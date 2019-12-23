@@ -31,12 +31,23 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'account.apps.AccountConfig',
+    'home.apps.HomeConfig',
+    'occurrences.apps.OccurrencesConfig',
+    'people.apps.PeopleConfig',
+    'places.apps.PlacesConfig',
+    'quotes.apps.QuotesConfig',
+    'sources.apps.SourcesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_mako_plus',
+    'imagekit',
+    'polymorphic',
+    'tinymce',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_mako_plus.RequestInitMiddleware',
 ]
 
 ROOT_URLCONF = 'history.urls'
@@ -65,7 +77,83 @@ TEMPLATES = [
             ],
         },
     },
+    {
+        'NAME': 'django_mako_plus',
+        'BACKEND': 'django_mako_plus.MakoTemplates',
+        'OPTIONS': {
+            'CONTENT_PROVIDERS': [
+                # provides JS context; this should be listed FIRST
+                { 'provider': 'django_mako_plus.JsContextProvider' },
+
+                # Sass precompiler provider
+                {
+                'provider': 'django_mako_plus.CompileScssProvider',
+                # 'group': 'styles',
+                # 'enabled': True,
+                # 'sourcepath': None,
+                # 'targetpath': None,
+                # 'command': []
+                },
+
+                # generates links for app/styles/template.css
+                {
+                'provider': 'django_mako_plus.CssLinkProvider',
+                # 'group': 'styles',
+                },
+
+                # generates links for app/scripts/template.js
+                { 'provider': 'django_mako_plus.JsLinkProvider' },
+            ],
+        },
+    },
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'loggers': {
+        'django_mako_plus': {
+            'handlers': ['console_handler'],
+            'level': DEBUG and 'DEBUG' or 'WARNING',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console_handler'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+    'handlers': {
+        'console_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+}
+#
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'dmp_simple': {
+#             'format': '%(levelname)s::DMP %(message)s'
+#         },
+#     },
+#     'handlers': {
+#         'dmp_console':{
+#             'level':'DEBUG',
+#             'class':'logging.StreamHandler',
+#             'formatter': 'dmp_simple'
+#         },
+#     },
+#     'loggers': {
+#         'django_mako_plus': {
+#             'handlers': ['dmp_console'],
+#             'level': 'DEBUG',
+#             'propagate': False,
+#         },
+#     },
+# }
 
 WSGI_APPLICATION = 'history.wsgi.application'
 
@@ -76,10 +164,15 @@ WSGI_APPLICATION = 'history.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.path.join(BASE_DIR, 'history'),
+        'NAME': 'history',
+        'USER': 'jacob',
+        'PASSWORD': 'bocaj092',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
+AUTH_USER_MODEL = 'account.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -118,3 +211,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    # SECURITY WARNING: this next line must be commented out at deployment
+    BASE_DIR,
+)
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')

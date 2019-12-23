@@ -1,0 +1,31 @@
+<%inherit file="base.htm" />
+
+<%block name="content">
+    <div class="container">
+        %if len(occurrences) > 0:
+            <div id="occurrences-list">
+                %for occurrence in occurrences:
+                    <div class="row">
+                        <!-- <img class="img-thumbnail" style="width: 20rem; margin-right: 1.5rem; vertical-align: top;" src="${ event.pictures.filter(is_representative=True)[0].image.url if len(event.pictures.filter(is_representative=True)) > 0 else STATIC_URL+'events/media/default.png' }" alt="tournament image"/> -->
+                        <div>
+                            <h2>
+                                <a href="/occurrences/${ occurrence.id }/">${ occurrence.summary }</a>
+                            </h3>
+                            <div>
+                                ${ occurrence.datetime.strftime('%b %d, %Y') if occurrence.datetime else '---' }
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                %endfor
+            </div>
+        %else:
+            <p class="lead">
+                Hell is other people.
+            </p>
+            <p>
+                If you have any questions, please <a href="/contact/">contact me</a>.
+            </p>
+        %endif
+    </div>
+</%block>

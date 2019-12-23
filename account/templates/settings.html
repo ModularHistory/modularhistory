@@ -1,0 +1,140 @@
+<%inherit file="base.htm" />
+
+<%! from django.urls import reverse %>
+
+<%block name="title">Account Settings</%block>
+
+<%block name="breadcrumb">
+    <li><a href="/account/">Account</a></li>
+    <li><a href="/account/settings/">Settings &amp; Privacy</a></li>
+</%block>
+
+<%block name="page_header">
+    Settings &amp; Privacy
+</%block>
+
+<%block name="content">
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+              <a data-toggle="collapse" href="#collapse1">
+                  Email address
+              </a>
+          </h4>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse in">
+          <div class="panel-body">
+              <table style="width: 100%">
+                  <tr>
+                      <td style="width: 50%">
+                          ${ request.user.email }
+                      </td>
+                      <td style="width: 50%; text-align: right;">
+                          <a class="btn btn-default" href="">Change email</a>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapse2">
+                Phone number
+            </a>
+          </h4>
+        </div>
+        <div id="collapse2" class="panel-collapse collapse">
+          <div class="panel-body">
+              <table style="width: 100%">
+                  <tr>
+                      <td style="width: 50%">
+                          ${ request.user.phone_number }
+                      </td>
+                      <td style="width: 50%; text-align: right;">
+                          <a class="btn btn-default" href="">Change phone</a>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" id="collapse-password" href="#password-collapse">
+                Password
+            </a>
+          </h4>
+        </div>
+        <div id="password-collapse" class="panel-collapse collapse">
+          <div class="panel-body">
+              <table style="width: 100%">
+                  <tr>
+                      <td style="width: 50%">
+                          [hidden]
+                      </td>
+                      <td style="width: 50%; text-align: right;">
+                          <a href="/account/settings.password/" class="btn btn-default modal-trigger">Change password</a>
+                      </td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapse3">
+                Social media accounts
+            </a>
+          </h4>
+        </div>
+        <div id="collapse3" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <h5>Facebook</h5>
+            %if facebook_login:
+              <p>Connected as <a href="https://facebook.com/${ facebook_login.extra_data['id'] }/" target="_blank">${ facebook_login.extra_data['id'] }</a></p>
+              %if can_disconnect:
+                <form method="post" action="${ reverse('social:disconnect', kwargs={'backend': 'facebook'}) }">
+                  ${ csrf_input }
+                  <button type="submit">Disconnect from Facebook</button>
+                </form>
+              %else:
+                <button type="button" disabled>Disconnect from Facebook</button>
+                <p style="color: red">You must <a href="%url 'password':">define a password</a> for your account before disconnecting from Facebook.</p>
+              %endif
+              <br />
+            %else:
+              <a href="${ reverse('social:begin', kwargs={'backend': 'facebook'}) }" class="btn btn-block btn-social btn-facebook" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                <span class="fa fa-facebook"></span> Connect with Facebook
+              </a>
+            %endif
+            ## Twitter authentication is broken at present
+            <!-- <h5>Twitter</h5> -->
+            <%doc>
+              %if twitter_login:
+                <p>Connected as <a href="https://twitter.com/${ twitter_login.extra_data['access_token']['screen_name'] }/" target="_blank">@${ twitter_login.extra_data['access_token']['screen_name'] }</a></p>
+                ${ twitter_login.extra_data }
+                %if can_disconnect:
+                  <form method="post" action="${ reverse('social:disconnect', kwargs={'backend': 'twitter'}) }">
+                    ${ csrf_input }
+                    <button type="submit">Disconnect from Twitter</button>
+                  </form>
+                %else:
+                  <button type="button" disabled>Disconnect from Twitter</button>
+                  <p style="color: red">You must <a href="%url 'password':">define a password</a> for your account before disconnecting from Twitter.</p>
+                %endif
+              %else:
+                  <a href="${ reverse('social:begin', kwargs={'backend': 'twitter'}) }" class="btn btn-block btn-social btn-twitter" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
+                    <span class="fa fa-twitter"></span> Connect with Twitter
+                  </a>
+              %endif
+            </%doc>
+          </div>
+        </div>
+      </div>
+    </div>
+</%block>

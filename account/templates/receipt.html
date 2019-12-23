@@ -1,0 +1,46 @@
+
+<%inherit file="base.htm" />
+<%block name="page_header">
+    <br />Order ${ "%07d" % sale.id }</small>
+</%block>
+<%block name="title">Receipt</%block>
+<%block name="content">
+  <div class="row">
+      <div>
+          %if not is_email:
+            <div class="dropdown pull-right" style="display: inline-block">
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+                    Options <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="/account.orders/${ sale.id }/returns/">Return items</a></li>
+                    <li><a href="/account.orders/${ sale.id }/receipt?email=True" class="spinner-trigger">Email receipt</a></li>
+                    <!-- <li role="separator" class="divider"></li> -->
+                </ul>
+            </div>
+            %if len(sale.returns.all()) > 0:
+                %for payment in sale.payments.all():
+                    <p class="text-center lead text-success" style="font-weight: bold; margin: 20px; clear: both;">
+                        Payment received ${ sale.payments.all()[0].datetime.strftime('%b %d, %Y at %H:%M') }).
+                    </p>
+                %endfor
+                %for r in sale.returns.all():
+                    <p class="text-center lead text-success" style="font-weight: bold; margin: 20px; clear: both;">
+                        Refund processed ${ r.datetime.strftime('%b %d, %Y at %H:%M') }).
+                    </p>
+                %endfor
+            %else:
+                <p class="text-center lead text-success" style="font-weight: bold; margin: 20px; clear: both;">
+                    Your purchase was completed successfully.
+                </p>
+            %endif
+            <p class="text-center lead text-success" style="font-weight: bold; margin: 20px; clear: both;">
+                <a href="/" class="btn btn-primary">Home</a>
+                <a href="/events/" class="btn btn-primary">Events</a>
+            </p>
+            <hr />
+          %endif
+          ${ receipt_partial }
+      </div>
+  </div>
+</%block>

@@ -1,20 +1,20 @@
 from django.views import generic
 
-from .models import Occurrence
+from .models import Location
 
 
 class IndexView(generic.list.ListView):
-    model = Occurrence
-    template_name = 'occurrences/index.html'
-    context_object_name = 'occurrences'
+    model = Location
+    template_name = 'places/index.html'
+    context_object_name = 'places'
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Occurrence.objects.order_by('-datetime')
+        return Location.objects.order_by('name')
 
 
 class DetailView(generic.detail.DetailView):
-    model = Occurrence
+    model = Location
     template_name = 'occurrences/detail.html'
 
 

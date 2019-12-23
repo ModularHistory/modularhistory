@@ -1,0 +1,126 @@
+%if is_email:
+  <% print(">>> Rendering email...") %>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <h1>Receipt for Order ${ "%07d" % sale.id }</h1>
+%endif
+<%
+  base_url = 'https://localhost:8000' if settings.DEBUG else 'https://www.history.com'
+  url = '%s%shome/media/images/logo.png' % (base_url if is_email else '', STATIC_URL)
+%>
+<div style="${ ("""background-image: url('%s'); background-repeat: no-repeat; background-origin: content-box, padding-box; background-position: center; background-size: auto;""" % url) if (is_email) else '' }">
+    <table class="table table-bordered receipt-table">
+        <thead>
+            <tr style="text-align: right;">
+                <th></th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Extended</th>
+            </tr>
+        </thead>
+        <tbody>
+            %for item in items:
+                <tr>
+                    <td class="item">
+                        <a href="${ ('/events/%s' % item.product.event.id) if hasattr(item.product, 'event') else '' }">
+                            <span class="name">${ item }</span>
+                            %if item._return:
+                                [RETURNED]
+                            %endif
+                        </a>
+                    </td>
+                    <td class="price" style="vertical-align: middle; text-align: right;">
+                        <span>$${ item.price }</span>
+                    </td>
+                    <td class="quantity" style="vertical-align: middle; text-align: right;">
+                        <span>${ item.quantity }</span>
+                    </td>
+                    <td class="extended" style="vertical-align: middle; text-align: right;">
+                        <span>$${ item.price * (item.quantity) }</span>
+                    </td>
+                </tr>
+            %endfor
+            <tr>
+                %if not sale.discount:
+                    <th style="text-align: left">Subtotal</th>
+                    <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                    <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                    <td class="extended" style="vertical-align: middle; text-align: right;">$${ sale.subtotal }</td>
+                %else:
+                    <td style="text-align: left">Subtotal</td>
+                    <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                    <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                    <td class="extended" style="vertical-align: middle; text-align: right;">$${ sale.subtotal }</td>
+                %endif
+            </tr>
+            %if sale.discount:
+            <tr>
+                <td style="text-align: left">Discount</td>
+                <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                <td class="extended" style="vertical-align: middle; text-align: right;">($${ sale.discount })</td>
+            </tr>
+            <tr>
+                <th style="text-align: left">Discounted subtotal</th>
+                <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                <td class="extended" style="vertical-align: middle; text-align: right;">$${ sale.subtotal - sale.discount }</td>
+            </tr>
+            %endif
+            <tr>
+                <td style="text-align: left">Tax</td>
+                <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                <td class="extended" style="vertical-align: middle; text-align: right;">$${ sale.tax }</td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Shipping</td>
+                <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                <td class="extended" style="vertical-align: middle; text-align: right;">$${ sale.shipping }</td>
+            </tr>
+            <tr>
+                <th style="text-align: left;">Total</th>
+                <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                <td style="vertical-align: middle; text-align: right;">$${ sale.total }</td>
+            </tr>
+            %if len(sale.payments.all()) > 0:
+              %for payment in sale.payments.all():
+                  <tr class="payment">
+                      <td style="text-align: left">Payment received ${ payment.datetime.strftime('%b %d, %Y at %H:%M') }</td>
+                      <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                      <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                      <td class="extended" style="vertical-align: middle; text-align: right;">$${ payment.amount }</td>
+                  </tr>
+              %endfor
+              <tr class="total_payments">
+                  <th style="text-align: left">Total payments received</th>
+                  <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                  <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                  <td class="extended" style="vertical-align: middle; text-align: right;">$${ total_payments_received }</td>
+              </tr>
+            %endif
+            %if len(sale.returns.all()) > 0:
+                <% net = total_payments_received %>
+                %for r in sale.returns.all():
+                    <tr class="return">
+                        <th style="text-align: left">Refund processed ${ r.datetime.strftime('%b %d, %Y at %H:%M') }</th>
+                        <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                        <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                        <td class="extended" style="vertical-align: middle; text-align: right;">($${ r.amount })</td>
+                    </tr>
+                    <% net -= r.amount %>
+                %endfor
+                <tr class="net">
+                    <th style="text-align: left">Net paid</th>
+                    <td class="price" style="vertical-align: middle; text-align: right;"></td>
+                    <td class="quantity" style="vertical-align: middle; text-align: right;"></td>
+                    <td class="extended" style="vertical-align: middle; text-align: right;">$${ net }</td>
+                </tr>
+            %endif
+        </tbody>
+    </table>
+</div>
+%if is_email:
+  <p class="lead">Questions or concerns?  Please <a target="_blank" href="https://www.history.com/contact/">send us a message</a>.</p>
+%endif

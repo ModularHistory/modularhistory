@@ -1,0 +1,11 @@
+td:nth-of-type(4), th:nth-of-type(4) {
+  text-align: right;
+}
+
+td:nth-of-type(2), td:nth-of-type(3), th:nth-of-type(2), th:nth-of-type(3) {
+  text-align: center;
+}
+
+.table>tbody>tr>td.price, .table>tbody>tr>td.quantity, .table>tbody>tr>td.extended, .table>tbody>tr>td.action {
+  vertical-align: middle;
+}

@@ -13,10 +13,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.apps import apps
 from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
     path('occurrences/', include('occurrences.urls')),
+    path('people/', include('people.urls')),
+    path('places/', include('places.urls')),
+    path('quotes/', include('quotes.urls')),
+    path('sources/', include('sources.urls')),
     path('admin/', admin.site.urls),
+    path('', include('home.urls')),
+    path('', include('django_mako_plus.urls')),
 ]
+
+# manually register the polls app with DMP
+apps.get_app_config('django_mako_plus').register_app('occurrences')
+apps.get_app_config('django_mako_plus').register_app('people')

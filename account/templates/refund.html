@@ -1,0 +1,104 @@
+<%inherit file="base.htm" />
+
+<%! from django.utils import timezone %>
+
+<%block name="title">Register</%block>
+
+<%block name="page_header">
+    Order ${ "%07d" % sale.id }<br /><small>&mdash; Returns &mdash;</small>
+</%block>
+
+<%block name="content">
+    <div class="row">
+        <p id="return-instructions" class="text-center lead text-info" style="font-weight: bold; margin: 20px; clear: both; color: #991314;">
+            Please select the items that you would like to return.
+        </p>
+        <hr />
+        <form id="return_form" method="POST" action="/account.orders/${ sale.id }/returns/">
+            ${ csrf_input }
+            <table class="table">
+                <thead style="font-size: 2rem;">
+                    <tr>
+                        <th></th>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Extended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    %for item in items:
+                        <tr class="item" data-id="${ item.id }">
+                            <td>
+                                <%
+                                    product, event = (item.product, None)
+                                    if hasattr(product, 'event') or hasattr(product, 'division'):
+                                        event = product.division.event if product.division else product.event
+                                    disabled = True if item._return or (event and event.datetime <= timezone.now()) else False
+                                %>
+                                <input type="checkbox" name="item${ item.id }" value="${ item.id }" ${ 'disabled' if disabled else '' } />
+                            </td>
+                            <td class="item">
+                                <a href="">
+                                    <span class="name">${ item }</span>
+                                    %if item._return:
+                                        [RETURNED]
+                                    %endif
+                                </a>
+                            </td>
+                            <td class="price">
+                                <span>$${ item.price }</span>
+                            </td>
+                            <td class="quantity">
+                                <span>${ item.quantity }</span>
+                            </td>
+                                <td class="extended">
+                                <span>$${ item.price * (item.quantity) }</span>
+                            </td>
+                        </tr>
+                    %endfor
+                    %if sale.discount:
+                    <tr>
+                        <td></td>
+                        <td>Discount</td>
+                        <td class="price">($${ sale.discount })</td>
+                        <td class="quantity">&mdash;</td>
+                        <td class="extended">($${ sale.discount })</td>
+                    </tr>
+                    %endif
+                    <tr>
+                        <td></td>
+                        <td>Tax</td>
+                        <td class="price">&mdash;</td>
+                        <td class="quantity">&mdash;</td>
+                        <td class="extended">$${ sale.tax }</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>Shipping</td>
+                        <td class="price">&mdash;</td>
+                        <td class="quantity">&mdash;</td>
+                        <td class="extended">$${ sale.shipping }</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <th>Order total</th>
+                        <td class="price">&mdash;</td>
+                        <td class="quantity">&mdash;</td>
+                        <td class="extended">$${ sale.total }</td>
+                    </tr>
+                    <tr class="refund" style="color: #991314; font-size: 2rem;">
+                        <td></td>
+                        <th>Expected refund</th>
+                        <td class="price"></td>
+                        <td class="quantity"></td>
+                        <th class="extended" id="expected-refund">$0.00</th>
+                    </tr>
+                </tbody>
+            </table>
+            <textarea name="reason" class="form-control" rows="4" placeholder="I am returning the selected items because..." style="margin-left: 4.4rem;"></textarea>
+            <br />
+            <input id="process-return-btn" type="submit" value="Process return" style="display: none" class="btn btn-danger pull-right" />
+        </form>
+    </div>
+</%block>

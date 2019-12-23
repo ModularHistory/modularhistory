@@ -1,0 +1,38 @@
+<%inherit file="base.htm" />
+
+<%block name="page_header">
+    <span>
+        %if request.user.is_superuser and event:
+            <a href="/events/manage/" class="btn btn-default text-center" style="display: inline-block; margin-bottom: 1.5rem;">Manage</a>
+            <br />
+        %endif
+        Orders
+    </span>
+</%block>
+
+<%block name="content">
+    <div class="container">
+        %if len(request.user.orders.all()) > 0:
+            %for sale in request.user.orders.all():
+                <div class="row" style="padding: 10px 40px; position: relative;">
+                    <div style="position: absolute; left: 30rem; min-height: 25rem; display: inline-block;">
+                        <h3 style="margin-top: 0.5rem;">
+                            <a href="/account.orders/${ sale.id }/receipt/">Order ${ "%07d" % sale.id }</a>
+                        </h3>
+                        <p>
+                            Click on the order number to view details.
+                        </p>
+                    </div>
+                </div>
+                <hr />
+            %endfor
+        %else:
+            <p class="lead">
+                You have not yet made any transactions with History.
+            </p>
+            <p>
+                If you have any questions, please <a href="/contact/">contact us</a>.
+            </p>
+        %endif
+    </div>
+</%block>

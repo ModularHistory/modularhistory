@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Occurrence, Year
+
+admin.site.register(Occurrence)
+admin.site.register(Year)

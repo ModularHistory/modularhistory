@@ -1,0 +1,52 @@
+<%inherit file="base_ajax.htm" />
+
+<%! from django.urls import reverse %>
+
+<%block name="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="text-center" style="padding-top: 6px">
+                <a href="${ reverse('social:begin', kwargs={'backend': 'facebook'}) }${ ('?next=%s' % request.GET['next']) if request.GET.get('next') else '' }" class="btn btn-block btn-social btn-facebook" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                  <span class="fa fa-facebook"></span> Sign in or create account with Facebook
+                </a>
+                <%doc>
+                  <!-- <a href="${ reverse('social:begin', kwargs={'backend': 'twitter'}) }${ ('?next=%s' % request.GET['next']) if request.GET.get('next') else '' }" class="btn btn-block btn-social btn-twitter" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
+                    <span class="fa fa-twitter"></span> Sign in with Twitter
+                  </a> -->
+                </%doc>
+                <a href="${ reverse('social:begin', kwargs={'backend': 'google-oauth2'}) }${ ('?next=%s' % request.GET['next']) if request.GET.get('next') else '' }" class="btn btn-block btn-social btn-google" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                  <span class="fa fa-google"></span> Sign in or create account with Google
+                </a>
+                <hr />
+                ${ loginform.non_field_errors() }
+                <form id="loginform" action="/account/login?ajax=True" style="display: inline-block" method="POST">
+                    ${ csrf_input }
+                    <div class="input-group" style="margin-bottom: 0.5rem;">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                        <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="Username or email">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                        <input id="login-password" type="password" class="form-control" name="password" placeholder="Password">
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input id="login-remember" type="checkbox" name="remember" value="1"> Remember me
+                        </label>
+                    </div>
+                    <input type="submit" value="Login" style="display: inline-block" class="btn btn-danger" />
+                    <hr />
+                    <div class="col-md-12 control" style="font-size:85%">
+                        <div>
+                            Don't have an account?
+                            <a href="/account/register" onClick="$('#loginbox').hide(); $('#signupbox').show()">Register</a>.
+                        </div>
+                        <div class="spacing">
+                            Forgot your password? <a href="${ reverse('password_reset_recover') }">Reset your password</a>.
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</%block>
