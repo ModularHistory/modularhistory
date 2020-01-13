@@ -1,0 +1,21 @@
+{% extends "_card.html" %}
+{% load get_detail_url %}
+
+{% block edit %}
+    {% with object=entity request=request %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block detail_url %}{{ entity|get_detail_url }}{% endblock %}
+
+{% block body %}
+    <a href="/history/entities/{{ entity.id }}/">
+        <!--Title-->
+        <h4 class="card-title">{{ entity }}</h4>
+        <!--Text-->
+        <p class="card-text">
+            {{ entity.description }}
+        </p>
+    </a>
+{% endblock %}

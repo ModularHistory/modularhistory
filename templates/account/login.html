@@ -1,0 +1,67 @@
+{% extends "base.htm" %}
+
+{% block content %}
+<div class="row text-center">
+    {% if next %}
+        {% if request.user.is_authenticated %}
+            <p>Your account doesn't have access to the requested page. To proceed, please login with an account that has access.</p>
+        {% else %}
+            <p class="lead text-center">To continue, please login.</p>
+        {% endif %}
+    {% endif %}
+</div>
+<div class="row text-center">
+    <div class="col-sm-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title text-center">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                        Login
+                    </a>
+                </h4>
+            </div>
+            <div class="panel-body">
+                <form id="loginform" action="/account/login" method="POST">
+                    {% csrf_token %}
+                    <table>
+                        {{ form.as_table }}
+                    </table>
+                    <div class="text-center">
+                        <input type="submit" value="Login" class="btn btn-danger submit_red"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        {% if next and not request.user.is_authenticated %}
+            <p>Register or login using your social media accounts.</p>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title text-center">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                        Use Your Social Media Account
+                    </a>
+                </h4>
+            </div>
+            <div class="panel-body">
+                <a href='{% url "social:begin" "facebook" %}' class="btn btn-block btn-social btn-facebook" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                    <i class="fab fa-facebook-f"></i> Sign in with Facebook
+                </a>
+                <a href='{% url "social:begin" "google-oauth2" %}' class="btn btn-block btn-social btn-google" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                    <i class="fab fa-google"></i> Sign in with Google
+                </a>
+            </div>
+        </div>
+        <p>
+            <a href="{% url 'account:password_reset' %}" class="text-center">Lost password?</a>
+        </p>
+    </div>
+    <div class="col-sm-4">
+        {% if next and not request.user.is_authenticated %}
+            <!-- <p>If you don't yet have an account, you can create one using the registration form below.</p> -->
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "_card.html" %}
+{% load get_detail_url %}
+
+{% block edit %}
+    {% with object=quote request=request %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block detail_url %}{{ quote|get_detail_url }}{% endblock %}
+
+{% block body %}
+    <!--Text-->
+    <div class="card-text">
+        <blockquote class="blockquote">
+            {% if quote.bite %}
+                {{ quote.bite.html }}
+            {% else %}
+                {{ quote.text.html|truncatechars_html:100 }}
+            {% endif %}
+            <footer class="blockquote-footer">
+                {% if quote.attributee %}
+                    {{ quote.attributee }}
+                {% elif quote.source_reference %}
+                    {{ quote.source_reference.source.creators }}
+                {% else %}
+                    ?
+                {% endif %}
+            </footer>
+        </blockquote>
+    </div>
+{% endblock %}

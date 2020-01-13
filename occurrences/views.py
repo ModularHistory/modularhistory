@@ -1,21 +1,39 @@
-from django.views import generic
+from typing import Dict
 
+from django.views import generic
+from polymorphic.query import PolymorphicQuerySet
+
+from home.forms import SearchFilterForm
 from .models import Occurrence
 
 
-class IndexView(generic.list.ListView):
+class ListView(generic.list.ListView):
     model = Occurrence
     template_name = 'occurrences/index.html'
     context_object_name = 'occurrences'
+    paginate_by = 20
 
-    def get_queryset(self):
-        """Return the last five published questions."""
-        return Occurrence.objects.order_by('-datetime')
+    def get_queryset(self) -> PolymorphicQuerySet:
+        """Return the queryset."""
+        return Occurrence.objects.exclude(related_topics__key='Mormonism')  # TODO
+
+    def get_context_data(self, *args, **kwargs) -> Dict:
+        context = super().get_context_data(*args, **kwargs)
+        context['search_filter_form'] = SearchFilterForm()
+        return context
 
 
-class DetailView(generic.detail.DetailView):
+class BaseDetailView(generic.detail.DetailView):
     model = Occurrence
+    context_object_name = 'occurrence'
+
+
+class DetailView(BaseDetailView):
     template_name = 'occurrences/detail.html'
+
+
+class DetailPartialView(BaseDetailView):
+    template_name = 'occurrences/_detail.html'
 
 
 # def add(request):

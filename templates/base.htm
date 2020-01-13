@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+{% load static %}
+{% load modal %}
+<html lang="en" xml:lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="google" content="notranslate">
+        <meta http-equiv="Content-Language" content="en">
+        <!-- <meta property="og:image" content="https://www.history.com${ STATIC_URL }home/media/images/ju1.jpg" /> -->
+        <meta property="og:type" content="website" />
+        <!-- <meta property="og:url" content="https://www.history.com/" /> -->
+        <!-- <meta property="og:title" content="History" /> -->
+        <!-- <meta property="og:description" content="Utah's submission tournament leader" /> -->
+
+        <title>
+            {% block title %}
+                Home
+            {% endblock %} | JTF
+        </title>
+
+        <!--<link rel="icon" href="{% static "home/media/favicon.ico" %}" type="image/x-icon" />-->
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+
+        <!-- ## jQuery UI CSS
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"> -->
+        <!-- ## jQuery DataTables CSS
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" /> -->
+
+        <!-- Latest compiled and minified Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+        <!-- Material Design Bootstrap CSS -->
+        <link rel="stylesheet" href='{% static "mdb/css/mdb.min.css" %}' type="text/css" />
+
+        <!--<link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>-->
+
+        <!-- Custom styles -->
+        {% load sass_tags %}
+        <link rel="stylesheet" href="{% sass_src 'styles/base.scss' %}" type="text/css" />
+
+        {% block styles %}{% endblock %}
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <!-- Latest compiled Bootstrap JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+        <!-- Material Design Bootstrap core JavaScript -->
+        <script type="text/javascript" src='{% static "mdb/js/mdb.min.js" %}'></script>
+        <!-- PDF.js -->
+        <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js"></script>
+
+        <!--
+        ## emulate tab
+        <script src="${ STATIC_URL }home/scripts/emulatetab.joelpurra.js"></script>
+        ## plus/enter as tab
+        <script src="${ STATIC_URL }home/scripts/plusastab.joelpurra.js"></script>
+        ## jQuery loadmodal
+        <script src="${ STATIC_URL }home/scripts/jquery.loadmodal.js"></script>
+        ## jQuery form
+        <script src="${ STATIC_URL }home/scripts/jquery.form.js"></script>
+        ## spinning wheel
+        <script src="${ STATIC_URL }home/scripts/spin.js" defer></script>
+        ## jQuery tablednd
+        <script src="${ STATIC_URL }home/scripts/jquery.tablednd.js" defer></script>
+        ## list (sorting/searching)
+        <script src="${ STATIC_URL }home/scripts/list.js" defer></script>
+        -->
+
+        <!--
+        ## cookies
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+        ## jQuery ui
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" defer></script>
+        ## jQuery dataTables
+        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js" defer></script>
+        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js" defer></script>
+        -->
+
+        <!-- <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBZqpNyAkIBNL2LBeG-eWR1VvFWaZ2HBIc'></script> -->
+        <script type="text/javascript" src='{% static "scripts/base.js" %}' defer></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark" id="global-nav">
+            <!-- Logo -->
+            <a class="navbar-brand" href="/">
+                <img src='{% static "logo_head_white.png" %}' alt="Logo" style="height: 2.5rem">
+            </a>
+
+            <!-- Toggler/collapser button -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Links -->
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav">
+                    {% block main_menu %}
+                        <!-- Dropdown -->
+                        <li class="nav-item dropdown active">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                                History
+                            </a>
+                            <div class="dropdown-menu">
+                                {% for title, app in settings.MENU_ITEMS %}
+                                    <a class="dropdown-item" href="/history/{{ app }}/">{{ title }}</a>
+                                    <!--<li class="nav-item ${'active' if False else ''}">-->
+                                    <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->
+                                    <!--</li>-->
+                                {% endfor %}
+                            </div>
+                        </li>
+                    {% endblock %}
+                </ul>
+
+                <form class="form-inline my-2 my-lg-0 ml-auto" action="{% url 'search' %}">
+                    <div class="input-group">
+                        <input name="q" class="form-control" type="search" placeholder="Search" aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-3" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <ul class="navbar-nav ml-auto nav-flex-icons">
+                    <li class="nav-item">
+                        <button class="btn btn-sm align-middle btn-outline-white" type="button">Patreon</button>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link waves-effect waves-light">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link waves-effect waves-light">
+                            <i class="fab fa-google-plus-g"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item avatar dropdown">
+                        {% if request.user.is_authenticated %}
+                            <a class="nav-link p-0 dropdown-toggle" id="navbarDropdownMenuLink-authenticated" data-toggle="dropdown">
+                                <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% endif %}" class="rounded-circle z-depth-0"
+                                     alt="avatar image" height="35">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="navbarDropdownMenuLink-authenticated">
+                                <a class="dropdown-item" href="/account/profile">Profile</a>
+                                {% if request.user.is_superuser %}
+                                    <a class="dropdown-item" href="/admin/">Administrate</a>
+                                    <a class="dropdown-item hide-admin-controls" href="">Hide admin controls</a>
+                                {% endif %}
+                                <a href="/account/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+                            </div>
+                        {% else %}
+                            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="navbarDropdownMenuLink-333">
+                                <a href="/account/register/" class="dropdown-item" href="#">Create an account</a>
+                                <a href="/account/login" class="dropdown-item" href="#">Login</a>
+                            </div>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="main-content">
+            <div class="container-fluid">
+                {% block breadcrumb %}
+                    {% if breadcrumb_items %}
+                        <ol class="breadcrumb" style="">
+                            {% for title, app in breadcrumb_items %}
+                            ...
+                            {% endfor %}
+                        </ol>
+                    {% endif %}
+                {% endblock %}
+                {% block content %}
+                    ...
+                {% endblock %}
+            </div>
+        </div>
+
+        {% block footer %}
+            <!-- Footer -->
+            <footer id="footer" class="page-footer font-small unique-color-dark pt-4">
+
+                <!-- Footer Elements -->
+                <div class="container">
+                    <!-- Call to action -->
+                    <ul class="list-unstyled list-inline text-center py-2">
+                        <li class="list-inline-item">
+                            <a href="#!" class="btn btn-outline-white">Support on Patreon</a>
+                        </li>
+                    </ul>
+                    <!-- Call to action -->
+                </div>
+                <!-- Footer Elements -->
+
+                <!-- Copyright -->
+                <div class="footer-copyright text-center py-3">
+                    &copy; 2019 Jacob Fredericksen
+                </div>
+                <!-- Copyright -->
+
+            </footer>
+            <!-- Footer -->
+        {% endblock %}
+
+        {% modal %}
+    </body>
+    {% block scripts %}{% endblock %}
+</html>

@@ -16,3 +16,10 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
     model = Source
     template_name = 'sources/detail.html'
+    context_object_name = 'source'
+
+
+class DetailPartView(generic.DetailView):
+    model = Source
+    template_name = 'sources/_detail.html'
+    context_object_name = 'source'

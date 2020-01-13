@@ -1,0 +1,16 @@
+<div class="card">
+    <div class="card-header" role="tab" id="{{ div.css_id }}-header">
+        <a data-toggle="collapse" data-parent="#accordion" href="#{{ div.css_id }}" aria-expanded="true"
+           aria-controls="{{ div.css_id }}">
+            <h5 class="mb-0">
+                {{ div.name }} <i class="fas fa-angle-down rotate-icon"></i>
+            </h5>
+        </a>
+    </div>
+    <div id="{{ div.css_id }}" class="collapse{% if div.active %} show{% endif %}" role="tabpanel"
+         aria-labelledby="{{ div.css_id }}-header" data-parent="#accordion">
+        <div class="card-body">
+            {{ fields|safe }}
+        </div>
+    </div>
+</div>

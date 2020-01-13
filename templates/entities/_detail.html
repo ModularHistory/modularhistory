@@ -1,0 +1,24 @@
+{% load get_admin_url %}
+{% load quote_card %}
+
+<div style="position: relative;">
+    <h1>{{ entity }}</h1>
+    <div>
+        {% for image in entity.images.all %}
+            {{ image.admin_image_element }}
+        {% endfor %}
+    </div>
+    <div>
+        {{ entity.description.html }}
+    </div>
+    <div>
+        {% if entity.quotes.all|length %}
+            {% for quote in entity.quotes.all %}
+                {% quote_card quote %}
+            {% endfor %}
+        {% else %}
+            No quotes
+        {% endif %}
+    </div>
+    <a class="edit-object-button" href="{{ entity|get_admin_url }}"><i class="fa fa-edit"></i></a>
+</div>

@@ -1,0 +1,23 @@
+{% load get_admin_url %}
+{% load image_card %}
+
+<div>
+    {% if quote.date %}{{ quote.date }}{% else %}{{ quote.year }}{% endif %}
+</div>
+<div class="card-text">
+    {% if quote.image %}
+        <div class="float-right m-4"
+             style="max-width: {% if quote.image.max_width %}{{ quote.image.max_width }}px{% else %}44%{% endif %}">
+            {% image_card quote.image %}
+        </div>
+    {% endif %}
+    <blockquote class="blockquote">
+        {{ quote.text.html }}
+        <footer class="blockquote-footer">{{ quote.source_reference }}</footer>
+    </blockquote>
+</div>
+{% if quote.source_file_url %}
+    <a href="{{ quote.source_file_url }}" class="btn btn-info display-source"
+       data-toggle="modal" data-target="#modal">View source</a>
+{% endif %}
+<a class="edit-object-button" href="{{ quote|get_admin_url }}"><i class="fa fa-edit"></i></a>

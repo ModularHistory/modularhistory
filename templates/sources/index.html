@@ -1,0 +1,22 @@
+{% extends "base.htm" %}
+
+{% load source_card %}
+
+{% block content %}
+    <div class="container">
+        {% if sources|length %}
+            <div>
+                {% for source in sources %}
+                    {% source_card source %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="lead">
+                Hell is other entities.
+            </p>
+            <p>
+                If you have any questions, please <a href="/contact/">contact me</a>.
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}

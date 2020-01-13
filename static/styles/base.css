@@ -1,0 +1,149 @@
+html, body {
+  height: 100%; }
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; }
+
+.main-content {
+  flex: 1; }
+
+.blockquote {
+  font-size: 1rem;
+  border-left: 0.75rem solid #eceeef;
+  padding: 0 1.5rem; }
+  .blockquote p {
+    padding: 0;
+    font-size: 0.9rem; }
+
+.card, .row {
+  position: relative; }
+
+.edit-object-button {
+  position: absolute;
+  right: 2px;
+  top: 2px; }
+
+.two-pane-container {
+  text-align: center; }
+  .two-pane-container .results {
+    text-align: left;
+    width: 25%;
+    display: inline-block;
+    vertical-align: top; }
+    .two-pane-container .results .card {
+      cursor: pointer;
+      position: relative; }
+      .two-pane-container .results .card:first-child {
+        margin-top: 0 !important; }
+      .two-pane-container .results .card.active {
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+        border-bottom: 1px solid black;
+        margin-right: -4px; }
+  .two-pane-container .view-detail {
+    text-align: left;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    position: -webkit-sticky;
+    /* Safari */
+    position: sticky;
+    top: 0;
+    width: 60%;
+    max-width: 44rem;
+    display: inline-block; }
+
+.embed-responsive-210by297 {
+  padding-bottom: 141.42%; }
+
+#global-nav {
+  margin-bottom: 0.5rem; }
+  #global-nav .avatar {
+    margin-top: auto;
+    margin-bottom: auto; }
+  #global-nav input[name='q'] {
+    width: 20rem; }
+
+.refinements-container {
+  display: flex;
+  margin-bottom: 0.5rem; }
+  .refinements-container form {
+    visibility: hidden;
+    display: flex;
+    flex: 0 1 auto; }
+    .refinements-container form .form-group {
+      position: relative; }
+      .refinements-container form .form-group .selectmultiple {
+        max-width: 15rem; }
+  .refinements-container h1 {
+    flex: 1 0 auto;
+    vertical-align: top;
+    padding: 6px 0;
+    white-space: nowrap;
+    text-align: right; }
+
+form ul {
+  list-style: none;
+  padding-left: 0; }
+  form ul li {
+    list-style: none;
+    font-size: 0.8rem; }
+
+ul.tags {
+  padding-left: 0; }
+  ul.tags li.topic-tag {
+    list-style: none;
+    font-size: 0.6rem;
+    background-color: rgba(255, 255, 153, 0.8);
+    margin: 2px;
+    padding: 4px;
+    display: inline; }
+
+/* Required height of parents of the Half Page Carousel for proper displaying carousel itself */
+html,
+body,
+.view {
+  height: 100%; }
+
+@media (max-width: 740px) {
+  .full-page-intro {
+    height: 1000px; } }
+
+/* Half Page Carousel itself*/
+.carousel {
+  height: 50%; }
+
+.carousel .carousel-inner {
+  height: 100%; }
+
+.carousel .carousel-inner .carousel-item,
+.carousel .carousel-inner .active {
+  height: 100%; }
+
+/* Adjustment for mobile devices*/
+@media (max-width: 776px) {
+  .carousel {
+    height: 100%; } }
+
+/* Navbar animation */
+.navbar {
+  background-color: rgba(0, 0, 0, 0.3); }
+
+.top-nav-collapse {
+  background-color: #1C2331; }
+
+/* Adding color to the Navbar on mobile */
+@media only screen and (max-width: 768px) {
+  .navbar {
+    background-color: #1C2331; } }
+
+/* Footer color for sake of consistency with Navbar */
+.page-footer {
+  background-color: #1C2331; }
+
+.nowrap {
+  white-space: nowrap; }
+
+/*# sourceMappingURL=base.css.map */

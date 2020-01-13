@@ -1,0 +1,58 @@
+{% extends "../home/templates/base.htm" %}
+
+{% block page_header %}
+    Register
+{% endblock %}
+
+{% block content %}
+<div class="row text-center">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="row text-center">
+            <div class="col-sm-6">
+                {% if next and not request.user.is_authenticated %}
+                    <p>Register or login using your social media accounts.</p>
+                {% endif %}
+                <div class="panel panel-default" style="display: inline-block">
+                    <div class="panel-heading">
+                        <h4 class="panel-title text-center">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                                Use Your Social Media Account
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                        <a href="${ reverse_lazy('social:begin', kwargs={'backend': 'facebook'}) }${ ('?next=%s' % request.GET['next']) if request.GET.get('next') else ''}" class="btn btn-block btn-social btn-facebook" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                          <span class="fa fa-facebook"></span> Sign in with Facebook
+                        </a>
+                        <!-- <a href="${ reverse_lazy('social:begin', kwargs={'backend': 'twitter'}) }${ ('?next=%s' % request.GET['next']) if request.GET.get('next') else ''}" class="btn btn-block btn-social btn-twitter" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
+                          <span class="fa fa-twitter"></span> Sign in with Twitter
+                        </a> -->
+                        <a href="${ reverse_lazy('social:begin', kwargs={'backend': 'google-oauth2'}) }${ ('?next=%s' % request.GET['next']) if request.GET.get('next') else ''}" class="btn btn-block btn-social btn-google" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                          <span class="fa fa-google"></span> Sign in with Google
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                {% if next and not request.user.is_authenticated %}
+                    <!-- <p>If you don't yet have an account, you can create one using the registration form below.</p> -->
+                {% endif %}
+                <div class="panel panel-default" style="display: inline-block">
+                    <div class="panel-heading">
+                        <h4 class="panel-title text-center">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                                Register
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                      <div class="form-container" id="registerform-container">
+                        {{ form }}
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-from django.contrib.admin import AdminSite
+from django.contrib.admin import AdminSite as BaseAdminSite
 # from django.contrib.flatpages.admin import FlatPageAdmin
 # from django.contrib.flatpages.models import FlatPage
 # from django.contrib.sites.models import Site
@@ -7,13 +7,38 @@ from django.contrib.admin import AdminSite
 # from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTaskForm
 # from django_celery_results.models import TaskResult
 # from django_celery_results.admin import TaskResultAdmin
+from django.contrib.admin import ModelAdmin
+from history.fields import HistoricDateField
+from history.forms import HistoricDateWidget
 
 
-class HistoryAdminSite(AdminSite):
+class Admin(ModelAdmin):
+    formfield_overrides = {
+        HistoricDateField: {'widget': HistoricDateWidget}
+    }
+
+    class Media:
+        # css = ()
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jQuery
+            '//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',  # Bootstrap
+            'scripts/mce.js',
+        )
+
+    def get_queryset(self, request):
+        if hasattr(self, 'tags'):
+            return super().get_queryset(request).prefetch_related('tags')
+        return super().get_queryset(request)
+
+    def tag_list(self, obj):
+        return u", ".join(o.name for o in obj.tags.all())
+
+
+class AdminSite(BaseAdminSite):
     site_header = 'History administration'
 
 
-admin_site = HistoryAdminSite(name='admin')
+admin_site = AdminSite(name='admin')
 
 
 # class CustomFlatPageAdmin(FlatPageAdmin):

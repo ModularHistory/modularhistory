@@ -12,9 +12,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+# noinspection PyPackageRequirements
+from decouple import config
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -23,31 +25,45 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'w@w6*rn!6y-)rkq$e)!di21(xy(txp%&75d)j32r!-82pb3^ne'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
 INSTALLED_APPS = [
-    'account.apps.AccountConfig',
-    'home.apps.HomeConfig',
-    'occurrences.apps.OccurrencesConfig',
-    'people.apps.PeopleConfig',
-    'places.apps.PlacesConfig',
-    'quotes.apps.QuotesConfig',
-    'sources.apps.SourcesConfig',
+    'admin_menu',  # Must come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.postgres',
     'django.contrib.staticfiles',
-    'django_mako_plus',
+    # 'django.contrib.gis',
+    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
+    'crispy_forms',
+    'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
+    # 'elasticsearch',
+    'decouple',
     'imagekit',
     'polymorphic',
+    'rest_framework',
+    'sass_processor',
+    'social_django',
+    'taggit',
+    # 'taggit_labels',
     'tinymce',
+    # 'typedmodels',
+    'account.apps.AccountConfig',
+    'entities.apps.EntitiesConfig',
+    'home.apps.HomeConfig',
+    'images.apps.ImagesConfig',
+    'occurrences.apps.OccurrencesConfig',
+    'places.apps.LocationsConfig',
+    'quotes.apps.QuotesConfig',
+    'sources.apps.SourcesConfig',
+    'topics.apps.TopicsConfig',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +74,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_mako_plus.RequestInitMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'history.urls'
@@ -66,7 +82,7 @@ ROOT_URLCONF = 'history.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,89 +90,19 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
+                'django_settings_export.settings_export',
             ],
-        },
-    },
-    {
-        'NAME': 'django_mako_plus',
-        'BACKEND': 'django_mako_plus.MakoTemplates',
-        'OPTIONS': {
-            'CONTENT_PROVIDERS': [
-                # provides JS context; this should be listed FIRST
-                { 'provider': 'django_mako_plus.JsContextProvider' },
-
-                # Sass precompiler provider
-                {
-                'provider': 'django_mako_plus.CompileScssProvider',
-                # 'group': 'styles',
-                # 'enabled': True,
-                # 'sourcepath': None,
-                # 'targetpath': None,
-                # 'command': []
-                },
-
-                # generates links for app/styles/template.css
-                {
-                'provider': 'django_mako_plus.CssLinkProvider',
-                # 'group': 'styles',
-                },
-
-                # generates links for app/scripts/template.js
-                { 'provider': 'django_mako_plus.JsLinkProvider' },
-            ],
+            'libraries': {
+                # https://stackoverflow.com/questions/41376480/django-template-exceptions-templatesyntaxerror-static-is-not-a-registered-tag
+                'staticfiles': 'django.templatetags.static',
+            },
         },
     },
 ]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'loggers': {
-        'django_mako_plus': {
-            'handlers': ['console_handler'],
-            'level': DEBUG and 'DEBUG' or 'WARNING',
-            'propagate': False,
-        },
-        'django': {
-            'handlers': ['console_handler'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    },
-    'handlers': {
-        'console_handler': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-    },
-}
-#
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'dmp_simple': {
-#             'format': '%(levelname)s::DMP %(message)s'
-#         },
-#     },
-#     'handlers': {
-#         'dmp_console':{
-#             'level':'DEBUG',
-#             'class':'logging.StreamHandler',
-#             'formatter': 'dmp_simple'
-#         },
-#     },
-#     'loggers': {
-#         'django_mako_plus': {
-#             'handlers': ['dmp_console'],
-#             'level': 'DEBUG',
-#             'propagate': False,
-#         },
-#     },
-# }
-
 WSGI_APPLICATION = 'history.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -173,6 +119,48 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = 'account.User'
+SOCIAL_AUTH_USER_MODEL = 'account.User'
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.open_id.OpenIdAuth',
+    'social_core.backends.google.GoogleOpenId',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.google.GoogleOAuth',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+# SOCIAL_AUTH_PIPELINE = (
+#     'social_core.pipeline.social_auth.social_details',
+#     'social_core.pipeline.social_auth.social_uid',
+#     'social_core.pipeline.social_auth.auth_allowed',
+#     'social_core.pipeline.social_auth.social_user',
+#     'social_core.pipeline.user.get_username',
+#     'social_core.pipeline.social_auth.associate_by_email',  # Enabled (disabled by default)
+#     'social_core.pipeline.user.create_user',
+#     'social_core.pipeline.social_auth.associate_user',
+#     'social_core.pipeline.social_auth.load_extra_data',
+#     'social_core.pipeline.user.user_details',
+# )
+LOGIN_URL = 'account/login'
+LOGOUT_URL = 'account/logout'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/account/settings'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/home/'
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+# TODO: https://simpleisbetterthancomplex.com/tutorial/2016/10/24/how-to-add-social-login-to-django.html
+# TODO: https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
+# SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'last_name', 'email']
+# SOCIAL_AUTH_TWITTER_KEY = config('SOCIAL_AUTH_TWITTER_KEY', default='')
+# SOCIAL_AUTH_TWITTER_SECRET = config('SOCIAL_AUTH_TWITTER_SECRET', default='')
+SOCIAL_AUTH_FACEBOOK_KEY = config('SOCIAL_AUTH_FACEBOOK_KEY', default='')
+SOCIAL_AUTH_FACEBOOK_SECRET = config('SOCIAL_AUTH_FACEBOOK_SECRET', default='')
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email', }
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', default='')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', default='')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -192,7 +180,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -206,13 +193,117 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    # SECURITY WARNING: this next line must be commented out at deployment
-    BASE_DIR,
+    os.path.join(BASE_DIR, 'static'),
 )
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Media files (images, etc. uploaded by users)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# GDAL_LIBRARY_PATH
+
+# https://github.com/jrief/django-sass-processor
+SASS_PRECISION = 8
+
+# https://django-tinymce.readthedocs.io/en/latest/usage.html
+TINYMCE_JS_URL = 'https://cloud.tinymce.com/stable/tinymce.min.js'
+TINYMCE_JS_ROOT = 'https://cloud.tinymce.com/stable/'
+TINYMCE_DEFAULT_CONFIG = {
+    # 'height': 360,
+    'width': '100%',
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 20,
+    'selector': 'textarea',
+    'theme': 'modern',
+    'plugins': ('anchor, autolink, blockquote, charmap, code, codesample, contextmenu, paste, '
+                'directionality, fullscreen, hr, image, insertdatetime, link, lists, '
+                'media, nonbreaking, preview, print, save, spellchecker, table, '
+                'textcolor, searchreplace, wordcount, visualblocks, visualchars'),
+    'toolbar1': ('fullscreen preview | paste | bold italic underline| blockquote | '
+                 'alignleft aligncenter alignright alignjustify | indent outdent | bullist numlist table | '
+                 'visualblocks visualchars | charmap hr nonbreaking anchor | image media link | code |'),
+    # 'toolbar2': '''
+    #         visualblocks visualchars |
+    #         charmap hr pagebreak nonbreaking anchor |  code |
+    #         ''',
+    'contextmenu': 'formats | link image',
+    'menubar': True,
+    'statusbar': True,
+    'branding': False,
+    # 'paste_as_text': True,
+}
+
+# https://pypi.org/project/django-bootstrap-datepicker-plus/
+BOOTSTRAP4 = {
+    'include_jquery': False,
+}
+
+# https://github.com/cdrx/django-admin-menu
+ADMIN_LOGO = 'logo_head_white.png'
+MENU_WEIGHT = {
+    'Entities': 1,
+    'Occurrences': 2,
+    'Quotes': 3,
+    'Sources': 4,
+    'Topics': 5,
+    'Facts': 6,
+    'Images': 7,
+    'Places': 8,
+    'Accounts': 20
+}
+ADMIN_STYLE = {
+    'primary-color': '#2B3746',
+    'secondary-color': '#354151',
+    'tertiary-color': '#F2F9FC'
+}
+# ADMIN_STYLE = {
+#     'background': 'white',
+#     'primary-color': '#205280',
+#     'primary-text': '#d6d5d2',
+#     'secondary-color': '#3B75AD',
+#     'secondary-text': 'white',
+#     'tertiary-color': '#F2F9FC',
+#     'tertiary-text': 'black',
+#     'breadcrumb-color': 'whitesmoke',
+#     'breadcrumb-text': 'black',
+#     'focus-color': '#eaeaea',
+#     'focus-text': '#666',
+#     'primary-button': '#26904A',
+#     'primary-button-text':' white',
+#     'secondary-button': '#999',
+#     'secondary-button-text': 'white',
+#     'link-color': '#333',
+#     'link-color-hover': 'lighten($link-color, 20%)'
+# }
+
+# https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+# https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
+CRISPY_FAIL_SILENTLY = not DEBUG
+CRISPY_CLASS_CONVERTERS = {
+    # 'textinput': "textinput inputtext"
+}
+
+# https://django-select2.readthedocs.io/en/latest/django_select2.html#module-django_select2.conf
+# SELECT2_CSS = ''
+
+MENU_ITEMS = [
+    ['Occurrences', 'occurrences'],
+    ['People', 'entities'],
+    ['Places', 'places'],
+    ['Quotes', 'quotes'],
+    ['Sources', 'sources'],
+    ['Topics', 'topics'],
+]
+
+SETTINGS_EXPORT = [
+    'MENU_ITEMS',
+]

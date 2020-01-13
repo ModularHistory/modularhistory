@@ -1,0 +1,21 @@
+{% extends "_card.html" %}
+{% load get_detail_url %}
+
+{% block edit %}
+    {% with object=source request=request %}
+        {{block.super}}
+    {% endwith %}
+{% endblock %}
+
+{% block detail_url %}{{ source|get_detail_url }}{% endblock %}
+
+{% block body %}
+    <!--Text-->
+    <div class="card-text">
+        {{ source }}
+    </div>
+    {% if source.file_url %}
+        <a href="{{ source.file_url }}" class="btn btn-info display-source"
+           data-toggle="modal" data-target="#modal">View source</a>
+    {% endif %}
+{% endblock %}

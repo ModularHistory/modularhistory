@@ -1,0 +1,43 @@
+{% extends "base.htm" %}
+
+{% block content %}
+    <div class="container">
+        {% if topics|length %}
+            <div id="occurrences-list">
+                {% for topic in topics %}
+                    <!--Card-->
+                    <div class="card" style="">
+                        <!--Card content-->
+                        <div class="card-body">
+                            <!--Title-->
+                            <h4 class="card-title">
+                                <a href="/topics/{{ topic.id }}/">${ topic.name }</a>
+                            </h4>
+                            <!--Text-->
+                            <p class="card-text">
+                                ...
+                            </p>
+                            <a href="/topics/{{ topic.id }}/" class="btn btn-info">More</a>
+                        </div>
+                    </div>
+                    <!--/.Card-->
+                    <div class="row">
+                        <div>
+                            <div>
+                                {{ topic.text }}
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="lead">
+                Hell is other topics.
+            </p>
+            <p>
+                If you have any questions, please <a href="/contact/">contact me</a>.
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}

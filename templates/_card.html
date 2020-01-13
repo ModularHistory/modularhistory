@@ -1,0 +1,23 @@
+{% load get_admin_url %}
+{% load get_detail_url %}
+
+<!--Card-->
+<div class="card m-2 {% block card_class %}{% endblock %}" data-href="{% block detail_url %}{% endblock %}">
+    {% block top %}{% endblock %}
+    <div class="card-body">
+        {% block edit %}
+            {% if request.user.is_superuser %}
+                <a class="edit-object-button" href="{{ object|get_admin_url }}"><i class="fa fa-edit"></i></a>
+            {% endif %}
+        {% endblock %}
+        {% block body %}{% endblock %}
+        {% block tags %}
+            {% if object.related_topics and object.related_topics.all|length %}
+                <ul class="tags">
+                    {{ object.topic_tags }}
+                </ul>
+            {% endif %}
+        {% endblock %}
+    </div>
+</div>
+<!--/.Card-->

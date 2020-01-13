@@ -12,6 +12,14 @@ class IndexView(generic.list.ListView):
         return Quote.objects.all()
 
 
-class DetailView(generic.detail.DetailView):
+class BaseDetailView(generic.detail.DetailView):
     model = Quote
+    context_object_name = 'quote'
+
+
+class DetailView(BaseDetailView):
     template_name = 'quotes/detail.html'
+
+
+class DetailPartView(BaseDetailView):
+    template_name = 'quotes/_detail.html'

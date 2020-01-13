@@ -1,0 +1,22 @@
+{% extends "_card.html" %}
+{% load get_detail_url %}
+
+{% block edit %}
+    {% with object=place request=request %}
+        {{block.super}}
+    {% endwith %}
+{% endblock %}
+
+{% block detail_url %}{{ place|get_detail_url }}{% endblock %}
+
+{% block body %}
+    <!--Title-->
+    <h4 class="card-title">
+        <a href="/entities/{{ place.id }}/">{{ place.name }}</a>
+    </h4>
+    <!--Text-->
+    <p class="card-text">
+        ...
+    </p>
+    <a href="/entities/{{ place.id }}/" class="btn btn-info">More</a>
+{% endblock %}

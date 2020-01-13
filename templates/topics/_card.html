@@ -1,0 +1,24 @@
+{% extends "_card.html" %}
+{% load get_detail_url %}
+
+{% block edit %}
+    {% with object=topic request=request %}
+        {{block.super}}
+    {% endwith %}
+{% endblock %}
+
+{% block detail_url %}{{ topic|get_detail_url }}{% endblock %}
+
+{% block body %}
+    <h4 class="card-title">
+        <a href="/topics/{{ topic.id }}/">{{ topic.key }}</a>
+    </h4>
+    <!--Text-->
+    <p class="card-text">
+        {{ topic.description }}
+    </p>
+    <div>
+        Facts: {{ topic.facts }}
+    </div>
+    <a href="/topics/{{ topic.id }}/" class="btn btn-info">More</a>
+{% endblock %}

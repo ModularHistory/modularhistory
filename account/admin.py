@@ -12,13 +12,13 @@ class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
     username = forms.CharField(required=False, widget=forms.HiddenInput())
-    email = forms.EmailField(label='Email', required=True, max_length=100, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-    first_name = forms.CharField(label='First Name', required=False, max_length=100, widget=forms.TextInput(attrs={ 'class': 'form-control' }))
-    last_name = forms.CharField(label='Last Name', required=False, max_length=100, widget=forms.TextInput(attrs={ 'class': 'form-control' }))
+    email = forms.EmailField(label='Email', required=True, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(label='First Name', required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(label='Last Name', required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
     force_password_change = forms.BooleanField(help_text='Prompt user to change password upon first login', required=False, initial=True)
-    groups = forms.ModelMultipleChoiceField(label="Groups", required=False, queryset=Group.objects.all(), widget=forms.CheckboxSelectMultiple(attrs={ 'class': 'form-control' }))
+    groups = forms.ModelMultipleChoiceField(label="Groups", required=False, queryset=Group.objects.all(), widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control'}))
     permissions = forms.ModelMultipleChoiceField(label="Permissions", required=False, queryset=Permission.objects.all(), help_text='Specifying permissions individually is not necessary if the user belongs to a group to which those permissions are already allocated.')
 
     class Meta:
@@ -79,16 +79,26 @@ class UserChangeForm(forms.ModelForm):
     # password = ReadOnlyPasswordHashField()
     # gender = forms.ChoiceField(label='Gender', required=True, choices=settings.GENDERS, widget=forms.Select(attrs={}))
     username = forms.CharField(required=False, widget=forms.HiddenInput())
-    email = forms.EmailField(label='Email', required=True, max_length=100, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-    first_name = forms.CharField(label='First Name', required=False, max_length=100, widget=forms.TextInput(attrs={ 'class': 'form-control' }))
-    last_name = forms.CharField(label='Last Name', required=False, max_length=100, widget=forms.TextInput(attrs={ 'class': 'form-control' }))
+    email = forms.EmailField(label='Email', required=True, max_length=100,
+                             widget=forms.TextInput(attrs={'class': 'form-control'}))
+    first_name = forms.CharField(label='First Name', required=False, max_length=100,
+                                 widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(label='Last Name', required=False, max_length=100,
+                                widget=forms.TextInput(attrs={'class': 'form-control'}))
     force_password_change = forms.BooleanField(label='Force password change', required=False)
     locked = forms.BooleanField(label='Locked', required=False)
     # password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     # password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
     # force_password_change = forms.BooleanField(help_text='Prompt user to change password upon first login', required=False, initial=True)
-    groups = forms.ModelMultipleChoiceField(label="Groups", required=False, queryset=Group.objects.all(), widget=forms.CheckboxSelectMultiple(attrs={ 'class': 'form-control' }))
-    permissions = forms.ModelMultipleChoiceField(label="Permissions", required=False, queryset=Permission.objects.all(), help_text='Specifying permissions individually is not necessary if the user belongs to a group to which those permissions are already allocated.')
+    groups = forms.ModelMultipleChoiceField(
+        label="Groups", required=False, queryset=Group.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control'})
+    )
+    permissions = forms.ModelMultipleChoiceField(
+        label="Permissions", required=False, queryset=Permission.objects.all(),
+        help_text=('Specifying permissions individually is not necessary if the user belongs to a group '
+                   'to which those permissions are already allocated.')
+    )
 
     class Meta:
         model = User
@@ -168,20 +178,4 @@ class UserAdmin(BaseUserAdmin):
     # some_action.short_description = "blabla"
 
 
-# class SaleAdmin(ModelAdmin):
-#     # fields = ('customer', 'amount')
-#     list_display = ('customer','total','datetime')
-#     list_filter = ('customer',)
-#
-#
-# class PaymentAdmin(ModelAdmin):
-#     # fields = ('user', 'amount')
-#     list_display = ('user','amount','datetime')
-#     list_filter = ('user',)
-
 admin_site.register(User, UserAdmin)
-# admin_site.register(Sale, SaleAdmin)
-# admin_site.register(SaleItem)
-# admin_site.register(Payment, PaymentAdmin)
-# admin_site.register(Coupon)
-# admin_site.register(Return)

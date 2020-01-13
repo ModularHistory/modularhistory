@@ -1,0 +1,38 @@
+{% load get_admin_url %}
+{% load image_card %}
+{% load quote_card %}
+{% load source_card %}
+
+<h2 class="text-center card-title">
+    {% if occurrence.date %}{{ occurrence.date }}{% else %}{{ occurrence.year }}{% endif %}
+</h2>
+<div class="card-text">
+    {% if occurrence.image %}
+        <div style="float:right;max-width:33%;">
+            {% image_card occurrence.image %}
+        </div>
+    {% endif %}
+    <div class="lead">
+        {{ occurrence.summary.html }}
+    </div>
+    <div>
+        {% for entity in occurrence.involved_entities.all %}
+            <a class="font-italic" href="{% url 'entities:detail' entity.id %}">{{ entity }}</a>
+        {% endfor %}
+    </div>
+    <br />
+    <div>
+        {{ occurrence.description.html }}
+    </div>
+</div>
+{% if occurrence.related_quotes.all|length %}
+    {% for quote in occurrence.related_quotes.all %}
+        {% quote_card quote %}
+    {% endfor %}
+{% endif %}
+{% if occurrence.sources.all|length %}
+    {% for source in occurrence.sources.all %}
+        {% source_card source %}
+    {% endfor %}
+{% endif %}
+<a class="edit-object-button" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>

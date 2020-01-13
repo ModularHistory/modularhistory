@@ -4,27 +4,33 @@ import datetime
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 
 from account.models import User
 
 
-class CustomUserCreationForm(UserCreationForm):
+class UserCreationForm(BaseUserCreationForm):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        exclude = ()
+        # fields = ('username', 'email')
+
+
+class RegistrationForm(UserCreationForm):
+    class Meta:
+        model = User
+        exclude = ()
+        # fields = ('username', 'email')
 
 
 class LoginForm(forms.Form):
     user: User
-    username = forms.CharField(label='Username', required=True, max_length=100, widget=forms.TextInput(attrs={ 'class': 'form-control' }))
-    password = forms.CharField(label='Password', required=True, max_length=100, widget=forms.PasswordInput(attrs={ 'class': 'form-control' }))
+    username = forms.CharField(label='Username', required=True, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(label='Password', required=True, max_length=100, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     next = forms.CharField(required=False, widget=forms.HiddenInput())
 
     def clean(self):
-        print(">>> Cleaning the login form...")
         username = self.cleaned_data.get('username')
-        print(">>> The supplied username is %s." % username)
         if not User.objects.filter(username=username).exists() and User.objects.filter(email=username).exists():
             print(">>> No one with that username exists.  Checking for matching email addresses instead...")
             username = User.objects.filter(email=username)[0].username
@@ -88,17 +94,17 @@ class LoginForm(forms.Form):
 #         }
 #
 #     def init(self):
-#         self.fields['first_name'] = forms.CharField(required=True, max_length=100, initial=self.request.user.first_name, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['last_name'] = forms.CharField(required=True, max_length=100, initial=self.request.user.last_name, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['email'] = forms.EmailField(required=True, initial=self.request.user.email, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['username'] = forms.CharField(required=True, initial=self.request.user.username, max_length=100, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['address'] = forms.CharField(required=False, max_length=100, initial=self.request.user.address, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['address2'] = forms.CharField(label='Address (line 2)', initial=self.request.user.address2, required=False, max_length=100, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['city'] = forms.CharField(required=False, max_length=40, initial=self.request.user.city, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['state'] = forms.CharField(required=False, max_length=2, initial=self.request.user.state, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['zip_code'] = forms.CharField(required=False, max_length=5, initial=self.request.user.zip_code, widget=forms.TextInput(attrs={ 'class':'form-control' }))
-#         self.fields['date_of_birth'] = forms.DateField(label='Date of birth', required=False, initial=self.request.user.date_of_birth, widget=forms.DateInput(attrs={ 'type': 'date', 'class':'form-control' }))
-#         self.fields['phone_number'] = forms.CharField(required=False, max_length=20, initial=self.request.user.phone_number, widget=forms.TextInput(attrs={ 'class':'form-control' }))
+#         self.fields['first_name'] = forms.CharField(required=True, max_length=100, initial=self.request.user.first_name, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['last_name'] = forms.CharField(required=True, max_length=100, initial=self.request.user.last_name, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['email'] = forms.EmailField(required=True, initial=self.request.user.email, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['username'] = forms.CharField(required=True, initial=self.request.user.username, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['address'] = forms.CharField(required=False, max_length=100, initial=self.request.user.address, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['address2'] = forms.CharField(label='Address (line 2)', initial=self.request.user.address2, required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['city'] = forms.CharField(required=False, max_length=40, initial=self.request.user.city, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['state'] = forms.CharField(required=False, max_length=2, initial=self.request.user.state, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['zip_code'] = forms.CharField(required=False, max_length=5, initial=self.request.user.zip_code, widget=forms.TextInput(attrs={'class': 'form-control'}))
+#         self.fields['date_of_birth'] = forms.DateField(label='Date of birth', required=False, initial=self.request.user.date_of_birth, widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+#         self.fields['phone_number'] = forms.CharField(required=False, max_length=20, initial=self.request.user.phone_number, widget=forms.TextInput(attrs={'class': 'form-control'}))
 #         # self.fields['picture'] = forms.ImageField(label='Profile picture', rinitial=self.request.user.pict, equired=False)
 #         p = self.request.user
 #
@@ -124,7 +130,7 @@ class LoginForm(forms.Form):
 #
 #     def clean_date_of_birth(self):
 #         if self.cleaned_data.get('date_of_birth') is not None and self.cleaned_data.get('date_of_birth') > datetime.date.today():
-#             raise forms.ValidationError('This date is in the future. Currently, we only support users who were born in the past... (:')
+#             raise forms.ValidationError('This date is in the future. Currently, we only support users who were born in the past... (: ')
 #         return self.cleaned_data.get('date_of_birth')
 #
 #

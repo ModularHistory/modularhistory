@@ -13,21 +13,29 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.apps import apps
-from django.contrib import admin
-from django.urls import include, path
+
+from django.conf import settings
+from django.conf.urls.static import static
+from django.urls import include, path, re_path
+from home.views import SearchResultsView
+from admin import admin_site
 
 urlpatterns = [
-    path('occurrences/', include('occurrences.urls')),
-    path('people/', include('people.urls')),
-    path('places/', include('places.urls')),
-    path('quotes/', include('quotes.urls')),
-    path('sources/', include('sources.urls')),
-    path('admin/', admin.site.urls),
+    path('admin/', admin_site.urls),
+    path('history/occurrences/', include(('occurrences.urls', 'occurrences'), namespace='occurrences')),
+    path('history/entities/', include(('entities.urls', 'entities'), namespace='entities')),
+    path('history/images/', include(('images.urls', 'images'), namespace='images')),
+    path('history/places/', include(('places.urls', 'places'), namespace='places')),
+    path('history/quotes/', include(('quotes.urls', 'quotes'), namespace='quotes')),
+    path('history/sources/', include(('sources.urls', 'sources'), namespace='sources')),
+    path('history/topics/', include(('topics.urls', 'topics'), namespace='topics')),
+    path('account/', include(('account.urls', 'account'), namespace='account')),
+    path('oauth/', include('social_django.urls', namespace='social')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('tinymce/', include('tinymce.urls')),
+    path('select2/', include('django_select2.urls')),
+    re_path(r'history/search/?', SearchResultsView.as_view(), name='search'),
     path('', include('home.urls')),
-    path('', include('django_mako_plus.urls')),
 ]
-
-# manually register the polls app with DMP
-apps.get_app_config('django_mako_plus').register_app('occurrences')
-apps.get_app_config('django_mako_plus').register_app('people')
+# urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

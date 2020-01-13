@@ -1,0 +1,21 @@
+{% extends "base.htm" %}
+{% load topic_card %}
+
+{% block content %}
+    <div class="container">
+        {% if topics|length %}
+            <div>
+                {% for topic in topics %}
+                    {% topic_card topic %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="lead">
+                Hell is other quotes.
+            </p>
+            <p>
+                If you have any questions, please <a href="/contact/">contact me</a>.
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "_row.html" %}
+{% load get_admin_url %}
+{% load image_card %}
+{% load quote_card %}
+{% load source_card %}
+
+{% block row_content %}
+    <h4 class="text-center card-title">
+        {% if occurrence.date %}{{ occurrence.date}}{% else %}{{occurrence.year }}{% endif %}
+    </h4>
+    <div class="card-text">
+        {% if occurrence.image %}
+            <div style="float:right;max-width:33%;">
+                {% image_card occurrence.image %}
+            </div>
+        {% endif %}
+        <div class="lead">
+            {{ occurrence.summary.html }}
+        </div>
+        {{ occurrence.description.html }}
+    </div>
+    {% if occurrence.related_quotes.all|length %}
+        {% for quote in occurrence.related_quotes.all %}
+            {% quote_card quote %}
+        {% endfor %}
+    {% endif %}
+    <a class="edit-object-button" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% load get_admin_url %}
+
+<div>
+    {{ topic }}
+</div>
+<div class="collapse col-md-11 col-md-offset-1" id="collapse{{topic.id}}">
+    {{ topic.description }}
+</div>
+{% if topic.facts.all|length %}
+    <div class="col-sm">
+        {% for fact in topic.facts.all %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ fact.id }}</h5>
+                    <p class="card-text">
+                        {{ fact }}
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<a class="edit-object-button" href="{{ topic|get_admin_url }}"><i class="fa fa-edit"></i></a>
