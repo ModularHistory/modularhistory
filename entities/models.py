@@ -6,7 +6,7 @@ from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
 from django.template.defaultfilters import truncatechars
 from django.utils.safestring import SafeText, mark_safe
 
-from history.fields import HTMLField, ArrayField, HistoricDateField
+from history.fields import HTMLField, ArrayField, HistoricDateField, HistoricDateTimeField
 from history.models import Model, PolymorphicModel, TaggableModel
 from images.models import Image
 
@@ -24,8 +24,8 @@ class Entity(PolymorphicModel, TaggableModel):
         null=True, blank=True
     )
     description = HTMLField(null=True, blank=True)
-    birth_date = HistoricDateField(null=True, blank=True)
-    death_date = HistoricDateField(null=True, blank=True)
+    birth_date = HistoricDateTimeField(null=True, blank=True)
+    death_date = HistoricDateTimeField(null=True, blank=True)
     is_living = models.BooleanField(default=False)
     images = ManyToManyField(Image, through=EntityImage, related_name='entities', blank=True)
 

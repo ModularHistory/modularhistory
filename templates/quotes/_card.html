@@ -22,9 +22,9 @@
                 {% if quote.attributee %}
                     {{ quote.attributee }}
                 {% elif quote.source_reference %}
-                    {{ quote.source_reference.source.creators }}
+                    {{ quote.source_reference }}
                 {% else %}
-                    ?
+                    Unknown
                 {% endif %}
             </footer>
         </blockquote>

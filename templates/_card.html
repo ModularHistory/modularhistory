@@ -1,5 +1,6 @@
 {% load get_admin_url %}
 {% load get_detail_url %}
+{% load is_instance %}
 
 <!--Card-->
 <div class="card m-2 {% block card_class %}{% endblock %}" data-href="{% block detail_url %}{% endblock %}">
@@ -7,13 +8,19 @@
     <div class="card-body">
         {% block edit %}
             {% if request.user.is_superuser %}
-                <a class="edit-object-button" href="{{ object|get_admin_url }}"><i class="fa fa-edit"></i></a>
+                <a class="edit-object-button" target="_blank" href="{{ object|get_admin_url }}"><i class="fa fa-edit"></i></a>
             {% endif %}
         {% endblock %}
+        {% if not object|is_instance:'images.Image' %}
+            <!--Title-->
+            <h4 class="card-title text-center">
+                {{ object.date.string }}
+            </h4>
+        {% endif %}
         {% block body %}{% endblock %}
         {% block tags %}
             {% if object.related_topics and object.related_topics.all|length %}
-                <ul class="tags">
+                <ul class="tags float-right">
                     {{ object.topic_tags }}
                 </ul>
             {% endif %}

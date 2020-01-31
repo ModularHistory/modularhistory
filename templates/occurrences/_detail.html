@@ -2,25 +2,35 @@
 {% load image_card %}
 {% load quote_card %}
 {% load source_card %}
+{% load class_name %}
 
 <h2 class="text-center card-title">
-    {% if occurrence.date %}{{ occurrence.date }}{% else %}{{ occurrence.year }}{% endif %}
+    {% if occurrence.date %}
+        {{ occurrence.date.string }}
+    {% else %}
+        {{ occurrence.year }}
+    {% endif %}
 </h2>
 <div class="card-text">
     {% if occurrence.image %}
-        <div style="float:right;max-width:33%;">
+        <div style="float:right; max-width:33%; margin-left: 0.7rem; margin-bottom: 0.7rem">
             {% image_card occurrence.image %}
         </div>
     {% endif %}
     <div class="lead">
         {{ occurrence.summary.html }}
     </div>
-    <div>
-        {% for entity in occurrence.involved_entities.all %}
-            <a class="font-italic" href="{% url 'entities:detail' entity.id %}">{{ entity }}</a>
-        {% endfor %}
-    </div>
-    <br />
+    {% if occurrence.involved_entities.all|length %}
+        <div>
+            <ul>
+                {% for entity in occurrence.involved_entities.all %}
+                    <li>
+                        <a class="font-italic" href="{% url 'entities:detail' entity.id %}">{{ entity }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
     <div>
         {{ occurrence.description.html }}
     </div>
@@ -31,8 +41,16 @@
     {% endfor %}
 {% endif %}
 {% if occurrence.sources.all|length %}
-    {% for source in occurrence.sources.all %}
-        {% source_card source %}
-    {% endfor %}
+    <footer class="footer">
+        {% for source_reference in occurrence.source_references.all %}
+            <div>
+                {{ source_reference }}
+                {% if source_reference.source_file_url %}
+                    <a href="{{ source_reference.source_file_url }}" class="btn btn-info display-source"
+                       data-toggle="modal" data-target="#modal">View source</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </footer>
 {% endif %}
-<a class="edit-object-button" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>
+<a class="edit-object-button" target="_blank" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>

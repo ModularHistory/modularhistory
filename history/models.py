@@ -1,16 +1,21 @@
-from datetime import datetime
+from datetime import date, datetime
 from sys import stderr
 from typing import Any, List, Optional, Union
 
+from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.db.models import (
     Model as BaseModel,
     Manager as BaseManager,
-    Q, QuerySet, BooleanField,
+    # Q,
+    QuerySet,
+    BooleanField,
 )
 from django.utils.safestring import SafeText, mark_safe
 from polymorphic.managers import PolymorphicManager as BasePolymorphicManager
 from polymorphic.models import PolymorphicModel as BasePolymorphicModel
 from polymorphic.query import PolymorphicQuerySet
+
+from history.structures.historic_datetime import HistoricDateTime
 
 
 # from typedmodels.models import TypedModel as BaseTypedModel
@@ -24,13 +29,20 @@ class Manager(BaseManager):
         model = self.model
         searchable_fields = model.get_searchable_fields()
         if searchable_fields:
-            q = Q()
-            for attr in searchable_fields:
-                q |= Q(**{f'{attr}__icontains': query})
-            qs = qs.filter(q).distinct()  # distinct() is often necessary with Q lookups
+            # q = Q()
+            # for attr in searchable_fields:
+            #     q |= Q(**{f'{attr}__search': query})
+            # qs = qs.filter(q).distinct()  # distinct() is often necessary with Q lookups
+            query = SearchQuery(query)
+            vector = SearchVector(*searchable_fields)
+            ## https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/
+            # rank = SearchRank(vector, query)
+            # qs = qs.annotate(rank=rank).order_by('rank')
+            qs = qs.annotate(search=vector).filter(search=query).order_by('id').distinct('id')
         return qs
 
-    def get_closest_to_datetime(self, datetime_value: datetime, datetime_attr: str = 'date'):
+    def get_closest_to_datetime(self, datetime_value: Union[date, datetime, HistoricDateTime],
+                                datetime_attr: str = 'date'):
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()
         lesser = qs.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()

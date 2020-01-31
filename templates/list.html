@@ -8,6 +8,8 @@
 {% load topic_detail %}
 {% load image_card %}
 {% load image_detail %}
+{% load source_card %}
+{% load source_detail %}
 {% load class_name %}
 {% load is_instance %}
 {% load crispy_forms_tags %}
@@ -41,6 +43,8 @@
                                 {% quote_card object %}
                             {% elif object|is_instance:"images.Image" %}
                                 {% image_card object %}
+                            {% elif object|is_instance:"sources.Source" %}
+                                {% source_card object %}
                             {% else %}
                                 <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
                             {% endif %}
@@ -78,4 +82,31 @@
             </div>
         {% endif %}
     {% endblock %}
+    {% if page_obj.has_previous or page_obj.has_next %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?{% if query %}q={{ query }}&{% endif %}page=1">
+                        &laquo; first
+                    </a>
+                    <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                        previous
+                    </a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">
+                        next
+                    </a>
+                    <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                        last &raquo;
+                    </a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
 {% endblock content %}

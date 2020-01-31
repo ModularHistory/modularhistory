@@ -1,4 +1,3 @@
-from django.contrib.admin import TabularInline, StackedInline
 from polymorphic.admin import (
     PolymorphicParentModelAdmin,
     PolymorphicChildModelAdmin,
@@ -6,7 +5,7 @@ from polymorphic.admin import (
     PolymorphicInlineSupportMixin
 )
 
-from admin import admin_site, Admin
+from admin import admin_site, Admin, TabularInline, StackedInline
 from topics.models import OccurrenceTopicRelation
 from . import models
 
@@ -14,31 +13,37 @@ from . import models
 class LocationsInline(TabularInline):
     model = models.Occurrence.locations.through
     extra = 1
+    autocomplete_fields = ['location']
 
 
 class ImagesInline(StackedInline):
     model = models.Occurrence.images.through
     extra = 1
+    autocomplete_fields = ['image']
 
 
 class RelatedQuotesInline(StackedInline):
     model = models.Occurrence.related_quotes.through
     extra = 1
+    autocomplete_fields = ['quote']
 
 
 class RelatedTopicsInline(StackedInline):
     model = OccurrenceTopicRelation
     extra = 1
+    autocomplete_fields = ['topic']
 
 
 class SourceReferencesInline(StackedInline):
     model = models.Occurrence.sources.through
     extra = 1
+    autocomplete_fields = ['source']
 
 
 class InvolvedEntitiesInline(TabularInline):
     model = models.Occurrence.involved_entities.through
     extra = 1
+    autocomplete_fields = ['entity']
 
 
 class YearAdmin(Admin):

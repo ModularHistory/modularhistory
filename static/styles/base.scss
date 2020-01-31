@@ -27,6 +27,13 @@ body {
 
 .card, .row {
   position: relative;
+  &.image-card {
+    .card-body {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      font-size: 0.9rem;
+    }
+  }
 }
 
 .edit-object-button {
@@ -69,6 +76,10 @@ body {
         //  z-index: 1;
         //}
       }
+      .thumbnail {
+        float: left;
+        margin-right: 0.9rem;
+      }
     }
   }
   .view-detail {
@@ -82,6 +93,18 @@ body {
     width: 60%;
     max-width: 44rem;
     display: inline-block;
+    .card {
+      .card-title {
+        display: none;
+      }
+    }
+    .footer {
+      clear: both;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 5px solid whitesmoke;
+    }
   }
 }
 
@@ -143,7 +166,9 @@ form {
 }
 
 ul.tags {
-  padding-left: 0;
+  clear: both;
+  padding: 0;
+  margin-bottom: 0;
   li.topic-tag {
     list-style: none;
     font-size: 0.6rem;

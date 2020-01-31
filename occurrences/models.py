@@ -8,8 +8,7 @@ from django.template.defaultfilters import truncatechars
 from django.utils.safestring import SafeText, mark_safe
 from taggit.models import TaggedItemBase
 
-from history.fields import HTMLField
-from history.fields import HistoricDateField
+from history.fields import HTMLField, HistoricDateTimeField
 from history.models import Model, PolymorphicModel, TaggableModel
 from images.models import Image
 from sources.models import Source, SourceReference
@@ -72,11 +71,9 @@ class OccurrenceImage(Model):
 
 class Occurrence(PolymorphicModel, TaggableModel):
     """Something that happened"""
-    searchable_fields = ['summary', 'description', 'related_topics__key', 'related_topics__aliases']
-
     summary = HTMLField(null=True, blank=True)
     description = HTMLField(null=True, blank=True)
-    date = HistoricDateField(null=True, blank=True)
+    date = HistoricDateTimeField(null=True, blank=True)
     year = models.ForeignKey(Year, null=True, blank=True, on_delete=PROTECT, related_name='occurrences')
     locations = ManyToManyField('places.Place', through='OccurrenceLocation', related_name='occurrences', blank=True)
     related_quotes = ManyToManyField('quotes.Quote', through='OccurrenceQuoteRelation', symmetrical=True,
@@ -91,6 +88,10 @@ class Occurrence(PolymorphicModel, TaggableModel):
         unique_together = (('summary', 'date'),)
         ordering = ['-year__years_before_present', '-date']
 
+    searchable_fields = ['summary', 'description',
+                         'involved_entities__name', 'involved_entities__aliases',
+                         'related_topics__key', 'related_topics__aliases']
+
     def __str__(self):
         return self.summary.text or "..."
 
@@ -100,12 +101,25 @@ class Occurrence(PolymorphicModel, TaggableModel):
 
     @property
     def image(self) -> Optional[Image]:
-        return (self.images.first() if self.images.exists() else
-                self.involved_entities.first().image if self.involved_entities.exists() else None)
+        if self.images.exists():
+            return self.images.first()
+        elif self.involved_entities.exists():
+            for entity in self.involved_entities.all():
+                if entity.images.exists():
+                    if self.date:
+                        return entity.images.get_closest_to_datetime(self.date)
+                    return entity.image
+        return None
 
     @property
     def pretty_year(self) -> str:
         return str(self.year)
+
+    @property
+    def source_reference(self) -> Optional['OccurrenceSourceReference']:
+        if not len(self.sources.all()):
+            return None
+        return self.source_references.order_by('position')[0]
 
     def natural_key(self) -> Tuple:
         return self.summary, self.date
@@ -157,8 +171,6 @@ episode_types = (
 class Episode(Occurrence):
     """A moment (or brief period) of time in which something happens."""
     type = models.CharField(max_length=12, choices=episode_types, default='other')
-    date_is_precise = models.BooleanField(default=True)
-    time_is_precise = models.BooleanField(default=False)
 
 
 importance_options = (

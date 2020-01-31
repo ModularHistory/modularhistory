@@ -11,21 +11,25 @@ from . import models
 class SourceReferencesInline(StackedInline):
     model = models.Quote.sources.through
     extra = 1
+    autocomplete_fields = ['source']
 
 
 class AttributeeInline(TabularInline):
     model = Entity
     extra = 1
+    autocomplete_fields = ['attributee']
 
 
 class OccurrencesInline(TabularInline):
     model = Occurrence.related_quotes.through
     extra = 1
+    autocomplete_fields = ['occurrence']
 
 
 class TopicsInline(TabularInline):
     model = TopicQuoteRelation
     extra = 1
+    autocomplete_fields = ['topic']
 
 
 class QuoteForm(ModelForm):
@@ -40,6 +44,7 @@ class QuoteAdmin(Admin):
     list_filter = ('attributee', 'year')
     search_fields = models.Quote.searchable_fields
     ordering = ('date', 'attributee')
+    autocomplete_fields = ['attributee']
     inlines = [
         # AttributeeInline,
         SourceReferencesInline,

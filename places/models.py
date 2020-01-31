@@ -32,8 +32,15 @@ class Place(PolymorphicModel):
         return self.name,
 
 
+prepositions = (
+    ('in', 'in'),
+    ('at', 'at')
+)
+
+
 class Venue(Place):
     """A venue: a place where something happens (e.g., a university)"""
+    preposition = models.CharField(max_length=2, choices=prepositions, default='in')
 
     class Meta:
         verbose_name_plural = 'Venues'

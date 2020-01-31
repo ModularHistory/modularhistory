@@ -14,11 +14,29 @@
     <div>
         {% if entity.quotes.all|length %}
             {% for quote in entity.quotes.all %}
-                {% quote_card quote %}
+                <div class="row">
+                    <blockquote class="blockquote">
+                        {% if quote.bite %}
+                            {{ quote.bite.html }}
+                        {% else %}
+                            {{ quote.text.html|truncatechars_html:100 }}
+                        {% endif %}
+                        <footer class="blockquote-footer">
+                            {{ quote.source_reference }}
+                        </footer>
+                    </blockquote>
+                    {% if quote.source_file_url %}
+                        <a href="{{ quote.source_file_url }}" class="btn btn-info display-source"
+                           data-toggle="modal" data-target="#modal">View source</a>
+                    {% endif %}
+                    <a class="edit-object-button" target="_blank" href="{{ quote|get_admin_url }}">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                </div>
             {% endfor %}
         {% else %}
             No quotes
         {% endif %}
     </div>
-    <a class="edit-object-button" href="{{ entity|get_admin_url }}"><i class="fa fa-edit"></i></a>
+    <a class="edit-object-button" target="_blank" href="{{ entity|get_admin_url }}"><i class="fa fa-edit"></i></a>
 </div>

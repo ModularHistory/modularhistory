@@ -1,0 +1,10 @@
+{% load get_admin_url %}
+
+<div class="card-text">
+    {{ source }}
+</div>
+{% if source.file_url %}
+    <a href="{{ source.file_url }}" class="btn btn-info display-source"
+       data-toggle="modal" data-target="#modal">View source</a>
+{% endif %}
+<a class="edit-object-button" target="_blank" href="{{ source|get_admin_url }}"><i class="fa fa-edit"></i></a>

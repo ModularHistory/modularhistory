@@ -44,15 +44,18 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
     'crispy_forms',
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
-    # 'elasticsearch',
     'decouple',
+    # TODO: https://django-file-picker.readthedocs.io/en/latest/index.html
+    # 'file_picker',
+    # 'file_picker.uploads',  # file and image Django app
+    # 'file_picker.wymeditor',  # optional WYMeditor plugin
+    # 'sorl.thumbnail',  # required
     'imagekit',
     'polymorphic',
     'rest_framework',
     'sass_processor',
     'social_django',
     'taggit',
-    # 'taggit_labels',
     'tinymce',
     # 'typedmodels',
     'account.apps.AccountConfig',

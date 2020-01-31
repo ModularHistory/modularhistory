@@ -1,8 +1,7 @@
-from django.contrib.admin import TabularInline, StackedInline
 
 # from taggit_labels.widgets import LabelWidget
 # from taggit.forms import TagField
-from admin import admin_site, Admin
+from admin import admin_site, Admin, TabularInline, StackedInline
 from . import models
 
 

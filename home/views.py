@@ -5,12 +5,13 @@ from typing import Dict, List, Union
 from django.db.models import QuerySet
 from django.views.generic import ListView
 from django.views.generic import TemplateView
-
+from django.core.paginator import Paginator
 from history.models import Model
 from home.forms import SearchFilterForm
 from images.models import Image
 from occurrences.models import Occurrence
 from quotes.models import Quote
+from sources.models import Source
 from datetime import datetime
 
 # from topics.models import Topic, Fact
@@ -34,7 +35,7 @@ def sorter(x: Model):
 class SearchResultsView(ListView):
     template_name = 'search_results.html'
     results_count = 0
-    paginate_by = 20
+    paginate_by = 100
 
     entities: QuerySet
 
@@ -56,13 +57,15 @@ class SearchResultsView(ListView):
             # topic_results = Topic.objects.search(query)
             # fact_results = Fact.objects.search(query)
             quote_results = Quote.objects.search(query)
-            image_results = Image.objects.search(query)
+            # image_results = Image.objects.search(query)
+            source_results = Source.objects.search(query).exclude(quotes__in=quote_results)
 
             # combine querysets
             queryset_chain = chain(
                 occurrence_results,
                 quote_results,
-                image_results
+                # image_results,
+                source_results
             )
             qs = sorted(queryset_chain, key=sorter, reverse=False)
 

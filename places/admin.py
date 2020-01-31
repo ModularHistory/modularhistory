@@ -7,6 +7,7 @@ from . import models
 
 class LocationInline(StackedPolymorphicInline):
     model = models.Place
+    autocomplete_fields = ['location']
 
     class CityInline(StackedPolymorphicInline.Child):
         model = models.City

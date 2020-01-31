@@ -1,7 +1,7 @@
 {% extends "_card.html" %}
 {% load get_detail_url %}
 
-{% block card_class %}{% endblock %}
+{% block card_class %}image-card{% endblock %}
 
 {% block edit %}
     {% with object=image request=request %}
@@ -12,9 +12,9 @@
 {% block detail_url %}{{ image|get_detail_url }}{% endblock %}
 
 {% block top %}
-    <div class="view overlay">
+    <div class="view overlay" style="max-width: {{ image.width }}px">
         <img class="card-img-top" src="{{ image.image.url }}" alt="{{ image.image.name }}">
-        <a href="#!">
+        <a href="/history/images/{{ image.id }}" target="_blank">
             <div class="mask rgba-white-slight"></div>
         </a>
     </div>

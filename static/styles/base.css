@@ -19,6 +19,10 @@ body {
 
 .card, .row {
   position: relative; }
+  .card.image-card .card-body, .row.image-card .card-body {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 0.9rem; }
 
 .edit-object-button {
   position: absolute;
@@ -42,6 +46,9 @@ body {
         border-left: 1px solid black;
         border-bottom: 1px solid black;
         margin-right: -4px; }
+      .two-pane-container .results .card .thumbnail {
+        float: left;
+        margin-right: 0.9rem; }
   .two-pane-container .view-detail {
     text-align: left;
     height: 100vh;
@@ -54,6 +61,14 @@ body {
     width: 60%;
     max-width: 44rem;
     display: inline-block; }
+    .two-pane-container .view-detail .card .card-title {
+      display: none; }
+    .two-pane-container .view-detail .footer {
+      clear: both;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 5px solid whitesmoke; }
 
 .embed-responsive-210by297 {
   padding-bottom: 141.42%; }
@@ -92,7 +107,9 @@ form ul {
     font-size: 0.8rem; }
 
 ul.tags {
-  padding-left: 0; }
+  clear: both;
+  padding: 0;
+  margin-bottom: 0; }
   ul.tags li.topic-tag {
     list-style: none;
     font-size: 0.6rem;

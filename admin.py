@@ -1,4 +1,5 @@
 from django.contrib.admin import AdminSite as BaseAdminSite
+from django.contrib.admin import ModelAdmin
 # from django.contrib.flatpages.admin import FlatPageAdmin
 # from django.contrib.flatpages.models import FlatPage
 # from django.contrib.sites.models import Site
@@ -7,14 +8,51 @@ from django.contrib.admin import AdminSite as BaseAdminSite
 # from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTaskForm
 # from django_celery_results.models import TaskResult
 # from django_celery_results.admin import TaskResultAdmin
-from django.contrib.admin import ModelAdmin
-from history.fields import HistoricDateField
-from history.forms import HistoricDateWidget
+from django.contrib.admin import StackedInline as BaseStackedInline, TabularInline as BaseTabularInline
+
+from history.fields import HistoricDateField, HistoricDateTimeField, SourceFileField
+from history.forms import HistoricDateWidget, SourceFileInput
+
+AUTOCOMPLETE_FIELDS = [
+    'attributee',
+    'quote',
+    'source',
+    'topic',
+    'location'
+]
+
+
+class StackedInline(BaseStackedInline):
+    formfield_overrides = {
+        HistoricDateField: {'widget': HistoricDateWidget},
+        HistoricDateTimeField: {'widget': HistoricDateWidget},
+        SourceFileField: {'widget': SourceFileInput},
+    }
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        for field_name in ('position', 'page_number', 'end_page_number', 'notes'):
+            i = 1
+            if field_name in fields:
+                fields.remove(field_name)
+                fields.append(field_name)
+                i += 1
+        return fields
+
+
+class TabularInline(BaseTabularInline):
+    formfield_overrides = {
+        HistoricDateField: {'widget': HistoricDateWidget},
+        HistoricDateTimeField: {'widget': HistoricDateWidget},
+        SourceFileField: {'widget': SourceFileInput},
+    }
 
 
 class Admin(ModelAdmin):
     formfield_overrides = {
-        HistoricDateField: {'widget': HistoricDateWidget}
+        HistoricDateField: {'widget': HistoricDateWidget},
+        HistoricDateTimeField: {'widget': HistoricDateWidget},
+        SourceFileField: {'widget': SourceFileInput},
     }
 
     class Media:

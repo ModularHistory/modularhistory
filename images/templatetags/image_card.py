@@ -7,4 +7,5 @@ register = template.Library()
 def image_card(context: RequestContext, image):
     return {**context.flatten(), **{
         'image': image,
+        'object': image,  # TODO
     }}
