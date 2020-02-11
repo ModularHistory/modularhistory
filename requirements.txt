@@ -4,7 +4,7 @@ beautifulsoup4==4.8.2
 celery==4.4.0
 certifi==2019.11.28
 cycler==0.10.0
-Django==3.0.2
+Django==3.0.3
 djangorestframework==3.11.0
 django-bootstrap-datepicker-plus==3.0.5
 django-crispy-forms==1.8.1
