@@ -1,7 +1,5 @@
 from django.contrib.admin import TabularInline
 
-# from taggit_labels.widgets import LabelWidget
-# from taggit.forms import TagField
 from admin import admin_site, Admin
 from entities.models import EntityImage
 from occurrences.models import OccurrenceImage

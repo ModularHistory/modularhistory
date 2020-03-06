@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     # 'file_picker.wymeditor',  # optional WYMeditor plugin
     # 'sorl.thumbnail',  # required
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
+    'massadmin',  # https://github.com/burke-software/django-mass-edit
     'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'rest_framework',  # https://github.com/encode/django-rest-framework
     'sass_processor',  # https://github.com/jrief/django-sass-processor

@@ -1,4 +1,3 @@
-# from sys import stderr
 from copy import deepcopy
 from os import listdir, remove
 from os.path import isfile, join

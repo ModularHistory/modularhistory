@@ -14,13 +14,12 @@ from history.fields.file_field import SourceFileField, upload_to
 from history.fields.historic_datetime_field import HistoricDateTimeField, HistoricDateField
 from history.fields.html_field import HTMLField
 from history.models import Model, PolymorphicModel, DatedModel, SearchableMixin
-# from places.models import Venue
 from ..manager import Manager
 
 
 class SourceFile(Model):
-    file = SourceFileField(upload_to=upload_to('sources/'), null=True, blank=True)
-    name = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    file = SourceFileField(upload_to=upload_to('sources/'), null=True, blank=True, unique=True)
+    name = models.CharField(max_length=100, null=True, blank=True, unique=True)
     page_offset = models.SmallIntegerField(default=0, blank=True)
     first_page_number = models.SmallIntegerField(default=1, blank=True)
 
@@ -66,22 +65,37 @@ class SourceFile(Model):
 
 class Source(PolymorphicModel, DatedModel, SearchableMixin):
     """A source for quotes or historical information."""
-    objects: Manager = Manager()
-
     db_string = models.CharField(verbose_name='database string', max_length=500, blank=True, unique=True)
-    attributees = ManyToManyField('entities.Entity', through='SourceAttribution', related_name='attributed_sources')
+    attributees = ManyToManyField(
+        'entities.Entity', related_name='attributed_sources',
+        through='SourceAttribution'
+    )
     creators = models.CharField(max_length=100, null=True, blank=True)
     link = models.CharField(max_length=100, null=True, blank=True)
     description = HTMLField(null=True, blank=True)
     date = HistoricDateTimeField(null=True, blank=True)
     publication_date = HistoricDateField(null=True, blank=True)
-    containers = ManyToManyField('self', through='SourceContainment', symmetrical=False,
-                                 through_fields=('source', 'container'), related_name='contained_sources', blank=True)
-    location = ForeignKey('places.Place', related_name='publications', on_delete=SET_NULL, null=True, blank=True)
-    file = ForeignKey(SourceFile, related_name='sources', on_delete=SET_NULL, null=True, blank=True)
+    containers = ManyToManyField(
+        'self', related_name='contained_sources',
+        through='SourceContainment',
+        through_fields=('source', 'container'),
+        symmetrical=False,
+        blank=True
+    )
+    location = ForeignKey(
+        'places.Place', related_name='publications',
+        null=True, blank=True,
+        on_delete=SET_NULL
+    )
+    file = ForeignKey(
+        SourceFile, related_name='sources',
+        null=True, blank=True,
+        on_delete=SET_NULL
+    )
 
     HISTORICAL_ITEM_TYPE = 'publication'
 
+    objects: Manager = Manager()
     searchable_fields = ['db_string', 'description']
 
     class Meta:
@@ -169,9 +183,6 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     def get_file(self) -> Optional[SourceFile]:
         return self.file if self.file else self.container.get_file() if self.container else None
-
-    def natural_key(self) -> Tuple:
-        return self.db_string,
 
     def clean(self):
         pass

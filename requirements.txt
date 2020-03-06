@@ -12,6 +12,7 @@ django-crispy-forms==1.9.0
 django-filter==2.2.0
 django-imagekit==4.0.2
 django-mako-plus==5.11.2
+django-mass-edit==3.2.0
 django-polymorphic==2.1.2
 django-sass-processor==0.8
 django-select2==7.2.0
@@ -22,7 +23,7 @@ django-tinymce==2.8.0
 django-debug-toolbar
 django-typed-models==0.9.0
 django-reverse-admin==2.8.3
-humanize==1.0.0
+humanize==2.0.0
 kombu==4.6.7
 mailchimp==2.0.9
 Mako==1.1.2
@@ -48,7 +49,7 @@ sqlparse==0.3.1
 tabulate==0.8.6
 termcolor==1.1.0
 tinycss==0.4
-virtualenv==20.0.7
+virtualenv==20.0.8
 virtualenv-clone==0.5.3
 wcwidth==0.1.8
 websocket-client==0.40.0

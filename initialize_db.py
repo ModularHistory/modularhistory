@@ -27,10 +27,9 @@ from sources import models as sources
 from django.contrib.contenttypes.models import ContentType
 from entities.models import Entity, Person
 
-from sources.models import Journal, JournalEntry
+from places.models import Place, Venue
 
-for je in JournalEntry.objects.all():
-    print(f'>>> {je}')
+
 
 # try:
 #     print('Creating groups...')

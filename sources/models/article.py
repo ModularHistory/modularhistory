@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 from django.utils.safestring import SafeText, mark_safe
@@ -7,7 +5,6 @@ from django.utils.safestring import SafeText, mark_safe
 from history.fields.html_field import HTMLField
 from history.models import Model
 from .base import TextualSource, TitleMixin, _Piece
-
 
 publication_types = (
     ('journal', 'Journal'),

@@ -10,7 +10,7 @@ from django.contrib.admin import ModelAdmin
 # from django_celery_results.admin import TaskResultAdmin
 from django.contrib.admin import StackedInline as BaseStackedInline, TabularInline as BaseTabularInline
 from sass_processor.processor import sass_processor
-
+from massadmin.massadmin import mass_change_selected
 from history.fields.historic_datetime_field import HistoricDateField, HistoricDateTimeField
 from history.fields.file_field import SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
@@ -82,6 +82,7 @@ class AdminSite(BaseAdminSite):
 
 
 admin_site = AdminSite(name='admin')
+admin_site.add_action(mass_change_selected)
 
 
 # class CustomFlatPageAdmin(FlatPageAdmin):

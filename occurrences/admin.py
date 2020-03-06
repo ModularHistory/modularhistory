@@ -1,7 +1,7 @@
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
 
-from admin import admin_site, Admin, TabularInline, StackedInline
+from admin import admin_site, Admin, TabularInline  # , StackedInline
 from topics.models import OccurrenceTopicRelation
 from . import models
 

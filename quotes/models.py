@@ -43,11 +43,15 @@ class Quote(TaggableModel, DatedModel, SearchableMixin):
     pretext = HTMLField(null=True, blank=True, help_text='Content to be displayed before the quote')
     context = HTMLField(null=True, blank=True, help_text='Content to be displayed after the quote')
     date = HistoricDateTimeField(null=True, blank=True)
-    attributee = ForeignKey(Entity, related_name='quotes', on_delete=models.SET_NULL, null=True, blank=True)
+    attributee = ForeignKey(
+        Entity, related_name='quotes',
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
     sources = ManyToManyField(Source, through=QuoteSourceReference, related_name='quotes', blank=True)
 
     class Meta:
-        unique_together = [['date', 'attributee', 'bite']]
+        unique_together = ['date', 'attributee', 'bite']
         ordering = ['date']
 
     searchable_fields = ['text', 'context', 'attributee__name', 'date__year',
@@ -106,9 +110,6 @@ class Quote(TaggableModel, DatedModel, SearchableMixin):
         if self.source_reference:
             return self.source_reference.source_file_url
         return None
-
-    def natural_key(self) -> Tuple:
-        return self.date, self.attributee, self.bite
 
     def clean(self):
         super().clean()

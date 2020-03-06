@@ -11,8 +11,10 @@ from topics.models import (
 )
 # from django_reverse_admin import ReverseModelAdmin
 from . import models
-from .forms import (PersonForm, GroupForm,
-                    OrganizationForm, IdeaForm)
+from .forms import (
+    PersonForm, GroupForm,
+    OrganizationForm, IdeaForm
+)
 
 
 class QuotesInline(StackedInline):

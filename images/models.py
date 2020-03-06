@@ -1,16 +1,26 @@
 from typing import Optional
-from django.core.exceptions import ValidationError
 
+import pafy
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import SafeText, mark_safe
 # from polymorphic.models import PolymorphicModel
 from taggit.models import TaggedItemBase
-import pafy
+
 from history.fields.file_field import upload_to
-from history.fields.historic_datetime_field import HistoricDateTimeField
-from history.fields.html_field import HTMLField
-from history.models import TypedModel, Model, TaggableModel, SearchableMixin
-from .manager import Manager
+from history.fields import HTMLField
+from history.models import Model, DatedModel, TaggableModel, SearchableMixin
+from .manager import Manager as ImageManager
+
+
+class MediaModel(TaggableModel, DatedModel, SearchableMixin):
+    caption = HTMLField(null=True, blank=True)
+    description = HTMLField(null=True, blank=True)
+    provider = models.CharField(max_length=200, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
 
 image_types = (
     ('image', 'Image'),
@@ -25,21 +35,17 @@ image_types = (
 )
 
 
-class Image(TypedModel, TaggableModel, SearchableMixin):
+class Image(MediaModel):
     """An image"""
-    objects: Manager = Manager()
+    objects: ImageManager = ImageManager()
 
     image = models.ImageField(
         upload_to=upload_to('images/'),
         height_field='height', width_field='width',
         null=True  # but not blank=True
     )
-    caption = HTMLField(null=True, blank=True)
-    description = HTMLField(null=True, blank=True)
-    provider = models.CharField(max_length=200, null=True, blank=True)
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
-    date = HistoricDateTimeField(null=True, blank=True)
     type = models.CharField(max_length=14, choices=image_types, default='image')
 
     searchable_fields = ['caption', 'description', 'provider']
@@ -77,26 +83,16 @@ class Image(TypedModel, TaggableModel, SearchableMixin):
         width = height * self.aspect_ratio
         return mark_safe(f'<img class="thumbnail" src="{self.image.url}" width="{width}px" height="{height}px" />')
 
-    def natural_key(self):
-        return self.image,
 
-
-class Photo(Image):
-    """A photo"""
-    pass
-
-
-class Illustration(Image):
-    """An illustration"""
-    pass
-
-
-class Video(Image):
+class Video(MediaModel):
     """A video"""
     title = models.CharField(max_length=200, null=True)
-    link = models.URLField(null=True)
+    link = models.URLField(null=True, unique=True)
     embed_code = models.CharField(max_length=200, null=True)
     duration = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ['title', 'link']
 
     def clean(self):
         if not self.link:

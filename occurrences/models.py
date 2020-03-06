@@ -18,8 +18,10 @@ from .manager import Manager
 class OccurrenceImage(Model):
     occurrence = models.ForeignKey('Occurrence', related_name='occurrence_images', on_delete=CASCADE)
     image = models.ForeignKey(Image, on_delete=CASCADE)
-    position = models.PositiveSmallIntegerField(default=1, blank=True,
-                                                help_text='Set to 0 if the image is positioned manually.')
+    position = models.PositiveSmallIntegerField(
+        default=1, blank=True,
+        help_text='Set to 0 if the image is positioned manually.'
+    )
 
     class Meta:
         unique_together = ['occurrence', 'image']
@@ -32,8 +34,13 @@ class OccurrenceImage(Model):
     def key(self) -> str:
         return self.image.key
 
+    def natural_key(self):
+        return super().natural_key()
+    natural_key.dependencies = ['images.image']
+
 
 class OccurrenceChain(Model):
+    description = HTMLField(max_length=200, null=True, unique=True)
     parent_chain = ForeignKey('self', on_delete=CASCADE, related_name='sub_chains')
 
 
@@ -47,8 +54,6 @@ class OccurrenceChainInclusion(Model):
 
 class Occurrence(DatedModel, TaggableModel, SearchableMixin):
     """Something that happened"""
-    objects: Manager = Manager()
-
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
     summary = HTMLField(null=True, blank=True)
@@ -63,13 +68,14 @@ class Occurrence(DatedModel, TaggableModel, SearchableMixin):
                                         through='OccurrenceEntityInvolvement', blank=True)
     chains = ManyToManyField(OccurrenceChain, related_name='occurrences', through=OccurrenceChainInclusion)
 
-    class Meta:
-        unique_together = (('summary', 'date'),)
-        ordering = ['-date']
-
+    objects: Manager = Manager()
     searchable_fields = ['summary', 'description', 'date__year',
                          'involved_entities__name', 'involved_entities__aliases',
                          'related_topics__key', 'related_topics__aliases']
+
+    class Meta:
+        unique_together = ['summary', 'date']
+        ordering = ['-date']
 
     def __str__(self):
         return self.summary.text or "..."
@@ -107,9 +113,6 @@ class Occurrence(DatedModel, TaggableModel, SearchableMixin):
         if not len(self.sources.all()):
             return None
         return self.source_references.order_by('position')[0]
-
-    def natural_key(self) -> Tuple:
-        return self.summary, self.date
 
     def full_clean(self, exclude=None, validate_unique=True):
         super().full_clean(exclude, validate_unique)
