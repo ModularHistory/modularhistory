@@ -2,9 +2,11 @@ from typing import Dict
 
 from django.views import generic
 from polymorphic.query import PolymorphicQuerySet
+from django.db.models import F
 
-from home.forms import SearchFilterForm
+from search.forms import SearchFilterForm
 from .models import Occurrence
+from quotes.models import Quote
 
 
 class ListView(generic.list.ListView):
@@ -23,9 +25,36 @@ class ListView(generic.list.ListView):
         return context
 
 
+def quote_sorter_key(quote: Quote):
+    x = 0
+    if quote.date:
+        date = quote.date
+        x += 1000000000000*date.year + 1000000000*date.month + 1000000*date.day
+    if quote.source_reference:
+        source_reference = quote.source_reference
+        number = ord(str(source_reference)[0].lower()) - 96
+        x += number*1000
+        if source_reference.page_number:
+            x += source_reference.page_number
+    return x
+
+
 class BaseDetailView(generic.detail.DetailView):
     model = Occurrence
     context_object_name = 'occurrence'
+
+    object: Occurrence
+
+    def get_context_data(self, *args, **kwargs) -> Dict:
+        context = super().get_context_data(*args, **kwargs)
+
+        context['quotes'] = sorted(self.object.related_quotes.all(), key=quote_sorter_key)
+
+        # 'unpositioned_images' is a little misleading;
+        # these are positioned by their `position` attribute rather than manually positioned.
+        context['unpositioned_images'] = self.object.occurrence_images.exclude(position=0)
+
+        return context
 
 
 class DetailView(BaseDetailView):

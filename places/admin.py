@@ -9,6 +9,9 @@ class LocationInline(StackedPolymorphicInline):
     model = models.Place
     autocomplete_fields = ['location']
 
+    class VenueInline(StackedPolymorphicInline.Child):
+        model = models.Venue
+
     class CityInline(StackedPolymorphicInline.Child):
         model = models.City
 
@@ -28,6 +31,7 @@ class LocationInline(StackedPolymorphicInline):
         model = models.Continent
 
     child_inlines = (
+        VenueInline,
         CityInline,
         CountyInline,
         StateInline,

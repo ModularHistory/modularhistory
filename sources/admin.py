@@ -1,102 +1,14 @@
-from django.contrib.admin import SimpleListFilter
-from polymorphic.admin import (PolymorphicParentModelAdmin, PolymorphicChildModelAdmin,
-                               PolymorphicInlineSupportMixin)
+from polymorphic.admin import (
+    PolymorphicParentModelAdmin,
+    PolymorphicChildModelAdmin,
+    PolymorphicInlineSupportMixin
+)
 
 from admin import admin_site, Admin, TabularInline, StackedInline
-from quotes.models import QuoteSourceReference
 from occurrences.models import Occurrence
+from quotes.models import QuoteSourceReference
 from . import models
-from django.db.models import Q
-
-
-class HasFileFilter(SimpleListFilter):
-    title = 'has file'
-    parameter_name = 'has_file'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'Yes':
-            return queryset.filter(file__isnull=False).exclude(file='')
-        if self.value() == 'No':
-            return queryset.filter(Q(file__isnull=True) | Q(file=''))
-
-
-class HasPageNumber(SimpleListFilter):
-    title = 'has page number'
-    parameter_name = 'has_page_number'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        queryset = queryset.filter(file__isnull=False).exclude(file='')
-        ids = []
-        if self.value() == 'Yes':
-            for source in queryset:
-                obj = source.object if hasattr(source, 'object') else source
-                if hasattr(obj, 'page_number'):
-                    if obj.page_number:
-                        ids.append(source.id)
-            return queryset.filter(id__in=ids)
-        if self.value() == 'No':
-            for source in queryset:
-                obj = source.object if hasattr(source, 'object') else source
-                if hasattr(obj, 'page_number'):
-                    if not obj.page_number:
-                        ids.append(source.id)
-            return queryset.filter(id__in=ids)
-
-
-class HasFilePageOffsetFilter(SimpleListFilter):
-    title = 'has file page offset'
-    parameter_name = 'has_file_page_offset'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        sources_with_files = queryset.filter(file__isnull=False).exclude(file='')
-        ids = []
-        if self.value() == 'Yes':
-            for source in sources_with_files:
-                file = source.file
-                if file.page_offset:
-                    ids.append(source.id)
-            return sources_with_files.filter(id__in=ids)
-        elif self.value() == 'No':
-            for source in sources_with_files:
-                file = source.file
-                if not file.page_offset:
-                    ids.append(source.id)
-            return sources_with_files.filter(id__in=ids)
-
-
-class ImpreciseDateFilter(SimpleListFilter):
-    title = 'date is imprecise'
-    parameter_name = 'date_is_imprecise'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('Yes', 'Yes'),
-            # ('No', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'Yes':
-            return queryset.filter(date__second='01', date__minute='01', date__hour='01')
-        # if self.value() == 'No':
-        #     return queryset
+from .list_filters import HasFileFilter, HasFilePageOffsetFilter, HasPageNumber, ImpreciseDateFilter
 
 
 class AttributeesInline(TabularInline):
@@ -105,20 +17,31 @@ class AttributeesInline(TabularInline):
     autocomplete_fields = ['attributee']
 
 
-class ContainersInline(StackedInline):
+class ContainersInline(TabularInline):
+    verbose_name = 'container'
+    verbose_name_plural = 'containers'
     model = models.Source.containers.through
     fk_name = 'source'
-    extra = 1
+    extra = 0
     autocomplete_fields = ['container']
 
 
-class QuotesInline(StackedInline):
+class ContainedSourcesInline(TabularInline):
+    verbose_name = 'contained source'
+    verbose_name_plural = 'contained sources'
+    model = models.Source.containers.through
+    fk_name = 'container'
+    extra = 0
+    autocomplete_fields = ['container']
+
+
+class QuotesInline(TabularInline):
     model = QuoteSourceReference
     extra = 1
     autocomplete_fields = ['quote']
 
 
-class OccurrencesInline(StackedInline):
+class OccurrencesInline(TabularInline):
     model = Occurrence.sources.through
     extra = 1
     autocomplete_fields = ['occurrence']
@@ -128,66 +51,88 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
     base_model = models.Source
     child_models = [
         models.Book,
+        models.Chapter,
         models.Article,
-        models.Lecture,
         models.Speech,
         models.Interview,
-        models.Essay,
+        models.Piece,
         models.Document,
+        models.JournalEntry,
         models.Letter,
-        models.Documentary
+        models.Documentary,
+        models.WebPage,
+        models.Affidavit
     ]
-    list_display = ('string', 'creators', 'title', 'date_string', 'location', 'admin_file_link')
-    list_filter = (HasFileFilter, HasFilePageOffsetFilter, HasPageNumber,
-                   ImpreciseDateFilter, 'attributees', 'polymorphic_ctype')
-    exclude = ['db_string']
+    list_display = (
+        'string',
+        'creators',
+        'date_string',
+        'location',
+        'admin_file_link'
+    )
+    list_filter = (
+        HasFileFilter,
+        HasFilePageOffsetFilter,
+        HasPageNumber,
+        ImpreciseDateFilter,
+        'hidden',
+        'attributees',
+        'polymorphic_ctype'
+    )
+    readonly_fields = ['db_string']
     search_fields = models.Source.searchable_fields
-    ordering = ('date', 'title', 'creators', 'polymorphic_ctype')
-    inlines = [AttributeesInline, ContainersInline, QuotesInline, OccurrencesInline]
+    ordering = (
+        'date',
+        'creators',
+        'polymorphic_ctype'
+    )
+    inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, QuotesInline, OccurrencesInline]
+    autocomplete_fields = ['file', 'location']
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if 'database_string' in fields:
+            fields.remove('database_string')
+            fields.insert(0, 'database_string')
 
 
 class ChildModelAdmin(PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin, Admin):
     base_model = models.Source
-    list_display = ('string', 'description', 'date_string')
-    list_filter = ('year', 'attributees')
-    exclude = ['db_string']
-    search_fields = ('db_string',)
-    ordering = ('date', 'creators', 'title')
+    list_display = ['string', 'description', 'date_string']
+    list_filter = ['attributees']
+    readonly_fields = ['db_string']
+    search_fields = ['db_string']
+    ordering = ['date', 'creators']
     inlines = SourceAdmin.inlines
+    autocomplete_fields = SourceAdmin.autocomplete_fields
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
-        for field_name in ('number', 'page_number', 'end_page_number', 'container', 'description', 'citations'):
+
+        for field_name in ('title',):
+            if field_name in fields:
+                fields.remove(field_name)
+                fields.insert(0, field_name)
+
+        for field_name in (
+                'volume', 'number', 'page_number', 'end_page_number',
+                'container', 'description', 'citations'
+        ):
             if field_name in fields:
                 fields.remove(field_name)
                 fields.append(field_name)
         return fields
 
 
-class NumbersInline(TabularInline):
-    model = models.PublicationNumber
-    extra = 1
-    autocomplete_fields = ['volume', 'publication']
-    show_change_link = True
-
-
-class VolumesInline(TabularInline):
-    model = models.PublicationVolume
-    extra = 1
-    autocomplete_fields = ['publication']
-    show_change_link = True
-
-
 class PublicationAdmin(Admin):
-    list_display = ('__str__', 'description', 'type')
+    list_display = ('__str__', 'description', 'type2')
     search_fields = ('name',)
-    list_filter = ('type',)
-    inlines = [VolumesInline, NumbersInline]
+    list_filter = ('type2',)
 
 
 class ArticleAdmin(ChildModelAdmin):
     list_display = ('string', 'publication', 'description', 'date_string')
-    autocomplete_fields = ['publication', 'volume', 'number']
+    autocomplete_fields = ChildModelAdmin.autocomplete_fields + ['publication']
 
 
 class ArticlesInline(StackedInline):
@@ -196,35 +141,68 @@ class ArticlesInline(StackedInline):
 
 
 class SpeechAdmin(ChildModelAdmin):
-    list_display = ('string', 'type', 'venue', 'date_string')
+    list_display = ('string', 'type2', 'location', 'date_string')
     search_fields = ('db_string', 'location__name')
 
 
-class PublicationVolumeAdmin(Admin):
-    search_fields = ('number', 'publication__name')
-    inlines = [NumbersInline, ArticlesInline]
-    autocomplete_fields = ('publication',)
+class CollectionAdmin(Admin):
+    search_fields = ('name', 'repository__name', 'repository__location')
+    autocomplete_fields = ('repository',)
 
 
-class PublicationNumberAdmin(Admin):
-    search_fields = ('number', 'publication__name')
-    inlines = [ArticlesInline]
-    autocomplete_fields = ('publication', 'volume')
+class DocumentAdmin(ChildModelAdmin):
+    search_fields = ChildModelAdmin.search_fields
+    autocomplete_fields = ('collection', 'file')
 
 
-admin_site.register(models.Book, ChildModelAdmin)
-admin_site.register(models.Lecture, ChildModelAdmin)
-admin_site.register(models.Interview, ChildModelAdmin)
-admin_site.register(models.Speech, SpeechAdmin)
-admin_site.register(models.Essay, ChildModelAdmin)
-admin_site.register(models.Document, ChildModelAdmin)
-admin_site.register(models.Letter, ChildModelAdmin)
-admin_site.register(models.Article, ArticleAdmin)
-admin_site.register(models.Documentary, ChildModelAdmin)
+class RepositoryAdmin(Admin):
+    search_fields = ('name', 'location')
+
+
+class SourcesInline(TabularInline):
+    model = models.Source
+    extra = 0
+    fields = ['verified', 'hidden', 'date_is_circa', 'creators', 'link', 'date', 'publication_date']
+
+
+class SourceFileAdmin(Admin):
+    list_display = ('__str__', 'name', 'page_offset')
+    search_fields = ('file',)
+    inlines = [SourcesInline]
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if fields and 'page_offset' in fields:
+            fields.remove('page_offset')
+            fields.append('page_offset')
+        return fields
+
+
 admin_site.register(models.Source, SourceAdmin)
+
+admin_site.register(models.Article, ArticleAdmin)
+
+admin_site.register(models.Speech, SpeechAdmin)
+
+admin_site.register(models.SourceFile, SourceFileAdmin)
+admin_site.register(models.Collection, CollectionAdmin)
+admin_site.register(models.Repository, RepositoryAdmin)
+admin_site.register(models.Document, DocumentAdmin)
+admin_site.register(models.Letter, DocumentAdmin)
+
+admin_site.register(models.JournalEntry, ChildModelAdmin)
+
 admin_site.register(models.Publication, PublicationAdmin)
-admin_site.register(models.Collection, Admin)
-admin_site.register(models.PublicationVolume, PublicationVolumeAdmin)
-admin_site.register(models.PublicationNumber, PublicationNumberAdmin)
-admin_site.register(models.Repository, Admin)
-# admin_site.register(SourceAttribution)
+
+child_models = (
+    models.Book,
+    models.Chapter,
+    models.Interview,
+    models.Piece,
+    models.Documentary,
+    models.WebPage,
+    models.Affidavit
+)
+
+for child in child_models:
+    admin_site.register(child, ChildModelAdmin)

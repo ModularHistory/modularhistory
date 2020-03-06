@@ -23,15 +23,17 @@
 {% endblock %}
 
 {% block content %}
-    <div class="refinements-container my-2">
-        <!-- Material input -->
-        {% crispy search_filter_form %}
-        {% block page_header %}
-        {% endblock %}
-    </div>
+{#    <div class="top">#}
+{#    </div>#}
     {% block list %}
         {% if object_list|length %}
+            <div class="refinements-container side">
+                <!-- Material input -->
+                {% crispy search_filter_form %}
+            </div>
             <div class="two-pane-container">
+                {% block page_header %}
+                {% endblock %}
                 <div class="results">
                     {% for object in object_list %}
                         {% with object|class_name as klass %}
@@ -83,13 +85,13 @@
         {% endif %}
     {% endblock %}
     {% if page_obj.has_previous or page_obj.has_next %}
-        <div class="pagination">
+        <div class="pagination" style="text-align: center">
             <span class="step-links">
                 {% if page_obj.has_previous %}
-                    <a href="?{% if query %}q={{ query }}&{% endif %}page=1">
+                    <a href="?{% if query %}query={{ query }}&{% endif %}page=1">
                         &laquo; first
                     </a>
-                    <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                    <a href="?{% if query %}query={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">
                         previous
                     </a>
                 {% endif %}
@@ -99,10 +101,10 @@
                 </span>
 
                 {% if page_obj.has_next %}
-                    <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">
+                    <a href="?{% if query %}query={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">
                         next
                     </a>
-                    <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                    <a href="?{% if query %}query={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
                         last &raquo;
                     </a>
                 {% endif %}

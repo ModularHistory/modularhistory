@@ -1,6 +1,7 @@
 from django.views import generic
-
+from typing import Dict
 from .models import Source
+from quotes.models import Quote  #, QuoteSourceReference
 
 
 class IndexView(generic.ListView):
@@ -13,13 +14,21 @@ class IndexView(generic.ListView):
         return Source.objects.all()
 
 
-class DetailView(generic.DetailView):
+class BaseDetailView(generic.DetailView):
     model = Source
+    context_object_name = 'source'
+    object: Source
+
+    def get_context_data(self, *args, **kwargs) -> Dict:
+        context = super().get_context_data(*args, **kwargs)
+        containers = [self.object] + [contained_source for contained_source in self.object.contained_sources.all()]
+        context['quotes'] = Quote.objects.filter(sources__in=containers)
+        return context
+
+
+class DetailView(BaseDetailView):
     template_name = 'sources/detail.html'
-    context_object_name = 'source'
 
 
-class DetailPartView(generic.DetailView):
-    model = Source
+class DetailPartView(BaseDetailView):
     template_name = 'sources/_detail.html'
-    context_object_name = 'source'

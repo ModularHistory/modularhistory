@@ -1,29 +1,32 @@
-from django.contrib.admin import TabularInline, StackedInline
-from django.forms import ModelForm
+from django.contrib.admin import TabularInline
 
 from admin import admin_site, Admin
-from entities.models import Entity
 from occurrences.models import Occurrence
 from topics.models import TopicQuoteRelation
 from . import models
 
 
-class SourceReferencesInline(StackedInline):
+# from django.forms import ModelForm
+
+
+class SourceReferencesInline(TabularInline):
     model = models.Quote.sources.through
-    extra = 1
     autocomplete_fields = ['source']
 
-
-class AttributeeInline(TabularInline):
-    model = Entity
-    extra = 1
-    autocomplete_fields = ['attributee']
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.source_references.count():
+            return 0
+        return 1
 
 
 class OccurrencesInline(TabularInline):
     model = Occurrence.related_quotes.through
-    extra = 1
     autocomplete_fields = ['occurrence']
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.related_occurrences.count():
+            return 0
+        return 1
 
 
 class TopicsInline(TabularInline):
@@ -32,25 +35,39 @@ class TopicsInline(TabularInline):
     autocomplete_fields = ['topic']
 
 
-class QuoteForm(ModelForm):
-    class Meta:
-        model = models.Quote
-        exclude = ['year']
+class BitesInline(TabularInline):
+    model = models.QuoteBite
+    extra = 0
+
+
+# class QuoteForm(ModelForm):
+#     fields = []
+#
+#     class Meta:
+#         model = models.Quote
 
 
 class QuoteAdmin(Admin):
-    form = QuoteForm
-    list_display = ('bite', 'attributee', 'date', 'source_reference', 'topic_tags')
-    list_filter = ('attributee', 'year')
+    # form = QuoteForm
+    list_display = ('bite', 'attributee', 'date_string', 'source_reference', 'topic_tags', 'id')
+    list_filter = ['attributee']
     search_fields = models.Quote.searchable_fields
     ordering = ('date', 'attributee')
     autocomplete_fields = ['attributee']
     inlines = [
-        # AttributeeInline,
         SourceReferencesInline,
         OccurrencesInline,
-        TopicsInline
+        TopicsInline,
+        BitesInline
     ]
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        for field_name in ('date', 'date_is_circa'):
+            if fields and field_name in fields:
+                fields.remove(field_name)
+                fields.append(field_name)
+        return fields
 
 
 admin_site.register(models.Quote, QuoteAdmin)

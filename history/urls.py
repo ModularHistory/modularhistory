@@ -17,7 +17,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
-from home.views import SearchResultsView
+from search.views import SearchResultsView
 from admin import admin_site
 
 urlpatterns = [
@@ -29,13 +29,19 @@ urlpatterns = [
     path('history/quotes/', include(('quotes.urls', 'quotes'), namespace='quotes')),
     path('history/sources/', include(('sources.urls', 'sources'), namespace='sources')),
     path('history/topics/', include(('topics.urls', 'topics'), namespace='topics')),
+    re_path(r'history/search/?', SearchResultsView.as_view(), name='search'),
+    path('history/search/', include(('search.urls', 'topics'), namespace='search')),
     path('account/', include(('account.urls', 'account'), namespace='account')),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('api-auth/', include('rest_framework.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),
-    re_path(r'history/search/?', SearchResultsView.as_view(), name='search'),
     path('', include('home.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__', include(debug_toolbar.urls))
+    ] + urlpatterns

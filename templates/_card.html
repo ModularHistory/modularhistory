@@ -2,8 +2,8 @@
 {% load get_detail_url %}
 {% load is_instance %}
 
-<!--Card-->
-<div class="card m-2 {% block card_class %}{% endblock %}" data-href="{% block detail_url %}{% endblock %}">
+<div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.key }}"
+     data-href="{% block detail_url %}{% endblock %}" style="{% block card_styles %}{% endblock %}">
     {% block top %}{% endblock %}
     <div class="card-body">
         {% block edit %}
@@ -12,10 +12,17 @@
             {% endif %}
         {% endblock %}
         {% if not object|is_instance:'images.Image' %}
-            <!--Title-->
-            <h4 class="card-title text-center">
-                {{ object.date.string }}
-            </h4>
+            {% if object.date_string or object.date %}
+                <h4 class="card-title text-center">
+                    <small>
+                        {% if object.date_html %}
+                            {{ object.date_html }}
+                        {% else %}
+                            {{ object.date.html }}
+                        {% endif %}
+                    </small>
+                </h4>
+            {% endif %}
         {% endif %}
         {% block body %}{% endblock %}
         {% block tags %}

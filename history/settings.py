@@ -14,6 +14,9 @@ import os
 
 # noinspection PyPackageRequirements
 from decouple import config
+from django.conf.locale.en import formats as en_formats
+
+en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,6 +32,9 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = []
 
+# https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
+INTERNAL_IPS = ['127.0.0.1']
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,9 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.postgres',
     'django.contrib.staticfiles',
-    # 'django.contrib.gis',
+    'django.forms',
+    # 'django.contrib.gis',  # https://docs.djangoproject.com/en/3.0/ref/contrib/gis/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
-    'crispy_forms',
+    'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
+    'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'decouple',
     # TODO: https://django-file-picker.readthedocs.io/en/latest/index.html
@@ -50,17 +58,17 @@ INSTALLED_APPS = [
     # 'file_picker.uploads',  # file and image Django app
     # 'file_picker.wymeditor',  # optional WYMeditor plugin
     # 'sorl.thumbnail',  # required
-    'imagekit',
-    'polymorphic',
-    'rest_framework',
-    'sass_processor',
-    'social_django',
+    'imagekit',  # https://github.com/matthewwithanm/django-imagekit
+    'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
+    'rest_framework',  # https://github.com/encode/django-rest-framework
+    'sass_processor',  # https://github.com/jrief/django-sass-processor
+    'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
     'taggit',
-    'tinymce',
-    # 'typedmodels',
+    'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'account.apps.AccountConfig',
     'entities.apps.EntitiesConfig',
     'home.apps.HomeConfig',
+    'search.apps.SearchConfig',
     'images.apps.ImagesConfig',
     'occurrences.apps.OccurrencesConfig',
     'places.apps.LocationsConfig',
@@ -74,6 +82,8 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -104,6 +114,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'history.wsgi.application'
 
@@ -194,7 +206,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -220,29 +232,65 @@ SASS_PRECISION = 8
 TINYMCE_JS_URL = 'https://cloud.tinymce.com/stable/tinymce.min.js'
 TINYMCE_JS_ROOT = 'https://cloud.tinymce.com/stable/'
 TINYMCE_DEFAULT_CONFIG = {
-    # 'height': 360,
+    # 'height': 100,
     'width': '100%',
     'cleanup_on_startup': True,
     'custom_undo_redo_levels': 20,
     'selector': 'textarea',
     'theme': 'modern',
-    'plugins': ('anchor, autolink, blockquote, charmap, code, codesample, contextmenu, paste, '
-                'directionality, fullscreen, hr, image, insertdatetime, link, lists, '
-                'media, nonbreaking, preview, print, save, spellchecker, table, '
-                'textcolor, searchreplace, wordcount, visualblocks, visualchars'),
-    'toolbar1': ('fullscreen preview | paste | bold italic underline| blockquote | '
-                 'alignleft aligncenter alignright alignjustify | indent outdent | bullist numlist table | '
-                 'visualblocks visualchars | charmap hr nonbreaking anchor | image media link | code |'),
-    # 'toolbar2': '''
-    #         visualblocks visualchars |
-    #         charmap hr pagebreak nonbreaking anchor |  code |
-    #         ''',
-    'contextmenu': 'formats | link image',
+    'plugins': (
+        'autolink, autoresize, autosave, blockquote, '
+        # 'casechange, '  # Premium
+        'charmap, code, contextmenu, emoticons, '
+        # 'formatpainter, '  # Premium
+        'fullscreen, hr, image, link, lists, media, paste, preview, '
+        'searchreplace, spellchecker, textcolor, visualblocks, visualchars, wordcount'
+    ),
+    'toolbar1': (
+        'bold italic | blockquote '
+        # 'formatpainter | '
+        'alignleft aligncenter alignright alignjustify | indent outdent | '
+        'bullist numlist | visualblocks visualchars | '
+        # 'charmap hr '
+        'nonbreaking anchor | image media link | code | highlight | smallcaps | '
+        'spellchecker preview | undo redo'
+    ),
+    'contextmenu': 'formats | highlight | smallcaps | link | media | image | code | pastetext',
     'menubar': True,
     'statusbar': True,
     'branding': False,
-    # 'paste_as_text': True,
+    'setup': ('''
+        function (editor) {
+            editor.addButton('highlight', {
+                text: 'Highlight text',
+                icon: false,
+                onclick : function() {
+                    editor.focus();
+                    let content = editor.selection.getContent();
+                    if (content.length) {
+                        content = content.replace("<mark>", "").replace("</mark>", "");
+                        editor.selection.setContent("<mark>" + editor.selection.getContent() + '</mark>');
+                    }
+                }
+            });
+            editor.addButton('smallcaps', {
+                text: 'Small caps',
+                icon: false,
+                onclick : function() {
+                    editor.focus();
+                    let content = editor.selection.getContent();
+                    if (content.length) {
+                        let opening_tag = '<span style="font-variant: small-caps">';
+                        let closing_tag = '</span>';
+                        content = content.replace(opening_tag, '').replace(closing_tag, '');
+                        editor.selection.setContent(opening_tag + editor.selection.getContent() + closing_tag);
+                    }
+                }
+            });
+        }
+    ''')
 }
+TINYMCE_SPELLCHECKER = True
 
 # https://pypi.org/project/django-bootstrap-datepicker-plus/
 BOOTSTRAP4 = {
@@ -310,3 +358,18 @@ MENU_ITEMS = [
 SETTINGS_EXPORT = [
     'MENU_ITEMS',
 ]
+
+# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
+}
+
+
+def show_debug_toolbar(request) -> bool:
+    if DEBUG and 'showDebugToolbar=true' in request.GET:
+        return True
+    return False
+
+
+X_RAPIDAPI_HOST = config('X_RAPIDAPI_HOST')
+X_RAPIDAPI_KEY = config('X_RAPIDAPI_KEY')

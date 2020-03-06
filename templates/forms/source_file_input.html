@@ -1,0 +1,7 @@
+<div>
+    {% for subwidget in widget.subwidgets %}
+        <div style="margin-left: 168px; margin-bottom: 7px;">
+            {% include subwidget.template_name with widget=subwidget %}
+        </div>
+    {% endfor %}
+</div>

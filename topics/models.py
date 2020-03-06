@@ -4,8 +4,8 @@ from django.db import models
 from django.db.models import ManyToManyField, ForeignKey, CASCADE, SET_NULL
 from taggit.models import TaggedItemBase
 
-from history.fields import ArrayField
-from history.fields import HTMLField
+from history.fields.array_field import ArrayField
+from history.fields.html_field import HTMLField
 from history.models import Model, TaggableModel
 from occurrences.models import Occurrence
 from sources.models import Source, SourceReference, SourceFactDerivation
@@ -15,17 +15,26 @@ class TopicQuoteRelation(Model):
     topic = ForeignKey('Topic', related_name='topic_quote_relations', on_delete=CASCADE)
     quote = ForeignKey('quotes.Quote', related_name='quote_topic_relations', on_delete=CASCADE)
 
+    class Meta:
+        unique_together = ['topic', 'quote']
+
 
 class OccurrenceTopicRelation(Model):
     topic = ForeignKey('topics.Topic', related_name='topic_occurrence_relations', on_delete=CASCADE)
     occurrence = ForeignKey('occurrences.Occurrence', related_name='occurrence_topic_relations', on_delete=CASCADE)
     weight = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1000)], default=500)
 
+    class Meta:
+        unique_together = ['topic', 'occurrence']
+
 
 class EntityTopicRelation(Model):
     """Relation of a topic to an entity."""
     entity = ForeignKey('entities.Entity', related_name='entity_topic_relations', on_delete=CASCADE)
     topic = ForeignKey('topics.Topic', related_name='topic_entity_relations', on_delete=CASCADE)
+
+    class Meta:
+        unique_together = ['topic', 'entity']
 
 
 class TopicRelation(Model):
@@ -37,7 +46,7 @@ class TopicRelation(Model):
 
 class Topic(TaggableModel):
     """A topic"""
-    key = models.CharField(max_length=20, unique=True)
+    key = models.CharField(max_length=24, unique=True)
     parent = ForeignKey('self', related_name='children', null=True, blank=True, on_delete=SET_NULL)
     aliases = ArrayField(models.CharField(max_length=100), null=True, blank=True)
     description = HTMLField(null=True, blank=True)
@@ -96,11 +105,17 @@ class EntityFactRelation(FactRelation):
     entity = ForeignKey('entities.Entity', related_name='entity_fact_relations', on_delete=CASCADE)
     fact = ForeignKey('Fact', related_name='fact_entity_relations', on_delete=CASCADE)
 
+    class Meta:
+        unique_together = ['fact', 'entity']
+
 
 class TopicFactRelation(FactRelation):
     """A relation of a fact to a topic."""
     topic = ForeignKey(Topic, related_name='topic_fact_relations', on_delete=CASCADE)
     fact = ForeignKey('Fact', related_name='fact_topic_relations', on_delete=CASCADE)
+
+    class Meta:
+        unique_together = ['topic', 'fact']
 
 
 class OccurrenceFactRelation(FactRelation):
@@ -108,14 +123,20 @@ class OccurrenceFactRelation(FactRelation):
     occurrence = ForeignKey('occurrences.Occurrence', related_name='occurrence_fact_relations', on_delete=CASCADE)
     fact = ForeignKey('Fact', related_name='fact_occurrence_relations', on_delete=CASCADE)
 
+    class Meta:
+        unique_together = ['fact', 'occurrence']
+
 
 class FactSupport(FactRelation):
     supported_fact = ForeignKey('Fact', on_delete=CASCADE, related_name='supported_fact_supports')
     supportive_fact = ForeignKey('Fact', on_delete=CASCADE, related_name='supportive_fact_supports')
 
+    class Meta:
+        unique_together = ['supported_fact', 'supportive_fact']
+
 
 class Fact(Model):
-    text = HTMLField()
+    text = HTMLField(unique=True)
     supportive_facts = ManyToManyField('self', related_name='supported_facts', through=FactSupport, symmetrical=False)
     sources = ManyToManyField(Source, related_name='derived_facts', through=SourceFactDerivation)
     related_entities = ManyToManyField('entities.Entity', related_name='facts', through=EntityFactRelation)

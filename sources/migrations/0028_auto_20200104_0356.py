@@ -14,16 +14,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='journal',
             name='description',
-            field=history.fields.HTMLField(blank=True, null=True),
+            field=history.fields.html_field.HTMLField(blank=True, null=True),
         ),
         migrations.AddField(
             model_name='magazine',
             name='description',
-            field=history.fields.HTMLField(blank=True, null=True),
+            field=history.fields.html_field.HTMLField(blank=True, null=True),
         ),
         migrations.AddField(
             model_name='newspaper',
             name='description',
-            field=history.fields.HTMLField(blank=True, null=True),
+            field=history.fields.html_field.HTMLField(blank=True, null=True),
         ),
     ]

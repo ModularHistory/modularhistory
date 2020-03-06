@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='source_file',
-            field=models.FileField(blank=True, null=True, upload_to=functools.partial(history.fields._update_filename, *(), **{'path': 'sources/'})),
+            field=models.FileField(blank=True, null=True, upload_to=functools.partial(history.fields.file_field._update_filename, *(), **{'path': 'sources/'})),
         ),
     ]

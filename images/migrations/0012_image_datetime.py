@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='datetime',
-            field=history.fields.HistoricDateTimeField(blank=True, null=True),
+            field=history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True),
         ),
     ]

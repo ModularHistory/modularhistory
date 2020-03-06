@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='topic',
             name='aliases',
-            field=history.fields.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None),
+            field=history.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None),
         ),
     ]

@@ -1,35 +1,19 @@
 {% load get_admin_url %}
 {% load image_card %}
 
-<div>
-    {% if quote.date %}{{ quote.date.string }}{% endif %}
-    <br />
-    <br />
-</div>
+{% if quote.attributee %}
+<p class="lead">
+    <a href="{% url 'entities:detail' quote.attributee.id %}" target="_blank">{{ quote.attributee }}</a>{% if quote.date %}, {{ quote.date.string }}{% endif %}
+</p>
+{% endif %}
 <div class="card-text">
     {% if quote.image %}
-        <div class="float-right mx-4" style="max-width: 44%; margin-left: 0.7rem; margin-bottom: 0.7rem">
+        <div class="img-container">
             {% image_card quote.image %}
         </div>
     {% endif %}
-    <blockquote class="blockquote">
-        {{ quote.text.html }}
-        <footer class="blockquote-footer">
-            {% if quote.source_reference %}
-                {{ quote.source_reference }}
-            {% elif quote.attributee %}
-                {{ quote.attributee }}
-            {% endif %}
-        </footer>
-    </blockquote>
-    {% if quote.source_file_url %}
-        <a href="{{ quote.source_file_url }}" class="btn btn-info display-source"
-           data-toggle="modal" data-target="#modal">View source</a>
-    {% endif %}
-    <br />
-    <br />
-    <div class="quote-context">
-        {{ quote.context.html }}
-    </div>
+    {{ quote.html }}
 </div>
-<a class="edit-object-button" target="_blank" href="{{ quote|get_admin_url }}"><i class="fa fa-edit"></i></a>
+{% if request.user.is_superuser %}
+    <a class="edit-object-button" target="_blank" href="{{ quote|get_admin_url }}"><i class="fa fa-edit"></i></a>
+{% endif %}

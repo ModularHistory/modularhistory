@@ -19,7 +19,7 @@
             {% endblock %} | JTF
         </title>
 
-        <!--<link rel="icon" href="{% static "home/media/favicon.ico" %}" type="image/x-icon" />-->
+        <link rel="icon" href="{% static "favicon.ico" %}" type="image/x-icon" />
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
@@ -52,6 +52,8 @@
         <script type="text/javascript" src='{% static "mdb/js/mdb.min.js" %}'></script>
         <!-- PDF.js -->
         <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js"></script>
+        <!-- Epub.js -->
+        <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
 
         <!--
         ## emulate tab
@@ -118,7 +120,7 @@
 
                 <form class="form-inline my-2 my-lg-0 ml-auto" action="{% url 'search' %}">
                     <div class="input-group">
-                        <input name="q" class="form-control" type="search" placeholder="Search" aria-label="Search">
+                        <input name="query" class="form-control" type="search" placeholder="Search" aria-label="Search">
                         <div class="input-group-append">
                             <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-3" type="submit">
                                 <i class="fas fa-search"></i>

@@ -1,0 +1,16 @@
+@import "generic";
+
+.image-card {
+  .card-text {
+    font-size: 0.8rem;
+  }
+  .image-credit {
+    display: block;
+    font-size: 0.6rem;
+    line-height: 0.8rem;
+  }
+}
+
+.mask.rgba-white-slight {
+  display: none;
+}

@@ -7,6 +7,12 @@
     {% endwith %}
 {% endblock %}
 
+{% block tags %}
+    {% with object=quote request=request %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
 {% block detail_url %}{{ quote|get_detail_url }}{% endblock %}
 
 {% block body %}

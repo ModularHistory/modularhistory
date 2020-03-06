@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='fact',
             name='text',
-            field=history.fields.HTMLField(),
+            field=history.fields.html_field.HTMLField(),
         ),
         migrations.AlterField(
             model_name='topic',
             name='description',
-            field=history.fields.HTMLField(blank=True, null=True),
+            field=history.fields.html_field.HTMLField(blank=True, null=True),
         ),
     ]

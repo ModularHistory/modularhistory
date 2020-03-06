@@ -16,14 +16,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='file',
-            field=models.FileField(blank=True, null=True, upload_to=functools.partial(history.fields._update_filename, *(), **{'path': 'sources/'})),
+            field=models.FileField(blank=True, null=True, upload_to=functools.partial(history.fields.file_field._update_filename, *(), **{'path': 'sources/'})),
         ),
         migrations.CreateModel(
             name='PublicationVolume',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('number', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('date', history.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
                 ('file', models.FileField(blank=True, null=True, upload_to='sources/')),
                 ('publication', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sources.Publication')),
             ],
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('number', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('date', history.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
                 ('file', models.FileField(blank=True, null=True, upload_to='sources/')),
                 ('publication', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sources.Publication')),
                 ('volume', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sources.PublicationVolume')),

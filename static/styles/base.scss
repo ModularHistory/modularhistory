@@ -1,3 +1,6 @@
+@import "generic";
+@import "admin";
+
 html, body {
   height: 100%;
 }
@@ -15,35 +18,74 @@ body {
   flex: 1;
 }
 
-.blockquote {
-  font-size: 1rem;
-  border-left: 0.75rem solid #eceeef;
-  padding: 0 1.5rem;
-  p {
-    padding: 0;
+.embed-responsive-210by297 {
+  padding-bottom: 141.42%;
+}
+
+#global-nav {
+  margin-bottom: 0.5rem;
+  .avatar {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  input[name='query'] {
+    width: 20rem;
+  }
+}
+
+blockquote {
+  &.blockquote {
+    border-left: 0.75rem solid #eceeef;
+    padding: 0 1.5rem;
     font-size: 0.9rem;
+    p {
+      font-size: 0.9rem;
+      padding: 0;
+    }
+    >blockquote {
+      border-left: none;
+      font-size: 0.8rem;
+      p {
+        font-size: 0.8rem;
+      }
+    }
   }
 }
 
 .card, .row {
   position: relative;
   &.image-card {
+    display: inline-block;
+    .image-credit {
+      font-size: 0.6rem;
+    }
     .card-body {
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
       font-size: 0.9rem;
+      padding-top: 1rem !important;
+      padding-bottom: 0 !important;
+    }
+  }
+  .edit-object-button {
+    margin: 1rem;
+    clear: right;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+  }
+  .blockquote, .blockquote > footer {
+    .edit-object-button {
+      position: static;
+      float: right;
     }
   }
 }
 
-.edit-object-button {
-  position: absolute;
-  right: 2px;
-  top: 2px;
-}
-
 .two-pane-container {
+  display: inline-block;
+  width: 80%;
+  vertical-align: top;
   text-align: center;
+  //margin-left: 15%;
   .results {
     text-align: left;
     width: 25%;
@@ -52,6 +94,7 @@ body {
     .card {
       cursor: pointer;
       position: relative;
+      text-overflow: ellipsis;
       &:first-child {
         margin-top: 0 !important;
       }
@@ -76,6 +119,21 @@ body {
         //  z-index: 1;
         //}
       }
+      .card-body {
+        font-size: 0.8rem;
+        p {
+          font-size: 0.8rem;
+        }
+        .blockquote {
+          font-size: 0.8rem;
+          p {
+            font-size: 0.8rem;
+          }
+        }
+      }
+      .image-credit {
+        display: none;
+      }
       .thumbnail {
         float: left;
         margin-right: 0.9rem;
@@ -93,7 +151,31 @@ body {
     width: 60%;
     max-width: 44rem;
     display: inline-block;
+    p {
+      >iframe {
+        margin-left: auto; // doesn't work; using iframe align attribute instead
+        margin-right: auto; // doesn't work; using iframe align attribute instead
+      }
+    }
+    .img-container {
+      float:right;
+      clear: right;
+      max-width:44%;  // or 300px
+      margin-left: 0.9rem;
+      margin-bottom: 0.8rem;
+    }
     .card {
+      &.image-card {
+        .card-text {
+          font-size: 0.8rem;
+        }
+        .image-credit {
+          display: block;
+          font-size: 0.6rem;
+          line-height: 0.8rem;
+          float: right;
+        }
+      }
       .card-title {
         display: none;
       }
@@ -104,54 +186,70 @@ body {
       margin-top: 2rem;
       padding-top: 1rem;
       border-top: 5px solid whitesmoke;
+      &.sources-footer {
+        .source {
+          clear: both;
+          margin-bottom: 1rem;
+          .display-source {
+            margin-left: 0.8rem;
+          }
+        }
+      }
     }
-  }
-}
-
-.embed-responsive-210by297 {
-  padding-bottom: 141.42%;
-}
-
-#global-nav {
-  margin-bottom: 0.5rem;
-  .avatar {
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-  input[name='q'] {
-    width: 20rem;
   }
 }
 
 .refinements-container {
-  display: flex;
-  margin-bottom: 0.5rem;
-  form {
-    visibility: hidden;  // TODO
+  &.side {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    padding: 1rem;
+    background-color: whitesmoke;
+    width: 15%;
+    min-width: 200px;
+    max-height: 100vh;
+    overflow-y: scroll;
+  }
+  &.top {
     display: flex;
-    flex: 0 1 auto;
-    //max-height: 100vh;
-    //width: 20%;
-    //display: inline-block;
-    //vertical-align: top;
-    //overflow-y: auto;
-    //position: -webkit-sticky; /* Safari */
-    //position: sticky;
-    //top: 0;
-    .form-group {
-      position: relative;
-      .selectmultiple {
-        max-width: 15rem;
+    margin-bottom: 0.5rem;
+    form {
+      display: flex;
+      flex: 0 1 auto;
+      //max-height: 100vh;
+      //width: 20%;
+      //display: inline-block;
+      //vertical-align: top;
+      //overflow-y: auto;
+      //position: -webkit-sticky; /* Safari */
+      //position: sticky;
+      //top: 0;
+      .form-group {
+        position: relative;
+        .selectmultiple {
+          max-width: 15rem;
+        }
       }
     }
+    h1 {
+      flex: 1 0 auto;
+      vertical-align: top;
+      padding: 6px 0;
+      white-space: nowrap;
+      text-align: right;
+    }
   }
-  h1 {
-    flex: 1 0 auto;
-    vertical-align: top;
-    padding: 6px 0;
-    white-space: nowrap;
-    text-align: right;
-  }
+}
+
+.pagination {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 form {
@@ -176,6 +274,19 @@ ul.tags {
     margin: 2px;
     padding: 4px;
     display: inline;
+  }
+}
+
+// Admin table styles
+
+#changelist {
+  .results {
+    li.topic-tag {
+      list-style: none;
+      ::after {
+        content: ",";
+      }
+    }
   }
 }
 

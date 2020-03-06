@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='entity',
             name='birth_date',
-            field=history.fields.HistoricDateTimeField(blank=True, null=True),
+            field=history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
             model_name='entity',
             name='death_date',
-            field=history.fields.HistoricDateTimeField(blank=True, null=True),
+            field=history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True),
         ),
     ]

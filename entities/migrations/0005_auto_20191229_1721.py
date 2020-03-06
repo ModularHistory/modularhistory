@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='entity',
             name='aliases',
-            field=history.fields.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None),
+            field=history.fields.array_field.ArrayField(base_field=models.CharField(max_length=100),
+                                                        blank=True, null=True, size=None),
         ),
     ]

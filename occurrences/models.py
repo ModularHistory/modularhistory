@@ -1,94 +1,73 @@
-from datetime import datetime
-from decimal import Decimal, getcontext
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import PROTECT, CASCADE, ManyToManyField, QuerySet
-from django.template.defaultfilters import truncatechars
+from django.db.models import ManyToManyField, ForeignKey, CASCADE
+from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
 from taggit.models import TaggedItemBase
 
-from history.fields import HTMLField, HistoricDateTimeField
-from history.models import Model, PolymorphicModel, TaggableModel
+from history.fields.historic_datetime_field import HistoricDateTimeField
+from history.fields.html_field import HTMLField
+from history.models import Model, PolymorphicModel, TaggableModel, DatedModel, SearchableMixin
 from images.models import Image
 from sources.models import Source, SourceReference
-
-
-class Year(Model):
-    """A year in history"""
-    common_era_threshold = 1000000
-
-    nickname = models.CharField(max_length=20, null=True, blank=True)
-    common_era = models.DecimalField(max_digits=12, decimal_places=0, unique=True, blank=True, null=True)
-    years_before_present = models.DecimalField(max_digits=12, decimal_places=0, blank=True, null=True)
-    string = models.CharField(max_length=20, null=True, blank=True)
-
-    searchable_fields = ['common_era', 'nickname']
-
-    class Meta:
-        ordering = ['-years_before_present']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__initial_ce = self.common_era
-        self.__initial_ybp = self.years_before_present
-
-    def __str__(self):
-        return self.string or self.get_pretty_string()
-
-    def get_pretty_string(self) -> str:
-        return (f'{self.years_before_present} YBP' if any([self.years_before_present and not self.common_era,
-                                                           self.years_before_present > self.common_era_threshold])
-                else f'{-self.common_era} BCE' if self.common_era < 0
-                else f'{self.common_era} CE' if self.common_era >= 0
-                else self)
-
-    def natural_key(self) -> Tuple:
-        return self.common_era,
-
-    def clean(self):
-        current_year = datetime.now().year
-        getcontext().prec = 7
-        if self.years_before_present:
-            self.years_before_present = Decimal(f'{self.years_before_present}')
-        if self.common_era and ((self.common_era != self.__initial_ce) or not self.years_before_present):
-            self.years_before_present = Decimal(current_year - self.common_era)
-        elif self.years_before_present and ((self.years_before_present != self.__initial_ybp) or not self.common_era):
-            self.common_era = Decimal(f'''{-((self.years_before_present - current_year)
-                                             if self.years_before_present <= self.common_era_threshold
-                                             else self.years_before_present)}''')
-        self.string = self.get_pretty_string()
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+from .manager import Manager
 
 
 class OccurrenceImage(Model):
-    occurrence = models.ForeignKey('Occurrence', on_delete=PROTECT)
-    image = models.ForeignKey(Image, on_delete=PROTECT)
+    occurrence = models.ForeignKey('Occurrence', related_name='occurrence_images', on_delete=CASCADE)
+    image = models.ForeignKey(Image, on_delete=CASCADE)
+    position = models.PositiveSmallIntegerField(default=1, blank=True,
+                                                help_text='Set to 0 if the image is positioned manually.')
+
+    class Meta:
+        unique_together = ['occurrence', 'image']
+        ordering = ['position', 'image']
+
+    def __str__(self):
+        return mark_safe(f'{self.position}: {self.image.caption}')
+
+    @property
+    def key(self) -> str:
+        return self.image.key
 
 
-class Occurrence(PolymorphicModel, TaggableModel):
+class OccurrenceChain(Model):
+    parent_chain = ForeignKey('self', on_delete=CASCADE, related_name='sub_chains')
+
+
+class OccurrenceChainInclusion(Model):
+    chain = ForeignKey(OccurrenceChain, on_delete=CASCADE, related_name='occurrence_inclusions')
+    occurrence = ForeignKey('Occurrence', on_delete=CASCADE, related_name='chain_inclusions')
+
+    class Meta:
+        unique_together = ['chain', 'occurrence']
+
+
+class Occurrence(DatedModel, TaggableModel, SearchableMixin):
     """Something that happened"""
+    objects: Manager = Manager()
+
+    date = HistoricDateTimeField(null=True, blank=True)
+    end_date = HistoricDateTimeField(null=True, blank=True)
     summary = HTMLField(null=True, blank=True)
     description = HTMLField(null=True, blank=True)
-    date = HistoricDateTimeField(null=True, blank=True)
-    year = models.ForeignKey(Year, null=True, blank=True, on_delete=PROTECT, related_name='occurrences')
+    postscript = HTMLField(null=True, blank=True, help_text='Content to be displayed below all related data')
     locations = ManyToManyField('places.Place', through='OccurrenceLocation', related_name='occurrences', blank=True)
     related_quotes = ManyToManyField('quotes.Quote', through='OccurrenceQuoteRelation', symmetrical=True,
                                      related_name='related_occurrences', blank=True)
-    sources = ManyToManyField(Source, through='OccurrenceSourceReference', blank=True)
+    sources = ManyToManyField(Source, through='OccurrenceSourceReference', related_name='occurrences', blank=True)
     images = ManyToManyField(Image, related_name='occurrences', through=OccurrenceImage, blank=True)
     involved_entities = ManyToManyField('entities.Entity', related_name='involved_occurrences',
                                         through='OccurrenceEntityInvolvement', blank=True)
-    period = models.ForeignKey('Duration', related_name='occurrences', on_delete=models.CASCADE, null=True, blank=True)
+    chains = ManyToManyField(OccurrenceChain, related_name='occurrences', through=OccurrenceChainInclusion)
 
     class Meta:
         unique_together = (('summary', 'date'),)
-        ordering = ['-year__years_before_present', '-date']
+        ordering = ['-date']
 
-    searchable_fields = ['summary', 'description',
+    searchable_fields = ['summary', 'description', 'date__year',
                          'involved_entities__name', 'involved_entities__aliases',
                          'related_topics__key', 'related_topics__aliases']
 
@@ -97,7 +76,19 @@ class Occurrence(PolymorphicModel, TaggableModel):
 
     @property
     def description__truncated(self) -> SafeText:
-        return mark_safe(truncatechars(self.description, 1200))
+        return mark_safe(truncatechars_html(self.description, 1000))
+
+    @property
+    def entity_images(self) -> Optional[List[Image]]:
+        if self.involved_entities.exists():
+            images = []
+            for entity in self.involved_entities.all():
+                if entity.images.exists():
+                    if self.date:
+                        image = entity.images.get_closest_to_datetime(self.date)
+                        images.append(image)
+            return images
+        return None
 
     @property
     def image(self) -> Optional[Image]:
@@ -112,10 +103,6 @@ class Occurrence(PolymorphicModel, TaggableModel):
         return None
 
     @property
-    def pretty_year(self) -> str:
-        return str(self.year)
-
-    @property
     def source_reference(self) -> Optional['OccurrenceSourceReference']:
         if not len(self.sources.all()):
             return None
@@ -124,53 +111,18 @@ class Occurrence(PolymorphicModel, TaggableModel):
     def natural_key(self) -> Tuple:
         return self.summary, self.date
 
-    def clean(self):
-        attrs = (
-            ('date', 'year'),
-        )
-        for date_attr, year_attr in attrs:
-            date = getattr(self, date_attr)
-            if date:
-                year, _ = Year.objects.get_or_create(common_era=date.year)
-                setattr(self, year_attr, year)
-        else:
-            if self.year and not self.date:
-                pass
+    def full_clean(self, exclude=None, validate_unique=True):
+        super().full_clean(exclude, validate_unique)
+        # ois = list(self.occurrence_images.order_by('position'))
+        # for i, oi in enumerate(ois):
+        #     if i < len(ois)-1 and not oi.position == 0:
+        #         if oi.position == ois[i+1].position:
+        #             raise ValidationError(f'{oi} has same position as {ois[i+1]}: {oi.position}. '
+        #                                   f'Positions should be unique.')
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-
-
-class Duration(Occurrence):
-    """A duration of time over which something happens."""
-    end_year = models.ForeignKey(Year, null=True, blank=True, on_delete=PROTECT, related_name='occurrences_ended')
-
-    @property
-    def pretty_year(self) -> str:
-        return f'{self.year}–{self.end_year}'
-
-    @property
-    def years(self) -> QuerySet:
-        return Year.objects.filter(common_era__gte=self.year.common_era, common_era__lte=self.end_year.common_era)
-
-
-episode_types = (
-    ('publication', 'Publication'),  # of book, article, etc.
-    ('delivery', 'Delivery'),  # of speech, lecture, or letter
-    ('writing', 'Writing'),  # of letter or historical document
-    ('interview', 'Interview'),
-    ('birth', 'Birth'),  # of person
-    ('death', 'Death'),  # of person
-    ('founding', 'Founding'),  # of organization
-    ('battle', 'Battle'),
-    ('other', 'Other')
-)
-
-
-class Episode(Occurrence):
-    """A moment (or brief period) of time in which something happens."""
-    type = models.CharField(max_length=12, choices=episode_types, default='other')
 
 
 importance_options = (
@@ -190,21 +142,38 @@ class OccurrenceLocation(Model):
     location = models.ForeignKey('places.Place', related_name='location_occurrences', on_delete=CASCADE)
     importance = models.IntegerField(choices=importance_options, default=1)
 
+    class Meta:
+        unique_together = ['occurrence', 'location']
+
 
 class OccurrenceEntityInvolvement(Model):
     """An involvement of an entity in an occurrence"""
     occurrence = models.ForeignKey(Occurrence, on_delete=CASCADE)
     entity = models.ForeignKey('entities.Entity', related_name='occurrence_involvements', on_delete=CASCADE)
-    importance = models.IntegerField(choices=importance_options, default=1)
+    importance = models.PositiveSmallIntegerField(choices=importance_options, default=1)
+
+    class Meta:
+        unique_together = ['occurrence', 'entity']
 
 
 class OccurrenceQuoteRelation(Model):
     """An involvement of an entity in an occurrence"""
     occurrence = models.ForeignKey(Occurrence, related_name='occurrence_quote_relations', on_delete=CASCADE)
     quote = models.ForeignKey('quotes.Quote', related_name='quote_occurrence_relations', on_delete=CASCADE)
+    position = models.PositiveSmallIntegerField(default=1, blank=True)
+
+    class Meta:
+        unique_together = ['occurrence', 'quote']
+        ordering = ['position', 'quote']
+
+    def __str__(self):
+        return mark_safe(f'{self.quote.source_reference}')
 
 
 class OccurrenceSourceReference(SourceReference):
     """A reference to a source."""
     occurrence = models.ForeignKey(Occurrence, related_name='source_references', on_delete=CASCADE)
     source = models.ForeignKey(Source, related_name='references_from_occurrences', on_delete=CASCADE)
+
+    class Meta:
+        unique_together = ['occurrence', 'source']

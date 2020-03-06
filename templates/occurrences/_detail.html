@@ -1,21 +1,33 @@
 {% load get_admin_url %}
 {% load image_card %}
-{% load quote_card %}
 {% load source_card %}
 {% load class_name %}
+{% load static %}
 
 <h2 class="text-center card-title">
     {% if occurrence.date %}
-        {{ occurrence.date.string }}
-    {% else %}
-        {{ occurrence.year }}
+        {{ occurrence.date_html }}
     {% endif %}
 </h2>
 <div class="card-text">
-    {% if occurrence.image %}
-        <div style="float:right; max-width:33%; margin-left: 0.7rem; margin-bottom: 0.7rem">
-            {% image_card occurrence.image %}
-        </div>
+    {% if unpositioned_images|length %}
+        {% for occurrence_image in unpositioned_images %}
+            <div class="img-container">
+                {% image_card occurrence_image.image %}
+            </div>
+        {% endfor %}
+    {% elif not occurrence.images.all|length %}
+        {% if occurrence.entity_images %}
+            {% for image in occurrence.entity_images %}
+                <div class="img-container">
+                    {% image_card image %}
+                </div>
+            {% endfor %}
+        {% elif occurrence.image and not occurrence.images.all|length %}
+            <div class="img-container">
+                {% image_card occurrence.image %}
+            </div>
+        {% endif %}
     {% endif %}
     <div class="lead">
         {{ occurrence.summary.html }}
@@ -25,7 +37,9 @@
             <ul>
                 {% for entity in occurrence.involved_entities.all %}
                     <li>
-                        <a class="font-italic" href="{% url 'entities:detail' entity.id %}">{{ entity }}</a>
+                        <a class="font-italic" href="{% url 'entities:detail' entity.id %}" target="_blank">
+                            {{ entity }}
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
@@ -35,20 +49,19 @@
         {{ occurrence.description.html }}
     </div>
 </div>
-{% if occurrence.related_quotes.all|length %}
-    {% for quote in occurrence.related_quotes.all %}
-        {% quote_card quote %}
+{% if quotes|length %}
+    {% for quote in quotes %}
+        {{ quote.html }}
     {% endfor %}
 {% endif %}
+{% if occurrence.postscript %}
+    {{ occurrence.postscript.html }}
+{% endif %}
 {% if occurrence.sources.all|length %}
-    <footer class="footer">
+    <footer class="footer sources-footer">
         {% for source_reference in occurrence.source_references.all %}
-            <div>
-                {{ source_reference }}
-                {% if source_reference.source_file_url %}
-                    <a href="{{ source_reference.source_file_url }}" class="btn btn-info display-source"
-                       data-toggle="modal" data-target="#modal">View source</a>
-                {% endif %}
+            <div class="source">
+                {{ source_reference.html }}
             </div>
         {% endfor %}
     </footer>

@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='description',
-            field=history.fields.HTMLField(blank=True, null=True),
+            field=history.fields.html_field.HTMLField(blank=True, null=True),
         ),
         migrations.AlterField(
             model_name='occurrence',
             name='summary',
-            field=history.fields.HTMLField(blank=True, null=True),
+            field=history.fields.html_field.HTMLField(blank=True, null=True),
         ),
     ]

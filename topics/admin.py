@@ -18,7 +18,7 @@ class TopicEntitiesInline(TabularInline):
 class TopicAdmin(Admin):
     list_display = ('key', 'description', 'related_topics_string')
     list_filter = ('related_topics',)
-    search_fields = ('key', 'description')
+    search_fields = ('key', 'aliases', 'description')
     # ordering = ('datetime', 'start_date', 'end_date')
 
     inlines = [

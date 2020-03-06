@@ -2,7 +2,17 @@
 {% load quote_card %}
 
 <div style="position: relative;">
+    <a class="edit-object-button float-right pull-right" target="_blank" href="{{ entity|get_admin_url }}">
+        <i class="fa fa-edit"></i>
+    </a>
     <h1>{{ entity }}</h1>
+    {% if entity.birth_date and entity.death_date %}
+        <p>{{ entity.birth_date.html }} – {{ entity.death_date.html }}</p>
+    {% elif entity.birth_date %}
+        <p>b. {{ entity.birth_date.html }}</p>
+    {% elif entity.death_date %}
+        <p>d. {{ entity.death_date.html }}</p>
+    {% endif %}
     <div>
         {% for image in entity.images.all %}
             {{ image.admin_image_element }}
@@ -14,29 +24,40 @@
     <div>
         {% if entity.quotes.all|length %}
             {% for quote in entity.quotes.all %}
-                <div class="row">
-                    <blockquote class="blockquote">
-                        {% if quote.bite %}
-                            {{ quote.bite.html }}
-                        {% else %}
-                            {{ quote.text.html|truncatechars_html:100 }}
+                <div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ quote.key }}"
+                     data-href="{% block detail_url %}{% endblock %}" style="{% block card_styles %}{% endblock %}">
+                    <div class="card-body">
+                        {% if request.user.is_superuser %}
+                            <a class="edit-object-button" target="_blank" href="{{ quote|get_admin_url }}"><i class="fa fa-edit"></i></a>
                         {% endif %}
-                        <footer class="blockquote-footer">
-                            {{ quote.source_reference }}
-                        </footer>
-                    </blockquote>
-                    {% if quote.source_file_url %}
-                        <a href="{{ quote.source_file_url }}" class="btn btn-info display-source"
-                           data-toggle="modal" data-target="#modal">View source</a>
-                    {% endif %}
-                    <a class="edit-object-button" target="_blank" href="{{ quote|get_admin_url }}">
-                        <i class="fa fa-edit"></i>
-                    </a>
+                        {% if quote.date_string %}
+                            <!--Title-->
+                            <h4 class="card-title text-center">
+                                <small>
+                                    {% if quote.date_html %}
+                                        {{ quote.date_html }}
+                                    {% else %}
+                                        {{ quote.date.html }}
+                                    {% endif %}
+                                </small>
+                            </h4>
+                        {% endif %}
+                        <!--Text-->
+                        <div class="card-text">
+                            {{ quote.html }}
+                        </div>
+                        {% block tags %}
+                            {% if quote.related_topics and quote.related_topics.all|length %}
+                                <ul class="tags float-right">
+                                    {{ quote.topic_tags }}
+                                </ul>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
             No quotes
         {% endif %}
     </div>
-    <a class="edit-object-button" target="_blank" href="{{ entity|get_admin_url }}"><i class="fa fa-edit"></i></a>
 </div>

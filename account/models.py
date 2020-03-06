@@ -40,7 +40,6 @@ class User(AbstractUser):
         user.first_name = first_name
         user.last_name = last_name
         user.save()
-        print(f'>>> Created user: {user}')
         return user
 
     def lock(self):

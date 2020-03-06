@@ -6,28 +6,31 @@ import django
 
 # Initialize Django
 print('Initializing Django...')
-mydir = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(mydir)
+my_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(my_dir)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
 django.setup()
-print('Completed Django initialization.')
 
-print('Importing required modules...')
-from history import settings
-from django.db import transaction
-from django.contrib.auth.models import Permission, Group
 
-from account import models as account
-from occurrences import models as occurrences
-from entities import models as people
-from places import models as places
-from quotes import models as quotes
+# from history import settings
+# from django.db import transaction
+# from django.contrib.auth.models import Permission, Group
+#
+# from account import models as account
+# from occurrences import models as occurrences
+# from entities import models as people
+# from places import models as places
+# from quotes import models as quotes
+# from images import models as images
 from sources import models as sources
 
-# from sources.models import Source
-#
-# for s in Source.objects.all():
-#     s.save()
+from django.contrib.contenttypes.models import ContentType
+from entities.models import Entity, Person
+
+from sources.models import Journal, JournalEntry
+
+for je in JournalEntry.objects.all():
+    print(f'>>> {je}')
 
 # try:
 #     print('Creating groups...')
@@ -60,7 +63,6 @@ from sources import models as sources
 # sources.Book.objects.all().delete()
 # sources._Article.objects.all().delete()
 # sources.Source.objects.all().delete()
-# occurrences.Year.objects.all().delete()
 # account.User.objects.all().delete()
 #
 # # # Delete existing admins
@@ -179,10 +181,7 @@ from sources import models as sources
 #         created_persons[person_name] = p
 # except django.db.utils.IntegrityError:
 #     print('States already exist.')
-#
-# for n in (1879, 1955, 1805, 1844, 1801, 1877, 1835, 1910, 1875, 1965, 1900, 1906):
-#     y = occurrences.Year.objects.create(common_era=n)
-#
+##
 # book_data = {
 #     # 'Bible Teaching and Religious Practice': {
 #     #     'text': 'Mark Twain, "Bible Teaching and Religious Practice," c. 1900.',
@@ -197,7 +196,6 @@ from sources import models as sources
 # }
 # book_objects = {}
 # for title, details in book_data.items():
-#     year = occurrences.Year.objects.get(common_era=details['year'])
 #     s = sources.Book.objects.create(text=details['text'], description=details['description'], year=year)
 #     s.description = 'aklsdlkfjs slkdfjlskdjflk lskdjflksdlf lskdjflksjdlkfj lksdjflskjdf lskdjflks.'
 #     s.save()

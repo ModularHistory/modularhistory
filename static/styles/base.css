@@ -1,3 +1,16 @@
+figcaption {
+  font-size: 0.8rem; }
+
+li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.2rem; }
+
+td.field-source {
+  max-width: 600px; }
+  td.field-source .related-widget-wrapper {
+    float: none; }
+
 html, body {
   height: 100%; }
 
@@ -9,27 +22,54 @@ body {
 .main-content {
   flex: 1; }
 
-.blockquote {
-  font-size: 1rem;
+.embed-responsive-210by297 {
+  padding-bottom: 141.42%; }
+
+#global-nav {
+  margin-bottom: 0.5rem; }
+  #global-nav .avatar {
+    margin-top: auto;
+    margin-bottom: auto; }
+  #global-nav input[name='query'] {
+    width: 20rem; }
+
+blockquote.blockquote {
   border-left: 0.75rem solid #eceeef;
-  padding: 0 1.5rem; }
-  .blockquote p {
-    padding: 0;
-    font-size: 0.9rem; }
+  padding: 0 1.5rem;
+  font-size: 0.9rem; }
+  blockquote.blockquote p {
+    font-size: 0.9rem;
+    padding: 0; }
+  blockquote.blockquote > blockquote {
+    border-left: none;
+    font-size: 0.8rem; }
+    blockquote.blockquote > blockquote p {
+      font-size: 0.8rem; }
 
 .card, .row {
   position: relative; }
-  .card.image-card .card-body, .row.image-card .card-body {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    font-size: 0.9rem; }
-
-.edit-object-button {
-  position: absolute;
-  right: 2px;
-  top: 2px; }
+  .card.image-card, .row.image-card {
+    display: inline-block; }
+    .card.image-card .image-credit, .row.image-card .image-credit {
+      font-size: 0.6rem; }
+    .card.image-card .card-body, .row.image-card .card-body {
+      font-size: 0.9rem;
+      padding-top: 1rem !important;
+      padding-bottom: 0 !important; }
+  .card .edit-object-button, .row .edit-object-button {
+    margin: 1rem;
+    clear: right;
+    position: absolute;
+    right: 2px;
+    top: 2px; }
+  .card .blockquote .edit-object-button, .card .blockquote > footer .edit-object-button, .row .blockquote .edit-object-button, .row .blockquote > footer .edit-object-button {
+    position: static;
+    float: right; }
 
 .two-pane-container {
+  display: inline-block;
+  width: 80%;
+  vertical-align: top;
   text-align: center; }
   .two-pane-container .results {
     text-align: left;
@@ -38,7 +78,8 @@ body {
     vertical-align: top; }
     .two-pane-container .results .card {
       cursor: pointer;
-      position: relative; }
+      position: relative;
+      text-overflow: ellipsis; }
       .two-pane-container .results .card:first-child {
         margin-top: 0 !important; }
       .two-pane-container .results .card.active {
@@ -46,6 +87,16 @@ body {
         border-left: 1px solid black;
         border-bottom: 1px solid black;
         margin-right: -4px; }
+      .two-pane-container .results .card .card-body {
+        font-size: 0.8rem; }
+        .two-pane-container .results .card .card-body p {
+          font-size: 0.8rem; }
+        .two-pane-container .results .card .card-body .blockquote {
+          font-size: 0.8rem; }
+          .two-pane-container .results .card .card-body .blockquote p {
+            font-size: 0.8rem; }
+      .two-pane-container .results .card .image-credit {
+        display: none; }
       .two-pane-container .results .card .thumbnail {
         float: left;
         margin-right: 0.9rem; }
@@ -61,6 +112,22 @@ body {
     width: 60%;
     max-width: 44rem;
     display: inline-block; }
+    .two-pane-container .view-detail p > iframe {
+      margin-left: auto;
+      margin-right: auto; }
+    .two-pane-container .view-detail .img-container {
+      float: right;
+      clear: right;
+      max-width: 44%;
+      margin-left: 0.9rem;
+      margin-bottom: 0.8rem; }
+    .two-pane-container .view-detail .card.image-card .card-text {
+      font-size: 0.8rem; }
+    .two-pane-container .view-detail .card.image-card .image-credit {
+      display: block;
+      font-size: 0.6rem;
+      line-height: 0.8rem;
+      float: right; }
     .two-pane-container .view-detail .card .card-title {
       display: none; }
     .two-pane-container .view-detail .footer {
@@ -69,35 +136,49 @@ body {
       margin-top: 2rem;
       padding-top: 1rem;
       border-top: 5px solid whitesmoke; }
+      .two-pane-container .view-detail .footer.sources-footer .source {
+        clear: both;
+        margin-bottom: 1rem; }
+        .two-pane-container .view-detail .footer.sources-footer .source .display-source {
+          margin-left: 0.8rem; }
 
-.embed-responsive-210by297 {
-  padding-bottom: 141.42%; }
+.refinements-container.side {
+  position: -webkit-sticky;
+  /* Safari */
+  position: sticky;
+  display: inline-block;
+  top: 0;
+  left: 0;
+  padding: 1rem;
+  background-color: whitesmoke;
+  width: 15%;
+  min-width: 200px;
+  max-height: 100vh;
+  overflow-y: scroll; }
 
-#global-nav {
-  margin-bottom: 0.5rem; }
-  #global-nav .avatar {
-    margin-top: auto;
-    margin-bottom: auto; }
-  #global-nav input[name='q'] {
-    width: 20rem; }
-
-.refinements-container {
+.refinements-container.top {
   display: flex;
   margin-bottom: 0.5rem; }
-  .refinements-container form {
-    visibility: hidden;
+  .refinements-container.top form {
     display: flex;
     flex: 0 1 auto; }
-    .refinements-container form .form-group {
+    .refinements-container.top form .form-group {
       position: relative; }
-      .refinements-container form .form-group .selectmultiple {
+      .refinements-container.top form .form-group .selectmultiple {
         max-width: 15rem; }
-  .refinements-container h1 {
+  .refinements-container.top h1 {
     flex: 1 0 auto;
     vertical-align: top;
     padding: 6px 0;
     white-space: nowrap;
     text-align: right; }
+
+.pagination {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center; }
 
 form ul {
   list-style: none;
@@ -117,6 +198,11 @@ ul.tags {
     margin: 2px;
     padding: 4px;
     display: inline; }
+
+#changelist .results li.topic-tag {
+  list-style: none; }
+  #changelist .results li.topic-tag ::after {
+    content: ","; }
 
 /* Required height of parents of the Half Page Carousel for proper displaying carousel itself */
 html,

@@ -3,10 +3,12 @@ from typing import Optional
 
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
-from django.template.defaultfilters import truncatechars
+from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
-
-from history.fields import HTMLField, ArrayField, HistoricDateField, HistoricDateTimeField
+from history.typed_models.models import TypedModel
+from history.fields.array_field import ArrayField
+from history.fields.historic_datetime_field import HistoricDateTimeField, HistoricDateField
+from history.fields.html_field import HTMLField
 from history.models import Model, PolymorphicModel, TaggableModel
 from images.models import Image
 
@@ -15,25 +17,54 @@ class EntityImage(Model):
     entity = ForeignKey('Entity', related_name='entity_images', on_delete=CASCADE)
     image = ForeignKey(Image, related_name='image_entities', on_delete=CASCADE)
 
+    class Meta:
+        unique_together = ['entity', 'image']
 
-class Entity(PolymorphicModel, TaggableModel):
-    """An entity"""
-    name = models.CharField(max_length=100)
+    def __str__(self):
+        return f'{self.image} ({self.image.id}) --> {self.entity} ({self.entity.id})'
+
+
+class Classification(Model):
+    name = models.CharField(max_length=100, unique=True)
     aliases = ArrayField(
         models.CharField(max_length=100),
         null=True, blank=True
     )
+    parent = ForeignKey('self', related_name='children', null=True, blank=True, on_delete=CASCADE)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class EntityClassification(Model):
+    entity = ForeignKey('Entity', related_name='entity_classifications', on_delete=CASCADE)
+    classification = ForeignKey(Classification, related_name='entity_classifications', on_delete=CASCADE)
+
+
+# https://github.com/craigds/django-typed-models
+class Entity(TypedModel, TaggableModel):
+    """An entity"""
+    name = models.CharField(max_length=100, unique=True)
+    aliases = ArrayField(
+        models.CharField(max_length=100), null=True, blank=True
+    )
+    classifications = ManyToManyField(
+        Classification, related_name='entities', through=EntityClassification, blank=True
+    )
     description = HTMLField(null=True, blank=True)
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
-    is_living = models.BooleanField(default=False)
     images = ManyToManyField(Image, through=EntityImage, related_name='entities', blank=True)
+    affiliated_entities = ManyToManyField('self', through='Affiliation', blank=True)
 
     searchable_fields = ['name', 'aliases', 'description']
 
     class Meta:
         verbose_name_plural = 'Entities'
-        ordering = ['name', 'birth_date']
+        ordering = ['name']
 
     def __str__(self):
         return f'{self.name}'
@@ -49,7 +80,7 @@ class Entity(PolymorphicModel, TaggableModel):
 
     @property
     def description__truncated(self) -> SafeText:
-        return mark_safe(truncatechars(self.description, 1200))
+        return mark_safe(truncatechars_html(self.description, 1200))
 
     def natural_key(self):
         return self.name, self.birth_date, self.death_date
@@ -57,68 +88,18 @@ class Entity(PolymorphicModel, TaggableModel):
 
 class Person(Entity):
     """A person"""
-    occupations = ManyToManyField('Occupation', related_name='participants', blank=True)
-    affiliations = ManyToManyField('Organization', related_name='members', through='Affiliation', blank=True)
-
     class Meta:
         verbose_name_plural = 'People'
 
 
-class Occupation(Model):
-    name = models.CharField(max_length=50)
-    description = HTMLField(null=True, blank=True)
-    classification = ForeignKey('OccupationClassification', related_name='occupations', null=True, blank=True,
-                                on_delete=SET_NULL)
-
-    def __str__(self):
-        return self.name
-
-
-class OccupationClassification(Model):
-    name = models.CharField(max_length=50)
-    description = HTMLField(null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
-class _Engagement(Model):
-    start_date = HistoricDateField(null=True, blank=True)
-    end_date = HistoricDateField(null=True, blank=True)
-
+class Deity(Entity):
+    """A deity"""
     class Meta:
-        abstract = True
+        verbose_name_plural = 'Deities'
 
 
-class OccupationEngagement(_Engagement):
-    occupation = ForeignKey(Occupation, related_name='person_engagements', on_delete=CASCADE)
-    person = ForeignKey(Person, related_name='occupation_engagements', on_delete=CASCADE)
-
-    def __str__(self):
-        return f'{self.person} — {self.occupation}'
-
-
-class Affiliation(_Engagement):
-    person = ForeignKey(Person, related_name='organization_affiliations', on_delete=CASCADE)
-    organization = ForeignKey('Organization', related_name='person_affiliations', on_delete=CASCADE)
-    roles = ManyToManyField('Role', related_name='affiliations', through='RoleFulfillment', blank=True)
-
-    def __str__(self):
-        return f'{self.person} — {self.organization}'
-
-
-class RoleFulfillment(_Engagement):
-    affiliation = ForeignKey(Affiliation, related_name='role_fulfillments', on_delete=CASCADE)
-    role = ForeignKey('Role', related_name='fulfillments', on_delete=CASCADE)
-
-
-class Role(Model):
-    name = models.CharField(max_length=100)
-    description = HTMLField(null=True, blank=True)
-    organization = ForeignKey('Organization', related_name='roles', on_delete=CASCADE)
-
-    def __str__(self):
-        return self.name
+class Group(Entity):
+    pass
 
 
 class Organization(Entity):
@@ -132,3 +113,52 @@ class Organization(Entity):
     @property
     def founding_date(self) -> datetime:
         return self.birth_date
+
+
+class _Engagement(Model):
+    start_date = HistoricDateField(null=True, blank=True)
+    end_date = HistoricDateField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class Affiliation(_Engagement):
+    entity = ForeignKey(Entity, related_name='affiliations', on_delete=CASCADE)
+    affiliated_entity = ForeignKey(Entity, on_delete=CASCADE)
+    roles = ManyToManyField('Role', related_name='affiliations', through='RoleFulfillment', blank=True)
+
+    class Meta:
+        unique_together = ['entity', 'affiliated_entity', 'start_date']
+
+    def __str__(self):
+        return f'{self.entity} — {self.affiliated_entity}'
+
+
+class RoleFulfillment(_Engagement):
+    affiliation = ForeignKey(Affiliation, related_name='role_fulfillments', on_delete=CASCADE)
+    role = ForeignKey('Role', related_name='fulfillments', on_delete=CASCADE)
+
+    class Meta:
+        unique_together = ['affiliation', 'role', 'start_date']
+
+
+class Role(Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = HTMLField(null=True, blank=True)
+    organization = ForeignKey('Entity', related_name='roles', on_delete=CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class EntityIdea(Model):
+    entity = ForeignKey(Entity, on_delete=CASCADE, related_name='entity_ideas')
+    idea = ForeignKey('Idea', on_delete=CASCADE, related_name='entity_ideas')
+
+
+class Idea(Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = HTMLField(null=True, blank=True)
+    promoters = ManyToManyField(Entity, related_name='ideas', blank=True)
+    # related_ideas = ManyToManyField('self', )

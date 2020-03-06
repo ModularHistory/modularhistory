@@ -34,11 +34,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='publicationnumber',
             name='file',
-            field=history.fields.SourceFileField(blank=True, null=True, upload_to='sources/'),
+            field=history.fields.file_field.SourceFileField(blank=True, null=True, upload_to='sources/'),
         ),
         migrations.AlterField(
             model_name='publicationvolume',
             name='file',
-            field=history.fields.SourceFileField(blank=True, null=True, upload_to='sources/'),
+            field=history.fields.file_field.SourceFileField(blank=True, null=True, upload_to='sources/'),
         ),
     ]

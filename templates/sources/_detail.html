@@ -1,10 +1,18 @@
 {% load get_admin_url %}
+{% load quote_card %}
 
 <div class="card-text">
     {{ source }}
+    {% if source.file_url %}
+        <a href="{{ source.file_url }}" class="display-source"
+           data-toggle="modal" data-target="#modal">
+            <i class="fas fa-search"></i>
+        </a>
+    {% endif %}
 </div>
-{% if source.file_url %}
-    <a href="{{ source.file_url }}" class="btn btn-info display-source"
-       data-toggle="modal" data-target="#modal">View source</a>
+{% if quotes.all|length %}
+    {% for quote in quotes.all %}
+        {% quote_card quote %}
+    {% endfor %}
 {% endif %}
 <a class="edit-object-button" target="_blank" href="{{ source|get_admin_url }}"><i class="fa fa-edit"></i></a>

@@ -9,8 +9,10 @@ from django.contrib.admin import ModelAdmin
 # from django_celery_results.models import TaskResult
 # from django_celery_results.admin import TaskResultAdmin
 from django.contrib.admin import StackedInline as BaseStackedInline, TabularInline as BaseTabularInline
+from sass_processor.processor import sass_processor
 
-from history.fields import HistoricDateField, HistoricDateTimeField, SourceFileField
+from history.fields.historic_datetime_field import HistoricDateField, HistoricDateTimeField
+from history.fields.file_field import SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
 
 AUTOCOMPLETE_FIELDS = [
@@ -32,11 +34,9 @@ class StackedInline(BaseStackedInline):
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
         for field_name in ('position', 'page_number', 'end_page_number', 'notes'):
-            i = 1
             if field_name in fields:
                 fields.remove(field_name)
                 fields.append(field_name)
-                i += 1
         return fields
 
 
@@ -56,7 +56,12 @@ class Admin(ModelAdmin):
     }
 
     class Media:
-        # css = ()
+        css = {
+            'all': (
+                'styles/base.css',
+                sass_processor('styles/mce.custom.scss')
+            )
+        }
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jQuery
             '//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',  # Bootstrap
