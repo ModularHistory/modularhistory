@@ -31,6 +31,16 @@ SECRET_KEY = config('SECRET_KEY')
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
 DEBUG = config('DEBUG', default=True, cast=bool)
 
+# https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
+SECURE_SSL_REDIRECT = not DEBUG
+
+# https://docs.djangoproject.com/en/3.0/ref/settings#s-session-cookie-samesite
+SESSION_COOKIE_SECURE = not DEBUG
+
+# https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-referrer-policy
+# https://docs.djangoproject.com/en/3.0/ref/middleware/#referrer-policy
+SECURE_REFERRER_POLICY = 'same-origin'
+
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-allowed-hosts
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
 
@@ -67,7 +77,6 @@ INSTALLED_APPS = [
     'rest_framework',  # https://github.com/encode/django-rest-framework
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
-    'taggit',
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'account.apps.AccountConfig',
     'entities.apps.EntitiesConfig',

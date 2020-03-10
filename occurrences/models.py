@@ -5,7 +5,6 @@ from django.db import models
 from django.db.models import ManyToManyField, ForeignKey, CASCADE
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
-from taggit.models import TaggedItemBase
 
 from history.fields import HistoricDateTimeField
 from history.fields import HTMLField
