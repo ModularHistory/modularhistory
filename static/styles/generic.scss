@@ -1,3 +1,7 @@
+.nowrap {
+  white-space: nowrap;
+}
+
 figcaption {
   font-size: 0.8rem;
 }
@@ -6,4 +10,34 @@ li {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   line-height: 1.2rem;
+}
+
+blockquote {
+  &.blockquote {
+    border-left: 0.75rem solid #eceeef;
+    padding: 0 1.5rem;
+    font-size: 0.9rem;
+    p {
+      font-size: 0.9rem;
+      padding: 0;
+    }
+    >blockquote {
+      border-left: none;
+      font-size: 0.8rem;
+      p {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+form {
+  ul {
+    list-style: none;
+    padding-left: 0;
+    li {
+      list-style: none;
+      font-size: 0.8rem;
+    }
+  }
 }

@@ -36,7 +36,7 @@ class HistoricDateTimeField(DateTimeField):
 
     # def clean(self, value, model_instance) -> HTML:
     #     value = super().clean(value=value, model_instance=model_instance)
-    #     value.raw_html = value.raw_html.replace('<blockquote>', '<blockquote class="blockquote">')
+    #     value.raw_value = value.raw_value.replace('<blockquote>', '<blockquote class="blockquote">')
     #     return value
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects

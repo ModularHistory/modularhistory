@@ -11,7 +11,7 @@ from django.contrib.admin import ModelAdmin
 from django.contrib.admin import StackedInline as BaseStackedInline, TabularInline as BaseTabularInline
 from sass_processor.processor import sass_processor
 from massadmin.massadmin import mass_change_selected
-from history.fields.historic_datetime_field import HistoricDateField, HistoricDateTimeField
+from history.fields import HistoricDateField, HistoricDateTimeField
 from history.fields.file_field import SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
 
@@ -59,7 +59,7 @@ class Admin(ModelAdmin):
         css = {
             'all': (
                 'styles/base.css',
-                sass_processor('styles/mce.custom.scss')
+                sass_processor('styles/mce.scss')
             )
         }
         js = (

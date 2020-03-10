@@ -12,22 +12,19 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
 django.setup()
 
 
-# from history import settings
+from history import settings
 # from django.db import transaction
 # from django.contrib.auth.models import Permission, Group
-#
-# from account import models as account
+from account import models as account
 # from occurrences import models as occurrences
 # from entities import models as people
 # from places import models as places
 # from quotes import models as quotes
 # from images import models as images
-from sources import models as sources
+# from sources import models as sources
+# from django.contrib.contenttypes.models import ContentType
 
-from django.contrib.contenttypes.models import ContentType
-from entities.models import Entity, Person
 
-from places.models import Place, Venue
 
 
 
@@ -64,31 +61,34 @@ from places.models import Place, Venue
 # sources.Source.objects.all().delete()
 # account.User.objects.all().delete()
 #
-# # # Delete existing admins
-# # print('Deleting existing admins...')
-# # account.User.objects.filter(is_superuser=True).delete()
-# # account.User.objects.filter(is_superuser=True, username__in=['jacob']).delete()
+# Delete existing admins
+# print('Deleting existing admins...')
+# account.User.objects.filter(is_superuser=True).delete()
+# account.User.objects.filter(is_superuser=True, username__in=['jacob']).delete()
 #
-# # Create admins
-# if not account.User.objects.filter(username='jacob', is_superuser=True).exists():
-#     print('Creating super admin...')
-#     u = account.User()
-#     u.is_active = True
-#     u.username = 'jacob'
-#     u.email = 'jacob.t.fredericksen@gmail.com'
-#     u.first_name = 'Jacob'
-#     u.last_name = 'Fredericksen'
-#     u.set_password('password')
-#     u.force_password_change = True if not settings.DEBUG else False
-#     u.is_superuser = True
-#     from django.core.files import File
-#     path = os.path.dirname(os.path.realpath(__file__))
-#     with open(f"{path}/account/media/fredericksen_jacob.jpg", "rb") as f:
-#         file = File(f)
-#         u.avatar.save("fredericksen_jacob.jpg", file, save=True)
-#     u.is_staff = True
-#     u.save()
-#     print('Created superuser: %s' % u.get_full_name())
+# Create admins
+if not account.User.objects.filter(username='jacob', is_superuser=True).exists():
+    print('Creating super admin...')
+    u = account.User()
+    u.is_active = True
+    u.is_staff = True
+    u.is_superuser = True
+    u.username = 'jacob'
+    u.email = 'jacob.t.fredericksen@gmail.com'
+    u.first_name = 'Jacob'
+    u.last_name = 'Fredericksen'
+    u.set_password('password')
+    u.force_password_change = True if not settings.DEBUG else False
+    from django.core.files import File
+    path = os.path.dirname(os.path.realpath(__file__))
+    with open(f"{path}/account/media/fredericksen_jacob.jpg", "rb") as f:
+        file = File(f)
+        u.avatar.save("fredericksen_jacob.jpg", file, save=True)
+    u.save()
+    print('Created superuser: %s' % u.get_full_name())
+
+for u in account.User.objects.all():
+    print(u)
 #
 # try:
 #     continent_names, continents = [

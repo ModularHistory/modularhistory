@@ -6,8 +6,8 @@ from django.db.models import ForeignKey, ManyToManyField, CASCADE
 from django.utils.safestring import SafeText, mark_safe
 
 from entities.models import Entity
-from history.fields.historic_datetime_field import HistoricDateTimeField
-from history.fields.html_field import HTMLField
+from history.fields import HistoricDateTimeField
+from history.fields import HTMLField
 from history.models import Model, TaggableModel, DatedModel, SearchableMixin
 from images.models import Image
 from sources.models import Source, SourceReference

@@ -3,7 +3,7 @@ from typing import Optional
 from django.db.models import BooleanField
 from django.utils.safestring import SafeText, mark_safe
 
-from history.fields.historic_datetime_field import HistoricDateTimeField
+from history.fields import HistoricDateTimeField
 from .base_model import Model
 
 

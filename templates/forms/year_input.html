@@ -1,0 +1,13 @@
+<div style="display: flex; width: 100%;">
+    {% for subwidget in widget.subwidgets %}
+        {% if subwidget.type == 'number' %}
+            <div style="flex: 1 1 auto;">
+                {% include subwidget.template_name with widget=subwidget %}
+            </div>
+        {% else %}
+            <div style="flex: 0 0 auto">
+                {% include subwidget.template_name with widget=subwidget %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

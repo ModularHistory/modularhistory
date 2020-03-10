@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('type', models.CharField(blank=True, choices=[('journal', 'Journal'), ('newspaper', 'Newspaper'), ('magazine', 'Magazine')], max_length=10, null=True)),
                 ('name', models.CharField(blank=True, max_length=100, null=True, unique=True)),
                 ('aliases', models.CharField(blank=True, max_length=100, null=True)),
-                ('description', history.fields.html_field.HTMLField(blank=True, null=True)),
+                ('description', history.fields.HTMLField(blank=True, null=True)),
             ],
             options={
                 'ordering': ['name'],

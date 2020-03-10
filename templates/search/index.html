@@ -2,6 +2,15 @@
 
 {% block content %}
     <div class="container">
-
+        <form class="form-inline my-2 my-lg-0 ml-auto" action="{% url 'search' %}">
+            <div class="input-group">
+                <input name="query" class="form-control" type="search" placeholder="Search" aria-label="Search">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-3" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 {% endblock %}

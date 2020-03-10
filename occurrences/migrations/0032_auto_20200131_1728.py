@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='occurrence',
             name='end_date',
-            field=history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True),
+            field=history.fields.HistoricDateTimeField(blank=True, null=True),
         ),
         migrations.AddField(
             model_name='occurrence',

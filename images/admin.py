@@ -21,9 +21,16 @@ class OccurrencesInline(TabularInline):
 
 
 class ImageAdmin(Admin):
-    list_display = ('admin_image_element', 'caption', 'provider', 'date')
+    list_display = [
+        'admin_image_element',
+        'detail_link',
+        'caption',
+        'provider',
+        'date_string'
+    ]
     inlines = [EntitiesInline, OccurrencesInline]
     search_fields = Image.searchable_fields
+    readonly_fields = ['height', 'width']
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)

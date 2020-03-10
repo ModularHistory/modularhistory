@@ -31,7 +31,7 @@ class Speech(TitleMixin, SpokenSource):
         verbose_name_plural = 'Speeches'
 
     def __str__(self):
-        string = f'{self.creators}, ' if self.creators else ''
+        string = f'{self.creator_string}, ' if self.creator_string else ''
         string += f'"{self.title}," ' if self.title else ''
         string += f'{self.type2}'
         string += ' delivered' if self.type2 not in ('statement',) else ''
@@ -54,7 +54,7 @@ class Interview(SpokenSource):
     interviewers = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
-        string = f'{self.creators} to {self.interviewers or "interviewer"}, '
+        string = f'{self.creator_string} to {self.interviewers or "interviewer"}, '
         string += f'{self.date.string}' if self.date else ''
         return mark_safe(string)
 
@@ -66,7 +66,7 @@ class VideoSource(Source):
 
 class Documentary(TitleMixin, VideoSource):
     def __str__(self) -> SafeText:
-        string = f'{self.creators}, '
+        string = f'{self.creator_string}, '
         string += f'<em>{self.title}</em>," ' if self.title else ''
         string += f'{self.date.string}' if self.date else ''
         return mark_safe(string)

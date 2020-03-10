@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
-                ('description', history.fields.html_field.HTMLField(blank=True, null=True)),
+                ('description', history.fields.HTMLField(blank=True, null=True)),
             ],
             options={
                 'abstract': False,
@@ -43,8 +43,8 @@ class Migration(migrations.Migration):
             name='OccupationEngagement',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_date', history.fields.historic_datetime_field.HistoricDateField(blank=True, null=True)),
-                ('end_date', history.fields.historic_datetime_field.HistoricDateField(blank=True, null=True)),
+                ('start_date', history.fields.HistoricDateField(blank=True, null=True)),
+                ('end_date', history.fields.HistoricDateField(blank=True, null=True)),
                 ('occupation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='person_engagements', to='entities.Occupation')),
                 ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='occupation_engagements', to='entities.Person')),
             ],
@@ -56,8 +56,8 @@ class Migration(migrations.Migration):
             name='Affiliation',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_date', history.fields.historic_datetime_field.HistoricDateField(blank=True, null=True)),
-                ('end_date', history.fields.historic_datetime_field.HistoricDateField(blank=True, null=True)),
+                ('start_date', history.fields.HistoricDateField(blank=True, null=True)),
+                ('end_date', history.fields.HistoricDateField(blank=True, null=True)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='person_affiliations', to='entities.Organization')),
                 ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='organization_affiliations', to='entities.Person')),
             ],

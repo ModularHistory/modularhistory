@@ -4,8 +4,8 @@ from django.db import models
 from django.db.models import ManyToManyField, ForeignKey, CASCADE, SET_NULL
 from taggit.models import TaggedItemBase
 
-from history.fields.array_field import ArrayField
-from history.fields.html_field import HTMLField
+from history.fields import ArrayField
+from history.fields import HTMLField
 from history.models import Model
 
 

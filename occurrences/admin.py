@@ -70,12 +70,13 @@ class OccurrenceAdmin(Admin):
     base_model = models.Occurrence
     list_display = (
         'summary',
+        'detail_link',
         'description__truncated',
         'date_string',
-        'date',
+        # 'date',
         'topic_tags'
     )
-    list_filter = (HasDateFilter, 'involved_entities', 'locations',)
+    list_filter = ('verified', HasDateFilter, 'involved_entities', 'locations',)
     search_fields = models.Occurrence.searchable_fields
     ordering = ('date',)
 
@@ -90,11 +91,6 @@ class OccurrenceAdmin(Admin):
 class OccurrenceChainAdmin(Admin):
     base_model = models.OccurrenceChain
     inlines = [OccurrencesInline]
-
-
-class EpisodeAdmin(Admin):
-    base_model = models.Occurrence
-    inlines = OccurrenceAdmin.inlines
 
 
 admin_site.register(models.Occurrence, OccurrenceAdmin)

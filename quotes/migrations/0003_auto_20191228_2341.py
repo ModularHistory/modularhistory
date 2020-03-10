@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quote',
             name='context',
-            field=history.fields.html_field.HTMLField(blank=True, null=True),
+            field=history.fields.HTMLField(blank=True, null=True),
         ),
         migrations.AlterField(
             model_name='quote',
             name='text',
-            field=history.fields.html_field.HTMLField(),
+            field=history.fields.HTMLField(),
         ),
     ]

@@ -1,33 +1,85 @@
-from typing import Optional, Union
+import re
+from typing import Callable, Optional, Union
 
-# from sys import stderr
+from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
 from tinymce.models import HTMLField as MceHTMLField
 
 from history.structures.html import HTML
 
+image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
+citation_key_regex = r'{{\ ?citation:\ ?(.+?)\ ?}}'
+
+
+def process_images(_, html: str) -> str:
+    if '{{' in html:
+        from images.models import Image
+        for match in re.finditer(image_key_regex, html):
+            key = match.group(1)
+            image = Image.objects.get(key=key)
+            image_html = render_to_string(
+                'images/_card.html',
+                context={'image': image, 'object': image}
+            )
+            if image.width < 300:
+                image_html = f'<div class="float-right pull-right">{image_html}</div>'
+            if image.width < 500:
+                image_html = f'<div style="text-align: center">{image_html}</div>'
+            html = html.replace(match.group(0), image_html)
+        for match in re.finditer(citation_key_regex, html):
+            key = match.group(1)
+    return html
+
 
 class HTMLField(MceHTMLField):
     """A string field for HTML content; uses the TinyMCE widget in forms."""
-    raw_html: str
+    raw_value: str
     html: SafeText
     text: str
+    DEFAULT_PROCESSOR: Callable = process_images
+    processor: Optional[Callable] = DEFAULT_PROCESSOR
+
+    # def __init__(self, *args, **kwargs):
+    #     # if 'processor' in kwargs and kwargs['processor'] != self.DEFAULT_PROCESSOR:
+    #     #     self.processor = kwargs['processor']
+    #     print()
+    #     print(f'args: {args}')
+    #     print(f'kwargs: {kwargs}')
+    #     # if 'verbose_name' in kwargs:
+    #     #     print(f'ERROR: verbose_name of `{kwargs.get("verbose_name")}` is present in kwargs; removing ...')
+    #     #     kwargs.pop('verbose_name')
+    #     super().__init__(self, *args, **kwargs)
+    #     print('success\n')
 
     def clean(self, value, model_instance) -> HTML:
-        value = super().clean(value=value, model_instance=model_instance)
-        value.raw_html = value.raw_html.replace(
+        html = super().clean(value=value, model_instance=model_instance)
+        raw_html = html.raw_value.replace(
             '<blockquote>', '<blockquote class="blockquote">'
         ).replace(
             '<table>', '<table class="table">'
-        )
+        ).strip()
+        if not raw_html.startswith('<') and raw_html.endswith('>'):
+            raw_html = f'<p>{raw_html}</p>'
+        html.raw_value = raw_html
+        return html
 
-        return value
+    # def deconstruct(self):
+    #     field_class = 'history.fields.HTMLField'
+    #     name, path, args, kwargs = super().deconstruct()
+    #     if self.processor != self.DEFAULT_PROCESSOR:
+    #         kwargs['processor'] = self.processor
+    #     return name, field_class, args, kwargs
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
     def from_db_value(self, value: Optional[str], expression, connection) -> Optional[HTML]:
         if value is None:
             return value
-        return HTML(value)
+        if not value.startswith('<') and value.endswith('>'):
+            value = f'<p>{value}</p>'
+        html = value
+        if self.processor:
+            html = self.processor(html)
+        return HTML(value, processed_value=html)
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
     def to_python(self, value: Optional[Union[HTML, str]]) -> Optional[HTML]:
@@ -40,7 +92,7 @@ class HTMLField(MceHTMLField):
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
     def get_prep_value(self, value: Optional[HTML]) -> Optional[str]:
         if isinstance(value, HTML):
-            return value.raw_html
+            return value.raw_value
         elif not value:
             return None
 

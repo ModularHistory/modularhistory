@@ -4,3 +4,16 @@ td.field-source {
     float: none;
   }
 }
+
+// Admin table styles
+
+#changelist {
+  .results {
+    li.topic-tag {
+      list-style: none;
+      ::after {
+        content: ",";
+      }
+    }
+  }
+}

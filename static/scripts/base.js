@@ -1,6 +1,7 @@
 function initializeListeners() {
     $('.display-source').click(function(event) {
         // event.preventDefault();
+        console.log('clicked ');
         let href = $( this ).attr('href');
         let target_modal = $( this ).attr('data-target');
         if (href.includes('.pdf')) {
@@ -9,6 +10,7 @@ function initializeListeners() {
                     <iframe class="embed-responsive-item" src="/static/pdfjs/web/viewer.html?file=${href}" allowfullscreen></iframe>
                 </div>
             `);
+            console.log('loaded modal');
         } else if (href.includes('.epub')) {
             console.log('Attempting to load ePub.');
             let book = ePub(href);
@@ -33,9 +35,10 @@ function setGetParam(key, value) {
 }
 
 $(function() {
-    // let vertical_offset = $('.results .card').first().offset().top;
-    // console.log(vertical_offset);
-    // $('.view-detail').css('top', vertical_offset).css('visibility', 'visible');
+    // any page
+    initializeListeners();
+
+    // SERP
     let result_card_selector = '.results .card';
     let searchParams = new URLSearchParams(window.location.search);
     let active_card = $(result_card_selector).first();

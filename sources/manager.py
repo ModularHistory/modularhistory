@@ -50,6 +50,5 @@ class Manager(PolymorphicManager):
             annotations = {'search': vector}
             if rank:
                 annotations['rank'] = SearchRank(vector, query)
-            print(f'>>>>> 2 >>>>>> {qs}')
             qs = qs.annotate(**annotations).filter(search=query)
         return qs.order_by('id').distinct('id')

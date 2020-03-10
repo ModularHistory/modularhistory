@@ -25,65 +25,69 @@
 {% block content %}
 {#    <div class="top">#}
 {#    </div>#}
-    {% block list %}
-        {% if object_list|length %}
-            <div class="refinements-container side">
-                <!-- Material input -->
-                {% crispy search_filter_form %}
-            </div>
-            <div class="two-pane-container">
-                {% block page_header %}
-                {% endblock %}
-                <div class="results">
-                    {% for object in object_list %}
-                        {% with object|class_name as klass %}
+    <div class="serp-container">
+        {% block list %}
+            {% if object_list|length %}
+                <div class="refinements-container side">
+                    <!-- Material input -->
+                    {% crispy search_filter_form %}
+                </div>
+                <div class="two-pane-container">
+                    {% block page_header %}
+                    {% endblock %}
+                    <div class="results">
+                        {% for object in object_list %}
+                            {% with object|class_name as klass %}
+                                {% if object|is_instance:"occurrences.Occurrence" %}
+                                    {% occurrence_card object %}
+                                {% elif object|is_instance:"topics.Topic" %}
+                                    {% topic_card object %}
+                                {% elif object|is_instance:"quotes.Quote" %}
+                                    {% quote_card object %}
+                                {% elif object|is_instance:"images.Image" %}
+                                    {% image_card object %}
+                                {% elif object|is_instance:"sources.Source" %}
+                                    {% source_card object %}
+                                {% else %}
+                                    <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                    <div class="card p-3 view-detail sticky">
+                        {% with object_list|first as object %}
                             {% if object|is_instance:"occurrences.Occurrence" %}
-                                {% occurrence_card object %}
+                                {% occurrence_detail object %}
                             {% elif object|is_instance:"topics.Topic" %}
-                                {% topic_card object %}
+                                {% topic_detail object %}
                             {% elif object|is_instance:"quotes.Quote" %}
-                                {% quote_card object %}
+                                {% quote_detail object %}
                             {% elif object|is_instance:"images.Image" %}
-                                {% image_card object %}
-                            {% elif object|is_instance:"sources.Source" %}
-                                {% source_card object %}
+                                {% image_detail object %}
                             {% else %}
                                 <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
                             {% endif %}
                         {% endwith %}
-                    {% endfor %}
+                    </div>
                 </div>
-                <div class="card p-3 view-detail sticky">
-                    {% with object_list|first as object %}
-                        {% if object|is_instance:"occurrences.Occurrence" %}
-                            {% occurrence_detail object %}
-                        {% elif object|is_instance:"topics.Topic" %}
-                            {% topic_detail object %}
-                        {% elif object|is_instance:"quotes.Quote" %}
-                            {% quote_detail object %}
-                        {% elif object|is_instance:"images.Image" %}
-                            {% image_detail object %}
-                        {% else %}
-                            <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
-                        {% endif %}
-                    {% endwith %}
+            {% else %}
+                <div class='row'>
+                    <div class='col-12 col-md-6 mx-auto my-5 py-5'>
+                        <form class="form-inline my-2 my-lg-0 ml-auto" action="{% url 'search' %}">
+                            <div class="input-group">
+                                <input name="query" class="form-control" type="search" placeholder="Search" aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-3" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-        {% else %}
-            <div class='row'>
-                <div class='col-12 col-md-6 mx-auto my-5 py-5'>
-                    <form method='GET' class='' action='home'>
-                        <div class="input-group form-group-no-border mx-auto" style="margin-bottom: 0px; font-size: 32px;">
-                        <span class="input-group-addon cfe-nav" style='color:#000'>
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                        </span>
-                            <input type="text" name="q" data-toggle="popover" data-placement="bottom" data-content="Press enter to search" class="form-control cfe-nav mt-0 py-3" placeholder="Search..." value="" style="" data-original-title="" title="" autofocus="autofocus">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        {% endif %}
-    {% endblock %}
+            {% endif %}
+        {% endblock %}
+    </div>
     {% if page_obj.has_previous or page_obj.has_next %}
         <div class="pagination" style="text-align: center">
             <span class="step-links">

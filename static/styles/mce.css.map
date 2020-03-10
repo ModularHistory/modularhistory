@@ -1,8 +1,8 @@
 {
 	"version": 3,
-	"file": "mce.custom.css",
+	"file": "mce.css",
 	"sources": [
-		"mce.custom.scss",
+		"mce.scss",
 		"generic.scss"
 	],
 	"names": [],

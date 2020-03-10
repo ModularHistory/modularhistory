@@ -60,7 +60,10 @@ class Image(MediaModel):
     @property
     def admin_image_element(self) -> SafeText:
         height = 150
+        max_width = 300
         width = height * self.aspect_ratio
+        if width > max_width:
+            width, height = max_width, max_width / self.aspect_ratio
         return mark_safe(f'<img src="{self.image.url}" width="{width}px" height="{height}px" />')
 
     @property

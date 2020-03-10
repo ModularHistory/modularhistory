@@ -1,4 +1,6 @@
 @import "generic";
+@import "mdb";
+@import "serp";
 @import "admin";
 
 html, body {
@@ -11,9 +13,6 @@ body {
   min-height: 100vh;
 }
 
-//#accordion {
-//}
-
 .main-content {
   flex: 1;
 }
@@ -23,7 +22,7 @@ body {
 }
 
 #global-nav {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;  // Set margin-top on main content, instead.
   .avatar {
     margin-top: auto;
     margin-bottom: auto;
@@ -33,23 +32,16 @@ body {
   }
 }
 
-blockquote {
-  &.blockquote {
-    border-left: 0.75rem solid #eceeef;
-    padding: 0 1.5rem;
-    font-size: 0.9rem;
-    p {
-      font-size: 0.9rem;
-      padding: 0;
-    }
-    >blockquote {
-      border-left: none;
-      font-size: 0.8rem;
-      p {
-        font-size: 0.8rem;
-      }
-    }
-  }
+.edit-object-button {
+  display: none;
+}
+
+.img-container {
+  float:right;
+  clear: right;
+  max-width:44%;  // or 300px
+  margin-left: 0.9rem;
+  margin-bottom: 0.8rem;
 }
 
 .card, .row {
@@ -80,189 +72,6 @@ blockquote {
   }
 }
 
-.two-pane-container {
-  display: inline-block;
-  width: 80%;
-  vertical-align: top;
-  text-align: center;
-  //margin-left: 15%;
-  .results {
-    text-align: left;
-    width: 25%;
-    display: inline-block;
-    vertical-align: top;
-    .card {
-      cursor: pointer;
-      position: relative;
-      text-overflow: ellipsis;
-      &:first-child {
-        margin-top: 0 !important;
-      }
-      &.active {
-        border-top: 1px solid black;
-        border-left: 1px solid black;
-        border-bottom: 1px solid black;
-        margin-right: -4px;
-        //&::after {
-        //  content: ".";
-        //  position: absolute;
-        //  top: -1px;
-        //  bottom: -1px;
-        //  //height: 100%;
-        //  right: -13px;
-        //  width: 9%;
-        //  color: white;
-        //  background-color: white;
-        //  border-top: 1px solid black;
-        //  border-bottom: 1px solid black;
-        //  font-weight: bold;
-        //  z-index: 1;
-        //}
-      }
-      .card-body {
-        font-size: 0.8rem;
-        p {
-          font-size: 0.8rem;
-        }
-        .blockquote {
-          font-size: 0.8rem;
-          p {
-            font-size: 0.8rem;
-          }
-        }
-      }
-      .image-credit {
-        display: none;
-      }
-      .thumbnail {
-        float: left;
-        margin-right: 0.9rem;
-      }
-    }
-  }
-  .view-detail {
-    text-align: left;
-    height: 100vh;
-    max-height: 100vh;
-    overflow-y: auto;
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
-    top: 0;
-    width: 60%;
-    max-width: 44rem;
-    display: inline-block;
-    p {
-      >iframe {
-        margin-left: auto; // doesn't work; using iframe align attribute instead
-        margin-right: auto; // doesn't work; using iframe align attribute instead
-      }
-    }
-    .img-container {
-      float:right;
-      clear: right;
-      max-width:44%;  // or 300px
-      margin-left: 0.9rem;
-      margin-bottom: 0.8rem;
-    }
-    .card {
-      &.image-card {
-        .card-text {
-          font-size: 0.8rem;
-        }
-        .image-credit {
-          display: block;
-          font-size: 0.6rem;
-          line-height: 0.8rem;
-          float: right;
-        }
-      }
-      .card-title {
-        display: none;
-      }
-    }
-    .footer {
-      clear: both;
-      font-size: 0.9rem;
-      margin-top: 2rem;
-      padding-top: 1rem;
-      border-top: 5px solid whitesmoke;
-      &.sources-footer {
-        .source {
-          clear: both;
-          margin-bottom: 1rem;
-          .display-source {
-            margin-left: 0.8rem;
-          }
-        }
-      }
-    }
-  }
-}
-
-.refinements-container {
-  &.side {
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
-    display: inline-block;
-    top: 0;
-    left: 0;
-    padding: 1rem;
-    background-color: whitesmoke;
-    width: 15%;
-    min-width: 200px;
-    max-height: 100vh;
-    overflow-y: scroll;
-  }
-  &.top {
-    display: flex;
-    margin-bottom: 0.5rem;
-    form {
-      display: flex;
-      flex: 0 1 auto;
-      //max-height: 100vh;
-      //width: 20%;
-      //display: inline-block;
-      //vertical-align: top;
-      //overflow-y: auto;
-      //position: -webkit-sticky; /* Safari */
-      //position: sticky;
-      //top: 0;
-      .form-group {
-        position: relative;
-        .selectmultiple {
-          max-width: 15rem;
-        }
-      }
-    }
-    h1 {
-      flex: 1 0 auto;
-      vertical-align: top;
-      padding: 6px 0;
-      white-space: nowrap;
-      text-align: right;
-    }
-  }
-}
-
-.pagination {
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-form {
-  ul {
-    list-style: none;
-    padding-left: 0;
-    li {
-      list-style: none;
-      font-size: 0.8rem;
-    }
-  }
-}
-
 ul.tags {
   clear: both;
   padding: 0;
@@ -276,179 +85,3 @@ ul.tags {
     display: inline;
   }
 }
-
-// Admin table styles
-
-#changelist {
-  .results {
-    li.topic-tag {
-      list-style: none;
-      ::after {
-        content: ",";
-      }
-    }
-  }
-}
-
-// Your custom styles
-
-/* Required height of parents of the Half Page Carousel for proper displaying carousel itself */
-html,
-body,
-.view {
-  height: 100%; }
-
-@media (max-width: 740px) {
-  .full-page-intro {
-    height: 1000px; } }
-
-/* Half Page Carousel itself*/
-.carousel {
-  height: 50%; }
-.carousel .carousel-inner {
-  height: 100%; }
-.carousel .carousel-inner .carousel-item,
-.carousel .carousel-inner .active {
-  height: 100%; }
-
-/* Adjustment for mobile devices*/
-@media (max-width: 776px) {
-  .carousel {
-    height: 100%; } }
-
-/* Navbar animation */
-.navbar {
-  background-color: rgba(0, 0, 0, 0.3); }
-
-.top-nav-collapse {
-  background-color: #1C2331; }
-
-/* Adding color to the Navbar on mobile */
-@media only screen and (max-width: 768px) {
-  .navbar {
-    background-color: #1C2331; } }
-
-/* Footer color for sake of consistency with Navbar */
-.page-footer {
-  background-color: #1C2331; }
-
-
-//#footer {
-//  flex-shrink: 0;
-//  /* position: relative;
-//  margin-top: -4rem; //negative value of footer height
-//  height: 4rem; */
-//  clear: both;
-//  text-align: center;
-//}
-
-// #main-nav {
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   height: 50px;
-// }
-// #main {
-//   flex: 1 0 auto;
-// }
-// #footer .container {
-//   padding: 1rem;
-//   display: table;
-//   vertical-align: middle;
-//   border-top: 1px solid lightgray;
-// }
-// .copyright, .privacy-and-terms, .back-to-top {
-//   display: table-cell;
-//   vertical-align: middle;
-//   width: 33.33%;
-// }
-
-// .navbar {
-//     margin-bottom: 0;
-//     border-radius: 0;
-// }
-// #navbar-logo {
-//     z-index: 100;
-// }
-// .btn-danger {
-//     background-color: #A91826 !important;
-// }
-// .text-danger {
-//     color: #A91826 !important;
-// }
-// .panel-title a {
-//     display: block;
-// }
-// .btn span.glyphicon {
-//     position: relative;
-//     top: 3px;
-// }
-
-// .helptext ul {
-//     list-style: circle;
-// }
-
-// input[type="tel"], input[type="date"], input[type="password"] {
-//   height: 34px;
-//   padding: 6px 12px;
-//   font-size: 14px;
-//   line-height: 1.42857143;
-//   color: #555;
-//   background-color: #fff;
-//   background-image: none;
-//   border: 1px solid #ccc;
-//   border-radius: 4px;
-//   box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-//   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-// }
-
-// ul#main-menu {
-//     margin-left: 6px;
-//     position: relative;
-//     top: -1px;
-// }
-// ul#main-menu li:first-child a {
-//     border-left: 1px solid #A91826;
-//     /* border-bottom: 6px solid transparent; */
-//     border-image: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.2));
-//     border-image-slice: 1;
-// }
-// ul#main-menu li:hover {
-//     background-color: rgba(0,0,0,0.2);
-// }
-// ul#main-menu li a {
-//     border-right: 1px solid #A91826;
-//     border-image: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.2));
-//     border-image-slice: 1;
-//     padding-left: 2rem;
-//     padding-right: 2rem;
-//     z-index: 3;
-// }
-
-.nowrap {
-   white-space: nowrap;
-}
-
-//.overlay {
-//  position: absolute;
-//  top: 0;
-//  bottom: 0;
-//  left: 0;
-//  right: 0;
-//  height: 100%;
-//  width: 100%;
-//  opacity: 0;
-//  transition: .5s ease;
-//  background-color: black;
-//}
-//.overlay-content {
-//  color: white;
-//  top: 0;
-//  bottom: 0;
-//  left: 0;
-//  right: 0;
-//  height: 100%;
-//  width: 100%;
-//  position: absolute;
-//}

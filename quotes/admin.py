@@ -1,3 +1,4 @@
+from django.contrib.admin import SimpleListFilter
 from django.contrib.admin import TabularInline
 
 from admin import admin_site, Admin
@@ -6,7 +7,21 @@ from topics.models import TopicQuoteRelation
 from . import models
 
 
-# from django.forms import ModelForm
+class HasSourceFilter(SimpleListFilter):
+    title = 'has source'
+    parameter_name = 'has_source'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('Yes', 'Yes'),
+            ('No', 'No'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'Yes':
+            return queryset.exclude(sources=None)
+        if self.value() == 'No':
+            return queryset.filter(sources=None)
 
 
 class SourceReferencesInline(TabularInline):
@@ -49,8 +64,19 @@ class BitesInline(TabularInline):
 
 class QuoteAdmin(Admin):
     # form = QuoteForm
-    list_display = ('bite', 'attributee', 'date_string', 'source_reference', 'topic_tags', 'id')
-    list_filter = ['attributee']
+    list_display = [
+        'bite',
+        'detail_link',
+        'attributee',
+        'date_string',
+        'source_reference',
+        'topic_tags'
+    ]
+    list_filter = [
+        'verified',
+        HasSourceFilter,
+        'attributee'
+    ]
     search_fields = models.Quote.searchable_fields
     ordering = ('date', 'attributee')
     autocomplete_fields = ['attributee']

@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='book',
             name='original_publication_date',
-            field=history.fields.historic_datetime_field.HistoricDateField(blank=True, null=True),
+            field=history.fields.HistoricDateField(blank=True, null=True),
         ),
     ]

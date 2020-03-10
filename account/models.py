@@ -7,12 +7,18 @@ from imagekit.processors import ResizeToFill
 
 
 class UserManager(BaseUserManager):
-    def get_by_natural_key(self, *args):
-        fields = self.model.natural_key_fields
-        natural_key = {}
-        for n, field in enumerate(fields):
-            natural_key[field] = args[n]
-        return self.get(**natural_key)
+    # TODO: Figure out how *args is determined; it needs to be the natural key fields, but it isn't.
+    # def get_by_natural_key(self, *args):
+    #     fields = self.model.natural_key_fields
+    #     natural_key = {}
+    #     print(f'natural key fields: {fields}')
+    #     print(f'args: {args}')
+    #     for n, field in enumerate(fields):
+    #         print(f'n: {n}')
+    #         print(f'args[n]: {args[n]}')
+    #         natural_key[field] = args[n]
+    #     return self.get(**natural_key)
+    pass
 
 
 class User(AbstractUser):
@@ -56,15 +62,18 @@ class User(AbstractUser):
         user.save()
         return user
 
-    def natural_key(self) -> Tuple[Any]:
-        natural_key_fields = self.natural_key_fields
-        natural_key_values = []
-        for field in natural_key_fields:
-            value = getattr(self, field, None)
-            if not value:
-                raise AttributeError(f'Model has no `{field}` attribute.')
-            natural_key_values.append(value)
-        return tuple(value for value in natural_key_values)
+    # TODO: Natural key is not working; first name is sent to get_by_natural_key
+    # def natural_key(self) -> Tuple[Any]:
+    #     natural_key_fields = self.natural_key_fields
+    #     natural_key_values = []
+    #     for field in natural_key_fields:
+    #         value = getattr(self, field, None)
+    #         if not value:
+    #             raise AttributeError(f'Model has no `{field}` attribute.')
+    #         natural_key_values.append(value)
+    #     natural_key = tuple(value for value in natural_key_values)
+    #     print(f'returning natural key: {natural_key}')
+    #     return natural_key
 
     def lock(self):
         self.locked = True

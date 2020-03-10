@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import history.fields.file_field
-import history.fields.html_field
+import history.fields
 
 
 class Migration(migrations.Migration):
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(blank=True, max_length=200, null=True, unique=True)),
-                ('description', history.fields.html_field.HTMLField(blank=True, null=True)),
+                ('description', history.fields.HTMLField(blank=True, null=True)),
                 ('file', history.fields.file_field.SourceFileField(blank=True, null=True, upload_to='sources/')),
             ],
             options={

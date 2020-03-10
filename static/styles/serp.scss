@@ -1,0 +1,181 @@
+.serp-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  .refinements-container {
+    &.side {
+      width: 15%;
+      min-width: 200px;
+      flex-basis: auto;
+      flex-grow: 0;
+      flex-shrink: 0;
+      position: -webkit-sticky; /* Safari */
+      position: sticky;
+      display: inline-block;
+      top: 0;
+      left: 0;
+      padding: 1rem;
+      background-color: whitesmoke;
+      max-height: 100vh;
+      overflow-y: scroll;
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      /* Hide scrollbar for IE and Edge */
+      -ms-overflow-style: none;
+    }
+    &.top {
+      display: flex;
+      margin-bottom: 0.5rem;
+      form {
+        display: flex;
+        flex: 0 1 auto;
+        //max-height: 100vh;
+        //width: 20%;
+        //display: inline-block;
+        //vertical-align: top;
+        //overflow-y: auto;
+        //position: -webkit-sticky; /* Safari */
+        //position: sticky;
+        //top: 0;
+        .form-group {
+          position: relative;
+          .selectmultiple {
+            max-width: 15rem;
+          }
+        }
+      }
+      h1 {
+        flex: 1 0 auto;
+        vertical-align: top;
+        padding: 6px 0;
+        white-space: nowrap;
+        text-align: right;
+      }
+    }
+  }
+  .two-pane-container {
+    //width: 80%;
+    flex: 1;
+    //flex-basis: auto;
+    //flex-grow: 0;
+    //flex-shrink: 0;
+    vertical-align: top;
+    text-align: center;
+    .results {
+      text-align: left;
+      width: 25%;
+      display: inline-block;
+      vertical-align: top;
+      .card {
+        cursor: pointer;
+        position: relative;
+        text-overflow: ellipsis;
+        &:first-child {
+          margin-top: 0 !important;
+        }
+        &.active {
+          border-top: 1px solid black;
+          border-left: 1px solid black;
+          border-bottom: 1px solid black;
+          margin-right: -4px;
+          //&::after {
+          //  content: ".";
+          //  position: absolute;
+          //  top: -1px;
+          //  bottom: -1px;
+          //  //height: 100%;
+          //  right: -13px;
+          //  width: 9%;
+          //  color: white;
+          //  background-color: white;
+          //  border-top: 1px solid black;
+          //  border-bottom: 1px solid black;
+          //  font-weight: bold;
+          //  z-index: 1;
+          //}
+        }
+        .card-body {
+          font-size: 0.8rem;
+          p {
+            font-size: 0.8rem;
+          }
+          .blockquote {
+            font-size: 0.8rem;
+            padding-left: 0.8rem;
+            padding-right: 0;
+            p {
+              font-size: 0.8rem;
+            }
+          }
+        }
+        .image-credit {
+          display: none;
+        }
+        .thumbnail {
+          float: left;
+          margin-right: 0.9rem;
+        }
+      }
+    }
+    .view-detail {
+      text-align: left;
+      height: 100vh;
+      max-height: 100vh;
+      overflow-y: auto;
+      position: -webkit-sticky; /* Safari */
+      position: sticky;
+      top: 0;
+      width: 60%;
+      max-width: 44rem;
+      display: inline-block;
+      p {
+        >iframe {
+          margin-left: auto; // doesn't work; using iframe align attribute instead
+          margin-right: auto; // doesn't work; using iframe align attribute instead
+        }
+      }
+      .card {
+        &.image-card {
+          .card-text {
+            font-size: 0.8rem;
+          }
+          .image-credit {
+            display: block;
+            font-size: 0.6rem;
+            line-height: 0.8rem;
+            float: right;
+          }
+        }
+        .card-title {
+          display: none;
+        }
+      }
+      .footer {
+        clear: both;
+        font-size: 0.9rem;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 5px solid whitesmoke;
+        &.sources-footer {
+          .source {
+            clear: both;
+            margin-bottom: 1rem;
+            .display-source {
+              margin-left: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.pagination {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

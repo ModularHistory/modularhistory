@@ -10,6 +10,7 @@ from history.structures.historic_datetime import (
     seasons, get_month_from_season,
     get_season_from_month, HistoricDateTime
 )
+from typing import Optional, Tuple
 
 year_systems = (
     ('CE', 'CE'),
@@ -18,11 +19,44 @@ year_systems = (
 )
 
 
+def get_year(year: int, year_system: str = 'CE') -> Tuple[int, int, int]:
+    year = int(year)
+    if year > HistoricDateTime.bce_threshold and not year_system == 'YBP':
+        # Safe to assume this should be YBP
+        print(f'Using YBP year system instead of {year_system} ...')
+        year_system = 'YBP'
+    microsecond, second = 0, 0
+    if year_system not in ('CE', 'BCE', 'YBP'):
+        raise ValueError
+    elif year_system == 'CE':
+        pass  # default
+    else:
+        significant_figures = 4
+        getcontext().prec = significant_figures
+        year = year if year_system == 'BCE' else Decimal(year - 1950)
+        year = round(year, sigfigs=HistoricDateTime.significant_figures)
+        # Build a year stamp with max 6 digits
+        scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
+        decimal_num, exponent = scientific_notation.split('e+')
+        exponent, decimal_num = int(exponent), int(decimal_num.replace('.', ''))  # 10, 13800 for the Big Bang
+        inv_exponent = 30 - exponent  # 20 for the Big Bang
+        inv_decimal_num = 100000 - int(decimal_num)  # 986200 for the Big Bang
+        second, microsecond = inv_exponent, inv_decimal_num
+        year = 1
+        # if year_system == 'BCE':
+        #     pass
+        # elif year_system == 'YBP':
+        #     pass
+    return year, second, microsecond
+
+
 class YearInput(MultiWidget):
+    template_name = 'forms/year_input.html'
+
     def __init__(self, attrs: Optional[Dict] = None):
-        attrs = attrs or {'style': ''}
+        attrs = attrs or {'class': 'form-control'}
         widgets = [
-            forms.NumberInput(attrs={**attrs, **{'min': '1'}}),
+            forms.NumberInput(attrs={**attrs, **{'min': '1', 'class': 'form-control'}}),
             forms.Select(attrs=attrs, choices=year_systems),
         ]
         super().__init__(widgets, attrs)
@@ -47,33 +81,10 @@ class YearInput(MultiWidget):
         year, year_system = values
         if not year:
             return None
-        year = int(year)
-        if year > HistoricDateTime.bce_threshold and not year_system == 'YBP':
-            # Safe to assume this should be YBP
-            print(f'Using YBP year system instead of {year_system} ...')
-            year_system = 'YBP'
-        microsecond, second = 0, 0
-        if year_system not in ('CE', 'BCE', 'YBP'):
-            raise ValueError
-        elif year_system == 'CE':
-            pass  # default
-        else:
-            significant_figures = 4
-            getcontext().prec = significant_figures
-            year = year if year_system == 'BCE' else Decimal(year - 1950)
-            year = round(year, sigfigs=HistoricDateTime.significant_figures)
-            # Build a year stamp with max 6 digits
-            scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
-            decimal_num, exponent = scientific_notation.split('e+')
-            exponent, decimal_num = int(exponent), int(decimal_num.replace('.', ''))  # 10, 13800 for the Big Bang
-            inv_exponent = 30 - exponent  # 20 for the Big Bang
-            inv_decimal_num = 100000 - int(decimal_num)  # 986200 for the Big Bang
-            second, microsecond = inv_exponent, inv_decimal_num
-            year = 1
+        year, second, microsecond = get_year(year, year_system)
         # Build datetime object
         dt = HistoricDateTime(year, 1, 1, 1, 1, second, microsecond=microsecond)
         # Return date-parsable string for db
-        print(f"{dt.strftime('%Y-%m-%d %H:%M:%S.%f')}")
         return dt.strftime('%Y-%m-%d %H:%M:%S.%f')
 
 
@@ -158,37 +169,11 @@ class HistoricDateWidget(MultiWidget):
         elif len(values == 3):
             year, month, day = values
             time = '00:00:00'
-
-        # Figure out year
         if not year:
             return None
-        year = int(year)
-        if year > HistoricDateTime.bce_threshold and not year_system == 'YBP':
-            # Safe to assume this should be YBP
-            print(f'Using YBP year system instead of {year_system} ...')
-            year_system = 'YBP'
-        microsecond, second = 0, 0
-        if year_system not in ('CE', 'BCE', 'YBP'):
-            raise ValueError
-        elif year_system == 'CE':
-            pass  # default
-        else:
-            significant_figures = 4
-            getcontext().prec = significant_figures
-            year = year if year_system == 'BCE' else Decimal(year - 1950)
-            year = round(year, sigfigs=HistoricDateTime.significant_figures)
-            # Build a year stamp with max 6 digits
-            scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
-            decimal_num, exponent = scientific_notation.split('e+')
-            exponent, decimal_num = int(exponent), int(decimal_num.replace('.', ''))  # 10, 13800 for the Big Bang
-            inv_exponent = 30 - exponent  # 20 for the Big Bang
-            inv_decimal_num = 100000 - int(decimal_num)  # 986200 for the Big Bang
-            second, microsecond = inv_exponent, inv_decimal_num
-            year = 1
-            # if year_system == 'BCE':
-            #     pass
-            # elif year_system == 'YBP':
-            #     pass
+
+        # Figure out year
+        year, second, microsecond = get_year(year, year_system)
 
         # Figure out date precision
         hour, minute = 0, 0
@@ -207,5 +192,4 @@ class HistoricDateWidget(MultiWidget):
         )
         dt = HistoricDateTime(year, month, day, hour, minute, second, microsecond=microsecond)
         # Return date-parsable string for db
-        print(f"{dt.strftime('%Y-%m-%d %H:%M:%S.%f')}")
         return dt.strftime('%Y-%m-%d %H:%M:%S.%f')

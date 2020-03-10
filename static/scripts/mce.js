@@ -18,10 +18,10 @@ $(window).on('load', function() {
         let iframe = $(this).find('iframe');
         iframe.contents().find('head').append(`
             <noscript>
-                <link rel="stylesheet" href="/static/styles/mce.custom.css" type="text/css" />
+                <link rel="stylesheet" href="/static/styles/mce.css" type="text/css" />
             </noscript>
         `);
-        $.when($.get("/static/styles/mce.custom.css")).done(function(response) {
+        $.when($.get("/static/styles/mce.css")).done(function(response) {
             iframe.contents().find('head').append(`
                 <style>${response}</style>
             `);

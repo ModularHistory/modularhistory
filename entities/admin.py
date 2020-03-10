@@ -19,7 +19,7 @@ from .forms import (
 
 class QuotesInline(StackedInline):
     model = Quote
-    extra = 1
+    extra = 0
     show_change_link = True
 
 

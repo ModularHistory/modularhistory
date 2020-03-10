@@ -12,7 +12,7 @@ class Piece(TitleMixin, _Piece):
     type2 = models.CharField(max_length=10, choices=piece_types, default='essay')
 
     def __str__(self) -> SafeText:
-        string = f'{self.creators}, ' or ''
+        string = f'{self.creator_string}, ' or ''
         string += f'"{self.title}"'
         # NOTE: punctuation (quotation marks and commas) are rearranged in the string
         string += f', {self.date.string}' if self.date else ''  # + (', ' if self.container else '')

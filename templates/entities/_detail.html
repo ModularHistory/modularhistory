@@ -1,7 +1,8 @@
 {% load get_admin_url %}
+{% load image_card %}
 {% load quote_card %}
 
-<div style="position: relative;">
+<div class="container my-4">
     <a class="edit-object-button float-right pull-right" target="_blank" href="{{ entity|get_admin_url }}">
         <i class="fa fa-edit"></i>
     </a>
@@ -14,46 +15,39 @@
         <p>d. {{ entity.death_date.html }}</p>
     {% endif %}
     <div>
-        {% for image in entity.images.all %}
-            {{ image.admin_image_element }}
-        {% endfor %}
-    </div>
-    <div>
+        {% if not entity.quotes.all|length %}
+            <div class="img-container">{% image_card entity.images.first %}</div>
+        {% endif %}
         {{ entity.description.html }}
     </div>
     <div>
         {% if entity.quotes.all|length %}
             {% for quote in entity.quotes.all %}
-                <div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ quote.key }}"
-                     data-href="{% block detail_url %}{% endblock %}" style="{% block card_styles %}{% endblock %}">
-                    <div class="card-body">
-                        {% if request.user.is_superuser %}
-                            <a class="edit-object-button" target="_blank" href="{{ quote|get_admin_url }}"><i class="fa fa-edit"></i></a>
-                        {% endif %}
-                        {% if quote.date_string %}
-                            <!--Title-->
-                            <h4 class="card-title text-center">
-                                <small>
-                                    {% if quote.date_html %}
-                                        {{ quote.date_html }}
-                                    {% else %}
-                                        {{ quote.date.html }}
-                                    {% endif %}
-                                </small>
-                            </h4>
-                        {% endif %}
-                        <!--Text-->
-                        <div class="card-text">
-                            {{ quote.html }}
+                <hr style="clear: both" />
+                <div class="m-2" data-key="{{ quote.key }}" data-href="{% block detail_url %}{% endblock %}">
+                    {% if quote.html|length > 1500 %}
+                        <div class="img-container">
+                            {% image_card quote.image %}
                         </div>
-                        {% block tags %}
-                            {% if quote.related_topics and quote.related_topics.all|length %}
-                                <ul class="tags float-right">
-                                    {{ quote.topic_tags }}
-                                </ul>
-                            {% endif %}
-                        {% endblock %}
-                    </div>
+                    {% endif %}
+                    {% if quote.date_string %}
+                        <!--Title-->
+                        <h4 class="card-title text-center">
+                            <small>
+                                {% if quote.date_html %}
+                                    {{ quote.date_html }}
+                                {% else %}
+                                    {{ quote.date.html }}
+                                {% endif %}
+                            </small>
+                        </h4>
+                    {% endif %}
+                    {{ quote.html }}
+                    {% if quote.related_topics and quote.related_topics.all|length %}
+                        <ul class="tags float-right">
+                            {{ quote.topic_tags }}
+                        </ul>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}

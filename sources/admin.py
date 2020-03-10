@@ -13,8 +13,12 @@ from .list_filters import HasFileFilter, HasFilePageOffsetFilter, HasPageNumber,
 
 class AttributeesInline(TabularInline):
     model = models.Source.attributees.through
-    extra = 1
     autocomplete_fields = ['attributee']
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.attributees.count():
+            return 0
+        return 1
 
 
 class ContainersInline(TabularInline):
@@ -71,6 +75,7 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
         'admin_file_link'
     )
     list_filter = (
+        'verified',
         HasFileFilter,
         HasFilePageOffsetFilter,
         HasPageNumber,
@@ -98,8 +103,13 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
 
 class ChildModelAdmin(PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin, Admin):
     base_model = models.Source
-    list_display = ['string', 'description', 'date_string']
-    list_filter = ['attributees']
+    list_display = [
+        'string',
+        'detail_link',
+        'description',
+        'date_string'
+    ]
+    list_filter = ['verified', 'attributees']
     readonly_fields = ['db_string']
     search_fields = ['db_string']
     ordering = ['date', 'creators']

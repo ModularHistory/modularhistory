@@ -7,8 +7,8 @@ from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
 from taggit.models import TaggedItemBase
 
-from history.fields.historic_datetime_field import HistoricDateTimeField
-from history.fields.html_field import HTMLField
+from history.fields import HistoricDateTimeField
+from history.fields import HTMLField
 from history.models import Model, PolymorphicModel, TaggableModel, DatedModel, SearchableMixin
 from images.models import Image
 from sources.models import Source, SourceReference
@@ -82,7 +82,7 @@ class Occurrence(DatedModel, TaggableModel, SearchableMixin):
 
     @property
     def description__truncated(self) -> SafeText:
-        return mark_safe(truncatechars_html(self.description, 1000))
+        return mark_safe(truncatechars_html(self.description, 250))
 
     @property
     def entity_images(self) -> Optional[List[Image]]:
@@ -179,4 +179,4 @@ class OccurrenceSourceReference(SourceReference):
     source = models.ForeignKey(Source, related_name='references_from_occurrences', on_delete=CASCADE)
 
     class Meta:
-        unique_together = ['occurrence', 'source']
+        unique_together = [['occurrence', 'source', 'page_number', 'end_page_number'], ['occurrence', 'position']]

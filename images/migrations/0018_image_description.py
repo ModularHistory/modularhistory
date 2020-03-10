@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='description',
-            field=history.fields.html_field.HTMLField(blank=True, null=True),
+            field=history.fields.HTMLField(blank=True, null=True),
         ),
     ]

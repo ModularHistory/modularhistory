@@ -10,11 +10,12 @@ from django.forms import (
     ChoiceField,
     ModelMultipleChoiceField,
     CheckboxSelectMultiple,
-    MultipleChoiceField
+    MultipleChoiceField,
+    RadioSelect
 )
 
 from entities.models import Entity
-# from django_select2.forms import Select2MultipleWidget
+from django_select2.forms import Select2MultipleWidget
 from history.forms import HistoricDateFormField
 from history.widgets.historic_date_widget import YearInput
 # from places.models import Place
@@ -49,11 +50,17 @@ class SearchFilterForm(Form):
         self.fields['query'] = CharField(required=False, initial=query)
 
         ordering = 'relevance' if order_by_relevance else 'date'
-        self.fields['ordering'] = ChoiceField(choices=ordering_choices, initial=ordering, required=False)
+        self.fields['ordering'] = ChoiceField(
+            choices=ordering_choices,
+            widget=RadioSelect,
+            initial=ordering,
+            required=False
+        )
+        if not query:
+            self.fields['ordering'].widget.attrs['disabled'] = True
 
         self.fields['content_types'] = MultipleChoiceField(
             choices=content_types,
-            # widget=Select2MultipleWidget,
             widget=CheckboxSelectMultiple,
             required=False
         )
@@ -63,14 +70,12 @@ class SearchFilterForm(Form):
 
         self.fields['entities'] = ModelMultipleChoiceField(
             queryset=(entities or Entity.objects.all()),
-            # widget=Select2MultipleWidget,
-            widget=CheckboxSelectMultiple,
+            widget=Select2MultipleWidget,
             required=False
         )
         self.fields['topics'] = ModelMultipleChoiceField(
             queryset=(topics or Topic.objects.all()),
-            # widget=Select2MultipleWidget,
-            widget=CheckboxSelectMultiple,
+            widget=Select2MultipleWidget,
             required=False
         )
         # self.fields['places'] = ModelMultipleChoiceField(
@@ -91,11 +96,11 @@ class SearchFilterForm(Form):
         self.helper.layout = Layout(
             Field('query', css_class='form-control'),
             Field('ordering', css_class=''),
-            Field('content_types', css_class=''),
-            Field('start_year', css_class=''),
-            Field('end_year', css_class=''),
+            Field('start_year'),
+            Field('end_year'),
             Field('entities', css_class=''),
             Field('topics', css_class=''),
             # Field('places', css_class=''),
+            Field('content_types', css_class=''),
             Submit('submit', self.SUBMIT_BUTTON_TEXT),
         )

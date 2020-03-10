@@ -6,7 +6,7 @@ from django.utils.safestring import SafeText, mark_safe
 from django.core.exceptions import ValidationError
 
 from history.fields.file_field import SourceFileField
-from history.fields.html_field import HTMLField
+from history.fields import HTMLField
 from history.models import Model
 from .base import TitleMixin, TextualSource, SourceFile, _Piece
 
@@ -48,7 +48,7 @@ class _Document(DocumentMixin, TextualSource):
 class Collection(Model):
     name = models.CharField(max_length=100, help_text='e.g., "Adam S. Bennion papers"', null=True, blank=True)
     repository = ForeignKey('Repository', on_delete=CASCADE, help_text='the collecting institution')
-    link = models.CharField(max_length=100, null=True, blank=True)
+    link = models.URLField(max_length=100, null=True, blank=True)
 
     class Meta:
         unique_together = ['name', 'repository']
@@ -78,7 +78,7 @@ class Repository(Model):
 class Document(TitleMixin, _Document):
     def __str__(self) -> SafeText:
         string = ''
-        string += f'{self.creators}, ' if self.creators else ''
+        string += f'{self.creator_string}, ' if self.creator_string else ''
         string += f'"{self.title}," ' if self.title else ''
         string += f'{self.date.string}, ' if self.date else ''
         string += f'archived in {self.collection}' if self.collection else ''
@@ -101,7 +101,7 @@ class Letter(_Document):
         verbose_name_plural = 'correspondence'
 
     def __str__(self) -> SafeText:
-        string = f'{self.creators}, letter to {self.recipient or "<Unknown>"}'
+        string = f'{self.creator_string}, letter to {self.recipient or "<Unknown>"}'
         if self.date:
             string += ', dated ' if self.date.day_is_known else ', '
             string += self.date.string
@@ -119,7 +119,7 @@ class Affidavit(_Document):
     certifier = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        string = f'{self.creators or self.attributees.first()}, '
+        string = f'{self.creator_string or self.attributees.first()}, '
         string += f'affidavit sworn {self.date_html} at {self.location} before {self.certifier}'
         return mark_safe(string)
 
@@ -135,6 +135,6 @@ class JournalEntry(_Piece):
         verbose_name_plural = 'Journal entries'
 
     def __str__(self) -> SafeText:
-        string = f'{self.creators}, journal ' if self.creators else 'Journal '
+        string = f'{self.creator_string}, journal ' if self.creator_string else 'Journal '
         string += f'entry dated {self.date.string}' if self.date else ''
         return mark_safe(string)
