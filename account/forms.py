@@ -26,7 +26,7 @@ class LoginForm(AuthenticationForm):
             HTML('<p class="h4 mb-4">Sign in</p>'),
             Field('username', css_class='form-control mb-4', placeholder='Username or email address'),
             Field('password', css_class='form-control mb-4', placeholder='Password'),
-            HTML('''
+            HTML(f'''
                 <div class="d-flex justify-content-around">
                     <div>
                         <!-- Remember me -->
@@ -37,19 +37,20 @@ class LoginForm(AuthenticationForm):
                     </div>
                     <div>
                         <!-- Forgot password -->
-                        <a href="{% url 'account:password_reset' %}">Forgot password?</a>
+                        <a href="{reverse('account:password_reset')}">Forgot password?</a>
                     </div>
                 </div>
             '''),
             Submit('submit', 'Sign in', css_class='btn btn-info btn-block my-4'),
+            HTML(f'<p>Not a member? <a href="{reverse("account:register")}">Register</a></p>'),
             HTML(f'''
                 <!-- Social login -->
                 <p>or sign in with:</p>
-                <a href='{reverse('social:begin', args=['facebook'])}' class="mx-2 btn-social btn-facebook" 
+                <a href='{reverse("social:begin", args=["facebook"])}' class="mx-2 btn-social btn-facebook" 
                    role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href='{reverse('social:begin', args=['google-oauth2'])}' class="mx-2 btn-social btn-google" 
+                <a href='{reverse("social:begin", args=["google-oauth2"])}' class="mx-2 btn-social btn-google" 
                    role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
                     <i class="fab fa-google"></i>
                 </a>
@@ -65,10 +66,55 @@ class UserCreationForm(BaseUserCreationForm):
 
 
 class RegistrationForm(UserCreationForm):
+    """Crispy registration form."""
     class Meta:
         model = User
         exclude = ()
         # fields = ('username', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
+        self.helper = FormHelper()
+        self.helper.form_id = 'registrationForm'
+        self.helper.form_class = 'text-center border border-light p-5'
+        self.helper.form_method = 'post'
+        self.helper.form_action = '/account/register'
+        self.helper.label_class = 'hidden'
+        # self.helper.field_class = 'col-lg-8'
+        self.helper.layout = Layout(
+            HTML('<p class="h4 mb-4">Register account</p>'),
+            Field('username', css_class='form-control mb-4', placeholder='Username'),
+            Field('password1', css_class='form-control mb-4', placeholder='Password'),
+            Field('password2', css_class='form-control mb-4', placeholder='Confirm password'),
+            # HTML(f'''
+            #     <div class="form-row mb-4">
+            #         <div class="col">
+            #             <!-- First name -->
+            #             <input type="text" id="defaultRegisterFormFirstName" class="form-control" placeholder="First name">
+            #         </div>
+            #         <div class="col">
+            #             <!-- Last name -->
+            #             <input type="text" id="defaultRegisterFormLastName" class="form-control" placeholder="Last name">
+            #         </div>
+            #     </div>
+            # '''),
+            Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
+            HTML(f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'),
+            HTML(f'''
+                <!-- Social login -->
+                <p>or sign in with:</p>
+                <a href='{reverse("social:begin", args=["facebook"])}' class="mx-2 btn-social btn-facebook" 
+                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href='{reverse("social:begin", args=["google-oauth2"])}' class="mx-2 btn-social btn-google" 
+                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                    <i class="fab fa-google"></i>
+                </a>
+            ''')
+        )
 
 
 #     def clean_email(self):

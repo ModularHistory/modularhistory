@@ -1,10 +1,9 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from .forms import LoginForm
+from .forms import LoginForm, RegistrationForm
 
 
 class LoginView(auth_views.LoginView):
@@ -39,12 +38,12 @@ class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
 
 class RegisterView(View):
     def get(self, request):
-        form = UserCreationForm()
+        form = RegistrationForm()
         context = {'form': form}
         return render(request, 'account/register.html', context)
 
     def post(self, request):
-        form = UserCreationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
