@@ -27,11 +27,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
 SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG must be False in production (for security)
+# https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+# https://docs.djangoproject.com/en/3.0/ref/settings#s-allowed-hosts
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
 
+# https://docs.djangoproject.com/en/3.0/ref/settings#s-internal-ips
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
 INTERNAL_IPS = ['127.0.0.1']
 
