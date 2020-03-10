@@ -1,12 +1,60 @@
 # from forms.form import FormMixIn, CustomForm
-import datetime
 
-from django import forms
-from django.conf import settings
-from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
-
+from django.contrib.auth.forms import AuthenticationForm
 from account.models import User
+
+from django.urls import reverse
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Field, HTML
+
+
+class LoginForm(AuthenticationForm):
+    """Crispy login form."""
+    def __init__(self, request=None, *args, **kwargs):
+        super().__init__(request=request, *args, **kwargs)
+
+        # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
+        self.helper = FormHelper()
+        self.helper.form_id = 'loginForm'
+        self.helper.form_class = 'text-center border border-light p-5'
+        self.helper.form_method = 'post'
+        self.helper.form_action = '/account/login'
+        self.helper.label_class = 'hidden'
+        # self.helper.field_class = 'col-lg-8'
+        self.helper.layout = Layout(
+            HTML('<p class="h4 mb-4">Sign in</p>'),
+            Field('username', css_class='form-control mb-4', placeholder='Username or email address'),
+            Field('password', css_class='form-control mb-4', placeholder='Password'),
+            HTML('''
+                <div class="d-flex justify-content-around">
+                    <div>
+                        <!-- Remember me -->
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember">
+                            <label class="custom-control-label" for="defaultLoginFormRemember">Remember me</label>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- Forgot password -->
+                        <a href="{% url 'account:password_reset' %}">Forgot password?</a>
+                    </div>
+                </div>
+            '''),
+            Submit('submit', 'Sign in', css_class='btn btn-info btn-block my-4'),
+            HTML(f'''
+                <!-- Social login -->
+                <p>or sign in with:</p>
+                <a href='{reverse('social:begin', args=['facebook'])}' class="mx-2 btn-social btn-facebook" 
+                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href='{reverse('social:begin', args=['google-oauth2'])}' class="mx-2 btn-social btn-google" 
+                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                    <i class="fab fa-google"></i>
+                </a>
+            ''')
+        )
 
 
 class UserCreationForm(BaseUserCreationForm):
@@ -21,25 +69,6 @@ class RegistrationForm(UserCreationForm):
         model = User
         exclude = ()
         # fields = ('username', 'email')
-
-
-class LoginForm(forms.Form):
-    user: User
-    username = forms.CharField(label='Username', required=True, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(label='Password', required=True, max_length=100, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-    next = forms.CharField(required=False, widget=forms.HiddenInput())
-
-    def clean(self):
-        username = self.cleaned_data.get('username')
-        if not User.objects.filter(username=username).exists() and User.objects.filter(email=username).exists():
-            print(">>> No one with that username exists.  Checking for matching email addresses instead...")
-            username = User.objects.filter(email=username)[0].username
-            print(">>> The username that will be used for authentication is %s." % username)
-        user = authenticate(username=username, password=self.cleaned_data.get('password'))
-        if not user:
-            raise forms.ValidationError('Invalid username and/or password.')
-        self.user = user
-        return self.cleaned_data
 
 
 #     def clean_email(self):

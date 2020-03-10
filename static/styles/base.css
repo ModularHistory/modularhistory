@@ -1,6 +1,9 @@
 .nowrap {
   white-space: nowrap; }
 
+.hidden {
+  display: none; }
+
 figcaption {
   font-size: 0.8rem; }
 
