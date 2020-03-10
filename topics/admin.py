@@ -1,6 +1,4 @@
 
-# from taggit_labels.widgets import LabelWidget
-# from taggit.forms import TagField
 from admin import admin_site, Admin, TabularInline, StackedInline
 from . import models
 

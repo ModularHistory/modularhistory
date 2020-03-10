@@ -4,8 +4,6 @@ import pafy
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import SafeText, mark_safe
-# from polymorphic.models import PolymorphicModel
-from taggit.models import TaggedItemBase
 
 from history.fields.file_field import upload_to
 from history.fields import HTMLField

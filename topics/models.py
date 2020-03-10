@@ -1,8 +1,5 @@
-from typing import Tuple
-
 from django.db import models
 from django.db.models import ManyToManyField, ForeignKey, CASCADE, SET_NULL
-from taggit.models import TaggedItemBase
 
 from history.fields import ArrayField
 from history.fields import HTMLField

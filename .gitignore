@@ -1,3 +1,8 @@
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
 # Django #
 *.log
 *.pot
