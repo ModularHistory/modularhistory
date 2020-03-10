@@ -37,6 +37,9 @@ SECURE_SSL_REDIRECT = not DEBUG
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = not DEBUG
 
+# https://docs.djangoproject.com/en/3.0/ref/settings#s-csrf-cookie-secure
+CSRF_COOKIE_SECURE = not DEBUG
+
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-referrer-policy
 # https://docs.djangoproject.com/en/3.0/ref/middleware/#referrer-policy
 SECURE_REFERRER_POLICY = 'same-origin'
