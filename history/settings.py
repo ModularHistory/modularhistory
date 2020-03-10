@@ -126,11 +126,10 @@ WSGI_APPLICATION = 'history.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'history',
-        'USER': 'jacob',
-        'PASSWORD': 'bocaj092',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        # 'PORT': '5432',
     }
 }
 
