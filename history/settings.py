@@ -18,6 +18,8 @@ from django.conf.locale.en import formats as en_formats
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
+SITE_ID = 1
+
 # Build paths inside the project like this:
 # os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -62,7 +64,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.postgres',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django.contrib.flatpages',
     'django.forms',
     # 'django.contrib.gis',  # https://docs.djangoproject.com/en/3.0/ref/contrib/gis/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
