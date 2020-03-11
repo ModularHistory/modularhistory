@@ -1,8 +1,8 @@
 from django.contrib.admin import AdminSite as BaseAdminSite
 from django.contrib.admin import ModelAdmin
-# from django.contrib.flatpages.admin import FlatPageAdmin
-# from django.contrib.flatpages.models import FlatPage
-# from django.contrib.sites.models import Site
+from django.contrib.flatpages.admin import FlatPageAdmin
+from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.models import Site
 # from django.utils.translation import gettext_lazy as _
 # from django_celery_beat.models import PeriodicTask, PeriodicTasks, CrontabSchedule, IntervalSchedule, SolarSchedule
 # from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTaskForm
@@ -85,18 +85,18 @@ admin_site = AdminSite(name='admin')
 admin_site.add_action(mass_change_selected)
 
 
-# class CustomFlatPageAdmin(FlatPageAdmin):
-#     fieldsets = (
-#         (None, {'fields': ('url', 'title', 'content', 'sites')}),
-#         (('Advanced options'), {
-#             'classes': ('collapse', ),
-#             'fields': (
-#                 'enable_comments',
-#                 'registration_required',
-#                 'template_name',
-#             ),
-#         }),
-#     )
+class CustomFlatPageAdmin(FlatPageAdmin):
+    fieldsets = (
+        (None, {'fields': ('url', 'title', 'content', 'sites')}),
+        (('Advanced options',), {
+            'classes': ('collapse', ),
+            'fields': (
+                'enable_comments',
+                'registration_required',
+                'template_name',
+            ),
+        }),
+    )
 
 # IntervalSchedule.objects.get_or_create(
 #     every=1,
@@ -147,8 +147,9 @@ admin_site.add_action(mass_change_selected)
 #     )
 #     form = CustomPeriodicTaskForm
 
-# admin_site.register(Site)
-# admin_site.register(FlatPage, CustomFlatPageAdmin)
+
+admin_site.register(Site)
+admin_site.register(FlatPage, CustomFlatPageAdmin)
 # admin_site.register(PeriodicTask, CustomPeriodicTaskAdmin)
 # admin_site.register(IntervalSchedule)
 # admin_site.register(CrontabSchedule)
