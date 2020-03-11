@@ -23,7 +23,7 @@ django-typed-models==0.9.0
 django-reverse-admin==2.8.3
 html5lib==1.0.1
 humanize==2.0.0
-kombu==4.6.7
+kombu==4.6.8
 lxml==4.5.0
 mailchimp==2.0.9
 Mako==1.1.2

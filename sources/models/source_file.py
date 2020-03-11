@@ -39,10 +39,10 @@ class SourceFile(Model):
 
     def save(self, *args, **kwargs):
         if self.name and self.name != self.file_name:
-            full_path = f'{settings.MEDIA_ROOT}/sources'
+            full_path = join(settings.MEDIA_ROOT, 'sources')
             files = [f for f in listdir(full_path) if isfile(join(full_path, f))]
             if self.file_name in files:
-                rename(f'{full_path}/{self.file_name}', f'{full_path}/{self.name}')
+                rename(join(full_path, self.file_name), join(full_path, self.name))
                 self.file.name = f'sources/{self.name}'
         if 'sources/sources' in self.file.name:
             raise ValidationError(f'Bad file name: {self.file.name}')

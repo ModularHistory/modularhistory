@@ -11,7 +11,7 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Entity.objects.order_by('name')
+        return Entity.objects.exclude(type='entities.deity').order_by('birth_date')
 
 
 class BaseDetailView(generic.detail.DetailView):

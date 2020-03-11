@@ -3,7 +3,6 @@ from functools import partial
 from os.path import isfile, join
 from typing import Optional
 
-# from sys import stderr
 from django.db.models import FileField, Model
 from django.forms import Field
 
@@ -13,7 +12,7 @@ from history.structures.source_file import TextualSourceFile
 
 
 def dedupe_files(path: str, new_file_name: Optional[str] = None):
-    full_path = f'{settings.MEDIA_ROOT}/{path}'
+    full_path = join(settings.MEDIA_ROOT, path)
     if not new_file_name:
         raise NotImplementedError
     else:
@@ -29,18 +28,18 @@ def dedupe_files(path: str, new_file_name: Optional[str] = None):
         for file_name in file_names:
             if file_name == new_file_name:
                 full_file_name = f'{file_name}{extension}'
-                file_path = f'{os.path.join(path, full_file_name)}'
+                file_path = join(path, full_file_name)
                 to_remove.append(file_path)
         for file_path in to_remove:
             print(f'Removing old version of {file_path} ...')
-            os.remove(f'{settings.MEDIA_ROOT}/{file_path}')
+            os.remove(join(settings.MEDIA_ROOT, file_path))
 
 
 def _update_filename(instance: Model, filename: str, path: str):
     path, filename = path, filename
     filename = filename.replace(' ', '_')
     dedupe_files(path, new_file_name=filename)
-    return os.path.join(path, filename)
+    return join(path, filename)
 
 
 def upload_to(path):

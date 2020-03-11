@@ -3,21 +3,33 @@
 {% load entity_card %}
 
 {% block content %}
-    <div class="container">
+    <div class="container gallery">
         {% if entities|length %}
             {% for entity in entities %}
-                <div class="row">
-                    <div class="col-sm-2">
-                        ...
-                    </div>
-                    <div class="col-sm-10">
-                        {% entity_card entity %}
+                <div class="card" style="">
+                    <!-- Card image -->
+                    {% if entity.images.all|length %}
+                        <div class="view overlay">
+                            <img class="card-img-top" src="{{ entity.images.first.image.url }}" alt="Card image cap">
+                            <a href="{{ entity.detail_url }}">
+                                <div class="mask rgba-white-slight"></div>
+                            </a>
+                        </div>
+                    {% endif %}
+                    <!-- Card content -->
+                    <div class="card-body">
+                        <!-- Title -->
+                        <h4 class="card-title">{{ entity.name }}</h4>
+                        <!-- Text -->
+                        <p class="card-text">
+                            {{ entity.description.html|truncatechars_html:100 }}
+                        </p>
                     </div>
                 </div>
             {% endfor %}
         {% else %}
             <p class="lead">
-                Hell is other entities.
+                Hell is other people.
             </p>
             <p>
                 If you have any questions, please <a href="/contact/">contact me</a>.
