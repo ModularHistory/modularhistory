@@ -1,5 +1,5 @@
 appdirs==1.4.3
-asgiref==3.2.3
+asgiref==3.2.4
 beautifulsoup4==4.8.2
 celery==4.4.1
 certifi==2019.11.28
@@ -50,7 +50,7 @@ sqlparse==0.3.1
 tabulate==0.8.6
 termcolor==1.1.0
 tinycss==0.4
-virtualenv==20.0.9
+virtualenv==20.0.10
 virtualenv-clone==0.5.3
 wcwidth==0.1.8
 websocket-client==0.40.0

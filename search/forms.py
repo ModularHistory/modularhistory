@@ -63,7 +63,7 @@ class SearchFilterForm(Form):
             choices=content_types,
             widget=CheckboxSelectMultiple,
             required=False
-        )
+        ) if content_types else None
 
         self.fields['start_year'] = HistoricDateFormField(required=False, widget=YearInput)
         self.fields['end_year'] = HistoricDateFormField(required=False, widget=YearInput)
@@ -93,7 +93,7 @@ class SearchFilterForm(Form):
         # self.helper.label_class = 'col-lg-2'
         # self.helper.field_class = 'col-lg-8'
         # self.helper.add_input(Submit('submit', 'Submit'))
-        self.helper.layout = Layout(
+        layout = [
             Field('query', css_class='form-control'),
             Field('ordering', css_class=''),
             Field('start_year'),
@@ -101,6 +101,8 @@ class SearchFilterForm(Form):
             Field('entities', css_class=''),
             Field('topics', css_class=''),
             # Field('places', css_class=''),
-            Field('content_types', css_class=''),
-            Submit('submit', self.SUBMIT_BUTTON_TEXT),
-        )
+        ]
+        if content_types:
+            layout.append(Field('content_types', css_class=''))
+        layout.append(Submit('submit', self.SUBMIT_BUTTON_TEXT))
+        self.helper.layout = Layout(*layout)

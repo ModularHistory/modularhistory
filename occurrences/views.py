@@ -2,11 +2,10 @@ from typing import Dict
 
 from django.views import generic
 from polymorphic.query import PolymorphicQuerySet
-from django.db.models import F
 
+from quotes.models import Quote
 from search.forms import SearchFilterForm
 from .models import Occurrence
-from quotes.models import Quote
 
 
 class ListView(generic.list.ListView):
