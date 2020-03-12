@@ -15,6 +15,9 @@ body {
 
 .main-content {
   flex: 1;
+  >.container {
+    margin-top: 1.5rem;
+  }
 }
 
 .embed-responsive-210by297 {

@@ -1,41 +1,52 @@
-{% extends "base.htm" %}
+{% extends "account/base.htm" %}
 
 {% block title %}
-...
-{% endblock %}
-
-{% block page_header %}
-<div class="row">
-    <div class="panel panel-default text-center col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-md-offset-3" style="padding: 2rem;">
-        <div id="profile-picture-container" style="display: inline-block;">
-            <img class="img-responsive img-circle img-thumbnail" style="max-width: 20rem;" src="{{ profile_image_url }}" alt="profile picture" />
-            <div class="overlay">
-                <div class="overlay-content">
-                    <a href="/account/profile.picture/" class="modal-trigger" title="Change Profile Picture"><i class="fa fa-pencil fa-lg"></i></a>
-                </div>
-s        </div>
-        <span style="position: absolute; top: 0; right: 0; display: inline-block; font-size: 2.5rem; padding: 1rem;">
-            <a href="/account/profile.edit" class="" style=""><i class="fa fa-pencil fa-lg"></i></a>
-        </span>
-        <span class="text-center page-header" style="display: block; margin-top: 1.5rem;">{{ request.user.get_full_name }}</span>
-    </div>
-</div>
+    Profile
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6">
-        <div class="panel panel-default" style="position: relative">
-            <div class="panel-heading"><h3 class="">Information</h3></div>
-            <div class="panel-body">
-                <table class="table table-responsive">
-                    <tr>
-                        <th>Email</th>
-                        <td>{{ request.user.email }}</td>
-                    </tr>
-                </table>
+<div class="container">
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img class="img-responsive" src="{{ profile_image_url }}" alt="profile picture" />
+                    <input type="file" name="file"/>
+                </div>
             </div>
+            <div class="col-md-6">
+                <div class="profile-head">
+                    <h5>{{ request.user.get_full_name }}</h5>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Username</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p>{{ request.user.username }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p>{{ request.user.get_full_name }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p>{{ request.user.email }}</p>
+                    </div>
+                </div>
+            </div>
+{#            <div class="col-md-2">#}
+{#                <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>#}
+{#            </div>#}
         </div>
-    </div>
+    </form>
 </div>
 {% endblock %}
