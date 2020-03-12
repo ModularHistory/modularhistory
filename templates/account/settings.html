@@ -1,12 +1,8 @@
-<%inherit file="base.htm" />
-
-<%! from django.urls import reverse %>
+{% extends 'account/base.htm' %}
 
 {% block title %}Account Settings{% endblock %}
 
 {% block breadcrumb %}
-    <li><a href="/account">Account</a></li>
-    <li><a href="/account/settings/">Settings &amp; Privacy</a></li>
 {% endblock %}
 
 {% block page_header %}
@@ -14,113 +10,112 @@
 {% endblock %}
 
 {% block content %}
-    <div class="panel-group">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-              <a data-toggle="collapse" href="#collapse1">
-                  Email address
-              </a>
-          </h4>
+    <div class="container">
+        <div class="card m-3">
+            <div class="card-header">
+                Contact Information
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Email address</h5>
+                <p class="card-text">
+                    {{ request.user.email }}
+                </p>
+            </div>
         </div>
-        <div id="collapse1" class="panel-collapse collapse in">
-          <div class="panel-body">
-              <table style="width: 100%">
-                  <tr>
-                      <td style="width: 50%">
-                          {{ request.user.email }}
-                      </td>
-                      <td style="width: 50%; text-align: right;">
-                          <a class="btn btn-default" href="">Change email</a>
-                      </td>
-                  </tr>
-              </table>
-          </div>
+        <div class="card m-3">
+            <div class="card-header">
+                Login Information
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Username</h5>
+                <p class="card-text">
+                    {{ request.user.email }}
+                </p>
+                <h5 class="card-title">Password</h5>
+                <p class="card-text">
+                    [hidden]
+                </p>
+                <a href="{% url 'account:password_change' %}" class="btn btn-default">Change password</a>
+            </div>
         </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" href="#collapse2">
-                Phone number
-            </a>
-          </h4>
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" id="collapse-password" href="#password-collapse">
-                Password
-            </a>
-          </h4>
-        </div>
-        <div id="password-collapse" class="panel-collapse collapse">
-          <div class="panel-body">
-              <table style="width: 100%">
-                  <tr>
-                      <td style="width: 50%">
-                          [hidden]
-                      </td>
-                      <td style="width: 50%; text-align: right;">
-                          <a href="/account/settings.password/" class="btn btn-default modal-trigger">Change password</a>
-                      </td>
-                  </tr>
-              </table>
-          </div>
-        </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" href="#collapse3">
-                Social media accounts
-            </a>
-          </h4>
-        </div>
-        <div id="collapse3" class="panel-collapse collapse in">
-          <div class="panel-body">
-            <h5>Facebook</h5>
-            {% if facebook_login %}
-              <p>Connected as <a href="https://facebook.com/${ facebook_login.extra_data['id'] }/" target="_blank">${ facebook_login.extra_data['id'] }</a></p>
-              {% if can_disconnect %}
-                <form method="post" action="${ reverse('social:disconnect', kwargs={'backend': 'facebook'}) }">
-                  {% csrf_token %}
-                  <button type="submit">Disconnect from Facebook</button>
-                </form>
-              {% else %}
-                <button type="button" disabled>Disconnect from Facebook</button>
-                <p style="color: red">You must <a href="%url 'password':">define a password</a> for your account before disconnecting from Facebook.</p>
-              {% endif %}
-              <br />
-            {% else %}
-              <a href="${ reverse('social:begin', kwargs={'backend': 'facebook'}) }" class="btn btn-block btn-social btn-facebook" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
-                <span class="fa fa-facebook"></span> Connect with Facebook
-              </a>
-            {% endif %}
-            ## Twitter authentication is broken at present
-            <!-- <h5>Twitter</h5> -->
-            <%doc>
-              {%if twitter_login %}
-                <p>Connected as <a href="https://twitter.com/${ twitter_login.extra_data['access_token']['screen_name'] }/" target="_blank">@${ twitter_login.extra_data['access_token']['screen_name'] }</a></p>
-                ${ twitter_login.extra_data }
-                {% if can_disconnect %}
-                  <form method="post" action="${ reverse('social:disconnect', kwargs={'backend': 'twitter'}) }">
-                    {% csrf_token %}
-                    <button type="submit">Disconnect from Twitter</button>
-                  </form>
+        <div class="card m-3">
+            <div class="card-header">
+                Social Media Connections
+            </div>
+            <div class="card-body">
+                <h5>Facebook</h5>
+                {% if facebook_login %}
+                    <p>Connected as <a href="https://facebook.com/{{ facebook_login.extra_data.id }}/"
+                                       target="_blank">{{ facebook_login.extra_data.id}}</a></p>
+                    {% if can_disconnect %}
+                        <form method="post"
+                              action="{% url 'social:disconnect' backend='facebook' %}">
+                            {% csrf_token %}
+                            <button type="submit">Disconnect from Facebook</button>
+                        </form>
+                    {% else %}
+                        <button type="button" disabled>Disconnect from Facebook</button>
+                        <p style="color: red">You must <a href="">define a password</a> for your
+                            account before disconnecting from Facebook.</p>
+                    {% endif %}
+                    <br/>
                 {% else %}
-                  <button type="button" disabled>Disconnect from Twitter</button>
-                  <p style="color: red">You must <a href="%url 'password':">define a password</a> for your account before disconnecting from Twitter.</p>
+                    <a href="{% url 'social:begin' backend='facebook' %}"
+                       class="btn btn-block btn-social btn-facebook"
+                       onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                        <span class="fab fa-facebook-f"></span> Connect with Facebook
+                    </a>
                 {% endif %}
-              {% else %}
-                  <a href="${ reverse('social:begin', kwargs={'backend': 'twitter'}) }" class="btn btn-block btn-social btn-twitter" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
-                    <span class="fa fa-twitter"></span> Connect with Twitter
-                  </a>
-              {% endif %}
-            </%doc>
-          </div>
+                <h5>Twitter</h5>
+                {% if twitter_login %}
+                    <p>
+                        Connected as <a
+                            href="https://twitter.com/{{ twitter_login.extra_data.access_token.screen_name }}/"
+                            target="_blank">@{{ twitter_login.extra_data.access_token.screen_name }}</a>
+                    </p>
+                    ${ twitter_login.extra_data }
+                    {% if can_disconnect %}
+                        <form method="post"
+                              action="{% url 'social:disconnect' backend='twitter' %}">
+                            {% csrf_token %}
+                            <button type="submit">Disconnect from Twitter</button>
+                        </form>
+                    {% else %}
+                        <button type="button" disabled>Disconnect from Twitter</button>
+                        <p style="color: red">You must <a href="">define a password</a> for your
+                            account before disconnecting from Twitter.</p>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'social:begin' backend='twitter' %}"
+                       class="btn btn-block btn-social btn-twitter"
+                       onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
+                        <span class="fab fa-twitter"></span> Connect with Twitter
+                    </a>
+                {% endif %}
+                <h5>Google</h5>
+                {% if google_login %}
+                    <p>
+                        Connected as {{ user.email }}
+                    </p>
+                    {% if can_disconnect %}
+                        <form method="post"
+                              action="{% url 'social:disconnect' backend='google' %}">
+                            {% csrf_token %}
+                            <button type="submit">Disconnect from Google</button>
+                        </form>
+                    {% else %}
+                        <button type="button" disabled>Disconnect from Google</button>
+                        <p style="color: red">You must <a href="">define a password</a> for your
+                            account before disconnecting from Google.</p>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'social:begin' backend='google' %}"
+                       class="btn btn-block btn-social btn-twitter"
+                       onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                        <span class="fab fa-google"></span> Connect with Google
+                    </a>
+                {% endif %}
+            </div>
         </div>
-      </div>
     </div>
 {% endblock %}

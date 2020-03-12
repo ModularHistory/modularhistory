@@ -145,12 +145,13 @@
                                      alt="avatar image" height="35">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="navbarDropdownMenuLink-authenticated">
-                                <a class="dropdown-item" href="/account/profile">Profile</a>
+                                <a class="dropdown-item" href="{% url 'account:profile' %}">Profile</a>
+                                <a class="dropdown-item" href="{% url 'account:settings' %}">Settings</a>
                                 {% if request.user.is_superuser %}
                                     <a class="dropdown-item" href="/admin/">Administrate</a>
                                     <a class="dropdown-item hide-admin-controls" href="">Hide admin controls</a>
                                 {% endif %}
-                                <a href="/account/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+                                <a href="{% url 'account:logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
                             </div>
                         {% else %}
                             <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
@@ -158,8 +159,8 @@
                                 <i class="fas fa-user"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="navbarDropdownMenuLink-333">
-                                <a href="/account/register/" class="dropdown-item" href="#">Create an account</a>
-                                <a href="/account/login" class="dropdown-item" href="#">Login</a>
+                                <a href="{% url 'account:register' %}" class="dropdown-item" href="#">Create an account</a>
+                                <a href="{% url 'account:login' %}" class="dropdown-item" href="#">Login</a>
                             </div>
                         {% endif %}
                     </li>
