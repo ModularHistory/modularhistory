@@ -82,3 +82,4 @@ class User(AbstractUser):
     def unlock(self):
         self.locked = False
         self.save()
+
