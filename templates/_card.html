@@ -5,7 +5,9 @@
 <div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.key }}"
      data-href="{% block detail_url %}{% endblock %}" style="{% block card_styles %}{% endblock %}">
     {% block top %}{% endblock %}
-    <div class="card-body">
+    <div class="img-bg" style="background-image: url('{{ object.image.image.url }}');">
+    </div>
+    <div class="card-body" style="background-color: transparent; z-index: 1;">
         {% block edit %}
             {% if request.user.is_superuser %}
                 <a class="edit-object-button" target="_blank" href="{{ object|get_admin_url }}"><i class="fa fa-edit"></i></a>
@@ -25,13 +27,6 @@
             {% endif %}
         {% endif %}
         {% block body %}{% endblock %}
-        {% block tags %}
-            {% if object.related_topics and object.related_topics.all|length %}
-                <ul class="tags float-right">
-                    {{ object.topic_tags }}
-                </ul>
-            {% endif %}
-        {% endblock %}
     </div>
 </div>
 <!--/.Card-->

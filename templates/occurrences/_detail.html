@@ -9,6 +9,11 @@
         {{ occurrence.date_html }}
     {% endif %}
 </h2>
+{% if occurrence.related_topics and occurrence.related_topics.all|length %}
+    <ul class="tags float-right">
+        {{ occurrence.topic_tags }}
+    </ul>
+{% endif %}
 <div class="card-text">
     {% if unpositioned_images|length %}
         {% for occurrence_image in unpositioned_images %}

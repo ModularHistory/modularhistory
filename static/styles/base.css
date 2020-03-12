@@ -147,6 +147,8 @@ body,
           margin-right: -4px; }
         .serp-container .two-pane-container .results .card .card-body {
           font-size: 0.8rem; }
+          .serp-container .two-pane-container .results .card .card-body .card-text {
+            color: black; }
           .serp-container .two-pane-container .results .card .card-body p {
             font-size: 0.8rem; }
           .serp-container .two-pane-container .results .card .card-body .blockquote {
@@ -246,6 +248,14 @@ body {
   max-width: 44%;
   margin-left: 0.9rem;
   margin-bottom: 0.8rem; }
+
+.img-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 50%;
+  background-position: center;
+  background-size: cover; }
 
 .card, .row {
   position: relative; }

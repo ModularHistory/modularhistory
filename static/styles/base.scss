@@ -47,6 +47,15 @@ body {
   margin-bottom: 0.8rem;
 }
 
+.img-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 50%;
+  background-position: center;
+  background-size: cover;
+}
+
 .card, .row {
   position: relative;
   &.image-card {

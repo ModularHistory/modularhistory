@@ -98,6 +98,9 @@
         }
         .card-body {
           font-size: 0.8rem;
+          .card-text {
+            color: black;
+          }
           p {
             font-size: 0.8rem;
           }

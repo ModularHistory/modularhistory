@@ -6,6 +6,11 @@
     <a href="{% url 'entities:detail' quote.attributee.id %}" target="_blank">{{ quote.attributee }}</a>{% if quote.date %}, {{ quote.date.string }}{% endif %}
 </p>
 {% endif %}
+{% if quote.related_topics and quote.related_topics.all|length %}
+    <ul class="tags float-right">
+        {{ quote.topic_tags }}
+    </ul>
+{% endif %}
 <div class="card-text">
     {% if quote.image %}
         <div class="img-container">
