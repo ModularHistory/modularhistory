@@ -15,7 +15,7 @@
         <p>d. {{ entity.death_date.html }}</p>
     {% endif %}
     <div>
-        {% if not entity.quotes.all|length %}
+        {% if entity.images.exists and not entity.quotes.all|length %}
             <div class="img-container">{% image_card entity.images.first %}</div>
         {% endif %}
         {{ entity.description.html }}

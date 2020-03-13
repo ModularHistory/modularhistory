@@ -11,7 +11,7 @@
     {% endif %}
     <div class="card-body" style="background-color: transparent; z-index: 1;">
         {% block edit %}
-            {% if request.user.is_superuser %}
+            {% if object and request.user.is_superuser %}
                 <a class="edit-object-button" target="_blank" href="{{ object|get_admin_url }}"><i class="fa fa-edit"></i></a>
             {% endif %}
         {% endblock %}

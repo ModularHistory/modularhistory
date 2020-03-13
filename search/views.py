@@ -134,7 +134,12 @@ class SearchResultsView(ListView):
                 suppress_unverified=(not request.user.is_superuser)
             ).filter(entities=None)
             if occurrence_results:
-                image_results = image_results.exclude(occurrences__in=occurrence_results)
+                image_results = image_results.exclude(
+                    Q(occurrences__in=occurrence_results) |
+                    Q(entities__involved_occurrences__in=occurrence_results)
+                )
+            if quote_results:
+                image_results = image_results.exclude(entities__quotes__in=quote_results)
         else:
             image_results = Image.objects.none()
 
@@ -164,13 +169,13 @@ class SearchResultsView(ListView):
         # fact_results = Fact.objects.search(query)
 
         self.entities = Entity.objects.filter(pk__in=Subquery(Entity.objects.filter(
-            Q(involved_occurrences__in=occurrence_results)
-            | Q(quotes__in=quote_results)
-            | Q(attributed_sources__in=source_results)
+            Q(involved_occurrences__in=occurrence_results) |
+            Q(quotes__in=quote_results) |
+            Q(attributed_sources__in=source_results)
         ).order_by('id').distinct('id').values('pk'))).order_by('name')
         self.topics = Topic.objects.filter(pk__in=Subquery(Topic.objects.filter(
-            Q(related_occurrences__in=occurrence_results)
-            | Q(related_quotes__in=quote_results)
+            Q(related_occurrences__in=occurrence_results) |
+            Q(related_quotes__in=quote_results)
             # | Q(related_topics__related_quotes__in=quote_results)
         ).order_by('id').distinct('id').values('pk'))).order_by('key')
         # self.places = Place.objects.filter(
