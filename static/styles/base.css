@@ -156,6 +156,9 @@ body,
           color: black; }
           .serp-container .two-pane-container .results .card .card-body .card-text {
             color: black; }
+          .serp-container .two-pane-container .results .card .card-body .fa {
+            -webkit-text-stroke: initial;
+            text-shadow: none; }
           .serp-container .two-pane-container .results .card .card-body p {
             font-size: 0.8rem;
             margin-bottom: 0; }
@@ -296,7 +299,6 @@ body {
       padding-top: 1rem !important;
       padding-bottom: 0 !important; }
   .card .edit-object-button, .row .edit-object-button {
-    margin: 1rem;
     clear: right;
     position: absolute;
     right: 2px;
