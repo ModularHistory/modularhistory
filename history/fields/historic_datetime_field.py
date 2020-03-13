@@ -19,13 +19,7 @@ class HistoricDateTimeField(DateTimeField):
                          **kwargs)
 
     def clean(self, value, model_instance):
-        print(f'>>> before HistoricDateTimeField clean: {value}')
-        try:
-            value = super().clean(value, model_instance)
-        except ValidationError as e:
-            raise ValidationError(f'HistoricDateTimeField validation error: {e}')
-        print(f'>>> after HistoricDateTimeField clean: {value}')
-        return value
+        return super().clean(value, model_instance)
 
     def formfield(self, **kwargs) -> Field:
         return super(DateTimeField, self).formfield(**{

@@ -117,40 +117,6 @@ class RegistrationForm(UserCreationForm):
         )
 
 
-#     def clean_email(self):
-#         email = self.cleaned_data.get('email')
-#         if User.objects.filter(email=email).exists():
-#             print(">>> ValidationError: An account with this email address has already been created.")
-#             raise forms.ValidationError('An account with this email address has already been created.')
-#         return email
-#
-#     def clean_username(self):
-#         email = self.cleaned_data.get('email')
-#         username = self.cleaned_data.get('username') if self.cleaned_data.get('username') else email
-#         if User.objects.filter(email=email).count() > 0:
-#             print(">>> ValidationError: An account with this username has already been created.")
-#             raise forms.ValidationError('An account with this username has already been created.')
-#         return username
-#
-#     def clean_first_name(self):
-#         first_name = self.cleaned_data.get('first_name')
-#         first_name = first_name.title()
-#         return first_name
-#
-#     def clean_last_name(self):
-#         last_name = self.cleaned_data.get('last_name')
-#         last_name = last_name.title()
-#         return last_name
-#
-#     def clean(self):
-#         if self.cleaned_data.get('username') is None:
-#             self.cleaned_data['username'] = self.cleaned_data.get('email')
-#         if self.cleaned_data.get('password') != self.cleaned_data.get('password2'):
-#             print(">>> ValidationError: Your passwords need to match. Please try again.")
-#             raise forms.ValidationError('Your passwords need to match. Please try again.')
-#         return self.cleaned_data
-
-
 # class ChangeForm(FormMixIn, forms.ModelForm):
 #     # Form for updating user information
 #     form_id = 'changeform' # set in __init__ below
@@ -229,24 +195,3 @@ class RegistrationForm(UserCreationForm):
 #             raise forms.ValidationError("The file type must be JPG or PNG.")
 #         return picture
 #
-#
-# class ChangePasswordForm(CustomForm):
-#     is_ajax = True
-#     form_id = 'changepasswordform'
-#     current_password = forms.CharField(label='Current password', required=True, max_length=100,
-#                                        widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-#     password1 = forms.CharField(label='New password', required=True, max_length=100,
-#                                 widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-#     password2 = forms.CharField(label='Confirm new password', required=True, max_length=100,
-#                                 widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-#
-#     def clean_current_password(self):
-#         if not self.user.check_password(self.cleaned_data.get('current_password')):
-#             raise forms.ValidationError('The password that you entered was incorrect.')
-#         return self.cleaned_data.get('current_password')
-#
-#     def clean(self):
-#         # check the two password are the same
-#         if self.cleaned_data.get('password1') != self.cleaned_data.get('password2'):
-#             raise forms.ValidationError('The new password did not match its confirmation value. Please try again.')
-#         return self.cleaned_data
