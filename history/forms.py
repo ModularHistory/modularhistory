@@ -21,29 +21,3 @@ class SourceFileFormField(FileField):
 
 class HistoricDateFormField(DateTimeField):
     widget = HistoricDateWidget
-
-
-class HistoricDateFormField2(DateTimeField):
-    widget = HistoricDateWidget
-
-    # def __init__(self, *args, **kwargs):
-    #     fields = (
-    #         forms.IntegerField(required=False),
-    #         forms.IntegerField(required=False),
-    #         forms.IntegerField(required=False),
-    #         forms.TimeField(required=False),
-    #     )
-    #     super().__init__(
-    #         fields=fields,
-    #         require_all_fields=False, **kwargs
-    #     )
-    #
-    # def compress(self, values):
-    #     compressed_values = []
-    #     for value in values:
-    #         if value != '':
-    #             print(f'{type(value)}: {value}', file=stderr)
-    #             sleep(15)
-    #             raise Exception(f'{value}')
-    #             compressed_values.append(value)
-    #     return compressed_values

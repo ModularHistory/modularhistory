@@ -1,12 +1,13 @@
 // autoresize JS may no longer be necessary; now using the autoresize TinyMCE plugin
 
-// function adjustMceHeight(iframe) {
-//     let initial_iframe_height = iframe.height();
-//     let content_height = iframe.contents().find('html').height() + 30;
-//     iframe.height(initial_iframe_height - (initial_iframe_height - content_height));
-// }
+function adjustMceHeight(iframe) {
+    let initial_iframe_height = iframe.height();
+    let content_height = iframe.contents().find('html').height() + 30;
+    iframe.height(initial_iframe_height - (initial_iframe_height - content_height));
+}
 
 $(window).on('load', function() {
+    console.log('mce.js');
     $('.mce-branding,.mce-notification').hide();
     let label_width = $('.mce-container').prev().width();
     // let form = $('.mce-container').closest('form');

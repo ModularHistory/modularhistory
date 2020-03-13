@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('type2', models.CharField(blank=True, choices=[('journal', 'Journal'), ('newspaper', 'Newspaper'), ('magazine', 'Magazine')], max_length=10, null=True)),
                 ('name', models.CharField(blank=True, max_length=100, null=True, unique=True)),
                 ('aliases', models.CharField(blank=True, max_length=100, null=True)),
-                ('description', history.fields.html_field.HTMLField(blank=True, null=True)),
+                ('description', history.fields.HTMLField(blank=True, null=True)),
             ],
             options={
                 'ordering': ['name'],
@@ -60,9 +60,9 @@ class Migration(migrations.Migration):
                 ('db_string', models.CharField(blank=True, max_length=500, unique=True, verbose_name='database string')),
                 ('creators', models.CharField(blank=True, max_length=100, null=True)),
                 ('link', models.URLField(blank=True, max_length=100, null=True)),
-                ('description', history.fields.html_field.HTMLField(blank=True, null=True)),
-                ('date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('publication_date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('description', history.fields.HTMLField(blank=True, null=True)),
+                ('date', history.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('publication_date', history.fields.HistoricDateTimeField(blank=True, null=True)),
             ],
             options={
                 'ordering': ['creators', '-date'],
@@ -156,7 +156,7 @@ class Migration(migrations.Migration):
                 ('publisher', models.CharField(blank=True, max_length=100, null=True)),
                 ('edition_number', models.PositiveSmallIntegerField(default=1)),
                 ('volume_number', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('original_publication_date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('original_publication_date', history.fields.HistoricDateTimeField(blank=True, null=True)),
             ],
             options={
                 'abstract': False,

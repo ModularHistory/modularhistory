@@ -35,6 +35,8 @@ function setGetParam(key, value) {
 }
 
 $(function() {
+    console.log('base.js');
+
     // any page
     initializeListeners();
 
@@ -88,6 +90,4 @@ $(function() {
         event.preventDefault();
         $('head').append(`<style>.edit-object-button {display: none}</style>`);
     });
-
-    // $('.mdb-select').materialSelect();
 });//ready

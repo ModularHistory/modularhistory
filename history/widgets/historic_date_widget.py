@@ -43,6 +43,7 @@ def get_year(year: int, year_system: str = 'CE') -> Tuple[int, int, int]:
         inv_decimal_num = 100000 - int(decimal_num)  # 986200 for the Big Bang
         second, microsecond = inv_exponent, inv_decimal_num
         year = 1
+        # TODO
         # if year_system == 'BCE':
         #     pass
         # elif year_system == 'YBP':
@@ -90,9 +91,6 @@ class YearInput(MultiWidget):
 
 class HistoricDateWidget(MultiWidget):
     def __init__(self, attrs: Optional[Dict] = None):
-        # days = [(day, day) for day in range(1, 32)]
-        # months = [(month, month) for month in range(1, 13)]
-        # years = [(year, year) for year in range(datetime.now().year)]
         attrs = {'style': 'margin-right: 1rem'} if not attrs else {
             **attrs, **{'style': 'margin-right: 1rem'}
         }

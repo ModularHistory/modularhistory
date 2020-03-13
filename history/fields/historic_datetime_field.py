@@ -2,9 +2,8 @@ import datetime
 from datetime import datetime
 from typing import Optional, Union
 
-# from sys import stderr
-from django.db.models import DateField, DateTimeField
-from django.forms import Field
+from django.db.models import DateTimeField
+from django.forms import Field, ValidationError
 
 from history.forms import HistoricDateFormField
 from history.structures.historic_datetime import HistoricDateTime
@@ -18,6 +17,12 @@ class HistoricDateTimeField(DateTimeField):
     def __init__(self, verbose_name=None, name=None, auto_now=False, auto_now_add=False, **kwargs):
         super().__init__(verbose_name=verbose_name, name=name, auto_now=auto_now, auto_now_add=auto_now_add,
                          **kwargs)
+
+    def clean(self, value, model_instance):
+        try:
+            super().clean(value, model_instance)
+        except ValidationError as e:
+            raise ValidationError(f'HistoricDateTimeField validation error: {e}')
 
     def formfield(self, **kwargs) -> Field:
         return super(DateTimeField, self).formfield(**{

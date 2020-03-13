@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             name='Fact',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', history.fields.html_field.HTMLField(unique=True)),
+                ('text', history.fields.HTMLField(unique=True)),
                 ('related_entities', models.ManyToManyField(related_name='facts', through='topics.EntityFactRelation', to='entities.Entity')),
             ],
             options={
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('key', models.CharField(max_length=24, unique=True)),
                 ('aliases', history.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
-                ('description', history.fields.html_field.HTMLField(blank=True, null=True)),
+                ('description', history.fields.HTMLField(blank=True, null=True)),
                 ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='children', to='topics.Topic')),
                 ('related_entities', models.ManyToManyField(blank=True, related_name='related_topics', through='topics.EntityTopicRelation', to='entities.Entity')),
                 ('related_occurrences', models.ManyToManyField(related_name='related_topics', through='topics.OccurrenceTopicRelation', to='occurrences.Occurrence')),
