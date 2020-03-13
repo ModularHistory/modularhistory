@@ -6,7 +6,7 @@ from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
 
-from history.fields import ArrayField, HistoricDateTimeField, HistoricDateField, HTMLField
+from history.fields import ArrayField, HistoricDateTimeField, HTMLField
 from history.models import Model, PolymorphicModel, TaggableModel
 from history.models import TypedModel
 from images.models import Image
@@ -148,8 +148,8 @@ class Organization(Entity):
 
 
 class _Engagement(Model):
-    start_date = HistoricDateField(null=True, blank=True)
-    end_date = HistoricDateField(null=True, blank=True)
+    start_date = HistoricDateTimeField(null=True, blank=True)
+    end_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
         abstract = True

@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import ForeignKey, SET_NULL
 from django.utils.safestring import SafeText, mark_safe
 
-from history.fields import HistoricDateField
+from history.fields import HistoricDateTimeField
 from .base import TitleMixin, TextualSource
 
 
@@ -13,7 +13,7 @@ class _Book(TitleMixin, TextualSource):
     edition_number = models.PositiveSmallIntegerField(default=1)
     volume_number = models.PositiveSmallIntegerField(null=True, blank=True)
     original_book = ForeignKey('self', related_name='subsequent_editions', blank=True, null=True, on_delete=SET_NULL)
-    original_publication_date = HistoricDateField(null=True, blank=True)
+    original_publication_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
         abstract = True

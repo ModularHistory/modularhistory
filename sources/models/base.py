@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
 from django.utils.safestring import SafeText, mark_safe
 # from django.dispatch import receiver
-from history.fields import HistoricDateTimeField, HistoricDateField
+from history.fields import HistoricDateTimeField
 from history.fields import HTMLField
 from history.models import Model, PolymorphicModel, DatedModel, SearchableMixin
 from .source_file import SourceFile
@@ -25,7 +25,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     link = models.URLField(max_length=100, null=True, blank=True)
     description = HTMLField(null=True, blank=True)
     date = HistoricDateTimeField(null=True, blank=True)
-    publication_date = HistoricDateField(null=True, blank=True)
+    publication_date = HistoricDateTimeField(null=True, blank=True)
     containers = ManyToManyField(
         'self', related_name='contained_sources',
         through='SourceContainment',

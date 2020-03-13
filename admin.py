@@ -11,8 +11,7 @@ from django.contrib.sites.models import Site
 from django.contrib.admin import StackedInline as BaseStackedInline, TabularInline as BaseTabularInline
 from sass_processor.processor import sass_processor
 from massadmin.massadmin import mass_change_selected
-from history.fields import HistoricDateField, HistoricDateTimeField
-from history.fields.file_field import SourceFileField
+from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
 
 AUTOCOMPLETE_FIELDS = [
@@ -26,7 +25,6 @@ AUTOCOMPLETE_FIELDS = [
 
 class StackedInline(BaseStackedInline):
     formfield_overrides = {
-        HistoricDateField: {'widget': HistoricDateWidget},
         HistoricDateTimeField: {'widget': HistoricDateWidget},
         SourceFileField: {'widget': SourceFileInput},
     }
@@ -42,7 +40,6 @@ class StackedInline(BaseStackedInline):
 
 class TabularInline(BaseTabularInline):
     formfield_overrides = {
-        HistoricDateField: {'widget': HistoricDateWidget},
         HistoricDateTimeField: {'widget': HistoricDateWidget},
         SourceFileField: {'widget': SourceFileInput},
     }
@@ -50,7 +47,6 @@ class TabularInline(BaseTabularInline):
 
 class Admin(ModelAdmin):
     formfield_overrides = {
-        HistoricDateField: {'widget': HistoricDateWidget},
         HistoricDateTimeField: {'widget': HistoricDateWidget},
         SourceFileField: {'widget': SourceFileInput},
     }
