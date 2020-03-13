@@ -34,11 +34,6 @@ class HistoricDateTimeField(DateTimeField):
             **kwargs,
         })
 
-    # def clean(self, value, model_instance) -> HTML:
-    #     value = super().clean(value=value, model_instance=model_instance)
-    #     value.raw_value = value.raw_value.replace('<blockquote>', '<blockquote class="blockquote">')
-    #     return value
-
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
     def from_db_value(self, value: Optional[datetime], expression, connection) -> Optional[HistoricDateTime]:
         if value is None:

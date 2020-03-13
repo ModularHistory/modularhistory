@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
-                ('date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('date', history.fields.HistoricDateTimeField(blank=True, null=True)),
                 ('verified', models.BooleanField(blank=True, default=False)),
                 ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
                 ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
