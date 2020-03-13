@@ -1,3 +1,7 @@
+@charset "UTF-8";
+* {
+  quotes: "“" "”" "‘" "’"; }
+
 .nowrap {
   white-space: nowrap; }
 
@@ -146,17 +150,41 @@ body,
           border-bottom: 1px solid black;
           margin-right: -4px; }
         .serp-container .two-pane-container .results .card .card-body {
-          font-size: 0.8rem; }
+          font-size: 0.8rem;
+          -webkit-text-stroke: 1px black;
+          text-shadow: 0 0 1px #ffffff, 0 1px 1px #ffffff, 1px 1px 1px #ffffff, 1px 0 1px #ffffff, 0 0 0.5rem #ffffff, 0 1px 0.5rem #ffffff, 1px 1px 0.5rem #ffffff, 1px 0 0.5rem #ffffff, 0 0 1rem #ffffff, 0 1px 1rem #ffffff, 1px 1px 1rem #ffffff, 1px 0 1rem #ffffff, 0 0 2rem #ffffff, 0 1px 2rem #ffffff, 1px 1px 2rem #ffffff, 1px 0 2rem #ffffff;
+          color: black; }
           .serp-container .two-pane-container .results .card .card-body .card-text {
             color: black; }
           .serp-container .two-pane-container .results .card .card-body p {
-            font-size: 0.8rem; }
-          .serp-container .two-pane-container .results .card .card-body .blockquote {
             font-size: 0.8rem;
-            padding-left: 0.8rem;
-            padding-right: 0; }
+            margin-bottom: 0; }
+          .serp-container .two-pane-container .results .card .card-body .blockquote {
+            position: relative;
+            margin-bottom: 0;
+            font-size: 0.8rem;
+            border-left: none;
+            padding: 0.2rem 0.1rem 0 0.3rem;
+            line-height: 1.2rem; }
+            .serp-container .two-pane-container .results .card .card-body .blockquote::before {
+              content: open-quote;
+              position: absolute;
+              top: -0.5rem;
+              left: -0.5rem;
+              font-size: 3rem;
+              font-weight: bold; }
+            .serp-container .two-pane-container .results .card .card-body .blockquote::after {
+              content: no-close-quote;
+              position: relative;
+              bottom: 0;
+              right: 0;
+              font-size: 2rem; }
             .serp-container .two-pane-container .results .card .card-body .blockquote p {
+              position: relative;
               font-size: 0.8rem; }
+            .serp-container .two-pane-container .results .card .card-body .blockquote footer {
+              margin-top: 0.5rem;
+              text-align: center; }
         .serp-container .two-pane-container .results .card .image-credit {
           display: none; }
         .serp-container .two-pane-container .results .card .thumbnail {

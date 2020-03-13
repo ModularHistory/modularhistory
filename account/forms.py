@@ -13,7 +13,6 @@ class LoginForm(AuthenticationForm):
     """Crispy login form."""
     def __init__(self, request=None, *args, **kwargs):
         super().__init__(request=request, *args, **kwargs)
-
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
         self.helper.form_id = 'loginForm'
@@ -69,12 +68,10 @@ class RegistrationForm(UserCreationForm):
     """Crispy registration form."""
     class Meta:
         model = User
-        exclude = ()
-        # fields = ('username', 'email')
+        fields = ('first_name', 'last_name', 'username', 'email')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
         self.helper.form_id = 'registrationForm'
@@ -88,18 +85,22 @@ class RegistrationForm(UserCreationForm):
             Field('username', css_class='form-control mb-4', placeholder='Username'),
             Field('password1', css_class='form-control mb-4', placeholder='Password'),
             Field('password2', css_class='form-control mb-4', placeholder='Confirm password'),
-            # HTML(f'''
-            #     <div class="form-row mb-4">
-            #         <div class="col">
-            #             <!-- First name -->
-            #             <input type="text" id="defaultRegisterFormFirstName" class="form-control" placeholder="First name">
-            #         </div>
-            #         <div class="col">
-            #             <!-- Last name -->
-            #             <input type="text" id="defaultRegisterFormLastName" class="form-control" placeholder="Last name">
-            #         </div>
-            #     </div>
-            # '''),
+            HTML(f'''
+                <div class="form-row mb-4">
+                    <div class="col">
+                        <!-- First name -->
+            '''),
+            Field('first_name', placeholder='First name'),
+            HTML(f'''
+                    </div>
+                    <div class="col">
+                        <!-- Last name -->
+            '''),
+            Field('last_name', placeholder='Last name'),
+            HTML(f'''
+                    </div>
+                </div>
+            '''),
             Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
             HTML(f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'),
             HTML(f'''

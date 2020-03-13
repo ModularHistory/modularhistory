@@ -77,13 +77,13 @@ $(function() {
         });
     }
 
-    $(result_card_selector).each(function () {
-        $('p', $(this)).each(function () {
-            let content = $(this).html();
-            content = `<span style="background-color: white;">${content}</span>`;
-            $(this).html(content);
-        });
-    });
+    // $(result_card_selector).each(function () {
+    //     $('p', $(this)).each(function () {
+    //         let content = $(this).html();
+    //         content = `<span style="background-color: white;">${content}</span>`;
+    //         $(this).html(content);
+    //     });
+    // });
 
     $('.hide-admin-controls').click(function(event) {
         // $('.edit-object-button').hide();
