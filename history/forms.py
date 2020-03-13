@@ -26,6 +26,7 @@ class HistoricDateFormField(DateTimeField):
         try:
             super().clean(value)
         except ValidationError as e:
-            raise ValidationError(f'HistoricDateFormField validation error: {e}')
+            raise ValidationError(f'HistoricDateFormField validation error: {e}. '
+                                  f'Caused by value of `{value}`.')
         except Exception as e:
             raise Exception(f'Unexpected error: {e}')
