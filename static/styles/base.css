@@ -306,9 +306,7 @@ body {
     float: right; }
 
 ul.tags {
-  clear: both;
-  padding: 0;
-  margin-bottom: 0; }
+  padding: 0; }
   ul.tags li.topic-tag {
     list-style: none;
     font-size: 0.6rem;
