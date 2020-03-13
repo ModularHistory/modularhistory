@@ -23,10 +23,13 @@ class HistoricDateFormField(DateTimeField):
     widget = HistoricDateWidget
 
     def clean(self, value):
+        print(f'>>> before HistoricDateFormField clean: {value}')
         try:
-            super().clean(value)
+            value = super().clean(value)
         except ValidationError as e:
             raise ValidationError(f'HistoricDateFormField validation error: {e}. '
                                   f'Caused by value of `{value}`.')
         except Exception as e:
             raise Exception(f'Unexpected error: {e}')
+        print(f'>>> after HistoricDateFormField clean: {value}')
+        return value

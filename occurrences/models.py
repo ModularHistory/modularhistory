@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import ManyToManyField, ForeignKey, CASCADE
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
-
+from django.core.exceptions import ValidationError
 from history.fields import HistoricDateTimeField
 from history.fields import HTMLField
 from history.models import Model, PolymorphicModel, TaggableModel, DatedModel, SearchableMixin
@@ -115,12 +115,8 @@ class Occurrence(DatedModel, TaggableModel, SearchableMixin):
 
     def full_clean(self, exclude=None, validate_unique=True):
         super().full_clean(exclude, validate_unique)
-        # ois = list(self.occurrence_images.order_by('position'))
-        # for i, oi in enumerate(ois):
-        #     if i < len(ois)-1 and not oi.position == 0:
-        #         if oi.position == ois[i+1].position:
-        #             raise ValidationError(f'{oi} has same position as {ois[i+1]}: {oi.position}. '
-        #                                   f'Positions should be unique.')
+        if not self.date:
+            raise ValidationError('Occurrence needs a date.')
 
     def save(self, *args, **kwargs):
         self.full_clean()
