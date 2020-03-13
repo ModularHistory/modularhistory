@@ -20,6 +20,11 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
 SITE_ID = 1
 
+ADMINS = config('ADMINS', cast=lambda value: [
+    tuple(name_and_email.split(','))
+    for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
+])
+
 # Build paths inside the project like this:
 # os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

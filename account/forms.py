@@ -82,9 +82,6 @@ class RegistrationForm(UserCreationForm):
         # self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Register account</p>'),
-            Field('username', css_class='form-control mb-4', placeholder='Username'),
-            Field('password1', css_class='form-control mb-4', placeholder='Password'),
-            Field('password2', css_class='form-control mb-4', placeholder='Confirm password'),
             HTML(f'''
                 <div class="form-row mb-4">
                     <div class="col">
@@ -101,6 +98,9 @@ class RegistrationForm(UserCreationForm):
                     </div>
                 </div>
             '''),
+            Field('username', css_class='form-control mb-4', placeholder='Username'),
+            Field('password1', css_class='form-control mb-4', placeholder='Password'),
+            Field('password2', css_class='form-control mb-4', placeholder='Confirm password'),
             Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
             HTML(f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'),
             HTML(f'''
