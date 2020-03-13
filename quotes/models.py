@@ -70,12 +70,12 @@ class Quote(TaggableModel, DatedModel, SearchableMixin):
         html = f'<div class="quote-context">{self.pretext.html}</div>' if self.pretext else ''
         html += (
             f'<blockquote class="blockquote">'
+            f'<a class="edit-object-button float-right" target="_blank" href="{self.get_admin_url()}">'
+            f'<i class="fa fa-edit"></i>'
+            f'</a>'
             f'{self.text.html}'
             f'<footer class="blockquote-footer" style="position: relative;">'
             f'{source_reference_html}'
-            f'<a class="edit-object-button" target="_blank" href="{self.get_admin_url()}">'
-            f'<i class="fa fa-edit"></i>'
-            f'</a>'
             f'</footer>'
             f'</blockquote>'
         )
