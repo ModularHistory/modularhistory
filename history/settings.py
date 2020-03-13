@@ -248,8 +248,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-# GDAL_LIBRARY_PATH
-
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
 
