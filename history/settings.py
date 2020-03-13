@@ -18,8 +18,6 @@ from django.conf.locale.en import formats as en_formats
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
-SITE_ID = 1
-
 ADMINS = config('ADMINS', cast=lambda value: [
     tuple(name_and_email.split(','))
     for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
@@ -28,9 +26,6 @@ ADMINS = config('ADMINS', cast=lambda value: [
 # Build paths inside the project like this:
 # os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
 SECRET_KEY = config('SECRET_KEY')
@@ -403,3 +398,6 @@ def show_debug_toolbar(request) -> bool:
 
 X_RAPIDAPI_HOST = config('X_RAPIDAPI_HOST')
 X_RAPIDAPI_KEY = config('X_RAPIDAPI_KEY')
+
+# https://docs.djangoproject.com/en/3.0/ref/contrib/sites/
+SITE_ID = 1
