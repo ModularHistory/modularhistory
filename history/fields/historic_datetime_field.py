@@ -12,15 +12,6 @@ from history.structures.historic_datetime import HistoricDateTime
 
 # TODO: https://dateparser.readthedocs.io/en/latest/
 # TODO: https://dateutil.readthedocs.io/en/stable/
-# https://softwareengineering.stackexchange.com/questions/194286/how-do-you-store-fuzzy-dates-into-a-database
-class HistoricDateField(DateField):
-    def formfield(self, **kwargs) -> Field:
-        return super(DateField, self).formfield(**{
-            'form_class': HistoricDateFormField,
-            **kwargs,
-        })
-
-
 class HistoricDateTimeField(DateTimeField):
     year: int
 
