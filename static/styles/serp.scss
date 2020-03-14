@@ -170,15 +170,22 @@
     }
     .view-detail {
       text-align: left;
+      display: inline-block;
+      width: 60%;
+      max-width: 44rem;
       height: 100vh;
       max-height: 100vh;
       overflow-y: auto;
-      position: -webkit-sticky; /* Safari */
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      /* Hide scrollbar for IE and Edge */
+      -ms-overflow-style: none;
+      /* Sticky position */
+      position: -webkit-sticky; // Safari
       position: sticky;
       top: 0;
-      width: 60%;
-      max-width: 44rem;
-      display: inline-block;
       p {
         >iframe {
           margin-left: auto; // doesn't work; using iframe align attribute instead
