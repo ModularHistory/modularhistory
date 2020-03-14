@@ -1,11 +1,12 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ManyToManyField, ForeignKey, CASCADE
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
-from django.core.exceptions import ValidationError
+
 from history.fields import HistoricDateTimeField, HTMLField
 from history.models import Model, PolymorphicModel, TaggableModel, DatedModel, SearchableMixin, SourceMixin
 from images.models import Image

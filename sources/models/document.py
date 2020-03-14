@@ -1,14 +1,10 @@
-from typing import Optional
-
-from django.db import models
-from django.db.models import ForeignKey, CASCADE, SET_NULL
-from django.utils.safestring import SafeText, mark_safe
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models import ForeignKey, CASCADE
+from django.utils.safestring import SafeText, mark_safe
 
-from history.fields.file_field import SourceFileField
-from history.fields import HTMLField
 from history.models import Model
-from .base import TitleMixin, TextualSource, SourceFile, _Piece
+from .base import TitleMixin, TextualSource, _Piece
 
 
 class DocumentMixin(Model):
@@ -72,7 +68,10 @@ class Repository(Model):
         verbose_name_plural = 'Repositories'
 
     def __str__(self):
-        return f'{self.name}, {self.location}'
+        string = self.name
+        if self.location:
+            string += f', {self.location}'
+        return string
 
 
 class Document(TitleMixin, _Document):
