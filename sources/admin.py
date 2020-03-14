@@ -67,14 +67,14 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
         models.WebPage,
         models.Affidavit
     ]
-    list_display = (
+    list_display = [
         'string',
         'creators',
         'date_string',
         'location',
         'admin_file_link'
-    )
-    list_filter = (
+    ]
+    list_filter = [
         'verified',
         HasFileFilter,
         HasFilePageOffsetFilter,
@@ -83,7 +83,7 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
         'hidden',
         'attributees',
         'polymorphic_ctype'
-    )
+    ]
     readonly_fields = ['db_string']
     search_fields = models.Source.searchable_fields
     ordering = (
@@ -133,13 +133,13 @@ class ChildModelAdmin(PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin,
 
 
 class PublicationAdmin(Admin):
-    list_display = ('__str__', 'description', 'type2')
-    search_fields = ('name',)
-    list_filter = ('type2',)
+    list_display = ['__str__', 'description', 'type2']
+    search_fields = ['name']
+    list_filter = ['type2']
 
 
 class ArticleAdmin(ChildModelAdmin):
-    list_display = ('string', 'publication', 'description', 'date_string')
+    list_display = ['string', 'publication', 'description', 'date_string']
     autocomplete_fields = ChildModelAdmin.autocomplete_fields + ['publication']
 
 
@@ -149,22 +149,23 @@ class ArticlesInline(StackedInline):
 
 
 class SpeechAdmin(ChildModelAdmin):
-    list_display = ('string', 'type2', 'location', 'date_string')
-    search_fields = ('db_string', 'location__name')
+    list_display = ['string', 'type2', 'location', 'date_string']
+    search_fields = ['db_string', 'location__name']
 
 
 class CollectionAdmin(Admin):
-    search_fields = ('name', 'repository__name', 'repository__location')
-    autocomplete_fields = ('repository',)
+    search_fields = ['name', 'repository__name', 'repository__location']
+    autocomplete_fields = ['repository']
 
 
 class DocumentAdmin(ChildModelAdmin):
     search_fields = ChildModelAdmin.search_fields
-    autocomplete_fields = ('collection', 'file')
+    autocomplete_fields = ['collection', 'file']
 
 
 class RepositoryAdmin(Admin):
-    search_fields = ('name', 'location')
+    search_fields = ['name', 'location']
+    autocomplete_fields = ['location']
 
 
 class SourcesInline(TabularInline):
@@ -174,8 +175,8 @@ class SourcesInline(TabularInline):
 
 
 class SourceFileAdmin(Admin):
-    list_display = ('__str__', 'name', 'page_offset')
-    search_fields = ('file',)
+    list_display = ['__str__', 'name', 'page_offset']
+    search_fields = ['file']
     inlines = [SourcesInline]
 
     def get_fields(self, request, obj=None):
