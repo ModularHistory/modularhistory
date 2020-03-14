@@ -1,5 +1,6 @@
 from django.contrib.admin import TabularInline
 
+from image_cropping import ImageCroppingMixin
 from admin import admin_site, Admin
 from entities.models import EntityImage
 from occurrences.models import OccurrenceImage
@@ -20,7 +21,7 @@ class OccurrencesInline(TabularInline):
     autocomplete_fields = ['occurrence']
 
 
-class ImageAdmin(Admin):
+class ImageAdmin(ImageCroppingMixin, Admin):
     list_display = [
         'admin_image_element',
         'detail_link',
@@ -34,7 +35,7 @@ class ImageAdmin(Admin):
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
-        for field_name in ('type',):
+        for field_name in ('date_is_circa', 'date', 'type', 'image', 'hidden', 'verified'):
             if field_name in fields:
                 fields.remove(field_name)
                 fields.insert(0, field_name)

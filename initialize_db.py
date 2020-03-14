@@ -24,23 +24,11 @@ from account import models as account
 # from sources import models as sources
 # from django.contrib.contenttypes.models import ContentType
 
-from sources.models import Source, Speech, SourceContainment
-from django.core.exceptions import ValidationError
+from images.models import Image
 
-for source in Source.objects.all():
-    try:
-        source.save()
-    except (RecursionError, ValidationError):
-        print()
-        if source.container:
-            if isinstance(source.container, Speech):
-                SourceContainment.objects.filter(source=source, container=source.container)[0].delete()
-            else:
-                print(source)
-                print(f'contained in {source.container}')
-                if source.container.container:
-                    print(f'contained in {source.container.container}')
-        raise
+for image in Image.objects.all():
+    if image.cropped_image:
+        print(image.cropped_image)
 
 
 # try:

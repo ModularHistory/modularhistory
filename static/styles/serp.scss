@@ -77,15 +77,13 @@
         }
         &.active {
           box-shadow:
-                  inset 1px 1px 1px 1px black,
-                  inset 1px -1px 1px 1px black;
-          >div {
+                  inset 2px 1px 1px 1px black,
+                  inset 2px -1px 1px 1px black;
+          >.img-bg {
             box-shadow:
                     inset 1px 1px 1px 1px black,
                     inset 1px -1px 1px 1px black;
-          }
-          .img-bg {
-            opacity: 60%;
+            opacity: 70%;
           }
         }
         .card-body {
@@ -161,10 +159,6 @@
           .image-credit {
             display: none;
           }
-        }
-        .thumbnail {
-          float: left;
-          margin-right: 0.9rem;
         }
       }
     }

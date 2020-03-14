@@ -1,5 +1,6 @@
 {% extends "_card.html" %}
 {% load get_detail_url %}
+{% load cropping %}
 
 {% block card_class %}image-card{% endblock %}
 
@@ -15,9 +16,8 @@
 
 {% block top %}
     <div class="view overlay" style="max-width: {{ image.width }}px; max-height: 97vh;">
-        <img class="card-img-top" src="{{ image.image.url }}" alt="{{ image.image.name }}">
+        <img class="card-img-top" src="{{ image.src_url }}" alt="{{ image.image.name }}">
         <a href="#" onclick="return false">
-{#        <a href="/history/images/{{ image.id }}" target="_blank">#}
             <div class="mask rgba-white-slight"></div>
         </a>
     </div>

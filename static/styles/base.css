@@ -145,11 +145,10 @@ body,
         .serp-container .two-pane-container .results .card:first-child {
           margin-top: 0 !important; }
         .serp-container .two-pane-container .results .card.active {
-          box-shadow: inset 1px 1px 1px 1px black, inset 1px -1px 1px 1px black; }
-          .serp-container .two-pane-container .results .card.active > div {
-            box-shadow: inset 1px 1px 1px 1px black, inset 1px -1px 1px 1px black; }
-          .serp-container .two-pane-container .results .card.active .img-bg {
-            opacity: 60%; }
+          box-shadow: inset 2px 1px 1px 1px black, inset 2px -1px 1px 1px black; }
+          .serp-container .two-pane-container .results .card.active > .img-bg {
+            box-shadow: inset 1px 1px 1px 1px black, inset 1px -1px 1px 1px black;
+            opacity: 70%; }
         .serp-container .two-pane-container .results .card .card-body {
           font-size: 0.8rem;
           -webkit-text-stroke: 1px black;

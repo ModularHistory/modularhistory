@@ -74,11 +74,13 @@ INSTALLED_APPS = [
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'decouple',
+    'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     # TODO: https://django-file-picker.readthedocs.io/en/latest/index.html
     # 'file_picker',
     # 'file_picker.uploads',  # file and image Django app
     # 'file_picker.wymeditor',  # optional WYMeditor plugin
     # 'sorl.thumbnail',  # required
+    'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
@@ -408,3 +410,9 @@ EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
+
+# https://github.com/jonasundderwolf/django-image-cropping
+from easy_thumbnails.conf import Settings as ThumbnailSettings
+THUMBNAIL_PROCESSORS = (
+    'image_cropping.thumbnail_processors.crop_corners',
+) + ThumbnailSettings.THUMBNAIL_PROCESSORS

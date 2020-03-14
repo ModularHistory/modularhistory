@@ -4,9 +4,10 @@ import pafy
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import SafeText, mark_safe
-
-from history.fields.file_field import upload_to
+from image_cropping import ImageRatioField
+from easy_thumbnails.files import get_thumbnailer
 from history.fields import HTMLField
+from history.fields.file_field import upload_to
 from history.models import Model, DatedModel, TaggableModel, SearchableMixin
 from .manager import Manager as ImageManager
 
@@ -40,11 +41,14 @@ class Image(MediaModel):
     image = models.ImageField(
         upload_to=upload_to('images/'),
         height_field='height', width_field='width',
-        null=True  # but not blank=True
+        null=True
     )
+    type = models.CharField(max_length=14, choices=image_types, default='image')
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
-    type = models.CharField(max_length=14, choices=image_types, default='image')
+    # https://github.com/jonasundderwolf/django-image-cropping
+    cropped_image = ImageRatioField('image', free_crop=True, allow_fullsize=True,
+                                    help_text='Not yet fully implemented.')
 
     searchable_fields = ['caption', 'description', 'provider']
 
@@ -69,6 +73,22 @@ class Image(MediaModel):
         return self.width / self.height
 
     @property
+    def cropped_image_url(self) -> Optional[str]:
+        """
+        URL for the cropped version of the image.
+
+        Reference:
+        https://github.com/jonasundderwolf/django-image-cropping#user-content-easy-thumbnails
+        """
+        if not self.cropped_image:
+            return None
+        return get_thumbnailer(self.image).get_thumbnail({
+            'box': self.cropped_image,
+            'crop': True,
+            'detail': True,
+        }).url
+
+    @property
     def provider_string(self) -> Optional[str]:
         """
         Image credit string (e.g., "Image provided by NASA") displayed in the caption.
@@ -82,10 +102,8 @@ class Image(MediaModel):
         return string
 
     @property
-    def thumbnail(self) -> SafeText:
-        height = 100
-        width = height * self.aspect_ratio
-        return mark_safe(f'<img class="thumbnail" src="{self.image.url}" width="{width}px" height="{height}px" />')
+    def src_url(self) -> str:
+        return self.cropped_image_url or self.image.url
 
     @property
     def bg_img_position(self) -> str:
