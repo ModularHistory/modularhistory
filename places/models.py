@@ -30,11 +30,10 @@ class Place(TypedModel):
     def string(self) -> str:
         """Presentable string to display in HTML."""
         location = self.location
-        # Don't display the country if it's the USA.
+        # Don't append the location's location if it's a continent, a region, or the USA.
         # TODO: This is hacky; maybe it can be improved.
-        if isinstance(location, Country) and str(location) == 'United States of America':
-            location = None
-        elif isinstance(location, Continent):
+        if (isinstance(location, (Region, Continent))
+                or isinstance(location, Country) and str(location).startswith('United States of America')):
             location = None
         return self.name + (f', {location}' if location else '')
 
