@@ -44,7 +44,7 @@ class TopicRelation(Model):
 
 class Topic(Model):
     """A topic"""
-    key = models.CharField(max_length=24, unique=True)
+    key = models.CharField(max_length=25, unique=True)
     parent = ForeignKey(
         'self', related_name='children',
         null=True, blank=True,

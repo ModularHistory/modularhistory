@@ -1,7 +1,6 @@
 function initializeListeners() {
     $('.display-source').click(function(event) {
         // event.preventDefault();
-        console.log('clicked ');
         let href = $( this ).attr('href');
         let target_modal = $( this ).attr('data-target');
         if (href.includes('.pdf')) {
