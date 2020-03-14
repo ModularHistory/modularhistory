@@ -40,6 +40,7 @@ for source in Source.objects.all():
                 print(f'contained in {source.container}')
                 if source.container.container:
                     print(f'contained in {source.container.container}')
+        raise
 
 
 # try:
