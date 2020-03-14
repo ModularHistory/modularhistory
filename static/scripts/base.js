@@ -5,7 +5,7 @@ function initializeListeners() {
         let href = $( this ).attr('href');
         let target_modal = $( this ).attr('data-target');
         if (href.includes('.pdf')) {
-            let href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
+            href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
             // $(target_modal).find('.modal-body').html(`
             //     <div class="embed-responsive embed-responsive-210by297">
             //         <iframe class="embed-responsive-item" src="${href}" allowfullscreen></iframe>
@@ -45,6 +45,7 @@ $(function() {
     let result_card_selector = '.results .card';
     let searchParams = new URLSearchParams(window.location.search);
     let active_card = $(result_card_selector).first();
+    // If the page is a SERP
     if (active_card[0]) {
         if (searchParams.has('key')) {
             let key = searchParams.get('key');
@@ -76,27 +77,26 @@ $(function() {
             });
             setGetParam('key', key);
         });
-    }
-
-    // Enable slideout menu
-    const toggler = document.getElementById('sliderToggle');
-    const slider = document.getElementById('slider');
-    function openSlider() {
-        slider.classList.remove('closed');
-        slider.classList.add('open');
-    }
-    function closeSlider() {
-        slider.classList.remove('open');
-        slider.classList.add('closed');
-    }
-    // Toggle button
-    toggler.addEventListener('click', function() {
-        if (slider.classList.contains('closed')) {
-            openSlider();
-        } else if (slider.classList.contains('open')) {
-            closeSlider();
+        // Enable slideout menu
+        const toggler = document.getElementById('sliderToggle');
+        const slider = document.getElementById('slider');
+        function openSlider() {
+            slider.classList.remove('closed');
+            slider.classList.add('open');
         }
-    });
+        function closeSlider() {
+            slider.classList.remove('open');
+            slider.classList.add('closed');
+        }
+        // Toggle button
+        toggler.addEventListener('click', function() {
+            if (slider.classList.contains('closed')) {
+                openSlider();
+            } else if (slider.classList.contains('open')) {
+                closeSlider();
+            }
+        });
+    }
 
     // Enable hiding admin controls
     $('.hide-admin-controls').click(function(event) {
