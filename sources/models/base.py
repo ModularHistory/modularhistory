@@ -282,7 +282,7 @@ class SourceReference(Model):
         html = str(self)
         if self.source_file_url:
             html += (
-                f'<a href="{self.source_file_url}" class="mx-2 display-source"'
+                f'<a href="{self.source_file_url}" class="display-source"'
                 f' target="_blank" data-toggle="modal" data-target="#modal">'
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
@@ -292,11 +292,11 @@ class SourceReference(Model):
             if self.page_number and 'www.sacred-texts.com' in link:
                 link += f'#page_{self.page_number}'
             html += (
-                f'<a href="{link}" class="mx-2" target="_blank">'
+                f'<a href="{link}" target="_blank">'
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
             )
-        return mark_safe(html)
+        return mark_safe(f'<span class="citation">{html}</span>')
 
     @property
     def source_file_page_number(self) -> Optional[int]:

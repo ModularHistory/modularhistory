@@ -55,7 +55,8 @@ class Admin(ModelAdmin):
         css = {
             'all': (
                 'styles/base.css',
-                sass_processor('styles/mce.scss')
+                sass_processor('styles/mce.scss'),
+                'https://use.fontawesome.com/releases/v5.11.2/css/all.css'
             )
         }
         js = (

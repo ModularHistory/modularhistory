@@ -281,6 +281,9 @@ body {
 .edit-object-button {
   display: none; }
 
+.citation .fa, .citation .fab, .citation .fas {
+  margin-left: 0.5rem; }
+
 .img-container {
   float: right;
   clear: right;
