@@ -20,6 +20,6 @@ django.setup()
 from images.models import Image
 
 for image in Image.objects.all():
-    if image.cropped_image:
-        print(image.cropped_image)
+    if image.cropping:
+        print(image.cropping)
 

@@ -45,8 +45,7 @@ class Image(MediaModel):
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
     # https://github.com/jonasundderwolf/django-image-cropping
-    # TODO: rename `cropped_image` back to `cropping`
-    cropped_image = ImageRatioField('image', free_crop=True, allow_fullsize=True,
+    cropping = ImageRatioField('image', free_crop=True, allow_fullsize=True,
                                     help_text='Not yet fully implemented.')
 
     class Meta:
@@ -80,10 +79,10 @@ class Image(MediaModel):
         Reference:
         https://github.com/jonasundderwolf/django-image-cropping#user-content-easy-thumbnails
         """
-        if not self.cropped_image:
+        if not self.cropping:
             return None
         return get_thumbnailer(self.image).get_thumbnail({
-            'box': self.cropped_image,
+            'box': self.cropping,
             'crop': True,
             'detail': True,
         }).url
