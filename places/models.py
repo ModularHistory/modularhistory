@@ -33,9 +33,9 @@ class Place(TypedModel):
         # Don't append the location's location if it's a continent, a region, or the USA.
         # TODO: This is hacky; maybe it can be improved.
         if (isinstance(location, (Region, Continent))
-                or isinstance(location, Country) and str(location).startswith('United States of America')):
+                or isinstance(location, Country) and location.name == 'United States of America'):
             location = None
-        return self.name + (f', {location}' if location else '')
+        return self.name + (f', {location.name}' if location else '')
 
 
 class Venue(Place):
