@@ -84,6 +84,11 @@ class Image(MediaModel):
         width = height * self.aspect_ratio
         return mark_safe(f'<img class="thumbnail" src="{self.image.url}" width="{width}px" height="{height}px" />')
 
+    def clean(self):
+        super().clean()
+        if not self.caption:
+            raise ValidationError('Image needs a caption.')
+
 
 class Video(MediaModel):
     """A video"""

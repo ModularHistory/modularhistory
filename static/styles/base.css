@@ -145,10 +145,11 @@ body,
         .serp-container .two-pane-container .results .card:first-child {
           margin-top: 0 !important; }
         .serp-container .two-pane-container .results .card.active {
-          border-top: 1px solid black;
-          border-left: 1px solid black;
-          border-bottom: 1px solid black;
-          margin-right: -4px; }
+          box-shadow: inset 1px 1px 1px 1px black, inset 1px -1px 1px 1px black; }
+          .serp-container .two-pane-container .results .card.active > div {
+            box-shadow: inset 1px 1px 1px 1px black, inset 1px -1px 1px 1px black; }
+          .serp-container .two-pane-container .results .card.active .img-bg {
+            opacity: 60%; }
         .serp-container .two-pane-container .results .card .card-body {
           font-size: 0.8rem;
           -webkit-text-stroke: 1px black;
@@ -188,7 +189,9 @@ body,
             .serp-container .two-pane-container .results .card .card-body .blockquote footer {
               margin-top: 0.5rem;
               text-align: center; }
-        .serp-container .two-pane-container .results .card .image-credit {
+        .serp-container .two-pane-container .results .card.image-card .card-body p {
+          margin-bottom: 1rem; }
+        .serp-container .two-pane-container .results .card.image-card .image-credit {
           display: none; }
         .serp-container .two-pane-container .results .card .thumbnail {
           float: left;
