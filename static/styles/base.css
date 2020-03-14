@@ -275,8 +275,6 @@ body {
   #global-nav .avatar {
     margin-top: auto;
     margin-bottom: auto; }
-  #global-nav input[name='query'] {
-    width: 20rem; }
 
 .edit-object-button {
   display: none; }

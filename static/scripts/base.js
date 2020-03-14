@@ -5,12 +5,13 @@ function initializeListeners() {
         let href = $( this ).attr('href');
         let target_modal = $( this ).attr('data-target');
         if (href.includes('.pdf')) {
-            $(target_modal).find('.modal-body').html(`
-                <div class="embed-responsive embed-responsive-210by297">
-                    <iframe class="embed-responsive-item" src="/static/libraries/pdfjs/web/viewer.html?file=${href}" allowfullscreen></iframe>
-                </div>
-            `);
-            console.log('loaded modal');
+            let href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
+            // $(target_modal).find('.modal-body').html(`
+            //     <div class="embed-responsive embed-responsive-210by297">
+            //         <iframe class="embed-responsive-item" src="${href}" allowfullscreen></iframe>
+            //     </div>
+            // `);
+            window.open(href, '_blank');
         } else if (href.includes('.epub')) {
             console.log('Attempting to load ePub.');
             let book = ePub(href);

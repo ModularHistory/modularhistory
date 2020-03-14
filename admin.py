@@ -63,6 +63,7 @@ class Admin(ModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jQuery
             '//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',  # Bootstrap
             'scripts/mce.js',
+            'scripts/base.js'
         )
 
     def get_queryset(self, request):
