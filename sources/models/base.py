@@ -133,6 +133,9 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 container_strings.append(container_string)
             containers = ', and '.join(container_strings)
             string += f', {containers}'
+        # Fix placement of commas after double-quoted titles
+        string = string.replace('," ,', ',"')
+        string = string.replace('",', ',"')
         return mark_safe(string)
 
     @property
@@ -144,7 +147,14 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         return self.file if self.file else self.container.get_file() if self.container else None
 
     def clean(self):
-        pass
+        super().clean()
+        for container in self.containers.all():
+            if self in container.containers.all():
+                raise ValidationError(
+                    f'This source cannot be contained by {container}, '
+                    f'because that source is already contained by this source.'
+                )
+
         # # Create related historical occurrence
         # if not Episode.objects.filter(type=self.HISTORICAL_ITEM_TYPE).exists():
         #     Episode.objects.create(
@@ -220,14 +230,6 @@ class _Piece(TextualSource):
 
     class Meta:
         abstract = True
-
-    @property
-    def string(self) -> SafeText:
-        string = super().string
-        # Fix placement of commas after double-quoted titles
-        string = string.replace('," ,', ',"')
-        string = string.replace('",', ',"')
-        return mark_safe(string)
 
     @property
     def file_page_number(self) -> Optional[int]:

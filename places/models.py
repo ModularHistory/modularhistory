@@ -23,7 +23,20 @@ class Place(TypedModel):
         unique_together = ['name', 'location']
 
     def __str__(self):
-        return self.name + (f', {self.location}' if self.location else '')
+        location = self.location
+        return self.name + (f', {location}' if location else '')
+
+    @property
+    def string(self) -> str:
+        """Presentable string to display in HTML."""
+        location = self.location
+        # Don't display the country if it's the USA.
+        # TODO: This is hacky; maybe it can be improved.
+        if isinstance(location, Country) and str(location) == 'United States of America':
+            location = None
+        elif isinstance(location, Continent):
+            location = None
+        return self.name + (f', {location}' if location else '')
 
 
 class Venue(Place):

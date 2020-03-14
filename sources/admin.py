@@ -118,12 +118,10 @@ class ChildModelAdmin(PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin,
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
-
-        for field_name in ('title',):
+        for field_name in ('title', 'creators', 'db_string'):
             if field_name in fields:
                 fields.remove(field_name)
                 fields.insert(0, field_name)
-
         for field_name in (
                 'volume', 'number', 'page_number', 'end_page_number',
                 'container', 'description', 'citations'

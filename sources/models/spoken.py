@@ -38,9 +38,9 @@ class Speech(TitleMixin, SpokenSource):
         if self.audience or self.location:
             string += f' to {self.audience}' if self.audience else ''
             if self.location:
-                location = self.location
+                location, location_string = self.location, self.location.string
                 preposition = location.preposition if isinstance(location, Venue) else 'in'
-                string += f' {preposition} {location}'
+                string += f' {preposition} {location_string}'
             string += ', '
         else:
             string += ' ' if self.date.month_is_known else ' in '
