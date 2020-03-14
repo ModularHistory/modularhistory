@@ -25,14 +25,14 @@
 {% block content %}
 {#    <div class="top">#}
 {#    </div>#}
+    <button id="sliderToggle" class="toggle-button">☰</button>
     <div class="serp-container">
         {% block list %}
             {% if object_list|length %}
-                <div class="refinements-container side">
-                    <!-- Material input -->
+                <div id="slider" class="refinements-container side closed">
                     {% crispy search_filter_form %}
                 </div>
-                <div class="two-pane-container">
+                <div id="twoPaneContainer" class="two-pane-container">
                     {% block page_header %}
                     {% endblock %}
                     <div class="results">

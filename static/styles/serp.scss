@@ -1,7 +1,21 @@
+$slideout-transition-duration: 70ms;
+
 .serp-container {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  #slider {
+    -webkit-transform: none;
+    transform: none;
+    transition: transform $slideout-transition-duration linear;
+    &.closed {
+      min-width: 0;
+      width: 0;
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
+      transition: transform $slideout-transition-duration linear;
+    }
+  }
   .refinements-container {
     &.side {
       width: 15%;
@@ -25,33 +39,19 @@
       /* Hide scrollbar for IE and Edge */
       -ms-overflow-style: none;
     }
-    &.top {
-      display: flex;
-      margin-bottom: 0.5rem;
-      form {
-        display: flex;
-        flex: 0 1 auto;
-        //max-height: 100vh;
-        //width: 20%;
-        //display: inline-block;
-        //vertical-align: top;
-        //overflow-y: auto;
-        //position: -webkit-sticky; /* Safari */
-        //position: sticky;
-        //top: 0;
-        .form-group {
-          position: relative;
-          .selectmultiple {
-            max-width: 15rem;
-          }
+    .select2.select2-container {
+      width: 100% !important;
+      ul.select2-selection__rendered {
+        padding: 0;
+        li.select2-search.select2-search--inline {
+          margin-top: 0;
         }
       }
-      h1 {
-        flex: 1 0 auto;
-        vertical-align: top;
-        padding: 6px 0;
-        white-space: nowrap;
-        text-align: right;
+      .select2-selection__choice, input.select2-search__field {
+        margin: 2px 2px 0 2px;
+      }
+      input.select2-search__field {
+        margin-bottom: 2px;
       }
     }
   }
@@ -69,6 +69,7 @@
       display: inline-block;
       vertical-align: top;
       .card {
+        quotes: "“" "”" "‘" "’";
         cursor: pointer;
         position: relative;
         text-overflow: ellipsis;

@@ -49,11 +49,11 @@
         <!-- Latest compiled Bootstrap JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
         <!-- Material Design Bootstrap core JavaScript -->
-        <script type="text/javascript" src='{% static "mdb/js/mdb.min.js" %}'></script>
+        <script type="text/javascript" src='{% static "libraries/mdb/js/mdb.min.js" %}'></script>
         <!-- PDF.js -->
-        <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js" defer></script>
         <!-- Epub.js -->
-        <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js" defer></script>
 
         <!--
         ## emulate tab
@@ -148,19 +148,19 @@
                                 <a class="dropdown-item" href="{% url 'account:profile' %}">Profile</a>
                                 <a class="dropdown-item" href="{% url 'account:settings' %}">Settings</a>
                                 {% if request.user.is_superuser %}
-                                    <a class="dropdown-item" href="/admin/">Administrate</a>
-                                    <a class="dropdown-item hide-admin-controls" href="">Hide admin controls</a>
+                                    <a href="/admin/" class="dropdown-item" >Administrate</a>
+                                    <a href="" class="dropdown-item hide-admin-controls">Hide admin controls</a>
                                 {% endif %}
                                 <a href="{% url 'account:logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
                             </div>
                         {% else %}
-                            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+                            <a class="nav-link dropdown-toggle" id="accountDropdown" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-user"></i>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="navbarDropdownMenuLink-333">
-                                <a href="{% url 'account:register' %}" class="dropdown-item" href="#">Create an account</a>
-                                <a href="{% url 'account:login' %}" class="dropdown-item" href="#">Login</a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="accountDropdown">
+                                <a href="{% url 'account:register' %}" class="dropdown-item">Create an account</a>
+                                <a href="{% url 'account:login' %}" class="dropdown-item">Login</a>
                             </div>
                         {% endif %}
                     </li>

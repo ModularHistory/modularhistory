@@ -7,7 +7,7 @@ function initializeListeners() {
         if (href.includes('.pdf')) {
             $(target_modal).find('.modal-body').html(`
                 <div class="embed-responsive embed-responsive-210by297">
-                    <iframe class="embed-responsive-item" src="/static/pdfjs/web/viewer.html?file=${href}" allowfullscreen></iframe>
+                    <iframe class="embed-responsive-item" src="/static/libraries/pdfjs/web/viewer.html?file=${href}" allowfullscreen></iframe>
                 </div>
             `);
             console.log('loaded modal');
@@ -77,6 +77,27 @@ $(function() {
         });
     }
 
+    // Enable slideout menu
+    const toggler = document.getElementById('sliderToggle');
+    const slider = document.getElementById('slider');
+    function openSlider() {
+        slider.classList.remove('closed');
+        slider.classList.add('open');
+    }
+    function closeSlider() {
+        slider.classList.remove('open');
+        slider.classList.add('closed');
+    }
+    // Toggle button
+    toggler.addEventListener('click', function() {
+        if (slider.classList.contains('closed')) {
+            openSlider();
+        } else if (slider.classList.contains('open')) {
+            closeSlider();
+        }
+    });
+
+    // Enable hiding admin controls
     $('.hide-admin-controls').click(function(event) {
         // $('.edit-object-button').hide();
         event.preventDefault();
