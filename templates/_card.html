@@ -3,21 +3,24 @@
 {% load is_instance %}
 
 <div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.key }}"
-     data-href="{% block detail_url %}{% endblock %}" style="{% block card_styles %}{% endblock %}">
-    {% block top %}{% endblock %}
+     data-href="{% block detail_url %}{% endblock %}"
+     style="{% block card_styles %}{% endblock %}">
+    {% block top %}
+    {% endblock %}
     {% if not object|is_instance:'images.Image' %}
         {% with image=object.image %}
-            {% with img_url=image.image.url img_position=image.bg_img_position %}
-                <div class="img-bg"
-                     style="background-image: url('{{ img_url }}'); background-position: {{ img_position }}">
-                </div>
-            {% endwith %}
+            <div class="img-bg"
+                 style="background-image: url('{{ image.src_url }}');
+                         background-position: {{ image.bg_img_position }}">
+            </div>
         {% endwith %}
     {% endif %}
     <div class="card-body" style="background-color: transparent; z-index: 1;">
         {% block edit %}
             {% if object and request.user.is_superuser %}
-                <a class="edit-object-button" target="_blank" href="{{ object|get_admin_url }}"><i class="fa fa-edit"></i></a>
+                <a class="edit-object-button" target="_blank" href="{{ object|get_admin_url }}">
+                    <i class="fa fa-edit"></i>
+                </a>
             {% endif %}
         {% endblock %}
         {% if not object|is_instance:'images.Image' %}

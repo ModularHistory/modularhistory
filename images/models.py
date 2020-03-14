@@ -36,8 +36,6 @@ image_types = (
 
 class Image(MediaModel):
     """An image"""
-    objects: ImageManager = ImageManager()
-
     image = models.ImageField(
         upload_to=upload_to('images/'),
         height_field='height', width_field='width',
@@ -47,14 +45,16 @@ class Image(MediaModel):
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
     # https://github.com/jonasundderwolf/django-image-cropping
+    # TODO: rename `cropped_image` back to `cropping`
     cropped_image = ImageRatioField('image', free_crop=True, allow_fullsize=True,
                                     help_text='Not yet fully implemented.')
-
-    searchable_fields = ['caption', 'description', 'provider']
 
     class Meta:
         unique_together = ['image', 'caption']
         ordering = ['date']
+
+    searchable_fields = ['caption', 'description', 'provider']
+    objects: ImageManager = ImageManager()
 
     def __str__(self):
         return self.caption.text if self.caption else self.image.name
