@@ -70,6 +70,9 @@ class Image(MediaModel):
 
     @property
     def provider_string(self) -> Optional[str]:
+        """
+        Image credit string (e.g., "Image provided by NASA") displayed in the caption.
+        """
         if (not self.provider) or self.provider in self.caption.text:
             return None
         phrase = 'provided'
@@ -83,6 +86,20 @@ class Image(MediaModel):
         height = 100
         width = height * self.aspect_ratio
         return mark_safe(f'<img class="thumbnail" src="{self.image.url}" width="{width}px" height="{height}px" />')
+
+    @property
+    def bg_img_position(self) -> str:
+        """
+        CSS `background-position` value (e.g., "center" or "top center")
+        to use when displaying the image as the background of a div.
+
+        Reference: https://www.w3schools.com/cssref/pr_background-position.asp
+
+        This is used to position the background images of the SERP cards.
+        """
+        # If the image is tall and narrow, it's like to be of a person or figurine;
+        # try to to avoid cutting off heads.
+        return 'center' if not self.height > 1.2*self.width else 'center 10%'
 
     def clean(self):
         super().clean()

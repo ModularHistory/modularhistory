@@ -6,8 +6,13 @@
      data-href="{% block detail_url %}{% endblock %}" style="{% block card_styles %}{% endblock %}">
     {% block top %}{% endblock %}
     {% if not object|is_instance:'images.Image' %}
-        <div class="img-bg" style="background-image: url('{{ object.image.image.url }}');">
-        </div>
+        {% with image=object.image %}
+            {% with img_url=image.image.url img_position=image.bg_img_position %}
+                <div class="img-bg"
+                     style="background-image: url('{{ img_url }}'); background-position: {{ img_position }}">
+                </div>
+            {% endwith %}
+        {% endwith %}
     {% endif %}
     <div class="card-body" style="background-color: transparent; z-index: 1;">
         {% block edit %}
