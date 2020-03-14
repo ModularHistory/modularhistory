@@ -5,9 +5,6 @@ $slideout-transition-duration: 70ms;
   flex-direction: row;
   flex-wrap: nowrap;
   #slider {
-    -webkit-transform: none;
-    transform: none;
-    transition: transform $slideout-transition-duration linear;
     &.closed {
       min-width: 0;
       width: 0;
@@ -15,6 +12,10 @@ $slideout-transition-duration: 70ms;
       transform: translateX(-100%);
       transition: transform $slideout-transition-duration linear;
     }
+    -webkit-transform: none;
+    transform: none;
+    transition: transform $slideout-transition-duration linear;
+    will-change: transform;
   }
   .refinements-container {
     &.side {

@@ -92,7 +92,8 @@ body,
   .serp-container #slider {
     -webkit-transform: none;
     transform: none;
-    transition: transform 70ms linear; }
+    transition: transform 70ms linear;
+    will-change: transform; }
     .serp-container #slider.closed {
       min-width: 0;
       width: 0;
