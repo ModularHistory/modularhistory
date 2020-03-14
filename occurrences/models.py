@@ -6,9 +6,8 @@ from django.db.models import ManyToManyField, ForeignKey, CASCADE
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
 from django.core.exceptions import ValidationError
-from history.fields import HistoricDateTimeField
-from history.fields import HTMLField
-from history.models import Model, PolymorphicModel, TaggableModel, DatedModel, SearchableMixin
+from history.fields import HistoricDateTimeField, HTMLField
+from history.models import Model, PolymorphicModel, TaggableModel, DatedModel, SearchableMixin, SourceMixin
 from images.models import Image
 from sources.models import Source, SourceReference
 from .manager import Manager
@@ -51,7 +50,7 @@ class OccurrenceChainInclusion(Model):
         unique_together = ['chain', 'occurrence']
 
 
-class Occurrence(DatedModel, TaggableModel, SearchableMixin):
+class Occurrence(DatedModel, TaggableModel, SearchableMixin, SourceMixin):
     """Something that happened"""
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
@@ -67,14 +66,16 @@ class Occurrence(DatedModel, TaggableModel, SearchableMixin):
                                         through='OccurrenceEntityInvolvement', blank=True)
     chains = ManyToManyField(OccurrenceChain, related_name='occurrences', through=OccurrenceChainInclusion)
 
-    objects: Manager = Manager()
-    searchable_fields = ['summary', 'description', 'date__year',
-                         'involved_entities__name', 'involved_entities__aliases',
-                         'related_topics__key', 'related_topics__aliases']
-
     class Meta:
         unique_together = ['summary', 'date']
         ordering = ['-date']
+
+    searchable_fields = [
+        'summary', 'description', 'date__year',
+        'involved_entities__name', 'involved_entities__aliases',
+        'related_topics__key', 'related_topics__aliases'
+    ]
+    objects: Manager = Manager()
 
     def __str__(self):
         return self.summary.text or "..."
@@ -106,12 +107,6 @@ class Occurrence(DatedModel, TaggableModel, SearchableMixin):
                         return entity.images.get_closest_to_datetime(self.date)
                     return entity.image
         return None
-
-    @property
-    def source_reference(self) -> Optional['OccurrenceSourceReference']:
-        if not len(self.sources.all()):
-            return None
-        return self.source_references.order_by('position')[0]
 
     def full_clean(self, exclude=None, validate_unique=True):
         super().full_clean(exclude, validate_unique)

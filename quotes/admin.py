@@ -69,7 +69,7 @@ class QuoteAdmin(Admin):
         'detail_link',
         'attributee',
         'date_string',
-        'source_reference',
+        'source_reference_html',
         'topic_tags'
     ]
     list_filter = [
@@ -80,6 +80,7 @@ class QuoteAdmin(Admin):
     search_fields = models.Quote.searchable_fields
     ordering = ('date', 'attributee')
     autocomplete_fields = ['attributee']
+    readonly_fields = ['source_reference_html']
     inlines = [
         SourceReferencesInline,
         OccurrencesInline,

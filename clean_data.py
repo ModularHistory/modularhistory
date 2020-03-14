@@ -17,21 +17,4 @@ django.setup()
 # from django.contrib.auth.models import Permission, Group
 # from django.contrib.contenttypes.models import ContentType
 
-from quotes.models import Quote
-from topics.models import Topic, TopicQuoteRelation
-from entities.models import Entity
-
-joseph = Entity.objects.filter(name='Joseph Smith, Jr.')[0]
-brigham = Entity.objects.filter(name='Brigham Young')[0]
-
-joseph_topic = Topic.objects.get(key='Joseph Smith')
-brigham_topic = Topic.objects.get(key='Brigham Young')
-
-for quote in Quote.objects.filter(attributee=joseph):
-    if not TopicQuoteRelation.objects.filter(topic=joseph_topic, quote=quote).exists():
-        TopicQuoteRelation.objects.create(topic=joseph_topic, quote=quote)
-
-for quote in Quote.objects.filter(attributee=brigham):
-    if not TopicQuoteRelation.objects.filter(topic=brigham_topic, quote=quote).exists():
-        TopicQuoteRelation.objects.create(topic=brigham_topic, quote=quote)
 

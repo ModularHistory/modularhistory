@@ -283,7 +283,7 @@ class SourceReference(Model):
         if self.source_file_url:
             html += (
                 f'<a href="{self.source_file_url}" class="mx-2 display-source"'
-                f' data-toggle="modal" data-target="#modal">'
+                f' target="_blank" data-toggle="modal" data-target="#modal">'
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
             )
