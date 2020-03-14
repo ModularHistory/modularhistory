@@ -119,6 +119,17 @@ class HistoricDateTime(datetime):
 
     @property
     def string(self) -> SafeText:
+        year_string = self.year_string
+        if self.day_is_known:
+            year_string = f'{self.strftime("%-d %b")} {year_string}'
+        elif self.month_is_known:
+            year_string = f'{self.strftime("%B")} {year_string}'
+        elif self.season_is_known:
+            year_string = f'{self.season.title()} {year_string}'
+        return mark_safe(year_string)
+
+    @property
+    def year_string(self) -> str:
         if not self.is_bce:
             # CE dates
             year_string = str(self.year)
@@ -135,10 +146,4 @@ class HistoricDateTime(datetime):
             else:
                 humanized_ybp = ybp
             year_string = f'c. {humanized_ybp} YBP'
-        if self.day_is_known:
-            year_string = f'{self.strftime("%-d %b")} {year_string}'
-        elif self.month_is_known:
-            year_string = f'{self.strftime("%B")} {year_string}'
-        elif self.season_is_known:
-            year_string = f'{self.season.title()} {year_string}'
-        return mark_safe(year_string)
+        return year_string

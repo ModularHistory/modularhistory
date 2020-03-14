@@ -16,13 +16,13 @@
             {% endif %}
         {% endblock %}
         {% if not object|is_instance:'images.Image' %}
-            {% if object.date_string or object.date %}
+            {% if object.year_html or object.date %}
                 <h4 class="card-title text-center">
                     <small>
-                        {% if object.date_html %}
-                            {{ object.date_html }}
+                        {% if object.year_html %}
+                            {{ object.year_html }}
                         {% else %}
-                            {{ object.date.html }}
+                            {{ object.date.year }}
                         {% endif %}
                     </small>
                 </h4>

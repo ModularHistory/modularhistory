@@ -173,7 +173,7 @@ body,
             .serp-container .two-pane-container .results .card .card-body .blockquote::before {
               content: open-quote;
               position: absolute;
-              top: -0.5rem;
+              top: -0.4rem;
               left: -0.5rem;
               font-size: 3rem;
               font-weight: bold; }

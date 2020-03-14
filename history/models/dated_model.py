@@ -31,8 +31,19 @@ class DatedModel(Model):
         date_html = self.date.html
         if date_html and self.date_is_circa and not date_html.startswith('c. '):
             date_html = f'c. {date_html}'
+            date_html = date_html.replace('c. c. ', 'c. ')
         if hasattr(self, 'end_date') and self.end_date:
             date_html = f'{date_html} – {self.end_date.html}'
         if self.date.year < 1000 and not self.date.is_bce and not date_html.endswith(' CE'):
             date_html += ' CE'
         return mark_safe(date_html)
+
+    @property
+    def year_html(self) -> Optional[SafeText]:
+        if not self.date:
+            return None
+        year_html = self.date.year_string
+        if self.date_is_circa and not self.date.month_is_known:
+            year_html = f'c. {year_html}'
+            year_html = year_html.replace('c. c. ', 'c. ')
+        return mark_safe(year_html)
