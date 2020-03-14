@@ -61,16 +61,20 @@ class Collection(Model):
 class Repository(Model):
     name = models.CharField(max_length=100, null=True, blank=True,
                             help_text='e.g., "L. Tom Perry Special Collections"')
-    location = models.CharField(max_length=100, null=True, blank=True,
-                                help_text='e.g., "Harold B. Lee Library, Brigham Young University"')
+    owner = models.CharField(max_length=100, null=True, blank=True,
+                             help_text='e.g., "Harold B. Lee Library, Brigham Young University"')
+    location = ForeignKey('places.Place', on_delete=models.SET_NULL,
+                          related_name='repositories', null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Repositories'
 
     def __str__(self):
         string = self.name
+        if self.owner:
+            string += f', {self.owner}'
         if self.location:
-            string += f', {self.location}'
+            string += f', {self.location.string}'
         return string
 
 
