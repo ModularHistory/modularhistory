@@ -34,6 +34,18 @@ body {
   }
 }
 
+#collapsibleNavbar {
+  @include mobile {
+    background-color: inherit;
+    z-index: 3;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 8px;
+  }
+}
+
 .edit-object-button {
   display: none;
 }
