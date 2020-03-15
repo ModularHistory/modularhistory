@@ -8,6 +8,9 @@
 
 {% block content %}
 <div class="container">
+    {% if form.errors %}
+        <p class="text-danger">{{ form.errors }}</p>
+    {% endif %}
     {% crispy form %}
 </div>
 {% endblock %}

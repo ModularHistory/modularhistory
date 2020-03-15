@@ -1,12 +1,12 @@
 # from forms.form import FormMixIn, CustomForm
 
-from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm as BaseUserCreationForm
 from account.models import User
 
 from django.urls import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, HTML
+from django.forms import ValidationError
 
 
 class LoginForm(AuthenticationForm):
@@ -70,6 +70,7 @@ class UserCreationForm(BaseUserCreationForm):
 
 class RegistrationForm(UserCreationForm):
     """Crispy registration form."""
+
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'email')
@@ -102,6 +103,7 @@ class RegistrationForm(UserCreationForm):
                     </div>
                 </div>
             '''),
+            Field('email', css_class='form-control mb-4', placeholder='Email address'),
             Field('username', css_class='form-control mb-4', placeholder='Username'),
             Field('password1', css_class='form-control mb-4', placeholder='Password'),
             Field('password2', css_class='form-control mb-4', placeholder='Confirm password'),
@@ -120,6 +122,43 @@ class RegistrationForm(UserCreationForm):
                 </a>
             ''')
         )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not self.cleaned_data.get('username'):
+            self.cleaned_data['username'] = email
+        if email and User.objects.filter(email=email).exists():
+            raise ValidationError('An account with this email address has already been created.')
+        return email
+
+    def clean_username(self):
+        email = self.cleaned_data.get('email')
+        username = self.cleaned_data.get('username') if self.cleaned_data.get('username') else email
+        if email:
+            if User.objects.filter(email=email).count() > 0:
+                raise ValidationError('An account with this email address has already been created.')
+        if username:
+            if User.objects.filter(username=username).count() > 0:
+                raise ValidationError('An account with this username has already been created.')
+        return username
+
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name')
+        first_name = first_name.title()
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name')
+        last_name = last_name.title()
+        return last_name
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # if cleaned_data.get('username') is None:
+        #     cleaned_data['username'] = cleaned_data.get('email')
+        if cleaned_data.get('password1') != cleaned_data.get('password2'):
+            raise ValidationError('Your passwords need to match. Please try again.')
+        return cleaned_data
 
 
 # class ChangeForm(FormMixIn, forms.ModelForm):
