@@ -90,12 +90,27 @@ body,
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap; }
-  .serp-container #slider {
+  .serp-container #sliderToggle {
+    position: fixed;
+    top: 15vh;
+    font-size: 1rem;
+    box-shadow: none;
+    border-left: none !important;
+    background-color: whitesmoke !important;
+    margin-left: 0;
+    z-index: 2; }
+    @media only screen and (max-width: 660px) {
+      .serp-container #sliderToggle {
+        font-size: 0.7rem;
+        padding-left: 0.8rem;
+        padding-right: 0.8rem; } }
+  .serp-container .refinements-container#slider {
     -webkit-transform: none;
     transform: none;
     transition: transform 70ms linear;
-    will-change: transform; }
-    .serp-container #slider.closed {
+    will-change: transform;
+    border-right: 2px solid black; }
+    .serp-container .refinements-container#slider.closed {
       min-width: 0;
       width: 0;
       -webkit-transform: translateX(-100%);
@@ -139,8 +154,12 @@ body,
     .serp-container .two-pane-container .results {
       text-align: left;
       width: 20%;
+      min-width: 15rem;
       display: inline-block;
       vertical-align: top; }
+      @media only screen and (max-width: 660px) {
+        .serp-container .two-pane-container .results {
+          width: unset; } }
       .serp-container .two-pane-container .results .card {
         quotes: "“" "”" "‘" "’";
         cursor: pointer;
@@ -180,8 +199,8 @@ body,
             .serp-container .two-pane-container .results .card .card-body .blockquote::before {
               content: open-quote;
               position: absolute;
-              top: -0.5rem;
-              left: -0.5rem;
+              top: -0.25rem;
+              left: -0.6rem;
               font-size: 3rem;
               font-weight: bold; }
             .serp-container .two-pane-container .results .card .card-body .blockquote::after {
@@ -215,6 +234,9 @@ body,
       position: -webkit-sticky;
       position: sticky;
       top: 0; }
+      @media only screen and (max-width: 660px) {
+        .serp-container .two-pane-container .view-detail {
+          display: none; } }
       .serp-container .two-pane-container .view-detail::-webkit-scrollbar {
         display: none; }
       .serp-container .two-pane-container .view-detail p > iframe {
@@ -272,8 +294,8 @@ body {
   min-height: 100vh; }
 
 .main-content {
-  flex: 1;
-  display: flex; }
+  position: relative;
+  flex: 1; }
   .main-content > .container {
     margin-top: 1.5rem; }
 

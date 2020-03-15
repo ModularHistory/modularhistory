@@ -1,16 +1,22 @@
+const mobile_width = 660;
+
 function initializeListeners() {
     $('.display-source').click(function(event) {
         // event.preventDefault();
         let href = $( this ).attr('href');
-        let target_modal = $( this ).attr('data-target');
         if (href.includes('.pdf')) {
             href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
-            // $(target_modal).find('.modal-body').html(`
-            //     <div class="embed-responsive embed-responsive-210by297">
-            //         <iframe class="embed-responsive-item" src="${href}" allowfullscreen></iframe>
-            //     </div>
-            // `);
-            window.open(href, '_blank');
+            let open_in_modal = false;
+            if (open_in_modal) {
+                let target_modal = $( this ).attr('data-target');
+                $(target_modal).find('.modal-body').html(`
+                    <div class="embed-responsive embed-responsive-210by297">
+                        <iframe class="embed-responsive-item" src="${href}" allowfullscreen></iframe>
+                    </div>
+                `);
+            } else {
+                window.open(href, '_blank');
+            }
         } else if (href.includes('.epub')) {
             console.log('Attempting to load ePub.');
             let book = ePub(href);
@@ -55,23 +61,34 @@ $(function() {
         } else {
             setGetParam('key', active_card.attr('data-key'));
         }
-        active_card.addClass('active');
-        if (!active_card.visible) {
-            active_card[0].scrollIntoView();
+
+        // If not mobile, load 2pane for the first result
+        if ($(window).width() > mobile_width) {
+            active_card.addClass('active');
+            if (!active_card.visible) {
+                active_card[0].scrollIntoView();
+            }
+            // Initial load of view-detail
+            let detail_href = active_card.attr('data-href') + 'part';
+            $('.view-detail').load(detail_href, function() {
+                initializeListeners();
+            });
         }
 
-        // Initial load of view-detail
-        let detail_href = active_card.attr('data-href') + 'part';
-        $('.view-detail').load(detail_href, function() {
-            initializeListeners();
-        });
-        // Listener to load view-detail when a card is clicked
+        // Load view-detail when a card is clicked
         $(result_card_selector).click(function() {
             $(`${result_card_selector}.active`).removeClass('active');
             $( this ).addClass('active');
             let detail_href = $( this ).attr('data-href') + 'part';
             let key = $( this ).attr('data-key');
             $('.view-detail').load(detail_href, function() {
+                if ($(window).width() <= mobile_width) {
+                    let modal = $('#modal');
+                    modal.find('.modal-body').html($(this).html());
+                    modal.modal();
+                    console.log('loaded modal');
+                }
+                console.log('slkdjfl');
                 initializeListeners();
             });
             setGetParam('key', key);
@@ -82,10 +99,12 @@ $(function() {
         function openSlider() {
             slider.classList.remove('closed');
             slider.classList.add('open');
+            toggler.style.left = `${slider.offsetWidth - 2}px`;  // TODO: Use stylesheet rather than JS
         }
         function closeSlider() {
             slider.classList.remove('open');
             slider.classList.add('closed');
+            toggler.style.left = '0';  // TODO: make this safer; use stylesheet rather than JS
         }
         // Toggle button
         toggler.addEventListener('click', function() {

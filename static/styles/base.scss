@@ -15,8 +15,8 @@ body {
 }
 
 .main-content {
+  position: relative;
   flex: 1;
-  display: flex;
   >.container {
     margin-top: 1.5rem;
   }

@@ -1,4 +1,11 @@
 $slideout-transition-duration: 70ms;
+$refinements-container-bg-color: whitesmoke;
+
+@mixin mobile {
+  @media only screen and (max-width: 660px) {
+    @content
+  }
+}
 
 /* Safari 11+ */
 @mixin safari {
@@ -13,20 +20,37 @@ $slideout-transition-duration: 70ms;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  #slider {
-    &.closed {
-      min-width: 0;
-      width: 0;
-      -webkit-transform: translateX(-100%);
-      transform: translateX(-100%);
-      transition: transform $slideout-transition-duration linear;
+  //overflow-x: scroll;
+  #sliderToggle {
+    position: fixed;
+    top: 15vh;
+    font-size: 1rem;
+    box-shadow: none;
+    border-left: none !important;
+    background-color: $refinements-container-bg-color !important;
+    margin-left: 0;
+    z-index: 2;
+    @include mobile {
+      font-size: 0.7rem;
+      padding-left: 0.8rem;
+      padding-right: 0.8rem;
     }
-    -webkit-transform: none;
-    transform: none;
-    transition: transform $slideout-transition-duration linear;
-    will-change: transform;
   }
   .refinements-container {
+    &#slider {
+      &.closed {
+        min-width: 0;
+        width: 0;
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+        transition: transform $slideout-transition-duration linear;
+      }
+      -webkit-transform: none;
+      transform: none;
+      transition: transform $slideout-transition-duration linear;
+      will-change: transform;
+      border-right: 2px solid black;
+    }
     &.side {
       width: 15%;
       min-width: 200px;
@@ -39,7 +63,7 @@ $slideout-transition-duration: 70ms;
       top: 0;
       left: 0;
       padding: 1rem;
-      background-color: whitesmoke;
+      background-color: $refinements-container-bg-color;
       max-height: 100vh;
       overflow-y: scroll;
       /* Hide scrollbar for Chrome, Safari and Opera */
@@ -66,16 +90,16 @@ $slideout-transition-duration: 70ms;
     }
   }
   .two-pane-container {
-    //width: 80%;
     flex: 1;
-    //flex-basis: auto;
-    //flex-grow: 0;
-    //flex-shrink: 0;
     vertical-align: top;
     text-align: center;
     .results {
+      @include mobile {
+        width: unset;
+      }
       text-align: left;
       width: 20%;
+      min-width: 15rem;
       display: inline-block;
       vertical-align: top;
       .card {
@@ -156,8 +180,8 @@ $slideout-transition-duration: 70ms;
             &::before {
               content: open-quote;
               position: absolute;
-              top: -0.5rem;
-              left: -0.5rem;
+              top: -0.25rem;
+              left: -0.6rem;
               font-size: 3rem;
               font-weight: bold;
             }
@@ -191,6 +215,9 @@ $slideout-transition-duration: 70ms;
       }
     }
     .view-detail {
+      @include mobile {
+        display: none;
+      }
       text-align: left;
       display: inline-block;
       width: 60%;

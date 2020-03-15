@@ -134,7 +134,7 @@
                                 <i class="fas fa-user"></i>
                             {% endif %}
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="accountDropdown">
+                        <div class="dropdown-menu dropdown-menu-right dropdown-default justify-content-end" aria-labelledby="accountDropdown">
                             {% if request.user.is_authenticated %}
                                 <a class="dropdown-item" href="{% url 'account:profile' %}">Profile</a>
                                 <a class="dropdown-item" href="{% url 'account:settings' %}">Settings</a>
