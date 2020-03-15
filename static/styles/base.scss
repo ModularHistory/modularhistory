@@ -37,7 +37,7 @@ body {
 #collapsibleNavbar {
   @include mobile {
     background-color: inherit;
-    z-index: 3;
+    z-index: 4;
     margin-left: -16px;
     margin-right: -16px;
     padding-left: 16px;

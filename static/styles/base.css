@@ -133,7 +133,7 @@ body,
     border-left: none !important;
     background-color: whitesmoke !important;
     margin-left: 0;
-    z-index: 2; }
+    z-index: 3; }
     @media only screen and (max-width: 660px) {
       .serp-container #sliderToggle {
         font-size: 0.7rem;
@@ -144,7 +144,8 @@ body,
   transform: none;
   transition: transform 70ms linear;
   will-change: transform;
-  border-right: 2px solid black; }
+  border-right: 2px solid black;
+  z-index: 2; }
   .refinements-container#slider.closed {
     min-width: 0;
     width: 0;
@@ -319,7 +320,7 @@ body {
 @media only screen and (max-width: 660px) {
   #collapsibleNavbar {
     background-color: inherit;
-    z-index: 3;
+    z-index: 4;
     margin-left: -16px;
     margin-right: -16px;
     padding-left: 16px;

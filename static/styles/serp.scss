@@ -78,7 +78,7 @@ $refinements-container-bg-color: whitesmoke;
     border-left: none !important;
     background-color: $refinements-container-bg-color !important;
     margin-left: 0;
-    z-index: 2;
+    z-index: 3;
     @include mobile {
       font-size: 0.7rem;
       padding-left: 0.8rem;
@@ -101,6 +101,7 @@ $refinements-container-bg-color: whitesmoke;
     transition: transform $slideout-transition-duration linear;
     will-change: transform;
     border-right: 2px solid black;
+    z-index: 2;
   }
   &.side {
     width: 15%;
