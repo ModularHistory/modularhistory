@@ -3,6 +3,12 @@
 @import "serp";
 @import "admin";
 
+@mixin mobileNavbar {
+  @media only screen and (max-width: 575px) {
+    @content
+  }
+}
+
 html, body {
   height: 100%;
   width: 100%;
@@ -35,7 +41,7 @@ body {
 }
 
 #collapsibleNavbar {
-  @include mobile {
+  @include mobileNavbar {
     background-color: inherit;
     z-index: 4;
     margin-left: -16px;

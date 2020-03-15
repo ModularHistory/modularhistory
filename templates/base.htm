@@ -97,34 +97,9 @@
                 <img src='{% static "logo_head_white.png" %}' alt="Logo" style="height: 2.5rem">
             </a>
 
-            <!-- Toggler/collapser button -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <!-- Links -->
-            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <!-- Non-collapsible links -->
+            <div class="d-flex ml-auto order-1 order-sm-2">
                 <ul class="navbar-nav">
-                    {% block main_menu %}
-                        {% if request.user.is_superuser %}
-                            <!-- Dropdown -->
-                            <li class="nav-item dropdown active">
-                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                                    History
-                                </a>
-                                <div class="dropdown-menu">
-                                    {% for title, app in settings.MENU_ITEMS %}
-                                        <a class="dropdown-item" href="/history/{{ app }}/">{{ title }}</a>
-                                        <!--<li class="nav-item ${'active' if False else ''}">-->
-                                        <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->
-                                        <!--</li>-->
-                                    {% endfor %}
-                                </div>
-                            </li>
-                        {% endif %}
-                    {% endblock %}
-                </ul>
-                <ul class="navbar-nav ml-auto nav-flex-icons justify-content-end">
                     <li class="nav-item avatar dropdown">
                         <a class="nav-link p-0 dropdown-toggle" id="accountDropdown" data-toggle="dropdown">
                             {% if request.user.is_authenticated %}
@@ -149,6 +124,37 @@
                             {% endif %}
                         </div>
                     </li>
+                </ul>
+                <!-- Toggler/collapser button -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <!-- Collapsible links -->
+            <div class="collapse navbar-collapse order-2 order-sm-1" id="collapsibleNavbar">
+                <ul class="navbar-nav">
+                    {% block main_menu %}
+                        {% if request.user.is_superuser %}
+                            <!-- Dropdown -->
+                            <li class="nav-item dropdown active">
+                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                                    History
+                                </a>
+                                <div class="dropdown-menu">
+                                    {% for title, app in settings.MENU_ITEMS %}
+                                        <a class="dropdown-item" href="/history/{{ app }}/">{{ title }}</a>
+                                        <!--<li class="nav-item ${'active' if False else ''}">-->
+                                        <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->
+                                        <!--</li>-->
+                                    {% endfor %}
+                                </div>
+                            </li>
+                        {% endif %}
+                    {% endblock %}
+                </ul>
+                <ul class="navbar-nav ml-auto nav-flex-icons justify-content-end">
+
                 </ul>
             </div>
         </nav>

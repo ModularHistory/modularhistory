@@ -317,7 +317,7 @@ body {
     margin-top: auto;
     margin-bottom: auto; }
 
-@media only screen and (max-width: 660px) {
+@media only screen and (max-width: 575px) {
   #collapsibleNavbar {
     background-color: inherit;
     z-index: 4;
