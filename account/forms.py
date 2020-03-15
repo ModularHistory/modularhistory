@@ -53,6 +53,10 @@ class LoginForm(AuthenticationForm):
                    role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
                     <i class="fab fa-google"></i>
                 </a>
+                <a href='{reverse("social:begin", args=["twitter"])}' class="mx-2 btn-social btn-twitter" 
+                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
+                    <i class="fab fa-twitter"></i>
+                </a>
             ''')
         )
 
