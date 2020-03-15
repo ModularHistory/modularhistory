@@ -1,9 +1,20 @@
+from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
 
 from admin import admin_site, Admin, TabularInline  # , StackedInline
 from topics.models import OccurrenceTopicRelation
 from . import models
+
+
+class EntityFilter(AutocompleteFilter):
+    title = 'Entity'
+    field_name = 'involved_entities'
+
+
+class LocationFilter(AutocompleteFilter):
+    title = 'Location'
+    field_name = 'locations'
 
 
 class LocationsInline(TabularInline):
@@ -76,10 +87,9 @@ class OccurrenceAdmin(Admin):
         # 'date',
         'topic_tags'
     )
-    list_filter = ('verified', HasDateFilter, 'involved_entities', 'locations',)
+    list_filter = ['verified', HasDateFilter, EntityFilter, LocationFilter]
     search_fields = models.Occurrence.searchable_fields
     ordering = ('date',)
-
     inlines = [
         RelatedQuotesInline, InvolvedEntitiesInline,
         LocationsInline, ImagesInline,

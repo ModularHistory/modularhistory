@@ -1,3 +1,4 @@
+from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.contrib.admin import TabularInline
 
@@ -5,6 +6,16 @@ from admin import admin_site, Admin
 from occurrences.models import Occurrence
 from topics.models import TopicQuoteRelation
 from . import models
+
+
+class TopicFilter(AutocompleteFilter):
+    title = 'Topic'
+    field_name = 'related_topics'
+
+
+class AttributeeFilter(AutocompleteFilter):
+    title = 'Attributee'
+    field_name = 'attributee'
 
 
 class HasSourceFilter(SimpleListFilter):
@@ -75,7 +86,8 @@ class QuoteAdmin(Admin):
     list_filter = [
         'verified',
         HasSourceFilter,
-        'attributee'
+        TopicFilter,
+        AttributeeFilter
     ]
     search_fields = models.Quote.searchable_fields
     ordering = ('date', 'attributee')

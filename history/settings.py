@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django.forms',
     # 'django.contrib.gis',  # https://docs.djangoproject.com/en/3.0/ref/contrib/gis/
+    'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/

@@ -15,6 +15,12 @@ from .forms import (
     PersonForm, GroupForm,
     OrganizationForm, IdeaForm
 )
+from admin_auto_filters.filters import AutocompleteFilter
+
+
+class ClassificationFilter(AutocompleteFilter):
+    title = 'Classification'
+    field_name = 'classifications'
 
 
 class QuotesInline(StackedInline):
@@ -102,7 +108,7 @@ class HasImageFilter(SimpleListFilter):
 class EntityAdmin(Admin):
     model = models.Entity
     list_display = ('name', 'description__truncated', 'birth_date', 'death_date', 'aliases', 'id')
-    list_filter = (HasQuotesFilter, HasImageFilter)
+    list_filter = (HasQuotesFilter, HasImageFilter, ClassificationFilter)
     search_fields = ['name', 'aliases']
     ordering = ('name', 'birth_date',)
     inlines = [
