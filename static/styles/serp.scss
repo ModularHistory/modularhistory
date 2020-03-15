@@ -16,6 +16,55 @@ $refinements-container-bg-color: whitesmoke;
   }
 }
 
+.view-detail {
+  text-align: left;
+  overflow-y: auto;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE and Edge */
+  -ms-overflow-style: none;
+  p {
+    >iframe {
+      margin-left: auto; // doesn't work; using iframe align attribute instead
+      margin-right: auto; // doesn't work; using iframe align attribute instead
+    }
+  }
+  .card {
+    &.image-card {
+      .card-text {
+        font-size: 0.8rem;
+      }
+      .image-credit {
+        display: block;
+        font-size: 0.6rem;
+        line-height: 0.8rem;
+        float: right;
+      }
+    }
+    .card-title {
+      display: none;
+    }
+  }
+  .footer {
+    clear: both;
+    font-size: 0.9rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 5px solid whitesmoke;
+    &.sources-footer {
+      .source {
+        clear: both;
+        margin-bottom: 1rem;
+        .display-source {
+          margin-left: 0.8rem;
+        }
+      }
+    }
+  }
+}
+
 .serp-container {
   display: flex;
   flex-direction: row;
@@ -36,94 +85,131 @@ $refinements-container-bg-color: whitesmoke;
       padding-right: 0.8rem;
     }
   }
-  .refinements-container {
-    &#slider {
-      &.closed {
-        min-width: 0;
-        width: 0;
-        -webkit-transform: translateX(-100%);
-        transform: translateX(-100%);
-        transition: transform $slideout-transition-duration linear;
-      }
-      -webkit-transform: none;
-      transform: none;
+}
+
+.refinements-container {
+  &#slider {
+    &.closed {
+      min-width: 0;
+      width: 0;
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
       transition: transform $slideout-transition-duration linear;
-      will-change: transform;
-      border-right: 2px solid black;
     }
-    &.side {
-      width: 15%;
-      min-width: 200px;
-      flex-basis: auto;
-      flex-grow: 0;
-      flex-shrink: 0;
-      position: -webkit-sticky; /* Safari */
-      position: sticky;
-      display: inline-block;
-      top: 0;
-      left: 0;
-      padding: 1rem;
-      background-color: $refinements-container-bg-color;
-      max-height: 100vh;
-      overflow-y: scroll;
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      &::-webkit-scrollbar {
-        display: none;
-      }
-      /* Hide scrollbar for IE and Edge */
-      -ms-overflow-style: none;
+    -webkit-transform: none;
+    transform: none;
+    transition: transform $slideout-transition-duration linear;
+    will-change: transform;
+    border-right: 2px solid black;
+  }
+  &.side {
+    width: 15%;
+    min-width: 200px;
+    flex-basis: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    padding: 1rem;
+    background-color: $refinements-container-bg-color;
+    max-height: 100vh;
+    overflow-y: scroll;
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    &::-webkit-scrollbar {
+      display: none;
     }
-    .select2.select2-container {
-      width: 100% !important;
-      ul.select2-selection__rendered {
-        padding: 0;
-        li.select2-search.select2-search--inline {
-          margin-top: 0;
-        }
+    /* Hide scrollbar for IE and Edge */
+    -ms-overflow-style: none;
+  }
+  .select2.select2-container {
+    width: 100% !important;
+    ul.select2-selection__rendered {
+      padding: 0;
+      li.select2-search.select2-search--inline {
+        margin-top: 0;
       }
-      .select2-selection__choice, input.select2-search__field {
-        margin: 2px 2px 0 2px;
-      }
-      input.select2-search__field {
-        margin-bottom: 2px;
-      }
+    }
+    .select2-selection__choice, input.select2-search__field {
+      margin: 2px 2px 0 2px;
+    }
+    input.select2-search__field {
+      margin-bottom: 2px;
     }
   }
-  .two-pane-container {
-    flex: 1;
+}
+
+.two-pane-container {
+  flex: 1;
+  vertical-align: top;
+  text-align: center;
+  .view-detail {
+    @include mobile {
+      display: none;
+    }
+    display: inline-block;
+    width: 60%;
+    max-width: 44rem;
+    height: 100vh;
+    max-height: 100vh;
+    /* Sticky position */
+    position: -webkit-sticky; // Safari
+    position: sticky;
+    top: 0;
+  }
+  .results {
+    @include mobile {
+      width: unset;
+    }
+    text-align: left;
+    width: 20%;
+    min-width: 15rem;
+    display: inline-block;
     vertical-align: top;
-    text-align: center;
-    .results {
-      @include mobile {
-        width: unset;
+    .card {
+      quotes: "“" "”" "‘" "’";
+      cursor: pointer;
+      position: relative;
+      text-overflow: ellipsis;
+      &:first-child {
+        margin-top: 0 !important;
       }
-      text-align: left;
-      width: 20%;
-      min-width: 15rem;
-      display: inline-block;
-      vertical-align: top;
-      .card {
-        quotes: "“" "”" "‘" "’";
-        cursor: pointer;
-        position: relative;
-        text-overflow: ellipsis;
-        &:first-child {
-          margin-top: 0 !important;
-        }
-        &.active {
+      &.active {
+        box-shadow:
+                inset 2px 1px 1px 1px black,
+                inset 2px -1px 1px 1px black;
+        >.img-bg {
           box-shadow:
-                  inset 2px 1px 1px 1px black,
-                  inset 2px -1px 1px 1px black;
-          >.img-bg {
-            box-shadow:
-                    inset 1px 1px 1px 1px black,
-                    inset 1px -1px 1px 1px black;
-            opacity: 70%;
-          }
+                  inset 1px 1px 1px 1px black,
+                  inset 1px -1px 1px 1px black;
+          opacity: 0.7;
         }
-        .card-body {
-          font-size: 0.8rem;
-          -webkit-text-stroke: 1px black;
+      }
+      .card-body {
+        font-size: 0.8rem;
+        -webkit-text-stroke: 1px black;
+        text-shadow:
+                0 0 1px #ffffff,
+                0 1px 1px #ffffff,
+                1px 1px 1px #ffffff,
+                1px 0 1px #ffffff,
+                0 0 0.5rem #ffffff,
+                0 1px 0.5rem #ffffff,
+                1px 1px 0.5rem #ffffff,
+                1px 0 0.5rem #ffffff,
+                0 0 1rem #ffffff,
+                0 1px 1rem #ffffff,
+                1px 1px 1rem #ffffff,
+                1px 0 1rem #ffffff,
+                0 0 2rem #ffffff,
+                0 1px 2rem #ffffff,
+                1px 1px 2rem #ffffff,
+                1px 0 2rem #ffffff;
+        @include safari {
+          // On Safari, without this override,
+          // the shadow goes on top of the text and makes it lighter....
           text-shadow:
                   0 0 1px #ffffff,
                   0 1px 1px #ffffff,
@@ -136,141 +222,60 @@ $refinements-container-bg-color: whitesmoke;
                   0 0 1rem #ffffff,
                   0 1px 1rem #ffffff,
                   1px 1px 1rem #ffffff,
-                  1px 0 1rem #ffffff,
-                  0 0 2rem #ffffff,
-                  0 1px 2rem #ffffff,
-                  1px 1px 2rem #ffffff,
-                  1px 0 2rem #ffffff;
-          @include safari {
-            // On Safari, without this override,
-            // the shadow goes on top of the text and makes it lighter....
-            text-shadow:
-                    0 0 1px #ffffff,
-                    0 1px 1px #ffffff,
-                    1px 1px 1px #ffffff,
-                    1px 0 1px #ffffff,
-                    0 0 0.5rem #ffffff,
-                    0 1px 0.5rem #ffffff,
-                    1px 1px 0.5rem #ffffff,
-                    1px 0 0.5rem #ffffff,
-                    0 0 1rem #ffffff,
-                    0 1px 1rem #ffffff,
-                    1px 1px 1rem #ffffff,
-                    1px 0 1rem #ffffff;
-          }
+                  1px 0 1rem #ffffff;
+        }
+        color: black;
+        .card-text {
           color: black;
-          .card-text {
-            color: black;
+        }
+        .fa {
+          -webkit-text-stroke: initial;
+          text-shadow: none;
+        }
+        p {
+          font-size: 0.8rem;
+          margin-bottom: 0;
+        }
+        .blockquote {
+          position: relative;
+          margin-bottom: 0;
+          font-size: 0.8rem;
+          border-left: none;
+          padding: 0.2rem 0.1rem 0 0.3rem;
+          line-height: 1.2rem;
+          &::before {
+            content: open-quote;
+            position: absolute;
+            top: -0.25rem;
+            left: -0.6rem;
+            font-size: 3rem;
+            font-weight: bold;
           }
-          .fa {
-            -webkit-text-stroke: initial;
-            text-shadow: none;
+          &::after {
+            content: no-close-quote;
+            position: relative;
+            bottom: 0;
+            right: 0;
+            font-size: 2rem;
           }
           p {
-            font-size: 0.8rem;
-            margin-bottom: 0;
-          }
-          .blockquote {
             position: relative;
-            margin-bottom: 0;
-            font-size: 0.8rem;
-            border-left: none;
-            padding: 0.2rem 0.1rem 0 0.3rem;
-            line-height: 1.2rem;
-            &::before {
-              content: open-quote;
-              position: absolute;
-              top: -0.25rem;
-              left: -0.6rem;
-              font-size: 3rem;
-              font-weight: bold;
-            }
-            &::after {
-              content: no-close-quote;
-              position: relative;
-              bottom: 0;
-              right: 0;
-              font-size: 2rem;
-            }
-            p {
-              position: relative;
-              font-size: 0.8rem;
-            }
-            footer {
-              margin-top: 0.5rem;
-              text-align: center;
-            }
-          }
-        }
-        &.image-card {
-          .card-body {
-            p {
-              margin-bottom: 1rem;
-            }
-          }
-          .image-credit {
-            display: none;
-          }
-        }
-      }
-    }
-    .view-detail {
-      @include mobile {
-        display: none;
-      }
-      text-align: left;
-      display: inline-block;
-      width: 60%;
-      max-width: 44rem;
-      height: 100vh;
-      max-height: 100vh;
-      overflow-y: auto;
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      &::-webkit-scrollbar {
-        display: none;
-      }
-      /* Hide scrollbar for IE and Edge */
-      -ms-overflow-style: none;
-      /* Sticky position */
-      position: -webkit-sticky; // Safari
-      position: sticky;
-      top: 0;
-      p {
-        >iframe {
-          margin-left: auto; // doesn't work; using iframe align attribute instead
-          margin-right: auto; // doesn't work; using iframe align attribute instead
-        }
-      }
-      .card {
-        &.image-card {
-          .card-text {
             font-size: 0.8rem;
           }
-          .image-credit {
-            display: block;
-            font-size: 0.6rem;
-            line-height: 0.8rem;
-            float: right;
+          footer {
+            margin-top: 0.5rem;
+            text-align: center;
           }
         }
-        .card-title {
-          display: none;
-        }
       }
-      .footer {
-        clear: both;
-        font-size: 0.9rem;
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 5px solid whitesmoke;
-        &.sources-footer {
-          .source {
-            clear: both;
+      &.image-card {
+        .card-body {
+          p {
             margin-bottom: 1rem;
-            .display-source {
-              margin-left: 0.8rem;
-            }
           }
+        }
+        .image-credit {
+          display: none;
         }
       }
     }

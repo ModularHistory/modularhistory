@@ -16,6 +16,10 @@ li {
   line-height: 1.2rem;
 }
 
+iframe {
+  max-width: 100%;
+}
+
 blockquote {
   &.blockquote {
     border-left: 0.75rem solid #eceeef;

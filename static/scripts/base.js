@@ -83,12 +83,27 @@ $(function() {
             let key = $( this ).attr('data-key');
             $('.view-detail').load(detail_href, function() {
                 if ($(window).width() <= mobile_width) {
+                    let content = $(this).html();
                     let modal = $('#modal');
-                    modal.find('.modal-body').html($(this).html());
+                    let modal_body = modal.find('.modal-body');
+                    modal_body.html(content).addClass('view-detail');
+                    let iframe;
+                    let iframe_width;
+                    let iframe_height;
+                    let aspect_ratio;
+                    modal_body.find('iframe').each(function() {
+                        iframe = $(this);
+                        iframe_width = iframe.attr('width');
+                        iframe_height = iframe.attr('height');
+                        let calculated_width = iframe.width();
+                        if (iframe_width && iframe_height && iframe_width > calculated_width) {
+                            console.log('iframe may need to be resized');
+                            aspect_ratio = iframe_width / iframe_height;
+                            // TODO
+                        }
+                    });
                     modal.modal();
-                    console.log('loaded modal');
                 }
-                console.log('slkdjfl');
                 initializeListeners();
             });
             setGetParam('key', key);
