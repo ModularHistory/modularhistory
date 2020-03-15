@@ -85,6 +85,7 @@ body,
 .page-footer {
   background-color: #1C2331; }
 
+/* Safari 11+ */
 .serp-container {
   display: flex;
   flex-direction: row;
@@ -157,6 +158,10 @@ body,
           -webkit-text-stroke: 1px black;
           text-shadow: 0 0 1px #ffffff, 0 1px 1px #ffffff, 1px 1px 1px #ffffff, 1px 0 1px #ffffff, 0 0 0.5rem #ffffff, 0 1px 0.5rem #ffffff, 1px 1px 0.5rem #ffffff, 1px 0 0.5rem #ffffff, 0 0 1rem #ffffff, 0 1px 1rem #ffffff, 1px 1px 1rem #ffffff, 1px 0 1rem #ffffff, 0 0 2rem #ffffff, 0 1px 2rem #ffffff, 1px 1px 2rem #ffffff, 1px 0 2rem #ffffff;
           color: black; }
+          @media not all and (min-resolution: 0.001dpcm) {
+            @supports (-webkit-appearance: none) and (stroke-color: transparent) {
+              .serp-container .two-pane-container .results .card .card-body {
+                text-shadow: 0 0 1px #ffffff, 0 1px 1px #ffffff, 1px 1px 1px #ffffff, 1px 0 1px #ffffff, 0 0 0.5rem #ffffff, 0 1px 0.5rem #ffffff, 1px 1px 0.5rem #ffffff, 1px 0 0.5rem #ffffff, 0 0 1rem #ffffff, 0 1px 1rem #ffffff, 1px 1px 1rem #ffffff, 1px 0 1rem #ffffff; } } }
           .serp-container .two-pane-container .results .card .card-body .card-text {
             color: black; }
           .serp-container .two-pane-container .results .card .card-body .fa {
@@ -242,6 +247,10 @@ body,
   display: flex;
   align-items: center;
   justify-content: center; }
+
+.form-row > div > .mce-tinymce.mce-container.mce-panel {
+  margin-left: 160px !important;
+  max-width: 80vw !important; }
 
 td.field-source {
   max-width: 600px; }

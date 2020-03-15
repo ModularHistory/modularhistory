@@ -9,12 +9,7 @@ function adjustMceHeight(iframe) {
 $(window).on('load', function() {
     console.log('mce.js');
     $('.mce-branding,.mce-notification').hide();
-    let label_width = $('.mce-container').prev().width();
-    let form = $('.mce-container').closest('form');
-    let form_width = form.width();
-    let new_mce_width = form_width - label_width;
     $('.mce-tinymce.mce-container.mce-panel').not('[data-inline-type="tabular"] *').each(function() {
-        $(this).css('margin-left', label_width + 'px').width(new_mce_width);
         let iframe = $(this).find('iframe');
         iframe.contents().find('head').append(`
             <noscript>

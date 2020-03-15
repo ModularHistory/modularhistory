@@ -91,7 +91,7 @@
         <script type="text/javascript" src='{% static "scripts/base.js" %}' defer></script>
     </head>
     <body>
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark" id="global-nav">
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark" id="global-nav" style="min-height: 4rem">
             <!-- Logo -->
             <a class="navbar-brand" href="/">
                 <img src='{% static "logo_head_white.png" %}' alt="Logo" style="height: 2.5rem">
@@ -109,42 +109,33 @@
                         {% if request.user.is_superuser %}
                             <!-- Dropdown -->
                             <li class="nav-item dropdown active">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
                                     History
                                 </a>
-                                    <div class="dropdown-menu">
-                                        {% for title, app in settings.MENU_ITEMS %}
-                                            <a class="dropdown-item" href="/history/{{ app }}/">{{ title }}</a>
-                                            <!--<li class="nav-item ${'active' if False else ''}">-->
-                                            <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->
-                                            <!--</li>-->
-                                        {% endfor %}
-                                    </div>
+                                <div class="dropdown-menu">
+                                    {% for title, app in settings.MENU_ITEMS %}
+                                        <a class="dropdown-item" href="/history/{{ app }}/">{{ title }}</a>
+                                        <!--<li class="nav-item ${'active' if False else ''}">-->
+                                        <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->
+                                        <!--</li>-->
+                                    {% endfor %}
+                                </div>
                             </li>
                         {% endif %}
                     {% endblock %}
                 </ul>
                 <ul class="navbar-nav ml-auto nav-flex-icons">
-{#                    <li class="nav-item">#}
-{#                        <button class="btn btn-sm align-middle btn-outline-white" type="button">Patreon</button>#}
-{#                    </li>#}
-{#                    <li class="nav-item">#}
-{#                        <a class="nav-link waves-effect waves-light">#}
-{#                            <i class="fab fa-twitter"></i>#}
-{#                        </a>#}
-{#                    </li>#}
-{#                    <li class="nav-item">#}
-{#                        <a class="nav-link waves-effect waves-light">#}
-{#                            <i class="fab fa-google-plus-g"></i>#}
-{#                        </a>#}
-{#                    </li>#}
                     <li class="nav-item avatar dropdown">
-                        {% if request.user.is_authenticated %}
-                            <a class="nav-link p-0 dropdown-toggle" id="navbarDropdownMenuLink-authenticated" data-toggle="dropdown">
+                        <a class="nav-link p-0 dropdown-toggle" id="accountDropdown" data-toggle="dropdown">
+                            {% if request.user.is_authenticated %}
                                 <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% endif %}" class="rounded-circle z-depth-0"
                                      alt="avatar image" height="35">
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="navbarDropdownMenuLink-authenticated">
+                            {% else %}
+                                <i class="fas fa-user"></i>
+                            {% endif %}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="accountDropdown">
+                            {% if request.user.is_authenticated %}
                                 <a class="dropdown-item" href="{% url 'account:profile' %}">Profile</a>
                                 <a class="dropdown-item" href="{% url 'account:settings' %}">Settings</a>
                                 {% if request.user.is_superuser %}
@@ -152,17 +143,11 @@
                                     <a href="" class="dropdown-item hide-admin-controls">Hide admin controls</a>
                                 {% endif %}
                                 <a href="{% url 'account:logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
-                            </div>
-                        {% else %}
-                            <a class="nav-link dropdown-toggle" id="accountDropdown" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-user"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="accountDropdown">
+                            {% else %}
                                 <a href="{% url 'account:register' %}" class="dropdown-item">Create an account</a>
                                 <a href="{% url 'account:login' %}" class="dropdown-item">Login</a>
-                            </div>
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     </li>
                 </ul>
             </div>

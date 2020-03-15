@@ -1,3 +1,10 @@
+$label-width: 160px;
+
+.form-row > div > .mce-tinymce.mce-container.mce-panel {
+  margin-left: $label-width !important;
+  max-width: 80vw !important;
+}
+
 td.field-source {
   max-width: 600px;
   .related-widget-wrapper {
