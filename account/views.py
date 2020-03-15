@@ -55,7 +55,8 @@ class RegisterView(View):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect('home')
+            return redirect('/')
+        return render(request, 'account/register.html', {'form': form})
 
 
 class ProfileView(LoginRequiredMixin, View):
