@@ -2,8 +2,14 @@
 
 {% block content %}
     <div class="container">
-        <p style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);">
-            Coming soon!
-        </p>
+        <div class="text-center"
+             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);">
+            <h1>Coming soon!</h1>
+            {% if request.user.is_authenticated %}
+                <p>
+                    <a href="{% url 'search' %}" class="btn btn-primary">Preview</a>
+                </p>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

@@ -99,7 +99,7 @@ $(function() {
         function openSlider() {
             slider.classList.remove('closed');
             slider.classList.add('open');
-            toggler.style.left = `${slider.offsetWidth - 2}px`;  // TODO: Use stylesheet rather than JS
+            toggler.style.left = `${slider.offsetWidth - 5}px`;  // TODO: Use stylesheet rather than JS
         }
         function closeSlider() {
             slider.classList.remove('open');
