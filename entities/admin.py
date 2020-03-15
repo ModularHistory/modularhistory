@@ -1,5 +1,4 @@
-# from django.forms import ModelForm
-
+from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 
 from admin import admin_site, Admin, StackedInline, TabularInline
@@ -9,13 +8,13 @@ from topics.models import (
     EntityTopicRelation,
     EntityFactRelation
 )
+# from django.forms import ModelForm
 # from django_reverse_admin import ReverseModelAdmin
 from . import models
 from .forms import (
     PersonForm, GroupForm,
     OrganizationForm, IdeaForm
 )
-from admin_auto_filters.filters import AutocompleteFilter
 
 
 class ClassificationFilter(AutocompleteFilter):
