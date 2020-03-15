@@ -16,6 +16,7 @@ body {
 
 .main-content {
   flex: 1;
+  display: flex;
   >.container {
     margin-top: 1.5rem;
   }

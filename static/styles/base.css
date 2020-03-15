@@ -272,7 +272,8 @@ body {
   min-height: 100vh; }
 
 .main-content {
-  flex: 1; }
+  flex: 1;
+  display: flex; }
   .main-content > .container {
     margin-top: 1.5rem; }
 
