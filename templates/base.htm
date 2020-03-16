@@ -103,8 +103,12 @@
                     <li class="nav-item avatar dropdown">
                         <a class="nav-link p-0 dropdown-toggle" id="accountDropdown" data-toggle="dropdown">
                             {% if request.user.is_authenticated %}
-                                <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% endif %}" class="rounded-circle z-depth-0"
-                                     alt="avatar image" height="35">
+                                {% if user.avatar %}
+                                    <img src="{{ user.avatar.url }}" class="rounded-circle z-depth-0"
+                                         alt="avatar image" height="35" />
+                                {% else %}
+                                    <i class="fas fa-user"></i>
+                                {% endif %}
                             {% else %}
                                 <i class="fas fa-user"></i>
                             {% endif %}
