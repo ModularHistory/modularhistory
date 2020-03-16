@@ -22,10 +22,19 @@ class ClassificationFilter(AutocompleteFilter):
     field_name = 'classifications'
 
 
-class QuotesInline(StackedInline):
+class QuotesInline(TabularInline):
     model = Quote
     extra = 0
     show_change_link = True
+    exclude = ['text', 'bite', 'pretext', 'context']
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        for field in ('date_is_circa', 'date'):
+            if field in fields:
+                fields.remove(field)
+                fields.append(field)
+        return fields
 
 
 class ImagesInline(TabularInline):
