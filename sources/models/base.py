@@ -287,8 +287,8 @@ class SourceReference(Model):
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
             )
-        elif self.source.link:
-            link = self.source.link
+        elif self.source.link or self.source.container and self.source.container.link:
+            link = self.source.link if self.source.link else self.source.container.link
             if self.page_number and 'www.sacred-texts.com' in link:
                 link += f'#page_{self.page_number}'
             html += (
