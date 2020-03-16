@@ -9,13 +9,18 @@ from . import models
 
 
 class TopicFilter(AutocompleteFilter):
-    title = 'Topic'
+    title = 'topic'
     field_name = 'related_topics'
 
 
 class AttributeeFilter(AutocompleteFilter):
-    title = 'Attributee'
+    title = 'attributee'
     field_name = 'attributee'
+
+
+class AttributeeClassificationFilter(AutocompleteFilter):
+    title = 'attributee classification'
+    field_name = 'attributee__classifications'
 
 
 class HasSourceFilter(SimpleListFilter):
@@ -87,7 +92,9 @@ class QuoteAdmin(Admin):
         'verified',
         HasSourceFilter,
         TopicFilter,
-        AttributeeFilter
+        AttributeeFilter,
+        # AttributeeClassificationFilter  # broken
+        'attributee__classifications'
     ]
     search_fields = models.Quote.searchable_fields
     ordering = ('date', 'attributee')
