@@ -57,7 +57,13 @@ INTERNAL_IPS = ['127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'admin_menu',  # Must come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
+    # admin_menu come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
+    # 'admin_menu',  # This breaks mass_edit; TODO: test locally and fix it
+    # admin_tools and its modules must come before django.contrib.admin
+    'admin_tools',  # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
+    'admin_tools.menu',
+    # 'admin_tools.theming',
+    # 'admin_tools.dashboard',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -121,7 +127,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
+        # 'APP_DIRS': True,  # app_dirs must not be set when `loaders` is defined (in `OPTIONS`)
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -131,6 +137,15 @@ TEMPLATES = [
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
                 'django_settings_export.settings_export',
+            ],
+            # https://docs.djangoproject.com/en/3.0/ref/templates/api/#loader-types
+            'loaders': [
+                ('django.template.loaders.cached.Loader', [
+                    'django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                    # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
+                    'admin_tools.template_loaders.Loader',
+                ]),
             ],
             'libraries': {
                 # https://stackoverflow.com/questions/41376480/django-template-exceptions-templatesyntaxerror-static-is-not-a-registered-tag
@@ -325,41 +340,10 @@ BOOTSTRAP4 = {
 
 # https://github.com/cdrx/django-admin-menu
 ADMIN_LOGO = 'logo_head_white.png'
-MENU_WEIGHT = {
-    'Entities': 1,
-    'Occurrences': 2,
-    'Quotes': 3,
-    'Sources': 4,
-    'Topics': 5,
-    'Facts': 6,
-    'Images': 7,
-    'Places': 8,
-    'Accounts': 20
-}
-ADMIN_STYLE = {
-    'primary-color': '#2B3746',
-    'secondary-color': '#354151',
-    'tertiary-color': '#F2F9FC'
-}
-# ADMIN_STYLE = {
-#     'background': 'white',
-#     'primary-color': '#205280',
-#     'primary-text': '#d6d5d2',
-#     'secondary-color': '#3B75AD',
-#     'secondary-text': 'white',
-#     'tertiary-color': '#F2F9FC',
-#     'tertiary-text': 'black',
-#     'breadcrumb-color': 'whitesmoke',
-#     'breadcrumb-text': 'black',
-#     'focus-color': '#eaeaea',
-#     'focus-text': '#666',
-#     'primary-button': '#26904A',
-#     'primary-button-text':' white',
-#     'secondary-button': '#999',
-#     'secondary-button-text': 'white',
-#     'link-color': '#333',
-#     'link-color-hover': 'lighten($link-color, 20%)'
-# }
+
+# https://django-admin-tools.readthedocs.io/en/latest/customization.html
+ADMIN_TOOLS_MENU = 'history.admin_menu.AdminMenu'
+ADMIN_TOOLS_THEMING_CSS = 'styles/admin.css'
 
 # https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

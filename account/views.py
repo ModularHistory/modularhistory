@@ -48,17 +48,14 @@ class RegisterView(View):
         return render(request, 'account/register.html', context)
 
     def post(self, request):
-        print('>>>>>>>> post')
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            print('>>>>>>>> form is valid')
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('/')
-        print(f'>>>>>>>> invalid form: {form.error_messages}, {form.error_class}, {form.errors}')
         return render(request, 'account/register.html', {'form': form})
 
 

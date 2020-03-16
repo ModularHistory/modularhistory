@@ -1,16 +1,20 @@
-from django.contrib.admin import AdminSite as BaseAdminSite
-from django.contrib.admin import ModelAdmin
-from django.contrib.flatpages.admin import FlatPageAdmin
-from django.contrib.flatpages.models import FlatPage
-from django.contrib.sites.models import Site
+from django.contrib.admin import (
+    ModelAdmin,
+    AdminSite as BaseAdminSite,
+    StackedInline as BaseStackedInline,
+    TabularInline as BaseTabularInline
+)
 # from django.utils.translation import gettext_lazy as _
 # from django_celery_beat.models import PeriodicTask, PeriodicTasks, CrontabSchedule, IntervalSchedule, SolarSchedule
 # from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTaskForm
 # from django_celery_results.models import TaskResult
 # from django_celery_results.admin import TaskResultAdmin
-from django.contrib.admin import StackedInline as BaseStackedInline, TabularInline as BaseTabularInline
-from sass_processor.processor import sass_processor
+from django.contrib.flatpages.admin import FlatPageAdmin
+from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.models import Site
 from massadmin.massadmin import mass_change_selected
+from sass_processor.processor import sass_processor
+
 from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
 
@@ -55,8 +59,9 @@ class Admin(ModelAdmin):
         css = {
             'all': (
                 'styles/base.css',
+                'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
                 sass_processor('styles/mce.scss'),
-                'https://use.fontawesome.com/releases/v5.11.2/css/all.css'
+                sass_processor('styles/admin.scss'),
             )
         }
         js = (

@@ -1,4 +1,16 @@
+@import "generic";
+@import "mce.scss";
+
 $label-width: 160px;
+
+.nimbus-is-editor {
+  #container {
+    #header {
+      background-color: #2B3746 !important;
+      color: white !important;
+    }
+  }
+}
 
 .form-row > div > .mce-tinymce.mce-container.mce-panel {
   margin-left: $label-width !important;

@@ -21,6 +21,7 @@ from search.views import SearchResultsView
 from admin import admin_site
 
 urlpatterns = [
+    path('admin_tools/', include('admin_tools.urls')),
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
     path('history/occurrences/', include(('occurrences.urls', 'occurrences'), namespace='occurrences')),

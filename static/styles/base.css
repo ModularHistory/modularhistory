@@ -279,6 +279,10 @@ body,
   align-items: center;
   justify-content: center; }
 
+.nimbus-is-editor #header {
+  background-color: #2B3746;
+  color: white; }
+
 .form-row > div > .mce-tinymce.mce-container.mce-panel {
   margin-left: 160px !important;
   max-width: 80vw !important; }

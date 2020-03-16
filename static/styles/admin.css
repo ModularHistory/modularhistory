@@ -1,0 +1,124 @@
+.nowrap {
+  white-space: nowrap; }
+
+.hidden {
+  display: none; }
+
+figcaption {
+  font-size: 0.8rem; }
+
+li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.2rem; }
+
+iframe {
+  max-width: 100%; }
+
+blockquote.blockquote {
+  border-left: 0.75rem solid #eceeef;
+  padding: 0 1.5rem;
+  font-size: 0.9rem; }
+  blockquote.blockquote p {
+    font-size: 0.9rem;
+    padding: 0; }
+  blockquote.blockquote > blockquote {
+    border-left: none;
+    font-size: 0.8rem; }
+    blockquote.blockquote > blockquote p {
+      font-size: 0.8rem; }
+
+form ul {
+  list-style: none;
+  padding-left: 0; }
+  form ul li {
+    list-style: none;
+    font-size: 0.8rem; }
+
+.flex-gallery {
+  display: flex;
+  flex-wrap: wrap; }
+
+.gallery {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: auto auto auto auto;
+  justify-content: center; }
+
+.nowrap {
+  white-space: nowrap; }
+
+.hidden {
+  display: none; }
+
+figcaption {
+  font-size: 0.8rem; }
+
+li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.2rem; }
+
+iframe {
+  max-width: 100%; }
+
+blockquote.blockquote {
+  border-left: 0.75rem solid #eceeef;
+  padding: 0 1.5rem;
+  font-size: 0.9rem; }
+  blockquote.blockquote p {
+    font-size: 0.9rem;
+    padding: 0; }
+  blockquote.blockquote > blockquote {
+    border-left: none;
+    font-size: 0.8rem; }
+    blockquote.blockquote > blockquote p {
+      font-size: 0.8rem; }
+
+form ul {
+  list-style: none;
+  padding-left: 0; }
+  form ul li {
+    list-style: none;
+    font-size: 0.8rem; }
+
+.flex-gallery {
+  display: flex;
+  flex-wrap: wrap; }
+
+.gallery {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: auto auto auto auto;
+  justify-content: center; }
+
+.image-card .card-text {
+  font-size: 0.8rem; }
+
+.image-card .image-credit {
+  display: block;
+  font-size: 0.6rem;
+  line-height: 0.8rem; }
+
+.mask.rgba-white-slight {
+  display: none; }
+
+.nimbus-is-editor #container #header {
+  background-color: #2B3746 !important;
+  color: white !important; }
+
+.form-row > div > .mce-tinymce.mce-container.mce-panel {
+  margin-left: 160px !important;
+  max-width: 80vw !important; }
+
+td.field-source {
+  max-width: 600px; }
+  td.field-source .related-widget-wrapper {
+    float: none; }
+
+#changelist .results li.topic-tag {
+  list-style: none; }
+  #changelist .results li.topic-tag ::after {
+    content: ","; }
+
+/*# sourceMappingURL=admin.css.map */

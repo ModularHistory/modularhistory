@@ -1,12 +1,11 @@
-# from forms.form import FormMixIn, CustomForm
-
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm as BaseUserCreationForm
-from account.models import User
-
-from django.urls import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, HTML
+# from forms.form import FormMixIn, CustomForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm as BaseUserCreationForm
 from django.forms import ValidationError
+from django.urls import reverse
+
+from account.models import User
 
 
 class LoginForm(AuthenticationForm):

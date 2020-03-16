@@ -106,10 +106,22 @@ class HasImageFilter(SimpleListFilter):
 
 class EntityAdmin(Admin):
     model = models.Entity
-    list_display = ('name', 'description__truncated', 'birth_date', 'death_date', 'aliases', 'id')
-    list_filter = (HasQuotesFilter, HasImageFilter, ClassificationFilter)
+    list_display = [
+        'name',
+        'description__truncated',
+        'birth_date',
+        'death_date',
+        'aliases',
+        'id'
+    ]
+    list_filter = [
+        HasQuotesFilter,
+        HasImageFilter,
+        ClassificationFilter
+    ]
     search_fields = ['name', 'aliases']
-    ordering = ('name', 'birth_date',)
+    ordering = ['name', 'birth_date']
+    # list_editable = []
     inlines = [
         ImagesInline,
         ClassificationsInline,
