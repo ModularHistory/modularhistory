@@ -149,8 +149,8 @@ class OccurrenceEntityInvolvement(Model):
     class Meta:
         unique_together = ['occurrence', 'entity']
 
-    def __str__(self):
-        return f'{self.occurrence.date_string}: {self.occurrence.summary}'
+    def __str__(self) -> SafeText:
+        return mark_safe(f'{self.occurrence.date_string}: {self.occurrence.summary}')
 
 
 class OccurrenceQuoteRelation(Model):
