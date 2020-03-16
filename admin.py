@@ -14,6 +14,8 @@ from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from massadmin.massadmin import mass_change_selected
 from sass_processor.processor import sass_processor
+from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOption
+from social_django.models import UserSocialAuth
 
 from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
@@ -152,7 +154,13 @@ class CustomFlatPageAdmin(FlatPageAdmin):
 
 
 admin_site.register(Site)
+
 admin_site.register(FlatPage, CustomFlatPageAdmin)
+
+admin.site.register(UserSocialAuth, UserSocialAuthOption)
+admin.site.register(Nonce, NonceOption)
+admin.site.register(Association, AssociationOption)
+
 # admin_site.register(PeriodicTask, CustomPeriodicTaskAdmin)
 # admin_site.register(IntervalSchedule)
 # admin_site.register(CrontabSchedule)
