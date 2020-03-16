@@ -199,6 +199,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
+    'history.social_auth.get_user_avatar',
 )
 LOGIN_URL = 'account/login'
 LOGOUT_URL = 'account/logout'

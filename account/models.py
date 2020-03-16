@@ -1,5 +1,3 @@
-from typing import Any, Tuple
-
 from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 from django.db import models
 from imagekit.models import ProcessedImageField
@@ -25,7 +23,7 @@ class User(AbstractUser):
     email = models.EmailField('email address', blank=True, unique=True)
     avatar = ProcessedImageField(
         null=True, blank=True,
-        upload_to='account/profile_pictures/%Y/%m',
+        upload_to='account/avatars',
         processors=[ResizeToFill(200, 200)],
         format='JPEG',
         options={'quality': 70}

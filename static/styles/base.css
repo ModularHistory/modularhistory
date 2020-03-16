@@ -279,24 +279,6 @@ body,
   align-items: center;
   justify-content: center; }
 
-.nimbus-is-editor #header {
-  background-color: #2B3746;
-  color: white; }
-
-.form-row > div > .mce-tinymce.mce-container.mce-panel {
-  margin-left: 160px !important;
-  max-width: 80vw !important; }
-
-td.field-source {
-  max-width: 600px; }
-  td.field-source .related-widget-wrapper {
-    float: none; }
-
-#changelist .results li.topic-tag {
-  list-style: none; }
-  #changelist .results li.topic-tag ::after {
-    content: ","; }
-
 html, body {
   height: 100%;
   width: 100%; }
