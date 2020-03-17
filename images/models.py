@@ -81,11 +81,15 @@ class Image(MediaModel):
         """
         if not self.cropping:
             return None
-        return get_thumbnailer(self.image).get_thumbnail({
-            'box': self.cropping,
-            'crop': True,
-            'detail': True,
-        }).url
+        try:
+            return get_thumbnailer(self.image).get_thumbnail({
+                'box': self.cropping,
+                'crop': True,
+                'detail': True,
+            }).url
+        except KeyError as e:
+            print(f'>>> {e}')
+            return None
 
     @property
     def provider_string(self) -> Optional[str]:
