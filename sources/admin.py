@@ -154,7 +154,7 @@ class SpeechAdmin(ChildModelAdmin):
 
 
 class CollectionAdmin(Admin):
-    search_fields = ['name', 'repository__name', 'repository__location']
+    search_fields = ['name', 'repository__name', 'repository__location__name']
     autocomplete_fields = ['repository']
 
 
@@ -164,7 +164,7 @@ class DocumentAdmin(ChildModelAdmin):
 
 
 class RepositoryAdmin(Admin):
-    search_fields = ['name', 'location']
+    search_fields = ['name', 'location__name']
     autocomplete_fields = ['location']
 
 

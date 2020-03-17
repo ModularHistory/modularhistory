@@ -64,9 +64,9 @@
 {% endif %}
 {% if occurrence.sources.all|length %}
     <footer class="footer sources-footer">
-        {% for source_reference in occurrence.source_references.all %}
+        {% for citation in occurrence.citations.all %}
             <div class="source">
-                {{ source_reference.html }}
+                {{ citation.html }}
             </div>
         {% endfor %}
     </footer>

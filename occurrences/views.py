@@ -29,12 +29,12 @@ def quote_sorter_key(quote: Quote):
     if quote.date:
         date = quote.date
         x += 1000000000000*date.year + 1000000000*date.month + 1000000*date.day
-    if quote.source_reference:
-        source_reference = quote.source_reference
-        number = ord(str(source_reference)[0].lower()) - 96
+    if quote.citation:
+        citation = quote.citation
+        number = ord(str(citation)[0].lower()) - 96
         x += number*1000
-        if source_reference.page_number:
-            x += source_reference.page_number
+        if citation.page_number:
+            x += citation.page_number
     return x
 
 

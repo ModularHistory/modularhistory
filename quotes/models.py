@@ -15,10 +15,11 @@ from .manager import Manager
 
 class QuoteSourceReference(SourceReference):
     """A reference to a source."""
-    quote = ForeignKey('Quote', related_name='source_references', on_delete=CASCADE)
+    quote = ForeignKey('Quote', related_name='citations', on_delete=CASCADE)
     source = ForeignKey(Source, related_name='references_from_quotes', on_delete=CASCADE)
 
     class Meta:
+        verbose_name = 'citation'
         unique_together = ['quote', 'source']
         ordering = ['source', 'page_number']
 
@@ -72,7 +73,7 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
             f'</a>'
             f'{self.text.html}'
             f'<footer class="blockquote-footer" style="position: relative;">'
-            f'{self.source_reference_html or self.attributee}'
+            f'{self.citation_html or self.attributee}'
             f'</footer>'
             f'</blockquote>'
         )

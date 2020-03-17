@@ -148,12 +148,13 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     def clean(self):
         super().clean()
-        for container in self.containers.all():
-            if self in container.containers.all():
-                raise ValidationError(
-                    f'This source cannot be contained by {container}, '
-                    f'because that source is already contained by this source.'
-                )
+        if self.id or self.pk:  # If this source is not being newly created
+            for container in self.containers.all():
+                if self in container.containers.all():
+                    raise ValidationError(
+                        f'This source cannot be contained by {container}, '
+                        f'because that source is already contained by this source.'
+                    )
 
         # # Create related historical occurrence
         # if not Episode.objects.filter(type=self.HISTORICAL_ITEM_TYPE).exists():
@@ -257,6 +258,12 @@ source_types = (
     ('T', 'Tertiary')
 )
 
+citation_phrase_options = (
+    (None, ''),
+    ('quoted in', 'quoted in'),
+    ('cited in', 'cited in')
+)
+
 
 class SourceReference(Model):
     """Abstract base class for a reference to a source."""
@@ -264,8 +271,11 @@ class SourceReference(Model):
     position = models.PositiveSmallIntegerField(verbose_name='reference position', default=1, blank=True)
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)
     end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
+    citation_phrase = models.CharField(max_length=10, choices=citation_phrase_options,
+                                       default=None, null=True, blank=True)
 
     class Meta:
+        verbose_name = 'citation'
         unique_together = ['source', 'page_number', 'end_page_number', 'position']
         abstract = True
 

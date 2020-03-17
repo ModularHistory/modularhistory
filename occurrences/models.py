@@ -164,12 +164,12 @@ class OccurrenceQuoteRelation(Model):
         ordering = ['position', 'quote']
 
     def __str__(self):
-        return mark_safe(f'{self.quote.source_reference}')
+        return mark_safe(f'{self.quote.citation}')
 
 
 class OccurrenceSourceReference(SourceReference):
     """A reference to a source."""
-    occurrence = models.ForeignKey(Occurrence, related_name='source_references', on_delete=CASCADE)
+    occurrence = models.ForeignKey(Occurrence, related_name='citations', on_delete=CASCADE)
     source = models.ForeignKey(Source, related_name='references_from_occurrences', on_delete=CASCADE)
 
     class Meta:

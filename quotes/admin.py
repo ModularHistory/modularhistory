@@ -45,7 +45,7 @@ class SourceReferencesInline(TabularInline):
     autocomplete_fields = ['source']
 
     def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.source_references.count():
+        if obj and obj.citations.count():
             return 0
         return 1
 
@@ -85,7 +85,7 @@ class QuoteAdmin(Admin):
         'detail_link',
         'attributee',
         'date_string',
-        'source_reference_html',
+        'citation_html',
         'topic_tags'
     ]
     list_filter = [
@@ -99,7 +99,7 @@ class QuoteAdmin(Admin):
     search_fields = models.Quote.searchable_fields
     ordering = ('date', 'attributee')
     autocomplete_fields = ['attributee']
-    readonly_fields = ['source_reference_html']
+    readonly_fields = ['citation_html']
     inlines = [
         SourceReferencesInline,
         OccurrencesInline,
