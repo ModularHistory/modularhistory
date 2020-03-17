@@ -7,7 +7,7 @@ from social_core.backends.google import GoogleOAuth2
 from social_core.backends.twitter import TwitterOAuth
 
 
-def get_user_avatar(backend, details, response, social_user, uid, user, *args, **kwargs):
+def get_user_avatar(backend, response, user, *args, **kwargs):
     url = None
     if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
         url = f'http://graph.facebook.com/{response["id"]}/picture?type=large'
