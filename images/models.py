@@ -88,7 +88,7 @@ class Image(MediaModel):
                 'detail': True,
             }).url
         except KeyError as e:
-            print(f'>>> {e}')
+            print(f'>>> {e}')  # TODO: Send email to admins about the error. Figure out why this happens.
             return None
 
     @property
@@ -120,7 +120,7 @@ class Image(MediaModel):
         """
         # If the image is tall and narrow, it's like to be of a person or figurine;
         # try to to avoid cutting off heads.
-        return 'center' if not self.height > 1.2*self.width else 'center 10%'
+        return 'center' if not self.height > (1.2 * self.width) else 'center 10%'
 
     def clean(self):
         super().clean()
@@ -141,9 +141,12 @@ class Video(MediaModel):
     def clean(self):
         if not self.link:
             raise ValidationError('Video needs a link.')
-        video = pafy.new(self.link)
-        if not self.title:
-            self.title = video.title
-        if not self.duration:
-            self.duration = video.duration
+        try:
+            video = pafy.new(self.link)
+            if not self.title:
+                self.title = video.title
+            if not self.duration:
+                self.duration = video.duration
+        except Exception as e:  # TODO: Enable saving other kinds of videos
+            raise Exception(f'Error: {e} \n Note: Non-YouTube videos are not yet supported.')
 
