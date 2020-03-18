@@ -12,6 +12,11 @@ class EntityFilter(AutocompleteFilter):
     field_name = 'involved_entities'
 
 
+class TopicFilter(AutocompleteFilter):
+    title = 'topic'
+    field_name = 'related_topics'
+
+
 class LocationFilter(AutocompleteFilter):
     title = 'Location'
     field_name = 'locations'
@@ -87,7 +92,7 @@ class OccurrenceAdmin(Admin):
         # 'date',
         'topic_tags'
     )
-    list_filter = ['verified', HasDateFilter, EntityFilter, LocationFilter]
+    list_filter = ['verified', HasDateFilter, EntityFilter, TopicFilter, LocationFilter]
     search_fields = models.Occurrence.searchable_fields
     ordering = ('date',)
     inlines = [
