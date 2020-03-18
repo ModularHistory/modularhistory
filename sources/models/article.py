@@ -36,7 +36,7 @@ class Article(TitleMixin, _Piece):
     searchable_fields = ['db_string', 'publication__name']
 
     def __str__(self) -> SafeText:
-        string = f'{self.creator_string}, ' if self.creator_string else ''
+        string = f'{self.creator_string}, ' if self.pk and self.creator_string else ''
         title = self.title.replace('"', "'") if self.title else None
         string += f'"{title}," ' if self.title else ''
         string += f'{self.publication}'

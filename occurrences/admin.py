@@ -1,5 +1,6 @@
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import Q
 
 from admin import admin_site, Admin, TabularInline  # , StackedInline
@@ -8,7 +9,7 @@ from . import models
 
 
 class EntityFilter(AutocompleteFilter):
-    title = 'Entity'
+    title = 'entity'
     field_name = 'involved_entities'
 
 
@@ -18,7 +19,7 @@ class TopicFilter(AutocompleteFilter):
 
 
 class LocationFilter(AutocompleteFilter):
-    title = 'Location'
+    title = 'location'
     field_name = 'locations'
 
 
@@ -32,7 +33,7 @@ class ImagesInline(TabularInline):
     model = models.Occurrence.images.through
     extra = 0
     autocomplete_fields = ['image']
-    readonly_fields = ('key',)
+    readonly_fields = ['key', 'pk']
 
 
 class RelatedQuotesInline(TabularInline):
@@ -51,6 +52,19 @@ class SourceReferencesInline(TabularInline):
     model = models.Occurrence.sources.through
     extra = 1
     autocomplete_fields = ['source']
+    readonly_fields = ['pk']
+
+
+class CitationsInline(GenericTabularInline):
+    model = models.Occurrence.sources.through
+    extra = 1
+    autocomplete_fields = ['source']
+    readonly_fields = ['pk']
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.citations.count():
+            return 0
+        return 1
 
 
 class InvolvedEntitiesInline(TabularInline):
@@ -99,6 +113,7 @@ class OccurrenceAdmin(Admin):
         RelatedQuotesInline, InvolvedEntitiesInline,
         LocationsInline, ImagesInline,
         SourceReferencesInline,
+        # CitationsInline,
         RelatedTopicsInline
     ]
 

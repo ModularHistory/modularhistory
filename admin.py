@@ -11,6 +11,7 @@ from django.contrib.admin import (
 # from django_celery_results.admin import TaskResultAdmin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from massadmin.massadmin import mass_change_selected
 from sass_processor.processor import sass_processor
@@ -153,7 +154,16 @@ class CustomFlatPageAdmin(FlatPageAdmin):
 #     form = CustomPeriodicTaskForm
 
 
+class ContentTypeAdmin(Admin):
+    list_display = ['app_label', 'model', 'pk']
+    list_filter = ('app_label',)
+    readonly_fields = ['pk', 'app_label', 'model']
+    ordering = ['app_label']
+
+
 admin_site.register(Site)
+
+admin_site.register(ContentType, ContentTypeAdmin)
 
 admin_site.register(FlatPage, CustomFlatPageAdmin)
 

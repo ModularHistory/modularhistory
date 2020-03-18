@@ -14,6 +14,7 @@ citation_key_regex = r'{{\ ?citation:\ ?(.+?)\ ?}}'
 def process_images(_, html: str) -> str:
     if '{{' in html:
         from images.models import Image
+        from sources.models import Citation
         for match in re.finditer(image_key_regex, html):
             key = match.group(1)
             image = Image.objects.get(key=key)
@@ -28,6 +29,8 @@ def process_images(_, html: str) -> str:
             html = html.replace(match.group(0), image_html)
         for match in re.finditer(citation_key_regex, html):
             key = match.group(1)
+            citation = Citation.objects.get(key=key)
+            citation = '<a href=""><sup></sup></a>'
     return html
 
 

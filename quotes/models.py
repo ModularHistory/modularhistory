@@ -4,12 +4,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
 from django.utils.safestring import SafeText, mark_safe
-
+# from gm2m import GM2MField as GenericManyToManyField
 from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
 from history.models import Model, TaggableModel, DatedModel, SearchableMixin, SourceMixin
 from images.models import Image
-from sources.models import Source, SourceReference
+from sources.models import Source, SourceReference, Citation
 from .manager import Manager
 
 
@@ -47,6 +47,7 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         null=True, blank=True
     )
     sources = ManyToManyField(Source, through=QuoteSourceReference, related_name='quotes', blank=True)
+    # sources2 = GenericManyToManyField(Source, through=Citation, related_name='quotes', blank=True)
 
     class Meta:
         unique_together = ['date', 'attributee', 'bite']

@@ -3,14 +3,16 @@ from typing import List, Optional
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import ManyToManyField, ForeignKey, CASCADE
+from django.db.models import ForeignKey, ManyToManyField, CASCADE
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
+# from gm2m import GM2MField as GenericManyToManyField
 
+from entities.models import Entity
 from history.fields import HistoricDateTimeField, HTMLField
 from history.models import Model, PolymorphicModel, TaggableModel, DatedModel, SearchableMixin, SourceMixin
 from images.models import Image
-from sources.models import Source, SourceReference
+from sources.models import Source, SourceReference, Citation
 from .manager import Manager
 
 
@@ -62,6 +64,10 @@ class Occurrence(DatedModel, TaggableModel, SearchableMixin, SourceMixin):
     related_quotes = ManyToManyField('quotes.Quote', through='OccurrenceQuoteRelation', symmetrical=True,
                                      related_name='related_occurrences', blank=True)
     sources = ManyToManyField(Source, through='OccurrenceSourceReference', related_name='occurrences', blank=True)
+    # sources2 = GenericManyToManyField(
+    #     Source, through=Citation, through_fields=('content_object', 'source'),
+    #     related_name='quotes', blank=True
+    # )
     images = ManyToManyField(Image, related_name='occurrences', through=OccurrenceImage, blank=True)
     involved_entities = ManyToManyField('entities.Entity', related_name='involved_occurrences',
                                         through='OccurrenceEntityInvolvement', blank=True)
@@ -173,4 +179,5 @@ class OccurrenceSourceReference(SourceReference):
     source = models.ForeignKey(Source, related_name='references_from_occurrences', on_delete=CASCADE)
 
     class Meta:
+        verbose_name = 'citation'
         unique_together = [['occurrence', 'source', 'page_number', 'end_page_number'], ['occurrence', 'position']]

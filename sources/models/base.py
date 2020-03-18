@@ -78,7 +78,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     def creator_string(self) -> Optional[str]:
         if self.creators:
             return self.creators
-        elif self.attributees.exists():
+        # Check for pk to avoid RecursionErrors with not-yet-saved objects
+        elif self.pk and self.attributees.exists():
             return self.attributees.first().name
         return None
 
@@ -106,12 +107,14 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     @property
     def object(self) -> 'Source':
         """Return the object with the correct content type."""
-        try:
-            ct = ContentType.objects.get(id=self.polymorphic_ctype_id)
-            return ct.model_class().objects.get(id=self.id)
-        except Exception as e:
-            print(f'EXCEPTION: Trying to get child object for {self} resulted in: {e}')
-            return self
+        polymorphic_ctype_id = getattr(self, 'polymorphic_ctype_id', None)
+        if polymorphic_ctype_id:
+            try:
+                ct = ContentType.objects.get(id=polymorphic_ctype_id)
+                return ct.model_class().objects.get(id=self.id)
+            except Exception as e:
+                print(f'EXCEPTION: Trying to get child object for {self} resulted in: {e}')
+        return self
 
     @property
     def string(self) -> SafeText:

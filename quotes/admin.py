@@ -1,6 +1,7 @@
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.contrib.admin import TabularInline
+from django.contrib.contenttypes.admin import GenericTabularInline
 
 from admin import admin_site, Admin
 from occurrences.models import Occurrence
@@ -43,6 +44,18 @@ class HasSourceFilter(SimpleListFilter):
 class SourceReferencesInline(TabularInline):
     model = models.Quote.sources.through
     autocomplete_fields = ['source']
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.citations.count():
+            return 0
+        return 1
+
+
+class CitationsInline(GenericTabularInline):
+    model = models.Quote.sources.through
+    extra = 1
+    autocomplete_fields = ['source']
+    readonly_fields = ['pk']
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj and obj.citations.count():
@@ -102,6 +115,7 @@ class QuoteAdmin(Admin):
     readonly_fields = ['citation_html']
     inlines = [
         SourceReferencesInline,
+        # CitationsInline,
         OccurrencesInline,
         TopicsInline,
         BitesInline

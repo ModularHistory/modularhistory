@@ -87,9 +87,9 @@ class TypedModelMetaclass(ModelBase):
                 if not (field.many_to_many or field.null or field.has_default()):
                     # https://github.com/craigds/django-typed-models/issues/39
                     warnings.warn(
-                        "Field {}.{} was implicitly set to null=True. "
-                        "This will cause an error in typedmodels 0.9. "
-                        "Add null=True to the field definition to avoid this warning."
+                        'Field {}.{} was implicitly set to null=True. '
+                        'This will cause an error in typedmodels 0.9. '
+                        'Add null=True to the field definition to avoid this warning.'
                         .format(class_name, field_name),
                         UserWarning,
                     )
@@ -136,14 +136,13 @@ class TypedModelMetaclass(ModelBase):
             opts = cls._meta
 
             model_name = opts.model_name
-            typ = "%s.%s" % (opts.app_label, model_name)
+            typ = f'{opts.app_label}.{model_name}'
             cls._typedmodels_type = typ
             cls._typedmodels_subtypes = [typ]
             if typ in base_class._typedmodels_registry:
                 raise ValueError(
-                    "Can't register type %r to %r (already registered to %r)" % (
-                        typ, class_name, base_class._typedmodels_registry[typ].__name__
-                    )
+                    f'Cannot register type {typ} to {class_name} '
+                    f'(already registered to {base_class._typedmodels_registry[typ].__name__})'
                 )
             base_class._typedmodels_registry[typ] = cls
 
@@ -229,7 +228,7 @@ class TypedModelMetaclass(ModelBase):
             # If it was cached already, it's because we've already filtered this, skip it
             if not was_cached:
                 fields = [f for f in fields if TypedModelMetaclass._model_has_field(cls, base_class, f)]
-                fields = make_immutable_fields_list("get_fields()", fields)
+                fields = make_immutable_fields_list('get_fields()', fields)
                 self._get_fields_cache[cache_key] = fields
             return fields
 
@@ -288,7 +287,7 @@ class TypedModel(with_metaclass(TypedModelMetaclass, models.Model)):
         args = list(args)
         if len(args) > len(self._meta.fields):
             # Daft, but matches old exception sans the err msg.
-            raise IndexError("Number of args exceeds number of fields")
+            raise IndexError('Number of args exceeds number of fields')
         for field_value, field in zip(args, self._meta.fields):
             kwargs[field.attname] = field_value
         args = []  # args were all converted to kwargs
@@ -298,7 +297,7 @@ class TypedModel(with_metaclass(TypedModelMetaclass, models.Model)):
             self.__class__ = self.base_class
         else:
             before_class = None
-        super(TypedModel, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if before_class:
             self.__class__ = before_class
         if self._auto_recast:
@@ -309,7 +308,7 @@ class TypedModel(with_metaclass(TypedModelMetaclass, models.Model)):
             if issubclass(base, TypedModel) and hasattr(base, '_typedmodels_registry'):
                 break
         else:
-            raise ValueError("No suitable base class found to recast!")
+            raise ValueError('No suitable base class found to recast!')
 
         if not self.type:
             if not hasattr(self, '_typedmodels_type'):
@@ -333,7 +332,7 @@ class TypedModel(with_metaclass(TypedModelMetaclass, models.Model)):
         try:
             correct_cls = base._typedmodels_registry[typ]
         except KeyError:
-            raise ValueError("Invalid %s identifier: %r" % (base.__name__, typ))
+            raise ValueError('Invalid %s identifier: %r' % (base.__name__, typ))
 
         self.type = typ
 
@@ -344,11 +343,26 @@ class TypedModel(with_metaclass(TypedModelMetaclass, models.Model)):
 
     def save(self, *args, **kwargs):
         if not getattr(self, '_typedmodels_type', None):
+            # TODO: Find out why the below is necessary to avoid the RuntimeError
             from entities.models import Entity
+            from places.models import Venue, City, State, Place
             if isinstance(self, Entity):
-                self.recast('entities.person')
+                if self.type:
+                    print(f'>>> Recasting Entity to {self.type}')
+                    self.recast(self.type)
+                else:
+                    print(f'>>> Recasting Entity to entities.person (default)')
+                    self.recast('entities.person')
+            elif isinstance(self, Place):
+                if self.type:
+                    print(f'>>> Recasting Place to {self.type}')
+                    self.recast(self.type)
+                else:
+                    print(f'>>> Recasting Place to places.city (default)')
+                    self.recast('places.city')
             else:
-                raise RuntimeError("Untyped %s cannot be saved." % self.__class__.__name__)
+                print(f'>>> {self}, type: {self.type}')
+                raise RuntimeError(f'Untyped self.__class__.__name__ cannot be saved.')
         return super(TypedModel, self).save(*args, **kwargs)
 
     def _get_unique_checks(self, exclude=None):
@@ -374,9 +388,9 @@ _python_serializer_get_dump_object = _PythonSerializer.get_dump_object
 def _get_dump_object(self, obj):
     if isinstance(obj, TypedModel):
         return {
-            "pk": smart_text(obj._get_pk_val(), strings_only=True),
-            "model": smart_text(getattr(obj, 'base_class', obj)._meta),
-            "fields": self._current
+            'pk': smart_text(obj._get_pk_val(), strings_only=True),
+            'model': smart_text(getattr(obj, 'base_class', obj)._meta),
+            'fields': self._current
         }
     else:
         return _python_serializer_get_dump_object(self, obj)
@@ -393,14 +407,14 @@ def _start_object(self, obj):
         obj_pk = obj._get_pk_val()
         modelname = smart_text(getattr(obj, 'base_class', obj)._meta)
         if obj_pk is None:
-            attrs = {"model": modelname,}
+            attrs = {'model': modelname,}
         else:
             attrs = {
-                "pk": smart_text(obj._get_pk_val()),
-                "model": modelname,
+                'pk': smart_text(obj._get_pk_val()),
+                'model': modelname,
             }
 
-        self.xml.startElement("object", attrs)
+        self.xml.startElement('object', attrs)
     else:
         return _xml_serializer_start_object(self, obj)
 
