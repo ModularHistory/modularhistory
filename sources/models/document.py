@@ -34,6 +34,7 @@ class _Document(DocumentMixin, TextualSource):
         max_length=400, null=True, blank=True,
         help_text='Ex: John H. Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
     )
+    information_url = models.URLField(max_length=100, null=True, blank=True)
 
     HISTORICAL_ITEM_TYPE = 'writing'
 

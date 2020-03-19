@@ -12,12 +12,16 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
 django.setup()
 
 
-from sources.models import Source
+from sources.models import Document, Letter
 
-# for s in Source.objects.all():
-#     if s.url:
-#         s.url = s.url
-#         s.save()
+for s in Document.objects.all():
+    if s.url:
+        s.information_url = s.url
+        s.save()
+for s in Letter.objects.all():
+    if s.url:
+        s.information_url = s.url
+        s.save()
 
 
 # from history import settings
