@@ -93,15 +93,15 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
             )
-        elif self.link:
-            link = self.link
-            if self.page_number and 'www.sacred-texts.com' in link:
-                link += f'#page_{self.page_number}'
-            html += (
-                f'<a href="{link}" class="mx-1" target="_blank">'
-                f'<i class="fas fa-search"></i>'
-                f'</a>'
-            )
+        # elif self.link:
+        #     link = self.link
+        #     if self.page_number and 'www.sacred-texts.com' in link:
+        #         link += f'#page_{self.page_number}'
+        #     html += (
+        #         f'<a href="{link}" class="mx-1" target="_blank">'
+        #         f'<i class="fas fa-search"></i>'
+        #         f'</a>'
+        #     )
         return html
 
     @property
