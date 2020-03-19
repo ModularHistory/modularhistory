@@ -118,6 +118,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     @property
     def string(self) -> SafeText:
+        # TODO: This is quite a mess; ideally, string methods should be split into different classes and/or mixins.
         if hasattr(self.object, 'string_override'):
             return mark_safe(self.object.string_override)
         string = str(self)
@@ -136,6 +137,10 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 container_strings.append(container_string)
             containers = ', and '.join(container_strings)
             string += f', {containers}'
+        if self.link:
+            link_string = f'retrieved from <a target="_blank" href="{self.url}">{self.url}</a>'
+            if link_string not in string and not self.get_file():
+                string += f', {link_string}'
         # Fix placement of commas after double-quoted titles
         string = string.replace('," ,', ',"')
         string = string.replace('",', ',"')

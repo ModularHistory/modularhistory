@@ -26,7 +26,7 @@ class QuotesInline(TabularInline):
     model = Quote
     extra = 0
     show_change_link = True
-    exclude = ['text', 'bite', 'pretext', 'context']
+    fields = ['verified', 'hidden']
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
