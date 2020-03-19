@@ -22,6 +22,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         through='SourceAttribution'
     )
     creators = models.CharField(max_length=100, null=True, blank=True)
+    url2 = models.URLField(max_length=100, null=True, blank=True)
     link = models.URLField(max_length=100, null=True, blank=True)
     description = HTMLField(null=True, blank=True)
     date = HistoricDateTimeField(null=True, blank=True)
@@ -138,9 +139,9 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             containers = ', and '.join(container_strings)
             string += f', {containers}'
         if self.link:
-            link_string = f'retrieved from <a target="_blank" href="{self.link}">{self.link}</a>'
+            link_string = f'<a target="_blank" href="{self.link}">{self.link}</a>'
             if link_string not in string and not self.get_file():
-                string += f', {link_string}'
+                string += f', retrieved from {link_string}'
         # Fix placement of commas after double-quoted titles
         string = string.replace('," ,', ',"')
         string = string.replace('",', ',"')

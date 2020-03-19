@@ -12,6 +12,14 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
 django.setup()
 
 
+from sources.models import Source
+
+for s in Source.objects.all():
+    if s.link:
+        s.url2 = s.link
+        s.save()
+
+
 # from history import settings
 # from django.db import transaction
 # from django.contrib.auth.models import Permission, Group
