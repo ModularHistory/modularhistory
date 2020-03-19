@@ -21,7 +21,7 @@ class QuoteSourceReference(SourceReference):
     class Meta:
         verbose_name = 'citation'
         unique_together = ['quote', 'source']
-        ordering = ['source', 'page_number']
+        ordering = ['position', 'source', 'page_number']
 
     def __str__(self) -> SafeText:
         string = super().__str__()

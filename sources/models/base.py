@@ -285,6 +285,7 @@ class SourceReference(Model):
     class Meta:
         verbose_name = 'citation'
         unique_together = ['source', 'page_number', 'end_page_number', 'position']
+        ordering = ['position', 'source', 'page_number']
         abstract = True
 
     def __str__(self) -> SafeText:
@@ -305,15 +306,15 @@ class SourceReference(Model):
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
             )
-        elif self.source.link or self.source.container and self.source.container.link:
-            link = self.source.link if self.source.link else self.source.container.link
-            if self.page_number and 'www.sacred-texts.com' in link:
-                link += f'#page_{self.page_number}'
-            html += (
-                f'<a href="{link}" target="_blank">'
-                f'<i class="fas fa-search"></i>'
-                f'</a>'
-            )
+        # elif self.source.link or self.source.container and self.source.container.link:
+        #     link = self.source.link if self.source.link else self.source.container.link
+        #     if self.page_number and 'www.sacred-texts.com' in link:
+        #         link += f'#page_{self.page_number}'
+        #     html += (
+        #         f'<a href="{link}" target="_blank">'
+        #         f'<i class="fas fa-search"></i>'
+        #         f'</a>'
+        #     )
         return mark_safe(f'<span class="citation">{html}</span>')
 
     @property
