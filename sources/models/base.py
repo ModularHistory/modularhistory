@@ -138,7 +138,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             containers = ', and '.join(container_strings)
             string += f', {containers}'
         if self.link:
-            link_string = f'retrieved from <a target="_blank" href="{self.url}">{self.url}</a>'
+            link_string = f'retrieved from <a target="_blank" href="{self.link}">{self.link}</a>'
             if link_string not in string and not self.get_file():
                 string += f', {link_string}'
         # Fix placement of commas after double-quoted titles
