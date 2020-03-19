@@ -14,10 +14,10 @@ django.setup()
 
 from sources.models import Source
 
-for s in Source.objects.all():
-    if s.link:
-        s.url2 = s.link
-        s.save()
+# for s in Source.objects.all():
+#     if s.url:
+#         s.url = s.url
+#         s.save()
 
 
 # from history import settings

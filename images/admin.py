@@ -47,7 +47,7 @@ class ImageAdmin(ImageCroppingMixin, Admin):
 
 
 class VideoAdmin(Admin):
-    list_display = ['title', 'link']
+    list_display = ['title', 'url']
     search_fields = ['title']
     readonly_fields = ['duration']
 

@@ -58,7 +58,3 @@ class WebPage(TitleMixin, TextualSource):
         string += f', {self.date.string}' if self.date else ''
         string += f', retrieved from <a target="_blank" href="{self.url}">{self.url}</a>'
         return mark_safe(string)
-
-    @property
-    def url(self) -> str:
-        return self.link

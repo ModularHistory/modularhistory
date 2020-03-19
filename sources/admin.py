@@ -171,7 +171,7 @@ class RepositoryAdmin(Admin):
 class SourcesInline(TabularInline):
     model = models.Source
     extra = 0
-    fields = ['verified', 'hidden', 'date_is_circa', 'creators', 'link', 'date', 'publication_date']
+    fields = ['verified', 'hidden', 'date_is_circa', 'creators', 'url', 'date', 'publication_date']
 
 
 class SourceFileAdmin(Admin):

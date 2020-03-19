@@ -68,8 +68,8 @@ class Citation(Model):
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
             )
-        elif self.source.link or self.source.container and self.source.container.link:
-            link = self.source.link if self.source.link else self.source.container.link
+        elif self.source.url or self.source.container and self.source.container.url:
+            link = self.source.url if self.source.url else self.source.container.url
             if self.page_number and 'www.sacred-texts.com' in link:
                 link += f'#page_{self.page_number}'
             html += (

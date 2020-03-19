@@ -131,18 +131,18 @@ class Image(MediaModel):
 class Video(MediaModel):
     """A video"""
     title = models.CharField(max_length=200, null=True)
-    link = models.URLField(null=True, unique=True)
+    url = models.URLField(null=True, unique=True)
     embed_code = models.CharField(max_length=200, null=True)
     duration = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
-        unique_together = ['title', 'link']
+        unique_together = ['title', 'url']
 
     def clean(self):
-        if not self.link:
+        if not self.url:
             raise ValidationError('Video needs a link.')
         try:
-            video = pafy.new(self.link)
+            video = pafy.new(self.url)
             if not self.title:
                 self.title = video.title
             if not self.duration:

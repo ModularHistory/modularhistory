@@ -22,8 +22,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         through='SourceAttribution'
     )
     creators = models.CharField(max_length=100, null=True, blank=True)
-    url2 = models.URLField(max_length=100, null=True, blank=True)
-    link = models.URLField(max_length=100, null=True, blank=True)
+    url = models.URLField(max_length=100, null=True, blank=True)
     description = HTMLField(null=True, blank=True)
     date = HistoricDateTimeField(null=True, blank=True)
     publication_date = HistoricDateTimeField(null=True, blank=True)
@@ -94,8 +93,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
             )
-        # elif self.link:
-        #     link = self.link
+        # elif self.url:
+        #     link = self.url
         #     if self.page_number and 'www.sacred-texts.com' in link:
         #         link += f'#page_{self.page_number}'
         #     html += (
@@ -138,8 +137,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 container_strings.append(container_string)
             containers = ', and '.join(container_strings)
             string += f', {containers}'
-        if self.link:
-            link_string = f'<a target="_blank" href="{self.link}">{self.link}</a>'
+        if self.url:
+            link_string = f'<a target="_blank" href="{self.url}">{self.url}</a>'
             if link_string not in string and not self.get_file():
                 string += f', retrieved from {link_string}'
         # Fix placement of commas after double-quoted titles
@@ -307,8 +306,8 @@ class SourceReference(Model):
                 f'<i class="fas fa-search"></i>'
                 f'</a>'
             )
-        # elif self.source.link or self.source.container and self.source.container.link:
-        #     link = self.source.link if self.source.link else self.source.container.link
+        # elif self.source.url or self.source.container and self.source.container.url:
+        #     link = self.source.url if self.source.url else self.source.container.url
         #     if self.page_number and 'www.sacred-texts.com' in link:
         #         link += f'#page_{self.page_number}'
         #     html += (
