@@ -105,6 +105,10 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         return html
 
     @property
+    def link(self) -> Optional[SafeText]:
+        return f'<a target="_blank" href="{self.url}">{self.url}</a>' if self.url else None
+
+    @property
     def object(self) -> 'Source':
         """Return the object with the correct content type."""
         polymorphic_ctype_id = getattr(self, 'polymorphic_ctype_id', None)
@@ -138,9 +142,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             containers = ', and '.join(container_strings)
             string += f', {containers}'
         if self.url:
-            link_string = f'<a target="_blank" href="{self.url}">{self.url}</a>'
-            if link_string not in string and not self.get_file():
-                string += f', retrieved from {link_string}'
+            if self.link not in string and not self.get_file():
+                string += f', retrieved from {self.link}'
         # Fix placement of commas after double-quoted titles
         string = string.replace('," ,', ',"')
         string = string.replace('",', ',"')
