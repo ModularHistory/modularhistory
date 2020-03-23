@@ -47,14 +47,9 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     context = HTMLField(null=True, blank=True, help_text='Content to be displayed after the quote')
     date = HistoricDateTimeField(null=True, blank=True)
     attributees = ManyToManyField(
-        Entity, related_name='quotes2',
+        Entity, related_name='quotes',
         through=QuoteAttribution,
         blank=True
-    )
-    attributee = ForeignKey(
-        Entity, related_name='quotes',
-        on_delete=models.SET_NULL,
-        null=True, blank=True
     )
     sources = ManyToManyField(
         Source, related_name='quotes',
@@ -79,11 +74,15 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
                 f'{self.text.text}')
 
     @property
+    def attributee(self) -> Optional[Entity]:
+        return self.attributees.first() if self.attributees.exists() else None
+
+    @property
     def html(self) -> SafeText:
         html = f'<div class="quote-context">{self.pretext.html}</div>' if self.pretext else ''
         html += (
             f'<blockquote class="blockquote">'
-            f'<a class="edit-object-button float-right" target="_blank" href="{self.get_admin_url()}">'
+            f'<a class="edit-object-button float-right" target="_blank" href="{self.admin_url}">'
             f'<i class="fa fa-edit"></i>'
             f'</a>'
             f'{self.text.html}'

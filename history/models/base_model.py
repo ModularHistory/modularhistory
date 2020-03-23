@@ -18,6 +18,10 @@ class Model(BaseModel):
         return cls.searchable_fields or []
 
     @property
+    def admin_url(self) -> str:
+        return self.get_admin_url()
+
+    @property
     def ctype(self) -> ContentType:
         return ContentType.objects.get_for_model(self)
 
