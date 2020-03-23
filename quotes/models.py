@@ -97,9 +97,11 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
             raise ValidationError('The quote must have text.')
         if not self.bite:
             text = self.text.text
-            self.bite = text
             if len(text) > 400:
-                self.bite = f'{text[:200]} ....... {text[-200:]}'
+                raise ValidationError('Add a quote bite.')
+            self.bite = text
+        if len(self.citations.filter(position=1)) > 1:
+            raise ValidationError('Citation positions should be unique.')
 
     def save(self, *args, **kwargs):
         self.full_clean()

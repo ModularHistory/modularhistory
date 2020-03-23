@@ -53,7 +53,7 @@ class OccurrenceChainInclusion(Model):
         unique_together = ['chain', 'occurrence']
 
 
-class Occurrence(DatedModel, TaggableModel, SearchableMixin, SourceMixin):
+class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
     """Something that happened"""
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
@@ -117,6 +117,8 @@ class Occurrence(DatedModel, TaggableModel, SearchableMixin, SourceMixin):
 
     def full_clean(self, exclude=None, validate_unique=True):
         super().full_clean(exclude, validate_unique)
+        if len(self.citations.filter(position=1)) > 1:
+            raise ValidationError('Citation positions should be unique.')
         if not self.date:
             raise ValidationError('Occurrence needs a date.')
 

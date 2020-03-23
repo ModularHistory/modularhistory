@@ -1,8 +1,10 @@
 from typing import Any, Optional, TYPE_CHECKING
 
+from django.core.exceptions import ValidationError
 from django.db.models import (
     Model as BaseModel
 )
+# from gm2m import GM2MField as GenericManyToManyField
 from django.utils.safestring import SafeText, mark_safe
 
 if TYPE_CHECKING:
@@ -30,6 +32,12 @@ class SourceMixin(BaseModel):
 
     @property
     def citation_html(self) -> Optional[SafeText]:
-        if self.citation:
-            return mark_safe(self.citation.html)
-        return None
+        if not self.sources.exists():
+            return None
+        citations = '; '.join([citation.html for citation in self.citations.all()])
+        return mark_safe(citations)
+
+    def clean(self):
+        super().clean()
+        if len(self.citations.filter(position=1)) > 1:
+            raise ValidationError('Citation positions should be unique.')

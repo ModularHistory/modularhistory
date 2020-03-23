@@ -20,6 +20,13 @@ class TaggableModel(Model):
         return None
 
     @property
+    def related_topics_string(self) -> Optional[str]:
+        related_topics = [topic.key for topic in self._related_topics]
+        if related_topics:
+            return ', '.join(related_topics)
+        return None
+
+    @property
     def topic_tags(self) -> Optional[SafeText]:
         if self._related_topics:
             return mark_safe(' '.join([f'<li class="topic-tag"><a>{topic.key}</a></li>'

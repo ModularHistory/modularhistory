@@ -157,11 +157,11 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         file = self.get_file()
         return file.url if file else None
 
-    def get_file(self) -> Optional[SourceFile]:
-        return self.file if self.file else self.container.get_file() if self.container else None
-
     def clean(self):
         super().clean()
+        if Source.objects.filter(db_string=self.db_string):
+            raise ValidationError(f'Unable to save this source because it duplicates an existing source '
+                                  f'or has an identical string: {self.db_string}')
         if self.id or self.pk:  # If this source is not being newly created
             for container in self.containers.all():
                 if self in container.containers.all():
@@ -169,6 +169,9 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                         f'This source cannot be contained by {container}, '
                         f'because that source is already contained by this source.'
                     )
+
+    def get_file(self) -> Optional[SourceFile]:
+        return self.file if self.file else self.container.get_file() if self.container else None
 
         # # Create related historical occurrence
         # if not Episode.objects.filter(type=self.HISTORICAL_ITEM_TYPE).exists():

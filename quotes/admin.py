@@ -2,7 +2,7 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.contrib.admin import TabularInline
 from django.contrib.contenttypes.admin import GenericTabularInline
-
+from django.db.models import Count
 from admin import admin_site, Admin
 from occurrences.models import Occurrence
 from topics.models import TopicQuoteRelation
@@ -39,6 +39,24 @@ class HasSourceFilter(SimpleListFilter):
             return queryset.exclude(sources=None)
         if self.value() == 'No':
             return queryset.filter(sources=None)
+
+
+class HasMultipleCitationsFilter(SimpleListFilter):
+    title = 'has multiple citations'
+    parameter_name = 'has_multiple_citations'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('Yes', 'Yes'),
+            ('No', 'No'),
+        )
+
+    def queryset(self, request, queryset):
+        queryset = queryset.annotate(citation_count=Count('citations'))
+        if self.value() == 'Yes':
+            return queryset.exclude(citation_count__lt=2)
+        if self.value() == 'No':
+            return queryset.filter(citation_count__gte=2)
 
 
 class SourceReferencesInline(TabularInline):
@@ -99,11 +117,12 @@ class QuoteAdmin(Admin):
         'attributee',
         'date_string',
         'citation_html',
-        'topic_tags'
+        'related_topics_string'
     ]
     list_filter = [
         'verified',
         HasSourceFilter,
+        HasMultipleCitationsFilter,
         TopicFilter,
         AttributeeFilter,
         # AttributeeClassificationFilter  # broken

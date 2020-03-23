@@ -51,7 +51,7 @@ class Model(BaseModel):
         return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[self.id])
 
     def get_detail_link(self) -> SafeText:
-        return mark_safe(f'<a href="{self.detail_url}" target="_blank">{self.detail_url}</a>')
+        return mark_safe(f'<a href="{self.detail_url}" target="_blank"><i class="fas fa-info-circle"></i></a>')
 
     def natural_key(self) -> Tuple[Any]:
         natural_key_fields = self.natural_key_fields
