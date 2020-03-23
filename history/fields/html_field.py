@@ -61,6 +61,7 @@ class HTMLField(MceHTMLField):
         ).replace(
             '<table>', '<table class="table">'
         ).strip()
+        raw_html = re.sub(r'\n?<div[^>]+?>&nbsp;</div>', '', raw_html)
         if not raw_html.startswith('<') and raw_html.endswith('>'):
             raw_html = f'<p>{raw_html}</p>'
         html.raw_value = raw_html
