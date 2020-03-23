@@ -51,6 +51,12 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         through=QuoteAttribution,
         blank=True
     )
+    # TODO: clean up (remove) attributee field; just use `attributees`
+    attributee = ForeignKey(
+        Entity, related_name='quote_set',
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
     sources = ManyToManyField(
         Source, related_name='quotes',
         through=QuoteSourceReference,
@@ -72,10 +78,6 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         return (f'{self.attributee or "<Unknown>"}'
                 f'{(", " + self.date.string) if self.date else ""}: '
                 f'{self.text.text}')
-
-    @property
-    def attributee(self) -> Optional[Entity]:
-        return self.attributees.first() if self.attributees.exists() else None
 
     @property
     def html(self) -> SafeText:
@@ -115,6 +117,12 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
             self.bite = text
         if len(self.citations.filter(position=1)) > 1:
             raise ValidationError('Citation positions should be unique.')
+        # TODO: The logic below can be removed after the `attributee` field is removed
+        if self.attributees.exists():
+            if hasattr(self, 'attributee') and not getattr(self, 'attributee', None):
+                self.attributee = self.attributees.first()
+        elif getattr(self, 'attributee', None):
+            QuoteAttribution.objects.create(quote=self, attributee=self.attributee)
 
     def save(self, *args, **kwargs):
         self.full_clean()
