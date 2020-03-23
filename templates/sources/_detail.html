@@ -10,9 +10,23 @@
         </a>
     {% endif %}
 </div>
-{% if quotes.all|length %}
-    {% for quote in quotes.all %}
-        {% quote_card quote %}
-    {% endfor %}
-{% endif %}
+
+<div>
+    {% if quotes|length %}
+        {% for quote in quotes %}
+            <hr style="clear: both" />
+            <div class="m-2" data-key="{{ quote.key }}" data-href="{% block detail_url %}{% endblock %}">
+                {{ quote.html }}
+                {% if quote.related_topics and quote.related_topics.all|length %}
+                    <ul class="tags float-right">
+                        {{ quote.topic_tags }}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        No quotes
+    {% endif %}
+</div>
+
 <a class="edit-object-button" target="_blank" href="{{ source|get_admin_url }}"><i class="fa fa-edit"></i></a>

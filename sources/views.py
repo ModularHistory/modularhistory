@@ -19,9 +19,11 @@ class BaseDetailView(generic.DetailView):
     context_object_name = 'source'
     object: Source
 
-    def get_context_data(self, *args, **kwargs) -> Dict:
-        context = super().get_context_data(*args, **kwargs)
-        containers = [self.object] + [contained_source for contained_source in self.object.contained_sources.all()]
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super().get_context_data(**kwargs)
+        containers = [self.object] + [
+            contained_source for contained_source in self.object.contained_sources.all()
+        ]
         context['quotes'] = Quote.objects.filter(sources__in=containers)
         return context
 
