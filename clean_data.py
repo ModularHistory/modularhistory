@@ -12,16 +12,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
 django.setup()
 
 
-from sources.models import Document, Letter
+from quotes.models import Quote, QuoteAttribution
 
-for s in Document.objects.all():
-    if s.url:
-        s.information_url = s.url
-        s.save()
-for s in Letter.objects.all():
-    if s.url:
-        s.information_url = s.url
-        s.save()
+for q in Quote.objects.all():
+    if q.attributee:
+        if not q.attributees.exists():
+            attributee = q.attributee
+            QuoteAttribution.objects.create(quote=q, attributee=attributee)
 
 
 # from history import settings

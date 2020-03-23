@@ -34,6 +34,11 @@ class QuoteSourceReference(SourceReference):
         return mark_safe(string)
 
 
+class QuoteAttribution(Model):
+    quote = ForeignKey('Quote', related_name='attributions', on_delete=CASCADE)
+    attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
+
+
 class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     """A quote"""
     text = HTMLField()
@@ -41,12 +46,21 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     pretext = HTMLField(null=True, blank=True, help_text='Content to be displayed before the quote')
     context = HTMLField(null=True, blank=True, help_text='Content to be displayed after the quote')
     date = HistoricDateTimeField(null=True, blank=True)
+    attributees = ManyToManyField(
+        Entity, related_name='quotes2',
+        through=QuoteAttribution,
+        blank=True
+    )
     attributee = ForeignKey(
         Entity, related_name='quotes',
         on_delete=models.SET_NULL,
         null=True, blank=True
     )
-    sources = ManyToManyField(Source, through=QuoteSourceReference, related_name='quotes', blank=True)
+    sources = ManyToManyField(
+        Source, related_name='quotes',
+        through=QuoteSourceReference,
+        blank=True
+    )
     # sources2 = GenericManyToManyField(Source, through=Citation, related_name='quotes', blank=True)
 
     class Meta:
