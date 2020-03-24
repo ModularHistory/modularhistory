@@ -64,6 +64,7 @@ class HTMLField(MceHTMLField):
         # Remove empty divs
         raw_html = re.sub(r'\n?<div[^>]+?>&nbsp;<\/div>', '', raw_html)
         raw_html = re.sub(r'<div id=\"i4c-draggable-container\"[^\/]+</div>', '', raw_html)
+        raw_html = re.sub(r'<p>&nbsp;<\/p>', '', raw_html)
         if not raw_html.startswith('<') and raw_html.endswith('>'):
             raw_html = f'<p>{raw_html}</p>'
         html.raw_value = raw_html
@@ -85,6 +86,7 @@ class HTMLField(MceHTMLField):
         # Remove empty divs
         value = re.sub(r'\n?<div[^>]+?>&nbsp;<\/div>', '', value)
         value = re.sub(r'<div id=\"i4c-draggable-container\"[^\/]+</div>', '', value)
+        value = re.sub(r'<p>&nbsp;<\/p>', '', value)
         html = value
         if self.processor:
             html = self.processor(html)
