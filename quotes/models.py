@@ -118,8 +118,6 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
             if len(text) > 400:
                 raise ValidationError('Add a quote bite.')
             self.bite = text
-        if len(self.citations.filter(position=1)) > 1:
-            raise ValidationError('Citation positions should be unique.')
         # TODO: The logic below can be removed after the `attributee` field is removed
         if self.attributees.exists():
             if hasattr(self, 'attributee') and not getattr(self, 'attributee', None):

@@ -117,8 +117,6 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
 
     def full_clean(self, exclude=None, validate_unique=True):
         super().full_clean(exclude, validate_unique)
-        if len(self.citations.filter(position=1)) > 1:
-            raise ValidationError('Citation positions should be unique.')
         if not self.date:
             raise ValidationError('Occurrence needs a date.')
 
