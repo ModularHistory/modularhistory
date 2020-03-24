@@ -5,6 +5,9 @@
 .hidden {
   display: none; }
 
+span.deleted {
+  text-decoration: line-through; }
+
 figcaption {
   font-size: 0.8rem; }
 

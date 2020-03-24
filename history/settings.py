@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
+    'dbbackup',  # https://django-dbbackup.readthedocs.io/en/stable/
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'decouple',
@@ -170,9 +171,11 @@ DATABASES = {
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'localhost',
-        # 'PORT': '5432',
     }
 }
+# https://django-dbbackup.readthedocs.io/en/stable/installation.html
+DBBACKUP_STORAGE = 'dbbackup.storage.filesystem_storage'
+DBBACKUP_STORAGE_OPTIONS = {'location': config('DBBACKUP_STORAGE_LOCATION', default=None)}
 
 AUTH_USER_MODEL = 'account.User'
 

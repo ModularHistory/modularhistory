@@ -23,11 +23,11 @@ venv.bak/
 # PyCharm / IntelliJ #
 .idea
 .DS_Store
-
 *.iws /out/
 
 # Backup files #
 *.bak
+backups/
 
 # Distribution / packaging
 .Python build/
@@ -60,7 +60,7 @@ htmlcov/
 .cache
 .pytest_cache/
 nosetests.xml
-coverage.xml 
+coverage.xml
 *.cover
 .hypothesis/
 
