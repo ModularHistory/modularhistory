@@ -80,6 +80,8 @@ class HTMLField(MceHTMLField):
             return value
         if not value.startswith('<') and value.endswith('>'):
             value = f'<p>{value}</p>'
+        # Remove empty divs
+        value = re.sub(r'\n?<div[^>]+?>&nbsp;</div>', '', value)
         html = value
         if self.processor:
             html = self.processor(html)

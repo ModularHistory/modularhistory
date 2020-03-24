@@ -37,10 +37,7 @@ class QuoteSourceReference(SourceReference):
 class QuoteAttribution(Model):
     quote = ForeignKey('Quote', related_name='attributions', on_delete=CASCADE)
     attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
-    position = models.PositiveSmallIntegerField(
-        default=0, blank=True,
-        help_text='Set to 0 if the image is positioned manually.'
-    )
+    position = models.PositiveSmallIntegerField(default=0, blank=True)
 
     class Meta:
         unique_together = ['quote', 'attributee']
