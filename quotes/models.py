@@ -93,9 +93,22 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     objects: Manager = Manager()
 
     def __str__(self):
-        return (f'{self.attributee or "<Unknown>"}'
+        return (f'{self.attributee_string or "<Unknown>"}'
                 f'{(", " + self.date.string) if self.date else ""}: '
                 f'{self.text.text}')
+
+    @property
+    def attributee_string(self) -> Optional[SafeText]:
+        if not self.attributees.exists():
+            return None
+        attributees = self.attributees.all()
+        n_attributees = len(attributees)
+        string = str(attributees[0])
+        if n_attributees == 2:
+            string = f'{attributees[0]} and {attributees[1]}'
+        elif n_attributees > 2:
+            string = f'{attributees[0]} et al.'
+        return mark_safe(string)
 
     @property
     def html(self) -> SafeText:
@@ -107,7 +120,7 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
             f'</a>'
             f'{self.text.html}'
             f'<footer class="blockquote-footer" style="position: relative;">'
-            f'{self.citation_html or self.attributee}'
+            f'{self.citation_html or self.attributee_string}'
             f'</footer>'
             f'</blockquote>'
         )
