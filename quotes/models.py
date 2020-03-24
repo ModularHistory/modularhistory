@@ -38,6 +38,9 @@ class QuoteAttribution(Model):
     quote = ForeignKey('Quote', related_name='attributions', on_delete=CASCADE)
     attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
 
+    def __str__(self):
+        return str(self.attributee)
+
 
 class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     """A quote"""

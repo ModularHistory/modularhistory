@@ -97,6 +97,16 @@ class TopicsInline(TabularInline):
     autocomplete_fields = ['topic']
 
 
+class AttributeesInline(TabularInline):
+    model = models.QuoteAttribution
+    autocomplete_fields = ['attributee']
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.attributees.count():
+            return 0
+        return 1
+
+
 class BitesInline(TabularInline):
     model = models.QuoteBite
     extra = 0
@@ -133,6 +143,7 @@ class QuoteAdmin(Admin):
     autocomplete_fields = ['attributee']
     readonly_fields = ['citation_html']
     inlines = [
+        AttributeesInline,
         SourceReferencesInline,
         # CitationsInline,
         OccurrencesInline,
