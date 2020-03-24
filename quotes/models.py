@@ -42,6 +42,10 @@ class QuoteAttribution(Model):
         help_text='Set to 0 if the image is positioned manually.'
     )
 
+    class Meta:
+        unique_together = ['quote', 'attributee']
+        ordering = ['position']
+
     def __str__(self):
         return str(self.attributee)
 
@@ -101,26 +105,28 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     def attributee_html(self) -> Optional[SafeText]:
         if not self.attributees.exists():
             return None
-        attributees = self.attributees.all()
-        n_attributees = len(attributees)
-        string = f'<a href="{reverse("entities:detail", args=[attributees[0].id])}" target="_blank">{attributees[0]}</a>'
-        if n_attributees == 2:
-            string = f'{attributees[0]} and {attributees[1]}'
-        elif n_attributees > 2:
-            string = f'{attributees[0]} et al.'
+        attributions = self.attributions.all()
+        n_attributions = len(attributions)
+        first_attributee = attributions[0].attributee
+        string = f'<a href="{reverse("entities:detail", args=[first_attributee.id])}" target="_blank">{first_attributee}</a>'
+        if n_attributions == 2:
+            string = f'{first_attributee} and {attributions[1].attributee}'
+        elif n_attributions > 2:
+            string = f'{first_attributee} et al.'
         return mark_safe(string)
 
     @property
     def attributee_string(self) -> Optional[SafeText]:
         if not self.attributees.exists():
             return None
-        attributees = self.attributees.all()
-        n_attributees = len(attributees)
-        string = str(attributees[0])
-        if n_attributees == 2:
-            string = f'{attributees[0]} and {attributees[1]}'
-        elif n_attributees > 2:
-            string = f'{attributees[0]} et al.'
+        attributions = self.attributions.all()
+        n_attributions = len(attributions)
+        first_attributee = attributions[0].attributee
+        string = str(first_attributee)
+        if n_attributions == 2:
+            string = f'{first_attributee} and {attributions[1].attributee}'
+        elif n_attributions > 2:
+            string = f'{first_attributee} et al.'
         return mark_safe(string)
 
     @property
