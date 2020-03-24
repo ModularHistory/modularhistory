@@ -47,13 +47,13 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     context = HTMLField(null=True, blank=True, help_text='Content to be displayed after the quote')
     date = HistoricDateTimeField(null=True, blank=True)
     attributees = ManyToManyField(
-        Entity, related_name='quotes',
+        Entity, related_name='quotes2',
         through=QuoteAttribution,
         blank=True
     )
     # TODO: clean up (remove) attributee field; just use `attributees`
     attributee = ForeignKey(
-        Entity, related_name='quote_set',
+        Entity, related_name='quotes',
         on_delete=models.SET_NULL,
         null=True, blank=True
     )
