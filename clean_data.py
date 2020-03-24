@@ -15,8 +15,13 @@ django.setup()
 from quotes.models import Quote
 
 for q in Quote.objects.all():
-    q.clean()
-    q.save()
+    try:
+        q.clean()
+        q.save()
+    except Exception as e:
+        print(q.attributee)
+        print(q.bite)
+        raise
 
 
 # from history import settings
