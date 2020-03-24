@@ -3,7 +3,7 @@
 
 {% if quote.attributee %}
 <p class="lead">
-    <a href="{% url 'entities:detail' quote.attributee.id %}" target="_blank">{{ quote.attributee }}</a>{% if quote.date %}, {{ quote.date.string }}{% endif %}
+    {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date.string }}{% endif %}
 </p>
 {% endif %}
 {% if quote.related_topics and quote.related_topics.all|length %}

@@ -1,5 +1,5 @@
 from typing import Optional
-
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
@@ -96,6 +96,19 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         return (f'{self.attributee_string or "<Unknown>"}'
                 f'{(", " + self.date.string) if self.date else ""}: '
                 f'{self.text.text}')
+
+    @property
+    def attributee_html(self) -> Optional[SafeText]:
+        if not self.attributees.exists():
+            return None
+        attributees = self.attributees.all()
+        n_attributees = len(attributees)
+        string = f'<a href="{reverse("entities:detail", args=[attributees[0].id])}" target="_blank">{attributees[0]}</a>'
+        if n_attributees == 2:
+            string = f'{attributees[0]} and {attributees[1]}'
+        elif n_attributees > 2:
+            string = f'{attributees[0]} et al.'
+        return mark_safe(string)
 
     @property
     def attributee_string(self) -> Optional[SafeText]:
