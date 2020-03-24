@@ -173,8 +173,8 @@ DATABASES = {
         'HOST': 'localhost',
     }
 }
-# https://django-dbbackup.readthedocs.io/en/stable/installation.html
-DBBACKUP_STORAGE = 'dbbackup.storage.filesystem_storage'
+# https://github.com/django-dbbackup/django-dbbackup/blob/master/docs/installation.rst
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': config('DBBACKUP_STORAGE_LOCATION', default=None)}
 
 AUTH_USER_MODEL = 'account.User'
