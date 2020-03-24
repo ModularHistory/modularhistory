@@ -12,13 +12,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
 django.setup()
 
 
-from quotes.models import Quote, QuoteAttribution
+from quotes.models import Quote
 
 for q in Quote.objects.all():
-    if q.attributee:
-        if not q.attributees.exists():
-            attributee = q.attributee
-            QuoteAttribution.objects.create(quote=q, attributee=attributee)
+    q.clean()
+    q.save()
 
 
 # from history import settings
