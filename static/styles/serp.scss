@@ -159,6 +159,7 @@ $refinements-container-bg-color: whitesmoke;
     position: -webkit-sticky; // Safari
     position: sticky;
     top: 0;
+    padding: 2rem;
   }
   .results {
     @include mobile {

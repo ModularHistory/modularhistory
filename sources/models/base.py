@@ -159,7 +159,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     def clean(self):
         super().clean()
-        if Source.objects.filter(db_string=self.db_string):
+        if Source.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
             raise ValidationError(f'Unable to save this source because it duplicates an existing source '
                                   f'or has an identical string: {self.db_string}')
         if self.id or self.pk:  # If this source is not being newly created

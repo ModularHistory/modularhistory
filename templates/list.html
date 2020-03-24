@@ -54,7 +54,7 @@
                             {% endwith %}
                         {% endfor %}
                     </div>
-                    <div class="card p-3 view-detail sticky">
+                    <div class="card view-detail sticky">
                         {% with object_list|first as object %}
                             {% if object|is_instance:"occurrences.Occurrence" %}
                                 {% occurrence_detail object %}
