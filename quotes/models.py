@@ -37,9 +37,24 @@ class QuoteSourceReference(SourceReference):
 class QuoteAttribution(Model):
     quote = ForeignKey('Quote', related_name='attributions', on_delete=CASCADE)
     attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
+    position = models.PositiveSmallIntegerField(
+        default=0, blank=True,
+        help_text='Set to 0 if the image is positioned manually.'
+    )
 
     def __str__(self):
         return str(self.attributee)
+
+    def clean(self):
+        super().clean()
+        if self.position > 0 and len(QuoteAttribution.objects.exclude(pk=self.pk).filter(
+                quote=self.quote, attributee=self.attributee, position=self.position
+        )) > 1:
+            raise ValidationError('Attribution position should be unique.')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
