@@ -115,10 +115,10 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         if n_attributions == 2:
             html += f' and {_html(attributions[1].attributee)}'
         elif n_attributions == 3:
-            html = (f'{first_attributee}, {_html(attributions[1].attributee)}, '
-                    f'and {_html(attributions[2].attributee)}')
+            html += (f', {_html(attributions[1].attributee)}, '
+                     f'and {_html(attributions[2].attributee)}')
         elif n_attributions > 3:
-            html = f'{first_attributee} et al.'
+            html += f' et al.'
         return mark_safe(html)
 
     # TODO: Order by `attributee_string` instead of `attributee`
