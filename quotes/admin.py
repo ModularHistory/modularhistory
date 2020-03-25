@@ -80,7 +80,7 @@ class QuoteAdmin(Admin):
     list_display = [
         'bite',
         'detail_link',
-        'attributee',
+        'attributee_html',
         'date_string',
         'citation_html',
         'related_topics_string'

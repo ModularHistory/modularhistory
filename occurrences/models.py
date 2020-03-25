@@ -10,7 +10,8 @@ from django.utils.safestring import SafeText, mark_safe
 
 from entities.models import Entity
 from history.fields import HistoricDateTimeField, HTMLField
-from history.models import Model, PolymorphicModel, TaggableModel, DatedModel, SearchableMixin, SourceMixin
+from history.models import (Model, PolymorphicModel, TaggableModel,
+                            DatedModel, SearchableMixin, SourceMixin)
 from images.models import Image
 from sources.models import Source, SourceReference, Citation
 from .manager import Manager

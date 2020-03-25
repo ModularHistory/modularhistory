@@ -98,8 +98,9 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
                 f'{(", " + self.date.string) if self.date else ""}: '
                 f'{self.text.text}')
 
-    @property
-    def attributee_html(self) -> Optional[SafeText]:
+    # _attributee_html is defined as a method rather than a property
+    # so that its `admin_order_field` attribute can be modified
+    def _attributee_html(self) -> Optional[SafeText]:
         if not self.attributees.exists():
             return None
         attributions = self.attributions.all()
@@ -119,6 +120,10 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         elif n_attributions > 3:
             html = f'{first_attributee} et al.'
         return mark_safe(html)
+
+    # TODO: Order by `attributee_string` instead of `attributee`
+    _attributee_html.admin_order_field = 'attributee'
+    attributee_html = property(_attributee_html)
 
     @property
     def attributee_string(self) -> Optional[SafeText]:
