@@ -38,6 +38,8 @@ class Classification(Model):
         null=True, blank=True,
         on_delete=CASCADE
     )
+    date = HistoricDateTimeField(null=True, blank=True)
+    end_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']

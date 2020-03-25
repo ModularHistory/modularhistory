@@ -4,10 +4,7 @@ from django.contrib.admin import SimpleListFilter
 from admin import admin_site, Admin, StackedInline, TabularInline
 from occurrences.models import OccurrenceEntityInvolvement
 from quotes.models import Quote
-from topics.models import (
-    EntityTopicRelation,
-    EntityFactRelation
-)
+from topics.models import EntityFactRelation
 # from django.forms import ModelForm
 # from django_reverse_admin import ReverseModelAdmin
 from . import models
@@ -41,12 +38,6 @@ class ImagesInline(TabularInline):
     model = models.Entity.images.through
     extra = 1
     autocomplete_fields = ['image']
-
-
-class TopicsInline(TabularInline):
-    model = EntityTopicRelation
-    extra = 1
-    autocomplete_fields = ['topic']
 
 
 class ClassificationsInline(TabularInline):
@@ -134,7 +125,6 @@ class EntityAdmin(Admin):
     inlines = [
         ImagesInline,
         ClassificationsInline,
-        TopicsInline,
         FactsInline,
         AffiliationsInline,
         OccurrencesInline,

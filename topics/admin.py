@@ -8,11 +8,6 @@ class RelatedOccurrencesInline(TabularInline):
     extra = 1
 
 
-class TopicEntitiesInline(TabularInline):
-    model = models.Topic.related_entities.through
-    extra = 1
-
-
 class TopicAdmin(Admin):
     list_display = (
         'key',
@@ -25,7 +20,6 @@ class TopicAdmin(Admin):
     # ordering = ('datetime', 'start_date', 'end_date')
 
     inlines = [
-        TopicEntitiesInline,
         RelatedOccurrencesInline
     ]
 

@@ -23,15 +23,6 @@ class OccurrenceTopicRelation(Model):
         unique_together = ['topic', 'occurrence']
 
 
-class EntityTopicRelation(Model):
-    """Relation of a topic to an entity."""
-    entity = ForeignKey('entities.Entity', related_name='entity_topic_relations', on_delete=CASCADE)
-    topic = ForeignKey('topics.Topic', related_name='topic_entity_relations', on_delete=CASCADE)
-
-    class Meta:
-        unique_together = ['topic', 'entity']
-
-
 class TopicRelation(Model):
     """A relationship between topics."""
     from_topic = ForeignKey('Topic', related_name='topics_related_to', on_delete=CASCADE)
@@ -55,11 +46,6 @@ class Topic(Model):
     related_occurrences = ManyToManyField(
         'occurrences.Occurrence', related_name='related_topics',
         through=OccurrenceTopicRelation
-    )
-    related_entities = ManyToManyField(
-        'entities.Entity', related_name='related_topics',
-        through='EntityTopicRelation',
-        blank=True
     )
     related_quotes = ManyToManyField(
         'quotes.Quote', related_name='related_topics',
