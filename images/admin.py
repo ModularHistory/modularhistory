@@ -1,7 +1,5 @@
-from django.contrib.admin import TabularInline
-
 from image_cropping import ImageCroppingMixin
-from admin import admin_site, Admin
+from admin import admin_site, Admin, TabularInline
 from entities.models import EntityImage
 from occurrences.models import OccurrenceImage
 from .models import Image, Video

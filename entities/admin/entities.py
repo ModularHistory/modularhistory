@@ -1,22 +1,14 @@
-from admin_auto_filters.filters import AutocompleteFilter
-from django.contrib.admin import SimpleListFilter
-
-from admin import admin_site, Admin, StackedInline, TabularInline
+from admin import admin_site, Admin, TabularInline
 from occurrences.models import OccurrenceEntityInvolvement
 from quotes.models import Quote
 from topics.models import EntityFactRelation
-# from django.forms import ModelForm
-# from django_reverse_admin import ReverseModelAdmin
-from . import models
-from .forms import (
+from .admin_filters import ClassificationFilter, HasImageFilter, HasQuotesFilter
+from .affiliations import RolesInline
+from .. import models
+from ..forms import (
     PersonForm, GroupForm,
     OrganizationForm, IdeaForm
 )
-
-
-class ClassificationFilter(AutocompleteFilter):
-    title = 'Classification'
-    field_name = 'classifications'
 
 
 class QuotesInline(TabularInline):
@@ -65,44 +57,7 @@ class AffiliationsInline(TabularInline):
     extra = 1
     show_change_link = True
     autocomplete_fields = ['affiliated_entity']
-
-
-class HasQuotesFilter(SimpleListFilter):
-    title = 'has quotes'
-    parameter_name = 'has_quotes'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        value = self.value()
-        if value == 'Yes':
-            return queryset.exclude(quotes=None)
-        elif value == 'No':
-            return queryset.filter(quotes=None)
-        return queryset
-
-
-class HasImageFilter(SimpleListFilter):
-    title = 'has image'
-    parameter_name = 'has_image'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        value = self.value()
-        if value == 'Yes':
-            return queryset.exclude(images=None)
-        elif value == 'No':
-            return queryset.filter(images=None)
-        return queryset
+    inlines = [RolesInline]
 
 
 class EntityAdmin(Admin):
@@ -153,12 +108,6 @@ class OrganizationAdmin(EntityAdmin):
     add_form = OrganizationForm
 
 
-class ClassificationAdmin(Admin):
-    list_display = ('name', 'aliases')
-    search_fields = list_display
-    ordering = ('name',)
-
-
 class IdeaAdmin(Admin):
     model = models.Idea
     add_form = IdeaForm
@@ -168,7 +117,3 @@ admin_site.register(models.Entity, EntityAdmin)
 admin_site.register(models.Person, PersonAdmin)
 admin_site.register(models.Group, GroupAdmin)
 admin_site.register(models.Organization, OrganizationAdmin)
-# admin_site.register(models.Affiliation, EntityAdmin)
-admin_site.register(models.Classification, ClassificationAdmin)
-admin_site.register(models.Role, Admin)
-admin_site.register(models.Idea, IdeaAdmin)

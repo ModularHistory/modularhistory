@@ -1,7 +1,4 @@
-from django.contrib.admin import TabularInline
-from django.contrib.contenttypes.admin import GenericTabularInline
-
-from admin import admin_site, Admin
+from admin import admin_site, Admin, TabularInline, GenericTabularInline
 from occurrences.models import Occurrence
 from topics.models import TopicQuoteRelation
 from . import models
@@ -19,6 +16,9 @@ class SourceReferencesInline(TabularInline):
     model = models.Quote.sources.through
     autocomplete_fields = ['source']
 
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj and obj.citations.count():
             return 0
@@ -30,6 +30,9 @@ class CitationsInline(GenericTabularInline):
     extra = 1
     autocomplete_fields = ['source']
     readonly_fields = ['pk']
+
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj and obj.citations.count():
@@ -56,6 +59,9 @@ class TopicsInline(TabularInline):
 class AttributeesInline(TabularInline):
     model = models.QuoteAttribution
     autocomplete_fields = ['attributee']
+
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj and obj.attributees.count():

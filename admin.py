@@ -1,19 +1,27 @@
 from django.contrib.admin import (
-    ModelAdmin,
     AdminSite as BaseAdminSite,
-    StackedInline as BaseStackedInline,
-    TabularInline as BaseTabularInline
+    # ModelAdmin,
+    # StackedInline as BaseStackedInline,
+    # TabularInline as BaseTabularInline
 )
+from django.contrib.contenttypes.admin import GenericTabularInline as BaseGenericTabularInline
+from django.contrib.contenttypes.models import ContentType
 # from django.utils.translation import gettext_lazy as _
-# from django_celery_beat.models import PeriodicTask, PeriodicTasks, CrontabSchedule, IntervalSchedule, SolarSchedule
+# from django_celery_beat.models import (
+#     PeriodicTask, PeriodicTasks, CrontabSchedule, IntervalSchedule, SolarSchedule
+# )
 # from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTaskForm
 # from django_celery_results.models import TaskResult
 # from django_celery_results.admin import TaskResultAdmin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from massadmin.massadmin import mass_change_selected
+from nested_admin.nested import NestedModelAdmin, NestedStackedInline, NestedTabularInline
+from nested_admin.polymorphic import (
+    NestedPolymorphicInlineSupportMixin,
+    NestedStackedPolymorphicInline
+)
 from sass_processor.processor import sass_processor
 from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOption
 from social_django.models import UserSocialAuth, Nonce, Association
@@ -21,38 +29,12 @@ from social_django.models import UserSocialAuth, Nonce, Association
 from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
 
-AUTOCOMPLETE_FIELDS = [
-    'attributee',
-    'quote',
-    'source',
-    'topic',
-    'location'
-]
+PolymorphicInlineSupportMixin = NestedPolymorphicInlineSupportMixin
+StackedPolymorphicInline = NestedStackedPolymorphicInline
+GenericTabularInline = BaseGenericTabularInline
 
 
-class StackedInline(BaseStackedInline):
-    formfield_overrides = {
-        HistoricDateTimeField: {'widget': HistoricDateWidget},
-        SourceFileField: {'widget': SourceFileInput},
-    }
-
-    def get_fields(self, request, obj=None):
-        fields = super().get_fields(request, obj)
-        for field_name in ('position', 'page_number', 'end_page_number', 'notes'):
-            if field_name in fields:
-                fields.remove(field_name)
-                fields.append(field_name)
-        return fields
-
-
-class TabularInline(BaseTabularInline):
-    formfield_overrides = {
-        HistoricDateTimeField: {'widget': HistoricDateWidget},
-        SourceFileField: {'widget': SourceFileInput},
-    }
-
-
-class Admin(ModelAdmin):
+class Admin(NestedModelAdmin):
     formfield_overrides = {
         HistoricDateTimeField: {'widget': HistoricDateWidget},
         SourceFileField: {'widget': SourceFileInput},
@@ -74,13 +56,35 @@ class Admin(ModelAdmin):
             'scripts/base.js'
         )
 
-    def get_queryset(self, request):
-        if hasattr(self, 'tags'):
-            return super().get_queryset(request).prefetch_related('tags')
-        return super().get_queryset(request)
 
-    def tag_list(self, obj):
-        return u", ".join(o.name for o in obj.tags.all())
+class StackedInline(NestedStackedInline):
+    formfield_overrides = {
+        HistoricDateTimeField: {'widget': HistoricDateWidget},
+        SourceFileField: {'widget': SourceFileInput},
+    }
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        for field_name in ('page_number', 'end_page_number', 'notes', 'position'):
+            if field_name in fields:
+                fields.remove(field_name)
+                fields.append(field_name)
+        return fields
+
+
+class TabularInline(NestedTabularInline):
+    formfield_overrides = {
+        HistoricDateTimeField: {'widget': HistoricDateWidget},
+        SourceFileField: {'widget': SourceFileInput},
+    }
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        for field_name in ('page_number', 'end_page_number', 'notes', 'position'):
+            if field_name in fields:
+                fields.remove(field_name)
+                fields.append(field_name)
+        return fields
 
 
 class AdminSite(BaseAdminSite):

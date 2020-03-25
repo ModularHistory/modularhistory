@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'massadmin',  # https://github.com/burke-software/django-mass-edit
+    'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'rest_framework',  # https://github.com/encode/django-rest-framework
     'sass_processor',  # https://github.com/jrief/django-sass-processor
@@ -350,6 +351,11 @@ ADMIN_LOGO = 'logo_head_white.png'
 # https://django-admin-tools.readthedocs.io/en/latest/customization.html
 ADMIN_TOOLS_MENU = 'history.admin_menu.AdminMenu'
 ADMIN_TOOLS_THEMING_CSS = 'styles/admin.css'
+
+# https://django-grappelli.readthedocs.io/en/latest/customization.html
+GRAPPELLI_ADMIN_TITLE = 'ModularHistory Administration'
+GRAPPELLI_SWITCH_USER = True
+GRAPPELLI_CLEAN_INPUT_TYPES = False  # TODO: See what happens it this is set to True
 
 # https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

@@ -153,7 +153,11 @@ class _Engagement(Model):
 class Affiliation(_Engagement):
     entity = ForeignKey(Entity, related_name='affiliations', on_delete=CASCADE)
     affiliated_entity = ForeignKey(Entity, on_delete=CASCADE)
-    roles = ManyToManyField('Role', related_name='affiliations', through='RoleFulfillment', blank=True)
+    roles = ManyToManyField(
+        'Role', related_name='affiliations',
+        through='RoleFulfillment',
+        blank=True
+    )
 
     class Meta:
         unique_together = ['entity', 'affiliated_entity', 'start_date']

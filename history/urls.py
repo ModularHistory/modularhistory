@@ -22,6 +22,7 @@ from admin import admin_site
 
 urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
+    re_path(r'^nested_admin/', include('nested_admin.urls')),
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
     path('history/occurrences/', include(('occurrences.urls', 'occurrences'), namespace='occurrences')),
@@ -38,6 +39,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),
+    path('grappelli/', include('grappelli.urls')),
     path('', include('home.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

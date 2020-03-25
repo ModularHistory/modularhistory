@@ -54,12 +54,23 @@ class SourceReferencesInline(TabularInline):
     autocomplete_fields = ['source']
     readonly_fields = ['pk']
 
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.citations.count():
+            return 0
+        return 1
+
 
 class CitationsInline(GenericTabularInline):
     model = models.Occurrence.sources.through
     extra = 1
     autocomplete_fields = ['source']
     readonly_fields = ['pk']
+
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj and obj.citations.count():

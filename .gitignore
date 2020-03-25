@@ -22,6 +22,7 @@ venv.bak/
 
 # PyCharm / IntelliJ #
 .idea
+.idea/
 .DS_Store
 *.iws /out/
 

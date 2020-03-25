@@ -1,10 +1,9 @@
 from polymorphic.admin import (
     PolymorphicParentModelAdmin,
-    PolymorphicChildModelAdmin,
-    PolymorphicInlineSupportMixin
+    PolymorphicChildModelAdmin
 )
 
-from admin import admin_site, Admin, TabularInline, StackedInline
+from admin import admin_site, Admin, TabularInline, StackedInline, PolymorphicInlineSupportMixin
 from occurrences.models import Occurrence
 from quotes.models import QuoteSourceReference
 from . import models
@@ -14,6 +13,9 @@ from .list_filters import HasFileFilter, HasFilePageOffsetFilter, HasPageNumber,
 class AttributeesInline(TabularInline):
     model = models.Source.attributees.through
     autocomplete_fields = ['attributee']
+
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):
         if obj and obj.attributees.count():
@@ -41,14 +43,28 @@ class ContainedSourcesInline(TabularInline):
 
 class QuotesInline(TabularInline):
     model = QuoteSourceReference
-    extra = 1
+    extra = 0
     autocomplete_fields = ['quote']
+    verbose_name = 'quote'
+    verbose_name_plural = 'quotes'
+
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
+
+    # Display one blank row if no quotes exist
+    # def get_extra(self, request, obj=None, **kwargs):
+    #     if obj and obj.quotes.count():
+    #         return 0
+    #     return 1
 
 
 class OccurrencesInline(TabularInline):
     model = Occurrence.sources.through
-    extra = 1
+    extra = 0
     autocomplete_fields = ['occurrence']
+    verbose_name = 'occurrence'
+    verbose_name_plural = 'occurrences'
+    exclude = ['position']
 
 
 class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Admin):
