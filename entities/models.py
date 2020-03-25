@@ -34,6 +34,7 @@ class Classification(Model):
         null=True, blank=True,
         on_delete=CASCADE
     )
+    weight = models.PositiveSmallIntegerField(default=1, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -50,6 +51,10 @@ class EntityClassification(Model):
 
     class Meta:
         unique_together = ['entity', 'classification']
+
+    @property
+    def weight(self) -> int:
+        return self.classification.weight
 
 
 # https://github.com/craigds/django-typed-models

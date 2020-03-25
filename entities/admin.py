@@ -44,6 +44,7 @@ class ClassificationsInline(TabularInline):
     model = models.EntityClassification
     extra = 1
     autocomplete_fields = ['classification']
+    readonly_fields = ['weight']
 
 
 class OccurrencesInline(TabularInline):
