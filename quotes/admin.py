@@ -1,62 +1,18 @@
-from admin_auto_filters.filters import AutocompleteFilter
-from django.contrib.admin import SimpleListFilter
 from django.contrib.admin import TabularInline
 from django.contrib.contenttypes.admin import GenericTabularInline
-from django.db.models import Count
+
 from admin import admin_site, Admin
 from occurrences.models import Occurrence
 from topics.models import TopicQuoteRelation
 from . import models
-
-
-class TopicFilter(AutocompleteFilter):
-    title = 'topic'
-    field_name = 'related_topics'
-
-
-class AttributeeFilter(AutocompleteFilter):
-    title = 'attributee'
-    field_name = 'attributee'
-
-
-class AttributeeClassificationFilter(AutocompleteFilter):
-    title = 'attributee classification'
-    field_name = 'attributee__classifications'
-
-
-class HasSourceFilter(SimpleListFilter):
-    title = 'has source'
-    parameter_name = 'has_source'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'Yes':
-            return queryset.exclude(sources=None)
-        if self.value() == 'No':
-            return queryset.filter(sources=None)
-
-
-class HasMultipleCitationsFilter(SimpleListFilter):
-    title = 'has multiple citations'
-    parameter_name = 'has_multiple_citations'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        queryset = queryset.annotate(citation_count=Count('citations'))
-        if self.value() == 'Yes':
-            return queryset.exclude(citation_count__lt=2)
-        if self.value() == 'No':
-            return queryset.filter(citation_count__gte=2)
+from .admin_filters import (
+    TopicFilter,
+    AttributeeFilter,
+    # AttributeeClassificationFilter,
+    HasSourceFilter,
+    AttributeeCountFilter,
+    HasMultipleCitationsFilter
+)
 
 
 class SourceReferencesInline(TabularInline):
@@ -135,6 +91,7 @@ class QuoteAdmin(Admin):
         HasMultipleCitationsFilter,
         TopicFilter,
         AttributeeFilter,
+        AttributeeCountFilter,
         # AttributeeClassificationFilter  # broken
         'attributee__classifications'
     ]

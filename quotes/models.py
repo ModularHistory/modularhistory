@@ -105,12 +105,20 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         attributions = self.attributions.all()
         n_attributions = len(attributions)
         first_attributee = attributions[0].attributee
-        string = f'<a href="{reverse("entities:detail", args=[first_attributee.id])}" target="_blank">{first_attributee}</a>'
+
+        def _html(attributee) -> str:
+            return (f'<a href="{reverse("entities:detail", args=[attributee.id])}" '
+                    f'target="_blank">{attributee}</a>')
+
+        html = _html(first_attributee)
         if n_attributions == 2:
-            string = f'{first_attributee} and {attributions[1].attributee}'
-        elif n_attributions > 2:
-            string = f'{first_attributee} et al.'
-        return mark_safe(string)
+            html += f' and {_html(attributions[1].attributee)}'
+        elif n_attributions == 3:
+            html = (f'{first_attributee}, {_html(attributions[1].attributee)}, '
+                    f'and {_html(attributions[2].attributee)}')
+        elif n_attributions > 3:
+            html = f'{first_attributee} et al.'
+        return mark_safe(html)
 
     @property
     def attributee_string(self) -> Optional[SafeText]:
@@ -121,9 +129,11 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         first_attributee = attributions[0].attributee
         string = str(first_attributee)
         if n_attributions == 2:
-            string = f'{first_attributee} and {attributions[1].attributee}'
-        elif n_attributions > 2:
-            string = f'{first_attributee} et al.'
+            string += f' and {attributions[1].attributee}'
+        elif n_attributions == 3:
+            string += f', {attributions[1].attributee}, and {attributions[2].attributee}'
+        elif n_attributions > 3:
+            string += f' et al.'
         return mark_safe(string)
 
     @property
