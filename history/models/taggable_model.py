@@ -21,9 +21,10 @@ class TaggableModel(Model):
 
     @property
     def related_topics_string(self) -> Optional[str]:
-        related_topics = [topic.key for topic in self._related_topics]
-        if related_topics:
-            return ', '.join(related_topics)
+        if self._related_topics:
+            related_topics = [topic.key for topic in self._related_topics]
+            if related_topics:
+                return ', '.join(related_topics)
         return None
 
     @property

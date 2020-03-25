@@ -104,7 +104,7 @@ class OccurrenceAdmin(Admin):
         'description__truncated',
         'date_string',
         # 'date',
-        'topic_tags'
+        'related_topics_string'
     )
     list_filter = ['verified', HasDateFilter, EntityFilter, TopicFilter, LocationFilter]
     search_fields = models.Occurrence.searchable_fields

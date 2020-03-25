@@ -50,12 +50,13 @@ class AttributeeCountFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         queryset = queryset.annotate(attributee_count=Count('attributees'))
-        n = self.value()
+        try:
+            n = int(self.value())
+        except TypeError:  # `All`
+            return queryset
         if n == 4:
             return queryset.exclude(attributee_count__lt=n)
-        elif isinstance(n, int):
-            return queryset.filter(attributee_count=n)
-        return queryset
+        return queryset.filter(attributee_count=n)
 
 
 class HasMultipleCitationsFilter(SimpleListFilter):
