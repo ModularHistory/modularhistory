@@ -352,11 +352,6 @@ ADMIN_LOGO = 'logo_head_white.png'
 ADMIN_TOOLS_MENU = 'history.admin_menu.AdminMenu'
 ADMIN_TOOLS_THEMING_CSS = 'styles/admin.css'
 
-# https://django-grappelli.readthedocs.io/en/latest/customization.html
-GRAPPELLI_ADMIN_TITLE = 'ModularHistory Administration'
-GRAPPELLI_SWITCH_USER = True
-GRAPPELLI_CLEAN_INPUT_TYPES = False  # TODO: See what happens it this is set to True
-
 # https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html

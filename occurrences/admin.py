@@ -54,7 +54,6 @@ class SourceReferencesInline(TabularInline):
     autocomplete_fields = ['source']
     readonly_fields = ['pk']
 
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):

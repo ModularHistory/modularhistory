@@ -16,7 +16,6 @@ class SourceReferencesInline(TabularInline):
     model = models.Quote.sources.through
     autocomplete_fields = ['source']
 
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):
@@ -31,7 +30,6 @@ class CitationsInline(GenericTabularInline):
     autocomplete_fields = ['source']
     readonly_fields = ['pk']
 
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):
@@ -60,7 +58,6 @@ class AttributeesInline(TabularInline):
     model = models.QuoteAttribution
     autocomplete_fields = ['attributee']
 
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):

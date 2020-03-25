@@ -39,7 +39,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),
-    path('grappelli/', include('grappelli.urls')),
     path('', include('home.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
