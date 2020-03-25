@@ -61,6 +61,7 @@ class EntityClassification(Model):
 class Entity(TypedModel, TaggableModel):
     """An entity"""
     name = models.CharField(max_length=100, unique=True)
+    verbose_name = models.CharField(max_length=100, unique=True, null=True, blank=True)
     aliases = ArrayField(
         models.CharField(max_length=100),
         null=True, blank=True
@@ -107,6 +108,15 @@ class Entity(TypedModel, TaggableModel):
     @property
     def description__truncated(self) -> SafeText:
         return mark_safe(truncatechars_html(self.description, 1200))
+
+    def clean(self):
+        super().clean()
+        if not self.verbose_name:
+            self.verbose_name = self.name
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Person(Entity):

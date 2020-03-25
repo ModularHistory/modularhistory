@@ -12,15 +12,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
 django.setup()
 
 
-from quotes.models import Quote
+from entities.models import Entity
 
-for q in Quote.objects.all():
+for e in Entity.objects.all():
     try:
-        q.clean()
-        q.save()
+        e.clean()
+        e.save()
     except Exception as e:
-        print(q.attributee)
-        print(q.bite)
         raise
 
 
