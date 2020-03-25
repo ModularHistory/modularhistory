@@ -22,10 +22,6 @@ class EntityImage(Model):
     def __str__(self):
         return f'{self.image} ({self.image.id}) --> {self.entity} ({self.entity.id})'
 
-    def natural_key(self):
-        return super().natural_key()
-    natural_key.dependencies = ['images.image']
-
 
 class Classification(Model):
     name = models.CharField(max_length=100, unique=True)
@@ -38,8 +34,6 @@ class Classification(Model):
         null=True, blank=True,
         on_delete=CASCADE
     )
-    date = HistoricDateTimeField(null=True, blank=True)
-    end_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -51,13 +45,11 @@ class Classification(Model):
 class EntityClassification(Model):
     entity = ForeignKey('Entity', related_name='entity_classifications', on_delete=CASCADE)
     classification = ForeignKey(Classification, related_name='entity_classifications', on_delete=CASCADE)
+    date = HistoricDateTimeField(null=True, blank=True)
+    end_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ['entity', 'classification']
-
-    def natural_key(self):
-        return super().natural_key()
-    natural_key.dependencies = ['entities.classification']
 
 
 # https://github.com/craigds/django-typed-models
@@ -110,10 +102,6 @@ class Entity(TypedModel, TaggableModel):
     @property
     def description__truncated(self) -> SafeText:
         return mark_safe(truncatechars_html(self.description, 1200))
-
-    def natural_key(self):
-        return super().natural_key()
-    natural_key.dependencies = ['images.image', 'entities.classification']
 
 
 class Person(Entity):

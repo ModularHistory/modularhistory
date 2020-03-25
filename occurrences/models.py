@@ -36,10 +36,6 @@ class OccurrenceImage(Model):
     def key(self) -> str:
         return self.image.key
 
-    def natural_key(self):
-        return super().natural_key()
-    natural_key.dependencies = ['images.image']
-
 
 class OccurrenceChain(Model):
     description = HTMLField(max_length=200, null=True, unique=True)
