@@ -6,6 +6,8 @@ from . import models
 class RelatedOccurrencesInline(TabularInline):
     model = models.Topic.related_occurrences.through
     extra = 1
+    verbose_name_plural = 'related occurrences'
+    verbose_name = 'related occurrence'
 
 
 class RelatedTopicsInline(TabularInline):
@@ -13,6 +15,8 @@ class RelatedTopicsInline(TabularInline):
     fk_name = 'from_topic'
     autocomplete_fields = ['to_topic']
     extra = 1
+    verbose_name_plural = 'related topics'
+    verbose_name = 'related topic'
 
 
 class ParentTopicsInline(TabularInline):
@@ -20,6 +24,8 @@ class ParentTopicsInline(TabularInline):
     fk_name = 'child_topic'
     autocomplete_fields = ['parent_topic']
     extra = 1
+    verbose_name_plural = 'parent topics'
+    verbose_name = 'parent topic'
 
 
 class ChildTopicsInline(TabularInline):
@@ -27,6 +33,8 @@ class ChildTopicsInline(TabularInline):
     fk_name = 'parent_topic'
     autocomplete_fields = ['child_topic']
     extra = 1
+    verbose_name_plural = 'child topics'
+    verbose_name = 'child topic'
 
 
 class TopicAdmin(Admin):
