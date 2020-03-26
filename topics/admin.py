@@ -8,19 +8,45 @@ class RelatedOccurrencesInline(TabularInline):
     extra = 1
 
 
+class RelatedTopicsInline(TabularInline):
+    model = models.Topic.related_topics2.through
+    fk_name = 'from_topic'
+    autocomplete_fields = ['to_topic']
+    extra = 1
+
+
+class ParentTopicsInline(TabularInline):
+    model = models.Topic.parent_topics.through
+    fk_name = 'child_topic'
+    autocomplete_fields = ['parent_topic']
+    extra = 1
+
+
+class ChildTopicsInline(TabularInline):
+    model = models.Topic.parent_topics.through
+    fk_name = 'parent_topic'
+    autocomplete_fields = ['child_topic']
+    extra = 1
+
+
 class TopicAdmin(Admin):
     list_display = (
         'key',
         'detail_link',
         'description',
+        'parent_topics_string',
+        'child_topics_string',
         'related_topics_string'
     )
     list_filter = ('related_topics',)
     search_fields = ('key', 'aliases', 'description')
-    # ordering = ('datetime', 'start_date', 'end_date')
+    ordering = ('key',)
 
     inlines = [
-        RelatedOccurrencesInline
+        ParentTopicsInline,
+        ChildTopicsInline,
+        RelatedTopicsInline,
+        RelatedOccurrencesInline,
     ]
 
 
