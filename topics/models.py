@@ -58,11 +58,8 @@ class TopicParentChildRelation(Model):
 class Topic(Model):
     """A topic"""
     key = models.CharField(max_length=25, unique=True)
-    parent = ForeignKey(
-        'self', related_name='children',
-        null=True, blank=True,
-        on_delete=SET_NULL
-    )
+    aliases = ArrayField(models.CharField(max_length=100), null=True, blank=True)
+    description = HTMLField(null=True, blank=True)
     parent_topics = ManyToManyField(
         'self', related_name='child_topics',
         through=TopicParentChildRelation,
@@ -70,8 +67,12 @@ class Topic(Model):
         symmetrical=False,
         blank=True
     )
-    aliases = ArrayField(models.CharField(max_length=100), null=True, blank=True)
-    description = HTMLField(null=True, blank=True)
+    related_topics = ManyToManyField(
+        'self', related_name='topics_related',
+        through=TopicRelation,
+        symmetrical=True,
+        blank=True
+    )
     related_occurrences = ManyToManyField(
         'occurrences.Occurrence', related_name='related_topics',
         through=OccurrenceTopicRelation
@@ -79,17 +80,6 @@ class Topic(Model):
     related_quotes = ManyToManyField(
         'quotes.Quote', related_name='related_topics',
         through=TopicQuoteRelation,
-        blank=True
-    )
-    related_topics = ManyToManyField(
-        'self', related_name='topics_related',
-        symmetrical=True,
-        blank=True
-    )
-    related_topics2 = ManyToManyField(
-        'self', related_name='topics_related2',
-        through=TopicRelation,
-        symmetrical=True,
         blank=True
     )
 
@@ -100,11 +90,6 @@ class Topic(Model):
 
     def __str__(self):
         return self.key
-
-    # @property
-    # def child_topics_string(self) -> str:
-    #     return ', '.join([str(r.child_topic)
-    #                       for r in TopicParentChildRelation.objects.filter(parent_topic=self)])
 
     @property
     def child_topics_string(self) -> str:
@@ -117,28 +102,6 @@ class Topic(Model):
     @property
     def related_topics_string(self) -> str:
         return ', '.join([str(topic) for topic in self.related_topics.all()])
-
-    def add_relationship(self, topic, relation_type=None, symmetrical: bool = False):
-        raise Exception('... looks like this cannot be deleted, after all.')
-        # relationship, created = TopicRelation.objects.get_or_create(
-        #     from_topic=self,
-        #     to_topic=topic,
-        #     relation_type=relation_type
-        # )
-        # if symmetrical:
-        #     # avoid recursion by passing `symmetrical=False`
-        #     topic.add_relationship(self, relation_type=relation_type, symmetrical=False)
-        # return relationship
-
-    def remove_relationship(self, topic, symmetrical: bool = False):
-        raise Exception('... looks like this cannot be deleted, after all.')
-        # TopicRelation.objects.filter(
-        #     from_topic=self,
-        #     to_topic=topic
-        # ).delete()
-        # if symmetrical:
-        #     # avoid recursion by passing `symmetrical=False`
-        #     topic.remove_relationship(self, symmetrical=False)
 
 
 class FactRelation(Model):

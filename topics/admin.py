@@ -9,7 +9,7 @@ class RelatedOccurrencesInline(TabularInline):
 
 
 class RelatedTopicsInline(TabularInline):
-    model = models.Topic.related_topics2.through
+    model = models.Topic.related_topics.through
     fk_name = 'from_topic'
     autocomplete_fields = ['to_topic']
     extra = 1
