@@ -10,7 +10,7 @@ class TopicFilter(AutocompleteFilter):
 
 class AttributeeFilter(AutocompleteFilter):
     title = 'attributee'
-    field_name = 'attributee'
+    field_name = '_attributee'
 
 
 class AttributeeClassificationFilter(AutocompleteFilter):
