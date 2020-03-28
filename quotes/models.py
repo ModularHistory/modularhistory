@@ -140,10 +140,7 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     @property
     def attributee_string(self) -> Optional[SafeText]:
         """See also the `attributee_html` property."""
-        try:
-            if not self.attributees.exists():
-                return None
-        except RecursionError:
+        if not self.pk or not self.attributees.exists():
             return None
         attributions = self.attributions.all()
         n_attributions = len(attributions)
@@ -194,11 +191,12 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
                 raise ValidationError('Add a quote bite.')
             self.bite = text
         # TODO: The logic below can be removed after the `attributee` field is removed
-        if self.attributees.exists():
-            if hasattr(self, 'attributee') and not getattr(self, 'attributee', None):
-                self.attributee = self.attributees.first()
-        elif getattr(self, 'attributee', None):
-            QuoteAttribution.objects.create(quote=self, attributee=self.attributee)
+        if self.pk:  # to avoid RecursionErrors and ValueErrors with not-yet-saved objects
+            if self.attributees.exists():
+                if hasattr(self, 'attributee') and not getattr(self, 'attributee', None):
+                    self.attributee = self.attributees.first()
+            elif getattr(self, 'attributee', None):
+                QuoteAttribution.objects.create(quote=self, attributee=self.attributee)
 
     def save(self, *args, **kwargs):
         self.full_clean()
