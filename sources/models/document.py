@@ -126,7 +126,7 @@ class Affidavit(_Document):
     certifier = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        string = f'{self.attributee_string or self.attributees.first()}, '
+        string = f'{self.attributee_string}, '
         string += f'affidavit sworn {self.date_html} at {self.location} before {self.certifier}'
         return mark_safe(string)
 

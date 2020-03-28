@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -26,7 +26,7 @@ class QuoteSourceReference(SourceReference):
     def __str__(self) -> SafeText:
         string = super().__str__()
         if self.source.attributees.exists():
-            if self.quote._attributee != self.source.attributees.first():
+            if self.quote._attributee != self.source.ordered_attributees[0]:
                 source_string = string
                 if not self.quote.citations.filter(position__lt=self.position).exists():
                     string = f'{self.quote._attributee}'
@@ -110,14 +110,11 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     # so that its `admin_order_field` attribute can be modified
     def _attributee_html(self) -> Optional[SafeText]:
         """See also the `attributee_string` property."""
-        try:
-            if not self.attributees.exists():
-                return None
-        except RecursionError:
+        if not self.pk or not self.attributees.exists():
             return None
-        attributions = self.attributions.all()
-        n_attributions = len(attributions)
-        first_attributee = attributions[0].attributee
+        attributees = self.ordered_attributees
+        n_attributions = len(attributees)
+        first_attributee = attributees[0]
 
         def _html(attributee) -> str:
             return (f'<a href="{reverse("entities:detail", args=[attributee.id])}" '
@@ -125,10 +122,10 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
 
         html = _html(first_attributee)
         if n_attributions == 2:
-            html += f' and {_html(attributions[1].attributee)}'
+            html += f' and {_html(attributees[1])}'
         elif n_attributions == 3:
-            html += (f', {_html(attributions[1].attributee)}, '
-                     f'and {_html(attributions[2].attributee)}')
+            html += (f', {_html(attributees[1])}, '
+                     f'and {_html(attributees[2])}')
         elif n_attributions > 3:
             html += f' et al.'
         return mark_safe(html)
@@ -142,14 +139,14 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         """See also the `attributee_html` property."""
         if not self.pk or not self.attributees.exists():
             return None
-        attributions = self.attributions.all()
-        n_attributions = len(attributions)
-        first_attributee = attributions[0].attributee
+        attributees = self.ordered_attributees
+        n_attributions = len(attributees)
+        first_attributee = attributees[0]
         string = str(first_attributee)
         if n_attributions == 2:
-            string += f' and {attributions[1].attributee}'
+            string += f' and {attributees[1]}'
         elif n_attributions == 3:
-            string += f', {attributions[1].attributee}, and {attributions[2].attributee}'
+            string += f', {attributees[1]}, and {attributees[2]}'
         elif n_attributions > 3:
             string += f' et al.'
         return mark_safe(string)
@@ -181,6 +178,12 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
             return self.related_occurrences.first().image
         return None
 
+    @property
+    def ordered_attributees(self) -> Optional[List[Entity]]:
+        if not self.pk or not self.attributees.exists():
+            return None
+        return [attribution.attributee for attribution in self.attributions.all()]
+
     def clean(self):
         super().clean()
         if (not self.text) or len(f'{self.text}') < 15:  # e.g., <p>&nbsp;</p>
@@ -193,9 +196,9 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         # TODO: The logic below can be removed after the `attributee` field is removed
         if self.pk:  # to avoid RecursionErrors and ValueErrors with not-yet-saved objects
             if self.attributees.exists():
-                if hasattr(self, 'attributee') and not getattr(self, 'attributee', None):
-                    self._attributee = self.attributees.first()
-            elif getattr(self, 'attributee', None):
+                if hasattr(self, '_attributee') and not getattr(self, '_attributee', None):
+                    self._attributee = self.ordered_attributees[0]
+            elif getattr(self, '_attributee', None):
                 QuoteAttribution.objects.create(quote=self, attributee=self._attributee)
 
     def save(self, *args, **kwargs):

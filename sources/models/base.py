@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Union
+from typing import List, Optional, Union, TYPE_CHECKING
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -12,6 +12,9 @@ from history.fields import HTMLField
 from history.models import Model, PolymorphicModel, DatedModel, SearchableMixin
 from .source_file import SourceFile
 from ..manager import Manager
+
+if TYPE_CHECKING:
+    from entities.models import Entity
 
 
 class Source(PolymorphicModel, DatedModel, SearchableMixin):
@@ -67,9 +70,19 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         if self.creators:
             return self.creators
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
-        elif self.pk and self.attributees.exists():
-            return self.attributees.first().name
-        return None
+        elif not self.pk or not self.attributees.exists():
+            return None
+        attributees = self.ordered_attributees
+        n_attributions = len(attributees)
+        first_attributee = attributees[0]
+        string = str(first_attributee)
+        if n_attributions == 2:
+            string += f' and {attributees[1]}'
+        elif n_attributions == 3:
+            string += f', {attributees[1]}, and {attributees[2]}'
+        elif n_attributions > 3:
+            string += f' et al.'
+        return mark_safe(string)
 
     @property
     def container(self) -> Optional['Source']:
@@ -119,6 +132,12 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             except Exception as e:
                 print(f'EXCEPTION: Trying to get child object for {self} resulted in: {e}')
         return self
+
+    @property
+    def ordered_attributees(self) -> Optional[List['Entity']]:
+        if not self.pk or not self.attributees.exists():
+            return None
+        return [attribution.attributee for attribution in self.attributions.all()]
 
     @property
     def string(self) -> SafeText:
@@ -273,8 +292,10 @@ class _Piece(TextualSource):
 
 class SourceAttribution(Model):
     """An entity (e.g., a writer or organization) to which a source is attributed."""
-    source = ForeignKey(Source, on_delete=CASCADE)
-    attributee = ForeignKey('entities.Entity', on_delete=CASCADE, related_name='source_attributions')
+    source = ForeignKey(Source, on_delete=CASCADE,
+                        related_name='attributions')
+    attributee = ForeignKey('entities.Entity', on_delete=CASCADE,
+                            related_name='source_attributions')
     position = models.PositiveSmallIntegerField(default=1, blank=True)
 
 
