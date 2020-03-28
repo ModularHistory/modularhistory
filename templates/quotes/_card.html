@@ -25,7 +25,7 @@
                 {{ quote.text.html|truncatechars_html:100 }}
             {% endif %}
             <footer class="blockquote-footer">
-                {% if quote.attributee %}
+                {% if quote.attributee_string %}
                     {{ quote.attributee_string }}
                 {% elif quote.citation %}
                     {{ quote.citation }}
