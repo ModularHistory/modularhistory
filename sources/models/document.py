@@ -86,9 +86,9 @@ class Document(TitleMixin, _Document):
     def __str__(self) -> SafeText:
         string = ''
         string += f'{self.attributee_string}, ' if self.attributee_string else ''
-        string += f'"{self.title}," ' if self.title else ''
-        string += f'{self.date.string}, ' if self.date else ''
-        string += f'archived in {self.collection}' if self.collection else ''
+        string += f'"{self.title}," ' if self.title else 'untitled document, '
+        string += f'{self.date.string}' if self.date else 'date unknown'
+        string += f', archived in {self.collection}' if self.collection else ''
         return mark_safe(string)
 
 
