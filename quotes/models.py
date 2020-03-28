@@ -28,9 +28,17 @@ class QuoteSourceReference(SourceReference):
         if self.source.attributees.exists():
             if self.quote.attributee != self.source.attributees.first():
                 source_string = string
-                string = f'{self.quote.attributee}'
-                string += f', {self.quote.date_string}' if self.quote.date else ''
-                string += f', quoted in {source_string}'
+                if not self.quote.citations.filter(position__lt=self.position).exists():
+                    string = f'{self.quote.attributee}'
+                    string += f', {self.quote.date_string}' if self.quote.date else ''
+                    string += f', quoted in {source_string}'
+                else:
+                    prior_citations = self.quote.citations.filter(position__lt=self.position)
+                    prior_citation = prior_citations.last()
+                    if 'quoted in' not in str(prior_citation):
+                        string = f'quoted in {source_string}'
+                    else:
+                        string = f'also in {source_string}'
         return mark_safe(string)
 
 

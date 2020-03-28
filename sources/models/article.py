@@ -36,7 +36,7 @@ class Article(TitleMixin, _Piece):
     searchable_fields = ['db_string', 'publication__name']
 
     def __str__(self) -> SafeText:
-        string = f'{self.creator_string}, ' if self.pk and self.creator_string else ''
+        string = f'{self.attributee_string}, ' if self.pk and self.attributee_string else ''
         title = self.title.replace('"', "'") if self.title else None
         string += f'"{title}," ' if self.title else ''
         string += f'{self.publication}'
@@ -51,7 +51,7 @@ class WebPage(TitleMixin, TextualSource):
     organization_name = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self) -> SafeText:
-        string = f'{self.creator_string}, ' if self.creator_string else ''
+        string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title}," ' if self.title else ''
         string += f'<i>{self.website_title}</i>'
         string += f', {self.organization_name}' if self.organization_name else ''

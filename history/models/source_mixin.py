@@ -34,6 +34,16 @@ class SourceMixin(BaseModel):
     def citation_html(self) -> Optional[SafeText]:
         if not self.sources.exists():
             return None
+        citations = self.citations.all()
+        primary_citation = citations[0]
+        citation_html = primary_citation.html
+        if len(citations) > 1:
+            prev_citation = primary_citation
+            for citation in citations[1:]:
+                more_html = citation.html
+                if citation.source.attributee_string == prev_citation.source.attributee_string:
+                    more_html = more_html[len(f'{citation.source.attributee_string}, '):]
+                citation_html += f'; {more_html}'
         citations = '; '.join([citation.html for citation in self.citations.all()])
         return mark_safe(citations)
 

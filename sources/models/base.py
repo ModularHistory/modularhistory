@@ -63,6 +63,15 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         return mark_safe(element)
 
     @property
+    def attributee_string(self) -> Optional[str]:
+        if self.creators:
+            return self.creators
+        # Check for pk to avoid RecursionErrors with not-yet-saved objects
+        elif self.pk and self.attributees.exists():
+            return self.attributees.first().name
+        return None
+
+    @property
     def container(self) -> Optional['Source']:
         if not self.containment:
             return None
@@ -73,15 +82,6 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         if not self.source_containments.exists():
             return None
         return self.source_containments.order_by('position')[0]
-
-    @property
-    def creator_string(self) -> Optional[str]:
-        if self.creators:
-            return self.creators
-        # Check for pk to avoid RecursionErrors with not-yet-saved objects
-        elif self.pk and self.attributees.exists():
-            return self.attributees.first().name
-        return None
 
     @property
     def html(self) -> SafeText:
@@ -131,11 +131,20 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             container_strings = []
             same_creator = True
             for c in containments:
-                if c.container.creator_string != self.creator_string:
+                if c.container.attributee_string != self.attributee_string:
                     same_creator = False
                 container_string = c.container.string
-                if same_creator and self.creator_string and self.creator_string in container_string:
-                    container_string = container_string[len(f'{self.creator_string}, '):]
+
+                # Remove redundant creator string
+                if same_creator and self.attributee_string and self.attributee_string in container_string:
+                    container_string = container_string[len(f'{self.attributee_string}, '):]
+
+                # Include the page number
+                if c.page_number and c.end_page_number:
+                    container_string += f', pp. {c.page_number}–{c.end_page_number}'
+                elif c.page_number:
+                    container_string += f', p. {c.page_number}'
+
                 container_string = (f'{c.phrase} in {container_string}' if c.phrase
                                     else f'in {container_string}')
                 container_strings.append(container_string)

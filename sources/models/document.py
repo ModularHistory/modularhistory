@@ -85,7 +85,7 @@ class Repository(Model):
 class Document(TitleMixin, _Document):
     def __str__(self) -> SafeText:
         string = ''
-        string += f'{self.creator_string}, ' if self.creator_string else ''
+        string += f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title}," ' if self.title else ''
         string += f'{self.date.string}, ' if self.date else ''
         string += f'archived in {self.collection}' if self.collection else ''
@@ -108,7 +108,7 @@ class Letter(_Document):
         verbose_name_plural = 'correspondence'
 
     def __str__(self) -> SafeText:
-        string = f'{self.creator_string}, letter to {self.recipient or "<Unknown>"}'
+        string = f'{self.attributee_string}, letter to {self.recipient or "<Unknown>"}'
         if self.date:
             string += ', dated ' if self.date.day_is_known else ', '
             string += self.date.string
@@ -126,7 +126,7 @@ class Affidavit(_Document):
     certifier = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        string = f'{self.creator_string or self.attributees.first()}, '
+        string = f'{self.attributee_string or self.attributees.first()}, '
         string += f'affidavit sworn {self.date_html} at {self.location} before {self.certifier}'
         return mark_safe(string)
 
@@ -142,6 +142,6 @@ class JournalEntry(_Piece):
         verbose_name_plural = 'Journal entries'
 
     def __str__(self) -> SafeText:
-        string = f'{self.creator_string}, journal ' if self.creator_string else 'Journal '
+        string = f'{self.attributee_string}, journal ' if self.attributee_string else 'Journal '
         string += f'entry dated {self.date.string}' if self.date else ''
         return mark_safe(string)

@@ -30,10 +30,10 @@ class Chapter(TitleMixin, TextualSource):
 
     def __str__(self):
         book_str = str(self.book)
-        if all([self.creator_string, self.book, self.book.creator_string,
-                self.creator_string == self.book.creator_string]):
-            book_str = book_str.replace(f'{self.creator_string}, ', '')
-        return f'{self.creator_string or self.book.creator_string}, "{self.title}," in {book_str}'
+        if all([self.attributee_string, self.book, self.book.attributee_string,
+                self.attributee_string == self.book.attributee_string]):
+            book_str = book_str.replace(f'{self.attributee_string}, ', '')
+        return f'{self.attributee_string or self.book.attributee_string}, "{self.title}," in {book_str}'
 
     @property
     def book(self) -> 'Book':
@@ -63,7 +63,7 @@ class Book(_Book):
 
     @property
     def html(self) -> SafeText:
-        string = f'{self.creator_string}, ' if self.creator_string else ''
+        string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'<i>{self.title}</i>'
         has_edition_year = ((self.edition_number and self.edition_number > 1)
                             or self.original_book or self.original_publication_date)
