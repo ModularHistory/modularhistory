@@ -199,7 +199,7 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
                 QuoteAttribution.objects.create(quote=self, attributee=self.attributee)
 
     def save(self, *args, **kwargs):
-        self.full_clean()
+        self.clean()
         super().save(*args, **kwargs)
 
 
