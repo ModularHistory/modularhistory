@@ -38,7 +38,7 @@ class ContainedSourcesInline(TabularInline):
     model = models.Source.containers.through
     fk_name = 'container'
     extra = 0
-    autocomplete_fields = ['container']
+    autocomplete_fields = ['source']
 
 
 class QuotesInline(TabularInline):

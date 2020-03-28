@@ -26,10 +26,10 @@ class QuoteSourceReference(SourceReference):
     def __str__(self) -> SafeText:
         string = super().__str__()
         if self.source.attributees.exists():
-            if self.quote.attributee != self.source.attributees.first():
+            if self.quote._attributee != self.source.attributees.first():
                 source_string = string
                 if not self.quote.citations.filter(position__lt=self.position).exists():
-                    string = f'{self.quote.attributee}'
+                    string = f'{self.quote._attributee}'
                     string += f', {self.quote.date_string}' if self.quote.date else ''
                     string += f', quoted in {source_string}'
                 else:
@@ -78,8 +78,8 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         through=QuoteAttribution,
         blank=True
     )
-    # TODO: clean up (remove) attributee field; just use `attributees`
-    attributee = ForeignKey(
+    # TODO: clean up (remove) _attributee field; use `attributees` instead
+    _attributee = ForeignKey(
         Entity, related_name='quotes',
         on_delete=models.SET_NULL,
         null=True, blank=True
@@ -92,11 +92,11 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     # sources2 = GenericManyToManyField(Source, through=Citation, related_name='quotes', blank=True)
 
     class Meta:
-        unique_together = ['date', 'attributee', 'bite']
+        unique_together = ['date', 'bite']
         ordering = ['date']
 
     searchable_fields = [
-        'text', 'context', 'attributee__name', 'date__year',
+        'text', 'context', 'attributees__name', 'date__year',
         'sources__db_string', 'related_topics__key', 'related_topics__aliases'
     ]
     objects: Manager = Manager()
@@ -173,10 +173,10 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
 
     @property
     def image(self) -> Optional[Image]:
-        if self.attributee and self.attributee.images.exists():
+        if self._attributee and self._attributee.images.exists():
             if self.date:
-                return self.attributee.images.get_closest_to_datetime(self.date)
-            return self.attributee.images.first()
+                return self._attributee.images.get_closest_to_datetime(self.date)
+            return self._attributee.images.first()
         elif self.related_occurrences.exists():
             return self.related_occurrences.first().image
         return None
@@ -194,9 +194,9 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         if self.pk:  # to avoid RecursionErrors and ValueErrors with not-yet-saved objects
             if self.attributees.exists():
                 if hasattr(self, 'attributee') and not getattr(self, 'attributee', None):
-                    self.attributee = self.attributees.first()
+                    self._attributee = self.attributees.first()
             elif getattr(self, 'attributee', None):
-                QuoteAttribution.objects.create(quote=self, attributee=self.attributee)
+                QuoteAttribution.objects.create(quote=self, attributee=self._attributee)
 
     def save(self, *args, **kwargs):
         self.clean()
