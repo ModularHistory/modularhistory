@@ -122,6 +122,16 @@ td.field-source {
   td.field-source .related-widget-wrapper {
     float: none; }
 
+#header ul#navigation-menu li {
+  margin-top: 0;
+  margin-bottom: 0; }
+  #header ul#navigation-menu li ul {
+    background-color: #f8f8f8; }
+
+#changelist-filter li {
+  margin-top: 0;
+  margin-bottom: 0; }
+
 #changelist .results li.topic-tag {
   list-style: none; }
   #changelist .results li.topic-tag ::after {

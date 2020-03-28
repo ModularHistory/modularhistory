@@ -24,6 +24,22 @@ td.field-source {
   }
 }
 
+#header ul#navigation-menu li {
+  margin-top: 0;
+  margin-bottom: 0;
+  ul {
+    background-color: #f8f8f8;
+  }
+}
+
+#changelist-filter {
+  li {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+
 // Admin table styles
 
 #changelist {
