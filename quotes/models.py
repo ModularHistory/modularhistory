@@ -109,7 +109,11 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     # _attributee_html is defined as a method rather than a property
     # so that its `admin_order_field` attribute can be modified
     def _attributee_html(self) -> Optional[SafeText]:
-        if not self.attributees.exists():
+        """See also the `attributee_string` property."""
+        try:
+            if not self.attributees.exists():
+                return None
+        except RecursionError:
             return None
         attributions = self.attributions.all()
         n_attributions = len(attributions)
@@ -135,7 +139,11 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
 
     @property
     def attributee_string(self) -> Optional[SafeText]:
-        if not self.attributees.exists():
+        """See also the `attributee_html` property."""
+        try:
+            if not self.attributees.exists():
+                return None
+        except RecursionError:
             return None
         attributions = self.attributions.all()
         n_attributions = len(attributions)
