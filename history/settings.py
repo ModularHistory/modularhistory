@@ -303,7 +303,7 @@ TINYMCE_DEFAULT_CONFIG = {
         'nonbreaking anchor | image media link | code | highlight | smallcaps | '
         'spellchecker preview | undo redo'
     ),
-    'contextmenu': ('formats | highlight smallcaps | link media image '
+    'contextmenu': ('formats | blockquote | highlight smallcaps | link media image '
                     'charmap hr | code | pastetext'),
     'menubar': True,
     'statusbar': True,

@@ -26,10 +26,10 @@ class QuoteSourceReference(SourceReference):
     def __str__(self) -> SafeText:
         string = super().__str__()
         if self.source.attributees.exists():
-            if self.quote._attributee != self.source.ordered_attributees[0]:
+            if self.quote.ordered_attributees != self.source.ordered_attributees:
                 source_string = string
                 if not self.quote.citations.filter(position__lt=self.position).exists():
-                    string = f'{self.quote._attributee}'
+                    string = f'{self.quote.attributee_string}'
                     string += f', {self.quote.date_string}' if self.quote.date else ''
                     string += f', quoted in {source_string}'
                 else:
