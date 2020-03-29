@@ -2,13 +2,16 @@ const mobile_width = 660;
 
 function initializeListeners() {
     $('.display-source').click(function(event) {
-        // event.preventDefault();
+        event.preventDefault();
         let href = $( this ).attr('href');
+        let open_in_modal = false;
+        let target_modal = null;
+        if (open_in_modal) {
+            target_modal = $( this ).attr('data-target');
+        }
         if (href.includes('.pdf')) {
             href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
-            let open_in_modal = false;
             if (open_in_modal) {
-                let target_modal = $( this ).attr('data-target');
                 $(target_modal).find('.modal-body').html(`
                     <div class="embed-responsive embed-responsive-210by297">
                         <iframe class="embed-responsive-item" src="${href}" allowfullscreen></iframe>
@@ -27,6 +30,7 @@ function initializeListeners() {
             let rendition = book.renderTo('document-viewer');
             rendition.display();
         }
+        return false;  // prevent modal from popping up
     });
 }
 
@@ -83,6 +87,7 @@ $(function() {
             let key = $( this ).attr('data-key');
             $('.view-detail').load(detail_href, function() {
                 if ($(window).width() <= mobile_width) {
+                    console.log('Mobile width detected.');
                     let content = $(this).html();
                     let modal = $('#modal');
                     let modal_body = modal.find('.modal-body');
