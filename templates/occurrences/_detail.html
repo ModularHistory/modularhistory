@@ -62,7 +62,7 @@
 {% if occurrence.postscript %}
     {{ occurrence.postscript.html }}
 {% endif %}
-{% if occurrence.sources.all|length %}
+{% if occurrence.citations.all|length %}
     <footer class="footer sources-footer">
         {% for citation in occurrence.citations.all %}
             <div class="source">

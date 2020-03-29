@@ -1,10 +1,4 @@
-from django.contrib.admin import (
-    AdminSite as BaseAdminSite,
-    # ModelAdmin,
-    # StackedInline as BaseStackedInline,
-    # TabularInline as BaseTabularInline
-)
-from django.contrib.contenttypes.admin import GenericTabularInline as BaseGenericTabularInline
+from django.contrib.admin import AdminSite as BaseAdminSite
 from django.contrib.contenttypes.models import ContentType
 # from django.utils.translation import gettext_lazy as _
 # from django_celery_beat.models import (
@@ -17,7 +11,11 @@ from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from massadmin.massadmin import mass_change_selected
-from nested_admin.nested import NestedModelAdmin, NestedStackedInline, NestedTabularInline
+from nested_admin.nested import (
+    NestedModelAdmin,
+    NestedStackedInline, NestedTabularInline,
+    NestedGenericStackedInline, NestedGenericTabularInline
+)
 from nested_admin.polymorphic import (
     NestedPolymorphicInlineSupportMixin,
     NestedStackedPolymorphicInline
@@ -31,7 +29,8 @@ from history.forms import HistoricDateWidget, SourceFileInput
 
 PolymorphicInlineSupportMixin = NestedPolymorphicInlineSupportMixin
 StackedPolymorphicInline = NestedStackedPolymorphicInline
-GenericTabularInline = BaseGenericTabularInline
+GenericTabularInline = NestedGenericTabularInline
+GenericStackedInline = NestedGenericStackedInline
 
 
 class Admin(NestedModelAdmin):

@@ -88,7 +88,7 @@ class Image(MediaModel):
                 'detail': True,
             }).url
         except KeyError as e:
-            print(f'>>> {e}')  # TODO: Send email to admins about the error. Figure out why this happens.
+            print(f'>>> KeyError: {e}')  # TODO: Send email to admins about the error. Figure out why this happens.
             return None
 
     @property

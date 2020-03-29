@@ -151,10 +151,6 @@ class Fact(Model):
         through=FactSupport,
         symmetrical=False
     )
-    sources = ManyToManyField(
-        'sources.Source', related_name='derived_facts',
-        through='sources.SourceFactDerivation'
-    )
     related_entities = ManyToManyField(
         'entities.Entity', related_name='facts',
         through=EntityFactRelation

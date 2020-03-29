@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
@@ -11,61 +10,8 @@ from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
 from history.models import Model, TaggableModel, DatedModel, SearchableMixin, SourceMixin
 from images.models import Image
-from sources.models import Source, SourceReference, Citation
+from sources.models import Source, Citation
 from .manager import Manager
-
-
-class QuoteSourceReference(SourceReference):
-    """A reference to a source."""
-    quote = ForeignKey('Quote', related_name='citations', on_delete=CASCADE)
-    source = ForeignKey(Source, related_name='references_from_quotes', on_delete=CASCADE)
-
-    class Meta:
-        verbose_name = 'citation'
-        unique_together = ['quote', 'source']
-        ordering = ['position', 'source', 'page_number']
-
-    def __str__(self) -> SafeText:
-        string = super().__str__()
-        if self.source.attributees.exists():
-            if self.quote.ordered_attributees != self.source.ordered_attributees:
-                source_string = string
-                if not self.quote.citations.filter(position__lt=self.position).exists():
-                    string = f'{self.quote.attributee_string}'
-                    string += f', {self.quote.date_string}' if self.quote.date else ''
-                    string += f', quoted in {source_string}'
-                else:
-                    prior_citations = self.quote.citations.filter(position__lt=self.position)
-                    prior_citation = prior_citations.last()
-                    if 'quoted in' not in str(prior_citation):
-                        string = f'quoted in {source_string}'
-                    else:
-                        string = f'also in {source_string}'
-        return mark_safe(string)
-
-
-class QuoteAttribution(Model):
-    quote = ForeignKey('Quote', related_name='attributions', on_delete=CASCADE)
-    attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
-    position = models.PositiveSmallIntegerField(default=0, blank=True)
-
-    class Meta:
-        unique_together = ['quote', 'attributee']
-        ordering = ['position']
-
-    def __str__(self):
-        return str(self.attributee)
-
-    def clean(self):
-        super().clean()
-        if self.position > 0 and len(QuoteAttribution.objects.exclude(pk=self.pk).filter(
-                quote=self.quote, attributee=self.attributee, position=self.position
-        )) > 1:
-            raise ValidationError('Attribution position should be unique.')
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
 
 
 class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
@@ -77,7 +23,7 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     date = HistoricDateTimeField(null=True, blank=True)
     attributees = ManyToManyField(
         Entity, related_name='quotes2',
-        through=QuoteAttribution,
+        through='QuoteAttribution',
         blank=True
     )
     # TODO: clean up (remove) _attributee field; use `attributees` instead
@@ -85,11 +31,6 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         Entity, related_name='quotes',
         on_delete=models.SET_NULL,
         null=True, blank=True
-    )
-    sources = ManyToManyField(
-        Source, related_name='quotes',
-        through=QuoteSourceReference,
-        blank=True
     )
 
     class Meta:
@@ -201,6 +142,30 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
                     self._attributee = self.ordered_attributees[0]
             elif getattr(self, '_attributee', None):
                 QuoteAttribution.objects.create(quote=self, attributee=self._attributee)
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+
+class QuoteAttribution(Model):
+    quote = ForeignKey('Quote', related_name='attributions', on_delete=CASCADE)
+    attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
+    position = models.PositiveSmallIntegerField(default=0, blank=True)
+
+    class Meta:
+        unique_together = ['quote', 'attributee']
+        ordering = ['position']
+
+    def __str__(self):
+        return str(self.attributee)
+
+    def clean(self):
+        super().clean()
+        if self.position > 0 and len(QuoteAttribution.objects.exclude(pk=self.pk).filter(
+                quote=self.quote, attributee=self.attributee, position=self.position
+        )) > 1:
+            raise ValidationError('Attribution position should be unique.')
 
     def save(self, *args, **kwargs):
         self.clean()

@@ -1,5 +1,4 @@
-import re
-from typing import List, Optional, Union, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -10,6 +9,7 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from history.fields import HTMLField, HistoricDateTimeField
 from history.models import Model, DatedModel, SearchableMixin, PolymorphicModel
+from history.structures.historic_datetime import HistoricDateTime
 from .source_file import SourceFile
 from ..manager import Manager
 
@@ -50,7 +50,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     related = GenericManyToManyField(
         'quotes.Quote', 'occurrences.Occurrence',
         through='sources.Citation',
-        related_name='source_set',
+        related_name='sources',
         blank=True
     )
 
@@ -205,6 +205,13 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                         f'because that source is already contained by this source.'
                     )
 
+    def get_date(self) -> Optional[HistoricDateTime]:
+        if self.date:
+            return self.date
+        elif self.container and self.container.date:
+            return self.container.date
+        return None
+
     def get_file(self) -> Optional[SourceFile]:
         return self.file if self.file else self.container.get_file() if self.container else None
 
@@ -277,26 +284,6 @@ class TextualSource(Source):
         return file_url
 
 
-class _Piece(TextualSource):
-    page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-
-    class Meta:
-        abstract = True
-
-    @property
-    def file_page_number(self) -> Optional[int]:
-        file = self.get_file()
-        if file:
-            if self.page_number:
-                return self.page_number + file.page_offset
-            elif self.container:
-                containment = self.source_containments.get(container=self.container)
-                if containment.page_number:
-                    return containment.page_number + file.page_offset
-        return None
-
-
 class SourceAttribution(Model):
     """An entity (e.g., a writer or organization) to which a source is attributed."""
     source = ForeignKey(Source, on_delete=CASCADE,
@@ -304,6 +291,9 @@ class SourceAttribution(Model):
     attributee = ForeignKey('entities.Entity', on_delete=CASCADE,
                             related_name='source_attributions')
     position = models.PositiveSmallIntegerField(default=1, blank=True)
+
+    def __str__(self):
+        return self.attributee.verbose_name or f'{self.attributee}'
 
 
 source_types = (
@@ -317,77 +307,3 @@ citation_phrase_options = (
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in')
 )
-
-
-class SourceReference(Model):
-    """Abstract base class for a reference to a source."""
-    source: Union[ForeignKey, Source]
-    position = models.PositiveSmallIntegerField(verbose_name='reference position', default=1, blank=True)
-    page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    citation_phrase = models.CharField(max_length=10, choices=citation_phrase_options,
-                                       default=None, null=True, blank=True)
-
-    class Meta:
-        verbose_name = 'citation'
-        unique_together = ['source', 'page_number', 'end_page_number', 'position']
-        ordering = ['position', 'source', 'page_number']
-        abstract = True
-
-    def __str__(self) -> SafeText:
-        page_string = ''
-        if self.page_number:
-            page_string = f'p{"p" if self.end_page_number else ""}. {self.page_number}'
-            if self.end_page_number:
-                page_string += f'–{self.end_page_number}'
-        return mark_safe(f'{self.source.string}{", " if page_string else ""}{page_string}')
-
-    @property
-    def html(self) -> SafeText:
-        html = str(self)
-        if self.source_file_url:
-            html += (
-                f'<a href="{self.source_file_url}" class="display-source"'
-                f' target="_blank" data-toggle="modal" data-target="#modal">'
-                f'<i class="fas fa-search"></i>'
-                f'</a>'
-            )
-        # elif self.source.url or self.source.container and self.source.container.url:
-        #     link = self.source.url if self.source.url else self.source.container.url
-        #     if self.page_number and 'www.sacred-texts.com' in link:
-        #         link += f'#page_{self.page_number}'
-        #     html += (
-        #         f'<a href="{link}" target="_blank">'
-        #         f'<i class="fas fa-search"></i>'
-        #         f'</a>'
-        #     )
-        return mark_safe(f'<span class="citation" data-key="{self.pk}">{html}</span>')
-
-    @property
-    def source_file_page_number(self) -> Optional[int]:
-        file = self.source.get_file()
-        if file:
-            if self.page_number:
-                return self.page_number + file.page_offset
-            elif hasattr(self.source, 'file_page_number'):
-                return self.source.file_page_number
-        return None
-
-    @property
-    def source_file_url(self) -> Optional[str]:
-        file_url = self.source.file_url
-        if file_url and self.source_file_page_number:
-            if 'page=' in file_url:
-                file_url = re.sub(r'page=\d+', f'page={self.source_file_page_number}', file_url)
-            else:
-                file_url = file_url + f'#page={self.source_file_page_number}'
-        return file_url
-
-    def clean(self):
-        if self.end_page_number and self.end_page_number < self.page_number:
-            raise ValidationError('The end page number must be greater than the start page number.')
-
-
-class SourceFactDerivation(SourceReference):
-    source = ForeignKey(Source, related_name='fact_derivations', on_delete=CASCADE)
-    fact = ForeignKey('topics.Fact', related_name='fact_derivations', on_delete=CASCADE)

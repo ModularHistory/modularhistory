@@ -2,7 +2,7 @@ from typing import Optional
 
 from django.db.models import BooleanField
 from django.utils.safestring import SafeText, mark_safe
-
+from history.structures.historic_datetime import HistoricDateTime
 from history.fields import HistoricDateTimeField
 from .base_model import Model
 
@@ -26,9 +26,10 @@ class DatedModel(Model):
 
     @property
     def date_html(self) -> Optional[SafeText]:
-        if not self.date:
+        date = self.get_date()
+        if not date:
             return None
-        date_html = self.date.html
+        date_html = date.html
         if date_html and self.date_is_circa and not date_html.startswith('c. '):
             date_html = f'c. {date_html}'
             date_html = date_html.replace('c. c. ', 'c. ')
@@ -47,3 +48,10 @@ class DatedModel(Model):
             year_html = f'c. {year_html}'
             year_html = year_html.replace('c. c. ', 'c. ')
         return mark_safe(year_html)
+
+    def get_date(self) -> Optional[HistoricDateTime]:
+        """
+        Override this to retrieve date values through other means,
+        e.g., by inspecting related objects.
+        """
+        return self.date or None

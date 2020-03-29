@@ -1,8 +1,8 @@
-from admin import admin_site, Admin, TabularInline, GenericTabularInline
+from admin import admin_site, Admin, TabularInline
 from occurrences.models import Occurrence
+from sources.admin.citations import CitationsInline
 from topics.models import TopicQuoteRelation
-from . import models
-from .admin_filters import (
+from .filters import (
     TopicFilter,
     AttributeeFilter,
     # AttributeeClassificationFilter,
@@ -10,32 +10,7 @@ from .admin_filters import (
     AttributeeCountFilter,
     HasMultipleCitationsFilter
 )
-
-
-class SourceReferencesInline(TabularInline):
-    model = models.Quote.sources.through
-    autocomplete_fields = ['source']
-
-    sortable_field_name = 'position'
-
-    def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.citations.count():
-            return 0
-        return 1
-
-
-class CitationsInline(GenericTabularInline):
-    model = models.Quote.sources.through
-    extra = 1
-    autocomplete_fields = ['source']
-    readonly_fields = ['pk']
-
-    sortable_field_name = 'position'
-
-    def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.citations.count():
-            return 0
-        return 1
+from .. import models
 
 
 class OccurrencesInline(TabularInline):
@@ -105,8 +80,7 @@ class QuoteAdmin(Admin):
     readonly_fields = ['citation_html']
     inlines = [
         AttributeesInline,
-        SourceReferencesInline,
-        # CitationsInline,
+        CitationsInline,
         OccurrencesInline,
         TopicsInline,
         BitesInline
@@ -122,4 +96,3 @@ class QuoteAdmin(Admin):
 
 
 admin_site.register(models.Quote, QuoteAdmin)
-# admin_site.register(SourceReference)

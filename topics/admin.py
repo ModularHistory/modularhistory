@@ -73,11 +73,6 @@ class OccurrencesInline(TabularInline):
     extra = 1
 
 
-class SourcesInline(StackedInline):
-    model = models.Fact.sources.through
-    extra = 1
-
-
 class SupportedFactsInline(StackedInline):
     model = models.FactSupport
     fk_name = 'supported_fact'
@@ -98,7 +93,6 @@ class FactAdmin(Admin):
 
     inlines = [
         FactEntitiesInline, FactTopicsInline, OccurrencesInline,
-        SourcesInline,
         SupportedFactsInline,
         SupportiveFactsInline
     ]

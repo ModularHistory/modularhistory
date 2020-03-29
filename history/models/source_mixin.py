@@ -1,19 +1,19 @@
 from typing import Any, Optional, TYPE_CHECKING
 
-from django.core.exceptions import ValidationError
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import (
     Model as BaseModel
 )
-# from gm2m import GM2MField as GenericManyToManyField
 from django.utils.safestring import SafeText, mark_safe
 
 if TYPE_CHECKING:
-    from sources.models import SourceReference
+    from sources.models import Citation
 
 
 class SourceMixin(BaseModel):
-    sources: Any  # Defined in model
-    citations: Any  # Defined in model
+    sources: Any
+
+    citations = GenericRelation('sources.Citation')
 
     class Meta:
         abstract = True
@@ -25,14 +25,14 @@ class SourceMixin(BaseModel):
         return None
 
     @property
-    def citation(self) -> Optional['SourceReference']:
-        if not len(self.sources.all()):
+    def citation(self) -> Optional['Citation']:
+        if not len(self.citations.all()):
             return None
         return self.citations.order_by('position')[0]
 
     @property
     def citation_html(self) -> Optional[SafeText]:
-        if not self.sources.exists():
+        if not self.citations.exists():
             return None
         citations = self.citations.all()
         primary_citation = citations[0]

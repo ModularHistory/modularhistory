@@ -4,7 +4,8 @@ from django.db.models import ForeignKey, CASCADE
 from django.utils.safestring import SafeText, mark_safe
 
 from history.models import Model
-from .base import TitleMixin, TextualSource, _Piece
+from .base import TitleMixin, TextualSource
+from .piece import _Piece
 
 
 class DocumentMixin(Model):

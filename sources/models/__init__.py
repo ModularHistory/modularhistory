@@ -1,7 +1,7 @@
 from .article import Publication, Article, WebPage
 from .base import (
     Source, SourceFile, SourceContainment,
-    SourceAttribution, SourceReference, SourceFactDerivation
+    SourceAttribution
 )
 from .book import Book, Chapter
 from .citation import Citation

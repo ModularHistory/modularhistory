@@ -3,11 +3,10 @@ from polymorphic.admin import (
     PolymorphicChildModelAdmin
 )
 
+from admin import GenericTabularInline
 from admin import admin_site, Admin, TabularInline, StackedInline, PolymorphicInlineSupportMixin
-from occurrences.models import Occurrence
-from quotes.models import QuoteSourceReference
+from .filters import HasFileFilter, HasFilePageOffsetFilter, HasPageNumber, ImpreciseDateFilter
 from .. import models
-from .list_filters import HasFileFilter, HasFilePageOffsetFilter, HasPageNumber, ImpreciseDateFilter
 
 
 class AttributeesInline(TabularInline):
@@ -41,30 +40,14 @@ class ContainedSourcesInline(TabularInline):
     autocomplete_fields = ['source']
 
 
-class QuotesInline(TabularInline):
-    model = QuoteSourceReference
+class RelatedInline(GenericTabularInline):
+    model = models.Citation
     extra = 0
-    autocomplete_fields = ['quote']
-    verbose_name = 'quote'
-    verbose_name_plural = 'quotes'
+    verbose_name = 'related object'
+    verbose_name_plural = 'related objects (not yet implemented)'
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
-
-    # Display one blank row if no quotes exist
-    # def get_extra(self, request, obj=None, **kwargs):
-    #     if obj and obj.quotes.count():
-    #         return 0
-    #     return 1
-
-
-class OccurrencesInline(TabularInline):
-    model = Occurrence.sources.through
-    extra = 0
-    autocomplete_fields = ['occurrence']
-    verbose_name = 'occurrence'
-    verbose_name_plural = 'occurrences'
-    exclude = ['position']
 
 
 class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Admin):
@@ -107,7 +90,7 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
         'creators',
         'polymorphic_ctype'
     )
-    inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, QuotesInline, OccurrencesInline]
+    inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
     autocomplete_fields = ['file', 'location']
 
     def get_fields(self, request, obj=None):
@@ -190,26 +173,12 @@ class SourcesInline(TabularInline):
     fields = ['verified', 'hidden', 'date_is_circa', 'creators', 'url', 'date', 'publication_date']
 
 
-class SourceFileAdmin(Admin):
-    list_display = ['__str__', 'name', 'page_offset']
-    search_fields = ['file']
-    inlines = [SourcesInline]
-
-    def get_fields(self, request, obj=None):
-        fields = super().get_fields(request, obj)
-        if fields and 'page_offset' in fields:
-            fields.remove('page_offset')
-            fields.append('page_offset')
-        return fields
-
-
 admin_site.register(models.Source, SourceAdmin)
 
 admin_site.register(models.Article, ArticleAdmin)
 
 admin_site.register(models.Speech, SpeechAdmin)
 
-admin_site.register(models.SourceFile, SourceFileAdmin)
 admin_site.register(models.Collection, CollectionAdmin)
 admin_site.register(models.Repository, RepositoryAdmin)
 admin_site.register(models.Document, DocumentAdmin)

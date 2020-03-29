@@ -4,7 +4,8 @@ from django.utils.safestring import SafeText, mark_safe
 
 from history.fields import HTMLField
 from history.models import Model
-from .base import TextualSource, TitleMixin, _Piece
+from .base import TextualSource, TitleMixin
+from .piece import _Piece
 
 publication_types = (
     ('journal', 'Journal'),

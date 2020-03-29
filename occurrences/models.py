@@ -12,7 +12,7 @@ from history.fields import HistoricDateTimeField, HTMLField
 from history.models import (Model, PolymorphicModel, TaggableModel,
                             DatedModel, SearchableMixin, SourceMixin)
 from images.models import Image
-from sources.models import Source, SourceReference, Citation
+from sources.models import Source, Citation
 from .manager import Manager
 
 
@@ -55,19 +55,34 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
     end_date = HistoricDateTimeField(null=True, blank=True)
     summary = HTMLField(null=True, blank=True)
     description = HTMLField(null=True, blank=True)
-    postscript = HTMLField(null=True, blank=True, help_text='Content to be displayed below all related data')
-    locations = ManyToManyField('places.Place', through='OccurrenceLocation', related_name='occurrences', blank=True)
-    related_quotes = ManyToManyField('quotes.Quote', through='OccurrenceQuoteRelation', symmetrical=True,
-                                     related_name='related_occurrences', blank=True)
-    sources = ManyToManyField(Source, through='OccurrenceSourceReference', related_name='occurrences', blank=True)
-    # sources2 = GenericManyToManyField(
-    #     Source, through=Citation, through_fields=('content_object', 'source'),
-    #     related_name='quotes', blank=True
-    # )
-    images = ManyToManyField(Image, related_name='occurrences', through=OccurrenceImage, blank=True)
-    involved_entities = ManyToManyField('entities.Entity', related_name='involved_occurrences',
-                                        through='OccurrenceEntityInvolvement', blank=True)
-    chains = ManyToManyField(OccurrenceChain, related_name='occurrences', through=OccurrenceChainInclusion)
+    postscript = HTMLField(
+        null=True, blank=True,
+        help_text='Content to be displayed below all related data'
+    )
+    locations = ManyToManyField(
+        'places.Place', through='OccurrenceLocation',
+        related_name='occurrences',
+        blank=True
+    )
+    related_quotes = ManyToManyField(
+        'quotes.Quote', through='OccurrenceQuoteRelation',
+        symmetrical=True,
+        related_name='related_occurrences',
+        blank=True
+    )
+    images = ManyToManyField(
+        Image, related_name='occurrences',
+        through=OccurrenceImage,
+        blank=True
+    )
+    involved_entities = ManyToManyField(
+        'entities.Entity', related_name='involved_occurrences',
+        through='OccurrenceEntityInvolvement', blank=True
+    )
+    chains = ManyToManyField(
+        OccurrenceChain, related_name='occurrences',
+        through=OccurrenceChainInclusion
+    )
 
     class Meta:
         unique_together = ['summary', 'date']
@@ -167,13 +182,3 @@ class OccurrenceQuoteRelation(Model):
 
     def __str__(self):
         return mark_safe(f'{self.quote.citation}')
-
-
-class OccurrenceSourceReference(SourceReference):
-    """A reference to a source."""
-    occurrence = models.ForeignKey(Occurrence, related_name='citations', on_delete=CASCADE)
-    source = models.ForeignKey(Source, related_name='references_from_occurrences', on_delete=CASCADE)
-
-    class Meta:
-        verbose_name = 'citation'
-        unique_together = [['occurrence', 'source', 'page_number', 'end_page_number'], ['occurrence', 'position']]

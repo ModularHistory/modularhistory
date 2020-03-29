@@ -1,9 +1,9 @@
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
-from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import Q
 
 from admin import admin_site, Admin, TabularInline  # , StackedInline
+from sources.admin import CitationsInline
 from topics.models import OccurrenceTopicRelation
 from . import models
 
@@ -46,35 +46,6 @@ class RelatedTopicsInline(TabularInline):
     model = OccurrenceTopicRelation
     extra = 1
     autocomplete_fields = ['topic']
-
-
-class SourceReferencesInline(TabularInline):
-    model = models.Occurrence.sources.through
-    extra = 1
-    autocomplete_fields = ['source']
-    readonly_fields = ['pk']
-
-    sortable_field_name = 'position'
-
-    def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.citations.count():
-            return 0
-        return 1
-
-
-class CitationsInline(GenericTabularInline):
-    model = models.Occurrence.sources.through
-    extra = 1
-    autocomplete_fields = ['source']
-    readonly_fields = ['pk']
-
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
-    sortable_field_name = 'position'
-
-    def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.citations.count():
-            return 0
-        return 1
 
 
 class InvolvedEntitiesInline(TabularInline):
@@ -122,8 +93,7 @@ class OccurrenceAdmin(Admin):
     inlines = [
         RelatedQuotesInline, InvolvedEntitiesInline,
         LocationsInline, ImagesInline,
-        SourceReferencesInline,
-        # CitationsInline,
+        CitationsInline,
         RelatedTopicsInline
     ]
 

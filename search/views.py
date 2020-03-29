@@ -20,10 +20,18 @@ from topics.models import Topic
 
 
 def date_sorter(x: Union[Model, DatedModel]):
-    date = x.date if hasattr(x, 'date') and x.date else HistoricDateTime(1, 1, 1, 0, 0, 0)
+    date = None
+    if hasattr(x, 'get_date'):
+        date = x.get_date()
+    elif hasattr(x, 'date'):
+        date = x.date
+    if not date:
+        date = HistoricDateTime(1, 1, 1, 0, 0, 0)
+
     # Display precise dates before ranges, e.g., "1500" before "1500 – 2000"
     if hasattr(x, 'end_date') and getattr(x, 'end_date'):
         date = date.replace(microsecond=date.microsecond+1)
+
     return date
 
 
@@ -153,14 +161,16 @@ class SearchResultsView(ListView):
                 topic_ids=topic_ids,
                 rank=sort_by_relevance,
                 suppress_unverified=(not request.user.is_superuser)
-            ).exclude(
-                Q(occurrences__in=occurrence_results) |
-                Q(quotes__related_occurrences__in=occurrence_results) |
-                Q(contained_sources__occurrences__in=occurrence_results) |
-                Q(contained_sources__quotes__related_occurrences__in=occurrence_results) |
-                Q(quotes__in=quote_results) |
-                Q(contained_sources__quotes__in=quote_results)
             )
+            # TODO: This was broken by conversion to generic relations with quotes & occurrences
+            # source_results = source_results.exclude(
+            #     Q(occurrences__in=occurrence_results) |
+            #     Q(quotes__related_occurrences__in=occurrence_results) |
+            #     Q(contained_sources__occurrences__in=occurrence_results) |
+            #     Q(contained_sources__quotes__related_occurrences__in=occurrence_results) |
+            #     Q(quotes__in=quote_results) |
+            #     Q(contained_sources__quotes__in=quote_results)
+            # )
         else:
             source_results = Source.objects.none()
 
