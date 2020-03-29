@@ -284,6 +284,11 @@ body,
   align-items: center;
   justify-content: center; }
 
+a.source-title {
+  color: #050505; }
+  a.source-title:hover {
+    color: black; }
+
 html, body {
   height: 100%;
   width: 100%; }

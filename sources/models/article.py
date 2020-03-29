@@ -38,7 +38,7 @@ class Article(TitleMixin, _Piece):
 
     def __str__(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.pk and self.attributee_string else ''
-        title = self.title.replace('"', "'") if self.title else None
+        title = self.title_html.replace('"', "'") if self.title else None
         string += f'"{title}," ' if self.title else ''
         string += f'{self.publication}'
         string += f', vol. {self.volume}' if self.volume else ''

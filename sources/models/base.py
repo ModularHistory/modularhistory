@@ -230,8 +230,20 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 class TitleMixin(Model):
     title = models.CharField(max_length=250, null=True, blank=True)
 
+    file_url: Optional[str] = None
+    url: Optional[str] = None
+
     class Meta:
         abstract = True
+
+    @property
+    def title_html(self) -> SafeText:
+        html = self.title
+        url = self.file_url or self.url
+        if url:
+            html = (f'<a href="{url}" target="_blank" class="source-title" '
+                    f'style="color: #505050">{html}</a>')
+        return mark_safe(html)
 
 
 containment_phrases = (

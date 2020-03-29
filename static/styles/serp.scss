@@ -291,3 +291,10 @@ $refinements-container-bg-color: whitesmoke;
   align-items: center;
   justify-content: center;
 }
+
+a.source-title {
+  color: #050505;
+  &:hover {
+    color: black;
+  }
+}

@@ -64,7 +64,7 @@ class Book(_Book):
     @property
     def html(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
-        string += f'<i>{self.title}</i>'
+        string += f'<i>{self.title_html}</i>'
         has_edition_year = ((self.edition_number and self.edition_number > 1)
                             or self.original_book or self.original_publication_date)
         if has_edition_year:
