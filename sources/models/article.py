@@ -38,8 +38,8 @@ class Article(TitleMixin, _Piece):
 
     def __str__(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.pk and self.attributee_string else ''
-        title = self.title_html.replace('"', "'") if self.title else None
-        string += f'"{title}," ' if self.title else ''
+        title_html = self.title_html.replace('"', "'") if self.title else None
+        string += f'"{title_html}," ' if self.title else ''
         string += f'{self.publication}'
         string += f', vol. {self.volume}' if self.volume else ''
         string += f', no. {self.number}' if self.number else ''
@@ -53,7 +53,7 @@ class WebPage(TitleMixin, TextualSource):
 
     def __str__(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
-        string += f'"{self.title}," ' if self.title else ''
+        string += f'"{self.title_html}," ' if self.title else ''
         string += f'<i>{self.website_title}</i>'
         string += f', {self.organization_name}' if self.organization_name else ''
         string += f', {self.date.string}' if self.date else ''

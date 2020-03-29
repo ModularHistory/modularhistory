@@ -35,7 +35,7 @@ class Piece(TitleMixin, _Piece):
 
     def __str__(self) -> SafeText:
         string = f'{self.attributee_string}, ' or ''
-        string += f'"{self.title}"'
+        string += f'"{self.title_html}"'
         # NOTE: punctuation (quotation marks and commas) are rearranged in the string
         string += f', {self.date.string}' if self.date else ''  # + (', ' if self.container else '')
         string = string.replace('",', ',"')

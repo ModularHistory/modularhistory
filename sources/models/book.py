@@ -33,7 +33,8 @@ class Chapter(TitleMixin, TextualSource):
         if all([self.attributee_string, self.book, self.book.attributee_string,
                 self.attributee_string == self.book.attributee_string]):
             book_str = book_str.replace(f'{self.attributee_string}, ', '')
-        return f'{self.attributee_string or self.book.attributee_string}, "{self.title}," in {book_str}'
+        attributee_string = self.attributee_string or self.book.attributee_string
+        return f'{attributee_string}, "{self.title}," in {book_str}'
 
     @property
     def book(self) -> 'Book':
@@ -56,6 +57,7 @@ class Chapter(TitleMixin, TextualSource):
         super().full_clean(exclude, validate_unique)
         if self.container and not isinstance(self.container, Book):
             raise ValidationError('Chapter container must be a book.')
+
 
 class Book(_Book):
     def __str__(self):

@@ -74,6 +74,7 @@ class Citation(Model):
     @property
     def html(self) -> SafeText:
         html = str(self)
+        print(f'>>> {html}')
         if self.source_file_url:
             html += (
                 f'<a href="{self.source_file_url}" class="display-source"'
