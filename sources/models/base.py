@@ -22,7 +22,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     db_string = models.CharField(verbose_name='database string', max_length=500, blank=True, unique=True)
     attributees = ManyToManyField(
         'entities.Entity', related_name='attributed_sources',
-        through='SourceAttribution'
+        through='SourceAttribution',
+        blank=True  # Some sources may not have attributees.
     )
     creators = models.CharField(max_length=100, null=True, blank=True)
     url = models.URLField(max_length=100, null=True, blank=True)

@@ -24,6 +24,7 @@ blockquote.blockquote {
   font-size: 0.9rem; }
   blockquote.blockquote p {
     font-size: 0.9rem;
+    margin-bottom: 0.7rem;
     padding: 0; }
   blockquote.blockquote > blockquote {
     border-left: none;
