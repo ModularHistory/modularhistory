@@ -241,8 +241,7 @@ class TitleMixin(Model):
         html = self.title
         url = self.file_url or self.url
         if url:
-            html = (f'<a href="{url}" target="_blank" class="source-title" '
-                    f'style="color: #505050">{html}</a>')
+            html = f'<a href="{url}" target="_blank" class="source-title">{html}</a>'
         return mark_safe(html)
 
 
