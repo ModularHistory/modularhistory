@@ -4,17 +4,18 @@ from typing import Callable, Optional, Union
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
 from tinymce.models import HTMLField as MceHTMLField
-
+from django.core.exceptions import ObjectDoesNotExist
 from history.structures.html import HTML
 
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
 citation_key_regex = r'{{\ ?citation:\ ?(.+?)\ ?}}'
+source_key_regex = r'{{\ ?source:\ ?(.+?)\ ?}}'
 
 
-def process_images(_, html: str) -> str:
+def process(_, html: str) -> str:
     if '{{' in html:
         from images.models import Image
-        from sources.models import Citation
+        from sources.models import Source, Citation
         for match in re.finditer(image_key_regex, html):
             key = match.group(1)
             image = Image.objects.get(key=key)
@@ -29,8 +30,17 @@ def process_images(_, html: str) -> str:
             html = html.replace(match.group(0), image_html)
         for match in re.finditer(citation_key_regex, html):
             key = match.group(1)
-            citation = Citation.objects.get(key=key)
-            citation = '<a href=""><sup></sup></a>'
+            try:
+                citation = Citation.objects.get(pk=key)
+                citation_html = f'<a href="" title="{citation}"><sup>{citation.number}</sup></a>'
+            except ObjectDoesNotExist:
+                citation_html = f'[UNABLE TO RETRIEVE CITATION WITH PK: {key}]'
+            html = html.replace(match.group(0), citation_html)
+        for match in re.finditer(source_key_regex, html):
+            key = match.group(1)
+            source = Source.objects.get(pk=key)
+            source_html = f'{source.html}'
+            html = html.replace(match.group(0), source_html)
     return html
 
 
@@ -39,7 +49,7 @@ class HTMLField(MceHTMLField):
     raw_value: str
     html: SafeText
     text: str
-    DEFAULT_PROCESSOR: Callable = process_images
+    DEFAULT_PROCESSOR: Callable = process
     processor: Optional[Callable] = DEFAULT_PROCESSOR
 
     # def __init__(self, *args, **kwargs):

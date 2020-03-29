@@ -6,10 +6,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
 from django.utils.safestring import SafeText, mark_safe
-# from django.dispatch import receiver
-from history.fields import HistoricDateTimeField
-from history.fields import HTMLField
-from history.models import Model, PolymorphicModel, DatedModel, SearchableMixin
+from gm2m import GM2MField as GenericManyToManyField
+
+from history.fields import HTMLField, HistoricDateTimeField
+from history.models import Model, DatedModel, SearchableMixin, PolymorphicModel
 from .source_file import SourceFile
 from ..manager import Manager
 
@@ -25,18 +25,10 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         through='SourceAttribution',
         blank=True  # Some sources may not have attributees.
     )
-    creators = models.CharField(max_length=100, null=True, blank=True)
     url = models.URLField(max_length=100, null=True, blank=True)
     description = HTMLField(null=True, blank=True)
     date = HistoricDateTimeField(null=True, blank=True)
     publication_date = HistoricDateTimeField(null=True, blank=True)
-    containers = ManyToManyField(
-        'self', related_name='contained_sources',
-        through='SourceContainment',
-        through_fields=('source', 'container'),
-        symmetrical=False,
-        blank=True
-    )
     location = ForeignKey(
         'places.Place', related_name='publications',
         null=True, blank=True,
@@ -46,6 +38,20 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         SourceFile, related_name='sources',
         null=True, blank=True,
         on_delete=SET_NULL
+    )
+    creators = models.CharField(max_length=100, null=True, blank=True)
+    containers = ManyToManyField(
+        'self', related_name='contained_sources',
+        through='SourceContainment',
+        through_fields=('source', 'container'),
+        symmetrical=False,
+        blank=True
+    )
+    related = GenericManyToManyField(
+        'quotes.Quote', 'occurrences.Occurrence',
+        through='sources.Citation',
+        related_name='source_set',
+        blank=True
     )
 
     HISTORICAL_ITEM_TYPE = 'publication'
@@ -355,7 +361,7 @@ class SourceReference(Model):
         #         f'<i class="fas fa-search"></i>'
         #         f'</a>'
         #     )
-        return mark_safe(f'<span class="citation">{html}</span>')
+        return mark_safe(f'<span class="citation" data-key="{self.pk}">{html}</span>')
 
     @property
     def source_file_page_number(self) -> Optional[int]:

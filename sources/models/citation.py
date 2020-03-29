@@ -5,7 +5,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import ForeignKey, CASCADE
+from django.db.models import ForeignKey, CASCADE, PositiveSmallIntegerField
 from django.utils.safestring import SafeText, mark_safe
 
 from history.models import Model
@@ -29,16 +29,20 @@ class Citation(Model):
     source = ForeignKey(Source, related_name='citation_set', on_delete=CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
-    position = models.PositiveSmallIntegerField(verbose_name='reference position', default=1, blank=True)
-    page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
+    content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
+    position = PositiveSmallIntegerField(
+        default=1, blank=True,
+        help_text='Determines the order of references.'
+    )
+    page_number = PositiveSmallIntegerField(null=True, blank=True)
+    end_page_number = PositiveSmallIntegerField(null=True, blank=True)
     citation_phrase = models.CharField(max_length=10, choices=citation_phrase_options,
                                        default=None, null=True, blank=True)
 
     class Meta:
         verbose_name = 'citation'
-        unique_together = ['source', 'content_type', 'object_id', 'page_number', 'end_page_number', 'position']
+        unique_together = ['source', 'content_type', 'object_id',
+                           'page_number', 'end_page_number', 'position']
         ordering = ['source', 'page_number']
 
     def __str__(self) -> SafeText:
@@ -81,6 +85,10 @@ class Citation(Model):
                 f'</a>'
             )
         return mark_safe(f'<span class="citation">{html}</span>')
+
+    @property
+    def number(self):
+        return self.position + 1
 
     @property
     def source_file_page_number(self) -> Optional[int]:

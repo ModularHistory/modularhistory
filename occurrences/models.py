@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
-# from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
 from history.fields import HistoricDateTimeField, HTMLField

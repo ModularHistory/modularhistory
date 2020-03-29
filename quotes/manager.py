@@ -29,7 +29,7 @@ class Manager(BaseManager):
         # Limit to specified entities
         if entity_ids:
             qs = qs.filter(
-                Q(attributee_id__in=entity_ids) |
+                Q(attributees__id__in=entity_ids) |
                 Q(related_occurrences__involved_entities__id__in=entity_ids)
             )
 

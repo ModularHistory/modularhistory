@@ -1,7 +1,7 @@
 from django.views import generic
 from typing import Dict
 from .models import Source
-from quotes.models import Quote  #, QuoteSourceReference
+from quotes.models import Quote
 
 
 class IndexView(generic.ListView):

@@ -6,7 +6,7 @@ from polymorphic.admin import (
 from admin import admin_site, Admin, TabularInline, StackedInline, PolymorphicInlineSupportMixin
 from occurrences.models import Occurrence
 from quotes.models import QuoteSourceReference
-from . import models
+from .. import models
 from .list_filters import HasFileFilter, HasFilePageOffsetFilter, HasPageNumber, ImpreciseDateFilter
 
 
