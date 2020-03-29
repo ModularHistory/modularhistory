@@ -292,9 +292,11 @@ $refinements-container-bg-color: whitesmoke;
   justify-content: center;
 }
 
-a.source-title {
-  color: #050505;
-  &:hover {
-    color: black;
+.source {
+  a.source-title {
+    color: #050505;
+    &:hover {
+      color: black;
+    }
   }
 }

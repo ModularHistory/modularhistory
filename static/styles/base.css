@@ -284,9 +284,9 @@ body,
   align-items: center;
   justify-content: center; }
 
-a.source-title {
+.source a.source-title {
   color: #050505; }
-  a.source-title:hover {
+  .source a.source-title:hover {
     color: black; }
 
 html, body {
