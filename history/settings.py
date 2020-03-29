@@ -303,13 +303,14 @@ TINYMCE_DEFAULT_CONFIG = {
         'nonbreaking anchor | image media link | code | highlight | smallcaps | '
         'spellchecker preview | undo redo'
     ),
-    'contextmenu': 'formats | highlight | smallcaps | link | media | image | code | pastetext',
+    'contextmenu': ('formats | highlight smallcaps | link media image '
+                    'charmap hr | code | pastetext'),
     'menubar': True,
     'statusbar': True,
     'branding': False,
     'setup': ('''
         function (editor) {
-            editor.addButton('highlight', {
+            editor.addMenuItem('highlight', {
                 text: 'Highlight text',
                 icon: false,
                 onclick : function() {
@@ -321,7 +322,7 @@ TINYMCE_DEFAULT_CONFIG = {
                     }
                 }
             });
-            editor.addButton('smallcaps', {
+            editor.addMenuItem('smallcaps', {
                 text: 'Small caps',
                 icon: false,
                 onclick : function() {
