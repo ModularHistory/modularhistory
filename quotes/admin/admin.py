@@ -56,6 +56,7 @@ class BitesInline(TabularInline):
 class QuoteAdmin(Admin):
     # form = QuoteForm
     list_display = [
+        'pk',
         'bite',
         'detail_link',
         'attributee_html',
