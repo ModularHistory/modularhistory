@@ -32,7 +32,7 @@ class HasPageNumber(SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        queryset = queryset.filter(file__isnull=False).exclude(file__file='')
+        queryset = queryset.filter(db_file__isnull=False).exclude(db_file__file='')
         ids = []
         if self.value() == 'Yes':
             for source in queryset:
@@ -61,7 +61,7 @@ class HasFilePageOffsetFilter(SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        sources_with_files = queryset.filter(file__isnull=False).exclude(file__file='')
+        sources_with_files = queryset.filter(db_file__isnull=False).exclude(db_file__file='')
         ids = []
         if self.value() == 'Yes':
             for source in sources_with_files:

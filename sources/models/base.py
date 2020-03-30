@@ -1,6 +1,6 @@
 import re
 from typing import List, Optional, TYPE_CHECKING
-
+from bs4 import BeautifulSoup
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -119,7 +119,45 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         return file.url if file else None
 
     def _html(self) -> SafeText:
-        html = self.string
+        # TODO: html methods should be split into different classes and/or mixins.
+        html = str(self)
+        if self.source_containments.exists():
+            containments = self.source_containments.order_by('position')[:2]
+            container_strings = []
+            same_creator = True
+            for c in containments:
+                if c.container.attributee_string != self.attributee_string:
+                    same_creator = False
+                container_string = c.container.string
+
+                # Remove redundant creator string
+                if (same_creator and self.attributee_string and
+                        self.attributee_string in container_string):
+                    container_string = container_string[len(f'{self.attributee_string}, '):]
+
+                # Include the page number
+                if c.page_number and c.end_page_number:
+                    container_string += f', pp. {c.page_number}–{c.end_page_number}'
+                elif c.page_number:
+                    container_string += f', p. {c.page_number}'
+
+                container_string = (f'{c.phrase} in {container_string}' if c.phrase
+                                    else f'in {container_string}')
+                container_strings.append(container_string)
+            containers = ', and '.join(container_strings)
+            html += f', {containers}'
+        if not self.file:
+            if self.url and self.link not in html:
+                html += f', retrieved from {self.link}'
+        if getattr(self.object, 'information_url', None) and self.information_url:
+            html += (
+                f', information available at <a target="_blank" href="{self.information_url}">'
+                f'{self.information_url}</a>'
+            )
+        # Fix placement of commas after double-quoted titles
+        html = html.replace('," ,', ',"')
+        html = html.replace('",', ',"')
+        return mark_safe(html)
         # TODO: Remove search icon; insert link intelligently
         # if self.file_url:
         #     html += (
@@ -137,7 +175,6 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         #         f'<i class="fas fa-search"></i>'
         #         f'</a>'
         #     )
-        return html
     _html.admin_order_field = 'db_string'
     html = property(_html)
 
@@ -164,55 +201,19 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         return [attribution.attributee for attribution in self.attributions.all()]
 
     @property
-    def string(self) -> SafeText:
-        # TODO: This is quite a mess; ideally, string methods should be split into different classes and/or mixins.
+    def string(self) -> str:
+        # TODO: String methods should be split into different classes and/or mixins.
         if hasattr(self.object, 'string_override'):
             return mark_safe(self.object.string_override)
-        string = str(self)
-        if self.source_containments.exists():
-            containments = self.source_containments.order_by('position')[:2]
-            container_strings = []
-            same_creator = True
-            for c in containments:
-                if c.container.attributee_string != self.attributee_string:
-                    same_creator = False
-                container_string = c.container.string
-
-                # Remove redundant creator string
-                if same_creator and self.attributee_string and self.attributee_string in container_string:
-                    container_string = container_string[len(f'{self.attributee_string}, '):]
-
-                # Include the page number
-                if c.page_number and c.end_page_number:
-                    container_string += f', pp. {c.page_number}–{c.end_page_number}'
-                elif c.page_number:
-                    container_string += f', p. {c.page_number}'
-
-                container_string = (f'{c.phrase} in {container_string}' if c.phrase
-                                    else f'in {container_string}')
-                container_strings.append(container_string)
-            containers = ', and '.join(container_strings)
-            string += f', {containers}'
-        if not self.file:
-            if self.url and self.link not in string:
-                string += f', retrieved from {self.link}'
-        if getattr(self.object, 'information_url', None) and self.information_url:
-            string += (f', information available at '
-                       f'<a target="_blank" href="{self.information_url}">{self.information_url}</a>')
-        # Fix placement of commas after double-quoted titles
-        string = string.replace('," ,', ',"')
-        string = string.replace('",', ',"')
-        return mark_safe(string)
-
-    @string.setter
-    def string(self, value):
-        self.db_string = value
+        return BeautifulSoup(self.html).get_text()
 
     def clean(self):
         super().clean()
         if Source.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
-            raise ValidationError(f'Unable to save this source because it duplicates an existing source '
-                                  f'or has an identical string: {self.db_string}')
+            raise ValidationError(
+                f'Unable to save this source because it duplicates an existing source '
+                f'or has an identical string: {self.db_string}'
+            )
         if self.id or self.pk:  # If this source is not being newly created
             for container in self.containers.all():
                 if self in container.containers.all():
@@ -235,8 +236,10 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         #     )
 
     def save(self, *args, **kwargs):
-        self.full_clean()
+        self.clean()
+        print(f'>>>1>>>> {self.string}')
         self.db_string = self.string
+        print(f'>>>2>>>> {self.db_string}')
         super().save(*args, **kwargs)
 
 
