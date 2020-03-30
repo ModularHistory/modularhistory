@@ -39,7 +39,8 @@ class Model(BaseModel):
         if unique_together:
             if not (isinstance(unique_together, (list, tuple))
                     and all([isinstance(v, str) for v in unique_together])):
-                raise ValueError('The `unique_together` value must be an iterable containing strings.')
+                raise ValueError('The `unique_together` value must be '
+                                 'an iterable containing strings.')
             return unique_together
         else:
             fields = self._meta.get_fields()
@@ -49,13 +50,16 @@ class Model(BaseModel):
                     unique_fields.append(field.name)
             if unique_fields:
                 return unique_fields
-        raise NotImplementedError('Model must have Meta.unique_together and/or `natural_key_fields` method defined.')
+        raise NotImplementedError('Model must have Meta.unique_together '
+                                  'and/or `natural_key_fields` method defined.')
 
     def get_admin_url(self):
-        return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change', args=[self.id])
+        return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
+                       args=[self.id])
 
     def get_detail_link(self) -> SafeText:
-        return mark_safe(f'<a href="{self.detail_url}" target="_blank"><i class="fas fa-info-circle"></i></a>')
+        return mark_safe(f'<a href="{self.detail_url}" target="_blank">'
+                         f'<i class="fas fa-info-circle"></i></a>')
 
     def natural_key(self) -> Tuple[Any]:
         natural_key_fields = self.natural_key_fields
@@ -79,11 +83,12 @@ class PolymorphicModel(BasePolymorphicModel, Model):
 
     @property
     def ctype(self) -> ContentType:
-        return self.polymorphic_ctype
+        return ContentType.objects.get_for_id(self.polymorphic_ctype_id)
 
     @property
     def detail_url(self) -> str:
         return reverse(f'{self.ctype.app_label}:detail', args=[self.id])
 
     def get_admin_url(self):
-        return reverse(f'admin:{self.ctype.app_label}_{self.ctype.model}_change', args=[self.id])
+        return reverse(f'admin:{self.ctype.app_label}_{self.ctype.model}_change',
+                       args=[self.id])

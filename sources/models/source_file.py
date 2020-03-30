@@ -13,14 +13,30 @@ from history.models import Model
 class SourceFile(Model):
     file = SourceFileField(upload_to=upload_to('sources/'), null=True, blank=True, unique=True)
     name = models.CharField(max_length=100, null=True, blank=True, unique=True)
-    page_offset = models.SmallIntegerField(default=0, blank=True)
-    first_page_number = models.SmallIntegerField(default=1, blank=True)
+    page_offset = models.SmallIntegerField(
+        default=0, blank=True,
+        help_text='The difference between the page numbers displayed on the pages '
+                  'and the actual page numbers of the electronic file (a positive '
+                  'number if the electronic page number is greater than the textual'
+                  'page number; a negative number if the textual page number is '
+                  'greater than the electronic page number).'
+    )
+    first_page_number = models.SmallIntegerField(
+        default=1, blank=True,
+        help_text='The page number that is visibly displayed on the page '
+                  'on which the relevant text begins (usually 1).'
+    )
 
     class Meta:
         ordering = ['name']
 
     def __str__(self):
         return f'{self.file_name} (page offset: {self.page_offset})'
+
+    @property
+    def default_page_number(self):
+        """Page number to be opened by default for the source file."""
+        return self.first_page_number + self.page_offset
 
     @property
     def file_name(self) -> Optional[str]:

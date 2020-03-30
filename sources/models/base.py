@@ -233,8 +233,9 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 class TitleMixin(Model):
     title = models.CharField(max_length=250, null=True, blank=True)
 
-    file_url: Optional[str] = None
-    url: Optional[str] = None
+    url: Optional[str]
+    file_url: Optional[str]
+    file: Optional[SourceFile]
 
     class Meta:
         abstract = True
@@ -242,7 +243,12 @@ class TitleMixin(Model):
     @property
     def title_html(self) -> SafeText:
         html = self.title
-        url = self.file_url or self.url
+        url = self.url
+        if self.file_url:
+            url = self.file_url
+            page_number = self.file.default_page_number
+            if page_number:
+                url += f'#page={page_number}'
         if url:
             html = f'<a href="{url}" target="_blank" class="source-title">{html}</a>'
         return mark_safe(html)
