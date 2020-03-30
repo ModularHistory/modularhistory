@@ -68,8 +68,8 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
         models.Affidavit
     ]
     list_display = [
+        'pk',
         'html',
-        'creators',
         'date_string',
         'location',
         'admin_file_link'
@@ -88,8 +88,7 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
     search_fields = models.Source.searchable_fields
     ordering = (
         'date',
-        'db_string',
-        'polymorphic_ctype'
+        'db_string'
     )
     inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
     autocomplete_fields = ['db_file', 'location']
