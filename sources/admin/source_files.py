@@ -5,7 +5,7 @@ from .. import models
 
 class SourceFileAdmin(Admin):
     list_display = ['__str__', 'name', 'page_offset']
-    search_fields = ['db_file']
+    search_fields = ['file', 'name']
     inlines = [SourcesInline]
 
     def get_fields(self, request, obj=None):
