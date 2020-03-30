@@ -136,10 +136,33 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                     container_string = container_string[len(f'{self.attributee_string}, '):]
 
                 # Include the page number
-                if c.page_number and c.end_page_number:
-                    container_string += f', pp. {c.page_number}–{c.end_page_number}'
-                elif c.page_number:
-                    container_string += f', p. {c.page_number}'
+                if c.page_number:
+                    _url = self.file_url or None
+
+                    def get_page_number_url(page_number, url=_url) -> Optional[str]:
+                        if not url:
+                            return None
+                        if 'page=' in url:
+                            url = re.sub(r'page=\d+', f'page={page_number}', url)
+                        else:
+                            url += f'#page={page_number}'
+                        return url
+
+                    def get_page_number_link(url, page_number) -> Optional[str]:
+                        if not url:
+                            return None
+                        return f'<a href="{url}" target="_blank">{page_number}</a>'
+
+                    pn = c.page_number
+                    pn_url = get_page_number_url(pn)
+                    pn = get_page_number_link(pn_url, pn) or pn
+                    if c.end_page_number:
+                        end_pn = c.end_page_number
+                        end_pn_url = get_page_number_url(end_pn)
+                        end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
+                        container_string += f', pp. {pn}–{end_pn}'
+                    else:
+                        container_string += f', p. {pn}'
 
                 container_string = (f'{c.phrase} in {container_string}' if c.phrase
                                     else f'in {container_string}')
@@ -205,7 +228,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         # TODO: String methods should be split into different classes and/or mixins.
         if hasattr(self.object, 'string_override'):
             return mark_safe(self.object.string_override)
-        return BeautifulSoup(self.html).get_text()
+        return BeautifulSoup(self.html, features='lxml').get_text()
 
     def clean(self):
         super().clean()
@@ -237,9 +260,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     def save(self, *args, **kwargs):
         self.clean()
-        print(f'>>>1>>>> {self.string}')
         self.db_string = self.string
-        print(f'>>>2>>>> {self.db_string}')
         super().save(*args, **kwargs)
 
 

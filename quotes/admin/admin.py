@@ -46,13 +46,6 @@ class BitesInline(TabularInline):
     extra = 0
 
 
-# class QuoteForm(ModelForm):
-#     fields = []
-#
-#     class Meta:
-#         model = models.Quote
-
-
 class QuoteAdmin(Admin):
     # form = QuoteForm
     list_display = [
