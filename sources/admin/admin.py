@@ -92,7 +92,7 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
         'polymorphic_ctype'
     )
     inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
-    autocomplete_fields = ['file', 'location']
+    autocomplete_fields = ['db_file', 'location']
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
@@ -170,7 +170,7 @@ class CollectionAdmin(Admin):
 
 class DocumentAdmin(ChildModelAdmin):
     search_fields = ChildModelAdmin.search_fields
-    autocomplete_fields = ['collection', 'file']
+    autocomplete_fields = ['collection', 'db_file']
 
 
 class RepositoryAdmin(Admin):

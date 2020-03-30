@@ -34,10 +34,10 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         null=True, blank=True,
         on_delete=SET_NULL
     )
-    file = ForeignKey(
+    db_file = ForeignKey(
         SourceFile, related_name='sources',
         null=True, blank=True,
-        on_delete=SET_NULL
+        on_delete=SET_NULL, verbose_name='file'
     )
     creators = models.CharField(max_length=100, null=True, blank=True)
     containers = ManyToManyField(
@@ -68,7 +68,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     @property
     def admin_file_link(self) -> SafeText:
         element = ''
-        if self.get_file():
+        if self.file:
             element = (f'<a class="btn display-source" '
                        f'href="{self.object.file_url}" target="_blank">file</a>')
         return mark_safe(element)
@@ -103,6 +103,19 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         if not self.source_containments.exists():
             return None
         return self.source_containments.order_by('position')[0]
+
+    @property
+    def file(self) -> Optional[SourceFile]:
+        return self.db_file or (self.container.db_file if self.container else None)
+
+    @file.setter
+    def file(self, value):
+        self.db_file = value
+
+    @property
+    def file_url(self) -> Optional[str]:
+        file = self.file
+        return file.url if file else None
 
     def _html(self) -> SafeText:
         html = self.string
@@ -179,7 +192,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 container_strings.append(container_string)
             containers = ', and '.join(container_strings)
             string += f', {containers}'
-        if not self.get_file():
+        if not self.file:
             if self.url and self.link not in string:
                 string += f', retrieved from {self.link}'
         if getattr(self.object, 'information_url', None) and self.information_url:
@@ -190,10 +203,9 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         string = string.replace('",', ',"')
         return mark_safe(string)
 
-    @property
-    def file_url(self) -> Optional[str]:
-        file = self.get_file()
-        return file.url if file else None
+    @string.setter
+    def string(self, value):
+        self.db_string = value
 
     def clean(self):
         super().clean()
@@ -214,9 +226,6 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         elif self.container and self.container.date:
             return self.container.date
         return None
-
-    def get_file(self) -> Optional[SourceFile]:
-        return self.file if self.file else self.container.get_file() if self.container else None
 
         # # Create related historical occurrence
         # if not Episode.objects.filter(type=self.HISTORICAL_ITEM_TYPE).exists():
@@ -289,7 +298,7 @@ class TextualSource(Source):
 
     @property
     def file_page_number(self) -> Optional[int]:
-        file = self.get_file()
+        file = self.file
         if file:
             if self.containment and self.containment.page_number:
                 return self.containment.page_number + file.page_offset

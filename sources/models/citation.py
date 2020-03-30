@@ -104,7 +104,7 @@ class Citation(Model):
 
     @property
     def source_file_page_number(self) -> Optional[int]:
-        file = self.source.get_file()
+        file = self.source.file
         if file:
             if self.page_number:
                 return self.page_number + file.page_offset

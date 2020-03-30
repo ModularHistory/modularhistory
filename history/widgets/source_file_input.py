@@ -45,11 +45,11 @@ class SourceFileInput(MultiWidget):
             ct_id, instance_id = int(ct_id), int(instance_id)
             model_class = ContentType.objects.get_for_id(ct_id).model_class()
             instance = model_class.objects.get(id=instance_id)
-            if hasattr(instance, 'file') and instance.file:
-                file = instance.file
+            if getattr(instance, 'db_file', None):
+                file = instance.db_file
                 file_name = file.name
                 if filepath and filepath != file_name:
-                    instance.file.name = filepath
+                    instance.db_file.name = filepath
                     instance.save()
         TextualSourceFile.dedupe()
         return file
