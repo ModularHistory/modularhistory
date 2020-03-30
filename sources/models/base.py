@@ -1,3 +1,4 @@
+import re
 from typing import List, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.models import ContentType
@@ -243,8 +244,8 @@ class TitleMixin(Model):
     title = models.CharField(max_length=250, null=True, blank=True)
 
     url: Optional[str]
-    file_url: Optional[str]
     file: Optional[SourceFile]
+    file_url: Optional[str]
 
     class Meta:
         abstract = True
@@ -257,7 +258,10 @@ class TitleMixin(Model):
             url = self.file_url
             page_number = self.file.default_page_number
             if page_number:
-                url += f'#page={page_number}'
+                if 'page=' in url:
+                    url = re.sub(r'page=\d+', f'page={page_number}', url)
+                else:
+                    url += f'#page={page_number}'
         if url:
             html = f'<a href="{url}" target="_blank" class="source-title">{html}</a>'
         return mark_safe(html)
