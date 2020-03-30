@@ -69,7 +69,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     def admin_file_link(self) -> SafeText:
         element = ''
         if self.get_file():
-            element = f'<a class="btn display-source" href="{self.object.file_url}" target="_blank">file</a>'
+            element = (f'<a class="btn display-source" '
+                       f'href="{self.object.file_url}" target="_blank">file</a>')
         return mark_safe(element)
 
     @property
@@ -103,16 +104,16 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             return None
         return self.source_containments.order_by('position')[0]
 
-    @property
-    def html(self) -> SafeText:
+    def _html(self) -> SafeText:
         html = self.string
-        if self.file_url:
-            html += (
-                f'<a href="{self.file_url}" class="mx-1 display-source"'
-                f' data-toggle="modal" data-target="#modal">'
-                f'<i class="fas fa-search"></i>'
-                f'</a>'
-            )
+        # TODO: Remove search icon; insert link intelligently
+        # if self.file_url:
+        #     html += (
+        #         f'<a href="{self.file_url}" class="mx-1 display-source"'
+        #         f' data-toggle="modal" data-target="#modal">'
+        #         f'<i class="fas fa-search"></i>'
+        #         f'</a>'
+        #     )
         # elif self.url:
         #     link = self.url
         #     if self.page_number and 'www.sacred-texts.com' in link:
@@ -123,6 +124,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         #         f'</a>'
         #     )
         return html
+    _html.admin_order_field = 'db_string'
+    html = property(_html)
 
     @property
     def link(self) -> Optional[SafeText]:

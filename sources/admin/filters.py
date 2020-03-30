@@ -1,5 +1,7 @@
 from django.contrib.admin import SimpleListFilter
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from ..models import Source
 
 
 class HasFileFilter(SimpleListFilter):
@@ -88,4 +90,27 @@ class ImpreciseDateFilter(SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value() == 'Yes':
             return queryset.filter(date__second='01', date__minute='01', date__hour='01')
+        return queryset
+
+
+class ContentTypeFilter(SimpleListFilter):
+    title = 'content type'
+    parameter_name = 'content_type'
+
+    def lookups(self, request, model_admin):
+        content_types = Source.objects.all().values('polymorphic_ctype').distinct()
+        print(content_types)
+        content_types = ContentType.objects.filter(id__in=content_types)
+        return [
+            (f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types
+        ]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+        if '.' in value:
+            app_name, model_name = value.split('.')
+            ct = ContentType.objects.get(app_label=app_name, model=model_name)
+            return queryset.filter(content_type=ct)
         return queryset

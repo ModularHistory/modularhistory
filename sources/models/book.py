@@ -12,7 +12,11 @@ class _Book(TitleMixin, TextualSource):
     publisher = models.CharField(max_length=100, null=True, blank=True)
     edition_number = models.PositiveSmallIntegerField(default=1)
     volume_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    original_book = ForeignKey('self', related_name='subsequent_editions', blank=True, null=True, on_delete=SET_NULL)
+    original_book = ForeignKey(
+        'self', related_name='subsequent_editions',
+        blank=True, null=True,
+        on_delete=SET_NULL
+    )
     original_publication_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
@@ -28,13 +32,13 @@ section_types = (
 class Chapter(TitleMixin, TextualSource):
     type2 = models.CharField(max_length=7, choices=section_types, default='chapter')
 
-    def __str__(self):
-        book_str = str(self.book)
+    def __str__(self) -> SafeText:
+        book_str = self.book.html
         if all([self.attributee_string, self.book, self.book.attributee_string,
                 self.attributee_string == self.book.attributee_string]):
             book_str = book_str.replace(f'{self.attributee_string}, ', '')
         attributee_string = self.attributee_string or self.book.attributee_string
-        return f'{attributee_string}, "{self.title}," in {book_str}'
+        return mark_safe(f'{attributee_string}, "{self.title_html}," in {book_str}')
 
     @property
     def book(self) -> 'Book':
@@ -63,15 +67,15 @@ class Book(_Book):
     def __str__(self):
         return self.html
 
-    @property
-    def html(self) -> SafeText:
+    def _html(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'<i>{self.title_html}</i>'
         has_edition_year = ((self.edition_number and self.edition_number > 1)
                             or self.original_book or self.original_publication_date)
         if has_edition_year:
             string += f', {self.date.year} edition'
-            string += f' (orig. {self.original_publication_date.year})' if self.original_publication_date else ''
+            string += (f' (orig. {self.original_publication_date.year})'
+                       if self.original_publication_date else '')
         string += f', ed. {self.editors}' if self.editors else ''
         string += f', translated by {self.translator}' if self.translator else ''
         string += f', {self.publisher}' if self.publisher else ''
@@ -79,3 +83,5 @@ class Book(_Book):
         if not has_edition_year:
             string += f', {self.date.year}' if self.date else ''
         return mark_safe(string)
+    _html.admin_order_field = 'db_string'
+    html = property(_html)

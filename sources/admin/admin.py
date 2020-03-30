@@ -5,7 +5,8 @@ from polymorphic.admin import (
 
 from admin import GenericTabularInline
 from admin import admin_site, Admin, TabularInline, StackedInline, PolymorphicInlineSupportMixin
-from .filters import HasFileFilter, HasFilePageOffsetFilter, HasPageNumber, ImpreciseDateFilter
+from .filters import (HasFileFilter, HasFilePageOffsetFilter, HasPageNumber,
+                      ImpreciseDateFilter, ContentTypeFilter)
 from .. import models
 
 
@@ -67,7 +68,7 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
         models.Affidavit
     ]
     list_display = [
-        'string',
+        'html',
         'creators',
         'date_string',
         'location',
@@ -81,13 +82,13 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
         ImpreciseDateFilter,
         'hidden',
         'attributees',
-        'polymorphic_ctype'
+        ContentTypeFilter
     ]
     readonly_fields = ['db_string']
     search_fields = models.Source.searchable_fields
     ordering = (
         'date',
-        'creators',
+        'db_string',
         'polymorphic_ctype'
     )
     inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
@@ -103,15 +104,18 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
 class ChildModelAdmin(PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin, Admin):
     base_model = models.Source
     list_display = [
-        'string',
+        'pk',
+        'html',
         'detail_link',
-        'description',
         'date_string'
     ]
     list_filter = ['verified', 'attributees']
     readonly_fields = ['db_string']
     search_fields = ['db_string']
-    ordering = ['date', 'creators']
+    ordering = (
+        'date',
+        'db_string'
+    )
     inlines = SourceAdmin.inlines
     autocomplete_fields = SourceAdmin.autocomplete_fields
 
@@ -138,8 +142,15 @@ class PublicationAdmin(Admin):
 
 
 class ArticleAdmin(ChildModelAdmin):
-    list_display = ['string', 'publication', 'description', 'date_string']
+    list_display = ['pk', 'html', 'publication', 'description', 'date_string']
     autocomplete_fields = ChildModelAdmin.autocomplete_fields + ['publication']
+    ordering = ChildModelAdmin.ordering
+
+
+class BookAdmin(ChildModelAdmin):
+    list_display = ChildModelAdmin.list_display
+    autocomplete_fields = ChildModelAdmin.autocomplete_fields
+    ordering = ChildModelAdmin.ordering
 
 
 class ArticlesInline(StackedInline):
@@ -176,20 +187,19 @@ class SourcesInline(TabularInline):
 admin_site.register(models.Source, SourceAdmin)
 
 admin_site.register(models.Article, ArticleAdmin)
-
+admin_site.register(models.Book, BookAdmin)
 admin_site.register(models.Speech, SpeechAdmin)
-
-admin_site.register(models.Collection, CollectionAdmin)
-admin_site.register(models.Repository, RepositoryAdmin)
-admin_site.register(models.Document, DocumentAdmin)
-admin_site.register(models.Letter, DocumentAdmin)
-
-admin_site.register(models.JournalEntry, ChildModelAdmin)
 
 admin_site.register(models.Publication, PublicationAdmin)
 
+admin_site.register(models.Document, DocumentAdmin)
+admin_site.register(models.Letter, DocumentAdmin)
+admin_site.register(models.Collection, CollectionAdmin)
+admin_site.register(models.Repository, RepositoryAdmin)
+
+admin_site.register(models.JournalEntry, ChildModelAdmin)
+
 child_models = (
-    models.Book,
     models.Chapter,
     models.Interview,
     models.Piece,

@@ -51,7 +51,8 @@ class Citation(Model):
             page_string = f'p{"p" if self.end_page_number else ""}. {self.page_number}'
             if self.end_page_number:
                 page_string += f'–{self.end_page_number}'
-        string = f'{self.source.string}{", " if page_string else ""}{page_string}'
+        string = f'{self.source.html}{", " if page_string else ""}{page_string}'
+        print(f'>>>>>> {string}')
         if self.source.attributees.exists():
             from quotes.models import Quote
             if isinstance(self.content_object, Quote):
@@ -75,25 +76,26 @@ class Citation(Model):
     def html(self) -> SafeText:
         html = str(self)
         print(f'>>> {html}')
-        if self.source_file_url:
-            html += (
-                f'<a href="{self.source_file_url}" class="display-source"'
-                f' target="_blank" data-toggle="modal" data-target="#modal">'
-                f'<i class="fas fa-search"></i>'
-                f'</a>'
-            )
-        elif self.source.url or self.source.container and self.source.container.url:
-            link = self.source.url if self.source.url else self.source.container.url
-            if self.page_number:
-                if 'www.sacred-texts.com' in link:
-                    link += f'#page_{self.page_number}'
-                elif 'josephsmithpapers.org' in link:
-                    link += f'/{self.page_number}'
-            html += (
-                f'<a href="{link}" target="_blank">'
-                f'<i class="fas fa-search"></i>'
-                f'</a>'
-            )
+        # TODO: Remove search icon so citations can be joined together with semicolons
+        # if self.source_file_url:
+        #     html += (
+        #         f'<a href="{self.source_file_url}" class="display-source"'
+        #         f' target="_blank" data-toggle="modal" data-target="#modal">'
+        #         f'<i class="fas fa-search"></i>'
+        #         f'</a>'
+        #     )
+        # elif self.source.url or self.source.container and self.source.container.url:
+        #     link = self.source.url if self.source.url else self.source.container.url
+        #     if self.page_number:
+        #         if 'www.sacred-texts.com' in link:
+        #             link += f'#page_{self.page_number}'
+        #         elif 'josephsmithpapers.org' in link:
+        #             link += f'/{self.page_number}'
+        #     html += (
+        #         f'<a href="{link}" target="_blank">'
+        #         f'<i class="fas fa-search"></i>'
+        #         f'</a>'
+        #     )
         return mark_safe(f'<span class="citation">{html}</span>')
 
     @property
