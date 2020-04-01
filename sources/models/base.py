@@ -149,6 +149,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                     def get_page_number_url(page_number, url=_url) -> Optional[str]:
                         if not url:
                             return None
+                        page_number += c.container.file.page_offset
                         if 'page=' in url:
                             url = re.sub(r'page=\d+', f'page={page_number}', url)
                         else:

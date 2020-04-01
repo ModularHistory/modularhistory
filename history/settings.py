@@ -300,8 +300,8 @@ TINYMCE_DEFAULT_CONFIG = {
         'alignleft aligncenter alignright alignjustify | indent outdent | '
         'bullist numlist | visualblocks visualchars | '
         # 'charmap hr '
-        'nonbreaking anchor | image media link | code | highlight | smallcaps | '
-        'spellchecker preview | undo redo'
+        'nonbreaking anchor | image media link | code | smallcaps highlight | smallcaps | '
+        'spellchecker preview | highlight | undo redo'
     ),
     'contextmenu': ('formats | blockquote | highlight smallcaps | link media image '
                     'charmap hr | code | pastetext'),
