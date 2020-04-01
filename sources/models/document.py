@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 from django.utils.safestring import SafeText, mark_safe
-
+from bs4 import BeautifulSoup
 from history.models import Model
 from .base import TitleMixin, TextualSource
 from .piece import _Piece
@@ -45,6 +45,9 @@ class _Document(DocumentMixin, TextualSource):
     class Meta:
         abstract = True
 
+    def _html(self) -> SafeText:
+        raise NotImplementedError
+
 
 class Collection(Model):
     name = models.CharField(max_length=100, help_text='e.g., "Adam S. Bennion papers"', null=True, blank=True)
@@ -55,12 +58,20 @@ class Collection(Model):
         unique_together = ['name', 'repository']
 
     def __str__(self):
+        return BeautifulSoup(self._html, features='lxml').get_text()
+
+    @property
+    def _html(self) -> str:
         string = ''
         if self.name:
             string += f'{self.name}' if self.name else ''
             string += ', ' if self.repository else ''
         string += f'{self.repository}' if self.repository else ''
         return string
+
+    @property
+    def html(self) -> SafeText:
+        return mark_safe(self._html)
 
 
 class Repository(Model):
@@ -84,7 +95,12 @@ class Repository(Model):
 
 
 class Document(TitleMixin, _Document):
+    """A historical document."""
     def __str__(self) -> SafeText:
+        return BeautifulSoup(self._html, features='lxml').get_text()
+
+    @property
+    def _html(self) -> str:
         string = ''
         string += f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title_html}," ' if self.title else 'untitled document, '
@@ -109,27 +125,30 @@ class Letter(_Document):
         verbose_name_plural = 'correspondence'
 
     def __str__(self) -> SafeText:
+        return BeautifulSoup(self._html, features='lxml').get_text()
+
+    @property
+    def _html(self) -> str:
         string = f'{self.attributee_string}, letter to {self.recipient or "<Unknown>"}'
         if self.date:
             string += ', dated ' if self.date.day_is_known else ', '
             string += self.date.string
         if self.collection:
             string += f', archived in {self.collection}'
-        # elif self.container:
-        #     containment = self.source_containments.get(container=self.container)
-        #     string += f', '
-        #     string += f'{containment.phrase} ' or ''
-        #     string += f'in {self.container}'
-        return mark_safe(string)
+        return string
 
 
 class Affidavit(_Document):
     certifier = models.CharField(max_length=100, null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> SafeText:
+        return BeautifulSoup(self._html, features='lxml').get_text()
+
+    @property
+    def _html(self) -> str:
         string = f'{self.attributee_string}, '
         string += f'affidavit sworn {self.date_html} at {self.location} before {self.certifier}'
-        return mark_safe(string)
+        return string
 
     def clean(self):
         super().clean()
@@ -138,11 +157,14 @@ class Affidavit(_Document):
 
 
 class JournalEntry(_Piece):
-
     class Meta:
         verbose_name_plural = 'Journal entries'
 
     def __str__(self) -> SafeText:
+        return BeautifulSoup(self._html, features='lxml').get_text()
+
+    @property
+    def _html(self) -> str:
         string = f'{self.attributee_string}, journal ' if self.attributee_string else 'Journal '
         string += f'entry dated {self.date.string}' if self.date else ''
         return mark_safe(string)

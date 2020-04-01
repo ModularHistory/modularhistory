@@ -12,7 +12,6 @@ class ContentTypeFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         content_types = models.Citation.objects.all().values('content_type').distinct()
-        print(content_types)
         content_types = ContentType.objects.filter(id__in=content_types)
         return [
             (f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types

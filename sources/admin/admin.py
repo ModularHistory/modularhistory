@@ -5,8 +5,8 @@ from polymorphic.admin import (
 
 from admin import GenericTabularInline
 from admin import admin_site, Admin, TabularInline, StackedInline, PolymorphicInlineSupportMixin
-from .filters import (HasFileFilter, HasFilePageOffsetFilter, HasPageNumber,
-                      ImpreciseDateFilter, ContentTypeFilter)
+from .filters import (HasContainerFilter, HasFileFilter, HasFilePageOffsetFilter,
+                      HasPageNumber, ImpreciseDateFilter, ContentTypeFilter)
 from .. import models
 
 
@@ -76,6 +76,7 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
     ]
     list_filter = [
         'verified',
+        HasContainerFilter,
         HasFileFilter,
         HasFilePageOffsetFilter,
         HasPageNumber,

@@ -46,7 +46,7 @@ class Citation(Model):
         ordering = ['position', 'source', 'page_number']
 
     def __str__(self):
-        return BeautifulSoup(self.html).get_text()
+        return BeautifulSoup(self.html, features='lxml').get_text()
 
     @property
     def html(self) -> SafeText:

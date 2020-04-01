@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 from django.utils.safestring import SafeText, mark_safe
@@ -26,7 +27,15 @@ class Publication(Model):
     searchable_fields = ['name', 'aliases']
 
     def __str__(self) -> SafeText:
+        return BeautifulSoup(self._html, features='lxml').get_text()
+
+    @property
+    def _html(self) -> str:
         return mark_safe(f'<i>{self.name}</i>')
+
+    @property
+    def html(self) -> SafeText:
+        return mark_safe(self._html)
 
 
 class Article(TitleMixin, _Piece):
@@ -37,10 +46,14 @@ class Article(TitleMixin, _Piece):
     searchable_fields = ['db_string', 'publication__name']
 
     def __str__(self) -> SafeText:
+        return BeautifulSoup(self._html, features='lxml').get_text()
+
+    @property
+    def _html(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.pk and self.attributee_string else ''
         title_html = self.title_html.replace('"', "'") if self.title else None
         string += f'"{title_html}," ' if self.title else ''
-        string += f'{self.publication}'
+        string += f'{self.publication.html}'
         string += f', vol. {self.volume}' if self.volume else ''
         string += f', no. {self.number}' if self.number else ''
         string += f', {self.date.string}' if self.date else ''
@@ -52,6 +65,10 @@ class WebPage(TitleMixin, TextualSource):
     organization_name = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self) -> SafeText:
+        return BeautifulSoup(self._html, features='lxml').get_text()
+
+    @property
+    def _html(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title_html}," ' if self.title else ''
         string += f'<i>{self.website_title}</i>'

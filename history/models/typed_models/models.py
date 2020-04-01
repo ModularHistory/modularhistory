@@ -361,8 +361,7 @@ class TypedModel(with_metaclass(TypedModelMetaclass, models.Model)):
                     print(f'>>> Recasting Place to places.city (default)')
                     self.recast('places.city')
             else:
-                print(f'>>> {self}, type: {self.type}')
-                raise RuntimeError(f'Untyped self.__class__.__name__ cannot be saved.')
+                raise RuntimeError(f'Untyped {self.__class__.__name__} cannot be saved.')
         return super(TypedModel, self).save(*args, **kwargs)
 
     def _get_unique_checks(self, exclude=None):

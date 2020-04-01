@@ -4,6 +4,23 @@ from django.db.models import Q
 from ..models import Source
 
 
+class HasContainerFilter(SimpleListFilter):
+    title = 'has container'
+    parameter_name = 'has_container'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('Yes', 'Yes'),
+            ('No', 'No'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'Yes':
+            return queryset.exclude(containers=None)
+        if self.value() == 'No':
+            return queryset.filter(containers=None)
+
+
 class HasFileFilter(SimpleListFilter):
     title = 'has file'
     parameter_name = 'has_file'
@@ -99,7 +116,6 @@ class ContentTypeFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         content_types = Source.objects.all().values('polymorphic_ctype').distinct()
-        print(content_types)
         content_types = ContentType.objects.filter(id__in=content_types)
         return [
             (f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types
@@ -112,5 +128,6 @@ class ContentTypeFilter(SimpleListFilter):
         if '.' in value:
             app_name, model_name = value.split('.')
             ct = ContentType.objects.get(app_label=app_name, model=model_name)
-            return queryset.filter(content_type=ct)
+            object_ids = [obj.id for obj in queryset if obj.ctype == ct]
+            return queryset.filter(id__in=object_ids)
         return queryset

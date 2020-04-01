@@ -70,8 +70,9 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     def admin_file_link(self) -> SafeText:
         element = ''
         if self.file:
-            element = (f'<a class="btn display-source" '
-                       f'href="{self.object.file_url}" target="_blank">file</a>')
+            element = (f'<a class="btn btn-small btn-default display-source"'
+                       f' href="{self.object.file_url}" target="_blank">'
+                       f'<i class="fa fa-search"></i></a>')
         return mark_safe(element)
 
     @property
@@ -118,9 +119,14 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         file = self.file
         return file.url if file else None
 
+    @property
     def _html(self) -> SafeText:
+        """Must be defined by inheriting models."""
+        return self.object._html
+
+    def html(self) -> SafeText:
         # TODO: html methods should be split into different classes and/or mixins.
-        html = str(self)
+        html = self._html
         if self.source_containments.exists():
             containments = self.source_containments.order_by('position')[:2]
             container_strings = []
@@ -198,8 +204,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         #         f'<i class="fas fa-search"></i>'
         #         f'</a>'
         #     )
-    _html.admin_order_field = 'db_string'
-    html = property(_html)
+    html.admin_order_field = 'db_string'
+    html = property(html)
 
     @property
     def link(self) -> Optional[SafeText]:
