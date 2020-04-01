@@ -117,9 +117,7 @@ class ContentTypeFilter(SimpleListFilter):
     def lookups(self, request, model_admin):
         content_types = Source.objects.all().values('polymorphic_ctype').distinct()
         content_types = ContentType.objects.filter(id__in=content_types)
-        return [
-            (f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types
-        ]
+        return [(f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types]
 
     def queryset(self, request, queryset):
         value = self.value()

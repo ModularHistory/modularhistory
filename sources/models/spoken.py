@@ -35,7 +35,7 @@ class Speech(TitleMixin, SpokenSource):
         verbose_name_plural = 'Speeches'
 
     def __str__(self):
-        return BeautifulSoup(self._html, features='lxml')
+        return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
     def _html(self) -> str:
