@@ -50,12 +50,13 @@ class Chapter(TitleMixin, TextualSource):
 
     @property
     def _html(self) -> str:
-        book_str = self.book.html
+        book_html = self.book.html
         if all([self.attributee_string, self.book, self.book.attributee_string,
                 self.attributee_string == self.book.attributee_string]):
-            book_str = book_str.replace(f'{self.attributee_string}, ', '')
+            book_html = book_html.replace(f'{self.attributee_string}, ', '')
         attributee_string = self.attributee_string or self.book.attributee_string
-        return f'{attributee_string}, "{self.title_html}," in {book_str}'
+        html = f'{attributee_string}, "{self.title_html}," in {book_html}'
+        return html
 
     @property
     def html(self) -> SafeText:
@@ -93,7 +94,7 @@ class Book(_Book):
             string += f', {self.date.year}' if self.date else ''
         return string
 
-    def html(self) -> SafeText:
-        return mark_safe(self._html)
-    html.admin_order_field = 'db_string'
-    html = property(html)
+    # def html(self) -> SafeText:
+    #     return mark_safe(self._html)
+    # html.admin_order_field = 'db_string'
+    # html = property(html)
