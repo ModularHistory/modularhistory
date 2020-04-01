@@ -1,8 +1,9 @@
+from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 from django.utils.safestring import SafeText, mark_safe
-from bs4 import BeautifulSoup
+
 from history.models import Model
 from .base import TitleMixin, TextualSource
 from .piece import _Piece

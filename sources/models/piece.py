@@ -1,6 +1,6 @@
 from typing import Optional
-from bs4 import BeautifulSoup
 
+from bs4 import BeautifulSoup
 from django.db import models
 from django.utils.safestring import SafeText, mark_safe
 

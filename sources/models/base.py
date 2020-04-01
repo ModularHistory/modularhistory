@@ -1,5 +1,6 @@
 import re
 from typing import List, Optional, TYPE_CHECKING
+
 from bs4 import BeautifulSoup
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError

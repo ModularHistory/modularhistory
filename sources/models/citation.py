@@ -1,5 +1,6 @@
 import re
 from typing import Optional
+
 from bs4 import BeautifulSoup
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
