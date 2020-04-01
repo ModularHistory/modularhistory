@@ -53,7 +53,7 @@ class Article(TitleMixin, _Piece):
         string = f'{self.attributee_string}, ' if self.pk and self.attributee_string else ''
         title_html = self.title_html.replace('"', "'") if self.title else None
         string += f'"{title_html}," ' if self.title else ''
-        string += f'{self.publication.html}'
+        string += f'{self.publication.html}' if self.publication else ''  # TODO: make required
         string += f', vol. {self.volume}' if self.volume else ''
         string += f', no. {self.number}' if self.number else ''
         string += f', {self.date.string}' if self.date else ''
