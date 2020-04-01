@@ -135,12 +135,12 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             for c in containments:
                 if c.container.attributee_string != self.attributee_string:
                     same_creator = False
-                container_string = c.container.string
+                container_html = c.container.html
 
                 # Remove redundant creator string
                 if (same_creator and self.attributee_string and
-                        self.attributee_string in container_string):
-                    container_string = container_string[len(f'{self.attributee_string}, '):]
+                        self.attributee_string in container_html):
+                    container_html = container_html[len(f'{self.attributee_string}, '):]
 
                 # Include the page number
                 if c.page_number:
@@ -167,13 +167,13 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                         end_pn = c.end_page_number
                         end_pn_url = get_page_number_url(end_pn)
                         end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
-                        container_string += f', pp. {pn}–{end_pn}'
+                        container_html += f', pp. {pn}–{end_pn}'
                     else:
-                        container_string += f', p. {pn}'
+                        container_html += f', p. {pn}'
 
-                container_string = (f'{c.phrase} in {container_string}' if c.phrase
-                                    else f'in {container_string}')
-                container_strings.append(container_string)
+                container_html = (f'{c.phrase} in {container_html}' if c.phrase
+                                    else f'in {container_html}')
+                container_strings.append(container_html)
             containers = ', and '.join(container_strings)
             html += f', {containers}'
         if not self.file:
