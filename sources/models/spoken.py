@@ -40,7 +40,7 @@ class Speech(TitleMixin, SpokenSource):
     @property
     def _html(self) -> str:
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
-        string += f'"{self.title}," ' if self.title else ''
+        string += f'"{self.title_html}," ' if self.title else ''
         string += f'{self.type2}'
         string += ' delivered' if self.type2 not in ('statement',) else ''
         if self.audience or self.location:
