@@ -29,8 +29,8 @@ class ContentTypeFilter(SimpleListFilter):
 
 
 class CitationAdmin(Admin):
-    list_display = ['__str__', 'position', 'content_object', 'content_type']
-    search_fields = []
+    list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
+    search_fields = ['source__db_string']
     list_filter = [ContentTypeFilter]
 
 

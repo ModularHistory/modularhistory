@@ -150,7 +150,10 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                         if not url:
                             return None
                         page_number += c.container.file.page_offset
+                        print(f'>>>>> setting {c.container} pn: {page_number}')
                         if 'page=' in url:
+                            original = re.match(r'page=(\d+)').group(1)
+                            print(f">>>>> originally {original}")
                             url = re.sub(r'page=\d+', f'page={page_number}', url)
                         else:
                             url += f'#page={page_number}'
@@ -159,7 +162,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                     def get_page_number_link(url, page_number) -> Optional[str]:
                         if not url:
                             return None
-                        return f'<a href="{url}" target="_blank">{page_number}</a>'
+                        return (f'<a href="{url}" target="_blank" '
+                                f'class="display-source">{page_number}</a>')
 
                     pn = c.page_number
                     pn_url = get_page_number_url(pn)
@@ -173,7 +177,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                         container_html += f', p. {pn}'
 
                 container_html = (f'{c.phrase} in {container_html}' if c.phrase
-                                    else f'in {container_html}')
+                                  else f'in {container_html}')
                 container_strings.append(container_html)
             containers = ', and '.join(container_strings)
             html += f', {containers}'
@@ -295,7 +299,8 @@ class TitleMixin(Model):
                 else:
                     url += f'#page={page_number}'
         if url:
-            html = f'<a href="{url}" target="_blank" class="source-title">{html}</a>'
+            html = (f'<a href="{url}" target="_blank" '
+                    f'class="source-title display-source">{html}</a>')
         return mark_safe(html)
 
 

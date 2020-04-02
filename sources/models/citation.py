@@ -71,7 +71,8 @@ class Citation(Model):
             def get_page_number_link(url, page_number) -> Optional[str]:
                 if not url:
                     return None
-                return f'<a href="{url}" target="_blank">{page_number}</a>'
+                return (f'<a href="{url}" target="_blank" '
+                        f'class="display-source">{page_number}</a>')
 
             pn_url = get_page_number_url(pn)
             pn = get_page_number_link(pn_url, pn) or pn
