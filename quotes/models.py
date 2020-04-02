@@ -46,7 +46,7 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     def __str__(self):
         return mark_safe(f'{self.attributee_string or "<Unknown>"}'
                          f'{(", " + self.date.string) if self.date else ""}: '
-                         f'{self.bite}')
+                         f'{self.bite.text}')
 
     # _attributee_html is defined as a method rather than a property
     # so that its `admin_order_field` attribute can be modified

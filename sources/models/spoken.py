@@ -90,6 +90,6 @@ class Documentary(TitleMixin, VideoSource):
     @property
     def _html(self) -> str:
         string = f'{self.attributee_string}, '
-        string += f'<em>{self.title}</em>," ' if self.title else ''
+        string += f'<em>{self.title_html}</em>," ' if self.title else ''
         string += f'{self.date.string}' if self.date else ''
         return string

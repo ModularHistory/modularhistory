@@ -27,6 +27,10 @@ class DocumentMixin(Model):
 
 
 class _Document(DocumentMixin, TextualSource):
+    descriptive_phrase = models.CharField(
+        max_length=30, null=True, blank=True,
+        help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"'
+    )
     collection = ForeignKey('Collection', related_name='%(class)s', null=True, blank=True, on_delete=CASCADE)
     collection_number = models.PositiveSmallIntegerField(
         null=True, blank=True,
