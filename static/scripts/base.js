@@ -2,7 +2,6 @@ const mobile_width = 660;
 
 function initializeListeners() {
     $('.display-source').click(function(event) {
-        event.preventDefault();
         let href = $( this ).attr('href');
         let open_in_modal = false;
         let target_modal = null;
@@ -10,6 +9,7 @@ function initializeListeners() {
             target_modal = $( this ).attr('data-target');
         }
         if (href.includes('.pdf')) {
+            event.preventDefault();
             href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
             if (open_in_modal) {
                 $(target_modal).find('.modal-body').html(`
@@ -20,17 +20,10 @@ function initializeListeners() {
             } else {
                 window.open(href, '_blank');
             }
+            return false;  // prevent modal from popping up
         } else if (href.includes('.epub')) {
-            console.log('Attempting to load ePub.');
-            let book = ePub(href);
-            $(target_modal).find('.modal-body').html(`
-                <div class="embed-responsive embed-responsive-210by297" id="document-viewer">
-                </div>
-            `);
-            let rendition = book.renderTo('document-viewer');
-            rendition.display();
+            console.log('Opening ePub');
         }
-        return false;  // prevent modal from popping up
     });
 }
 

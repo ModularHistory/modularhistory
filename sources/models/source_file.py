@@ -1,6 +1,7 @@
 from os import listdir, rename
 from os.path import isfile, join
 from typing import Optional
+from django.utils.safestring import SafeText, mark_safe
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -45,8 +46,16 @@ class SourceFile(Model):
         return None
 
     @property
+    def link(self) -> Optional[SafeText]:
+        return mark_safe(f'<a href="{self.url}" class="display-source" target="_blank">'
+                         f'<i class="fa fa-search"></i></a>')
+
+    @property
     def url(self) -> str:
-        return self.file.url
+        url = self.file.url
+        if url.endswith('epub'):
+            url = f'/history/sources/epub{url}'
+        return url
 
     def full_clean(self, exclude=None, validate_unique=True):
         super().full_clean(exclude=exclude, validate_unique=validate_unique)

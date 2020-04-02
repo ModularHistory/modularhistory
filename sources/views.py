@@ -2,6 +2,7 @@ from django.views import generic
 from typing import Dict
 from .models import Source
 from quotes.models import Quote
+from django.views.generic import TemplateView
 
 
 class IndexView(generic.ListView):
@@ -34,3 +35,14 @@ class DetailView(BaseDetailView):
 
 class DetailPartView(BaseDetailView):
     template_name = 'sources/_detail.html'
+
+
+class EPubView(TemplateView):
+    template_name = 'sources/_epub_viewer.html'
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super().get_context_data(**kwargs)
+        epub_path = self.kwargs['path']
+        print(f'>>>>>>> {epub_path}')
+        context['path'] = epub_path
+        return context

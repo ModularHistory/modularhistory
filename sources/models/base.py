@@ -118,7 +118,10 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     @property
     def file_url(self) -> Optional[str]:
         file = self.file
-        return file.url if file else None
+        if not file:
+            return None
+        file_url = file.url
+        return file_url
 
     @property
     def _html(self) -> SafeText:
@@ -150,9 +153,9 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                         if not url:
                             return None
                         page_number += c.container.file.page_offset
-                        print(f'>>>>> setting {c.container} pn: {page_number}')
+                        print(f'\n>>>>> setting {c.container} pn: {page_number}')
                         if 'page=' in url:
-                            original = re.match(r'page=(\d+)').group(1)
+                            original = re.search(r'page=(\d+)', url).group(1)
                             print(f">>>>> originally {original}")
                             url = re.sub(r'page=\d+', f'page={page_number}', url)
                         else:
