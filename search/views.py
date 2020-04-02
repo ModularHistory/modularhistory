@@ -51,6 +51,7 @@ class SearchResultsView(ListView):
 
     content_types: Optional[List[Tuple[int, str]]] = None
     sort_by_relevance: bool = False
+    suppress_unverified: bool = True
     entities: Optional[QuerySet] = None
     topics: Optional[QuerySet] = None
     places: Optional[QuerySet] = None
@@ -68,8 +69,10 @@ class SearchResultsView(ListView):
         #     'topics': None,
         # }
 
-        context['search_filter_form'] = SearchFilterForm(
+        search_filter_form = SearchFilterForm(
+            request=self.request,
             query=query,
+            suppress_unverified=self.suppress_unverified,
             order_by_relevance=self.sort_by_relevance,
             content_types=self.content_types,
             # places=self.places
@@ -77,6 +80,7 @@ class SearchResultsView(ListView):
             topics=self.topics,
             # initial=data
         )
+        context['search_filter_form'] = search_filter_form
         return context
 
     def get_queryset(self) -> Union[QuerySet, List]:
@@ -85,6 +89,9 @@ class SearchResultsView(ListView):
 
         sort_by_relevance = request.GET.get('ordering') == 'relevance'
         self.sort_by_relevance = sort_by_relevance
+
+        suppress_unverified = request.GET.get('quality') == 'verified'
+        self.suppress_unverified = suppress_unverified
 
         ct_ids = request.GET.getlist('content_types', None)
         start_year = request.GET.get('start_year_0', None)
@@ -109,7 +116,7 @@ class SearchResultsView(ListView):
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
                 rank=sort_by_relevance,
-                suppress_unverified=(not request.user.is_superuser)
+                suppress_unverified=suppress_unverified
             )
         else:
             occurrence_results = Occurrence.objects.none()
@@ -123,7 +130,7 @@ class SearchResultsView(ListView):
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
                 rank=sort_by_relevance,
-                suppress_unverified=(not request.user.is_superuser)
+                suppress_unverified=suppress_unverified
             )
             if occurrence_results:
                 quote_results = quote_results.exclude(related_occurrences__in=occurrence_results)
@@ -139,7 +146,7 @@ class SearchResultsView(ListView):
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
                 rank=sort_by_relevance,
-                suppress_unverified=(not request.user.is_superuser)
+                suppress_unverified=suppress_unverified
             ).filter(entities=None)
             if occurrence_results:
                 image_results = image_results.exclude(
@@ -160,7 +167,7 @@ class SearchResultsView(ListView):
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
                 rank=sort_by_relevance,
-                suppress_unverified=(not request.user.is_superuser)
+                suppress_unverified=suppress_unverified
             )
             # TODO: This was broken by conversion to generic relations with quotes & occurrences
             # source_results = source_results.exclude(

@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 
 from crispy_forms.bootstrap import Accordion, AccordionGroup
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field
+from crispy_forms.layout import Submit, Layout, Field, Div
 from django.db.models import QuerySet
 from django.forms import (
     Form,
@@ -13,9 +13,10 @@ from django.forms import (
     MultipleChoiceField,
     RadioSelect
 )
+from django.http import HttpRequest
+from django_select2.forms import Select2MultipleWidget
 
 from entities.models import Entity
-from django_select2.forms import Select2MultipleWidget
 from history.forms import HistoricDateFormField
 from history.widgets.historic_date_widget import YearInput
 # from places.models import Place
@@ -36,7 +37,9 @@ class SearchFilterForm(Form):
 
     def __init__(
             self,
+            request: HttpRequest,
             query: Optional[str] = None,
+            suppress_unverified: bool = True,
             order_by_relevance: bool = False,
             content_types: List[Tuple[int, str]] = None,
             entities: Optional[QuerySet] = None,
@@ -46,7 +49,7 @@ class SearchFilterForm(Form):
             **kwargs
     ):
         super().__init__(*args, **kwargs)
-
+        self.request = request
         self.fields['query'] = CharField(required=False, initial=query)
 
         ordering = 'relevance' if order_by_relevance else 'date'
@@ -58,6 +61,16 @@ class SearchFilterForm(Form):
         )
         if not query:
             self.fields['ordering'].widget.attrs['disabled'] = True
+
+        quality = 'verified' if suppress_unverified else 'unverified'
+        self.fields['quality'] = ChoiceField(
+            choices=(('verified', 'Verified'), ('unverified', 'Unverified')),
+            widget=RadioSelect,
+            initial=quality,
+            required=False
+        )
+        if not self.request.user.is_superuser:
+            self.fields['quality'].widget.attrs['disabled'] = True
 
         self.fields['content_types'] = MultipleChoiceField(
             choices=content_types,
@@ -95,7 +108,9 @@ class SearchFilterForm(Form):
         # self.helper.add_input(Submit('submit', 'Submit'))
         layout = [
             Field('query', css_class='form-control'),
-            Field('ordering', css_class=''),
+            Div('quality', 'ordering', css_class=''),
+            # Field('quality', css_class=''),
+            # Field('ordering', css_class=''),
             Field('start_year'),
             Field('end_year'),
             Field('entities', css_class=''),
