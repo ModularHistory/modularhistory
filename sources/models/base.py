@@ -305,6 +305,8 @@ class TitleMixin(Model):
         if self.file_url:
             url = self.file_url
             page_number = self.file.default_page_number
+            if hasattr(self, 'page_number') and getattr(self, 'page_number', None):
+                page_number = self.page_number
             if page_number:
                 if 'page=' in url:
                     url = re.sub(r'page=\d+', f'page={page_number}', url)
