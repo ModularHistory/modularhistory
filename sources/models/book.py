@@ -62,7 +62,7 @@ class Chapter(TitleMixin, TextualSource):
         return html
 
     @property
-    def html(self) -> SafeText:
+    def html_override(self) -> SafeText:
         return mark_safe(self._html)
 
     @property
@@ -115,7 +115,7 @@ class Book(_Book):
             string += f', {self.date.year}' if self.date else ''
         return string
 
-    # def html(self) -> SafeText:
-    #     return mark_safe(self._html)
-    # html.admin_order_field = 'db_string'
-    # html = property(html)
+    def html(self) -> SafeText:
+        return mark_safe(self._html)
+    html.admin_order_field = 'db_string'
+    html = property(html)

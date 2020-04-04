@@ -130,7 +130,39 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     def html(self) -> SafeText:
         # TODO: html methods should be split into different classes and/or mixins.
+        if hasattr(self.object, 'html_override'):
+            return mark_safe(self.object.html_override)
         html = self._html
+        _url = self.file_url or None
+
+        def get_page_number_url(page_number, url=_url, file=self.file) -> Optional[str]:
+            if not url:
+                return None
+            page_number += file.page_offset
+            if 'page=' in url:
+                url = re.sub(r'page=\d+', f'page={page_number}', url)
+            else:
+                url += f'#page={page_number}'
+            return url
+
+        def get_page_number_link(url, page_number) -> Optional[str]:
+            if not url:
+                return None
+            return (f'<a href="{url}" target="_blank" '
+                    f'class="display-source">{page_number}</a>')
+
+        def get_page_number_html(page_number, end_page_number=None, file=self.file) -> str:
+            pn = page_number
+            pn_url = get_page_number_url(pn)
+            pn = get_page_number_link(pn_url, pn) or pn
+            if end_page_number:
+                end_pn = end_page_number
+                end_pn_url = get_page_number_url(end_pn, file=file)
+                end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
+                return f'pp. {pn}–{end_pn}'
+            else:
+                return f', p. {pn}'
+
         if self.source_containments.exists():
             containments = self.source_containments.order_by('position')[:2]
             container_strings = []
@@ -147,43 +179,20 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
                 # Include the page number
                 if c.page_number:
-                    _url = self.file_url or None
-
-                    def get_page_number_url(page_number, url=_url) -> Optional[str]:
-                        if not url:
-                            return None
-                        page_number += c.container.file.page_offset
-                        print(f'\n>>>>> setting {c.container} pn: {page_number}')
-                        if 'page=' in url:
-                            original = re.search(r'page=(\d+)', url).group(1)
-                            print(f">>>>> originally {original}")
-                            url = re.sub(r'page=\d+', f'page={page_number}', url)
-                        else:
-                            url += f'#page={page_number}'
-                        return url
-
-                    def get_page_number_link(url, page_number) -> Optional[str]:
-                        if not url:
-                            return None
-                        return (f'<a href="{url}" target="_blank" '
-                                f'class="display-source">{page_number}</a>')
-
-                    pn = c.page_number
-                    pn_url = get_page_number_url(pn)
-                    pn = get_page_number_link(pn_url, pn) or pn
-                    if c.end_page_number:
-                        end_pn = c.end_page_number
-                        end_pn_url = get_page_number_url(end_pn)
-                        end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
-                        container_html += f', pp. {pn}–{end_pn}'
-                    else:
-                        container_html += f', p. {pn}'
+                    page_number_html = get_page_number_html(
+                        c.page_number, c.end_page_number, file=c.source.file
+                    )
+                    container_html += f', {page_number_html}'
 
                 container_html = (f'{c.phrase} in {container_html}' if c.phrase
                                   else f'in {container_html}')
                 container_strings.append(container_html)
             containers = ', and '.join(container_strings)
             html += f', {containers}'
+        elif getattr(self, 'page_number', None):
+            page_number_html = get_page_number_html(self.page_number, self.end_page_number,
+                                                    file=self.file)
+            html += f', {page_number_html}'
         if not self.file:
             if self.url and self.link not in html:
                 html += f', retrieved from {self.link}'
@@ -242,7 +251,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     def string(self) -> str:
         # TODO: String methods should be split into different classes and/or mixins.
         if hasattr(self.object, 'string_override'):
-            return mark_safe(self.object.string_override)
+            return self.object.string_override
         return BeautifulSoup(self.html, features='lxml').get_text()
 
     def clean(self):
