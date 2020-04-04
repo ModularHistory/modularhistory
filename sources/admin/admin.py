@@ -149,7 +149,7 @@ class ArticleAdmin(ChildModelAdmin):
 
 class BookAdmin(ChildModelAdmin):
     list_display = ChildModelAdmin.list_display
-    autocomplete_fields = ChildModelAdmin.autocomplete_fields
+    autocomplete_fields = ChildModelAdmin.autocomplete_fields + ['original_book']
     ordering = ChildModelAdmin.ordering
 
 

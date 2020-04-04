@@ -16,6 +16,12 @@ django.setup()
 # from django.db import transaction
 # from django.contrib.auth.models import Permission, Group
 # from django.contrib.contenttypes.models import ContentType
-from sources.models import Citation
+from sources.models import Citation, Source
+
+for s in Source.objects.all():
+    if getattr(s, 'edition_number', None):
+        s.edition_number = None
+        s.save()
+
 
 Citation.objects.all().delete()

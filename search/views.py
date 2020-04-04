@@ -90,7 +90,7 @@ class SearchResultsView(ListView):
         sort_by_relevance = request.GET.get('ordering') == 'relevance'
         self.sort_by_relevance = sort_by_relevance
 
-        suppress_unverified = request.GET.get('quality') == 'verified'
+        suppress_unverified = not request.GET.get('quality') == 'unverified'
         self.suppress_unverified = suppress_unverified
 
         ct_ids = request.GET.getlist('content_types', None)
