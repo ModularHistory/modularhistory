@@ -139,6 +139,8 @@ class Letter(_Document):
         if self.date:
             string += ', dated ' if self.date.day_is_known else ', '
             string += self.date.string
+        if self.descriptive_phrase:
+            string += f', {self.descriptive_phrase}'
         if self.collection:
             string += f', archived in {self.collection}'
         return string
