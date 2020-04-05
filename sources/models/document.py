@@ -110,6 +110,7 @@ class Document(TitleMixin, _Document):
         string += f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title_html}," ' if self.title else 'untitled document, '
         string += f'{self.date.string}' if self.date else 'date unknown'
+        string += f', {self.descriptive_phrase}' if self.descriptive_phrase else ''
         string += f', archived in {self.collection}' if self.collection else ''
         return mark_safe(string)
 
