@@ -135,7 +135,7 @@ class Letter(_Document):
 
     @property
     def _html(self) -> str:
-        string = f'{self.attributee_string}, letter to {self.recipient or "<Unknown>"}'
+        string = f'{self.attributee_string}, {self.type2} to {self.recipient or "<Unknown>"}'
         if self.date:
             string += ', dated ' if self.date.day_is_known else ', '
             string += self.date.string
