@@ -53,6 +53,8 @@ class Chapter(TitleMixin, TextualSource):
 
     @property
     def _html(self) -> str:
+        if not self.book:
+            return ''
         book_html = self.book.html
         if all([self.attributee_string, self.book, self.book.attributee_string,
                 self.attributee_string == self.book.attributee_string]):
