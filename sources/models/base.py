@@ -161,7 +161,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
                 return f'pp. {pn}–{end_pn}'
             else:
-                return f', p. {pn}'
+                return f'p. {pn}'
 
         if self.source_containments.exists():
             containments = self.source_containments.order_by('position')[:2]
