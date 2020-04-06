@@ -4,7 +4,7 @@ from .base import (
     SourceAttribution
 )
 from .book import Book, Chapter
-from .citation import Citation, OSR, QSR
+from .citation import Citation
 from .document import (
     Collection, Repository,
     Document, Affidavit,
