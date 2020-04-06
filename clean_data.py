@@ -25,8 +25,7 @@ qsrs = QSR.objects.using('backup').all()
 osrs = OSR.objects.using('backup').all()
 
 for qsr in qsrs:
-    print(f'>>> {qsr}')
-    Citation.objects.create(
+    c = Citation.objects.get_or_create(
         citation_phrase=qsr.citation_phrase,
         source=qsr.source,
         content_type=quote,
@@ -36,10 +35,10 @@ for qsr in qsrs:
         end_page_number=qsr.end_page_number,
         position=qsr.position
     )
+    print(f'>>> {c}')
 
 for osr in osrs:
-    print(f'>>> {osr}')
-    Citation.objects.create(
+    c = Citation.objects.get_or_create(
         citation_phrase=osr.citation_phrase,
         source=osr.source,
         content_type=occurrence,
@@ -49,3 +48,4 @@ for osr in osrs:
         end_page_number=osr.end_page_number,
         position=osr.position
     )
+    print(f'>>> {c}')
