@@ -16,11 +16,14 @@ django.setup()
 # from django.db import transaction
 # from django.contrib.auth.models import Permission, Group
 # from django.contrib.contenttypes.models import ContentType
-from sources.models import Citation
+from sources.models import Citation, Source
 
 citations = Citation.objects.using('backup').all()
+sources = Source.objects.using('backup').all()
 for c in citations:
     print(f'>>> {c}')
+for s in sources:
+    print(f'>>> {s}')
     # Citation.objects.create(
     #     citation_phrase=c.citation_phrase,
     #     source=c.source,
