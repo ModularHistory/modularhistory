@@ -2,6 +2,7 @@ const mobile_width = 660;
 
 function initializeListeners() {
     $('.display-source').click(function(event) {
+        console.log('Displaying source.');
         let href = $( this ).attr('href');
         let open_in_modal = false;
         let target_modal = null;

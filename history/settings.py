@@ -172,6 +172,13 @@ DATABASES = {
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'localhost',
+    },
+    'backup': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'backup',
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': 'localhost',
     }
 }
 # https://django-dbbackup.readthedocs.io/en/latest/installation.html
@@ -323,6 +330,32 @@ TINYMCE_DEFAULT_CONFIG = {
                 }
             });
             editor.addMenuItem('smallcaps', {
+                text: 'Small caps',
+                icon: false,
+                onclick : function() {
+                    editor.focus();
+                    let content = editor.selection.getContent();
+                    if (content.length) {
+                        let opening_tag = '<span style="font-variant: small-caps">';
+                        let closing_tag = '</span>';
+                        content = content.replace(opening_tag, '').replace(closing_tag, '');
+                        editor.selection.setContent(opening_tag + editor.selection.getContent() + closing_tag);
+                    }
+                }
+            });
+            editor.addButton('highlight', {
+                text: 'Highlight text',
+                icon: false,
+                onclick : function() {
+                    editor.focus();
+                    let content = editor.selection.getContent();
+                    if (content.length) {
+                        content = content.replace("<mark>", "").replace("</mark>", "");
+                        editor.selection.setContent("<mark>" + editor.selection.getContent() + '</mark>');
+                    }
+                }
+            });
+            editor.addButton('smallcaps', {
                 text: 'Small caps',
                 icon: false,
                 onclick : function() {
