@@ -1,10 +1,10 @@
 {% load get_admin_url %}
 {% load image_card %}
 
-{% if quote.attributee %}
-<p class="lead">
-    {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date.string }}{% endif %}
-</p>
+{% if quote.attributee_html %}
+    <p class="lead">
+        {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date.string }}{% endif %}
+    </p>
 {% endif %}
 {% if quote.related_topics and quote.related_topics.all|length %}
     <ul class="tags">
