@@ -1,5 +1,6 @@
 {% extends "_card.html" %}
 {% load get_detail_url %}
+{% load get_classification %}
 
 {% block edit %}
     {% with object=quote request=request %}
@@ -27,6 +28,15 @@
             <footer class="blockquote-footer">
                 {% if quote.attributee_string %}
                     {{ quote.attributee_string }}
+                    {% if quote.attributees.all|length == 1%}
+                        {% with classification=quote.attributees.first|get_classification:quote.date %}
+                            {% if classification %}
+                                <span style="opacity: 0.5; margin-left: 0.5rem;">
+                                    ({{ classification }})
+                                </span>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
                 {% elif quote.citation %}
                     {{ quote.citation }}
                 {% else %}

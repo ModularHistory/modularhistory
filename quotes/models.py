@@ -1,17 +1,21 @@
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
 from django.urls import reverse
 from django.utils.safestring import SafeText, mark_safe
-
+from bs4 import BeautifulSoup
 from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
+from history.structures.historic_datetime import HistoricDateTime
 from history.models import Model, TaggableModel, DatedModel, SearchableMixin, SourceMixin
 from images.models import Image
 from sources.models import Source, Citation
 from .manager import Manager
+
+if TYPE_CHECKING:
+    from entities.models import Classification, EntityClassification
 
 
 class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
@@ -78,20 +82,10 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
 
     @property
     def attributee_string(self) -> Optional[SafeText]:
-        """See also the `attributee_html` property."""
-        if not self.pk or not self.attributees.exists():
+        """See the `attributee_html` property."""
+        if not self.attributee_html:
             return None
-        attributees = self.ordered_attributees
-        n_attributions = len(attributees)
-        first_attributee = attributees[0]
-        string = str(first_attributee)
-        if n_attributions == 2:
-            string += f' and {attributees[1]}'
-        elif n_attributions == 3:
-            string += f', {attributees[1]}, and {attributees[2]}'
-        elif n_attributions > 3:
-            string += f' et al.'
-        return mark_safe(string)
+        return BeautifulSoup(self.attributee_html, features='lxml').get_text()
 
     @property
     def html(self) -> SafeText:

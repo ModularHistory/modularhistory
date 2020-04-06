@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
-
+from history.structures import HistoricDateTime
 from history.fields import ArrayField, HistoricDateTimeField, HTMLField
 from history.models import Model, PolymorphicModel, TaggableModel
 from history.models import TypedModel
@@ -44,13 +44,22 @@ class Classification(Model):
 
 
 class EntityClassification(Model):
-    entity = ForeignKey('Entity', related_name='entity_classifications', on_delete=CASCADE)
-    classification = ForeignKey(Classification, related_name='entity_classifications', on_delete=CASCADE)
+    entity = ForeignKey(
+        'Entity', related_name='entity_classifications',
+        on_delete=CASCADE
+    )
+    classification = ForeignKey(
+        Classification, related_name='entity_classifications',
+        on_delete=CASCADE
+    )
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ['entity', 'classification']
+
+    def __str__(self):
+        return str(self.classification)
 
     @property
     def weight(self) -> int:
@@ -113,6 +122,18 @@ class Entity(TypedModel, TaggableModel):
         super().clean()
         if not self.verbose_name:
             self.verbose_name = self.name
+
+    def get_classification(self, date: HistoricDateTime) -> Optional['EntityClassification']:
+        if not self.classifications.exists():
+            return None
+        classifications = EntityClassification.objects.filter(
+            entity=self, date__gte=date
+        )
+        if len(classifications):
+            classification = classifications.order_by('date').first()
+        else:
+            classification = self.entity_classifications.first()
+        return classification
 
     def save(self, *args, **kwargs):
         self.clean()
