@@ -24,12 +24,13 @@ quote = ContentType.objects.get(app_label='quotes', model='quote')
 qsrs = QSR.objects.using('backup').all()
 osrs = OSR.objects.using('backup').all()
 
-for qsr in qsrs:
+for _qsr in qsrs:
+    qsr = _qsr
     c = Citation.objects.get_or_create(
         citation_phrase=qsr.citation_phrase,
-        source=qsr.source,
-        content_type=quote,
-        object_id=qsr.quote.id,
+        source=qsr.source.pk,
+        content_type=quote.pk,
+        object_id=qsr.quote.pk,
         page_number=qsr.page_number,
         end_page_number=qsr.end_page_number,
         position=qsr.position
@@ -39,9 +40,9 @@ for qsr in qsrs:
 for osr in osrs:
     c = Citation.objects.get_or_create(
         citation_phrase=osr.citation_phrase,
-        source=osr.source,
-        content_type=occurrence,
-        object_id=osr.occurrence.id,
+        source=osr.source.pk,
+        content_type=occurrence.pk,
+        object_id=osr.occurrence.pk,
         page_number=osr.page_number,
         end_page_number=osr.end_page_number,
         position=osr.position
