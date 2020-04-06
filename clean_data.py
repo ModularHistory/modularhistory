@@ -30,7 +30,6 @@ for qsr in qsrs:
         source=qsr.source,
         content_type=quote,
         object_id=qsr.quote.id,
-        content_object=qsr.quote,
         page_number=qsr.page_number,
         end_page_number=qsr.end_page_number,
         position=qsr.position
@@ -43,7 +42,6 @@ for osr in osrs:
         source=osr.source,
         content_type=occurrence,
         object_id=osr.occurrence.id,
-        content_object=osr.occurrence,
         page_number=osr.page_number,
         end_page_number=osr.end_page_number,
         position=osr.position
