@@ -25,6 +25,32 @@ citation_phrase_options = (
 )
 
 
+class OSR(Model):
+    occurrence = ForeignKey('occurrences.Occurrence', on_delete=CASCADE, related_name='osrs')
+    citation_phrase = models.CharField(max_length=10, choices=citation_phrase_options,
+                                       default=None, null=True, blank=True)
+    source = ForeignKey(Source, related_name='osrs', on_delete=CASCADE)
+    page_number = PositiveSmallIntegerField(null=True, blank=True)
+    end_page_number = PositiveSmallIntegerField(null=True, blank=True)
+    position = PositiveSmallIntegerField(
+        default=1, blank=True,
+        help_text='Determines the order of references.'
+    )
+
+
+class QSR(Model):
+    quote = ForeignKey('quotes.Quote', on_delete=CASCADE, related_name='qsrs')
+    citation_phrase = models.CharField(max_length=10, choices=citation_phrase_options,
+                                       default=None, null=True, blank=True)
+    source = ForeignKey(Source, related_name='qsrs', on_delete=CASCADE)
+    page_number = PositiveSmallIntegerField(null=True, blank=True)
+    end_page_number = PositiveSmallIntegerField(null=True, blank=True)
+    position = PositiveSmallIntegerField(
+        default=1, blank=True,
+        help_text='Determines the order of references.'
+    )
+
+
 class Citation(Model):
     """A reference to a source (from any other model)."""
     citation_phrase = models.CharField(max_length=10, choices=citation_phrase_options,
@@ -41,7 +67,6 @@ class Citation(Model):
     )
 
     class Meta:
-        verbose_name = 'citation'
         unique_together = ['source', 'content_type', 'object_id',
                            'page_number', 'end_page_number', 'position']
         ordering = ['position', 'source', 'page_number']
