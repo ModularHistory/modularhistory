@@ -126,13 +126,10 @@ class Entity(TypedModel, TaggableModel):
     def get_classification(self, date: HistoricDateTime) -> Optional['EntityClassification']:
         if not self.classifications.exists():
             return None
-        classifications = EntityClassification.objects.filter(
-            entity=self, date__gte=date
-        )
-        if len(classifications):
-            classification = classifications.order_by('date').first()
-        else:
-            classification = self.entity_classifications.first()
+        classifications = EntityClassification.objects.filter(entity=self, date__lte=date)
+        if not len(classifications):
+            classifications = self.entity_classifications.all()
+        classification = classifications.order_by('date', 'classification__weight').last()
         return classification
 
     def save(self, *args, **kwargs):
