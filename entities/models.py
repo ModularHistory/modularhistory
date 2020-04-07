@@ -155,7 +155,7 @@ class Entity(TypedModel, TaggableModel):
         )
         if noun_classifications.exists():
             noun = noun_classifications.order_by(
-                'date', 'classification__weight'
+                'classification__weight', 'date'
             ).last()
             words += str(noun).split(' ')
         noun_adj_classifications = EntityClassification.objects.exclude(date__gt=date).filter(
@@ -163,7 +163,7 @@ class Entity(TypedModel, TaggableModel):
         )
         if noun_adj_classifications.exists():
             noun_adj = noun_adj_classifications.order_by(
-                'date', 'classification__weight'
+                'classification__weight', 'date'
             ).last()
             words = [word for word in str(noun_adj).split(' ') if word not in words] + words
         adj_classifications = EntityClassification.objects.exclude(date__gt=date).filter(
@@ -171,7 +171,7 @@ class Entity(TypedModel, TaggableModel):
         )
         if adj_classifications.exists():
             adj = adj_classifications.order_by(
-                'date', 'classification__weight'
+                'classification__weight', 'date'
             ).last()
             words = [word for word in str(adj).split(' ') if word not in words] + words
         # Final removal of duplicate words
