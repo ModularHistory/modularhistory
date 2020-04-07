@@ -23,8 +23,18 @@ class EntityImage(Model):
         return f'{self.image} ({self.image.id}) --> {self.entity} ({self.entity.id})'
 
 
+parts_of_speech = (
+    ('noun', 'noun'),
+    ('adjective', 'adjective')
+)
+
+
 class Classification(Model):
     name = models.CharField(max_length=100, unique=True)
+    part_of_speech = models.CharField(
+        max_length=9, choices=parts_of_speech,
+        default='adjective'
+    )
     aliases = ArrayField(
         models.CharField(max_length=100),
         null=True, blank=True
