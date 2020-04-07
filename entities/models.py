@@ -143,6 +143,41 @@ class Entity(TypedModel, TaggableModel):
         classification = classifications.order_by('date', 'classification__weight').last()
         return classification
 
+    def get_classification_string(
+            self, date: HistoricDateTime
+    ) -> Optional[str]:
+        """Intelligently build a classification string, like `conservative LDS apostle`."""
+        if not self.classifications.exists():
+            return None
+        words = []
+        noun_classifications = EntityClassification.objects.exclude(date__gt=date).filter(
+            entity=self, classification__part_of_speech='noun'
+        )
+        if noun_classifications.exists():
+            noun = noun_classifications.order_by(
+                'date', 'classification__weight'
+            ).last()
+            words += str(noun).split(' ')
+        noun_adj_classifications = EntityClassification.objects.exclude(date__gt=date).filter(
+            entity=self, classification__part_of_speech='any'
+        )
+        if noun_adj_classifications.exists():
+            noun_adj = noun_adj_classifications.order_by(
+                'date', 'classification__weight'
+            ).last()
+            words = [word for word in str(noun_adj).split(' ') if word not in words] + words
+        adj_classifications = EntityClassification.objects.exclude(date__gt=date).filter(
+            entity=self, classification__part_of_speech='adj'
+        )
+        if adj_classifications.exists():
+            adj = adj_classifications.order_by(
+                'date', 'classification__weight'
+            ).last()
+            words = [word for word in str(adj).split(' ') if word not in words] + words
+        # Final removal of duplicate words
+        words = list(dict.fromkeys(words))
+        return ' '.join(words)
+
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)

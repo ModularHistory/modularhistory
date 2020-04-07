@@ -13,4 +13,4 @@ def get_classification(value: Entity, date: HistoricDateTime) -> Optional[Entity
     entity = value
     if not entity:
         return None
-    return entity.get_classification(date=date)
+    return entity.get_classification_string(date=date)
