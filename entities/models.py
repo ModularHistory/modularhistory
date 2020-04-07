@@ -25,7 +25,8 @@ class EntityImage(Model):
 
 parts_of_speech = (
     ('noun', 'noun'),
-    ('adjective', 'adjective')
+    ('adj', 'adjective'),
+    ('any', 'noun / adjective'),
 )
 
 
@@ -33,7 +34,7 @@ class Classification(Model):
     name = models.CharField(max_length=100, unique=True)
     part_of_speech = models.CharField(
         max_length=9, choices=parts_of_speech,
-        default='adjective'
+        default='adj'
     )
     aliases = ArrayField(
         models.CharField(max_length=100),
