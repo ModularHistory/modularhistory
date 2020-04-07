@@ -3,9 +3,9 @@ from .. import models
 
 
 class ClassificationAdmin(Admin):
-    list_display = ('pk', 'name', 'part_of_speech', 'aliases')
+    list_display = ('pk', 'name', 'part_of_speech', 'aliases', 'weight')
     search_fields = ['name', 'aliases']
-    list_editable = ['name', 'part_of_speech', 'aliases']
+    list_editable = ['name', 'part_of_speech', 'aliases', 'weight']
     ordering = ('name',)
 
 
