@@ -57,9 +57,6 @@ $refinements-container-bg-color: whitesmoke;
       .source {
         clear: both;
         margin-bottom: 1rem;
-        .display-source {
-          margin-left: 0.8rem;
-        }
       }
     }
   }
@@ -142,14 +139,12 @@ $refinements-container-bg-color: whitesmoke;
   }
 }
 
-.two-pane-container {
+.results-container {
   flex: 1;
   vertical-align: top;
   text-align: center;
   .view-detail {
-    @include mobile {
-      display: none;
-    }
+    @include mobile { display: none; }
     display: inline-block;
     width: 60%;
     max-width: 44rem;
@@ -165,53 +160,36 @@ $refinements-container-bg-color: whitesmoke;
     @include mobile {
       width: unset;
     }
+    padding: 5rem;
     text-align: left;
-    width: 20%;
-    min-width: 15rem;
-    display: inline-block;
-    vertical-align: top;
-    .card {
-      quotes: "“" "”" "‘" "’";
-      cursor: pointer;
-      position: relative;
-      text-overflow: ellipsis;
-      &:first-child {
-        margin-top: 0 !important;
-      }
-      &.active {
-        box-shadow:
-                inset 2px 1px 1px 1px black,
-                inset 2px -1px 1px 1px black;
-        >.img-bg {
-          box-shadow:
-                  inset 1px 1px 1px 1px black,
-                  inset 1px -1px 1px 1px black;
-          opacity: 0.7;
+    &.result-cards {
+      padding: 0;
+      width: 20%;
+      min-width: 15rem;
+      display: inline-block;
+      vertical-align: top;
+      .card {
+        quotes: "“" "”" "‘" "’";
+        cursor: pointer;
+        position: relative;
+        text-overflow: ellipsis;
+        &:first-child {
+          margin-top: 0 !important;
         }
-      }
-      .card-body {
-        font-size: 0.8rem;
-        -webkit-text-stroke: 1px black;
-        text-shadow:
-                0 0 1px #ffffff,
-                0 1px 1px #ffffff,
-                1px 1px 1px #ffffff,
-                1px 0 1px #ffffff,
-                0 0 0.5rem #ffffff,
-                0 1px 0.5rem #ffffff,
-                1px 1px 0.5rem #ffffff,
-                1px 0 0.5rem #ffffff,
-                0 0 1rem #ffffff,
-                0 1px 1rem #ffffff,
-                1px 1px 1rem #ffffff,
-                1px 0 1rem #ffffff,
-                0 0 2rem #ffffff,
-                0 1px 2rem #ffffff,
-                1px 1px 2rem #ffffff,
-                1px 0 2rem #ffffff;
-        @include safari {
-          // On Safari, without this override,
-          // the shadow goes on top of the text and makes it lighter....
+        &.active {
+          box-shadow:
+                  inset 2px 1px 1px 1px black,
+                  inset 2px -1px 1px 1px black;
+          >.img-bg {
+            box-shadow:
+                    inset 1px 1px 1px 1px black,
+                    inset 1px -1px 1px 1px black;
+            opacity: 0.7;
+          }
+        }
+        .card-body {
+          font-size: 0.8rem;
+          -webkit-text-stroke: 1px black;
           text-shadow:
                   0 0 1px #ffffff,
                   0 1px 1px #ffffff,
@@ -224,64 +202,92 @@ $refinements-container-bg-color: whitesmoke;
                   0 0 1rem #ffffff,
                   0 1px 1rem #ffffff,
                   1px 1px 1rem #ffffff,
-                  1px 0 1rem #ffffff;
-        }
-        color: black;
-        .card-text {
+                  1px 0 1rem #ffffff,
+                  0 0 2rem #ffffff,
+                  0 1px 2rem #ffffff,
+                  1px 1px 2rem #ffffff,
+                  1px 0 2rem #ffffff;
+          @include safari {
+            // On Safari, without this override,
+            // the shadow goes on top of the text and makes it lighter....
+            text-shadow:
+                    0 0 1px #ffffff,
+                    0 1px 1px #ffffff,
+                    1px 1px 1px #ffffff,
+                    1px 0 1px #ffffff,
+                    0 0 0.5rem #ffffff,
+                    0 1px 0.5rem #ffffff,
+                    1px 1px 0.5rem #ffffff,
+                    1px 0 0.5rem #ffffff,
+                    0 0 1rem #ffffff,
+                    0 1px 1rem #ffffff,
+                    1px 1px 1rem #ffffff,
+                    1px 0 1rem #ffffff;
+          }
           color: black;
-        }
-        .fa {
-          -webkit-text-stroke: initial;
-          text-shadow: none;
-        }
-        p {
-          font-size: 0.8rem;
-          margin-bottom: 0;
-        }
-        .blockquote {
-          position: relative;
-          margin-bottom: 0;
-          font-size: 0.8rem;
-          border-left: none;
-          padding: 0.2rem 0.1rem 0 0.3rem;
-          line-height: 1.2rem;
-          &::before {
-            content: open-quote;
-            position: absolute;
-            top: -0.25rem;
-            left: -0.6rem;
-            font-size: 3rem;
-            font-weight: bold;
+          .card-text {
+            color: black;
           }
-          &::after {
-            content: no-close-quote;
-            position: relative;
-            bottom: 0;
-            right: 0;
-            font-size: 2rem;
+          .fa {
+            -webkit-text-stroke: initial;
+            text-shadow: none;
           }
           p {
-            position: relative;
             font-size: 0.8rem;
+            margin-bottom: 0;
           }
-          footer {
-            margin-top: 0.5rem;
-            text-align: center;
+          .blockquote {
+            position: relative;
+            margin-bottom: 0;
+            font-size: 0.8rem;
+            border-left: none;
+            padding: 0.2rem 0.1rem 0 0.3rem;
+            line-height: 1.2rem;
+            &::before {
+              content: open-quote;
+              position: absolute;
+              top: -0.25rem;
+              left: -0.6rem;
+              font-size: 3rem;
+              font-weight: bold;
+            }
+            &::after {
+              content: no-close-quote;
+              position: relative;
+              bottom: 0;
+              right: 0;
+              font-size: 2rem;
+            }
+            p {
+              position: relative;
+              font-size: 0.8rem;
+            }
+            footer {
+              margin-top: 0.5rem;
+              text-align: center;
+            }
           }
         }
-      }
-      &.image-card {
-        .card-body {
-          p {
-            margin-bottom: 1rem;
+        &.image-card {
+          .card-body {
+            p {
+              margin-bottom: 1rem;
+            }
           }
-        }
-        .image-credit {
-          display: none;
+          .image-credit {
+            display: none;
+          }
         }
       }
     }
   }
+}
+
+.display-options {
+  position: absolute;
+  right: 0;
+  top: 0;
+  float: right;
 }
 
 .pagination {
@@ -299,4 +305,50 @@ $refinements-container-bg-color: whitesmoke;
       color: black;
     }
   }
+}
+
+.display-options {
+  display: flex;
+  margin-bottom: 36px;
+  overflow: hidden;
+}
+
+.display-options input {
+  position: absolute !important;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  width: 1px;
+  border: 0;
+  overflow: hidden;
+}
+
+.display-options label {
+  background-color: #e4e4e4;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  line-height: 1;
+  text-align: center;
+  padding: 8px 16px;
+  margin-right: -1px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.1s ease-in-out;
+}
+
+.display-options label:hover {
+  cursor: pointer;
+}
+
+.display-options input:checked + label {
+  background-color: gray;
+  color: white;
+  box-shadow: none;
+}
+
+.display-options label:first-of-type {
+  border-radius: 4px 0 0 4px;
+}
+
+.display-options label:last-of-type {
+  border-radius: 0 4px 4px 0;
 }

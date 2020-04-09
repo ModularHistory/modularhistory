@@ -32,43 +32,89 @@
                 <button id="sliderToggle" class="toggle-button btn btn-md btn-outline-black">
                     <i class="fas fa-filter"></i>
                 </button>
-                <div id="twoPaneContainer" class="two-pane-container">
+                <div class="results-container">
                     {% block page_header %}
                     {% endblock %}
-                    <div class="results">
-                        {% for object in object_list %}
-                            {% with object|class_name as klass %}
-                                {% if object|is_instance:"occurrences.Occurrence" %}
-                                    {% occurrence_card object %}
-                                {% elif object|is_instance:"topics.Topic" %}
-                                    {% topic_card object %}
-                                {% elif object|is_instance:"quotes.Quote" %}
-                                    {% quote_card object %}
-                                {% elif object|is_instance:"images.Image" %}
-                                    {% image_card object %}
-                                {% elif object|is_instance:"sources.Source" %}
-                                    {% source_card object %}
-                                {% else %}
-                                    <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
-                                {% endif %}
+                    {% with display_option=request.GET.display %}
+                        <div class="display-options">
+                            {% with selected_option=display_option %}
+                                <span class="display-option">
+                                <input type="radio" id="2pane-option" name="display" value="2pane"
+                                        {% if selected_option == '2pane' %} checked{% endif %} />
+                                <label for="2pane-option"><i class="fas fa-list"></i></label>
+                            </span>
+                                <span class="display-option">
+                                <input type="radio" id="rows-option" name="display" value="rows"
+                                        {% if selected_option == 'rows' or not selected_option %} checked{% endif %} />
+                                <label for="rows-option"><i class="fas fa-bars"></i></label>
+                            </span>
+                                <span class="display-option">
+                                <input type="radio" id="timeline-option" name="display" value="timeline"
+                                        {% if selected_option == 'timeline' %} checked{% endif %} />
+                                <label for="timeline-option"><i class="fas fa-columns"></i></label>
+                            </span>
                             {% endwith %}
-                        {% endfor %}
-                    </div>
-                    <div class="card view-detail sticky">
-                        {% with object_list|first as object %}
-                            {% if object|is_instance:"occurrences.Occurrence" %}
-                                {% occurrence_detail object %}
-                            {% elif object|is_instance:"topics.Topic" %}
-                                {% topic_detail object %}
-                            {% elif object|is_instance:"quotes.Quote" %}
-                                {% quote_detail object %}
-                            {% elif object|is_instance:"images.Image" %}
-                                {% image_detail object %}
-                            {% else %}
-                                <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
-                            {% endif %}
-                        {% endwith %}
-                    </div>
+                        </div>
+                        {% if display_option == '2pane' %}
+                            <div class="two-pane-container">
+                                <div class="results result-cards">
+                                    {% for object in object_list %}
+                                        {% with object|class_name as klass %}
+                                            {% if object|is_instance:"occurrences.Occurrence" %}
+                                                {% occurrence_card object %}
+                                            {% elif object|is_instance:"topics.Topic" %}
+                                                {% topic_card object %}
+                                            {% elif object|is_instance:"quotes.Quote" %}
+                                                {% quote_card object %}
+                                            {% elif object|is_instance:"images.Image" %}
+                                                {% image_card object %}
+                                            {% elif object|is_instance:"sources.Source" %}
+                                                {% source_card object %}
+                                            {% else %}
+                                                <a href='{{ object.get_absolute_url }}'>{{ object }}</a>
+                                                | {{ object|class_name }}
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endfor %}
+                                </div>
+                                <div class="card view-detail sticky">
+                                    {% with object_list|first as object %}
+                                        {% if object|is_instance:"occurrences.Occurrence" %}
+                                            {% occurrence_detail object %}
+                                        {% elif object|is_instance:"topics.Topic" %}
+                                            {% topic_detail object %}
+                                        {% elif object|is_instance:"quotes.Quote" %}
+                                            {% quote_detail object %}
+                                        {% elif object|is_instance:"images.Image" %}
+                                            {% image_detail object %}
+                                        {% else %}
+                                            <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        {% elif not display_option or display_option == 'rows' %}
+                            <div class="results">
+                                {% for object in object_list %}
+                                    <div style="clear: both; margin-top: 2rem;" data-key="{{ object.key }}">
+                                        {% with object|class_name as klass %}
+                                            {% if object|is_instance:"occurrences.Occurrence" %}
+                                                {% occurrence_detail object %}
+                                            {% elif object|is_instance:"quotes.Quote" %}
+                                                {% quote_detail object %}
+                                            {% elif object|is_instance:"images.Image" %}
+                                                {% image_detail object %}
+                                            {% elif object|is_instance:"sources.Source" %}
+                                                {% source_detail object %}
+                                            {% else %}
+                                                <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
                 </div>
             {% else %}
                 <div class='row'>

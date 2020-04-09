@@ -4,6 +4,9 @@
 .hidden {
   display: none; }
 
+.lazy-bg {
+  background-image: url("/static/img-placeholder.jpg"); }
+
 span.deleted {
   text-decoration: line-through; }
 
@@ -54,6 +57,9 @@ form ul {
 
 .hidden {
   display: none; }
+
+.lazy-bg {
+  background-image: url("/static/img-placeholder.jpg"); }
 
 span.deleted {
   text-decoration: line-through; }

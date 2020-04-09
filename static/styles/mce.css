@@ -4,6 +4,9 @@
 .hidden {
   display: none; }
 
+.lazy-bg {
+  background-image: url("/static/img-placeholder.jpg"); }
+
 span.deleted {
   text-decoration: line-through; }
 
