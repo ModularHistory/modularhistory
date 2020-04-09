@@ -108,10 +108,8 @@ $(function() {
     let serp_container = $(serp_container_selector).first();
     // If the page is a SERP
     if (serp_container[0]) {
-        let result_card_selector = '.results .card';
         let display_option_selector = '.display-options .display-option';
         let searchParams = new URLSearchParams(window.location.search);
-        let active_card = $(result_card_selector).first();
         $(display_option_selector).on('click', function() {
             let input = $(this).find('input');
             if (!input.is(':checked')) {
@@ -136,25 +134,27 @@ $(function() {
                 window.location.href = url.href;
             }
         });
-        if (active_card[0]) {
+        let result_selector = '.results > .card, .results > .result';
+        let active_result = $(result_selector).first();
+        if (active_result[0]) {
             if (searchParams.has('key')) {
                 let key = searchParams.get('key');
-                let active_card_selector = `[data-key=${key}]`;
-                if ($(active_card_selector).length) {
-                    active_card = $(active_card_selector).first();
+                let active_result_selector = `[data-key=${key}]`;
+                if ($(active_result_selector).length) {
+                    active_result = $(active_result_selector).first();
                 }
             } else {
-                setGetParam('key', active_card.attr('data-key'));
+                setGetParam('key', active_result.attr('data-key'));
             }
 
             // If not mobile, load 2pane for the first result
             if ($(window).width() > mobile_width) {
-                active_card.addClass('active');
-                if (!active_card.visible) {
-                    active_card[0].scrollIntoView();
+                active_result.addClass('active');
+                if (!active_result.visible) {
+                    active_result[0].scrollIntoView();
                 }
                 // Initial load of view-detail
-                let detail_href = active_card.attr('data-href') + 'part';
+                let detail_href = active_result.attr('data-href') + 'part';
                 $('.view-detail').load(detail_href, function() {
                     initializeListeners();
                     lazyLoadImages();
@@ -162,8 +162,8 @@ $(function() {
             }
 
             // Load view-detail when a card is clicked
-            $(result_card_selector).click(function() {
-                $(`${result_card_selector}.active`).removeClass('active');
+            $(result_selector).click(function() {
+                $(`${result_selector}.active`).removeClass('active');
                 $( this ).addClass('active');
                 let detail_href = $( this ).attr('data-href') + 'part';
                 let key = $( this ).attr('data-key');

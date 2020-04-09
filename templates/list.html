@@ -96,7 +96,7 @@
                         {% elif not display_option or display_option == 'rows' %}
                             <div class="results">
                                 {% for object in object_list %}
-                                    <div style="clear: both; margin-top: 2rem;" data-key="{{ object.key }}">
+                                    <div class="result" data-key="{{ object.key }}">
                                         {% with object|class_name as klass %}
                                             {% if object|is_instance:"occurrences.Occurrence" %}
                                                 {% occurrence_detail object %}

@@ -162,6 +162,10 @@ $refinements-container-bg-color: whitesmoke;
     }
     padding: 5rem;
     text-align: left;
+    .result {
+      clear: both;
+      margin-top: 2rem;
+    }
     &.result-cards {
       padding: 0;
       width: 20%;

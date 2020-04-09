@@ -215,6 +215,9 @@ body,
     @media only screen and (max-width: 660px) {
       .results-container .results {
         width: unset; } }
+    .results-container .results .result {
+      clear: both;
+      margin-top: 2rem; }
     .results-container .results.result-cards {
       padding: 0;
       width: 20%;
