@@ -17,8 +17,17 @@
             {% image_card quote.image %}
         </div>
     {% endif %}
+    {% if request.user.is_superuser %}
+        <a class="edit-object-button float-right" style="margin-left: 1rem;"
+           target="_blank" href="{{ quote|get_admin_url }}">
+            <i class="fa fa-edit"></i>
+        </a>
+    {% endif %}
     {{ quote.html }}
+    {% if request.user.is_superuser %}
+        <a class="edit-object-button float-right" style="position: relative; bottom: 2rem; margin-left: 1rem;"
+           target="_blank" href="{{ quote|get_admin_url }}">
+            <i class="fa fa-edit"></i>
+        </a>
+    {% endif %}
 </div>
-{% if request.user.is_superuser %}
-    <a class="edit-object-button" target="_blank" href="{{ quote|get_admin_url }}"><i class="fa fa-edit"></i></a>
-{% endif %}
