@@ -134,7 +134,8 @@ $(function() {
                 window.location.href = url.href;
             }
         });
-        let result_selector = '.results > .card, .results > .result';
+        let result_card_selector = '.results > .card';
+        let result_selector = `${result_card_selector}, .results > .result`;
         let active_result = $(result_selector).first();
         if (active_result[0]) {
             if (searchParams.has('key')) {
@@ -162,7 +163,8 @@ $(function() {
             }
 
             // Load view-detail when a card is clicked
-            $(result_selector).click(function() {
+            $(result_card_selector).on('click', function() {
+                console.log('Result card was clicked; setting new active result.');
                 $(`${result_selector}.active`).removeClass('active');
                 $( this ).addClass('active');
                 let detail_href = $( this ).attr('data-href') + 'part';
@@ -199,20 +201,20 @@ $(function() {
         }
 
         // Enable slideout menu
-        const toggler = document.getElementById('sliderToggle');
+        const toggle = document.getElementById('sliderToggle');
         const slider = document.getElementById('slider');
         function openSlider() {
             slider.classList.remove('closed');
             slider.classList.add('open');
-            toggler.style.left = `${slider.offsetWidth - 5}px`;  // TODO: Use stylesheet rather than JS
+            toggle.style.left = `${slider.offsetWidth - 5}px`;  // TODO: Use stylesheet rather than JS
         }
         function closeSlider() {
             slider.classList.remove('open');
             slider.classList.add('closed');
-            toggler.style.left = '0';  // TODO: make this safer; use stylesheet rather than JS
+            toggle.style.left = '0';  // TODO: make this safer; use stylesheet rather than JS
         }
         // Toggle button
-        toggler.addEventListener('click', function() {
+        toggle.addEventListener('click', function() {
             if (slider.classList.contains('closed')) {
                 openSlider();
             } else if (slider.classList.contains('open')) {
