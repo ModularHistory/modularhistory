@@ -61,7 +61,6 @@ function lazyLoadImages(element=null) {
                         }
                         lazyElement.classList.remove("lazy-bg");
                         lazyElement.style.backgroundImage = `url("${url}")`;
-                        console.log(`Lazy-loaded image: ${url}`);
                     } else if (isImage) {
                         let lazyImage = lazyElement;
                         url = lazyImage.dataset.src;
@@ -78,9 +77,6 @@ function lazyLoadImages(element=null) {
                         console.log(lazyElement.parentElement);
                     }
                     lazyImageObserver.unobserve(lazyElement);
-                    if (url) {
-                        console.log(`Lazy-loaded image: ${url}`);
-                    }
                 }
             });
         }, {
@@ -123,8 +119,37 @@ function lazyLoadImages(element=null) {
     }
 }
 
+// This function is used to track the user's position in the default "rows" viewing mode.
+function scrollSpy() {
+    let modules = [].slice.call(document.querySelectorAll(".result[data-key]"));
+    if ("IntersectionObserver" in window) {
+        let moduleObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    let module = entry.target;
+                    let key = module.dataset.key;
+                    setGetParam('key', key);
+                }
+            });
+        }, {
+            // when the top of the module is 60% from the bottom of the window
+            rootMargin: "0px 0px -60% 0px"
+        });
+        modules.forEach(function(module) {
+            moduleObserver.observe(module);
+        });
+    }
+}
+
 $(function() {
     console.log('base.js');
+
+    let searchParams = new URLSearchParams(window.location.search);
+    let hasDisplayOption = searchParams.has('display');
+    let displayOption = (hasDisplayOption ? searchParams.get('display') : 'rows');
+    if (displayOption === 'rows') {
+        scrollSpy();
+    }
 
     // any page
     initializeListeners();
