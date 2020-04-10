@@ -24,7 +24,7 @@
                 </div>
             {% endfor %}
         {% elif occurrence.image and not occurrence.images.all|length %}
-            <div class="img-container">
+            <div class="img-container" style="max-width: 44%">
                 {% image_card occurrence.image %}
             </div>
         {% endif %}
