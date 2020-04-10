@@ -80,7 +80,7 @@ function lazyLoadImages(element=null) {
                 }
             });
         }, {
-            rootMargin: "0px 0px 500px 0px"
+            rootMargin: "0px 0px 999px 0px"
         });
         lazyImages.forEach(function(lazyImage) {
             lazyImageObserver.observe(lazyImage);
