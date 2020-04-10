@@ -26,35 +26,35 @@
     <div class="serp-container">
         {% block list %}
             {% if object_list|length %}
-                <div id="slider" class="refinements-container side closed">
-                    {% crispy search_filter_form %}
-                </div>
-                <button id="sliderToggle" class="toggle-button btn btn-md btn-outline-black">
-                    <i class="fas fa-filter"></i>
-                </button>
-                <div class="results-container">
-                    {% block page_header %}
-                    {% endblock %}
-                    {% with display_option=request.GET.display %}
-                        <div class="display-options">
-                            {% with selected_option=display_option %}
-                                <span class="display-option">
+                {% with display_option=request.GET.display %}
+                    <div id="slider" class="refinements-container side closed">
+                        {% crispy search_filter_form %}
+                    </div>
+                    <button id="sliderToggle" class="toggle-button btn btn-md btn-outline-black">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <div class="display-options">
+                        {% with selected_option=display_option %}
+                            <span class="display-option">
                                 <input type="radio" id="2pane-option" name="display" value="2pane"
                                         {% if selected_option == '2pane' %} checked{% endif %} />
                                 <label for="2pane-option"><i class="fas fa-list"></i></label>
                             </span>
-                                <span class="display-option">
+                            <span class="display-option">
                                 <input type="radio" id="rows-option" name="display" value="rows"
                                         {% if selected_option == 'rows' or not selected_option %} checked{% endif %} />
                                 <label for="rows-option"><i class="fas fa-bars"></i></label>
                             </span>
-                                <span class="display-option">
+                            <span class="display-option">
                                 <input type="radio" id="timeline-option" name="display" value="timeline"
                                         {% if selected_option == 'timeline' %} checked{% endif %} />
                                 <label for="timeline-option"><i class="fas fa-columns"></i></label>
                             </span>
-                            {% endwith %}
-                        </div>
+                        {% endwith %}
+                    </div>
+                    <div class="results-container">
+                        {% block page_header %}
+                        {% endblock %}
                         {% if display_option == '2pane' %}
                             <div class="two-pane-container">
                                 <div class="results result-cards">
@@ -115,8 +115,8 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
-                    {% endwith %}
-                </div>
+                    </div>
+                {% endwith %}
             {% else %}
                 <div class='row'>
                     <div class='col-12 col-md-6 mx-auto my-5 py-5'>

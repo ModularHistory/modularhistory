@@ -82,6 +82,15 @@ $refinements-container-bg-color: whitesmoke;
       padding-right: 0.8rem;
     }
   }
+  .display-options {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 25vh;
+    label {
+      margin: 0;
+    }
+  }
 }
 
 .refinements-container {
@@ -285,13 +294,6 @@ $refinements-container-bg-color: whitesmoke;
       }
     }
   }
-}
-
-.display-options {
-  position: absolute;
-  right: 0;
-  top: 0;
-  float: right;
 }
 
 .pagination {

@@ -144,6 +144,14 @@ body,
         font-size: 0.7rem;
         padding-left: 0.8rem;
         padding-right: 0.8rem; } }
+  .serp-container .display-options {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 25vh; }
+    .serp-container .display-options label {
+      margin: 0; }
+
 .refinements-container#slider {
   -webkit-transform: none;
   transform: none;
@@ -283,12 +291,6 @@ body,
           margin-bottom: 1rem; }
         .results-container .results.result-cards .card.image-card .image-credit {
           display: none; }
-
-.display-options {
-  position: absolute;
-  right: 0;
-  top: 0;
-  float: right; }
 
 .pagination {
   margin-top: 1.5rem;
