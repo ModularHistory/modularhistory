@@ -1,7 +1,9 @@
 const mobile_width = 660;
 
-function initializeListeners() {
-    $('.display-source').click(function(event) {
+function initializeListeners(element=null) {
+    let scope = element ? element : document;
+    console.log(`Initializing listeners for ${scope}.`);
+    $(scope).find('.display-source').unbind('click').on('click', function(event) {
         console.log('Displaying source.');
         let href = $( this ).attr('href');
         let open_in_modal = false;
@@ -29,6 +31,7 @@ function initializeListeners() {
 }
 
 function setGetParam(key, value) {
+    console.log(`Setting ${key} param to ${value}.`);
     if (history.pushState) {
         let params = new URLSearchParams(window.location.search);
         params.set(key, value);
@@ -38,24 +41,50 @@ function setGetParam(key, value) {
     }
 }
 
-function lazyLoadImages() {
-    let lazyImages = [].slice.call(document.querySelectorAll("img.lazy,.lazy-bg"));
+function lazyLoadImages(element=null) {
+    let scope = element ? element : document;
+    console.log(`Lazy-loading images in ${scope}.`);
+    let lazyImages = [].slice.call(scope.querySelectorAll("img.lazy,.lazy-bg"));
     if ("IntersectionObserver" in window) {
         let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
             entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
-                    let lazyImage = entry.target;
-                    if (lazyImage.classList.contains('lazy-bg')) {
-                        lazyImage.classList.remove("lazy-bg");
-                        lazyImage.style.backgroundImage = `url("${lazyImage.dataset.img}")`;
-                    } else {
-                        lazyImage.src = lazyImage.dataset.src;
-                        // lazyImage.srcset = lazyImage.dataset.srcset;
+                    let lazyElement = entry.target;
+                    let url;
+                    let hasLazyBg = lazyElement.classList.contains('lazy-bg');
+                    let isImage = 'src' in lazyElement.dataset;
+                    if (hasLazyBg) {
+                        url = lazyElement.dataset.img;
+                        if (!url) {
+                            let key = lazyElement.parentElement.dataset.key;
+                            console.log(`no URL could be retrieved for lazy-bg ${lazyElement.textContent} ${key}`);
+                        }
+                        lazyElement.classList.remove("lazy-bg");
+                        lazyElement.style.backgroundImage = `url("${url}")`;
+                        console.log(`Lazy-loaded image: ${url}`);
+                    } else if (isImage) {
+                        let lazyImage = lazyElement;
+                        url = lazyImage.dataset.src;
+                        if (!url) {
+                            console.log(`no URL could be retrieved for ${lazyImage} ${lazyImage.textContent}`);
+                        }
+                        lazyImage.src = url;
+                        // lazyElement.srcset = lazyElement.dataset.srcset;
                         lazyImage.classList.remove("lazy");
-                        lazyImageObserver.unobserve(lazyImage);
+                        // lazyImageObserver.unobserve(lazyImage);
+                    } else {
+                        console.log('What is this?');
+                        console.log(lazyElement.dataset);
+                        console.log(lazyElement.parentElement);
+                    }
+                    lazyImageObserver.unobserve(lazyElement);
+                    if (url) {
+                        console.log(`Lazy-loaded image: ${url}`);
                     }
                 }
             });
+        }, {
+            rootMargin: "0px 0px 500px 0px"
         });
         lazyImages.forEach(function(lazyImage) {
             lazyImageObserver.observe(lazyImage);
@@ -157,8 +186,8 @@ $(function() {
                 // Initial load of view-detail
                 let detail_href = active_result.attr('data-href') + 'part';
                 $('.view-detail').load(detail_href, function() {
-                    initializeListeners();
-                    lazyLoadImages();
+                    initializeListeners(this);
+                    lazyLoadImages(this);
                 });
             }
 
@@ -193,8 +222,8 @@ $(function() {
                         });
                         modal.modal();
                     }
-                    initializeListeners();
-                    lazyLoadImages();
+                    initializeListeners(this);
+                    lazyLoadImages(this);
                 });
                 setGetParam('key', key);
             });

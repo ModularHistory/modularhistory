@@ -16,11 +16,11 @@
 {% block detail_url %}{{ image|get_detail_url }}{% endblock %}
 
 {% block top %}
-    <div class="view overlay" style="max-width: {{ image.width }}px; max-height: 97vh;">
+    <div class="view overlay" style="max-width: {{ image.width }}px; max-height: {{ image.height }}px;">
         <img class="card-img-top lazy"
              src="{% static "img-placeholder.jpg" %}"
              data-src="{{ image.src_url }}"
-             alt="{{ image.image.name }}">
+             alt="{{ image.image.name }}" />
         <a href="#" onclick="return false">
             <div class="mask rgba-white-slight"></div>
         </a>

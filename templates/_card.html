@@ -9,10 +9,10 @@
     {% endblock %}
     {% if not object|is_instance:'images.Image' %}
         {% with image=object.image %}
-            <div class="img-bg lazy-bg"
+            <div{% if image %} class="img-bg lazy-bg"
                  data-img="{{ image.src_url }}"
                  style="background-position: {{ image.bg_img_position }};
-                         background-image: url('{{ image.src_url }}')">
+                         background-image: url('{{ image.src_url }}')"{% endif %}>
             </div>
         {% endwith %}
     {% endif %}

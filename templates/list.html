@@ -107,7 +107,8 @@
                                             {% elif object|is_instance:"sources.Source" %}
                                                 {% source_detail object %}
                                             {% else %}
-                                                <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
+                                                <a href='{{ object.get_absolute_url }}'>{{ object }}</a>
+                                                | {{ object|class_name }}
                                             {% endif %}
                                         {% endwith %}
                                     </div>
