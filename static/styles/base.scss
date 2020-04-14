@@ -119,3 +119,122 @@ ul.tags {
     display: inline;
   }
 }
+
+
+// horizontal timeline styles
+
+ul.timeline {
+  list-style-type: none;
+  margin: 0;
+  display: -webkit-box;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 50px 30px;
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  ul::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+  ul .year {
+    color: #ffd402;
+    background: #3f444c;
+    display: block;
+    position: relative;
+    padding-left: 24px;
+    line-height: 24px;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  ul .year::before {
+    content: "";
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    background: #ffd402;
+    border-radius: 50%;
+    left: -24px;
+    top: calc( (40 - 24) / 2 * -1px );
+  }
+  ul .year.new {
+    border-radius: 0 24px 24px 0;
+  }
+  ul .year.new::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    display: block;
+    box-sizing: border-box;
+    border: 20px solid #3f444c;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    position: absolute;
+    right: -30px;
+    top: -9.5px;
+  }
+  ul .content {
+    border-left: 8px solid #ffd402;
+    margin-left: -8px;
+    padding: 15px 0;
+    padding-right: 24px;
+  }
+  ul .content > li {
+    padding-left: 20px;
+    border-bottom: 4px solid #eef4f7;
+    padding-bottom: 8px;
+    position: relative;
+    margin-left: -8px;
+  }
+  ul .content > li:last-of-type {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  ul .content > li::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #eef4f7;
+    left: 2px;
+    top: 8px;
+  }
+}
+
+ul.timeline > li {
+  width: calc( 100% / 6 );
+}
+ul.timeline > li:nth-of-type(odd) > .content {
+  -webkit-transform: translateY(calc(-100% - 24px));
+  transform: translateY(calc(-100% - 24px));
+}
+
+
+@media screen and (max-width: 1140px) {
+  ul.timeline > li {
+    width: calc( 100% / 4 );
+  }
+}
+@media screen and (max-width: 991px) {
+  ul.timeline > li {
+    width: calc( 100% / 2 );
+  }
+}
+@media screen and (max-width: 767px) {
+  ul.timeline {
+    display: block;
+  }
+  ul.timeline > li {
+    width: 100%;
+  }
+  ul.timeline > li:nth-of-type(odd) .content {
+    -webkit-transform: none;
+    transform: none;
+  }
+}

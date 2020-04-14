@@ -112,9 +112,11 @@
                                             {% endif %}
                                         {% endwith %}
                                     </div>
-                                    <hr />
+                                    <hr style="clear: both" />
                                 {% endfor %}
                             </div>
+                        {% elif display_option == 'timeline' %}
+                            <p>Not yet implemented</p>
                         {% endif %}
                     </div>
                 {% endwith %}

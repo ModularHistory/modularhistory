@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
+    'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'decouple',
@@ -115,6 +116,8 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # https://github.com/yandex/django_replicated
+    'django_replicated.middleware.ReplicationMiddleware',
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -173,6 +176,13 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'localhost',
     },
+    'slave': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'slave',
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': 'localhost',
+    },
     'backup': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'backup',
@@ -181,6 +191,13 @@ DATABASES = {
         'HOST': 'localhost',
     }
 }
+
+# https://github.com/yandex/django_replicated
+from django_replicated.settings import *
+REPLICATED_DATABASE_SLAVES = ['slave']
+DATABASE_ROUTERS = ['django_replicated.router.ReplicationRouter']
+REPLICATED_DATABASE_DOWNTIME = 30
+
 # https://django-dbbackup.readthedocs.io/en/latest/installation.html
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': config('DBBACKUP_STORAGE_LOCATION', default=None)}
