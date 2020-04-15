@@ -199,6 +199,12 @@ from django_replicated.settings import *
 REPLICATED_DATABASE_SLAVES = ['slave']
 DATABASE_ROUTERS = ['django_replicated.router.ReplicationRouter']
 REPLICATED_DATABASE_DOWNTIME = 30
+REPLICATED_VIEWS_OVERRIDES = {
+    '/admin/*': 'master',
+    # 'api-store-event': 'slave',
+    # 'app.views.do_something': 'master',
+    # '/users/': 'slave',
+}
 
 # https://django-dbbackup.readthedocs.io/en/latest/installation.html
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
