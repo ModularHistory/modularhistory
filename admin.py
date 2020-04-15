@@ -1,16 +1,15 @@
 from django.contrib.admin import AdminSite as BaseAdminSite
 from django.contrib.contenttypes.models import ContentType
 # from django.utils.translation import gettext_lazy as _
-# from django_celery_beat.models import (
-#     PeriodicTask, PeriodicTasks, CrontabSchedule, IntervalSchedule, SolarSchedule
-# )
-# from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTaskForm
-# from django_celery_results.models import TaskResult
-# from django_celery_results.admin import TaskResultAdmin
+from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTask
+from django_celery_beat.admin import (
+    PeriodicTask, PeriodicTaskAdmin,
+    CrontabSchedule, IntervalSchedule, SolarSchedule
+)
+from django_celery_results.admin import TaskResult, TaskResultAdmin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
-from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTask
 from massadmin.massadmin import mass_change_selected
 from nested_admin.nested import (
     NestedModelAdmin,
@@ -173,6 +172,11 @@ admin_site.register(ContentType, ContentTypeAdmin)
 admin_site.register(FlatPage, CustomFlatPageAdmin)
 
 admin_site.register(PeriodicTask, PeriodicTaskAdmin)
+admin_site.register(SolarSchedule)
+admin_site.register(IntervalSchedule)
+admin_site.register(CrontabSchedule)
+
+admin_site.register(TaskResult, TaskResultAdmin)
 
 admin_site.register(UserSocialAuth, UserSocialAuthOption)
 admin_site.register(Nonce, NonceOption)
