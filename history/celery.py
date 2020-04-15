@@ -25,13 +25,13 @@ def debug_task(self):
     print('Request: {0!r}'.format(self.request))
 
 
-@app.task(bind=True)
-def debug_task(self):
-    print('Request: {0!r}'.format(self.request))
-
-    RUN_AT_TIMES = ['6:00', '18:00']
-    schedule = Schedule(run_at_times=RUN_AT_TIMES)
-    code = 'my_app.Backup'
-
-    def do(self):
-        management.call_command('dbbackup')
+# @app.task(bind=True)
+# def debug_task(self):
+#     print('Request: {0!r}'.format(self.request))
+#
+#     RUN_AT_TIMES = ['6:00', '18:00']
+#     schedule = Schedule(run_at_times=RUN_AT_TIMES)
+#     code = 'my_app.Backup'
+#
+#     def do(self):
+#         management.call_command('dbbackup')
