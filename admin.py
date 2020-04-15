@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
+from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTask
 from massadmin.massadmin import mass_change_selected
 from nested_admin.nested import (
     NestedModelAdmin,
@@ -170,6 +171,8 @@ admin_site.register(Site)
 admin_site.register(ContentType, ContentTypeAdmin)
 
 admin_site.register(FlatPage, CustomFlatPageAdmin)
+
+admin_site.register(PeriodicTask, PeriodicTaskAdmin)
 
 admin_site.register(UserSocialAuth, UserSocialAuthOption)
 admin_site.register(Nonce, NonceOption)

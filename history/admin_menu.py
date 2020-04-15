@@ -24,7 +24,14 @@ class AdminMenu(Menu):
         self.children += [
             items.MenuItem(_('Dashboard'), reverse('admin:index')),
             items.Bookmarks(),
-            items.AppList(title='Applications', exclude=['django.contrib.*', 'social_django.*']),
+            items.AppList(
+                title='Applications',
+                exclude=[
+                    'django.contrib.*',
+                    'social_django.*',
+                    'django_celery_*'
+                ]
+            ),
             items.MenuItem('Entities', children=[
                 items.MenuItem('People', '/admin/entities/person/'),
                 items.MenuItem('Organizations', '/admin/entities/organization/'),
