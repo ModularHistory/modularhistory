@@ -56,6 +56,10 @@ class AdminMenu(Menu):
             ]),
             items.MenuItem('Topics', '/admin/topics/topic/'),
             items.MenuItem('Places', '/admin/places/place/'),
+            items.MenuItem('Tasks', children=[
+                items.MenuItem('Periodic tasks', '/admin/django_celery_beat/periodictask/'),
+                items.MenuItem('Task results', '/admin/django_celery_results/taskresult/')
+            ])
         ]
 
     def init_with_context(self, context):
