@@ -471,6 +471,8 @@ THUMBNAIL_PROCESSORS = (
 # celery settings
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
+# CELERY_BROKER_URL = 'amqp://guest:**@localhost:5672'
+CELERY_BROKER_URL = 'amqp://localhost'
 
 # TODO: Look into using caching
 # CELERY_CACHE_BACKEND = 'default'
