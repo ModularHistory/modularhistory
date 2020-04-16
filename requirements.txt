@@ -58,6 +58,7 @@ selenium==3.141.0
 sigfig==1.1.8
 six==1.14.0
 social-auth-app-django==3.1.0
+supervisor==4.1.0
 sqlparse==0.3.1
 tabulate==0.8.7
 termcolor==1.1.0
