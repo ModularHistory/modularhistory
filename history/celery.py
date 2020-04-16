@@ -3,6 +3,8 @@ from __future__ import absolute_import, unicode_literals
 import os
 from glob import glob
 
+# noinspection PyPackageRequirements
+from decouple import config
 from celery import Celery
 from django.core import management
 from paramiko import SSHClient
@@ -34,24 +36,28 @@ def debug(self):
 def back_up_db(self):
     """Create a database backup file."""
     print(f'Received request to back up database: {self.request}')
+    if not settings.DEBUG:
+        # Create backup file
+        management.call_command('dbbackup')
 
-    # Create backup file
-    management.call_command('dbbackup')
+        # Select latest backup file
+        os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
+        files = glob('*sql')  # .psql or .sql files
+        if not files:
+            return None
+        backup_file = max(files, key=os.path.getmtime)
 
-    # Select latest backup file
-    os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
-    files = glob("*sql")  # .psql or .sql files
-    if not files:
-        return None
-    backup_file = max(files, key=os.path.getmtime)
+        # Connect to remote backup server
+        server = config('REMOTE_BACKUP_SERVER', default=None)
+        username = config('REMOTE_BACKUP_SERVER_USERNAME', default=None)
+        password = config('REMOTE_BACKUP_SERVER_PASSWORD', default=None)
+        ssh_client = SSHClient()
+        ssh_client.load_system_host_keys()
+        # ssh_client.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
+        if server:
+            ssh_client.connect(server, username=username, password=password)
+            # ssh_client.connect(server, username='username', password='password')
 
-    # Connect to Jacob's MacBook
-    ssh = SSHClient()
-    ssh.load_system_host_keys()
-    # ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
-    ssh.connect('smb://192.168.12.8')
-    # ssh.connect(server, username='username', password='password')
-
-    with SCPClient(ssh.get_transport()) as scp:
-        scp.put(backup_file, f'~/history/history/backups/{backup_file}')
-        # scp.get('test2.txt')
+            with SCPClient(ssh_client.get_transport()) as scp_client:
+                scp_client.put(backup_file, f'~/history/history/backups/{backup_file}')
+                # scp_client.get('test2.txt')
