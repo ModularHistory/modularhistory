@@ -107,7 +107,10 @@ class HTMLField(MceHTMLField):
         value = re.sub(r'<p>&nbsp;<\/p>', '', value)
         html = value
         if self.processor:
-            html = self.processor(html)
+            try:
+                html = self.processor(html)
+            except Exception as e:
+                print(f'Unable to process HTML; encountered exception: {e}')
         return HTML(value, processed_value=html)
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
