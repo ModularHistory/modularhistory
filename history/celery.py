@@ -2,10 +2,11 @@ from __future__ import absolute_import, unicode_literals
 
 import os
 from glob import glob
+from sys import stderr
 
+from celery import Celery
 # noinspection PyPackageRequirements
 from decouple import config
-from celery import Celery
 from django.core import management
 from paramiko import SSHClient
 from scp import SCPClient
@@ -39,7 +40,13 @@ def back_up_db(self):
     if not settings.DEBUG:
         print(f'Backing up database....')
         # Create backup file
-        management.call_command('dbbackup')
+        import getpass
+        print(f'user: {getpass.getuser()}', file=stderr)
+        try:
+            management.call_command('dbbackup')
+        except Exception as e:
+            print(f'{e}', file=stderr)
+            os.chdir(f'{settings.BASE_DIR}')
         # Select latest backup file
         os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
         files = glob('*sql')  # .psql or .sql files

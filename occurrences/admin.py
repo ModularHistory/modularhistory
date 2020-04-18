@@ -38,8 +38,12 @@ class ImagesInline(TabularInline):
 
 class RelatedQuotesInline(TabularInline):
     model = models.Occurrence.related_quotes.through
-    extra = 1
     autocomplete_fields = ['quote']
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.related_quotes.count():
+            return 0
+        return 1
 
 
 class RelatedTopicsInline(TabularInline):
