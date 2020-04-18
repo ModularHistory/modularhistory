@@ -1,10 +1,12 @@
 import re
+from sys import stderr
 from typing import Callable, Optional, Union
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
 from tinymce.models import HTMLField as MceHTMLField
-from django.core.exceptions import ObjectDoesNotExist
+
 from history.structures.html import HTML
 
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
@@ -36,7 +38,7 @@ def process(_, html: str) -> str:
             try:
                 citation = Citation.objects.get(pk=key)
             except ObjectDoesNotExist:
-                print(f'UNABLE TO RETRIEVE CITATION: {key}')
+                print(f'UNABLE TO RETRIEVE CITATION: {key}', file=stderr)
                 continue
             html_id = citation.html_id
             citation_html = (f'<a href="#{html_id}" title="{citation}">'
@@ -110,7 +112,7 @@ class HTMLField(MceHTMLField):
             try:
                 html = self.processor(html)
             except RecursionError as e:
-                print(f'Unable to process HTML; encountered exception: {e}')
+                print(f'Unable to process HTML; encountered exception: {e}', file=stderr)
         return HTML(value, processed_value=html)
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects

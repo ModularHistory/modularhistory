@@ -1,4 +1,5 @@
 import re
+from sys import stderr
 from typing import List, Optional, TYPE_CHECKING
 
 from bs4 import BeautifulSoup
@@ -238,7 +239,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 ct = ContentType.objects.get(id=polymorphic_ctype_id)
                 return ct.model_class().objects.get(id=self.id)
             except Exception as e:
-                print(f'EXCEPTION: Trying to get child object for {self} resulted in: {e}')
+                print(f'Encountered exception while trying to get child object for {self}: {e}',
+                      file=stderr)
         return self
 
     @property

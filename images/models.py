@@ -1,11 +1,13 @@
+from sys import stderr
 from typing import Optional
 
 import pafy
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import SafeText, mark_safe
-from image_cropping import ImageRatioField
 from easy_thumbnails.files import get_thumbnailer
+from image_cropping import ImageRatioField
+
 from history.fields import HTMLField
 from history.fields.file_field import upload_to
 from history.models import Model, DatedModel, TaggableModel, SearchableMixin
@@ -88,7 +90,8 @@ class Image(MediaModel):
                 'detail': True,
             }).url
         except KeyError as e:
-            print(f'>>> KeyError: {e}')  # TODO: Send email to admins about the error. Figure out why this happens.
+            # TODO: Send email to admins about the error. Figure out why this happens.
+            print(f'KeyError: {e}', file=stderr)
             return None
 
     @property
