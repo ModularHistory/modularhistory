@@ -10,7 +10,7 @@ from tinymce.models import HTMLField as MceHTMLField
 from history.structures.html import HTML
 
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
-citation_key_regex = r'{{\ ?citation:\ ?(.+?)\ ?}}'
+citation_key_regex = r'\ ?{{\ ?citation:\ ?(.+?)\ ?}}'
 source_key_regex = r'{{\ ?source:\ ?(.+?)\ ?}}'
 
 
