@@ -16,6 +16,7 @@ def process(_, html: str) -> str:
     if '{{' in html:
         from images.models import Image
         from sources.models import Source, Citation
+        # Process images
         for match in re.finditer(image_key_regex, html):
             key = match.group(1)
             image = Image.objects.get(key=key)
@@ -28,6 +29,7 @@ def process(_, html: str) -> str:
             if image.width < 500:
                 image_html = f'<div style="text-align: center">{image_html}</div>'
             html = html.replace(match.group(0), image_html)
+        # Process citations
         for match in re.finditer(citation_key_regex, html):
             key = match.group(1)
             try:
@@ -36,6 +38,7 @@ def process(_, html: str) -> str:
             except ObjectDoesNotExist:
                 citation_html = f'[UNABLE TO RETRIEVE CITATION WITH PK: {key}]'
             html = html.replace(match.group(0), citation_html)
+        # Process sources
         for match in re.finditer(source_key_regex, html):
             key = match.group(1)
             source = Source.objects.get(pk=key)

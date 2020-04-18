@@ -37,16 +37,16 @@ def back_up_db(self):
     """Create a database backup file."""
     print(f'Received request to back up database: {self.request}')
     if not settings.DEBUG:
+        print(f'Backing up database....')
         # Create backup file
         management.call_command('dbbackup')
-
         # Select latest backup file
         os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
         files = glob('*sql')  # .psql or .sql files
         if not files:
+            print(f'Could not find a db backup file.')
             return None
         backup_file = max(files, key=os.path.getmtime)
-
         # Connect to remote backup server
         server = config('REMOTE_BACKUP_SERVER', default=None)
         username = config('REMOTE_BACKUP_SERVER_USERNAME', default=None)
@@ -55,9 +55,10 @@ def back_up_db(self):
         ssh_client.load_system_host_keys()
         # ssh_client.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
         if server:
+            print(f'Connecting to remote backup location.')
             ssh_client.connect(server, username=username, password=password)
             # ssh_client.connect(server, username='username', password='password')
-
             with SCPClient(ssh_client.get_transport()) as scp_client:
                 scp_client.put(backup_file, f'~/history/history/backups/{backup_file}')
                 # scp_client.get('test2.txt')
+            print(f'Completed remote db backup.')

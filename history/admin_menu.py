@@ -49,6 +49,10 @@ class AdminMenu(Menu):
                 items.MenuItem('All', '/admin/sources/source/'),
                 items.MenuItem('Articles', '/admin/sources/article/'),
                 items.MenuItem('Books', '/admin/sources/book/'),
+                items.MenuItem('Citations', '/admin/sources/citation/'),
+                items.MenuItem('Collections', '/admin/sources/collection/'),
+                items.MenuItem('Files', '/admin/sources/sourcefile/'),
+                items.MenuItem('Repositories', '/admin/sources/repository/'),
             ]),
             items.MenuItem('Images', children=[
                 items.MenuItem('Images', '/admin/images/image/'),
@@ -56,6 +60,7 @@ class AdminMenu(Menu):
             ]),
             items.MenuItem('Topics', '/admin/topics/topic/'),
             items.MenuItem('Places', '/admin/places/place/'),
+            items.MenuItem('Pages', '/admin/flatpages/flatpage/'),
             items.MenuItem('Tasks', children=[
                 items.MenuItem('Periodic tasks', '/admin/django_celery_beat/periodictask/'),
                 items.MenuItem('Task results', '/admin/django_celery_results/taskresult/')
