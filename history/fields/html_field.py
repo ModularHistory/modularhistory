@@ -31,19 +31,17 @@ def process(_, html: str) -> str:
             html = html.replace(match.group(0), image_html)
         # Process citations
         for match in re.finditer(citation_key_regex, html):
+            key = match.group(1)
+            print(f'Found match: {match.group(0)}')
             try:
-                key = match.group(1)
-                print(f'Found match: {match.group(0)}')
-                try:
-                    citation = Citation.objects.get(pk=key)
-                    citation_html = (f'<a href="#{citation.html_id}" title="{citation}">'
-                                     f'<sup>{citation.number}</sup>'
-                                     f'</a>')
-                except ObjectDoesNotExist:
-                    citation_html = f'[UNABLE TO RETRIEVE CITATION: {key}]'
-                html = html.replace(match.group(0), citation_html)
-            except Exception as e:
-                print(f'Could not process citation in HTML; encountered exception: {e}')
+                citation = Citation.objects.get(pk=key)
+            except ObjectDoesNotExist:
+                print(f'UNABLE TO RETRIEVE CITATION: {key}')
+                continue
+            citation_html = (f'<a href="#{citation.html_id}" title="{citation}">'
+                             f'<sup>{citation.number}</sup>'
+                             f'</a>')
+            html = html.replace(match.group(0), citation_html)
         # Process sources
         for match in re.finditer(source_key_regex, html):
             key = match.group(1)
