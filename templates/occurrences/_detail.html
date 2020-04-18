@@ -64,11 +64,13 @@
 {% endif %}
 {% if occurrence.citations.all|length %}
     <footer class="footer sources-footer">
-        {% for citation in occurrence.citations.all %}
-            <div class="source">
-                {{ citation.html }}
-            </div>
-        {% endfor %}
+        <ol class="citations">
+            {% for citation in occurrence.citations.all %}
+                <li class="source" id="{{ citation.html_id }}">
+                    {{ citation.html }}
+                </li>
+            {% endfor %}
+        </ol>
     </footer>
 {% endif %}
 <a class="edit-object-button" target="_blank" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>

@@ -130,6 +130,10 @@ class Citation(Model):
         return mark_safe(f'<span class="citation">{html}</span>')
 
     @property
+    def html_id(self) -> str:
+        return f'citation-{self.pk}'
+
+    @property
     def number(self):
         return self.position + 1
 

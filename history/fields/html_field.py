@@ -34,7 +34,9 @@ def process(_, html: str) -> str:
             key = match.group(1)
             try:
                 citation = Citation.objects.get(pk=key)
-                citation_html = f'<a href="" title="{citation}"><sup>{citation.number}</sup></a>'
+                citation_html = (f'<a href="#{citation.html_id}" title="{citation}">'
+                                 f'<sup>{citation.number}</sup>'
+                                 f'</a>')
             except ObjectDoesNotExist:
                 citation_html = f'[UNABLE TO RETRIEVE CITATION WITH PK: {key}]'
             html = html.replace(match.group(0), citation_html)
