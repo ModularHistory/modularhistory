@@ -201,6 +201,7 @@ DATABASE_ROUTERS = ['django_replicated.router.ReplicationRouter']
 REPLICATED_DATABASE_DOWNTIME = 30
 REPLICATED_VIEWS_OVERRIDES = {
     '/admin/*': 'master',
+    '/history/*': 'master',  # TODO: probably should use slave eventually
     # 'api-store-event': 'slave',
     # 'app.views.do_something': 'master',
     # '/users/': 'slave',

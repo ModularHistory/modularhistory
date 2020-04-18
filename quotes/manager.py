@@ -14,7 +14,7 @@ class Manager(BaseManager):
             topic_ids: Optional[List[int]] = None,
             rank: bool = False,
             suppress_unverified: bool = True,
-            db: str = 'slave'
+            db: str = 'default'
     ) -> QuerySet:
         qs = self._queryset_class(
             model=self.model, using=db, hints=self._hints
