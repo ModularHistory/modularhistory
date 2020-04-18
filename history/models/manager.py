@@ -27,9 +27,13 @@ class Manager(BaseManager):
             entity_ids: Optional[List[int]] = None,
             topic_ids: Optional[List[int]] = None,
             rank: bool = False,
-            suppress_unverified: bool = True
+            suppress_unverified: bool = True,
+            db: str = 'slave'
     ) -> Union[QuerySet, PolymorphicQuerySet]:
-        qs = self.get_queryset().filter(hidden=False)
+        qs = self._queryset_class(
+            model=self.model, using=db, hints=self._hints
+        ).filter(hidden=False)
+
         searchable_fields = self.model.get_searchable_fields()
         if searchable_fields:
             # q = Q()
@@ -72,7 +76,8 @@ class Manager(BaseManager):
         lesser = qs.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()
         if not greater and not lesser:
             first_item = qs.first()
-            print(f'No items with {datetime_attr} attribute; returning first item instead: {first_item}', file=stderr)
+            print(f'No items with {datetime_attr} attribute; '
+                  f'returning first item instead: {first_item}', file=stderr)
             return first_item
         elif greater and lesser:
             greater_diff = abs(getattr(greater, datetime_attr) - datetime_value)

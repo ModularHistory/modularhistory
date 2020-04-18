@@ -13,9 +13,12 @@ class Manager(BaseManager):
             entity_ids: Optional[List[int]] = None,
             topic_ids: Optional[List[int]] = None,
             rank: bool = False,
-            suppress_unverified: bool = True
+            suppress_unverified: bool = True,
+            db: str = 'slave',
     ) -> QuerySet:
-        qs = self.get_queryset().filter(hidden=False)
+        qs = self._queryset_class(
+            model=self.model, using=db, hints=self._hints
+        ).filter(hidden=False)
 
         if suppress_unverified:
             qs = qs.filter(verified=True)

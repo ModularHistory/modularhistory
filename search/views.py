@@ -87,6 +87,8 @@ class SearchResultsView(ListView):
         request = self.request
         query = request.GET.get('query', None)
 
+        db = 'slave' if not request.user.is_superuser else 'default'
+
         sort_by_relevance = request.GET.get('ordering') == 'relevance'
         self.sort_by_relevance = sort_by_relevance
 
@@ -98,7 +100,7 @@ class SearchResultsView(ListView):
         year_type = request.GET.get('start_year_1', None)
         if start_year and year_type:
             pass
-            # TODO: Add methods to historic datetime to create datetime object from year and year type
+            # TODO: Create historic datetime object from year and year type
         end_year = request.GET.get('end_year_0', None)
         entity_ids = request.GET.getlist('entities', None)
         topic_ids = request.GET.getlist('topics', None)
@@ -107,16 +109,26 @@ class SearchResultsView(ListView):
             ct = ContentType.objects.get_for_id(ct_id).model_class()
             content_types.append(ct)
 
+        search_kwargs = {
+            'query': query,
+            'start_year': start_year,
+            'end_year': end_year,
+            'rank': sort_by_relevance,
+            'suppress_unverified': suppress_unverified,
+            'db': db
+        }
+
         # Occurrences
         if Occurrence in content_types or not content_types:
             occurrence_results = Occurrence.objects.search(
-                query=query,
-                start_year=start_year,
-                end_year=end_year,
+                **search_kwargs,
+                # query=query,
+                # start_year=start_year,
+                # end_year=end_year,
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
-                rank=sort_by_relevance,
-                suppress_unverified=suppress_unverified
+                # rank=sort_by_relevance,
+                # suppress_unverified=suppress_unverified
             )
         else:
             occurrence_results = Occurrence.objects.none()
@@ -124,13 +136,14 @@ class SearchResultsView(ListView):
         # Quotes
         if Quote in content_types or not content_types:
             quote_results = Quote.objects.search(
-                query=query,
-                start_year=start_year,
-                end_year=end_year,
+                **search_kwargs,
+                # query=query,
+                # start_year=start_year,
+                # end_year=end_year,
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
-                rank=sort_by_relevance,
-                suppress_unverified=suppress_unverified
+                # rank=sort_by_relevance,
+                # suppress_unverified=suppress_unverified
             )
             if occurrence_results:
                 quote_results = quote_results.exclude(related_occurrences__in=occurrence_results)
@@ -140,13 +153,14 @@ class SearchResultsView(ListView):
         # Images
         if Image in content_types or not content_types:
             image_results = Image.objects.search(
-                query=query,
-                start_year=start_year,
-                end_year=end_year,
+                **search_kwargs,
+                # query=query,
+                # start_year=start_year,
+                # end_year=end_year,
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
-                rank=sort_by_relevance,
-                suppress_unverified=suppress_unverified
+                # rank=sort_by_relevance,
+                # suppress_unverified=suppress_unverified
             ).filter(entities=None)
             if occurrence_results:
                 image_results = image_results.exclude(
@@ -161,13 +175,14 @@ class SearchResultsView(ListView):
         # Sources
         if Source in content_types or not content_types:
             source_results = Source.objects.search(
-                query=query,
-                start_year=start_year,
-                end_year=end_year,
+                **search_kwargs,
+                # query=query,
+                # start_year=start_year,
+                # end_year=end_year,
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
-                rank=sort_by_relevance,
-                suppress_unverified=suppress_unverified
+                # rank=sort_by_relevance,
+                # suppress_unverified=suppress_unverified
             )
             # TODO: This was broken by conversion to generic relations with quotes & occurrences
             # source_results = source_results.exclude(
