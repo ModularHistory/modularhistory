@@ -90,7 +90,7 @@ class Citation(Model):
                 html = html.replace(_page_string, page_string)
             else:
                 html += f', {page_string}'
-        if self.source.attributees.exists():
+        if self.pk and self.source.attributees.exists():
             from quotes.models import Quote
             if isinstance(self.content_object, Quote):
                 quote = self.content_object
