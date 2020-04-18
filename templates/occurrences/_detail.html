@@ -4,73 +4,75 @@
 {% load class_name %}
 {% load static %}
 
-<h2 class="text-center card-title">
-    {% if occurrence.date %}
-        {{ occurrence.date_html }}
-    {% endif %}
-</h2>
-<div class="card-text">
-    {% if unpositioned_images|length %}
-        {% for occurrence_image in unpositioned_images %}
-            <div class="img-container" style="max-width: 44%">
-                {% image_card occurrence_image.image %}
-            </div>
-        {% endfor %}
-    {% elif not occurrence.images.all|length %}
-        {% if occurrence.entity_images %}
-            {% for image in occurrence.entity_images %}
+<div class="detail">
+    <h2 class="text-center card-title">
+        {% if occurrence.date %}
+            {{ occurrence.date_html }}
+        {% endif %}
+    </h2>
+    <div class="card-text">
+        {% if unpositioned_images|length %}
+            {% for occurrence_image in unpositioned_images %}
                 <div class="img-container" style="max-width: 44%">
-                    {% image_card image %}
+                    {% image_card occurrence_image.image %}
                 </div>
             {% endfor %}
-        {% elif occurrence.image and not occurrence.images.all|length %}
-            <div class="img-container" style="max-width: 44%">
-                {% image_card occurrence.image %}
+        {% elif not occurrence.images.all|length %}
+            {% if occurrence.entity_images %}
+                {% for image in occurrence.entity_images %}
+                    <div class="img-container" style="max-width: 44%">
+                        {% image_card image %}
+                    </div>
+                {% endfor %}
+            {% elif occurrence.image and not occurrence.images.all|length %}
+                <div class="img-container" style="max-width: 44%">
+                    {% image_card occurrence.image %}
+                </div>
+            {% endif %}
+        {% endif %}
+        <div class="lead">
+            {{ occurrence.summary.html }}
+        </div>
+        {% if occurrence.involved_entities.all|length %}
+            <div>
+                <ul>
+                    {% for entity in occurrence.involved_entities.all %}
+                        <li>
+                            <a class="font-italic" href="{% url 'entities:detail' entity.id %}" target="_blank">
+                                {{ entity }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
         {% endif %}
-    {% endif %}
-    <div class="lead">
-        {{ occurrence.summary.html }}
+        <div>
+            {{ occurrence.description.html }}
+        </div>
     </div>
+    {% if quotes|length %}
+        {% for quote in quotes %}
+            {{ quote.html }}
+        {% endfor %}
+    {% endif %}
+    {% if occurrence.postscript %}
+        {{ occurrence.postscript.html }}
+    {% endif %}
     {% if occurrence.related_topics and occurrence.related_topics.all|length %}
         <ul class="tags">
             {{ occurrence.topic_tags }}
         </ul>
     {% endif %}
-    {% if occurrence.involved_entities.all|length %}
-        <div>
-            <ul>
-                {% for entity in occurrence.involved_entities.all %}
-                    <li>
-                        <a class="font-italic" href="{% url 'entities:detail' entity.id %}" target="_blank">
-                            {{ entity }}
-                        </a>
+    {% if occurrence.citations.all|length %}
+        <footer class="footer sources-footer">
+            <ol class="citations">
+                {% for citation in occurrence.citations.all %}
+                    <li class="source" id="{{ citation.html_id }}">
+                        {{ citation.html }}
                     </li>
                 {% endfor %}
-            </ul>
-        </div>
+            </ol>
+        </footer>
     {% endif %}
-    <div>
-        {{ occurrence.description.html }}
-    </div>
+    <a class="edit-object-button" target="_blank" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>
 </div>
-{% if quotes|length %}
-    {% for quote in quotes %}
-        {{ quote.html }}
-    {% endfor %}
-{% endif %}
-{% if occurrence.postscript %}
-    {{ occurrence.postscript.html }}
-{% endif %}
-{% if occurrence.citations.all|length %}
-    <footer class="footer sources-footer">
-        <ol class="citations">
-            {% for citation in occurrence.citations.all %}
-                <li class="source" id="{{ citation.html_id }}">
-                    {{ citation.html }}
-                </li>
-            {% endfor %}
-        </ol>
-    </footer>
-{% endif %}
-<a class="edit-object-button" target="_blank" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>

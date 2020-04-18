@@ -1,33 +1,35 @@
 {% load get_admin_url %}
 {% load image_card %}
 
-{% if quote.attributee_html %}
-    <p class="lead">
-        {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date.string }}{% endif %}
-    </p>
-{% endif %}
-{% if quote.related_topics and quote.related_topics.all|length %}
-    <ul class="tags">
-        {{ quote.topic_tags }}
-    </ul>
-{% endif %}
-<div class="card-text">
-    {% if quote.image %}
-        <div class="img-container" style="max-width: 44%">
-            {% image_card quote.image %}
-        </div>
+<div class="detail">
+    {% if quote.attributee_html %}
+        <p class="lead">
+            {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date.string }}{% endif %}
+        </p>
     {% endif %}
-    {% if request.user.is_superuser %}
-        <a class="edit-object-button float-right" style="margin-left: 1rem;"
-           target="_blank" href="{{ quote|get_admin_url }}">
-            <i class="fa fa-edit"></i>
-        </a>
+    {% if quote.related_topics and quote.related_topics.all|length %}
+        <ul class="tags">
+            {{ quote.topic_tags }}
+        </ul>
     {% endif %}
-    {{ quote.html }}
-    {% if request.user.is_superuser %}
-        <a class="edit-object-button float-right" style="position: relative; bottom: 2rem; margin-left: 1rem;"
-           target="_blank" href="{{ quote|get_admin_url }}">
-            <i class="fa fa-edit"></i>
-        </a>
-    {% endif %}
+    <div class="card-text">
+        {% if quote.image %}
+            <div class="img-container" style="max-width: 44%">
+                {% image_card quote.image %}
+            </div>
+        {% endif %}
+        {% if request.user.is_superuser %}
+            <a class="edit-object-button float-right" style="margin-left: 1rem;"
+               target="_blank" href="{{ quote|get_admin_url }}">
+                <i class="fa fa-edit"></i>
+            </a>
+        {% endif %}
+        {{ quote.html }}
+        {% if request.user.is_superuser %}
+            <a class="edit-object-button float-right" style="position: relative; bottom: 2rem; margin-left: 1rem;"
+               target="_blank" href="{{ quote|get_admin_url }}">
+                <i class="fa fa-edit"></i>
+            </a>
+        {% endif %}
+    </div>
 </div>

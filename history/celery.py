@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+from getpass import getuser
 from glob import glob
 from sys import stderr
 
@@ -30,7 +31,9 @@ app.autodiscover_tasks()
 
 @app.task(bind=True)
 def debug(self):
+    print('Debugging....')
     print('Request: {0!r}'.format(self.request))
+    print(f'User: {getuser()}', file=stderr)
 
 
 @app.task(bind=True)
@@ -40,13 +43,7 @@ def back_up_db(self):
     if not settings.DEBUG:
         print(f'Backing up database....')
         # Create backup file
-        import getpass
-        print(f'user: {getpass.getuser()}', file=stderr)
-        try:
-            management.call_command('dbbackup')
-        except Exception as e:
-            print(f'{e}', file=stderr)
-            os.chdir(f'{settings.BASE_DIR}')
+        management.call_command('dbbackup')
         # Select latest backup file
         os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
         files = glob('*sql')  # .psql or .sql files
@@ -62,7 +59,7 @@ def back_up_db(self):
         ssh_client.load_system_host_keys()
         # ssh_client.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
         if server:
-            print(f'Connecting to remote backup location.')
+            print(f'Connecting to remote backup location: {server}')
             ssh_client.connect(server, username=username, password=password)
             # ssh_client.connect(server, username='username', password='password')
             with SCPClient(ssh_client.get_transport()) as scp_client:
