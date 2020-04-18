@@ -80,6 +80,7 @@ class HasDateFilter(SimpleListFilter):
 class OccurrenceAdmin(Admin):
     base_model = models.Occurrence
     list_display = (
+        'pk',
         'summary',
         'detail_link',
         'description__truncated',

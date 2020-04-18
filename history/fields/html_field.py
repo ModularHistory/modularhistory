@@ -39,7 +39,7 @@ def process(_, html: str) -> str:
                                      f'<sup>{citation.number}</sup>'
                                      f'</a>')
                 except ObjectDoesNotExist:
-                    citation_html = f'[UNABLE TO RETRIEVE CITATION WITH PK: {key}]'
+                    citation_html = f'[UNABLE TO RETRIEVE CITATION: {key}]'
                 html = html.replace(match.group(0), citation_html)
             except Exception as e:
                 print(f'Could not process citation in HTML; encountered exception: {e}')
