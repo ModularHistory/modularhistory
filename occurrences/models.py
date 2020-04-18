@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -12,12 +12,16 @@ from history.fields import HistoricDateTimeField, HTMLField
 from history.models import (Model, PolymorphicModel, TaggableModel,
                             DatedModel, SearchableMixin, SourceMixin)
 from images.models import Image
+from quotes.models import quote_sorter_key
 from sources.models import Source, Citation
 from .manager import Manager
 
 
 class OccurrenceImage(Model):
-    occurrence = models.ForeignKey('Occurrence', related_name='occurrence_images', on_delete=CASCADE)
+    occurrence = models.ForeignKey(
+        'Occurrence', related_name='occurrence_images',
+        on_delete=CASCADE
+    )
     image = models.ForeignKey(Image, on_delete=CASCADE)
     position = models.PositiveSmallIntegerField(
         default=1, blank=True,
@@ -75,6 +79,7 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
         through=OccurrenceImage,
         blank=True
     )
+    occurrence_images: Any
     involved_entities = ManyToManyField(
         'entities.Entity', related_name='involved_occurrences',
         through='OccurrenceEntityInvolvement', blank=True
@@ -96,7 +101,7 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
     objects: Manager = Manager()
 
     def __str__(self):
-        return self.summary.text or "..."
+        return self.summary.text or '...'
 
     @property
     def description__truncated(self) -> SafeText:
@@ -131,6 +136,15 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
         if not self.date:
             raise ValidationError('Occurrence needs a date.')
 
+    def get_context(self):
+        return {
+            'occurrence': self,
+            'quotes': sorted(self.related_quotes.all(), key=quote_sorter_key),
+            # 'unpositioned_images' is a little misleading;
+            # these are positioned by their `position` attribute rather than manually positioned.
+            'unpositioned_images': self.occurrence_images.exclude(position=0)
+        }
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
@@ -150,7 +164,10 @@ importance_options = (
 class OccurrenceLocation(Model):
     """A place being a site of an occurrence"""
     occurrence = models.ForeignKey(Occurrence, on_delete=CASCADE)
-    location = models.ForeignKey('places.Place', related_name='location_occurrences', on_delete=CASCADE)
+    location = models.ForeignKey(
+        'places.Place', related_name='location_occurrences',
+        on_delete=CASCADE
+    )
     importance = models.IntegerField(choices=importance_options, default=1)
 
     class Meta:
@@ -160,7 +177,10 @@ class OccurrenceLocation(Model):
 class OccurrenceEntityInvolvement(Model):
     """An involvement of an entity in an occurrence"""
     occurrence = models.ForeignKey(Occurrence, on_delete=CASCADE)
-    entity = models.ForeignKey('entities.Entity', related_name='occurrence_involvements', on_delete=CASCADE)
+    entity = models.ForeignKey(
+        'entities.Entity', related_name='occurrence_involvements',
+        on_delete=CASCADE
+    )
     importance = models.PositiveSmallIntegerField(choices=importance_options, default=1)
 
     class Meta:
@@ -172,8 +192,14 @@ class OccurrenceEntityInvolvement(Model):
 
 class OccurrenceQuoteRelation(Model):
     """An involvement of an entity in an occurrence"""
-    occurrence = models.ForeignKey(Occurrence, related_name='occurrence_quote_relations', on_delete=CASCADE)
-    quote = models.ForeignKey('quotes.Quote', related_name='quote_occurrence_relations', on_delete=CASCADE)
+    occurrence = models.ForeignKey(
+        Occurrence, related_name='occurrence_quote_relations',
+        on_delete=CASCADE
+    )
+    quote = models.ForeignKey(
+        'quotes.Quote', related_name='quote_occurrence_relations',
+        on_delete=CASCADE
+    )
     position = models.PositiveSmallIntegerField(default=1, blank=True)
 
     class Meta:

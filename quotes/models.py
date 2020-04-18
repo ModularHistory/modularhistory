@@ -166,3 +166,17 @@ class QuoteAttribution(Model):
 class QuoteBite(TaggableModel):
     """A catchy piece of a larger quote."""
     quote = ForeignKey(Quote, on_delete=CASCADE, related_name='bites')
+
+
+def quote_sorter_key(quote: Quote):
+    x = 0
+    if quote.date:
+        date = quote.date
+        x += 1000000000000*date.year + 1000000000*date.month + 1000000*date.day
+    if quote.citation:
+        citation = quote.citation
+        number = ord(str(citation)[0].lower()) - 96
+        x += number*1000
+        if citation.page_number:
+            x += citation.page_number
+    return x
