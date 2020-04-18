@@ -33,6 +33,7 @@ def process(_, html: str) -> str:
         for match in re.finditer(citation_key_regex, html):
             try:
                 key = match.group(1)
+                print(f'Found match: {match.group(0)}')
                 try:
                     citation = Citation.objects.get(pk=key)
                     citation_html = (f'<a href="#{citation.html_id}" title="{citation}">'
@@ -109,7 +110,7 @@ class HTMLField(MceHTMLField):
         if self.processor:
             try:
                 html = self.processor(html)
-            except Exception as e:
+            except RecursionError as e:
                 print(f'Unable to process HTML; encountered exception: {e}')
         return HTML(value, processed_value=html)
 
