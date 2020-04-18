@@ -12,6 +12,7 @@ from django.utils.safestring import SafeText, mark_safe
 from history.models import Model
 from sources.models import Source
 
+
 source_types = (
     ('P', 'Primary'),
     ('S', 'Secondary'),
@@ -92,7 +93,8 @@ class Citation(Model):
                 html += f', {page_string}'
         if self.pk and self.source.attributees.exists():
             from quotes.models import Quote
-            if isinstance(self.content_object, Quote):
+            quote_ct = ContentType.objects.get_for_model(Quote)
+            if self.content_type_id == quote_ct.id:
                 quote = self.content_object
                 if quote.ordered_attributees != self.source.ordered_attributees:
                     _html = html
