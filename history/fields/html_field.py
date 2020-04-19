@@ -88,7 +88,7 @@ class HTMLField(MceHTMLField):
                     entity: Entity = e
                     for name in set([entity.name] + entity.aliases):
                         raw_html = re.sub(
-                            rf'([^>]?)({name})([^\w])',
+                            rf'(^|[^>])({name})([^\w])',
                             rf'\g<1><span class="entity-name" data-entity-id="{entity.pk}">\g<2></span>\g<3>',
                             raw_html
                         )
