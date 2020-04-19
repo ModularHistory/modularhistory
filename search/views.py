@@ -55,6 +55,7 @@ class SearchResultsView(ListView):
     entities: Optional[QuerySet] = None
     topics: Optional[QuerySet] = None
     places: Optional[QuerySet] = None
+    db: str = 'default'
 
     def get_context_data(self, *args, **kwargs) -> Dict:
         context = super().get_context_data(*args, **kwargs)
@@ -87,7 +88,7 @@ class SearchResultsView(ListView):
         request = self.request
         query = request.GET.get('query', None)
 
-        db = 'slave' if not request.user.is_superuser else 'default'
+        db = self.db
 
         sort_by_relevance = request.GET.get('ordering') == 'relevance'
         self.sort_by_relevance = sort_by_relevance
@@ -106,7 +107,7 @@ class SearchResultsView(ListView):
         topic_ids = request.GET.getlist('topics', None)
         content_types = []
         for ct_id in ct_ids:
-            ct = ContentType.objects.get_for_id(ct_id).model_class()
+            ct = ContentType.objects.using(db).get_for_id(ct_id).model_class()
             content_types.append(ct)
 
         search_kwargs = {
@@ -122,13 +123,8 @@ class SearchResultsView(ListView):
         if Occurrence in content_types or not content_types:
             occurrence_results = Occurrence.objects.search(
                 **search_kwargs,
-                # query=query,
-                # start_year=start_year,
-                # end_year=end_year,
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
-                # rank=sort_by_relevance,
-                # suppress_unverified=suppress_unverified
             )
         else:
             occurrence_results = Occurrence.objects.none()
@@ -137,30 +133,20 @@ class SearchResultsView(ListView):
         if Quote in content_types or not content_types:
             quote_results = Quote.objects.search(
                 **search_kwargs,
-                # query=query,
-                # start_year=start_year,
-                # end_year=end_year,
                 entity_ids=entity_ids,
-                topic_ids=topic_ids,
-                # rank=sort_by_relevance,
-                # suppress_unverified=suppress_unverified
+                topic_ids=topic_ids
             )
             if occurrence_results:
                 quote_results = quote_results.exclude(related_occurrences__in=occurrence_results)
         else:
-            quote_results = Quote.objects.none()
+            quote_results = Quote.objects.using(db).none()
 
         # Images
         if Image in content_types or not content_types:
             image_results = Image.objects.search(
                 **search_kwargs,
-                # query=query,
-                # start_year=start_year,
-                # end_year=end_year,
                 entity_ids=entity_ids,
-                topic_ids=topic_ids,
-                # rank=sort_by_relevance,
-                # suppress_unverified=suppress_unverified
+                topic_ids=topic_ids
             ).filter(entities=None)
             if occurrence_results:
                 image_results = image_results.exclude(
@@ -170,19 +156,14 @@ class SearchResultsView(ListView):
             if quote_results:
                 image_results = image_results.exclude(entities__quotes__in=quote_results)
         else:
-            image_results = Image.objects.none()
+            image_results = Image.objects.using(db).none()
 
         # Sources
         if Source in content_types or not content_types:
             source_results = Source.objects.search(
                 **search_kwargs,
-                # query=query,
-                # start_year=start_year,
-                # end_year=end_year,
                 entity_ids=entity_ids,
-                topic_ids=topic_ids,
-                # rank=sort_by_relevance,
-                # suppress_unverified=suppress_unverified
+                topic_ids=topic_ids
             )
             # TODO: This was broken by conversion to generic relations with quotes & occurrences
             # source_results = source_results.exclude(
@@ -194,18 +175,14 @@ class SearchResultsView(ListView):
             #     Q(contained_sources__quotes__in=quote_results)
             # )
         else:
-            source_results = Source.objects.none()
+            source_results = Source.objects.using(db).none()
 
-        # entity_results = Entity.objects.search(query)
-        # topic_results = Topic.objects.search(query)
-        # fact_results = Fact.objects.search(query)
-
-        self.entities = Entity.objects.filter(pk__in=Subquery(Entity.objects.filter(
+        self.entities = Entity.objects.using(db).filter(pk__in=Subquery(Entity.objects.filter(
             Q(involved_occurrences__in=occurrence_results) |
             Q(quotes__in=quote_results) |
             Q(attributed_sources__in=source_results)
         ).order_by('id').distinct('id').values('pk'))).order_by('name')
-        self.topics = Topic.objects.filter(pk__in=Subquery(Topic.objects.filter(
+        self.topics = Topic.objects.using(db).filter(pk__in=Subquery(Topic.objects.filter(
             Q(related_occurrences__in=occurrence_results) |
             Q(related_quotes__in=quote_results)
             # | Q(related_topics__related_quotes__in=quote_results)

@@ -85,6 +85,7 @@ class Image(MediaModel):
             return None
         try:
             return get_thumbnailer(self.image).get_thumbnail({
+                'size': (self.width, self.height),
                 'box': self.cropping,
                 'crop': True,
                 'detail': True,

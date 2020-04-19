@@ -62,17 +62,17 @@ class HTMLField(MceHTMLField):
     DEFAULT_PROCESSOR: Callable = process
     processor: Optional[Callable] = DEFAULT_PROCESSOR
 
-    # def __init__(self, *args, **kwargs):
-    #     # if 'processor' in kwargs and kwargs['processor'] != self.DEFAULT_PROCESSOR:
-    #     #     self.processor = kwargs['processor']
-    #     print()
-    #     print(f'args: {args}')
-    #     print(f'kwargs: {kwargs}')
-    #     # if 'verbose_name' in kwargs:
-    #     #     print(f'ERROR: verbose_name of `{kwargs.get("verbose_name")}` is present in kwargs; removing ...')
-    #     #     kwargs.pop('verbose_name')
-    #     super().__init__(self, *args, **kwargs)
-    #     print('success\n')
+    def __init__(self, *args, **kwargs):
+        if 'processor' in kwargs and kwargs['processor'] != self.DEFAULT_PROCESSOR:
+            self.processor = kwargs['processor']
+        print()
+        print(f'args: {args}')
+        print(f'kwargs: {kwargs}')
+        # if 'verbose_name' in kwargs:
+        #     print(f'ERROR: verbose_name of `{kwargs.get("verbose_name")}` is present in kwargs; removing ...')
+        #     kwargs.pop('verbose_name')
+        super().__init__(self, *args, **kwargs)
+        print('success\n')
 
     def clean(self, value, model_instance) -> HTML:
         html = super().clean(value=value, model_instance=model_instance)
@@ -90,12 +90,12 @@ class HTMLField(MceHTMLField):
         html.raw_value = raw_html
         return html
 
-    # def deconstruct(self):
-    #     field_class = 'history.fields.HTMLField'
-    #     name, path, args, kwargs = super().deconstruct()
-    #     if self.processor != self.DEFAULT_PROCESSOR:
-    #         kwargs['processor'] = self.processor
-    #     return name, field_class, args, kwargs
+    def deconstruct(self):
+        field_class = 'history.fields.HTMLField'
+        name, path, args, kwargs = super().deconstruct()
+        if self.processor != self.DEFAULT_PROCESSOR:
+            kwargs['processor'] = self.processor
+        return name, field_class, args, kwargs
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
     def from_db_value(self, value: Optional[str], expression, connection) -> Optional[HTML]:

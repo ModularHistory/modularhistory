@@ -2,16 +2,9 @@
 {% load image_card %}
 
 <div class="detail">
-    {% if quote.attributee_html %}
-        <p class="lead">
-            {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date.string }}{% endif %}
-        </p>
-    {% endif %}
-    {% if quote.related_topics and quote.related_topics.all|length %}
-        <ul class="tags">
-            {{ quote.topic_tags }}
-        </ul>
-    {% endif %}
+    <h2 class="text-center card-title">
+        {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date_string }}{% endif %}
+    </h2>
     <div class="card-text">
         {% if quote.image %}
             <div class="img-container" style="max-width: 44%">
@@ -30,6 +23,11 @@
                target="_blank" href="{{ quote|get_admin_url }}">
                 <i class="fa fa-edit"></i>
             </a>
+        {% endif %}
+        {% if quote.related_topics and quote.related_topics.all|length %}
+            <ul class="tags">
+                {{ quote.topic_tags }}
+            </ul>
         {% endif %}
     </div>
 </div>

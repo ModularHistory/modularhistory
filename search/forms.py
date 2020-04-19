@@ -45,6 +45,7 @@ class SearchFilterForm(Form):
             entities: Optional[QuerySet] = None,
             topics: Optional[QuerySet] = None,
             # places: Optional[QuerySet] = None,
+            db: str = 'default',
             *args,
             **kwargs
     ):
@@ -82,12 +83,12 @@ class SearchFilterForm(Form):
         self.fields['end_year'] = HistoricDateFormField(required=False, widget=YearInput)
 
         self.fields['entities'] = ModelMultipleChoiceField(
-            queryset=(entities or Entity.objects.all()),
+            queryset=(entities or Entity.objects.using(db).all()),
             widget=Select2MultipleWidget,
             required=False
         )
         self.fields['topics'] = ModelMultipleChoiceField(
-            queryset=(topics or Topic.objects.all()),
+            queryset=(topics or Topic.objects.using(db).all()),
             widget=Select2MultipleWidget,
             required=False
         )

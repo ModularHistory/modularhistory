@@ -3,8 +3,10 @@ from datetime import datetime
 from typing import Optional, Union
 
 from django.db.models import DateTimeField
-from django.forms import Field, ValidationError
+from django.forms import Field
+from django.utils.timezone import make_aware, is_naive
 
+from history import settings
 from history.forms import HistoricDateFormField
 from history.structures.historic_datetime import HistoricDateTime
 
@@ -14,9 +16,10 @@ from history.structures.historic_datetime import HistoricDateTime
 class HistoricDateTimeField(DateTimeField):
     year: int
 
-    def __init__(self, verbose_name=None, name=None, auto_now=False, auto_now_add=False, **kwargs):
-        super().__init__(verbose_name=verbose_name, name=name, auto_now=auto_now, auto_now_add=auto_now_add,
-                         **kwargs)
+    def __init__(self, verbose_name=None, name=None,
+                 auto_now=False, auto_now_add=False, **kwargs):
+        super().__init__(verbose_name=verbose_name, name=name,
+                         auto_now=auto_now, auto_now_add=auto_now_add, **kwargs)
 
     def clean(self, value, model_instance):
         return super().clean(value, model_instance)
@@ -35,7 +38,9 @@ class HistoricDateTimeField(DateTimeField):
                                 value.hour, value.minute, value.second, value.microsecond)
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
-    def to_python(self, value: Optional[Union[HistoricDateTime, datetime, str]]) -> Optional[HistoricDateTime]:
+    def to_python(
+            self, value: Optional[Union[HistoricDateTime, datetime, str]]
+    ) -> Optional[HistoricDateTime]:
         if not value:
             return None
         elif isinstance(value, HistoricDateTime):
@@ -46,12 +51,15 @@ class HistoricDateTimeField(DateTimeField):
         elif isinstance(value, str):
             raise TypeError
 
-    # # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
-    # def get_prep_value(self, value: Optional[HistoricDateTime]) -> Optional[datetime]:
-    #     if isinstance(value, HistoricDateTime):
-    #         return datetime(value.year, value.month, value.day, value.hour, value.minute, value.second)
-    #     elif not value:
-    #         return None
+    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
+    def get_prep_value(self, value: Optional[HistoricDateTime]) -> Optional[datetime]:
+        if not value:
+            return None
+        value = self.to_python(value)
+        if value and settings.USE_TZ and is_naive(value):
+            value = make_aware(value)
+        return super().get_prep_value(value)
+
     #
     # # https://docs.djangoproject.com/en/3.0/howto/customg-model-fields/#converting-query-values-to-database-values
     # def get_db_prep_value(self, value, connection, prepared=False):
