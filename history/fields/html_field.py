@@ -88,7 +88,10 @@ class HTMLField(MceHTMLField):
         if hasattr(model_instance, 'attributees') or hasattr(model_instance, 'involved_entities'):
             entities = (getattr(model_instance, 'attributees', None)
                         or getattr(model_instance, 'involved_entities', None))
-            print(f'>>> {entities}', file=stderr)
+            if entities and entities.exists():
+                entities = entities.all()
+                for entity in entities:
+                    print(f'>>> {entity}', file=stderr)
         if not raw_html.startswith('<') and raw_html.endswith('>'):
             raw_html = f'<p>{raw_html}</p>'
         html.raw_value = raw_html
