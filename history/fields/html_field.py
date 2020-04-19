@@ -63,7 +63,7 @@ def process(_, html: str) -> str:
                 processed_entity_keys.append(key)
                 try:
                     # entity = Entity.objects.get(pk=key)
-                    entity_link = (f'<a href="{reverse("entities:detail", args=key)}" '
+                    entity_link = (f'<a href="{reverse("entities:detail", args=[key])}" '
                                    f'target="_blank">{entity_name}</a>')
                     html = html.replace(match.group(0), entity_link)
                 except Exception as e:
