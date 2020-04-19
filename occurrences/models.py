@@ -57,12 +57,10 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
     """Something that happened"""
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
-    summary = HTMLField(null=True, blank=True)
-    description = HTMLField(null=True, blank=True)
-    postscript = HTMLField(
-        null=True, blank=True,
-        help_text='Content to be displayed below all related data'
-    )
+    summary = HTMLField(verbose_name='Summary', null=True, blank=True)
+    description = HTMLField(verbose_name='Description', null=True, blank=True)
+    postscript = HTMLField(verbose_name='Postscript', null=True, blank=True,
+                           help_text='Content to be displayed below all related data')
     locations = ManyToManyField(
         'places.Place', through='OccurrenceLocation',
         related_name='occurrences',

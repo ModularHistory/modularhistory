@@ -65,14 +65,7 @@ class HTMLField(MceHTMLField):
     def __init__(self, *args, **kwargs):
         if 'processor' in kwargs and kwargs['processor'] != self.DEFAULT_PROCESSOR:
             self.processor = kwargs['processor']
-        print()
-        print(f'args: {args}')
-        print(f'kwargs: {kwargs}')
-        if 'verbose_name' in kwargs:
-            print(f'ERROR: verbose_name of `{kwargs.get("verbose_name")}` is present in kwargs')
-            # kwargs.pop('verbose_name')
-        super().__init__(self, *args, **kwargs)
-        print('success\n')
+        super().__init__(*args, **kwargs)
 
     def clean(self, value, model_instance) -> HTML:
         html = super().clean(value=value, model_instance=model_instance)

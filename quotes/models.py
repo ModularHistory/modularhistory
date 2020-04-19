@@ -1,14 +1,14 @@
 from typing import List, Optional, TYPE_CHECKING
 
+from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
 from django.urls import reverse
 from django.utils.safestring import SafeText, mark_safe
-from bs4 import BeautifulSoup
+
 from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
-from history.structures.historic_datetime import HistoricDateTime
 from history.models import Model, TaggableModel, DatedModel, SearchableMixin, SourceMixin
 from images.models import Image
 from sources.models import Source, Citation
@@ -20,10 +20,12 @@ if TYPE_CHECKING:
 
 class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
     """A quote"""
-    text = HTMLField()
-    bite = HTMLField(null=True, blank=True)
-    pretext = HTMLField(null=True, blank=True, help_text='Content to be displayed before the quote')
-    context = HTMLField(null=True, blank=True, help_text='Content to be displayed after the quote')
+    text = HTMLField(verbose_name='Text')
+    bite = HTMLField(verbose_name='Bite', null=True, blank=True)
+    pretext = HTMLField(verbose_name='Pretext', null=True, blank=True,
+                        help_text='Content to be displayed before the quote')
+    context = HTMLField(verbose_name='Context', null=True, blank=True,
+                        help_text='Content to be displayed after the quote')
     date = HistoricDateTimeField(null=True, blank=True)
     attributees = ManyToManyField(
         Entity, related_name='quotes2',
