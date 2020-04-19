@@ -125,6 +125,21 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         return file_url
 
     @property
+    def href(self) -> Optional[str]:
+        url = self.url
+        if self.file_url:
+            url = self.file_url
+            page_number = self.file.default_page_number
+            if hasattr(self, 'page_number') and getattr(self, 'page_number', None):
+                page_number = self.page_number + self.file.page_offset
+            if page_number:
+                if 'page=' in url:
+                    url = re.sub(r'page=\d+', f'page={page_number}', url)
+                else:
+                    url += f'#page={page_number}'
+        return url
+
+    @property
     def _html(self) -> SafeText:
         """Must be defined by inheriting models."""
         return self.object._html
@@ -293,9 +308,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 class TitleMixin(Model):
     title = models.CharField(max_length=250, null=True, blank=True)
 
-    url: Optional[str]
     file: Optional[SourceFile]
-    file_url: Optional[str]
+    href: Optional[str]
 
     class Meta:
         abstract = True
@@ -303,19 +317,9 @@ class TitleMixin(Model):
     @property
     def title_html(self) -> SafeText:
         html = self.title
-        url = self.url
-        if self.file_url:
-            url = self.file_url
-            page_number = self.file.default_page_number
-            if hasattr(self, 'page_number') and getattr(self, 'page_number', None):
-                page_number = self.page_number + self.file.page_offset
-            if page_number:
-                if 'page=' in url:
-                    url = re.sub(r'page=\d+', f'page={page_number}', url)
-                else:
-                    url += f'#page={page_number}'
-        if url:
-            html = (f'<a href="{url}" target="_blank" '
+        href = self.href
+        if href:
+            html = (f'<a href="{href}" target="_blank" '
                     f'class="source-title display-source">{html}</a>')
         return mark_safe(html)
 

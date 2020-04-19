@@ -135,15 +135,20 @@ class Letter(_Document):
 
     @property
     def _html(self) -> str:
-        string = f'{self.attributee_string}, {self.type2} to {self.recipient or "<Unknown>"}'
+        html = f'{self.attributee_string}, '
+        if self.href:
+            html += f'<a href="{self.href}" target="_blank">'
+        html += f'{self.type2} to {self.recipient or "<Unknown>"}'
         if self.date:
-            string += ', dated ' if self.date.day_is_known else ', '
-            string += self.date.string
+            html += ', dated ' if self.date.day_is_known else ', '
+            html += self.date.string
+        if self.href:
+            html += '</a>'
         if self.descriptive_phrase:
-            string += f', {self.descriptive_phrase}'
+            html += f', {self.descriptive_phrase}'
         if self.collection:
-            string += f', archived in {self.collection}'
-        return string
+            html += f', archived in {self.collection}'
+        return html
 
 
 class Affidavit(_Document):
