@@ -73,13 +73,15 @@ class Chapter(TitleMixin, TextualSource):
 
     def full_clean(self, exclude=None, validate_unique=True):
         super().full_clean(exclude, validate_unique)
-        if self.container and not isinstance(self.container, Book):
+        if self.pk and self.container and not isinstance(self.container, Book):
             raise ValidationError('Chapter container must be a book.')
 
 
 class Book(_Book):
     def __str__(self):
-        return BeautifulSoup(self._html, features='lxml').get_text()
+        if self.pk:
+            return BeautifulSoup(self._html, features='lxml').get_text()
+        return ''
 
     @property
     def _html(self) -> str:
