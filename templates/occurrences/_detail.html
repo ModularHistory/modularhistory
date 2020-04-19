@@ -5,6 +5,11 @@
 {% load static %}
 
 <div class="detail">
+    {% if request.user.is_superuser %}
+        <a class="edit-object-button float-right" target="_blank" href="{{ occurrence|get_admin_url }}">
+            <i class="fa fa-edit"></i>
+        </a>
+    {% endif %}
     <h2 class="text-center card-title">
         {% if occurrence.date %}
             {{ occurrence.date_html }}
@@ -30,12 +35,7 @@
                 </div>
             {% endif %}
         {% endif %}
-        <div class="lead" style="position: relative">
-            {% if request.user.is_superuser %}
-                <a class="edit-object-button float-right" target="_blank" href="{{ occurrence|get_admin_url }}">
-                    <i class="fa fa-edit"></i>
-                </a>
-            {% endif %}
+        <div class="lead">
             {{ occurrence.summary.html }}
         </div>
 {#        {% if occurrence.involved_entities.all|length %}#}
