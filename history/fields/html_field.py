@@ -68,9 +68,9 @@ class HTMLField(MceHTMLField):
         print()
         print(f'args: {args}')
         print(f'kwargs: {kwargs}')
-        # if 'verbose_name' in kwargs:
-        #     print(f'ERROR: verbose_name of `{kwargs.get("verbose_name")}` is present in kwargs; removing ...')
-        #     kwargs.pop('verbose_name')
+        if 'verbose_name' in kwargs:
+            print(f'ERROR: verbose_name of `{kwargs.get("verbose_name")}` is present in kwargs')
+            # kwargs.pop('verbose_name')
         super().__init__(self, *args, **kwargs)
         print('success\n')
 
@@ -85,6 +85,10 @@ class HTMLField(MceHTMLField):
         raw_html = re.sub(r'\n?<div[^>]+?>&nbsp;<\/div>', '', raw_html)
         raw_html = re.sub(r'<div id=\"i4c-draggable-container\"[^\/]+</div>', '', raw_html)
         raw_html = re.sub(r'<p>&nbsp;<\/p>', '', raw_html)
+        if hasattr(model_instance, 'attributees') or hasattr(model_instance, 'involved_entities'):
+            entities = (getattr(model_instance, 'attributees', None)
+                        or getattr(model_instance, 'involved_entities', None))
+            print(f'>>> {entities}', file=stderr)
         if not raw_html.startswith('<') and raw_html.endswith('>'):
             raw_html = f'<p>{raw_html}</p>'
         html.raw_value = raw_html
