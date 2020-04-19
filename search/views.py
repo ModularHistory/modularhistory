@@ -107,7 +107,7 @@ class SearchResultsView(ListView):
         topic_ids = request.GET.getlist('topics', None)
         content_types = []
         for ct_id in ct_ids:
-            ct = ContentType.objects.using(db).get_for_id(ct_id).model_class()
+            ct = ContentType.objects.get_for_id(ct_id).model_class()
             content_types.append(ct)
 
         search_kwargs = {
