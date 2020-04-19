@@ -39,7 +39,7 @@ def process(_, html: str) -> str:
             try:
                 citation = Citation.objects.get(pk=key)
             except ObjectDoesNotExist:
-                print(f'UNABLE TO RETRIEVE CITATION: {key}', file=stderr)
+                print(f'Unable to retrieve citation: {key}', file=stderr)
                 continue
             html_id = citation.html_id
             citation_html = (f'<a href="#{html_id}" title="{citation}">'
@@ -65,7 +65,7 @@ def process(_, html: str) -> str:
                     # entity = Entity.objects.get(pk=key)
                     entity_link = (f'<a href="{reverse("entities:detail", args=[key])}" '
                                    f'target="_blank">{entity_name}</a>')
-                    html = html.replace(match.group(0), entity_link)
+                    html = html.replace(match.group(0), entity_link, 1)
                 except Exception as e:
                     print(f'{e}', file=stderr)
     return html
