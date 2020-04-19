@@ -1,7 +1,7 @@
 import re
 from sys import stderr
 from typing import Callable, Optional, Union
-
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
@@ -12,6 +12,7 @@ from history.structures.html import HTML
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
 citation_key_regex = r'\ ?{{\ ?citation:\ ?(.+?)\ ?}}'
 source_key_regex = r'{{\ ?source:\ ?(.+?)\ ?}}'
+entity_name_regex = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
 
 def process(_, html: str) -> str:
@@ -51,6 +52,19 @@ def process(_, html: str) -> str:
             source = Source.objects.get(pk=key)
             source_html = f'{source.html}'
             html = html.replace(match.group(0), source_html)
+    if re.search(entity_name_regex, html):
+        from entities.models import Entity
+        processed_entity_keys = []
+        for match in re.finditer(entity_name_regex, html):
+            key = match.group(1)
+            entity_name = match.group(2)
+            # Process the entity name if it hasn't already been processed
+            if key not in processed_entity_keys:
+                processed_entity_keys.append(key)
+                # entity = Entity.objects.get(pk=key)
+                entity_link = (f'<a href="{reverse("entities:detail", args=key)}" '
+                               f'target="_blank">{entity_name}</a>')
+                html = html.replace(match.group(0), entity_link)
     return html
 
 
