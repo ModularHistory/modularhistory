@@ -90,7 +90,18 @@ class HTMLField(MceHTMLField):
                         or getattr(model_instance, 'involved_entities', None))
             if entities and entities.exists():
                 entities = entities.all()
-                for entity in entities:
+                from entities.models import Entity
+                for e in entities:
+                    entity: Entity = e
+                    for name in ([entity.name] + entity.aliases):
+                        raw_html = re.sub(
+                            rf'([^>]?)({name})([^\w])',
+                            rf'\g<1><span class="entity-name" data-entity-id="{entity.pk}">\g<2></span>\g<3>',
+                            raw_html
+                        )
+                        raw_html = raw_html.replace(name, (f'<span class="entity-name" '
+                                                           f'data-entity-id="{entity.pk}">'
+                                                           f'{name}</span>'))
                     print(f'>>> {entity}', file=stderr)
         if not raw_html.startswith('<') and raw_html.endswith('>'):
             raw_html = f'<p>{raw_html}</p>'
