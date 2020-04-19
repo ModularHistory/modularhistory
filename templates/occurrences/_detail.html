@@ -30,12 +30,12 @@
                 </div>
             {% endif %}
         {% endif %}
-        {% if request.user.is_superuser %}
-            <a class="edit-object-button float-right" style="clear: none" target="_blank" href="{{ occurrence|get_admin_url }}">
-                <i class="fa fa-edit"></i>
-            </a>
-        {% endif %}
-        <div class="lead">
+        <div class="lead" style="position: relative">
+            {% if request.user.is_superuser %}
+                <a class="edit-object-button float-right" target="_blank" href="{{ occurrence|get_admin_url }}">
+                    <i class="fa fa-edit"></i>
+                </a>
+            {% endif %}
             {{ occurrence.summary.html }}
         </div>
 {#        {% if occurrence.involved_entities.all|length %}#}
