@@ -24,7 +24,7 @@ class OccurrenceImage(Model):
     )
     image = models.ForeignKey(Image, on_delete=CASCADE)
     position = models.PositiveSmallIntegerField(
-        default=1, blank=True,
+        null=True, blank=True,
         help_text='Set to 0 if the image is positioned manually.'
     )
 
@@ -198,7 +198,7 @@ class OccurrenceQuoteRelation(Model):
         'quotes.Quote', related_name='quote_occurrence_relations',
         on_delete=CASCADE
     )
-    position = models.PositiveSmallIntegerField(default=1, blank=True)
+    position = models.PositiveSmallIntegerField(null=True, blank=True)  # TODO: add cleaning logic
 
     class Meta:
         unique_together = ['occurrence', 'quote']

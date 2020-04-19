@@ -37,7 +37,7 @@ class Citation(Model):
     page_number = PositiveSmallIntegerField(null=True, blank=True)
     end_page_number = PositiveSmallIntegerField(null=True, blank=True)
     position = PositiveSmallIntegerField(
-        default=1, blank=True,
+        null=True, blank=True,  # TODO: add cleaning logic
         help_text='Determines the order of references.'
     )
 

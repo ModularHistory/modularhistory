@@ -40,6 +40,8 @@ class RelatedQuotesInline(TabularInline):
     model = models.Occurrence.related_quotes.through
     autocomplete_fields = ['quote']
 
+    sortable_field_name = 'position'
+
     def get_extra(self, request, obj=None, **kwargs):
         if obj and obj.related_quotes.count():
             return 0

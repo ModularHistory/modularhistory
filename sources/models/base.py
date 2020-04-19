@@ -337,7 +337,7 @@ class SourceContainment(Model):
     container = ForeignKey(Source, on_delete=CASCADE, related_name='container_containments')
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)
     end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    position = models.PositiveSmallIntegerField(default=1)
+    position = models.PositiveSmallIntegerField(null=True, blank=True)  # TODO: add cleaning logic
     phrase = models.CharField(max_length=12, choices=containment_phrases, default='', blank=True)
 
     class Meta:
@@ -376,7 +376,7 @@ class SourceAttribution(Model):
                         related_name='attributions')
     attributee = ForeignKey('entities.Entity', on_delete=CASCADE,
                             related_name='source_attributions')
-    position = models.PositiveSmallIntegerField(default=1, blank=True)
+    position = models.PositiveSmallIntegerField(null=True, blank=True)  # TODO: add cleaning logic
 
     def __str__(self):
         return self.attributee.verbose_name or f'{self.attributee}'
