@@ -106,7 +106,8 @@ class HTMLField(MceHTMLField):
         raw_html = re.sub(r'\n?<div[^>]+?>&nbsp;<\/div>', '', raw_html)
         raw_html = re.sub(r'<div id=\"i4c-draggable-container\"[^\/]+</div>', '', raw_html)
         raw_html = re.sub(r'<p>&nbsp;<\/p>', '', raw_html)
-        if hasattr(model_instance, 'attributees') or hasattr(model_instance, 'involved_entities'):
+        if model_instance.pk and (hasattr(model_instance, 'attributees')
+                                  or hasattr(model_instance, 'involved_entities')):
             entities = (getattr(model_instance, 'attributees', None)
                         or getattr(model_instance, 'involved_entities', None))
             if entities and entities.exists():
