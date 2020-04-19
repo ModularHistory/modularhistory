@@ -61,10 +61,13 @@ def process(_, html: str) -> str:
             # Process the entity name if it hasn't already been processed
             if key not in processed_entity_keys:
                 processed_entity_keys.append(key)
-                # entity = Entity.objects.get(pk=key)
-                entity_link = (f'<a href="{reverse("entities:detail", args=key)}" '
-                               f'target="_blank">{entity_name}</a>')
-                html = html.replace(match.group(0), entity_link)
+                try:
+                    # entity = Entity.objects.get(pk=key)
+                    entity_link = (f'<a href="{reverse("entities:detail", args=key)}" '
+                                   f'target="_blank">{entity_name}</a>')
+                    html = html.replace(match.group(0), entity_link)
+                except Exception as e:
+                    print(f'{e}', file=stderr)
     return html
 
 
