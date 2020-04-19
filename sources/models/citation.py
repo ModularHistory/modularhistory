@@ -12,7 +12,6 @@ from django.utils.safestring import SafeText, mark_safe
 from history.models import Model
 from sources.models import Source
 
-
 source_types = (
     ('P', 'Primary'),
     ('S', 'Secondary'),
@@ -41,6 +40,8 @@ class Citation(Model):
         help_text='Determines the order of references.'
     )
 
+    PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
+
     class Meta:
         unique_together = ['source', 'content_type', 'object_id',
                            'page_number', 'end_page_number', 'position']
@@ -52,39 +53,10 @@ class Citation(Model):
     @property
     def html(self) -> SafeText:
         html = f'{self.source.html}'
-        page_string = ''
         if self.page_number:
-            pn = self.page_number
-            end_pn = self.end_page_number or None
-            _url = self.source.file_url or None
-
-            def get_page_number_url(page_number, url=_url) -> Optional[str]:
-                if not url:
-                    return None
-                page_number += self.source.file.page_offset
-                if 'page=' in url:
-                    url = re.sub(r'page=\d+', f'page={page_number}', url)
-                else:
-                    url += f'#page={page_number}'
-                return url
-
-            def get_page_number_link(url, page_number) -> Optional[str]:
-                if not url:
-                    return None
-                return (f'<a href="{url}" target="_blank" '
-                        f'class="display-source">{page_number}</a>')
-
-            pn_url = get_page_number_url(pn)
-            pn = get_page_number_link(pn_url, pn) or pn
-            if end_pn:
-                end_pn_url = get_page_number_url(end_pn)
-                end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
-                page_string += f'pp. {pn}–{end_pn}'
-            else:
-                page_string += f'p. {pn}'
-
+            page_string = self.page_string
             # Replace the source's page string if it exists
-            page_str_regex = re.compile(r'.+, (pp?\. <a .+>\d+<\/a>)$')
+            page_str_regex = re.compile(self.PAGE_STRING_REGEX)
             match = page_str_regex.match(html)
             if match:
                 _page_string = match.group(1)
@@ -140,6 +112,40 @@ class Citation(Model):
     @property
     def number(self):
         return self.position + 1
+
+    @property
+    def page_string(self) -> Optional[str]:
+        pn = self.page_number
+        if not pn:
+            return None
+        end_pn = self.end_page_number or None
+        _url = self.source.file_url or None
+
+        def get_page_number_url(page_number, url=_url) -> Optional[str]:
+            if not url:
+                return None
+            page_number += self.source.file.page_offset
+            if 'page=' in url:
+                url = re.sub(r'page=\d+', f'page={page_number}', url)
+            else:
+                url += f'#page={page_number}'
+            return url
+
+        def get_page_number_link(url, page_number) -> Optional[str]:
+            if not url:
+                return None
+            return (f'<a href="{url}" target="_blank" '
+                    f'class="display-source">{page_number}</a>')
+
+        pn_url = get_page_number_url(pn)
+        pn = get_page_number_link(pn_url, pn) or pn
+        if end_pn:
+            end_pn_url = get_page_number_url(end_pn)
+            end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
+            page_string = f'pp. {pn}–{end_pn}'
+        else:
+            page_string = f'p. {pn}'
+        return page_string
 
     @property
     def source_file_page_number(self) -> Optional[int]:

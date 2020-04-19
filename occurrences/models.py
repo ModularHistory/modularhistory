@@ -103,7 +103,7 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
 
     @property
     def description__truncated(self) -> SafeText:
-        return mark_safe(truncatechars_html(self.description, 250))
+        return mark_safe(truncatechars_html(self.description.html, 250))
 
     @property
     def entity_images(self) -> Optional[List[Image]]:

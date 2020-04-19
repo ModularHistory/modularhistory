@@ -10,7 +10,7 @@ from tinymce.models import HTMLField as MceHTMLField
 from history.structures.html import HTML
 
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
-citation_key_regex = r'\ ?{{\ ?citation:\ ?(.+?)\ ?}}'
+citation_key_regex = r'\ ?{{\ ?citation:\ ?(.+?)(,\ pp?\.\ ([^}]+))?}}'
 source_key_regex = r'{{\ ?source:\ ?(.+?)\ ?}}'
 entity_name_regex = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
@@ -21,7 +21,7 @@ def process(_, html: str) -> str:
         from sources.models import Source, Citation
         # Process images
         for match in re.finditer(image_key_regex, html):
-            key = match.group(1)
+            key = match.group(1).strip()
             image = Image.objects.get(key=key)
             image_html = render_to_string(
                 'images/_card.html',
@@ -34,7 +34,7 @@ def process(_, html: str) -> str:
             html = html.replace(match.group(0), image_html)
         # Process citations
         for match in re.finditer(citation_key_regex, html):
-            key = match.group(1)
+            key = match.group(1).strip()
             print(f'Found match: {match.group(0)}')
             try:
                 citation = Citation.objects.get(pk=key)
@@ -42,13 +42,24 @@ def process(_, html: str) -> str:
                 print(f'Unable to retrieve citation: {key}', file=stderr)
                 continue
             html_id = citation.html_id
-            citation_html = (f'<a href="#{html_id}" title="{citation}">'
+            source_string = str(citation)
+            page_str = match.group(3)
+            if page_str:
+                page_str = page_str.strip()
+                page_str_regex = re.compile(Citation.PAGE_STRING_REGEX)
+                page_str_match = page_str_regex.match(source_string)
+                if page_str_match:
+                    _page_string = page_str_match.group(1)
+                    source_string = source_string.replace(_page_string, page_str)
+                else:
+                    source_string += f', {page_str}'
+            citation_html = (f'<a href="#{html_id}" title="{source_string}">'
                              f'<sup>{citation.number}</sup>'
                              f'</a>')
             html = html.replace(match.group(0), citation_html)
         # Process sources
         for match in re.finditer(source_key_regex, html):
-            key = match.group(1)
+            key = match.group(1).strip()
             source = Source.objects.get(pk=key)
             source_html = f'{source.html}'
             html = html.replace(match.group(0), source_html)
@@ -56,7 +67,7 @@ def process(_, html: str) -> str:
         # from entities.models import Entity
         processed_entity_keys = []
         for match in re.finditer(entity_name_regex, html):
-            key = match.group(1)
+            key = match.group(1).strip()
             entity_name = match.group(2)
             # Process the entity name if it hasn't already been processed
             if key not in processed_entity_keys:
