@@ -22,7 +22,10 @@ if TYPE_CHECKING:
 
 class Source(PolymorphicModel, DatedModel, SearchableMixin):
     """A source for quotes or historical information."""
-    db_string = models.CharField(verbose_name='database string', max_length=500, blank=True, unique=True)
+    db_string = models.CharField(
+        verbose_name='database string',
+        max_length=500, blank=True, unique=True
+    )
     attributees = ManyToManyField(
         'entities.Entity', related_name='attributed_sources',
         through='SourceAttribution',
@@ -300,6 +303,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         #     )
 
     def save(self, *args, **kwargs):
+        self.db_string = self.string
+        super().save(*args, **kwargs)
         self.clean()
         self.db_string = self.string
         super().save(*args, **kwargs)
