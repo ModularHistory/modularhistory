@@ -53,7 +53,7 @@ def process(_, html: str) -> str:
             source_html = f'{source.html}'
             html = html.replace(match.group(0), source_html)
     if re.search(entity_name_regex, html):
-        from entities.models import Entity
+        # from entities.models import Entity
         processed_entity_keys = []
         for match in re.finditer(entity_name_regex, html):
             key = match.group(1)
@@ -104,12 +104,12 @@ class HTMLField(MceHTMLField):
                 for e in entities:
                     entity: Entity = e
                     for name in set([entity.name] + entity.aliases):
+                        print(f'>>> {name}', file=stderr)
                         raw_html = re.sub(
                             rf'(^|[^>])({name})([^\w])',
                             rf'\g<1><span class="entity-name" data-entity-id="{entity.pk}">\g<2></span>\g<3>',
                             raw_html
                         )
-                    print(f'>>> {entity}', file=stderr)
         if not raw_html.startswith('<') and raw_html.endswith('>'):
             raw_html = f'<p>{raw_html}</p>'
         html.raw_value = raw_html
