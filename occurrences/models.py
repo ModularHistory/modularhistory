@@ -102,7 +102,9 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
         return self.summary.text or '...'
 
     @property
-    def description__truncated(self) -> SafeText:
+    def description__truncated(self) -> Optional[SafeText]:
+        if not self.description:
+            return None
         return mark_safe(truncatechars_html(self.description.html, 250))
 
     @property
