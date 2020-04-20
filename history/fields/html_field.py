@@ -9,9 +9,21 @@ from tinymce.models import HTMLField as MceHTMLField
 
 from history.structures.html import HTML
 
+# group 1: image pk
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
-citation_key_regex = r'\ ?{{\ ?citation:\ ?(.+?)(,\ (pp?\.\ [^}]+))?}}'
+
+# group 1: citation pk (e.g., '988')
+# group 2: skip
+# group 3: page string (e.g., 'p. 22')
+# group 4: skip
+# group 5: quotation (e.g., "It followed institutionalized procedures....")
+citation_key_regex = r'\ ?{{\ ?citation:\ ?([\d\w]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?\ ?}}'
+
+# group 1: source pk
 source_key_regex = r'{{\ ?source:\ ?(.+?)\ ?}}'
+
+# group 1: entity pk
+# group 2: entity name
 entity_name_regex = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
 
