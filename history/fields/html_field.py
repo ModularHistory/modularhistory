@@ -56,6 +56,7 @@ def process(_, html: str) -> str:
             html_id = citation.html_id
             source_string = str(citation)
             page_str = match.group(3)
+            quotation = match.group(5)
             if page_str:
                 page_str = page_str.strip()
                 page_str_regex = re.compile(Citation.PAGE_STRING_REGEX)
@@ -65,6 +66,8 @@ def process(_, html: str) -> str:
                     source_string = source_string.replace(_page_string, page_str)
                 else:
                     source_string += f', {page_str}'
+            if quotation:
+                source_string += f': {quotation}'
             citation_html = (f'<a href="#{html_id}" title=\'{source_string}\'>'
                              f'<sup>{citation.number}</sup>'
                              f'</a>')
