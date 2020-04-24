@@ -12,6 +12,9 @@ from history.structures.html import HTML
 # group 1: image pk
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
 
+# group 1: quote pk
+quote_key_regex = r'{{\ ?quote:\ ?(.+?)\ ?}}'
+
 # group 1: citation pk (e.g., '988')
 # group 2: skip
 # group 3: page string (e.g., 'p. 22')
@@ -30,7 +33,9 @@ entity_name_regex = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)
 def process(_, html: str) -> str:
     if '{{' in html:
         from images.models import Image
+        from quotes.models import Quote
         from sources.models import Source, Citation
+
         # Process images
         for match in re.finditer(image_key_regex, html):
             key = match.group(1).strip()
@@ -44,6 +49,14 @@ def process(_, html: str) -> str:
             if image.width < 500:
                 image_html = f'<div style="text-align: center">{image_html}</div>'
             html = html.replace(match.group(0), image_html)
+
+        # Process quotes
+        for match in re.finditer(quote_key_regex, html):
+            key = match.group(1).strip()
+            quote = Quote.objects.get(key=key)
+            quote_html = quote.text.html
+            html = html.replace(match.group(0), quote_html)
+
         # Process citations
         for match in re.finditer(citation_key_regex, html):
             key = match.group(1).strip()
@@ -72,12 +85,14 @@ def process(_, html: str) -> str:
                              f'<sup>{citation.number}</sup>'
                              f'</a>')
             html = html.replace(match.group(0), citation_html)
+
         # Process sources
         for match in re.finditer(source_key_regex, html):
             key = match.group(1).strip()
             source = Source.objects.get(pk=key)
             source_html = f'{source.html}'
             html = html.replace(match.group(0), source_html)
+
     if re.search(entity_name_regex, html):
         # from entities.models import Entity
         processed_entity_keys = []
