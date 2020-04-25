@@ -58,7 +58,14 @@ def process(_, html: str) -> str:
         for match in re.finditer(quote_key_regex, html):
             key = match.group(1).strip()
             quote = Quote.objects.get(pk=key)
-            quote_html = quote.text.html
+            quote_html = quote.text.html(
+                f'<blockquote class="blockquote">'
+                f'{quote.text.html}'
+                f'<footer class="blockquote-footer" style="position: relative;">'
+                f'{quote.citation_html or quote.attributee_string}'
+                f'</footer>'
+                f'</blockquote>'
+            )
             html = html.replace(match.group(0), quote_html)
 
         # Process citations
