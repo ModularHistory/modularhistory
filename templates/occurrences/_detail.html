@@ -55,11 +55,11 @@
             {{ occurrence.description.html }}
         </div>
     </div>
-    {% if quotes|length %}
-        {% for quote in quotes %}
-            {{ quote.html }}
-        {% endfor %}
-    {% endif %}
+{#    {% if quotes|length %}#}
+{#        {% for quote in quotes %}#}
+{#            {{ quote.html }}#}
+{#        {% endfor %}#}
+{#    {% endif %}#}
     {% if occurrence.postscript %}
         {{ occurrence.postscript.html }}
     {% endif %}
