@@ -53,7 +53,7 @@ def process(_, html: str) -> str:
         # Process quotes
         for match in re.finditer(quote_key_regex, html):
             key = match.group(1).strip()
-            quote = Quote.objects.get(key=key)
+            quote = Quote.objects.get(pk=key)
             quote_html = quote.text.html
             html = html.replace(match.group(0), quote_html)
 
