@@ -118,8 +118,8 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    # https://github.com/yandex/django_replicated
-    'django_replicated.middleware.ReplicationMiddleware',
+    # # https://github.com/yandex/django_replicated
+    # 'django_replicated.middleware.ReplicationMiddleware',  # breaks user sessions
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -194,18 +194,19 @@ DATABASES = {
     }
 }
 
-# https://github.com/yandex/django_replicated
-from django_replicated.settings import *
-REPLICATED_DATABASE_SLAVES = ['slave']
-DATABASE_ROUTERS = ['django_replicated.router.ReplicationRouter']
-REPLICATED_DATABASE_DOWNTIME = 30
-REPLICATED_VIEWS_OVERRIDES = {
-    '/admin/*': 'master',
-    '/history/*': 'master',  # TODO: probably should use slave eventually
-    # 'api-store-event': 'slave',
-    # 'app.views.do_something': 'master',
-    # '/users/': 'slave',
-}
+# TODO: Fix this so it doesn't break user sessions
+# # https://github.com/yandex/django_replicated
+# from django_replicated.settings import *
+# REPLICATED_DATABASE_SLAVES = ['slave']
+# DATABASE_ROUTERS = ['django_replicated.router.ReplicationRouter']
+# REPLICATED_DATABASE_DOWNTIME = 30
+# REPLICATED_VIEWS_OVERRIDES = {
+#     '/admin/*': 'master',
+#     '/history/*': 'master',  # TODO: probably should use slave eventually
+#     # 'api-store-event': 'slave',
+#     # 'app.views.do_something': 'master',
+#     # '/users/': 'slave',
+# }
 
 # https://django-dbbackup.readthedocs.io/en/latest/installation.html
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'

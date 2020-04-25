@@ -13,7 +13,7 @@ from history.structures.html import HTML
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
 
 # group 1: quote pk
-quote_key_regex = r'{{\ ?quote:\ ?(.+?)\ ?}}'
+quote_key_regex = r'{{\ ?quote:\ ?([\w\d]+?)()?\ ?}}'
 
 # group 1: citation pk (e.g., '988')
 # group 2: skip
