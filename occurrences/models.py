@@ -208,3 +208,7 @@ class OccurrenceQuoteRelation(Model):
 
     def __str__(self):
         return mark_safe(f'{self.quote.citation}')
+
+    @property
+    def quote_pk(self) -> str:
+        return self.quote.pk

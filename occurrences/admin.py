@@ -39,7 +39,7 @@ class ImagesInline(TabularInline):
 class RelatedQuotesInline(TabularInline):
     model = models.Occurrence.related_quotes.through
     autocomplete_fields = ['quote']
-    readonly_fields = ['pk']
+    readonly_fields = ['pk', 'quote_pk']
 
     sortable_field_name = 'position'
 
