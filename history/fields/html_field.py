@@ -85,7 +85,8 @@ def process(_, html: str) -> str:
                     source_string += f', {page_str}'
             if quotation:
                 source_string += f': {quotation}'
-            citation_html = (f'<a href="#{html_id}" title=\'{source_string}\'>'
+            source_string = source_string.replace('"', '\"').replace("'", "\'")
+            citation_html = (f'<a href="#{html_id}" title="{source_string}">'
                              f'<sup>{citation.number}</sup>'
                              f'</a>')
             html = html.replace(match.group(0), citation_html)
