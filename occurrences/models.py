@@ -36,6 +36,10 @@ class OccurrenceImage(Model):
         return mark_safe(f'{self.position}: {self.image.caption}')
 
     @property
+    def image_pk(self) -> str:
+        return self.image.pk
+
+    @property
     def key(self) -> str:
         return self.image.key
 

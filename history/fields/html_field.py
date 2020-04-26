@@ -47,10 +47,10 @@ def process(_, html: str) -> str:
         for match in re.finditer(image_key_regex, html):
             key = match.group(1).strip()
             try:
-                image = Image.objects.get(key=key)
-            except Exception as e:
                 print(f'{e}', file=stderr)
                 image = Image.objects.get(pk=key)
+            except Exception as e:
+                image = Image.objects.get(key=key)
             image_html = render_to_string(
                 'images/_card.html',
                 context={'image': image, 'object': image}

@@ -33,7 +33,7 @@ class ImagesInline(TabularInline):
     model = models.Occurrence.images.through
     extra = 0
     autocomplete_fields = ['image']
-    readonly_fields = ['key', 'pk']
+    readonly_fields = ['key', 'image_pk']
 
 
 class RelatedQuotesInline(TabularInline):
