@@ -10,6 +10,7 @@
 .img-container {
   float: right;
   clear: right;
+  max-width: 49%;
   margin-left: 0.9rem;
   margin-bottom: 0.8rem; }
 
@@ -70,6 +71,7 @@ form ul {
 .img-container {
   float: right;
   clear: right;
+  max-width: 49%;
   margin-left: 0.9rem;
   margin-bottom: 0.8rem; }
 
@@ -151,12 +153,6 @@ td.field-source {
 #changelist-filter li {
   margin-top: 0;
   margin-bottom: 0; }
-
-.img-container {
-  float: right;
-  clear: right;
-  margin-left: 0.9rem;
-  margin-bottom: 0.8rem; }
 
 #changelist .results li.topic-tag {
   list-style: none; }
