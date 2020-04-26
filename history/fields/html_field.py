@@ -203,7 +203,7 @@ class HTMLField(MceHTMLField):
             key = match.group(1).strip()
             image = image_cls.objects.get(pk=key)
             appendage = match.group(2)
-            updated_appendage = f': {image.caption.html}'
+            updated_appendage = f': {image.caption.text}'
             if not appendage:
                 updated_image_placeholder = (
                     f'{image_placeholder.replace(" }}", "").replace("}}", "")}'
