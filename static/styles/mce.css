@@ -7,6 +7,12 @@
 .lazy-bg {
   background-image: url("/static/img-placeholder.jpg"); }
 
+.img-container {
+  float: right;
+  clear: right;
+  margin-left: 0.9rem;
+  margin-bottom: 0.8rem; }
+
 span.deleted {
   text-decoration: line-through; }
 
