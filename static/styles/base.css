@@ -11,6 +11,7 @@
 .img-container {
   float: right;
   clear: right;
+  max-width: 49%;
   margin-left: 0.9rem;
   margin-bottom: 0.8rem; }
 
@@ -390,12 +391,6 @@ body {
 
 .citation .fa, .citation .fab, .citation .fas {
   margin-left: 0.5rem; }
-
-.img-container {
-  float: right;
-  clear: right;
-  margin-left: 0.9rem;
-  margin-bottom: 0.8rem; }
 
 .img-bg {
   position: absolute;
