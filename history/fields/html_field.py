@@ -14,7 +14,9 @@ if TYPE_CHECKING:
     from quotes.models import Quote
 
 # group 1: image pk
-image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
+# group 2: ignore
+# group 3: image caption
+image_key_regex = r'{{\ ?image:\ ?(.+?)(:([^}]+?))?\ ?}}'
 
 # group 1: quote pk
 # group 2: ignore
@@ -190,6 +192,26 @@ class HTMLField(MceHTMLField):
             else:
                 updated_quote_placeholder = quote_placeholder.replace(appendage, updated_appendage)
             raw_html = raw_html.replace(quote_placeholder, updated_quote_placeholder)
+
+        # Add image captions (purely for readability when editing)
+        image_cls = None
+        for match in re.finditer(image_key_regex, raw_html):
+            image_placeholder = match.group(0)
+            if not image_cls:
+                from images.models import Image
+                image_cls = Image
+            key = match.group(1).strip()
+            image = image_cls.objects.get(pk=key)
+            appendage = match.group(2)
+            updated_appendage = f': {image.caption.html}'
+            if not appendage:
+                updated_image_placeholder = (
+                    f'{image_placeholder.replace(" }}", "").replace("}}", "")}'
+                    f'{updated_appendage}'
+                ) + '}}'  # Angle brackets can't be included in f-string literals
+            else:
+                updated_image_placeholder = image_placeholder.replace(appendage, updated_appendage)
+            raw_html = raw_html.replace(image_placeholder, updated_image_placeholder)
 
         # Wrap HTML content in a <p> tag if necessary
         if not raw_html.startswith('<') and raw_html.endswith('>'):
