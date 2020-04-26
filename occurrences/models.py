@@ -36,6 +36,10 @@ class OccurrenceImage(Model):
         return mark_safe(f'{self.position}: {self.image.caption}')
 
     @property
+    def is_positioned(self) -> bool:
+        return f'image: {self.image.pk}' in self.occurrence.description.raw_value
+
+    @property
     def image_pk(self) -> str:
         return self.image.pk
 
@@ -146,7 +150,8 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
             'quotes': sorted(self.related_quotes.all(), key=quote_sorter_key),
             # 'unpositioned_images' is a little misleading;
             # these are positioned by their `position` attribute rather than manually positioned.
-            'unpositioned_images': self.occurrence_images.exclude(position=0)
+            'unpositioned_images': [image for image in self.occurrence_images.all()
+                                    if not image.is_positioned]
         }
 
     def save(self, *args, **kwargs):
