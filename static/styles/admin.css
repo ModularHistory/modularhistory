@@ -152,6 +152,12 @@ td.field-source {
   margin-top: 0;
   margin-bottom: 0; }
 
+.img-container {
+  float: right;
+  clear: right;
+  margin-left: 0.9rem;
+  margin-bottom: 0.8rem; }
+
 #changelist .results li.topic-tag {
   list-style: none; }
   #changelist .results li.topic-tag ::after {
