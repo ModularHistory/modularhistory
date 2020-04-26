@@ -1,24 +1,31 @@
 import re
 from sys import stderr
-from typing import Callable, Optional, Union
-from django.urls import reverse
+from typing import Callable, Optional, Union, TYPE_CHECKING
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.safestring import SafeText
 from tinymce.models import HTMLField as MceHTMLField
 
 from history.structures.html import HTML
 
+if TYPE_CHECKING:
+    from quotes.models import Quote
+
 # group 1: image pk
 image_key_regex = r'{{\ ?image:\ ?(.+?)\ ?}}'
 
 # group 1: quote pk
-quote_key_regex = r'{{\ ?quote:\ ?([\w\d]+?)()?\ ?}}'
+# group 2: ignore
+# group 3: quote content
+# group 4: closing brackets
+quote_key_regex = r'{{\ ?quote:\ ?([\w\d]+?)(:([^}]+?))?(\ ?}})'
 
 # group 1: citation pk (e.g., '988')
-# group 2: skip
+# group 2: ignore
 # group 3: page string (e.g., 'p. 22')
-# group 4: skip
+# group 4: ignore
 # group 5: quotation (e.g., "It followed institutionalized procedures....")
 citation_key_regex = r'\ ?{{\ ?citation:\ ?([\d\w]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?\ ?}}'
 
@@ -58,14 +65,7 @@ def process(_, html: str) -> str:
         for match in re.finditer(quote_key_regex, html):
             key = match.group(1).strip()
             quote = Quote.objects.get(pk=key)
-            quote_html = (
-                f'<blockquote class="blockquote">'
-                f'{quote.text.html}'
-                f'<footer class="blockquote-footer" style="position: relative;">'
-                f'{quote.citation_html or quote.attributee_string}'
-                f'</footer>'
-                f'</blockquote>'
-            )
+            quote_html = get_quote_html(quote)
             html = html.replace(match.group(0), quote_html)
 
         # Process citations
@@ -139,15 +139,20 @@ class HTMLField(MceHTMLField):
 
     def clean(self, value, model_instance) -> HTML:
         html = super().clean(value=value, model_instance=model_instance)
+
+        # Add Bootstrap classes to blockquotes and tables
         raw_html = html.raw_value.replace(
             '<blockquote>', '<blockquote class="blockquote">'
         ).replace(
             '<table>', '<table class="table">'
         ).strip()
+
         # Remove empty divs
         raw_html = re.sub(r'\n?<div[^>]+?>&nbsp;<\/div>', '', raw_html)
         raw_html = re.sub(r'<div id=\"i4c-draggable-container\"[^\/]+</div>', '', raw_html)
         raw_html = re.sub(r'<p>&nbsp;<\/p>', '', raw_html)
+
+        # Insert links for entity names
         if model_instance.pk and (hasattr(model_instance, 'attributees')
                                   or hasattr(model_instance, 'involved_entities')):
             entities = (getattr(model_instance, 'attributees', None)
@@ -164,8 +169,32 @@ class HTMLField(MceHTMLField):
                             rf'\g<1><span class="entity-name" data-entity-id="{entity.pk}">\g<2></span>\g<3>',
                             raw_html
                         )
+
+        # Add quote content (purely for readability when editing)
+        quote_cls = None
+        for match in re.finditer(quote_key_regex, raw_html):
+            quote_placeholder = match.group(0)
+            if not quote_cls:
+                from quotes.models import Quote
+                quote_cls = Quote
+            key = match.group(1).strip()
+            quote = quote_cls.objects.get(pk=key)
+            quote_html = get_quote_html(quote)
+            appendage = match.group(2)
+            updated_appendage = f': {quote_html}'
+            if not appendage:
+                updated_quote_placeholder = (
+                    f'{quote_placeholder.replace(" }}", "").replace("}}", "")}'
+                    f'{updated_appendage}'
+                ) + '}}'  # Angle brackets can't be included in f-string literals
+            else:
+                updated_quote_placeholder = quote_placeholder.replace(appendage, updated_appendage)
+            raw_html = raw_html.replace(quote_placeholder, updated_quote_placeholder)
+
+        # Wrap HTML content in a <p> tag if necessary
         if not raw_html.startswith('<') and raw_html.endswith('>'):
             raw_html = f'<p>{raw_html}</p>'
+
         html.raw_value = raw_html
         return html
 
@@ -217,3 +246,14 @@ class HTMLField(MceHTMLField):
     def value_to_string(self, obj) -> str:
         value = self.value_from_object(obj)
         return self.get_prep_value(value) or ''
+
+
+def get_quote_html(quote: 'Quote'):
+    return (
+        f'<blockquote class="blockquote">'
+        f'{quote.text.html}'
+        f'<footer class="blockquote-footer" style="position: relative;">'
+        f'{quote.citation_html or quote.attributee_string}'
+        f'</footer>'
+        f'</blockquote>'
+    )
