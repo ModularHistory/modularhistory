@@ -5,7 +5,7 @@ from django.db.models import ForeignKey, PositiveIntegerField, CharField
 from django.utils.encoding import python_2_unicode_compatible
 from typedmodels.models import TypedModel
 
-from django.utils.six import text_type
+from six import text_type
 
 
 class UniqueIdentifier(models.Model):

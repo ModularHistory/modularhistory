@@ -1,5 +1,6 @@
 from typing import Any, List, Optional
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -27,6 +28,8 @@ class OccurrenceImage(Model):
         null=True, blank=True,
         help_text='Set to 0 if the image is positioned manually.'
     )
+
+    quote_relations = GenericRelation('quotes.QuoteRelation')
 
     class Meta:
         unique_together = ['occurrence', 'image']

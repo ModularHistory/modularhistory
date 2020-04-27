@@ -18,37 +18,27 @@ django.setup()
 from history import settings
 
 
-# from history import settings
-# from django.db import transaction
-# from django.contrib.auth.models import Permission, Group
-# from django.contrib.contenttypes.models import ContentType
-# from sources.models import Citation, QSR, OSR, Source
+from history import settings
+from django.db import transaction
+from django.contrib.auth.models import Permission, Group
+from django.contrib.contenttypes.models import ContentType
+from sources.models import Citation, Source
+from quotes.models import QuoteRelation
+from occurrences.models import OccurrenceQuoteRelation, Occurrence
 
 
-if not settings.DEBUG:
-    print(f'Backing up database....')
-    # Create backup file
-    # management.call_command('dbbackup')
-    # Select latest backup file
-    os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
-    files = glob('*sql')  # .psql or .sql files
-    if not files:
-        print(f'Could not find a db backup file.')
-    backup_file = max(files, key=os.path.getmtime)
-    # Connect to remote backup server
-    server = config('REMOTE_BACKUP_SERVER', default=None)
-    username = config('REMOTE_BACKUP_SERVER_USERNAME', default=None)
-    password = config('REMOTE_BACKUP_SERVER_PASSWORD', default=None)
-    ssh_client = SSHClient()
-    ssh_client.load_system_host_keys()
-    # ssh_client.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
-    if server:
-        print(f'Connecting to remote backup location: {server}')
-        ssh_client.connect(server, username=username, password=password)
-        print('Connected.')
-        # ssh_client.connect(server, username='username', password='password')
-        with SCPClient(ssh_client.get_transport()) as scp_client:
-            scp_client.put(backup_file, f'~/history/history/backups/{backup_file}')
-            # scp_client.get('test2.txt')
-        print(f'Completed remote db backup.')
+occurrence_ct = ContentType.objects.get_for_model(Occurrence)
+
+for _oqr in OccurrenceQuoteRelation.objects.all():
+    oqr: OccurrenceQuoteRelation = _oqr
+    qr = QuoteRelation.objects.get_or_create(
+        quote=oqr.quote,
+        object_id=oqr.occurrence.pk,
+        content_type=occurrence_ct,
+        position=oqr.position
+    )
+    print(f'\n>>> {qr}')
+
+
+
 

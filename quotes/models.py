@@ -1,17 +1,19 @@
 from typing import List, Optional, TYPE_CHECKING
 
 from bs4 import BeautifulSoup
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import ForeignKey, ManyToManyField, CASCADE
+from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, ManyToManyField
 from django.urls import reverse
 from django.utils.safestring import SafeText, mark_safe
+from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
 from history.models import Model, TaggableModel, DatedModel, SearchableMixin, SourceMixin
 from images.models import Image
-from sources.models import Source, Citation
 from .manager import Manager
 
 if TYPE_CHECKING:
@@ -37,6 +39,12 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         Entity, related_name='quotes',
         on_delete=models.SET_NULL,
         null=True, blank=True
+    )
+    related = GenericManyToManyField(
+        'occurrences.Occurrence',  # add additional args here for related models
+        through='quotes.QuoteRelation',
+        related_name='quotes',
+        blank=True
     )
 
     class Meta:
@@ -168,6 +176,29 @@ class QuoteAttribution(Model):
 class QuoteBite(TaggableModel):
     """A catchy piece of a larger quote."""
     quote = ForeignKey(Quote, on_delete=CASCADE, related_name='bites')
+
+
+class QuoteRelation(Model):
+    """A relation to a quote (by any other model)."""
+    quote = ForeignKey(Quote, related_name='relations', on_delete=CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
+    position = PositiveSmallIntegerField(
+        null=True, blank=True,  # TODO: add cleaning logic
+        help_text='Determines the order of quotes.'
+    )
+
+    def __str__(self):
+        return BeautifulSoup(self.quote.bite.html, features='lxml').get_text()
+
+    class Meta:
+        unique_together = ['quote', 'content_type', 'object_id', 'position']
+        ordering = ['position', 'quote']
+
+    @property
+    def quote_pk(self) -> str:
+        return self.quote.pk
 
 
 def quote_sorter_key(quote: Quote):
