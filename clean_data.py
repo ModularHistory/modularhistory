@@ -31,13 +31,8 @@ occurrence_ct = ContentType.objects.get_for_model(Occurrence)
 
 for _oqr in OccurrenceQuoteRelation.objects.all():
     oqr: OccurrenceQuoteRelation = _oqr
-    qr = QuoteRelation.objects.get_or_create(
-        quote=oqr.quote,
-        object_id=oqr.occurrence.pk,
-        content_type=occurrence_ct,
-        position=oqr.position
-    )
-    print(f'\n>>> {qr}')
+    if not QuoteRelation.objects.filter(quote=oqr.quote, object_id=oqr.occurrence.id).exists():
+        raise Exception('incomplete')
 
 
 
