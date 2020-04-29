@@ -16,12 +16,7 @@ class Manager(PolymorphicManager):
             suppress_unverified: bool = True,
             db: str = 'default'
     ) -> QuerySet:
-        qs = self._queryset_class(
-            model=self.model, using=db, hints=self._hints
-        ).filter(hidden=False)
-
-        if suppress_unverified:
-            qs = qs.filter(verified=True)
+        qs = super().search(db=db, suppress_unverified=suppress_unverified).filter(hidden=False)
 
         # Limit to specified date range
         if start_year:

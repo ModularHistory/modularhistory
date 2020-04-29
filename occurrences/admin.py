@@ -1,8 +1,9 @@
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
-from django.db.models import Q
+from django.db.models import Count, Q
 
 from admin import admin_site, Admin, TabularInline  # , StackedInline
+from quotes.admin import RelatedQuotesInline
 from sources.admin import CitationsInline
 from topics.models import OccurrenceTopicRelation
 from . import models
@@ -23,6 +24,25 @@ class LocationFilter(AutocompleteFilter):
     field_name = 'locations'
 
 
+class HasQuotesFilter(SimpleListFilter):
+    title = 'has quotes'
+    parameter_name = 'has_quotes'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('Yes', 'Yes'),
+            ('No', 'No'),
+        )
+
+    def queryset(self, request, queryset):
+        queryset = queryset.annotate(quote_count=Count('quote_relations'))
+        if self.value() == 'Yes':
+            return queryset.exclude(quote_count__lt=1)
+        if self.value() == 'No':
+            return queryset.filter(quote_count__gt=1)
+        return queryset
+
+
 class LocationsInline(TabularInline):
     model = models.Occurrence.locations.through
     extra = 1
@@ -34,19 +54,6 @@ class ImagesInline(TabularInline):
     extra = 0
     autocomplete_fields = ['image']
     readonly_fields = ['key', 'image_pk']
-
-
-class RelatedQuotesInline(TabularInline):
-    model = models.Occurrence.related_quotes.through
-    autocomplete_fields = ['quote']
-    readonly_fields = ['pk', 'quote_pk']
-
-    sortable_field_name = 'position'
-
-    def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.related_quotes.count():
-            return 0
-        return 1
 
 
 class RelatedTopicsInline(TabularInline):
@@ -92,10 +99,12 @@ class OccurrenceAdmin(Admin):
         'detail_link',
         'description__truncated',
         'date_string',
-        # 'date',
         'related_topics_string'
     )
-    list_filter = ['verified', HasDateFilter, EntityFilter, TopicFilter, LocationFilter]
+    list_filter = [
+        'verified', HasDateFilter, HasQuotesFilter,
+        EntityFilter, TopicFilter, LocationFilter
+    ]
     search_fields = models.Occurrence.searchable_fields
     ordering = ('date',)
     inlines = [

@@ -1,9 +1,8 @@
 from django.db import models
-from django.db.models import ManyToManyField, ForeignKey, CASCADE, SET_NULL
+from django.db.models import ManyToManyField, ForeignKey, CASCADE
 
-from history.fields import ArrayField
-from history.fields import HTMLField
-from history.models import Model
+from history.fields import ArrayField, HTMLField
+from history.models import Model, RelatedQuotesMixin
 
 
 class TopicQuoteRelation(Model):
@@ -55,7 +54,7 @@ class TopicParentChildRelation(Model):
         return f'{self.parent_topic} > {self.child_topic}'
 
 
-class Topic(Model):
+class Topic(Model, RelatedQuotesMixin):
     """A topic"""
     key = models.CharField(max_length=25, unique=True)
     aliases = ArrayField(models.CharField(max_length=100), null=True, blank=True)

@@ -1,6 +1,5 @@
 from typing import Any, List, Optional
 
-from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -10,8 +9,10 @@ from django.utils.safestring import SafeText, mark_safe
 
 from entities.models import Entity
 from history.fields import HistoricDateTimeField, HTMLField
-from history.models import (Model, PolymorphicModel, TaggableModel,
-                            DatedModel, SearchableMixin, SourceMixin)
+from history.models import (
+    Model, PolymorphicModel, TaggableModel, DatedModel,
+    RelatedQuotesMixin, SearchableMixin, SourcesMixin
+)
 from images.models import Image
 from quotes.models import quote_sorter_key
 from sources.models import Source, Citation
@@ -28,8 +29,6 @@ class OccurrenceImage(Model):
         null=True, blank=True,
         help_text='Set to 0 if the image is positioned manually.'
     )
-
-    quote_relations = GenericRelation('quotes.QuoteRelation')
 
     class Meta:
         unique_together = ['occurrence', 'image']
@@ -64,7 +63,7 @@ class OccurrenceChainInclusion(Model):
         unique_together = ['chain', 'occurrence']
 
 
-class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
+class Occurrence(RelatedQuotesMixin, SourcesMixin, SearchableMixin, DatedModel, TaggableModel):
     """Something that happened"""
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
@@ -75,12 +74,6 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
     locations = ManyToManyField(
         'places.Place', through='OccurrenceLocation',
         related_name='occurrences',
-        blank=True
-    )
-    related_quotes = ManyToManyField(
-        'quotes.Quote', through='OccurrenceQuoteRelation',
-        symmetrical=True,
-        related_name='related_occurrences',
         blank=True
     )
     images = ManyToManyField(
@@ -148,9 +141,11 @@ class Occurrence(SourceMixin, SearchableMixin, DatedModel, TaggableModel):
             raise ValidationError('Occurrence needs a date.')
 
     def get_context(self):
+        quotes = ([quote_relation.quote for quote_relation in self.quote_relations.all()]
+                  if self.quote_relations.exists() else [])
         return {
             'occurrence': self,
-            'quotes': sorted(self.related_quotes.all(), key=quote_sorter_key),
+            'quotes': sorted(quotes, key=quote_sorter_key),
             # 'unpositioned_images' is a little misleading;
             # these are positioned by their `position` attribute rather than manually positioned.
             'unpositioned_images': [image for image in self.occurrence_images.all()

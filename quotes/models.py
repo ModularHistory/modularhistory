@@ -12,7 +12,10 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
-from history.models import Model, TaggableModel, DatedModel, SearchableMixin, SourceMixin
+from history.models import (
+    Model, TaggableModel, DatedModel,
+    RelatedQuotesMixin, SearchableMixin, SourcesMixin
+)
 from images.models import Image
 from .manager import Manager
 
@@ -20,7 +23,7 @@ if TYPE_CHECKING:
     from entities.models import Classification, EntityClassification
 
 
-class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
+class Quote(TaggableModel, DatedModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin):
     """A quote"""
     text = HTMLField(verbose_name='Text')
     bite = HTMLField(verbose_name='Bite', null=True, blank=True)
@@ -41,9 +44,9 @@ class Quote(TaggableModel, DatedModel, SearchableMixin, SourceMixin):
         null=True, blank=True
     )
     related = GenericManyToManyField(
-        'occurrences.Occurrence',  # add additional args here for related models
+        'occurrences.Occurrence', 'entities.Entity', 'quotes.Quote',
         through='quotes.QuoteRelation',
-        related_name='quotes',
+        related_name='related_quotes2',
         blank=True
     )
 
@@ -181,7 +184,7 @@ class QuoteBite(TaggableModel):
 class QuoteRelation(Model):
     """A relation to a quote (by any other model)."""
     quote = ForeignKey(Quote, related_name='relations', on_delete=CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
     position = PositiveSmallIntegerField(

@@ -91,7 +91,7 @@ INSTALLED_APPS = [
     # 'file_picker.uploads',  # file and image Django app
     # 'file_picker.wymeditor',  # optional WYMeditor plugin
     # 'sorl.thumbnail',  # required
-    'gm2m',  # https://django-gm2m.readthedocs.io/en/stable/
+    'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'massadmin',  # https://github.com/burke-software/django-mass-edit

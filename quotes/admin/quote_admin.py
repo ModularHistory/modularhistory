@@ -1,6 +1,8 @@
-from admin import admin_site, Admin, TabularInline
+from admin import admin_site, Admin, TabularInline, GenericTabularInline
 from occurrences.models import Occurrence
+from django.contrib.contenttypes.models import ContentType
 from sources.admin.citations import CitationsInline
+from django.db.models import QuerySet
 from topics.models import TopicQuoteRelation
 from .filters import (
     TopicFilter,
@@ -13,14 +15,15 @@ from .filters import (
 from .. import models
 
 
-class OccurrencesInline(TabularInline):
-    model = Occurrence.related_quotes.through
-    autocomplete_fields = ['occurrence']
+class OccurrencesInline(GenericTabularInline):
+    model = models.QuoteRelation
+    # readonly_fields = ['']
+    # autocomplete_fields = ['occurrence']
 
-    def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.related_occurrences.count():
-            return 0
-        return 1
+    def get_queryset(self, request):
+        qs: QuerySet = super().get_queryset(request)
+        ct = ContentType.objects.get_for_model(Occurrence)
+        return qs.filter(content_type_id=ct.id)
 
 
 class TopicsInline(TabularInline):

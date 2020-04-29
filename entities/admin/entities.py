@@ -2,6 +2,7 @@ from admin import admin_site, Admin, TabularInline
 from occurrences.models import OccurrenceEntityInvolvement
 from quotes.models import Quote
 from topics.models import EntityFactRelation
+from quotes.admin import RelatedQuotesInline
 from .admin_filters import ClassificationFilter, HasImageFilter, HasQuotesFilter
 from .affiliations import RolesInline
 from .. import models
@@ -85,6 +86,7 @@ class EntityAdmin(Admin):
         AffiliationsInline,
         OccurrencesInline,
         QuotesInline,
+        RelatedQuotesInline
     ]
 
 

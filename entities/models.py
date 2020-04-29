@@ -5,10 +5,13 @@ from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
-from history.structures import HistoricDateTime
+
 from history.fields import ArrayField, HistoricDateTimeField, HTMLField
-from history.models import Model, PolymorphicModel, TaggableModel
-from history.models import TypedModel
+from history.models import (
+    Model, PolymorphicModel, TaggableModel, TypedModel,
+    RelatedQuotesMixin
+)
+from history.structures import HistoricDateTime
 from images.models import Image
 
 
@@ -78,7 +81,7 @@ class EntityClassification(Model):
 
 
 # https://github.com/craigds/django-typed-models
-class Entity(TypedModel, TaggableModel):
+class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
     """An entity"""
     name = models.CharField(max_length=100, unique=True)
     verbose_name = models.CharField(max_length=100, unique=True, null=True, blank=True)

@@ -16,9 +16,7 @@ class Manager(BaseManager):
             suppress_unverified: bool = True,
             db: str = 'default'
     ) -> QuerySet:
-        qs = self._queryset_class(
-            model=self.model, using=db, hints=self._hints
-        ).filter(hidden=False)
+        qs = super().search(db=db, suppress_unverified=suppress_unverified).filter(hidden=False)
 
         if suppress_unverified:
             qs = qs.filter(verified=True)

@@ -1,16 +1,14 @@
 from typing import Any, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db.models import (
-    Model as BaseModel
-)
+from history.models.base_model import BaseModel
 from django.utils.safestring import SafeText, mark_safe
 
 if TYPE_CHECKING:
     from sources.models import Citation
 
 
-class SourceMixin(BaseModel):
+class SourcesMixin(BaseModel):
     sources: Any
 
     citations = GenericRelation('sources.Citation')

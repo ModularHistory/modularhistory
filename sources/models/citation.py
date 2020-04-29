@@ -30,7 +30,7 @@ class Citation(Model):
     citation_phrase = models.CharField(max_length=10, choices=citation_phrase_options,
                                        default=None, null=True, blank=True)
     source = ForeignKey(Source, related_name='citations', on_delete=CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
     page_number = PositiveSmallIntegerField(null=True, blank=True)

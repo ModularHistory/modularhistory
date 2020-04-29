@@ -24,16 +24,14 @@ from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from sources.models import Citation, Source
 from quotes.models import QuoteRelation
-from occurrences.models import OccurrenceQuoteRelation, Occurrence
+from topics.models import TopicQuoteRelation, Topic
 
 
-occurrence_ct = ContentType.objects.get_for_model(Occurrence)
+topic_ct = ContentType.objects.get_for_model(Topic)
 
-for _oqr in OccurrenceQuoteRelation.objects.all():
-    oqr: OccurrenceQuoteRelation = _oqr
-    if not QuoteRelation.objects.filter(quote=oqr.quote, object_id=oqr.occurrence.id).exists():
-        raise Exception('incomplete')
-
-
-
-
+for _oqr in TopicQuoteRelation.objects.all():
+    oqr: TopicQuoteRelation = _oqr
+    QuoteRelation.objects.get_or_create(
+            quote=oqr.quote, object_id=oqr.topic_id,
+            content_type=topic_ct
+    )

@@ -32,42 +32,47 @@ class Manager(BaseManager):
     ) -> Union[QuerySet, PolymorphicQuerySet]:
         qs = self._queryset_class(
             model=self.model, using=db, hints=self._hints
-        ).filter(hidden=False)
-
-        searchable_fields = self.model.get_searchable_fields()
-        if searchable_fields:
-            # q = Q()
-            # for attr in searchable_fields:
-            #     q |= Q(**{f'{attr}__search': query})
-            # qs = qs.filter(q).distinct()  # distinct() is often necessary with Q lookups
-
-            query = SearchQuery(query)
-            #  https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-PARSING-QUERIES
-            #  SearchQuery('red tomato', search_type='phrase')
-            #  SearchQuery('"tomato" & ("red" | "green")', search_type='raw')
-            #  SearchQuery('meat') & SearchQuery('cheese')  # AND
-            #  SearchQuery('meat') | SearchQuery('cheese')  # OR
-            #  ~SearchQuery('meat')  # NOT
-
-            # https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/#weighting-queries
-            vectors = []
-            for searchable_field in searchable_fields:
-                if isinstance(searchable_field, tuple) or isinstance(searchable_field, list):
-                    field, weight = searchable_field
-                    vectors.append(SearchVector(field, weight=weight))
-                else:
-                    vectors.append(SearchVector(searchable_field))
-            vector = vectors[0]
-            if len(vectors) > 1:
-                for v in vectors[1:]:
-                    vector += v
-            annotations = {'search': vector}
-            if rank:
-                annotations['rank'] = SearchRank(vector, query)
-            qs = qs.annotate(**annotations).filter(
-                search=query, hidden=False
-            ).order_by('id').distinct('id')
+        ).filter(verified=suppress_unverified)
         return qs
+
+        # qs = self._queryset_class(
+        #     model=self.model, using=db, hints=self._hints
+        # ).filter(hidden=False)
+        #
+        # searchable_fields = self.model.get_searchable_fields()
+        # if searchable_fields:
+        #     # q = Q()
+        #     # for attr in searchable_fields:
+        #     #     q |= Q(**{f'{attr}__search': query})
+        #     # qs = qs.filter(q).distinct()  # distinct() is often necessary with Q lookups
+        #
+        #     query = SearchQuery(query)
+        #     #  https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-PARSING-QUERIES
+        #     #  SearchQuery('red tomato', search_type='phrase')
+        #     #  SearchQuery('"tomato" & ("red" | "green")', search_type='raw')
+        #     #  SearchQuery('meat') & SearchQuery('cheese')  # AND
+        #     #  SearchQuery('meat') | SearchQuery('cheese')  # OR
+        #     #  ~SearchQuery('meat')  # NOT
+        #
+        #     # https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/#weighting-queries
+        #     vectors = []
+        #     for searchable_field in searchable_fields:
+        #         if isinstance(searchable_field, tuple) or isinstance(searchable_field, list):
+        #             field, weight = searchable_field
+        #             vectors.append(SearchVector(field, weight=weight))
+        #         else:
+        #             vectors.append(SearchVector(searchable_field))
+        #     vector = vectors[0]
+        #     if len(vectors) > 1:
+        #         for v in vectors[1:]:
+        #             vector += v
+        #     annotations = {'search': vector}
+        #     if rank:
+        #         annotations['rank'] = SearchRank(vector, query)
+        #     qs = qs.annotate(**annotations).filter(
+        #         search=query, hidden=False
+        #     ).order_by('id').distinct('id')
+        # return qs
 
     def get_closest_to_datetime(self, datetime_value: Union[date, datetime, HistoricDateTime],
                                 datetime_attr: str = 'date'):
