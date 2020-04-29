@@ -1,5 +1,5 @@
 from typing import List, Optional, TYPE_CHECKING
-
+from django.db.models import QuerySet, Q
 from bs4 import BeautifulSoup
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -45,7 +45,7 @@ class Quote(TaggableModel, DatedModel, RelatedQuotesMixin, SearchableMixin, Sour
     )
     related = GenericManyToManyField(
         'occurrences.Occurrence', 'entities.Entity', 'quotes.Quote',
-        through='quotes.QuoteRelation',
+        through='QuoteRelation',
         related_name='related_quotes2',
         blank=True
     )
@@ -129,6 +129,25 @@ class Quote(TaggableModel, DatedModel, RelatedQuotesMixin, SearchableMixin, Sour
         if not self.pk or not self.attributees.exists():
             return None
         return [attribution.attributee for attribution in self.attributions.all()]
+
+    @property
+    def related_occurrences(self) -> QuerySet:
+        # TODO: refactor
+        from occurrences.models import Occurrence
+        occurrence_ct = ContentType.objects.get_for_model(Occurrence)
+        occurrence_ids = [
+            o.id for o in self.relations.filter(Q(content_type_id=occurrence_ct.id))
+        ]
+        return Occurrence.objects.filter(id__in=occurrence_ids)
+
+    @property
+    def related_quotes(self) -> QuerySet:
+        # TODO: refactor
+        quote_ct = ContentType.objects.get_for_model(Quote)
+        quote_ids = [
+            q.id for q in self.relations.filter(Q(content_type_id=quote_ct.id))
+        ]
+        return Quote.objects.filter(id__in=quote_ids)
 
     def clean(self):
         super().clean()

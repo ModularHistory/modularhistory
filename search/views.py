@@ -137,7 +137,13 @@ class SearchResultsView(ListView):
                 topic_ids=topic_ids
             )
             if occurrence_results:
-                quote_results = quote_results.exclude(related_occurrences__in=occurrence_results)
+                # TODO: refactor
+                occurrence_result_ids = [o.id for o in occurrence_results]
+                occurrence_ct = ContentType.objects.get_for_model(Occurrence)
+                quote_results = quote_results.exclude(
+                    Q(relations__content_type_id=occurrence_ct) &
+                    Q(relations__object_id__in=occurrence_result_ids)
+                )
         else:
             quote_results = Quote.objects.using(db).none()
 
