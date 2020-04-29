@@ -1,8 +1,17 @@
+from typing import TYPE_CHECKING
+
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import ManyToManyField, ForeignKey, CASCADE
+from django.db.models import CASCADE, ForeignKey, ManyToManyField
 
 from history.fields import ArrayField, HTMLField
-from history.models import Model, RelatedQuotesMixin
+from history.models import (
+    Model, DatedModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin
+)
+
+if TYPE_CHECKING:
+    from entities.models import Classification, EntityClassification
 
 
 class TopicQuoteRelation(Model):
@@ -75,11 +84,6 @@ class Topic(Model, RelatedQuotesMixin):
     related_occurrences = ManyToManyField(
         'occurrences.Occurrence', related_name='related_topics',
         through=OccurrenceTopicRelation
-    )
-    related_quotes = ManyToManyField(
-        'quotes.Quote', related_name='related_topics',
-        through=TopicQuoteRelation,
-        blank=True
     )
 
     searchable_fields = ['key', 'description', 'aliases']
@@ -167,3 +171,20 @@ class Fact(Model):
 
     def __str__(self):
         return self.text.text
+
+
+class Relation(Model):
+    """A relation to a topic (by any other model)."""
+    topic = ForeignKey(Topic, related_name='relations', on_delete=CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
+    weight = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1000)], default=500)
+
+    class Meta:
+        unique_together = ['topic', 'content_type', 'object_id']
+        ordering = ['topic']
+
+    @property
+    def topic_pk(self) -> str:
+        return str(self.topic.id)

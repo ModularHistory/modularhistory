@@ -23,15 +23,16 @@ from django.db import transaction
 from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from sources.models import Citation, Source
+from occurrences.models import Occurrence
 from quotes.models import QuoteRelation
-from topics.models import TopicQuoteRelation, Topic
+from topics.models import TopicQuoteRelation, Topic, OccurrenceTopicRelation, Relation
 
 
-topic_ct = ContentType.objects.get_for_model(Topic)
+occurrence_ct = ContentType.objects.get_for_model(Occurrence)
 
-for _oqr in TopicQuoteRelation.objects.all():
-    oqr: TopicQuoteRelation = _oqr
-    QuoteRelation.objects.get_or_create(
-            quote=oqr.quote, object_id=oqr.topic_id,
-            content_type=topic_ct
+for _otr in OccurrenceTopicRelation.objects.all():
+    otr: OccurrenceTopicRelation = _otr
+    Relation.objects.get_or_create(
+            topic=otr.topic, object_id=otr.occurrence_id,
+            content_type=occurrence_ct
     )

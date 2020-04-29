@@ -2,7 +2,7 @@ from typing import Any, List, Optional
 
 from django.utils.safestring import SafeText, mark_safe
 
-from topics.models import Topic
+from topics.models import Topic, Relation
 from .base_model import Model
 
 
@@ -18,6 +18,10 @@ class TaggableModel(Model):
         if self.related_topics and len(self.related_topics.all()):
             return list(self.related_topics.all())
         return None
+
+    # @property
+    # def related_topics(self):
+    #     return self.relations.all()
 
     @property
     def related_topics_string(self) -> Optional[str]:
