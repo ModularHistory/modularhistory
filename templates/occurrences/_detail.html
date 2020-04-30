@@ -38,28 +38,10 @@
         <div class="lead">
             {{ occurrence.summary.html }}
         </div>
-{#        {% if occurrence.involved_entities.all|length %}#}
-{#            <div>#}
-{#                <ul>#}
-{#                    {% for entity in occurrence.involved_entities.all %}#}
-{#                        <li>#}
-{#                            <a class="font-italic" href="{% url 'entities:detail' entity.id %}" target="_blank">#}
-{#                                {{ entity }}#}
-{#                            </a>#}
-{#                        </li>#}
-{#                    {% endfor %}#}
-{#                </ul>#}
-{#            </div>#}
-{#        {% endif %}#}
         <div>
             {{ occurrence.description.html }}
         </div>
     </div>
-{#    {% if quotes|length %}#}
-{#        {% for quote in quotes %}#}
-{#            {{ quote.html }}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
     {% if occurrence.postscript %}
         {{ occurrence.postscript.html }}
     {% endif %}
