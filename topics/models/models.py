@@ -73,7 +73,7 @@ class Topic(Model, RelatedQuotesMixin):
     )
     related = GenericManyToManyField(
         'occurrences.Occurrence', 'quotes.Quote',
-        through='Relation',
+        through='topics.TopicRelation',
         related_name='topic_relations',
         blank=True
     )
@@ -163,20 +163,3 @@ class Fact(Model):
 
     def __str__(self):
         return self.text.text
-
-
-class Relation(Model):
-    """A relation to a topic (by any other model)."""
-    topic = ForeignKey(Topic, related_name='relations', on_delete=CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
-    weight = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1000)], default=500)
-
-    class Meta:
-        unique_together = ['topic', 'content_type', 'object_id']
-        ordering = ['topic']
-
-    @property
-    def topic_pk(self) -> str:
-        return str(self.topic.id)
