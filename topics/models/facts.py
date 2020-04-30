@@ -3,9 +3,7 @@ from typing import TYPE_CHECKING
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 
 from history.fields import HTMLField
-from history.models import (
-    Model
-)
+from history.models import Model
 from .topics import Topic
 
 if TYPE_CHECKING:

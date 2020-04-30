@@ -6,6 +6,18 @@ from django.utils.safestring import SafeText, mark_safe
 
 from .base_model import Model
 
+import re
+
+from admin_auto_filters.filters import AutocompleteFilter
+from admin_auto_filters.filters import AutocompleteSelect
+from django.contrib.admin import SimpleListFilter
+from django.db.models import Count
+from django.shortcuts import reverse
+from django.utils.safestring import mark_safe
+
+from topics.models import Topic
+
+
 if TYPE_CHECKING:
     from topics.models import Topic
 
@@ -46,3 +58,31 @@ class TaggableModel(Model):
                 ])
             )
         return None
+
+
+class TopicFilter(AutocompleteFilter):
+    title = 'tags'
+    field_name = 'tags'
+
+    PARAMETER_NAME = 'tags__topic__pk__exact'
+
+    def __init__(self, request, params, model, model_admin):
+        super().__init__(request, params, model, model_admin)
+        rendered_widget = self.rendered_widget
+        if self.value():
+            topic = Topic.objects.get(pk=self.value())
+            rendered_widget = mark_safe(
+                re.sub(r'(selected>).+(</option>)',
+                       rf'\g<1>{topic}\g<2>',
+                       rendered_widget)
+            )
+        self.rendered_widget = rendered_widget
+
+    def get_autocomplete_url(self, request, model_admin):
+        return reverse('admin:tag_search')
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(**{self.PARAMETER_NAME: self.value()})
+        else:
+            return queryset

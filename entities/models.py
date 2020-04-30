@@ -8,7 +8,7 @@ from django.utils.safestring import SafeText, mark_safe
 
 from history.fields import ArrayField, HistoricDateTimeField, HTMLField
 from history.models import (
-    Model, PolymorphicModel, TaggableModel, TypedModel,
+    Model, TaggableModel, PolymorphicModel, TypedModel,
     RelatedQuotesMixin
 )
 from history.structures import HistoricDateTime

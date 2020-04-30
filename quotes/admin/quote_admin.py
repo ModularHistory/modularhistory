@@ -1,11 +1,15 @@
-from admin import admin_site, Admin, TabularInline, GenericTabularInline
-from occurrences.models import Occurrence
 from django.contrib.contenttypes.models import ContentType
-from sources.admin.citations import CitationsInline
 from django.db.models import QuerySet
-from topics.models import TopicQuoteRelation
+from django.urls import path
+
+from admin import admin_site, Admin, TabularInline, GenericTabularInline
+from history.models.taggable_model import TopicFilter
+from occurrences.models import Occurrence
+from sources.admin.citations import CitationsInline
+from topics.models import TopicRelation
+from topics.views import TagSearchView
+from entities.views import EntitySearchView
 from .filters import (
-    # TopicFilter,
     AttributeeFilter,
     # AttributeeClassificationFilter,
     HasSourceFilter,
@@ -26,8 +30,8 @@ class OccurrencesInline(GenericTabularInline):
         return qs.filter(content_type_id=ct.id)
 
 
-class TopicsInline(TabularInline):
-    model = TopicQuoteRelation
+class TopicsInline(GenericTabularInline):
+    model = TopicRelation
     extra = 1
     autocomplete_fields = ['topic']
 
@@ -64,7 +68,7 @@ class QuoteAdmin(Admin):
         'verified',
         HasSourceFilter,
         HasMultipleCitationsFilter,
-        # TopicFilter,
+        TopicFilter,
         AttributeeFilter,
         AttributeeCountFilter,
         # AttributeeClassificationFilter  # broken
@@ -90,6 +94,18 @@ class QuoteAdmin(Admin):
                 fields.remove(field_name)
                 fields.append(field_name)
         return fields
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('tag_search/',
+                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
+                 name='tag_search'),
+            path('entity_search/',
+                 self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
+                 name='entity_search')
+        ]
+        return custom_urls + urls
 
 
 admin_site.register(models.Quote, QuoteAdmin)

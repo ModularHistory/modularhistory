@@ -1,10 +1,14 @@
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count, Q
-from admin import admin_site, Admin, TabularInline, GenericTabularInline
+from django.urls import path
+
+from admin import admin_site, Admin, TabularInline
+from history.models.taggable_model import TopicFilter
 from quotes.admin import RelatedQuotesInline
 from sources.admin import CitationsInline
-from topics.admin import RelatedTopicsInline
+# from topics.admin import RelatedTopicsInline
+from topics.views import TagSearchView
 from . import models
 
 
@@ -97,7 +101,7 @@ class OccurrenceAdmin(Admin):
     list_filter = [
         'verified', HasDateFilter, HasQuotesFilter,
         EntityFilter,
-        # TopicFilter,
+        TopicFilter,
         LocationFilter
     ]
     search_fields = models.Occurrence.searchable_fields
@@ -108,6 +112,15 @@ class OccurrenceAdmin(Admin):
         CitationsInline,
         # RelatedTopicsInline
     ]
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('tag_search/',
+                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
+                 name='tag_search'),
+        ]
+        return custom_urls + urls
 
 
 class OccurrenceChainAdmin(Admin):

@@ -1,16 +1,40 @@
+import re
+
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 
-
-# class TopicFilter(AutocompleteFilter):
-#     title = 'topic'
-#     field_name = 'related_topics'
+from entities.models import Entity
 
 
 class AttributeeFilter(AutocompleteFilter):
     title = 'attributee'
-    field_name = '_attributee'
+    field_name = 'attributees'
+
+    PARAMETER_NAME = 'attributees__pk__exact'
+
+    def __init__(self, request, params, model, model_admin):
+        super().__init__(request, params, model, model_admin)
+        rendered_widget = self.rendered_widget
+        if self.value():
+            entity = Entity.objects.get(pk=self.value())
+            rendered_widget = mark_safe(
+                re.sub(r'(selected>).+(</option>)',
+                       rf'\g<1>{entity}\g<2>',
+                       rendered_widget)
+            )
+        self.rendered_widget = rendered_widget
+
+    def get_autocomplete_url(self, request, model_admin):
+        return reverse('admin:entity_search')
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(**{self.PARAMETER_NAME: self.value()})
+        else:
+            return queryset
 
 
 class AttributeeClassificationFilter(AutocompleteFilter):

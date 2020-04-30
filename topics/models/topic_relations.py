@@ -26,6 +26,9 @@ class TopicRelation(Model):
         unique_together = ['topic', 'content_type', 'object_id']
         ordering = ['topic']
 
+    def __str__(self):
+        return str(self.topic)
+
     @property
     def topic_pk(self) -> str:
         return str(self.topic.id)

@@ -194,6 +194,7 @@ class HTMLField(MceHTMLField):
             raw_html = raw_html.replace(quote_placeholder, updated_quote_placeholder)
 
         # Add image captions (purely for readability when editing)
+
         image_cls = None
         for match in re.finditer(image_key_regex, raw_html):
             image_placeholder = match.group(0)
@@ -201,7 +202,13 @@ class HTMLField(MceHTMLField):
                 from images.models import Image
                 image_cls = Image
             key = match.group(1).strip()
-            image = image_cls.objects.get(pk=key)
+            # Update key if necessary
+            try:
+                image = image_cls.objects.get(pk=key)
+            except Exception as e:
+                print(f'{e}', file=stderr)
+                image = image_cls.objects.get(key=key)
+                image_placeholder = image_placeholder.replace(key, image.pk)
             appendage = match.group(2)
             updated_appendage = f': {image.caption.text}'
             if not appendage:

@@ -1,6 +1,24 @@
+from admin_auto_filters.views import AutocompleteJsonView
+from django.db.models import Q
 from django.views import generic
 
-from .models import Topic
+from topics.models import Topic
+
+
+class TagSearchView(AutocompleteJsonView):
+    """Used by autocomplete widget in admin."""
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Topic.objects.all()
+        term = self.term
+        if term:
+            queryset = queryset.filter(
+                Q(key__icontains=term) |
+                Q(aliases__icontains=term)
+            )
+        return queryset
 
 
 class IndexView(generic.list.ListView):

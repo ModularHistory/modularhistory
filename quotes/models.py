@@ -13,7 +13,7 @@ from gm2m import GM2MField as GenericManyToManyField
 from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
 from history.models import (
-    Model, TaggableModel, DatedModel,
+    Model, DatedModel, TaggableModel,
     RelatedQuotesMixin, SearchableMixin, SourcesMixin
 )
 from images.models import Image
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from entities.models import Classification, EntityClassification
 
 
-class Quote(TaggableModel, DatedModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin):
+class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin):
     """A quote"""
     text = HTMLField(verbose_name='Text')
     bite = HTMLField(verbose_name='Bite', null=True, blank=True)

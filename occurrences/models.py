@@ -1,5 +1,6 @@
 from typing import Any, List, Optional
 
+from bs4 import BeautifulSoup
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -109,7 +110,10 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
     def description__truncated(self) -> Optional[SafeText]:
         if not self.description:
             return None
-        return mark_safe(truncatechars_html(self.description.html, 250))
+        description = BeautifulSoup(self.description.html, features='lxml')
+        if description.find('img'):
+            description.find('img').decompose()
+        return mark_safe(truncatechars_html(description.prettify(), 250))
 
     @property
     def entity_images(self) -> Optional[List[Image]]:

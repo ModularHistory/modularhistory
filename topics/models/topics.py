@@ -5,9 +5,7 @@ from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from gm2m import GM2MField as GenericManyToManyField
 
 from history.fields import ArrayField, HTMLField
-from history.models import (
-    Model, RelatedQuotesMixin
-)
+from history.models import Model, RelatedQuotesMixin
 
 if TYPE_CHECKING:
     pass

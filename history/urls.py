@@ -18,6 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
 from search.views import SearchResultsView
+from topics.views import TagSearchView
 from admin import admin_site
 
 urlpatterns = [

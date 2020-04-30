@@ -1,17 +1,9 @@
-from typing import Any  # , TYPE_CHECKING
-
 from django.contrib.contenttypes.fields import GenericRelation
 
 from history.models.base_model import BaseModel
 
 
-# if TYPE_CHECKING:
-#     from quotes.models import QuoteRelation
-
-
 class RelatedQuotesMixin(BaseModel):
-    related_quotes2: Any
-
     quote_relations = GenericRelation('quotes.QuoteRelation')
 
     class Meta:
