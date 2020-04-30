@@ -92,7 +92,7 @@ class OccurrenceAdmin(Admin):
         'detail_link',
         'description__truncated',
         'date_string',
-        # 'related_topics_string'
+        # 'tags_string'
     )
     list_filter = [
         'verified', HasDateFilter, HasQuotesFilter,

@@ -18,7 +18,7 @@ class TaggableModel(Model):
         abstract = True
 
     @property
-    def has_related_topics(self) -> bool:
+    def has_tags(self) -> bool:
         return bool(self.related_topics)
 
     @property
@@ -29,16 +29,16 @@ class TaggableModel(Model):
         return related_topics
 
     @property
-    def related_topics_string(self) -> Optional[str]:
-        if self.has_related_topics:
+    def tags_string(self) -> Optional[str]:
+        if self.has_tags:
             related_topics = [topic.key for topic in self.related_topics]
             if related_topics:
                 return ', '.join(related_topics)
         return None
 
     @property
-    def topic_tags(self) -> Optional[SafeText]:
-        if self.has_related_topics:
+    def tags_html(self) -> Optional[SafeText]:
+        if self.has_tags:
             return mark_safe(
                 ' '.join([
                     f'<li class="topic-tag"><a>{topic.key}</a></li>'

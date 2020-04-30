@@ -24,9 +24,9 @@
                 <i class="fa fa-edit"></i>
             </a>
         {% endif %}
-        {% if quote.related_topics and quote.related_topics.all|length %}
+        {% if quote.has_tags %}
             <ul class="tags">
-                {{ quote.topic_tags }}
+                {{ quote.tags_html }}
             </ul>
         {% endif %}
     </div>

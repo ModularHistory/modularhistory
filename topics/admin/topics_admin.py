@@ -43,7 +43,7 @@ class TopicAdmin(Admin):
         'description',
         'parent_topics_string',
         'child_topics_string',
-        'related_topics_string'
+        'tags_string'
     )
     list_filter = ('related_topics',)
     search_fields = ('key', 'aliases', 'description')
@@ -52,7 +52,7 @@ class TopicAdmin(Admin):
     inlines = [
         ParentTopicsInline,
         ChildTopicsInline,
-        # TopicRelationsInline,
+        TopicRelationsInline,
         # RelatedOccurrencesInline,
     ]
 

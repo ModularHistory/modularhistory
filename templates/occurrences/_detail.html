@@ -63,9 +63,9 @@
     {% if occurrence.postscript %}
         {{ occurrence.postscript.html }}
     {% endif %}
-    {% if occurrence.related_topics and occurrence.related_topics.all|length %}
+    {% if occurrence.has_tags %}
         <ul class="tags">
-            {{ occurrence.topic_tags }}
+            {{ occurrence.tags_html }}
         </ul>
     {% endif %}
     {% if occurrence.citations.all|length %}

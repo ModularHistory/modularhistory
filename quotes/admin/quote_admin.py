@@ -58,7 +58,7 @@ class QuoteAdmin(Admin):
         'attributee_html',
         'date_string',
         'citation_html',
-        'related_topics_string'
+        'tags_string'
     ]
     list_filter = [
         'verified',

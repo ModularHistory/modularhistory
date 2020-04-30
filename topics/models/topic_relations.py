@@ -8,7 +8,7 @@ from django.db.models import CASCADE, ForeignKey
 from history.models import (
     Model
 )
-from .models import Topic
+from .topics import Topic
 
 if TYPE_CHECKING:
     pass

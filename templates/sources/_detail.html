@@ -19,7 +19,7 @@
                 {{ quote.html }}
                 {% if quote.related_topics and quote.related_topics.all|length %}
                     <ul class="tags float-right">
-                        {{ quote.topic_tags }}
+                        {{ quote.tags_html }}
                     </ul>
                 {% endif %}
             </div>
