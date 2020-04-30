@@ -5,7 +5,7 @@ from sources.admin.citations import CitationsInline
 from django.db.models import QuerySet
 from topics.models import TopicQuoteRelation
 from .filters import (
-    TopicFilter,
+    # TopicFilter,
     AttributeeFilter,
     # AttributeeClassificationFilter,
     HasSourceFilter,
@@ -64,7 +64,7 @@ class QuoteAdmin(Admin):
         'verified',
         HasSourceFilter,
         HasMultipleCitationsFilter,
-        TopicFilter,
+        # TopicFilter,
         AttributeeFilter,
         AttributeeCountFilter,
         # AttributeeClassificationFilter  # broken

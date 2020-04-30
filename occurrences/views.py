@@ -15,7 +15,7 @@ class ListView(generic.list.ListView):
 
     def get_queryset(self) -> PolymorphicQuerySet:
         """Return the queryset."""
-        return Occurrence.objects.exclude(related_topics__key='Mormonism')  # TODO
+        return Occurrence.objects.all()  # .exclude(related_topics__key='Mormonism')  # TODO
 
     def get_context_data(self, *args, **kwargs) -> Dict:
         context = super().get_context_data(*args, **kwargs)

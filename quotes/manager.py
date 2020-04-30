@@ -37,8 +37,8 @@ class Manager(BaseManager):
         # Limit to specified topics
         if topic_ids:
             qs = qs.filter(
-                Q(related_topics__id__in=topic_ids) |
-                Q(related_topics__related_topics__id__in=topic_ids)
+                Q(tags__topic__id__in=topic_ids) |
+                Q(tags__topic__related_topics__id__in=topic_ids)
             )
 
         searchable_fields = self.model.get_searchable_fields()

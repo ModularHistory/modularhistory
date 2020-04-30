@@ -1,16 +1,15 @@
-
 from admin import admin_site, Admin, TabularInline, StackedInline
-from . import models
+from .. import models
 
 
-class RelatedOccurrencesInline(TabularInline):
-    model = models.Topic.related_occurrences.through
-    extra = 1
-    verbose_name_plural = 'related occurrences'
-    verbose_name = 'related occurrence'
+# class RelatedOccurrencesInline(TabularInline):
+#     model = models.Topic.related_occurrences.through
+#     extra = 1
+#     verbose_name_plural = 'related occurrences'
+#     verbose_name = 'related occurrence'
 
 
-class RelatedTopicsInline(TabularInline):
+class TopicRelationsInline(TabularInline):
     model = models.Topic.related_topics.through
     fk_name = 'from_topic'
     autocomplete_fields = ['to_topic']
@@ -53,8 +52,8 @@ class TopicAdmin(Admin):
     inlines = [
         ParentTopicsInline,
         ChildTopicsInline,
-        RelatedTopicsInline,
-        RelatedOccurrencesInline,
+        # TopicRelationsInline,
+        # RelatedOccurrencesInline,
     ]
 
 
@@ -63,9 +62,9 @@ class FactEntitiesInline(TabularInline):
     extra = 1
 
 
-class FactTopicsInline(TabularInline):
-    model = models.Fact.related_topics.through
-    extra = 1
+# class FactTopicsInline(TabularInline):
+#     model = models.Fact.related_topics.through
+#     extra = 1
 
 
 class OccurrencesInline(TabularInline):
@@ -87,12 +86,14 @@ class SupportiveFactsInline(StackedInline):
 
 class FactAdmin(Admin):
     list_display = ('text',)
-    list_filter = ('related_topics', 'related_entities', 'related_occurrences')
+    list_filter = ('related_entities', 'related_occurrences')
     search_fields = ('text',)
     # ordering = ('datetime', 'start_date', 'end_date')
 
     inlines = [
-        FactEntitiesInline, FactTopicsInline, OccurrencesInline,
+        FactEntitiesInline,
+        # FactTopicsInline,
+        OccurrencesInline,
         SupportedFactsInline,
         SupportiveFactsInline
     ]

@@ -63,7 +63,7 @@ class OccurrenceChainInclusion(Model):
         unique_together = ['chain', 'occurrence']
 
 
-class Occurrence(RelatedQuotesMixin, SourcesMixin, SearchableMixin, DatedModel, TaggableModel):
+class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, SearchableMixin):
     """Something that happened"""
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)

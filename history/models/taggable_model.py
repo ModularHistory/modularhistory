@@ -1,39 +1,48 @@
-from typing import Any, List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
+from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models import QuerySet
 from django.utils.safestring import SafeText, mark_safe
 
-from topics.models import Topic, Relation
 from .base_model import Model
+
+if TYPE_CHECKING:
+    from topics.models import Topic
 
 
 class TaggableModel(Model):
     """Mixin for models that are topic-taggable."""
-    related_topics: Any
+    tags = GenericRelation('topics.TopicRelation')
 
     class Meta:
         abstract = True
 
     @property
-    def _related_topics(self) -> Optional[List[Topic]]:
-        if self.related_topics and len(self.related_topics.all()):
-            return list(self.related_topics.all())
-        return None
+    def has_related_topics(self) -> bool:
+        return bool(self.related_topics)
 
-    # @property
-    # def related_topics(self):
-    #     return self.relations.all()
+    @property
+    def related_topics(self) -> List['Topic']:
+        if not self.tags.exists():
+            return []
+        related_topics = [tag.topic for tag in self.tags.all()]
+        return related_topics
 
     @property
     def related_topics_string(self) -> Optional[str]:
-        if self._related_topics:
-            related_topics = [topic.key for topic in self._related_topics]
+        if self.has_related_topics:
+            related_topics = [topic.key for topic in self.related_topics]
             if related_topics:
                 return ', '.join(related_topics)
         return None
 
     @property
     def topic_tags(self) -> Optional[SafeText]:
-        if self._related_topics:
-            return mark_safe(' '.join([f'<li class="topic-tag"><a>{topic.key}</a></li>'
-                                       for topic in self._related_topics]))
+        if self.has_related_topics:
+            return mark_safe(
+                ' '.join([
+                    f'<li class="topic-tag"><a>{topic.key}</a></li>'
+                    for topic in self.related_topics
+                ])
+            )
         return None

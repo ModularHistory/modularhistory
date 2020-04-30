@@ -3,9 +3,9 @@ from django.contrib.admin import SimpleListFilter
 from django.db.models import Count
 
 
-class TopicFilter(AutocompleteFilter):
-    title = 'topic'
-    field_name = 'related_topics'
+# class TopicFilter(AutocompleteFilter):
+#     title = 'topic'
+#     field_name = 'related_topics'
 
 
 class AttributeeFilter(AutocompleteFilter):

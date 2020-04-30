@@ -18,6 +18,9 @@ from search.forms import SearchFilterForm
 from sources.models import Source
 from topics.models import Topic
 
+occurrence_ct = ContentType.objects.get_for_model(Occurrence)
+quote_ct = ContentType.objects.get_for_model(Quote)
+
 
 def date_sorter(x: Union[Model, DatedModel]):
     date = None
@@ -120,16 +123,19 @@ class SearchResultsView(ListView):
         }
 
         # Occurrences
+        occurrence_result_ids = []
         if Occurrence in content_types or not content_types:
             occurrence_results = Occurrence.objects.search(
                 **search_kwargs,
                 entity_ids=entity_ids,
                 topic_ids=topic_ids,
             )
+            occurrence_result_ids = [o.id for o in occurrence_results]
         else:
             occurrence_results = Occurrence.objects.none()
 
         # Quotes
+        quote_result_ids = []
         if Quote in content_types or not content_types:
             quote_results = Quote.objects.search(
                 **search_kwargs,
@@ -138,12 +144,11 @@ class SearchResultsView(ListView):
             )
             if occurrence_results:
                 # TODO: refactor
-                occurrence_result_ids = [o.id for o in occurrence_results]
-                occurrence_ct = ContentType.objects.get_for_model(Occurrence)
                 quote_results = quote_results.exclude(
                     Q(relations__content_type_id=occurrence_ct) &
                     Q(relations__object_id__in=occurrence_result_ids)
                 )
+            quote_result_ids = [q.id for q in quote_results]
         else:
             quote_results = Quote.objects.using(db).none()
 
@@ -188,11 +193,19 @@ class SearchResultsView(ListView):
             Q(quotes__in=quote_results) |
             Q(attributed_sources__in=source_results)
         ).order_by('id').distinct('id').values('pk'))).order_by('name')
-        self.topics = Topic.objects.using(db).filter(pk__in=Subquery(Topic.objects.filter(
-            Q(related_occurrences__in=occurrence_results) |
-            Q(related_quotes__in=quote_results)
-            # | Q(related_topics__related_quotes__in=quote_results)
-        ).order_by('id').distinct('id').values('pk'))).order_by('key')
+
+        # TODO: refactor
+        topics_ids = []
+        from topics.models import TopicRelation
+        for relation in TopicRelation.objects.filter(
+            Q(content_type=occurrence_ct) & Q(object_id__in=occurrence_result_ids)
+        ):
+            topics_ids.append(relation.topic.id)
+        for relation in TopicRelation.objects.filter(
+            Q(content_type=quote_ct) & Q(object_id__in=quote_result_ids)
+        ):
+            topics_ids.append(relation.topic.id)
+        self.topics = Topic.objects.using(db).filter(pk__in=topics_ids).order_by('key')
         # self.places = Place.objects.filter(
         #     Q(occurrences__in=occurrence_results)
         #     | Q(publications__in=source_results)

@@ -1,11 +1,10 @@
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count, Q
-
-from admin import admin_site, Admin, TabularInline  # , StackedInline
+from admin import admin_site, Admin, TabularInline, GenericTabularInline
 from quotes.admin import RelatedQuotesInline
 from sources.admin import CitationsInline
-from topics.models import OccurrenceTopicRelation
+from topics.admin import RelatedTopicsInline
 from . import models
 
 
@@ -14,9 +13,9 @@ class EntityFilter(AutocompleteFilter):
     field_name = 'involved_entities'
 
 
-class TopicFilter(AutocompleteFilter):
-    title = 'topic'
-    field_name = 'related_topics'
+# class TopicFilter(AutocompleteFilter):
+#     title = 'topic'
+#     field_name = 'related_topics'
 
 
 class LocationFilter(AutocompleteFilter):
@@ -56,12 +55,6 @@ class ImagesInline(TabularInline):
     readonly_fields = ['key', 'image_pk']
 
 
-class RelatedTopicsInline(TabularInline):
-    model = OccurrenceTopicRelation
-    extra = 1
-    autocomplete_fields = ['topic']
-
-
 class InvolvedEntitiesInline(TabularInline):
     model = models.Occurrence.involved_entities.through
     extra = 1
@@ -99,11 +92,13 @@ class OccurrenceAdmin(Admin):
         'detail_link',
         'description__truncated',
         'date_string',
-        'related_topics_string'
+        # 'related_topics_string'
     )
     list_filter = [
         'verified', HasDateFilter, HasQuotesFilter,
-        EntityFilter, TopicFilter, LocationFilter
+        EntityFilter,
+        # TopicFilter,
+        LocationFilter
     ]
     search_fields = models.Occurrence.searchable_fields
     ordering = ('date',)
@@ -111,7 +106,7 @@ class OccurrenceAdmin(Admin):
         RelatedQuotesInline, InvolvedEntitiesInline,
         LocationsInline, ImagesInline,
         CitationsInline,
-        RelatedTopicsInline
+        # RelatedTopicsInline
     ]
 
 

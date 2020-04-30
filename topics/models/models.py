@@ -4,10 +4,12 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
+from gm2m import GM2MField as GenericManyToManyField
 
 from history.fields import ArrayField, HTMLField
 from history.models import (
-    Model, DatedModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin
+    Model, DatedModel,
+    RelatedQuotesMixin, SearchableMixin, SourcesMixin
 )
 
 if TYPE_CHECKING:
@@ -25,19 +27,7 @@ class TopicQuoteRelation(Model):
         return f'{self.topic}'
 
 
-class OccurrenceTopicRelation(Model):
-    topic = ForeignKey('topics.Topic', related_name='topic_occurrence_relations', on_delete=CASCADE)
-    occurrence = ForeignKey('occurrences.Occurrence', related_name='occurrence_topic_relations', on_delete=CASCADE)
-    weight = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1000)], default=500)
-
-    class Meta:
-        unique_together = ['topic', 'occurrence']
-
-    def __str__(self):
-        return f'{self.topic}'
-
-
-class TopicRelation(Model):
+class TopicTopicRelation(Model):
     """A relationship between equivalent or closely related topics."""
     from_topic = ForeignKey('Topic', related_name='topics_related_to', on_delete=CASCADE)
     to_topic = ForeignKey('Topic', related_name='topics_related_from', on_delete=CASCADE)
@@ -77,13 +67,15 @@ class Topic(Model, RelatedQuotesMixin):
     )
     related_topics = ManyToManyField(
         'self', related_name='topics_related',
-        through=TopicRelation,
+        through=TopicTopicRelation,
         symmetrical=True,
         blank=True
     )
-    related_occurrences = ManyToManyField(
-        'occurrences.Occurrence', related_name='related_topics',
-        through=OccurrenceTopicRelation
+    related = GenericManyToManyField(
+        'occurrences.Occurrence', 'quotes.Quote',
+        through='Relation',
+        related_name='topic_relations',
+        blank=True
     )
 
     searchable_fields = ['key', 'description', 'aliases']

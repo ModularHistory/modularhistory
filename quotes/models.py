@@ -56,7 +56,7 @@ class Quote(TaggableModel, DatedModel, RelatedQuotesMixin, SearchableMixin, Sour
 
     searchable_fields = [
         'text', 'context', 'attributees__name', 'date__year',
-        'sources__db_string', 'related_topics__key', 'related_topics__aliases'
+        'sources__db_string', 'tags__topic__key', 'tags__topic__aliases'
     ]
     objects: Manager = Manager()
 
