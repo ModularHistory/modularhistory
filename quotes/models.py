@@ -37,12 +37,6 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
         through='QuoteAttribution',
         blank=True
     )
-    # TODO: clean up (remove) _attributee field; use `attributees` instead
-    _attributee = ForeignKey(
-        Entity, related_name='quotes',
-        on_delete=models.SET_NULL,
-        null=True, blank=True
-    )
     related = GenericManyToManyField(
         'occurrences.Occurrence', 'entities.Entity', 'quotes.Quote',
         through='QuoteRelation',
@@ -116,10 +110,11 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
 
     @property
     def image(self) -> Optional[Image]:
-        if self._attributee and self._attributee.images.exists():
+        if self.attributees.exists() and self.attributees.first().images.exists():
+            attributee = self.attributees.first()
             if self.date:
-                return self._attributee.images.get_closest_to_datetime(self.date)
-            return self._attributee.images.first()
+                return attributee.images.get_closest_to_datetime(self.date)
+            return attributee.images.first()
         elif self.related_occurrences.exists():
             return self.related_occurrences.first().image
         return None
@@ -158,13 +153,6 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
             if len(text) > 400:
                 raise ValidationError('Add a quote bite.')
             self.bite = text
-        # TODO: The logic below can be removed after the `attributee` field is removed
-        if self.pk:  # to avoid RecursionErrors and ValueErrors with not-yet-saved objects
-            if self.attributees.exists():
-                if hasattr(self, '_attributee') and not getattr(self, '_attributee', None):
-                    self._attributee = self.ordered_attributees[0]
-            elif getattr(self, '_attributee', None):
-                QuoteAttribution.objects.create(quote=self, attributee=self._attributee)
 
     def save(self, *args, **kwargs):
         self.clean()

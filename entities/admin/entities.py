@@ -13,10 +13,10 @@ from ..forms import (
 
 
 class QuotesInline(TabularInline):
-    model = Quote
+    model = Quote.attributees.through
     extra = 0
     show_change_link = True
-    fields = ['verified', 'hidden']
+    autocomplete_fields = ['quote']
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)

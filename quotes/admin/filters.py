@@ -39,7 +39,7 @@ class AttributeeFilter(AutocompleteFilter):
 
 class AttributeeClassificationFilter(AutocompleteFilter):
     title = 'attributee classification'
-    field_name = 'attributee__classifications'
+    field_name = 'attributees__classifications'
 
 
 class HasSourceFilter(SimpleListFilter):

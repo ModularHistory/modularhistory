@@ -72,12 +72,11 @@ class QuoteAdmin(Admin):
         AttributeeFilter,
         AttributeeCountFilter,
         # AttributeeClassificationFilter  # broken
-        '_attributee__classifications',
         'attributees__classifications'
     ]
     search_fields = models.Quote.searchable_fields
-    ordering = ('date', '_attributee')
-    autocomplete_fields = ['_attributee']
+    ordering = ('date',)
+    autocomplete_fields = []
     readonly_fields = ['citation_html']
     inlines = [
         AttributeesInline,
