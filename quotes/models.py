@@ -40,7 +40,7 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
     related = GenericManyToManyField(
         'occurrences.Occurrence', 'entities.Entity', 'quotes.Quote',
         through='QuoteRelation',
-        related_name='related_quotes2',
+        related_name='related_quotes',
         blank=True
     )
 
@@ -134,15 +134,6 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
             o.id for o in self.relations.filter(Q(content_type_id=occurrence_ct.id))
         ]
         return Occurrence.objects.filter(id__in=occurrence_ids)
-
-    @property
-    def related_quotes(self) -> QuerySet:
-        # TODO: refactor
-        quote_ct = ContentType.objects.get_for_model(Quote)
-        quote_ids = [
-            q.id for q in self.relations.filter(Q(content_type_id=quote_ct.id))
-        ]
-        return Quote.objects.filter(id__in=quote_ids)
 
     def clean(self):
         super().clean()
