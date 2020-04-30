@@ -33,7 +33,7 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
                         help_text='Content to be displayed after the quote')
     date = HistoricDateTimeField(null=True, blank=True)
     attributees = ManyToManyField(
-        Entity, related_name='quotes2',
+        Entity, related_name='quotes',
         through='QuoteAttribution',
         blank=True
     )
