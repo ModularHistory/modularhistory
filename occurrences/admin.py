@@ -3,11 +3,11 @@ from django.contrib.admin import SimpleListFilter
 from django.db.models import Count, Q
 from django.urls import path
 
+from topics.admin import RelatedTopicsInline
 from admin import admin_site, Admin, TabularInline
 from history.models.taggable_model import TopicFilter
 from quotes.admin import RelatedQuotesInline
 from sources.admin import CitationsInline
-# from topics.admin import RelatedTopicsInline
 from topics.views import TagSearchView
 from . import models
 
@@ -110,7 +110,7 @@ class OccurrenceAdmin(Admin):
         RelatedQuotesInline, InvolvedEntitiesInline,
         LocationsInline, ImagesInline,
         CitationsInline,
-        # RelatedTopicsInline
+        RelatedTopicsInline
     ]
 
     def get_urls(self):

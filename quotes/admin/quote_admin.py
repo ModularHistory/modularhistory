@@ -3,12 +3,12 @@ from django.db.models import QuerySet
 from django.urls import path
 
 from admin import admin_site, Admin, TabularInline, GenericTabularInline
+from entities.views import EntitySearchView
 from history.models.taggable_model import TopicFilter
 from occurrences.models import Occurrence
 from sources.admin.citations import CitationsInline
-from topics.models import TopicRelation
+from topics.admin import RelatedTopicsInline
 from topics.views import TagSearchView
-from entities.views import EntitySearchView
 from .filters import (
     AttributeeFilter,
     # AttributeeClassificationFilter,
@@ -28,12 +28,6 @@ class OccurrencesInline(GenericTabularInline):
         qs: QuerySet = super().get_queryset(request)
         ct = ContentType.objects.get_for_model(Occurrence)
         return qs.filter(content_type_id=ct.id)
-
-
-class TopicsInline(GenericTabularInline):
-    model = TopicRelation
-    extra = 1
-    autocomplete_fields = ['topic']
 
 
 class AttributeesInline(TabularInline):
@@ -82,7 +76,7 @@ class QuoteAdmin(Admin):
         AttributeesInline,
         CitationsInline,
         OccurrencesInline,
-        TopicsInline,
+        RelatedTopicsInline,
         BitesInline
     ]
 
