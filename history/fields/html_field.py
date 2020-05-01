@@ -152,7 +152,7 @@ class HTMLField(MceHTMLField):
                         opening_span_tag = f'<span class="entity-name" data-entity-id="{e.pk}">'
                         closing_span_tag = '</span>'
                         raw_html = re.sub(
-                            rf'(^|^<p>|[^>])({name})([^\w])',
+                            rf'(^|^<p>|[^>])({name})(?!\w|[^\ ]\")',
                             rf'\g<1>{opening_span_tag}\g<2>{closing_span_tag}\g<3>',
                             raw_html
                         )
