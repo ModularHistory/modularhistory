@@ -4,7 +4,6 @@ from typing import Callable, Optional, Union, TYPE_CHECKING
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
-from django.urls import reverse
 from django.utils.safestring import SafeText
 from tinymce.models import HTMLField as MceHTMLField
 
@@ -107,22 +106,6 @@ def process(_, html: str) -> str:
             source_html = f'{source.html}'
             html = html.replace(match.group(0), source_html)
 
-    if re.search(entity_name_regex, html):
-        # from entities.models import Entity
-        processed_entity_keys = []
-        for match in re.finditer(entity_name_regex, html):
-            key = match.group(1).strip()
-            entity_name = match.group(2)
-            # Process the entity name if it hasn't already been processed
-            if key not in processed_entity_keys:
-                processed_entity_keys.append(key)
-                try:
-                    # entity = Entity.objects.get(pk=key)
-                    entity_link = (f'<a href="{reverse("entities:detail", args=[key])}" '
-                                   f'target="_blank">{entity_name}</a>')
-                    html = html.replace(match.group(0), entity_link, 1)
-                except Exception as e:
-                    print(f'{e}', file=stderr)
     return html
 
 
@@ -162,13 +145,14 @@ class HTMLField(MceHTMLField):
             if entities and entities.exists():
                 entities = entities.all()
                 from entities.models import Entity
-                for e in entities:
-                    entity: Entity = e
-                    for name in set([entity.name] + entity.aliases):
-                        print(f'>>> {name}', file=stderr)
+                for entity in entities:
+                    e: Entity = entity
+                    for name in set([e.name] + e.aliases):
+                        opening_span_tag = f'<span class="entity-name" data-entity-id="{e.pk}">'
+                        closing_span_tag = '</span>'
                         raw_html = re.sub(
                             rf'(^|[^>])({name})([^\w])',
-                            rf'\g<1><span class="entity-name" data-entity-id="{entity.pk}">\g<2></span>\g<3>',
+                            rf'\g<1>{opening_span_tag}\g<2>{closing_span_tag}\g<3>',
                             raw_html
                         )
 

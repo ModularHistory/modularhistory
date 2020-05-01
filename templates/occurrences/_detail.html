@@ -3,6 +3,7 @@
 {% load source_card %}
 {% load class_name %}
 {% load static %}
+{% load with_entity_links %}
 
 <div class="detail">
     {% if request.user.is_superuser %}
@@ -36,10 +37,10 @@
             {% endif %}
         {% endif %}
         <div class="lead">
-            {{ occurrence.summary.html }}
+            {{ occurrence.summary.html | with_entity_links }}
         </div>
         <div>
-            {{ occurrence.description.html }}
+            {{ occurrence.description.html | with_entity_links }}
         </div>
     </div>
     {% if occurrence.postscript %}
