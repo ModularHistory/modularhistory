@@ -37,12 +37,12 @@
                         {% with selected_option=display_option %}
                             <span class="display-option">
                                 <input type="radio" id="2pane-option" name="display" value="2pane"
-                                        {% if selected_option == '2pane' %} checked{% endif %} />
+                                        {% if selected_option == '2pane' or not selected_option %} checked{% endif %} />
                                 <label for="2pane-option"><i class="fas fa-list"></i></label>
                             </span>
                             <span class="display-option">
                                 <input type="radio" id="rows-option" name="display" value="rows"
-                                        {% if selected_option == 'rows' or not selected_option %} checked{% endif %} />
+                                        {% if selected_option == 'rows' %} checked{% endif %} />
                                 <label for="rows-option"><i class="fas fa-bars"></i></label>
                             </span>
                             <span class="display-option">
@@ -55,7 +55,7 @@
                     <div class="results-container">
                         {% block page_header %}
                         {% endblock %}
-                        {% if display_option == '2pane' %}
+                        {% if display_option == '2pane' or not display_option %}
                             <div class="two-pane-container">
                                 <div class="results result-cards">
                                     {% for object in object_list %}
@@ -93,7 +93,7 @@
                                     {% endwith %}
                                 </div>
                             </div>
-                        {% elif not display_option or display_option == 'rows' %}
+                        {% elif display_option == 'rows' %}
                             <div class="results">
                                 {% for object in object_list %}
                                     <div class="result" data-key="{{ object.key }}">
