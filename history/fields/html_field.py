@@ -4,6 +4,7 @@ from typing import Callable, Optional, Union, TYPE_CHECKING
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.safestring import SafeText
 from tinymce.models import HTMLField as MceHTMLField
 
@@ -151,7 +152,7 @@ class HTMLField(MceHTMLField):
                         opening_span_tag = f'<span class="entity-name" data-entity-id="{e.pk}">'
                         closing_span_tag = '</span>'
                         raw_html = re.sub(
-                            rf'(^|[^>])({name})([^\w])',
+                            rf'(^|^<p>|[^>])({name})([^\w])',
                             rf'\g<1>{opening_span_tag}\g<2>{closing_span_tag}\g<3>',
                             raw_html
                         )
@@ -178,7 +179,6 @@ class HTMLField(MceHTMLField):
             raw_html = raw_html.replace(quote_placeholder, updated_quote_placeholder)
 
         # Add image captions (purely for readability when editing)
-
         image_cls = None
         for match in re.finditer(image_key_regex, raw_html):
             image_placeholder = match.group(0)
