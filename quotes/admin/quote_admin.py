@@ -7,7 +7,7 @@ from entities.views import EntitySearchView
 from history.models.taggable_model import TopicFilter
 from occurrences.models import Occurrence
 from sources.admin.citations import CitationsInline
-from topics.admin import RelatedTopicsInline
+from topics.admin import RelatedTopicsInline, HasTagsFilter
 from topics.views import TagSearchView
 from .filters import (
     AttributeeFilter,
@@ -62,6 +62,7 @@ class QuoteAdmin(Admin):
         'verified',
         HasSourceFilter,
         HasMultipleCitationsFilter,
+        HasTagsFilter,
         TopicFilter,
         AttributeeFilter,
         AttributeeCountFilter,

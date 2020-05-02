@@ -1,2 +1,2 @@
-from .topics_admin import *
-from .related_topics_inline import RelatedTopicsInline
+from .topics import *
+from .related_topics import RelatedTopicsInline, HasTagsFilter
