@@ -30,11 +30,17 @@ from topics.models import Topic, TopicRelation
 occurrence_ct = ContentType.objects.get_for_model(Occurrence)
 quote_ct = ContentType.objects.get_for_model(Quote)
 
-mrm_topic = Topic.objects.get(key='Mormonism')
-race_topic = Topic.objects.get(key='Race')
-for q in Quote.objects.filter(verified=True):
-    print(q.text.text)
-    if input('Mormonism? [y/n] ') == 'y':
-        TopicRelation.objects.get_or_create(topic=mrm_topic, object_id=q.id, content_type=quote_ct)
-    if input('Race? [y/n] ') == 'y':
-        TopicRelation.objects.get_or_create(topic=race_topic, object_id=q.id, content_type=quote_ct)
+for pr in PageRange.objects.all():
+    print(f'{pr}')
+    if pr.page_number == 0:
+        if input('Delete? [y/n] ') == 'y':
+            pr.delete()
+
+# mrm_topic = Topic.objects.get(key='Mormonism')
+# race_topic = Topic.objects.get(key='Race')
+# for q in Quote.objects.filter(verified=True):
+#     print(q.text.text)
+#     if input('Mormonism? [y/n] ') == 'y':
+#         TopicRelation.objects.get_or_create(topic=mrm_topic, object_id=q.id, content_type=quote_ct)
+#     if input('Race? [y/n] ') == 'y':
+#         TopicRelation.objects.get_or_create(topic=race_topic, object_id=q.id, content_type=quote_ct)

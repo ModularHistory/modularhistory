@@ -28,7 +28,7 @@ citation_phrase_options = (
 
 class PageRange(Model):
     citation = ForeignKey('Citation', on_delete=CASCADE, related_name='pages')
-    page_number = PositiveSmallIntegerField(null=True, blank=True)
+    page_number = PositiveSmallIntegerField()
     end_page_number = PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
