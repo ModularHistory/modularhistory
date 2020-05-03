@@ -31,7 +31,6 @@ occurrence_ct = ContentType.objects.get_for_model(Occurrence)
 quote_ct = ContentType.objects.get_for_model(Quote)
 
 for pr in PageRange.objects.all():
-    print(f'{pr}')
     if pr.page_number == 0:
         if input('Delete? [y/n] ') == 'y':
             pr.delete()
