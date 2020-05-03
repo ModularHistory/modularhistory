@@ -104,6 +104,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'entities.apps.EntitiesConfig',
     'home.apps.HomeConfig',
+    'markup.apps.MarkupConfig',
     'search.apps.SearchConfig',
     'images.apps.ImagesConfig',
     'occurrences.apps.OccurrencesConfig',

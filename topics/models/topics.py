@@ -11,17 +11,6 @@ if TYPE_CHECKING:
     pass
 
 
-class TopicQuoteRelation(Model):
-    topic = ForeignKey('Topic', related_name='topic_quote_relations', on_delete=CASCADE)
-    quote = ForeignKey('quotes.Quote', related_name='quote_topic_relations', on_delete=CASCADE)
-
-    class Meta:
-        unique_together = ['topic', 'quote']
-
-    def __str__(self):
-        return f'{self.topic}'
-
-
 class TopicTopicRelation(Model):
     """A relationship between equivalent or closely related topics."""
     from_topic = ForeignKey('Topic', related_name='topics_related_to', on_delete=CASCADE)

@@ -175,8 +175,10 @@ class QuoteAttribution(Model):
 
 
 class QuoteBite(TaggableModel):
-    """A catchy piece of a larger quote."""
+    """A piece of a larger quote."""
     quote = ForeignKey(Quote, on_delete=CASCADE, related_name='bites')
+    start = models.PositiveIntegerField()
+    end = models.PositiveIntegerField()
 
 
 class QuoteRelation(Model):
