@@ -1,8 +1,7 @@
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 
-from admin import GenericTabularInline
-from admin import admin_site, Admin
+from admin import admin_site, Admin, TabularInline, GenericTabularInline
 from .. import models
 
 
@@ -34,12 +33,25 @@ class CitationAdmin(Admin):
     list_filter = [ContentTypeFilter]
 
 
+class PagesInline(TabularInline):
+    model = models.PageRange
+    verbose_name = 'page range'
+    verbose_name_plural = 'pages'
+
+    def get_extra(self, request, obj=None, **kwargs):
+        if obj and obj.pages.count():
+            return 0
+        return 1
+
+
 class CitationsInline(GenericTabularInline):
     model = models.Citation
     autocomplete_fields = ['source']
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
+
+    inlines = [PagesInline]
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'

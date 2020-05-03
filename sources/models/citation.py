@@ -25,6 +25,20 @@ citation_phrase_options = (
 )
 
 
+class PageRange(Model):
+    citation = ForeignKey('Citation', on_delete=CASCADE, related_name='pages')
+    page_number = PositiveSmallIntegerField(null=True, blank=True)
+    end_page_number = PositiveSmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['page_number']
+        unique_together = ['citation', 'page_number']
+
+    def __str__(self):
+        string = f'{self.page_number}'
+        return string
+
+
 class Citation(Model):
     """A reference to a source (from any other model)."""
     citation_phrase = models.CharField(max_length=10, choices=citation_phrase_options,
