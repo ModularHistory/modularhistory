@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import Any, Optional
 
 from bs4 import BeautifulSoup
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -36,8 +36,46 @@ class PageRange(Model):
         unique_together = ['citation', 'page_number']
 
     def __str__(self):
-        string = f'{self.page_number}'
-        return string
+        return BeautifulSoup(self.html, features='lxml').get_text()
+
+    @property
+    def html(self) -> Optional[SafeText]:
+        citation = self.citation
+        pn = self.page_number
+        if not pn:
+            return None
+        end_pn = self.end_page_number or None
+        _url = citation.source.file_url or None
+
+        def get_page_number_url(page_number, url=_url) -> Optional[str]:
+            if not url:
+                return None
+            page_number += citation.source.file.page_offset
+            if 'page=' in url:
+                url = re.sub(r'page=\d+', f'page={page_number}', url)
+            else:
+                url += f'#page={page_number}'
+            return url
+
+        def get_page_number_link(url, page_number) -> Optional[str]:
+            if not url:
+                return None
+            return (f'<a href="{url}" target="_blank" '
+                    f'class="display-source">{page_number}</a>')
+
+        pn_url = get_page_number_url(pn)
+        pn = get_page_number_link(pn_url, pn) or pn
+        if end_pn:
+            end_pn_url = get_page_number_url(end_pn)
+            end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
+            page_string = f'pp. {pn}–{end_pn}'
+        else:
+            page_string = f'p. {pn}'
+        return mark_safe(page_string)
+
+    def clean(self):
+        if self.end_page_number and self.end_page_number < self.page_number:
+            raise ValidationError('The end page number must be greater than the start page number.')
 
 
 class Citation(Model):
@@ -48,8 +86,9 @@ class Citation(Model):
     content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
-    page_number = PositiveSmallIntegerField(null=True, blank=True)
-    end_page_number = PositiveSmallIntegerField(null=True, blank=True)
+    pages: Any
+    # page_number = PositiveSmallIntegerField(null=True, blank=True)
+    # end_page_number = PositiveSmallIntegerField(null=True, blank=True)
     position = PositiveSmallIntegerField(
         null=True, blank=True,  # TODO: add cleaning logic
         help_text='Determines the order of references.'
@@ -58,9 +97,8 @@ class Citation(Model):
     PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 
     class Meta:
-        unique_together = ['source', 'content_type', 'object_id',
-                           'page_number', 'end_page_number', 'position']
-        ordering = ['position', 'source', 'page_number']
+        unique_together = ['source', 'content_type', 'object_id', 'position']
+        ordering = ['position', 'source']
 
     def __str__(self):
         return BeautifulSoup(self.html, features='lxml').get_text()
@@ -69,7 +107,7 @@ class Citation(Model):
     def html(self) -> SafeText:
         html = f'{self.source.html}'
         if self.page_number:
-            page_string = self.page_string
+            page_string = self.page_html
             # Replace the source's page string if it exists
             page_str_regex = re.compile(self.PAGE_STRING_REGEX)
             match = page_str_regex.match(html)
@@ -129,38 +167,16 @@ class Citation(Model):
         return self.position + 1
 
     @property
-    def page_string(self) -> Optional[str]:
-        pn = self.page_number
-        if not pn:
+    def page_number(self) -> Optional[int]:
+        if not self.pages.exists():
             return None
-        end_pn = self.end_page_number or None
-        _url = self.source.file_url or None
+        return self.pages.first().page_number
 
-        def get_page_number_url(page_number, url=_url) -> Optional[str]:
-            if not url:
-                return None
-            page_number += self.source.file.page_offset
-            if 'page=' in url:
-                url = re.sub(r'page=\d+', f'page={page_number}', url)
-            else:
-                url += f'#page={page_number}'
-            return url
-
-        def get_page_number_link(url, page_number) -> Optional[str]:
-            if not url:
-                return None
-            return (f'<a href="{url}" target="_blank" '
-                    f'class="display-source">{page_number}</a>')
-
-        pn_url = get_page_number_url(pn)
-        pn = get_page_number_link(pn_url, pn) or pn
-        if end_pn:
-            end_pn_url = get_page_number_url(end_pn)
-            end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
-            page_string = f'pp. {pn}–{end_pn}'
-        else:
-            page_string = f'p. {pn}'
-        return page_string
+    @property
+    def page_html(self) -> Optional[str]:
+        page_strings = [pr.html for pr in self.pages.all()]
+        page_string = ', '.join(page_strings)
+        return mark_safe(page_string)
 
     @property
     def source_file_page_number(self) -> Optional[int]:
@@ -181,7 +197,3 @@ class Citation(Model):
             else:
                 file_url = file_url + f'#page={self.source_file_page_number}'
         return file_url
-
-    def clean(self):
-        if self.end_page_number and self.end_page_number < self.page_number:
-            raise ValidationError('The end page number must be greater than the start page number.')
