@@ -1,12 +1,12 @@
 {% extends "base.htm" %}
-{% load quote_card %}
+{% load card %}
 
 {% block content %}
     <div class="container">
         {% if quotes|length %}
             <div>
                 {% for quote in quotes %}
-                    {% quote_card quote %}
+                    {% card quote %}
                 {% endfor %}
             </div>
         {% else %}

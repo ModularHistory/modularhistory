@@ -1,15 +1,6 @@
 {% extends 'base.htm' %}
-{% load entity_card %}
-{% load occurrence_card %}
-{% load occurrence_detail %}
-{% load quote_card %}
-{% load quote_detail %}
-{% load topic_card %}
-{% load topic_detail %}
-{% load image_card %}
-{% load image_detail %}
-{% load source_card %}
-{% load source_detail %}
+{% load card %}
+{% load detail %}
 {% load class_name %}
 {% load is_instance %}
 {% load crispy_forms_tags %}
@@ -60,37 +51,12 @@
                             <div class="two-pane-container">
                                 <div class="results result-cards">
                                     {% for object in object_list %}
-                                        {% with object|class_name as klass %}
-                                            {% if object|is_instance:"occurrences.Occurrence" %}
-                                                {% occurrence_card object %}
-                                            {% elif object|is_instance:"topics.Topic" %}
-                                                {% topic_card object %}
-                                            {% elif object|is_instance:"quotes.Quote" %}
-                                                {% quote_card object %}
-                                            {% elif object|is_instance:"images.Image" %}
-                                                {% image_card object %}
-                                            {% elif object|is_instance:"sources.Source" %}
-                                                {% source_card object %}
-                                            {% else %}
-                                                <a href='{{ object.get_absolute_url }}'>{{ object }}</a>
-                                                | {{ object|class_name }}
-                                            {% endif %}
-                                        {% endwith %}
+                                        {% card object %}
                                     {% endfor %}
                                 </div>
                                 <div class="card view-detail sticky">
                                     {% with object_list|first as object %}
-                                        {% if object|is_instance:"occurrences.Occurrence" %}
-                                            {% occurrence_detail object %}
-                                        {% elif object|is_instance:"topics.Topic" %}
-                                            {% topic_detail object %}
-                                        {% elif object|is_instance:"quotes.Quote" %}
-                                            {% quote_detail object %}
-                                        {% elif object|is_instance:"images.Image" %}
-                                            {% image_detail object %}
-                                        {% else %}
-                                            <a href='{{ object.get_absolute_url }}'>{{ object }}</a> | {{ object|class_name }}
-                                        {% endif %}
+                                        {% detail object %}
                                     {% endwith %}
                                 </div>
                             </div>
@@ -98,20 +64,7 @@
                             <div class="results">
                                 {% for object in object_list %}
                                     <div class="result" data-key="{{ object.key }}">
-                                        {% with object|class_name as klass %}
-                                            {% if object|is_instance:"occurrences.Occurrence" %}
-                                                {% occurrence_detail object %}
-                                            {% elif object|is_instance:"quotes.Quote" %}
-                                                {% quote_detail object %}
-                                            {% elif object|is_instance:"images.Image" %}
-                                                {% image_detail object %}
-                                            {% elif object|is_instance:"sources.Source" %}
-                                                {% source_detail object %}
-                                            {% else %}
-                                                <a href='{{ object.get_absolute_url }}'>{{ object }}</a>
-                                                | {{ object|class_name }}
-                                            {% endif %}
-                                        {% endwith %}
+                                        {% detail object %}
                                     </div>
                                     <hr style="clear: both" />
                                 {% endfor %}

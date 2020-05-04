@@ -1,9 +1,9 @@
 {% load get_admin_url %}
-{% load image_card %}
-{% load source_card %}
+{% load card %}
 {% load class_name %}
 {% load static %}
 {% load with_entity_links %}
+{% load highlight %}
 
 <div class="detail">
     {% if request.user.is_superuser %}
@@ -20,19 +20,19 @@
         {% if unpositioned_images|length %}
             {% for occurrence_image in unpositioned_images %}
                 <div class="img-container" style="max-width: 44%">
-                    {% image_card occurrence_image.image %}
+                    {% card occurrence_image.image %}
                 </div>
             {% endfor %}
         {% elif not occurrence.images.all|length %}
             {% if occurrence.entity_images %}
                 {% for image in occurrence.entity_images %}
                     <div class="img-container" style="max-width: 44%">
-                        {% image_card image %}
+                        {% card image %}
                     </div>
                 {% endfor %}
             {% elif occurrence.image and not occurrence.images.all|length %}
                 <div class="img-container" style="max-width: 44%">
-                    {% image_card occurrence.image %}
+                    {% card occurrence.image %}
                 </div>
             {% endif %}
         {% endif %}

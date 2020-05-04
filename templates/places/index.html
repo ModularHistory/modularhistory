@@ -1,12 +1,12 @@
 {% extends "base.htm" %}
-{% load place_card %}
+{% load card %}
 
 {% block content %}
     <div class="container">
         {%if places|length %}
             <div id="occurrences-list">
                 {% for place in places %}
-                    {% place_card place %}
+                    {% card place %}
                 {% endfor %}
             </div>
         {% else %}

@@ -1,8 +1,6 @@
 {% extends "_row.html" %}
 {% load get_admin_url %}
-{% load image_card %}
-{% load quote_card %}
-{% load source_card %}
+{% load card %}
 
 {% block row_content %}
     <h4 class="text-center card-title">
@@ -11,7 +9,7 @@
     <div class="card-text">
         {% if occurrence.image %}
             <div style="float:right; max-width:33%;">
-                {% image_card occurrence.image %}
+                {% card occurrence.image %}
             </div>
         {% endif %}
         <div class="lead">
@@ -21,7 +19,7 @@
     </div>
     {% if occurrence.related_quotes.all|length %}
         {% for quote in occurrence.related_quotes.all %}
-            {% quote_card quote %}
+            {% card quote %}
         {% endfor %}
     {% endif %}
     <a class="edit-object-button" target="_blank" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>
