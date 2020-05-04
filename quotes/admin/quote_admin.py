@@ -1,11 +1,12 @@
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import QuerySet
+# import re
+# from django.contrib.contenttypes.models import ContentType
+# from django.db.models import QuerySet
 from django.urls import path
 
-from admin import admin_site, Admin, TabularInline, GenericTabularInline
+from admin import admin_site, Admin, TabularInline
 from entities.views import EntitySearchView
 from history.models.taggable_model import TopicFilter
-from occurrences.models import Occurrence
+# from occurrences.models import Occurrence
 from sources.admin.citations import CitationsInline
 from topics.admin import RelatedTopicsInline, HasTagsFilter
 from topics.views import TagSearchView
@@ -16,18 +17,32 @@ from .filters import (
     AttributeeCountFilter,
     HasMultipleCitationsFilter
 )
+from .related_quotes_inline import RelatedQuotesInline
 from .. import models
 
 
-class OccurrencesInline(GenericTabularInline):
-    model = models.QuoteRelation
-    # readonly_fields = ['']
-    # autocomplete_fields = ['occurrence']
-
-    def get_queryset(self, request):
-        qs: QuerySet = super().get_queryset(request)
-        ct = ContentType.objects.get_for_model(Occurrence)
-        return qs.filter(content_type_id=ct.id)
+# TODO: try to get this reverse relationship working
+# class OccurrencesInline(GenericTabularInline):
+#     model = models.QuoteRelation
+#     # readonly_fields = ['']
+#     # autocomplete_fields = ['occurrence']
+#     verbose_name = 'occurrence'
+#     verbose_name_plural = 'occurrences'
+#
+#     def get_queryset(self, request):
+#         # qs: QuerySet = super().get_queryset(request)
+#         pk = re.search(r'/(\d+)/', request.path).group(1)
+#         ct = ContentType.objects.get_for_model(Occurrence)
+#         qs: QuerySet = models.QuoteRelation.objects.filter(
+#             quote_id=pk,
+#             content_type_id=ct.id
+#         )
+#         return qs.filter(content_type_id=ct.id)
+#
+#     def get_extra(self, request, obj=None, **kwargs):
+#         if len(self.get_queryset(request)):
+#             return 0
+#         return 1
 
 
 class AttributeesInline(TabularInline):
@@ -76,7 +91,8 @@ class QuoteAdmin(Admin):
     inlines = [
         AttributeesInline,
         CitationsInline,
-        OccurrencesInline,
+        # OccurrencesInline,
+        RelatedQuotesInline,
         RelatedTopicsInline,
         BitesInline
     ]
