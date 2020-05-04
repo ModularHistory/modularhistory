@@ -4,7 +4,6 @@ from django import template
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.safestring import mark_safe
-from haystack.utils.highlighting import Highlighter
 
 from entities.models import Entity
 # from django.apps import apps
@@ -13,6 +12,7 @@ from occurrences.models import Occurrence
 from quotes.models import Quote
 from sources.models import Source
 from topics.models import Topic
+from .highlight import highlight
 
 register = template.Library()
 
@@ -50,7 +50,6 @@ def detail(context: RequestContext, obj: Any):
 
     query = context.get('query')
     if query:
-        highlighter = Highlighter(query)
-        return mark_safe(highlighter.highlight(response))
+        return mark_safe(highlight(response, text=query))
 
     return response
