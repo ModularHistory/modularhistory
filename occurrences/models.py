@@ -99,7 +99,7 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
     searchable_fields = [
         'summary', 'description', 'date__year',
         'involved_entities__name', 'involved_entities__aliases',
-        'related_topics__key', 'related_topics__aliases'
+        'tags__topic__key', 'tags__topic__aliases'
     ]
     objects: Manager = Manager()
 

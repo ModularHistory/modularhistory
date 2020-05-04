@@ -44,7 +44,7 @@
                         </h4>
                     {% endif %}
                     {{ quote.html }}
-                    {% if quote.related_topics and quote.related_topics.all|length %}
+                    {% if quote.related_topics and quote.related_topics|length %}
                         <ul class="tags float-right">
                             {{ quote.topic_tags }}
                         </ul>

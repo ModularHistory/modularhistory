@@ -1,5 +1,6 @@
 {% load get_admin_url %}
 {% load card %}
+{% load detail %}
 
 <div class="card-text">
     {{ source }}
@@ -16,12 +17,7 @@
         {% for quote in quotes %}
             <hr style="clear: both" />
             <div class="m-2" data-key="{{ quote.key }}" data-href="{% block detail_url %}{% endblock %}">
-                {{ quote.html }}
-                {% if quote.related_topics and quote.related_topics.all|length %}
-                    <ul class="tags float-right">
-                        {{ quote.tags_html }}
-                    </ul>
-                {% endif %}
+                {% detail quote %}
             </div>
         {% endfor %}
     {% else %}
