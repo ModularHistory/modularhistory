@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     # 'file_picker.wymeditor',  # optional WYMeditor plugin
     # 'sorl.thumbnail',  # required
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
+    'haystack',  # https://django-haystack.readthedocs.io/en/latest/
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'massadmin',  # https://github.com/burke-software/django-mass-edit
@@ -471,14 +472,14 @@ THUMBNAIL_PROCESSORS = (
     'image_cropping.thumbnail_processors.crop_corners',
 ) + ThumbnailSettings.THUMBNAIL_PROCESSORS
 
-# celery settings
+
+# Celery settings
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_URL = 'amqp://localhost'
 
 # CELERY_BROKER_URL = 'amqp://guest:**@localhost:5672'
 # CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672'
-
 
 # TODO: Look into using caching
 # CELERY_CACHE_BACKEND = 'default'
@@ -488,3 +489,12 @@ CELERY_BROKER_URL = 'amqp://localhost'
 #         'LOCATION': 'my_cache_table',
 #     }
 # }
+
+
+# Haystack settings
+# https://django-haystack.readthedocs.io/en/latest/tutorial.html
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
