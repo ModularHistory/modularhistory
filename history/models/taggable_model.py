@@ -1,22 +1,13 @@
+import re
 from typing import List, Optional, TYPE_CHECKING
 
-from django.contrib.contenttypes.fields import GenericRelation
-from django.db.models import QuerySet
-from django.utils.safestring import SafeText, mark_safe
-
-from .base_model import Model
-
-import re
-
 from admin_auto_filters.filters import AutocompleteFilter
-from admin_auto_filters.filters import AutocompleteSelect
-from django.contrib.admin import SimpleListFilter
-from django.db.models import Count
+from django.contrib.contenttypes.fields import GenericRelation
 from django.shortcuts import reverse
-from django.utils.safestring import mark_safe
+from django.utils.safestring import mark_safe, SafeText
 
 from topics.models import Topic
-
+from .model import Model
 
 if TYPE_CHECKING:
     from topics.models import Topic

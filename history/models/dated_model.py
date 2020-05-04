@@ -2,9 +2,9 @@ from typing import Optional
 
 from django.db.models import BooleanField
 from django.utils.safestring import SafeText, mark_safe
-from history.structures.historic_datetime import HistoricDateTime
+from history.structures import HistoricDateTime
 from history.fields import HistoricDateTimeField
-from .base_model import Model
+from .model import Model
 
 
 class DatedModel(Model):

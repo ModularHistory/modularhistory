@@ -1,7 +1,7 @@
 from typing import Any, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
-from history.models.base_model import BaseModel
+from history.models.model import BaseModel
 from django.utils.safestring import SafeText, mark_safe
 
 if TYPE_CHECKING:

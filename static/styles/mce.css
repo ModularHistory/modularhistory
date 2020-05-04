@@ -5,7 +5,7 @@
   display: none; }
 
 .highlighted {
-  background-color: rgba(255, 183, 183, 0.5); }
+  background-color: rgba(255, 183, 183, 0.9); }
 
 .lazy-bg {
   background-image: url("/static/img-placeholder.jpg"); }

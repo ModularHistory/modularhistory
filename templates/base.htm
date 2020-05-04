@@ -36,6 +36,10 @@
 
         <!--<link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>-->
 
+        <!-- AnnotatorJS (http://docs.annotatorjs.org/en/) -->
+        <script src="{% static "libraries/annotator/annotator-full.min.js" %}" defer></script>
+        <link rel="stylesheet" href="{% static "libraries/annotator/annotator.min.css" %}">
+
         <!-- Custom styles -->
         {% load sass_tags %}
         <link rel="stylesheet" href="{% sass_src 'styles/base.scss' %}" type="text/css" />

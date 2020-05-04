@@ -45,6 +45,7 @@ def card(context: RequestContext, obj: Any):
     template_directory_name = template_directory_name or f'{obj_name}s'
 
     context = {**context.flatten(), **{
+        'object': obj,
         obj_name: obj,
     }}
 

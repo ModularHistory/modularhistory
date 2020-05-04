@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.fields import GenericRelation
 
-from history.models.base_model import BaseModel
+from history.models.model import BaseModel
 
 
 class RelatedQuotesMixin(BaseModel):

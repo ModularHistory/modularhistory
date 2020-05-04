@@ -28,6 +28,10 @@ function initializeListeners(element=null) {
             console.log('Opening ePub');
         }
     });
+
+    // TODO: clean up
+    // // enable annotations
+    // $(scope).find('.detail').annotator().annotator('setupPlugins');
 }
 
 function setGetParam(key, value) {
