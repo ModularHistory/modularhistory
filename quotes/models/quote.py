@@ -1,11 +1,10 @@
 from typing import List, Optional, TYPE_CHECKING
-from django.db.models import QuerySet, Q
+
 from bs4 import BeautifulSoup
-from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.db import models
-from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, ManyToManyField
+from django.db.models import ManyToManyField
+from django.db.models import QuerySet, Q
 from django.urls import reverse
 from django.utils.safestring import SafeText, mark_safe
 from gm2m import GM2MField as GenericManyToManyField
@@ -13,14 +12,14 @@ from gm2m import GM2MField as GenericManyToManyField
 from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
 from history.models import (
-    Model, DatedModel, TaggableModel,
+    DatedModel, TaggableModel,
     RelatedQuotesMixin, SearchableMixin, SourcesMixin
 )
 from images.models import Image
-from .manager import Manager
+from ..manager import Manager
 
 if TYPE_CHECKING:
-    from entities.models import Classification, EntityClassification
+    pass
 
 
 class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin):
@@ -34,12 +33,12 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
     date = HistoricDateTimeField(null=True, blank=True)
     attributees = ManyToManyField(
         Entity, related_name='quotes',
-        through='QuoteAttribution',
+        through='quotes.QuoteAttribution',
         blank=True
     )
     related = GenericManyToManyField(
         'occurrences.Occurrence', 'entities.Entity', 'quotes.Quote',
-        through='QuoteRelation',
+        through='quotes.QuoteRelation',
         related_name='related_quotes',
         blank=True
     )
@@ -148,60 +147,6 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
-
-
-class QuoteAttribution(Model):
-    quote = ForeignKey('Quote', related_name='attributions', on_delete=CASCADE)
-    attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
-    position = models.PositiveSmallIntegerField(default=0, blank=True)
-
-    class Meta:
-        unique_together = ['quote', 'attributee']
-        ordering = ['position']
-
-    def __str__(self):
-        return str(self.attributee)
-
-    def clean(self):
-        super().clean()
-        if self.position > 0 and len(QuoteAttribution.objects.exclude(pk=self.pk).filter(
-                quote=self.quote, attributee=self.attributee, position=self.position
-        )) > 1:
-            raise ValidationError('Attribution position should be unique.')
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
-
-
-class QuoteBite(TaggableModel):
-    """A piece of a larger quote."""
-    quote = ForeignKey(Quote, on_delete=CASCADE, related_name='bites')
-    start = models.PositiveIntegerField()
-    end = models.PositiveIntegerField()
-
-
-class QuoteRelation(Model):
-    """A relation to a quote (by any other model)."""
-    quote = ForeignKey(Quote, related_name='relations', on_delete=CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
-    position = PositiveSmallIntegerField(
-        null=True, blank=True,  # TODO: add cleaning logic
-        help_text='Determines the order of quotes.'
-    )
-
-    def __str__(self):
-        return BeautifulSoup(self.quote.bite.html, features='lxml').get_text()
-
-    class Meta:
-        unique_together = ['quote', 'content_type', 'object_id', 'position']
-        ordering = ['position', 'quote']
-
-    @property
-    def quote_pk(self) -> str:
-        return self.quote.pk
 
 
 def quote_sorter_key(quote: Quote):

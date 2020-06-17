@@ -18,9 +18,6 @@ from search.forms import SearchFilterForm
 from sources.models import Source
 from topics.models import Topic
 
-occurrence_ct = ContentType.objects.get_for_model(Occurrence)
-quote_ct = ContentType.objects.get_for_model(Quote)
-
 
 def date_sorter(x: Union[Model, DatedModel]):
     date = None
@@ -39,10 +36,11 @@ def date_sorter(x: Union[Model, DatedModel]):
 
 
 def rank_sorter(x: Union[Model]):
-    if not hasattr(x, 'rank'):
+    rank = getattr(x, 'rank', None)
+    if not rank:
         raise Exception('No rank')
-    print(f'>>> {x.rank}: {x}\n')
-    return getattr(x, 'rank')
+    print(f'>>> {rank}: {x}\n')
+    return rank
 
 
 # TODO: https://docs.djangoproject.com/en/3.0/topics/db/search/
@@ -90,6 +88,9 @@ class SearchResultsView(ListView):
     def get_queryset(self) -> Union[QuerySet, List]:
         request = self.request
         query = request.GET.get('query', None)
+
+        occurrence_ct = ContentType.objects.get_for_model(Occurrence)
+        quote_ct = ContentType.objects.get_for_model(Quote)
 
         db = self.db
 

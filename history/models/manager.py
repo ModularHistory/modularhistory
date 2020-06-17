@@ -2,7 +2,8 @@ from datetime import date, datetime
 from sys import stderr
 from typing import List, Optional, Union
 
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+# from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import QuerySet, Manager as BaseManager
 from polymorphic.managers import PolymorphicManager as BasePolymorphicManager
 from polymorphic.query import PolymorphicQuerySet
@@ -12,6 +13,22 @@ from history.structures.historic_datetime import HistoricDateTime
 
 class Manager(BaseManager):
     """Base manager for models."""
+
+    @property
+    def occurrence_ct_id(self):
+        from occurrences.models import Occurrence
+        return (ContentType.objects.get_for_model(Occurrence)).id
+
+    @property
+    def quote_ct_id(self):
+        from quotes.models import Quote
+        return (ContentType.objects.get_for_model(Quote)).id
+
+    @property
+    def entity_ct_id(self):
+        from entities.models import Entity
+        return (ContentType.objects.get_for_model(Entity)).id
+
     def get_by_natural_key(self, *args):
         fields = self.model.natural_key_fields
         natural_key = {}

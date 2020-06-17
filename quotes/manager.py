@@ -1,5 +1,5 @@
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import QuerySet, Q
+from django.db.models import QuerySet, Q  # , Subquery
 from typing import List, Optional
 from history.models import Manager as BaseManager
 
@@ -31,7 +31,9 @@ class Manager(BaseManager):
         if entity_ids:
             qs = qs.filter(
                 Q(attributees__id__in=entity_ids) |
-                Q(related_occurrences__involved_entities__id__in=entity_ids)
+                # Q(related_occurrences__involved_entities__id__in=entity_ids)
+                Q(relations__content_type_id=self.occurrence_ct_id,
+                  relations__object_id__in=entity_ids)
             )
 
         # Limit to specified topics
