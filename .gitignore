@@ -10,11 +10,14 @@ staticfiles
 # Environments
 .env
 .venv
-env/
-venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Virtual environment
+.modularhistoryenv/
+env/
+venv/
 
 # Python #
 *.py[cod]
