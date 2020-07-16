@@ -8,11 +8,12 @@ from django.utils.safestring import SafeText, mark_safe
 
 from history.fields import ArrayField, HistoricDateTimeField, HTMLField
 from history.models import (
-    Model, TaggableModel, PolymorphicModel, TypedModel,
+    Model, TaggableModel, TypedModel,
     RelatedQuotesMixin
 )
 from history.structures import HistoricDateTime
 from images.models import Image
+from .classification import Classification
 
 
 class EntityImage(Model):
@@ -31,30 +32,6 @@ parts_of_speech = (
     ('adj', 'adjective'),
     ('any', 'noun / adjective'),
 )
-
-
-class Classification(Model):
-    name = models.CharField(max_length=100, unique=True)
-    part_of_speech = models.CharField(
-        max_length=9, choices=parts_of_speech,
-        default='adj'
-    )
-    aliases = ArrayField(
-        models.CharField(max_length=100),
-        null=True, blank=True
-    )
-    parent = ForeignKey(
-        'self', related_name='children',
-        null=True, blank=True,
-        on_delete=CASCADE
-    )
-    weight = models.PositiveSmallIntegerField(default=1, blank=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
 
 
 class EntityClassification(Model):
@@ -95,18 +72,18 @@ class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
     classifications = ManyToManyField(
         Classification,
         related_name='entities',
-        through=EntityClassification,
+        through='entities.EntityClassification',
         blank=True
     )
     images = ManyToManyField(
         Image,
-        through=EntityImage,
+        through='entities.EntityImage',
         related_name='entities',
         blank=True
     )
     affiliated_entities = ManyToManyField(
         'self',
-        through='Affiliation',
+        through='entities.Affiliation',
         blank=True
     )
 

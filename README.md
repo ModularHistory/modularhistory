@@ -6,8 +6,7 @@ https://www.modularhistory.com
 
 ## Installation
 
-- All the `code` required to get started
-- Images of what it should look like
+- 
 
 ### Clone
 
@@ -58,6 +57,19 @@ $ bower install
 ---
 
 ## Development
+Install requirements:
+
+```pip install -Ur requirements.txt```
+
+Write your code.
+
+After adding some code, check coverage to determine what needs to be tested:
+
+```coverage run --source='.' manage.py test && coverage html```
+
+See https://coverage.readthedocs.io/en/coverage-5.2/.
+
+Make migrations.
 
 How to reset migrations: 
 https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html

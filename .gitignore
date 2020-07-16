@@ -7,6 +7,9 @@ db.sqlite3
 media
 staticfiles
 
+# Node JS
+node_modules/
+
 # Environments
 .env
 .venv

@@ -162,14 +162,14 @@ body,
     .serp-container .display-options label {
       margin: 0; }
 
-.refinements-container#slider {
+#slider.refinements-container {
   -webkit-transform: none;
   transform: none;
   transition: transform 70ms linear;
   will-change: transform;
   border-right: 2px solid black;
   z-index: 2; }
-  .refinements-container#slider.closed {
+  #slider.refinements-container.closed {
     min-width: 0;
     width: 0;
     -webkit-transform: translateX(-100%);
