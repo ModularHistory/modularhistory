@@ -47,9 +47,9 @@ class Manager(BaseManager):
             suppress_unverified: bool = True,
             db: str = 'default'
     ) -> Union[QuerySet, PolymorphicQuerySet]:
-        qs = self._queryset_class(
-            model=self.model, using=db, hints=self._hints
-        ).filter(verified=suppress_unverified)
+        qs = self._queryset_class(model=self.model, using=db, hints=self._hints)
+        if suppress_unverified:
+            qs = qs.filter(verified=True)
         return qs
 
         # qs = self._queryset_class(

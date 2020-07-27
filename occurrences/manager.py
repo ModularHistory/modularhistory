@@ -18,9 +18,6 @@ class Manager(BaseManager):
     ) -> QuerySet:
         qs = super().search(db=db, suppress_unverified=suppress_unverified).filter(hidden=False)
 
-        if suppress_unverified:
-            qs = qs.filter(verified=True)
-
         # Limit to specified date range
         if start_year:
             qs = qs.filter(date__year__gte=start_year)
