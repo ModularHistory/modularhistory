@@ -45,7 +45,7 @@ def back_up_db(self):
     if not settings.DEBUG:
         print(f'Backing up database....')
         # Create backup file
-        management.call_command('dbbackup')
+        management.call_command('dbbackup --clean')
         # Select latest backup file
         os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
         files = glob('*sql')  # .psql or .sql files
