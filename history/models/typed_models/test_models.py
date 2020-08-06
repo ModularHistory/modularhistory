@@ -23,7 +23,7 @@ class UniqueIdentifierMixin(models.Model):
         abstract = True
 
 
-@python_2_unicode_compatible
+
 class Animal(TypedModel, UniqueIdentifierMixin):
     """
     Abstract model

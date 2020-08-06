@@ -10,17 +10,16 @@ staticfiles
 # Node JS
 node_modules/
 
-# Environments
+# Environment
 .env
-.venv
 ENV/
 env.bak/
 venv.bak/
 
-# Virtual environment
-.modularhistoryenv/
+# Virtual Python environment
 env/
 venv/
+.venv/
 
 # Python #
 *.py[cod]
