@@ -7,8 +7,14 @@ from .models import Entity
 class EntitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entity
-        # fields = (
-        #     'name',
-        #     'birth_date',
-        #     'death_date',
-        # )
+        fields = [
+            'name',
+            'verbose_name',
+            'aliases',
+            'birth_date',
+            'death_date',
+            'description',
+            'classifications',
+            'images',
+            'affiliated_entities',
+        ]

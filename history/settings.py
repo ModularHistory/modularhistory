@@ -12,16 +12,29 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+import sentry_sdk
 # noinspection PyPackageRequirements
 from decouple import config
 from django.conf.locale.en import formats as en_formats
-
-en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
 
 ADMINS = config('ADMINS', cast=lambda value: [
     tuple(name_and_email.split(','))
     for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
 ])
+
+sentry_sdk.init(
+    dsn="https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835",
+    environment=config('ENVIRONMENT', default='dev'),
+    integrations=[DjangoIntegration(), CeleryIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
+
+en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
 # Build paths inside the project like this:
 # os.path.join(BASE_DIR, ...)
