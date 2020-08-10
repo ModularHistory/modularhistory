@@ -28,9 +28,7 @@ sentry_sdk.init(
     dsn="https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835",
     environment=config('ENVIRONMENT', default='dev'),
     integrations=[DjangoIntegration(), CeleryIntegration()],
-
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
+    # Associate users to errors (using django.contrib.auth) by sending PII data
     send_default_pii=True
 )
 
@@ -198,7 +196,7 @@ DATABASES = {
         'NAME': 'slave',
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',
+        'HOST': config('DB_HOST', default='localhost'),
     },
     'backup': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -206,6 +204,14 @@ DATABASES = {
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'localhost',
+    }
+} if not os.getenv('GAE_APPLICATION', None) else {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': 'modularhistory:us-central1:modularhistory-instance',
+        'USER': '[YOUR-USERNAME]',
+        'PASSWORD': '[YOUR-PASSWORD]',
+        'NAME': '[YOUR-DATABASE]',
     }
 }
 
