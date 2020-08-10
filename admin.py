@@ -1,15 +1,14 @@
 from django.contrib.admin import AdminSite as BaseAdminSite
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.flatpages.admin import FlatPageAdmin
+from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.models import Site
 # from django.utils.translation import gettext_lazy as _
-from django_celery_beat.admin import PeriodicTaskAdmin, PeriodicTask
 from django_celery_beat.admin import (
     PeriodicTask, PeriodicTaskAdmin,
     CrontabSchedule, IntervalSchedule, SolarSchedule
 )
 from django_celery_results.admin import TaskResult, TaskResultAdmin
-from django.contrib.flatpages.admin import FlatPageAdmin
-from django.contrib.flatpages.models import FlatPage
-from django.contrib.sites.models import Site
 from massadmin.massadmin import mass_change_selected
 from nested_admin.nested import (
     NestedModelAdmin,

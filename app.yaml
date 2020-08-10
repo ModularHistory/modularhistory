@@ -1,5 +1,6 @@
-# [START django_app]
 runtime: python37
+includes:
+  - env.yaml
 handlers:
   # This configures Google App Engine to serve the files in the app's
   # static directory.
@@ -11,4 +12,3 @@ handlers:
   # files defined.
   - url: /.*
     script: auto
-# [END django_app]

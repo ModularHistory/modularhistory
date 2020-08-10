@@ -5,8 +5,8 @@ from typing import List, Optional, Union
 # from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import QuerySet, Manager as BaseManager
-from polymorphic.managers import PolymorphicManager as BasePolymorphicManager
-from polymorphic.query import PolymorphicQuerySet
+from history.models.polymorphic.managers import PolymorphicManager as BasePolymorphicManager
+from history.models.polymorphic.query import PolymorphicQuerySet
 
 from history.structures.historic_datetime import HistoricDateTime
 

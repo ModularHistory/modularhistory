@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Tuple
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as BaseModel
 from django.urls import reverse
-from polymorphic.models import PolymorphicModel as BasePolymorphicModel
+from history.models.polymorphic.models import PolymorphicModel as BasePolymorphicModel
 from django.utils.safestring import SafeText, mark_safe
 
 from .manager import Manager, PolymorphicManager

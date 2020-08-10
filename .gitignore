@@ -12,9 +12,7 @@ node_modules/
 
 # Environment
 .env
-ENV/
-env.bak/
-venv.bak/
+env.yaml
 
 # Virtual Python environment
 env/
