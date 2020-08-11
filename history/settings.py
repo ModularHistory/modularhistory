@@ -27,7 +27,7 @@ ENVIRONMENT = PRODUCTION if IS_PROD else DEVELOPMENT
 ADMINS = config('ADMINS', cast=lambda value: [
     tuple(name_and_email.split(','))
     for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
-])
+]) if config('ADMINS') else []
 
 sentry_sdk.init(
     dsn="https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835",
@@ -192,6 +192,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME'),
+        'HOST': config('DB_HOST'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+    }
+} if ENVIRONMENT == PRODUCTION else {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'localhost',
@@ -209,14 +217,6 @@ DATABASES = {
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'localhost',
-    }
-} if not ENVIRONMENT == 'production' else {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'modularhistory:us-central1:modularhistory-instance',
-        'USER': '[YOUR-USERNAME]',
-        'PASSWORD': '[YOUR-PASSWORD]',
-        'NAME': '[YOUR-DATABASE]',
     }
 }
 

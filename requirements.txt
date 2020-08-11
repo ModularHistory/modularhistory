@@ -27,6 +27,7 @@ django-nested-admin==3.3.2
 django-sass-processor==0.8
 django-select2==7.4.2
 django-settings-export==1.2.1
+django-storages[google]==1.9.1
 django-tinymce==3.0.2
 django-debug-toolbar
 django-typed-models==0.10.0

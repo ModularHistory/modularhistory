@@ -12,4 +12,3 @@ handlers:
   # files defined.
   - url: /.*
     script: auto
-threadsafe: yes
