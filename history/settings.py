@@ -339,6 +339,9 @@ SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 # Media files (images, etc. uploaded by users)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+if ENVIRONMENT == PRODUCTION:
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_BUCKET_NAME = 'modularhistory-media'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
