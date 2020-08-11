@@ -34,6 +34,7 @@ django-typed-models==0.10.0
 django-reverse-admin==2.8.13
 djangorestframework==3.11.1
 easy-thumbnails==2.7
+google-cloud-storage
 html5lib==1.1
 humanize==2.5.0
 kombu==4.6.11

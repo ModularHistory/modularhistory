@@ -10,6 +10,9 @@ staticfiles
 # Node JS
 node_modules/
 
+# Credentials
+*credentials.json
+
 # Environment
 .env
 env.yaml

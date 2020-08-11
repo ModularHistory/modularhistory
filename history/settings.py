@@ -335,13 +335,17 @@ STATICFILES_DIRS = (
 )
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
+if ENVIRONMENT == PRODUCTION:
+    STATICFILES_STORAGE = 'storage.GoogleCloudStaticFileStorage'
 
 # Media files (images, etc. uploaded by users)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+GS_MEDIA_BUCKET_NAME = 'modularhistory-media'
+GS_STATIC_BUCKET_NAME = 'modularhistory-static'
 if ENVIRONMENT == PRODUCTION:
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    GS_BUCKET_NAME = 'modularhistory-media'
+    DEFAULT_FILE_STORAGE = 'storage.GoogleCloudMediaFileStorage'
+    GS_BUCKET_NAME = GS_MEDIA_BUCKET_NAME
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
