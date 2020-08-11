@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-from history.models.polymorphic.query import PolymorphicQuerySet
+from polymorphic.query import PolymorphicQuerySet
 
 __all__ = ("PolymorphicManager", "PolymorphicQuerySet")
 

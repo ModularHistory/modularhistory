@@ -13,7 +13,7 @@ from django.forms.models import (
 )
 from django.utils.functional import cached_property
 
-from history.models.polymorphic.models import PolymorphicModel
+from polymorphic.models import PolymorphicModel
 
 from .utils import add_media
 

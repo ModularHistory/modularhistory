@@ -7,7 +7,7 @@ from django.contrib import admin
 from django.urls import resolve
 from django.utils.translation import ugettext_lazy as _
 
-from history.models.polymorphic.utils import get_base_polymorphic_model
+from polymorphic.utils import get_base_polymorphic_model
 
 from ..admin import PolymorphicParentModelAdmin
 

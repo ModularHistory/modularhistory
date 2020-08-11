@@ -7,7 +7,7 @@ This package provides classes that support both options for polymorphic formsets
 import extra_views
 from django.core.exceptions import ImproperlyConfigured
 
-from history.models.polymorphic.formsets import (
+from polymorphic.formsets import (
     BasePolymorphicInlineFormSet,
     BasePolymorphicModelFormSet,
     polymorphic_child_forms_factory,

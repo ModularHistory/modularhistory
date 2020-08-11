@@ -10,7 +10,7 @@ from django.utils.encoding import force_text
 from django.utils.text import capfirst
 from django.utils.translation import ugettext
 
-from history.models.polymorphic.formsets import BasePolymorphicModelFormSet
+from polymorphic.formsets import BasePolymorphicModelFormSet
 
 
 class PolymorphicInlineAdminForm(InlineAdminForm):

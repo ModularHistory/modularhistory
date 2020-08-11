@@ -17,7 +17,7 @@ from django.utils.http import urlencode
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from history.models.polymorphic.utils import get_base_polymorphic_model
+from polymorphic.utils import get_base_polymorphic_model
 from .forms import PolymorphicModelChoiceForm
 
 if sys.version_info[0] >= 3:

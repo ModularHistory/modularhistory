@@ -1,7 +1,10 @@
 from typing import Dict
 
 from django.views import generic
-from history.models.polymorphic.query import PolymorphicQuerySet
+try:
+    from polymorphic import PolymorphicQuerySet
+except ImportError:
+    from polymorphic.query import PolymorphicQuerySet
 
 from search.forms import SearchFilterForm
 from .models import Occurrence

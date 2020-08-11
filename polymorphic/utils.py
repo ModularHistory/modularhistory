@@ -3,8 +3,8 @@ import sys
 from django.contrib.contenttypes.models import ContentType
 from django.db import DEFAULT_DB_ALIAS
 
-from history.models.polymorphic.base import PolymorphicModelBase
-from history.models.polymorphic.models import PolymorphicModel
+from polymorphic.base import PolymorphicModelBase
+from polymorphic.models import PolymorphicModel
 
 
 def reset_polymorphic_ctype(*models, **filters):

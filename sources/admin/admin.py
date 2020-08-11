@@ -1,4 +1,4 @@
-from history.models.polymorphic.admin import (
+from polymorphic.admin import (
     PolymorphicParentModelAdmin,
     PolymorphicChildModelAdmin
 )

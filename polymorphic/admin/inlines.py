@@ -11,13 +11,13 @@ from django.contrib.admin.utils import flatten_fieldsets
 from django.core.exceptions import ImproperlyConfigured
 from django.forms import Media
 
-from history.models.polymorphic.formsets import (
+from polymorphic.formsets import (
     BasePolymorphicInlineFormSet,
     PolymorphicFormSetChild,
     UnsupportedChildType,
     polymorphic_child_forms_factory,
 )
-from history.models.polymorphic.formsets.utils import add_media
+from polymorphic.formsets.utils import add_media
 
 from .helpers import PolymorphicInlineSupportMixin
 

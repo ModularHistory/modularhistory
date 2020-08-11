@@ -2,7 +2,7 @@ from django.contrib.contenttypes.admin import GenericInlineModelAdmin
 from django.contrib.contenttypes.models import ContentType
 from django.utils.functional import cached_property
 
-from history.models.polymorphic.formsets import (
+from polymorphic.formsets import (
     BaseGenericPolymorphicInlineFormSet,
     GenericPolymorphicFormSetChild,
     polymorphic_child_forms_factory,

@@ -129,6 +129,7 @@ INSTALLED_APPS = [
     'quotes.apps.QuotesConfig',
     'sources.apps.SourcesConfig',
     'topics.apps.TopicsConfig',
+    'polymorphic.apps.PolymorphicConfig',  # TODO: replace with django-polymorphic when library is updated
 ]
 
 MIDDLEWARE = [

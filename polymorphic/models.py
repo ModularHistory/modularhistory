@@ -10,7 +10,7 @@ from django.db.models.fields.related import (
 )
 from django.db.utils import DEFAULT_DB_ALIAS
 
-from history.models.polymorphic.compat import with_metaclass
+from polymorphic.compat import with_metaclass
 
 from .base import PolymorphicModelBase
 from .managers import PolymorphicManager
