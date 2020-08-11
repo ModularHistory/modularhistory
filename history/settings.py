@@ -14,8 +14,9 @@ import sentry_sdk
 # noinspection PyPackageRequirements
 from decouple import config
 from django.conf.locale.en import formats as en_formats
-from sentry_sdk.integrations.django import DjangoIntegration
+from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # TODO
 PRODUCTION = 'prod'
@@ -199,25 +200,33 @@ DATABASES = {
 } if ENVIRONMENT == PRODUCTION else {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',
-    },
-    'slave': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'slave',
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-    },
-    'backup': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'backup',
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'NAME': 'modularhistory',
+        'USER': 'modularhistory',
+        'PASSWORD': 'ucEAdBuKfc7l2cft',
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': config('DB_NAME'),
+    #     'USER': config('DB_USER'),
+    #     'PASSWORD': config('DB_PASSWORD'),
+    #     'HOST': 'localhost',
+    # },
+    # 'slave': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'slave',
+    #     'USER': config('DB_USER'),
+    #     'PASSWORD': config('DB_PASSWORD'),
+    #     'HOST': config('DB_HOST', default='localhost'),
+    # },
+    # 'backup': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'backup',
+    #     'USER': config('DB_USER'),
+    #     'PASSWORD': config('DB_PASSWORD'),
+    #     'HOST': 'localhost',
+    # }
 }
 
 # TODO: Fix this so it doesn't break user sessions
@@ -427,10 +436,11 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 TINYMCE_SPELLCHECKER = True
 
+# https://github.com/jonasundderwolf/django-image-cropping
+THUMBNAIL_PROCESSORS = ('image_cropping.thumbnail_processors.crop_corners',) + ThumbnailSettings.THUMBNAIL_PROCESSORS
+
 # https://pypi.org/project/django-bootstrap-datepicker-plus/
-BOOTSTRAP4 = {
-    'include_jquery': False,
-}
+BOOTSTRAP4 = {'include_jquery': False}
 
 # https://github.com/cdrx/django-admin-menu
 ADMIN_LOGO = 'logo_head_white.png'
@@ -489,13 +499,6 @@ EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
-
-# https://github.com/jonasundderwolf/django-image-cropping
-from easy_thumbnails.conf import Settings as ThumbnailSettings
-THUMBNAIL_PROCESSORS = (
-    'image_cropping.thumbnail_processors.crop_corners',
-) + ThumbnailSettings.THUMBNAIL_PROCESSORS
-
 
 # Celery settings
 CELERY_RESULT_BACKEND = 'django-db'
