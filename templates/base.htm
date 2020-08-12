@@ -109,7 +109,7 @@
                             {% if request.user.is_authenticated %}
                                 {% if user.avatar %}
                                     <img src="{{ user.avatar.url }}" class="rounded-circle z-depth-0"
-                                         alt="avatar image" height="35" />
+                                         alt="{{ user }}" height="35" />
                                 {% else %}
                                     <i class="fas fa-user"></i>
                                 {% endif %}

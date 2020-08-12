@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple
 from crispy_forms.bootstrap import Accordion, AccordionGroup
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Div
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import QuerySet
 from django.forms import (
     Form,
@@ -19,17 +20,25 @@ from django_select2.forms import Select2MultipleWidget
 from entities.models import Entity
 from history.forms import HistoricDateFormField
 from history.widgets.historic_date_widget import YearInput
-# from places.models import Place
+# from django.core.paginator import Paginator
+from images.models import Image
+from occurrences.models import Occurrence
+from quotes.models import Quote
+from sources.models import Source
 from topics.models import Topic
+# from places.models import Place
+from .models import Search
 
 Accordion.template = 'forms/_accordion.html'
 AccordionGroup.template = 'forms/_accordion_group.html'
 
 
-ordering_choices = (
-    ('date', 'Date'),
-    ('relevance', 'Relevance')
-)
+CONTENT_TYPES = [
+    (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
+    (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
+    (ContentType.objects.get_for_model(Image).id, 'Images'),
+    (ContentType.objects.get_for_model(Source).id, 'Sources')
+]
 
 
 class SearchFilterForm(Form):
@@ -41,7 +50,7 @@ class SearchFilterForm(Form):
             query: Optional[str] = None,
             suppress_unverified: bool = True,
             order_by_relevance: bool = False,
-            content_types: List[Tuple[int, str]] = None,
+            excluded_content_types: List[Tuple[int, str]] = None,
             entities: Optional[QuerySet] = None,
             topics: Optional[QuerySet] = None,
             # places: Optional[QuerySet] = None,
@@ -55,7 +64,7 @@ class SearchFilterForm(Form):
 
         ordering = 'relevance' if order_by_relevance else 'date'
         self.fields['ordering'] = ChoiceField(
-            choices=ordering_choices,
+            choices=Search.ORDERING_CHOICES,
             widget=RadioSelect,
             initial=ordering,
             required=False
@@ -74,10 +83,10 @@ class SearchFilterForm(Form):
             self.fields['quality'].widget.attrs['disabled'] = True
 
         self.fields['content_types'] = MultipleChoiceField(
-            choices=content_types,
+            choices=CONTENT_TYPES,
             widget=CheckboxSelectMultiple,
             required=False
-        ) if content_types else None
+        )
 
         self.fields['start_year'] = HistoricDateFormField(required=False, widget=YearInput)
         self.fields['end_year'] = HistoricDateFormField(required=False, widget=YearInput)
@@ -117,8 +126,7 @@ class SearchFilterForm(Form):
             Field('entities', css_class=''),
             Field('topics', css_class=''),
             # Field('places', css_class=''),
+            Field('content_types', css_class=''),
+            Submit('submit', self.SUBMIT_BUTTON_TEXT)
         ]
-        if content_types:
-            layout.append(Field('content_types', css_class=''))
-        layout.append(Submit('submit', self.SUBMIT_BUTTON_TEXT))
         self.helper.layout = Layout(*layout)

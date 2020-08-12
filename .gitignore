@@ -10,12 +10,10 @@ staticfiles
 # Node JS
 node_modules/
 
-# Credentials
-*credentials.json
-
-# Environment
+# Environment & credentials
 .env
 env.yaml
+*credentials.json
 
 # Virtual Python environment
 env/
@@ -71,17 +69,11 @@ coverage.xml
 *.cover
 .hypothesis/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
 # pyenv
 .python-version
 
 # celery
 celerybeat-schedule.*
-
-# SageMath parsed files
-*.sage.py
 
 # mkdocs documentation
 /site

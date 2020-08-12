@@ -1,18 +1,17 @@
 {% extends "base.htm" %}
 
+{% load crispy_forms_tags %}
+
+{% block styles %}
+    {{ search_form.media.css }}
+{% endblock %}
+
+{% block scripts %}
+    {{ search_form.media.js }}
+{% endblock %}
+
 {% block content %}
     <div class="container">
-        <div class="text-center"
-             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);">
-            <h1 style="font-weight: bold">Under Construction</h1>
-            {% if request.user.is_authenticated %}
-                <h2 style="margin-top: 5rem; margin-bottom: 2rem; text-decoration: underline;">Previewable Topics</h2>
-                <ul>
-                    <li>
-                        <a href="/history/search?topics=7&topics=8" class="">Mormonism and Race</a>
-                    </li>
-                </ul>
-            {% endif %}
-        </div>
+        {% crispy search_form %}
     </div>
 {% endblock %}

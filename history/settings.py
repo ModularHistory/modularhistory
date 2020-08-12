@@ -17,8 +17,14 @@ from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
+from enum import Enum
 
-# TODO
+
+class Environments(str, Enum):
+    PRODUCTION = 'prod'
+    DEVELOPMENT = 'dev'
+
+
 PRODUCTION = 'prod'
 DEVELOPMENT = 'dev'
 IS_GCP = os.getenv('GAE_APPLICATION', None)
@@ -206,27 +212,28 @@ DATABASES = {
         'USER': 'modularhistory',
         'PASSWORD': 'ucEAdBuKfc7l2cft',
     }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': config('DB_NAME'),
-    #     'USER': config('DB_USER'),
-    #     'PASSWORD': config('DB_PASSWORD'),
-    #     'HOST': 'localhost',
-    # },
-    # 'slave': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'slave',
-    #     'USER': config('DB_USER'),
-    #     'PASSWORD': config('DB_PASSWORD'),
-    #     'HOST': config('DB_HOST', default='localhost'),
-    # },
-    # 'backup': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'backup',
-    #     'USER': config('DB_USER'),
-    #     'PASSWORD': config('DB_PASSWORD'),
-    #     'HOST': 'localhost',
-    # }
+} if ENVIRONMENT == DEVELOPMENT and False else {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': 'localhost',
+    },
+    'slave': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'slave',
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST', default='localhost'),
+    },
+    'backup': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'backup',
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': 'localhost',
+    }
 }
 
 # TODO: Fix this so it doesn't break user sessions
@@ -327,6 +334,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Google Cloud Storage bucket names
+GS_MEDIA_BUCKET_NAME = 'modularhistory-media'
+GS_STATIC_BUCKET_NAME = 'modularhistory-static'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 STATIC_URL = '/static/'
@@ -335,16 +346,14 @@ STATICFILES_DIRS = (
 )
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
-if ENVIRONMENT == PRODUCTION:
-    STATICFILES_STORAGE = 'storage.GoogleCloudStaticFileStorage'
+if IS_PROD:
+    STATICFILES_STORAGE = 'history.storage.GoogleCloudStaticFileStorage'
 
 # Media files (images, etc. uploaded by users)
-MEDIA_URL = '/media/'
+MEDIA_URL = f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/' if IS_PROD else '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-GS_MEDIA_BUCKET_NAME = 'modularhistory-media'
-GS_STATIC_BUCKET_NAME = 'modularhistory-static'
-if ENVIRONMENT == PRODUCTION:
-    DEFAULT_FILE_STORAGE = 'storage.GoogleCloudMediaFileStorage'
+if IS_PROD:
+    DEFAULT_FILE_STORAGE = 'history.storage.GoogleCloudMediaFileStorage'
     GS_BUCKET_NAME = GS_MEDIA_BUCKET_NAME
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

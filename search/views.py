@@ -50,7 +50,7 @@ class SearchResultsView(ListView):
     results_count = 0
     paginate_by = 100
 
-    content_types: Optional[List[Tuple[int, str]]] = None
+    excluded_content_types: Optional[List[Tuple[int, str]]] = None
     sort_by_relevance: bool = False
     suppress_unverified: bool = True
     entities: Optional[QuerySet] = None
@@ -76,7 +76,7 @@ class SearchResultsView(ListView):
             query=query,
             suppress_unverified=self.suppress_unverified,
             order_by_relevance=self.sort_by_relevance,
-            content_types=self.content_types,
+            excluded_content_types=self.excluded_content_types,
             # places=self.places
             entities=self.entities,
             topics=self.topics,
@@ -212,17 +212,17 @@ class SearchResultsView(ListView):
         #     | Q(publications__in=source_results)
         # ).distinct
 
-        # Content types
-        content_types = []
-        if len(occurrence_results):
-            content_types.append((ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'))
-        if len(quote_results):
-            content_types.append((ContentType.objects.get_for_model(Quote).id, 'Quotes'))
-        if len(image_results):
-            content_types.append((ContentType.objects.get_for_model(Image).id, 'Images'))
-        if len(source_results):
-            content_types.append((ContentType.objects.get_for_model(Source).id, 'Sources'))
-        self.content_types = content_types
+        # # Content types
+        # content_types = []
+        # if len(occurrence_results):
+        #     content_types.append((ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'))
+        # if len(quote_results):
+        #     content_types.append((ContentType.objects.get_for_model(Quote).id, 'Quotes'))
+        # if len(image_results):
+        #     content_types.append((ContentType.objects.get_for_model(Image).id, 'Images'))
+        # if len(source_results):
+        #     content_types.append((ContentType.objects.get_for_model(Source).id, 'Sources'))
+        # self.content_types = content_types
 
         # Combine querysets
         queryset_chain = chain(
