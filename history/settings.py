@@ -211,7 +211,7 @@ if ENVIRONMENT == PRODUCTION:
             'PASSWORD': config('DB_PASSWORD'),
         }
     }
-elif ENVIRONMENT == DEVELOPMENT and False:
+elif ENVIRONMENT == DEVELOPMENT and True:
     DATABASES = {
         'default': {
             'NAME': config('PROD_DB_NAME'),
@@ -501,16 +501,16 @@ SETTINGS_EXPORT = [
 ]
 
 
-# def show_debug_toolbar(request) -> bool:
-#     if DEBUG and request.GET.get('showDebugToolbar'):
-#         return True
-#     return False
-#
-#
-# # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
-# DEBUG_TOOLBAR_CONFIG = {
-#     'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
-# }
+def show_debug_toolbar(request) -> bool:
+    if DEBUG or request.META.HTTP_HOST == config('GC_TEST_DOMAIN'):
+        return True
+    return False
+
+
+# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
+}
 
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-panels
 DEBUG_TOOLBAR_PANELS = [
@@ -555,9 +555,10 @@ CELERY_BROKER_URL = 'amqp://localhost'
 
 # TODO
 # CELERY_CACHE_BACKEND = 'default'
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'cache',
+if ENVIRONMENT == DEVELOPMENT:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+            'LOCATION': 'cache',
+        }
     }
-}
