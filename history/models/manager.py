@@ -96,10 +96,10 @@ class Manager(BaseManager):
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()
         lesser = qs.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()
-        if not greater and not lesser:
+        if not greater and not lesser:  # TODO
             first_item = qs.first()
-            print(f'No items with {datetime_attr} attribute; '
-                  f'returning first item instead: {first_item}', file=stderr)
+            # print(f'No items with {datetime_attr} attribute; '
+            #       f'returning first item instead: {first_item}', file=stderr)
             return first_item
         elif greater and lesser:
             greater_diff = abs(getattr(greater, datetime_attr) - datetime_value)

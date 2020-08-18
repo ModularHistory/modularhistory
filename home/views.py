@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Tuple
 from django.db.models import QuerySet
 from django.views.generic import TemplateView  # , RedirectView
 
-from search.forms import SearchFilterForm
+from search.forms import SearchForm
 
 
 class HomePageView(TemplateView):
@@ -23,14 +23,7 @@ class HomePageView(TemplateView):
         query = self.request.GET.get('query')
         context['query'] = query
 
-        # Initial data
-        # data = {
-        #     'excluded_content_types': None,
-        #     'entities': None,
-        #     'topics': None,
-        # }
-
-        search_form = SearchFilterForm(
+        search_form = SearchForm(
             request=self.request,
             query=query,
             suppress_unverified=self.suppress_unverified,
@@ -40,6 +33,7 @@ class HomePageView(TemplateView):
             topics=self.topics,
             # places=self.places
             # initial=data
+            collapse_refinements=True
         )
         context['search_form'] = search_form
         return context

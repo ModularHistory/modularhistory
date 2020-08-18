@@ -12,6 +12,13 @@
 
 {% block content %}
     <div class="container">
-        {% crispy search_form %}
+        <p class="lead">
+            Welcome to ModularHistory.
+        </p>
+        <div class="card p-2">
+            <div class="card-body">
+                {% crispy search_form %}
+            </div>
+        </div>
     </div>
 {% endblock %}

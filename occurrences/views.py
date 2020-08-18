@@ -6,7 +6,7 @@ try:
 except ImportError:
     from polymorphic.query import PolymorphicQuerySet
 
-from search.forms import SearchFilterForm
+from search.forms import SearchForm
 from .models import Occurrence
 
 
@@ -22,7 +22,9 @@ class ListView(generic.list.ListView):
 
     def get_context_data(self, *args, **kwargs) -> Dict:
         context = super().get_context_data(*args, **kwargs)
-        context['search_filter_form'] = SearchFilterForm()
+        context['search_form'] = SearchForm(
+            request=self.request
+        )
         return context
 
 

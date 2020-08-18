@@ -71,9 +71,9 @@ def process(_, html: str) -> str:
             html = html.replace(match.group(0), quote_html)
 
         # Process citations
+        print('Processing citations...')
         for match in re.finditer(citation_key_regex, html):
             key = match.group(1).strip()
-            print(f'Found match: {match.group(0)}')
             try:
                 citation = Citation.objects.get(pk=key)
             except ObjectDoesNotExist:
@@ -99,6 +99,7 @@ def process(_, html: str) -> str:
                              f'<sup>{citation.number}</sup>'
                              f'</a>')
             html = html.replace(match.group(0), citation_html)
+            # print(f'Replaced {match.group(0).strip()} with {citation_html}`')
 
         # Process sources
         for match in re.finditer(source_key_regex, html):

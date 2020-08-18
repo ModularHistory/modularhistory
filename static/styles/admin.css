@@ -4,8 +4,18 @@
 .hidden {
   display: none; }
 
+[data-toggle="collapse"][aria-expanded="true"] .fa-chevron-circle-down {
+  display: none; }
+
+.collapsed[data-toggle="collapse"] .fa-chevron-circle-up {
+  display: none; }
+
 .highlighted {
   background-color: rgba(255, 183, 183, 0.9); }
+
+.select2-container {
+  min-width: 100%;
+  max-width: 100%; }
 
 .lazy-bg {
   background-image: url("/static/img-placeholder.jpg"); }
@@ -61,6 +71,22 @@ form ul {
   grid-gap: 1rem;
   grid-template-columns: auto auto auto auto;
   justify-content: center; }
+
+.flexbox-holy-albatross {
+  display: flex;
+  flex-wrap: wrap;
+  --multiplier: calc(300px - 100%);
+  --horizontal-margin: 1rem;
+  margin-left: calc(var(--horizontal-margin) * -1);
+  margin-right: calc(var(--horizontal-margin) * -1); }
+  .flexbox-holy-albatross > * {
+    margin-left: var(--horizontal-margin);
+    margin-right: var(--horizontal-margin);
+    min-width: 33%;
+    flex-grow: 1;
+    flex-basis: calc(var(--multiplier) * 999); }
+    .flexbox-holy-albatross > *.block {
+      flex-basis: 100%; }
 
 .nowrap {
   white-space: nowrap; }
@@ -68,8 +94,18 @@ form ul {
 .hidden {
   display: none; }
 
+[data-toggle="collapse"][aria-expanded="true"] .fa-chevron-circle-down {
+  display: none; }
+
+.collapsed[data-toggle="collapse"] .fa-chevron-circle-up {
+  display: none; }
+
 .highlighted {
   background-color: rgba(255, 183, 183, 0.9); }
+
+.select2-container {
+  min-width: 100%;
+  max-width: 100%; }
 
 .lazy-bg {
   background-image: url("/static/img-placeholder.jpg"); }
@@ -125,6 +161,22 @@ form ul {
   grid-gap: 1rem;
   grid-template-columns: auto auto auto auto;
   justify-content: center; }
+
+.flexbox-holy-albatross {
+  display: flex;
+  flex-wrap: wrap;
+  --multiplier: calc(300px - 100%);
+  --horizontal-margin: 1rem;
+  margin-left: calc(var(--horizontal-margin) * -1);
+  margin-right: calc(var(--horizontal-margin) * -1); }
+  .flexbox-holy-albatross > * {
+    margin-left: var(--horizontal-margin);
+    margin-right: var(--horizontal-margin);
+    min-width: 33%;
+    flex-grow: 1;
+    flex-basis: calc(var(--multiplier) * 999); }
+    .flexbox-holy-albatross > *.block {
+      flex-basis: 100%; }
 
 .image-card .card-text {
   font-size: 0.8rem; }

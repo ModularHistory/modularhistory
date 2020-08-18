@@ -119,6 +119,7 @@ INSTALLED_APPS = [
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'massadmin',  # https://github.com/burke-software/django-mass-edit
+    # 'menu',  # https://github.com/jazzband/django-simple-menu
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     # 'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'rest_framework',  # https://github.com/encode/django-rest-framework
@@ -141,13 +142,17 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
     # # https://github.com/yandex/django_replicated
     # 'django_replicated.middleware.ReplicationMiddleware',  # breaks user sessions
-    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -195,46 +200,51 @@ WSGI_APPLICATION = 'history.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'HOST': config('DB_HOST'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
+if ENVIRONMENT == PRODUCTION:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'HOST': config('DB_HOST'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+        }
     }
-} if ENVIRONMENT == PRODUCTION else {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'NAME': 'modularhistory',
-        'USER': 'modularhistory',
-        'PASSWORD': 'ucEAdBuKfc7l2cft',
+elif ENVIRONMENT == DEVELOPMENT and False:
+    DATABASES = {
+        'default': {
+            'NAME': config('PROD_DB_NAME'),
+            'USER': config('PROD_DB_USER'),
+            'PASSWORD': config('PROD_DB_PASSWORD'),
+            'HOST': config('PROD_DB_HOST'),
+            'PORT': config('PROD_DB_PORT'),
+            'ENGINE': 'django.db.backends.postgresql',
+        }
     }
-} if ENVIRONMENT == DEVELOPMENT and False else {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',
-    },
-    'slave': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'slave',
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-    },
-    'backup': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'backup',
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',
+else:
+    DATABASES = {
+        'default': {
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'ENGINE': 'django.db.backends.postgresql',
+        },
+        'slave': {
+            'NAME': 'slave',
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'ENGINE': 'django.db.backends.postgresql',
+        },
+        'backup': {
+            'NAME': 'backup',
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST', default='localhost'),
+            'ENGINE': 'django.db.backends.postgresql',
+        }
     }
-}
 
 # TODO: Fix this so it doesn't break user sessions
 # # https://github.com/yandex/django_replicated
@@ -479,7 +489,7 @@ CRISPY_CLASS_CONVERTERS = {
 MENU_ITEMS = [
     ['Occurrences', 'occurrences'],
     ['People', 'entities'],
-    ['Places', 'places'],
+    # ['Places', 'places'],
     ['Quotes', 'quotes'],
     ['Sources', 'sources'],
     ['Topics', 'topics'],
@@ -489,17 +499,17 @@ SETTINGS_EXPORT = [
     'MENU_ITEMS',
 ]
 
-# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
-DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
-}
 
-
-def show_debug_toolbar(request) -> bool:
-    if DEBUG and 'showDebugToolbar=true' in request.GET:
-        return True
-    return False
-
+# def show_debug_toolbar(request) -> bool:
+#     if DEBUG and request.GET.get('showDebugToolbar'):
+#         return True
+#     return False
+#
+#
+# # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
+# DEBUG_TOOLBAR_CONFIG = {
+#     'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
+# }
 
 X_RAPIDAPI_HOST = config('X_RAPIDAPI_HOST')
 X_RAPIDAPI_KEY = config('X_RAPIDAPI_KEY')

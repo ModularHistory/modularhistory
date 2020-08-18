@@ -1,9 +1,9 @@
 # coding: utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from functools import partial
 import types
 import warnings
+from functools import partial
 
 from django.core.exceptions import FieldDoesNotExist
 from django.core.serializers.python import Serializer as _PythonSerializer
@@ -14,6 +14,8 @@ from django.db.models.fields import Field
 from django.db.models.options import make_immutable_fields_list
 from django.utils.encoding import smart_text
 from six import with_metaclass
+
+from history.models import Model
 
 
 class TypedModelManager(models.Manager):
@@ -238,7 +240,7 @@ class TypedModelMetaclass(ModelBase):
         cls._meta._expire_cache()
 
 
-class TypedModel(with_metaclass(TypedModelMetaclass, models.Model)):
+class TypedModel(with_metaclass(TypedModelMetaclass, Model)):
     """
     This class contains the functionality required to auto-downcast a model based
     on its ``type`` attribute.
@@ -345,7 +347,7 @@ class TypedModel(with_metaclass(TypedModelMetaclass, models.Model)):
         if not getattr(self, '_typedmodels_type', None):
             # TODO: Find out why the below is necessary to avoid the RuntimeError
             from entities.models import Entity
-            from places.models import Venue, City, State, Place
+            from places.models import Place
             if isinstance(self, Entity):
                 if self.type:
                     print(f'>>> Recasting Entity to {self.type}')

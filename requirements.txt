@@ -15,6 +15,7 @@ django-celery-beat==2.0.0
 django-celery-results==1.2.1
 django-crispy-forms==1.9.2
 django-dbbackup==3.3.0
+django-debug-toolbar
 django-extra-views==0.13.0
 django-filter==2.3.0
 django-gm2m==1.0
@@ -23,20 +24,20 @@ django-image-cropping==1.4.0
 django-imagekit==4.0.2
 django-mass-edit==3.2.0
 django-nested-admin==3.3.2
-# django-polymorphic==2.1.2
+django-polymorphic==2.1.2
 django-sass-processor==0.8
 django-select2==7.4.2
 django-settings-export==1.2.1
+django-simple-menu==1.2.1
 django-storages[google]==1.9.1
 django-tinymce==3.0.2
-django-debug-toolbar
 django-typed-models==0.10.0
 django-reverse-admin==2.8.13
 djangorestframework==3.11.1
 easy-thumbnails==2.7
 google-cloud-storage
 html5lib==1.1
-humanize==2.5.0
+humanize==2.6.0
 kombu==4.6.11
 lxml==4.5.2
 markdown==3.2.2
@@ -56,7 +57,7 @@ python-magic==0.4.18
 pytz==2020.1
 requests==2.24.0
 scp==0.13.2
-sentry-sdk==0.16.3
+sentry-sdk==0.16.4
 sigfig==1.1.8
 six==1.15.0
 social-auth-app-django==4.0.0

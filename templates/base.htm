@@ -3,9 +3,17 @@
 {% load modal %}
 <html lang="en" xml:lang="en">
     <head>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-175229389-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'UA-175229389-1');
+        </script>
+
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="google" content="notranslate">
         <meta http-equiv="Content-Language" content="en">
         <meta property="og:type" content="website" />
         <!-- <meta property="og:image" content="https://www.history.com${ STATIC_URL }home/media/images/ju1.jpg" /> -->
@@ -99,6 +107,7 @@
             <!-- Logo -->
             <a class="navbar-brand" href="/">
                 <img src='{% static "logo_head_white.png" %}' alt="Logo" style="height: 2.5rem">
+                ModularHistory
             </a>
 
             <!-- Non-collapsible links -->
@@ -144,20 +153,28 @@
                 <ul class="navbar-nav">
                     {% block main_menu %}
                         {% if request.user.is_superuser %}
-                            <!-- Dropdown -->
-                            <li class="nav-item dropdown active">
-                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                                    History
-                                </a>
-                                <div class="dropdown-menu">
-                                    {% for title, app in settings.MENU_ITEMS %}
-                                        <a class="dropdown-item" href="/history/{{ app }}/">{{ title }}</a>
-                                        <!--<li class="nav-item ${'active' if False else ''}">-->
-                                        <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->
-                                        <!--</li>-->
-                                    {% endfor %}
-                                </div>
-                            </li>
+                            {% with menu_items=settings.MENU_ITEMS %}
+                                {% for title, app in menu_items %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/history/{{ app }}/">{{ title }}</a>
+                                    </li>
+                                {% endfor %}
+                            {% endwith %}
+
+{#                            <!-- Dropdown -->#}
+{#                            <li class="nav-item dropdown active">#}
+{#                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}
+{#                                    History#}
+{#                                </a>#}
+{#                                <div class="dropdown-menu">#}
+{#                                    {% for title, app in settings.MENU_ITEMS %}#}
+{#                                        <a class="dropdown-item" href="/history/{{ app }}/">{{ title }}</a>#}
+{#                                        <!--<li class="nav-item ${'active' if False else ''}">-->#}
+{#                                        <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->#}
+{#                                        <!--</li>-->#}
+{#                                    {% endfor %}#}
+{#                                </div>#}
+{#                            </li>#}
                         {% endif %}
                     {% endblock %}
                 </ul>

@@ -14,7 +14,7 @@ from images.models import Image
 from occurrences.models import Occurrence
 # from places.models import Place
 from quotes.models import Quote
-from search.forms import SearchFilterForm
+from search.forms import SearchForm
 from sources.models import Source
 from topics.models import Topic
 
@@ -71,7 +71,7 @@ class SearchResultsView(ListView):
         #     'topics': None,
         # }
 
-        search_filter_form = SearchFilterForm(
+        search_form = SearchForm(
             request=self.request,
             query=query,
             suppress_unverified=self.suppress_unverified,
@@ -82,7 +82,7 @@ class SearchResultsView(ListView):
             topics=self.topics,
             # initial=data
         )
-        context['search_filter_form'] = search_filter_form
+        context['search_form'] = search_form
         return context
 
     def get_queryset(self) -> Union[QuerySet, List]:
