@@ -1,12 +1,12 @@
 import os
 import sys
-from glob import glob
+# from glob import glob
 
 import django
-from decouple import config
-from django.core import management
-from paramiko import SSHClient
-from scp import SCPClient
+# from decouple import config
+# from django.core import management
+# from paramiko import SSHClient
+# from scp import SCPClient
 
 # Initialize Django
 print('Initializing Django...')
@@ -14,9 +14,6 @@ my_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(my_dir)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
 django.setup()
-
-from history import settings
-
 
 from history import settings
 from django.db import transaction
@@ -27,13 +24,11 @@ from occurrences.models import Occurrence
 from quotes.models import QuoteRelation, Quote
 from topics.models import Topic, TopicRelation
 
-occurrence_ct = ContentType.objects.get_for_model(Occurrence)
-quote_ct = ContentType.objects.get_for_model(Quote)
+# occurrence_ct = ContentType.objects.get_for_model(Occurrence)
+# quote_ct = ContentType.objects.get_for_model(Quote)
 
-for pr in PageRange.objects.all():
-    if pr.page_number == 0:
-        if input('Delete? [y/n] ') == 'y':
-            pr.delete()
+for occurrence in Occurrence.objects.all():
+    occurrence.save()
 
 # mrm_topic = Topic.objects.get(key='Mormonism')
 # race_topic = Topic.objects.get(key='Race')

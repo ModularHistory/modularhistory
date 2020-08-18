@@ -120,6 +120,7 @@ INSTALLED_APPS = [
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     # 'menu',  # https://github.com/jazzband/django-simple-menu
+    'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     # 'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'rest_framework',  # https://github.com/encode/django-rest-framework
@@ -511,6 +512,24 @@ SETTINGS_EXPORT = [
 #     'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
 # }
 
+# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-panels
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'pympler.panels.MemoryPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    # 'debug_toolbar.panels.logging.LoggingPanel',
+    # 'debug_toolbar.panels.redirects.RedirectsPanel',
+    # 'debug_toolbar.panels.profiling.ProfilingPanel',
+    # 'debug_toolbar.panels.settings.SettingsPanel',
+    # 'debug_toolbar.panels.versions.VersionsPanel',
+]
+
 X_RAPIDAPI_HOST = config('X_RAPIDAPI_HOST')
 X_RAPIDAPI_KEY = config('X_RAPIDAPI_KEY')
 
@@ -534,11 +553,11 @@ CELERY_BROKER_URL = 'amqp://localhost'
 # CELERY_BROKER_URL = 'amqp://guest:**@localhost:5672'
 # CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672'
 
-# TODO: Look into using caching
+# TODO
 # CELERY_CACHE_BACKEND = 'default'
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-#         'LOCATION': 'my_cache_table',
-#     }
-# }
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cache',
+    }
+}

@@ -48,7 +48,7 @@ def rank_sorter(x: Union[Model]):
 class SearchResultsView(ListView):
     template_name = 'search/search_results.html'
     results_count = 0
-    paginate_by = 100
+    paginate_by = 25
 
     excluded_content_types: Optional[List[Tuple[int, str]]] = None
     sort_by_relevance: bool = False

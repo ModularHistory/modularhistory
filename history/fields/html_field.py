@@ -1,10 +1,10 @@
 import re
 from sys import stderr
-from typing import Callable, Optional, Union, TYPE_CHECKING
+from typing import Callable, Match, Optional, Union, TYPE_CHECKING
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
-from django.urls import reverse
+# from django.urls import reverse
 from django.utils.safestring import SafeText
 from tinymce.models import HTMLField as MceHTMLField
 
@@ -12,15 +12,17 @@ from history.structures.html import HTML
 
 if TYPE_CHECKING:
     from quotes.models import Quote
+    from images.models import Image
+    from sources.models import Source, Citation
 
 # group 1: image pk
 # group 2: ignore
-# group 3: image caption
+# group 3: image HTML
 image_key_regex = r'{{\ ?image:\ ?(.+?)(:([^}]+?))?\ ?}}'
 
 # group 1: quote pk
 # group 2: ignore
-# group 3: quote content
+# group 3: quote HTML
 # group 4: closing brackets
 quote_key_regex = r'{{\ ?quote:\ ?([\w\d]+?)(:([^}]+?))?(\ ?}})'
 
@@ -29,7 +31,10 @@ quote_key_regex = r'{{\ ?quote:\ ?([\w\d]+?)(:([^}]+?))?(\ ?}})'
 # group 3: page string (e.g., 'p. 22')
 # group 4: ignore
 # group 5: quotation (e.g., "It followed institutionalized procedures....")
-citation_key_regex = r'\ ?{{\ ?citation:\ ?([\d\w]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?\ ?}}'
+# group 6: ignore
+# group 7: citation HTML
+citation_key_regex = (r'\ ?{{\ ?citation:\ ?([\d\w]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?\ ?'
+                      r'(<span style="display: none;?">(.+)<\/span>)?\ ?}}')
 
 # group 1: source pk
 source_key_regex = r'{{\ ?source:\ ?(.+?)\ ?}}'
@@ -47,66 +52,26 @@ def process(_, html: str) -> str:
 
         # Process images
         for match in re.finditer(image_key_regex, html):
-            key = match.group(1).strip()
-            try:
-                image = Image.objects.get(pk=key)
-            except Exception as e:
-                print(f'{e}', file=stderr)
-                image = Image.objects.get(key=key)
-            image_html = render_to_string(
-                'images/_card.html',
-                context={'image': image, 'object': image}
-            )
-            if image.width < 300:
-                image_html = f'<div class="float-right pull-right">{image_html}</div>'
-            if image.width < 500:
-                image_html = f'<div style="text-align: center">{image_html}</div>'
+            image_html = (match.group(3) or get_image_html(match)).strip()
             html = html.replace(match.group(0), image_html)
 
         # Process quotes
         for match in re.finditer(quote_key_regex, html):
-            key = match.group(1).strip()
-            quote = Quote.objects.get(pk=key)
-            quote_html = get_quote_html(quote)
+            quote_html = match.group(3).strip()
             html = html.replace(match.group(0), quote_html)
 
         # Process citations
-        print('Processing citations...')
         for match in re.finditer(citation_key_regex, html):
-            key = match.group(1).strip()
-            try:
-                citation = Citation.objects.get(pk=key)
-            except ObjectDoesNotExist:
-                print(f'Unable to retrieve citation: {key}', file=stderr)
-                continue
-            html_id = citation.html_id
-            source_string = str(citation)
-            page_str = match.group(3)
-            quotation = match.group(5)
-            if page_str:
-                page_str = page_str.strip()
-                page_str_regex = re.compile(Citation.PAGE_STRING_REGEX)
-                page_str_match = page_str_regex.match(source_string)
-                if page_str_match:
-                    _page_string = page_str_match.group(1)
-                    source_string = source_string.replace(_page_string, page_str)
-                else:
-                    source_string += f', {page_str}'
-            if quotation:
-                source_string += f': {quotation}'
-            source_string = source_string.replace('"', '\\"').replace("'", "\\'")
-            citation_html = (f'<a href="#{html_id}" title="{source_string}">'
-                             f'<sup>{citation.number}</sup>'
-                             f'</a>')
+            citation_html = (match.group(7) or get_citation_html(match)).strip()
             html = html.replace(match.group(0), citation_html)
             # print(f'Replaced {match.group(0).strip()} with {citation_html}`')
 
-        # Process sources
-        for match in re.finditer(source_key_regex, html):
-            key = match.group(1).strip()
-            source = Source.objects.get(pk=key)
-            source_html = f'{source.html}'
-            html = html.replace(match.group(0), source_html)
+        # # Process sources
+        # for match in re.finditer(source_key_regex, html):
+        #     key = match.group(1).strip()
+        #     source = Source.objects.get(pk=key)
+        #     source_html = f'{source.html}'
+        #     html = html.replace(match.group(0), source_html)
 
     return html
 
@@ -139,7 +104,7 @@ class HTMLField(MceHTMLField):
         raw_html = re.sub(r'<div id=\"i4c-draggable-container\"[^\/]+</div>', '', raw_html)
         raw_html = re.sub(r'<p>&nbsp;<\/p>', '', raw_html)
 
-        # Insert links for entity names
+        # Insert links for entity names.
         if model_instance.pk and (hasattr(model_instance, 'attributees')
                                   or hasattr(model_instance, 'involved_entities')):
             entities = (getattr(model_instance, 'attributees', None)
@@ -149,7 +114,8 @@ class HTMLField(MceHTMLField):
                 from entities.models import Entity
                 for entity in entities:
                     e: Entity = entity
-                    for name in set([e.name] + e.aliases):
+                    aliases = e.aliases or []
+                    for name in set([e.name] + aliases):
                         opening_span_tag = f'<span class="entity-name" data-entity-id="{e.pk}">'
                         closing_span_tag = '</span>'
                         raw_html = re.sub(
@@ -159,7 +125,8 @@ class HTMLField(MceHTMLField):
                             raw_html
                         )
 
-        # Add quote content (purely for readability when editing)
+        # Add quote HTML.
+        # This (1) improves readability when editing and (2) reduces time to process search results.
         quote_cls = None
         for match in re.finditer(quote_key_regex, raw_html):
             quote_placeholder = match.group(0)
@@ -180,31 +147,77 @@ class HTMLField(MceHTMLField):
                 updated_quote_placeholder = quote_placeholder.replace(appendage, updated_appendage)
             raw_html = raw_html.replace(quote_placeholder, updated_quote_placeholder)
 
-        # Add image captions (purely for readability when editing)
+        # Add image HTML.
+        # This (1) improves readability when editing and (2) reduces time to process search results.
         image_cls = None
         for match in re.finditer(image_key_regex, raw_html):
-            image_placeholder = match.group(0)
+            img_placeholder = match.group(0)
             if not image_cls:
                 from images.models import Image
                 image_cls = Image
             key = match.group(1).strip()
+
             # Update key if necessary
             try:
                 image = image_cls.objects.get(pk=key)
-            except Exception as e:
+            except ValueError as e:  # legacy key
                 print(f'{e}', file=stderr)
                 image = image_cls.objects.get(key=key)
-                image_placeholder = image_placeholder.replace(key, image.pk)
+                img_placeholder = img_placeholder.replace(key, str(image.pk))
+
             appendage = match.group(2)
-            updated_appendage = f': {image.caption.text}'
+            updated_appendage = f': {get_image_html(image)}'
             if not appendage:
-                updated_image_placeholder = (
-                    f'{image_placeholder.replace(" }}", "").replace("}}", "")}'
+                updated_img_placeholder = (
+                    f'{img_placeholder.replace(" }}", "").replace("}}", "")}'
                     f'{updated_appendage}'
                 ) + '}}'  # Angle brackets can't be included in f-string literals
             else:
-                updated_image_placeholder = image_placeholder.replace(appendage, updated_appendage)
-            raw_html = raw_html.replace(image_placeholder, updated_image_placeholder)
+                updated_img_placeholder = img_placeholder.replace(appendage, updated_appendage)
+            updated_img_placeholder = updated_img_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
+            raw_html = raw_html.replace(img_placeholder, updated_img_placeholder)
+
+        # Add citation HTML.
+        # This (1) improves readability when editing and (2) reduces time to process search results.
+        citation_cls = None
+        for match in re.finditer(citation_key_regex, raw_html):
+            citation_placeholder = match.group(0)
+            if not citation_cls:
+                from sources.models import Citation
+                citation_cls = Citation
+            citation_html = get_citation_html(match)
+            appendage = match.group(6)
+            updated_appendage = f'<span style="display: none">{citation_html}</span>'
+            if not appendage:
+                updated_citation_placeholder = (
+                   f'{citation_placeholder.replace(" }}", "").replace("}}", "")}'
+                   f'{updated_appendage}'
+                ) + ' }}'  # Angle brackets can't be included in f-string literals
+            else:
+                updated_citation_placeholder = citation_placeholder.replace(appendage, updated_appendage)
+            raw_html = raw_html.replace(citation_placeholder, updated_citation_placeholder)
+
+        # # Add source HTML.
+        # # This (1) improves readability when editing and (2) reduces time to process search results.
+        # source_cls = None
+        # for match in re.finditer(source_key_regex, raw_html):
+        #     source_placeholder = match.group(0)
+        #     if not source_cls:
+        #         from sources.models import Source
+        #         source_cls = Source
+        #     key = match.group(1).strip()
+        #     source = source_cls.objects.get(pk=key)
+        #     source_html = get_source_html(source)
+        #     appendage = match.group(2)
+        #     updated_appendage = f': {source_html}'
+        #     if not appendage:
+        #         updated_source_placeholder = (
+        #            f'{source_placeholder.replace(" }}", "").replace("}}", "")}'
+        #            f'{updated_appendage}'
+        #        ) + '}}'  # Angle brackets can't be included in f-string literals
+        #     else:
+        #         updated_source_placeholder = source_placeholder.replace(appendage, updated_appendage)
+        #     raw_html = raw_html.replace(source_placeholder, updated_source_placeholder)
 
         # Wrap HTML content in a <p> tag if necessary
         if not raw_html.startswith('<') and raw_html.endswith('>'):
@@ -272,3 +285,60 @@ def get_quote_html(quote: 'Quote'):
         f'</footer>'
         f'</blockquote>'
     )
+
+
+def get_image_html(image: Union['Image', Match]):
+    if hasattr(image, 'group'):
+        match = image
+        key = match.group(1).strip()
+        from images.models import Image
+        try:
+            image = Image.objects.get(pk=key)
+        except ValueError as e:  # legacy key
+            print(f'{e}')
+            image = Image.objects.get(key=key)
+    image_html = render_to_string(
+        'images/_card.html',
+        context={'image': image, 'object': image}
+    )
+    if image.width < 300:
+        image_html = f'<div class="float-right pull-right">{image_html}</div>'
+    if image.width < 500:
+        image_html = f'<div style="text-align: center">{image_html}</div>'
+    return image_html
+
+
+def get_citation_html(citation_match: Match):
+    match = citation_match
+    key = match.group(1).strip()
+    from sources.models import Citation
+    try:
+        citation = Citation.objects.get(pk=key)
+    except ObjectDoesNotExist:
+        print(f'Unable to retrieve citation: {key}', file=stderr)
+        return
+    html_id = citation.html_id
+    source_string = str(citation)
+    page_str = match.group(3)
+    quotation = match.group(5)
+    if page_str:
+        page_str = page_str.strip()
+        page_str_regex = re.compile(Citation.PAGE_STRING_REGEX)
+        page_str_match = page_str_regex.match(source_string)
+        if page_str_match:
+            _page_string = page_str_match.group(1)
+            source_string = source_string.replace(_page_string, page_str)
+        else:
+            source_string += f', {page_str}'
+    if quotation:
+        source_string += f': {quotation}'
+    source_string = source_string.replace('"', '\\"').replace("'", "\\'")
+    citation_html = (f'<a href="#{html_id}" title="{source_string}">'
+                     f'<sup>{citation.number}</sup>'
+                     f'</a>')
+    return citation_html
+
+
+def get_source_html(source: 'Source'):
+    source_html = ''
+    return source_html
