@@ -13,10 +13,10 @@ import sys
 from enum import Enum
 
 import sentry_sdk
-# noinspection PyPackageRequirements
 from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
+from mega import Mega
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -29,10 +29,13 @@ class Environment(str, Enum):
 
 IS_GCP = os.getenv('GAE_APPLICATION', None)
 IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')
+
 TESTING = 'test' in sys.argv
 ENVIRONMENT = (Environment.PROD if IS_PROD
                else Environment.GITHUB_TEST if os.environ.get('GITHUB_WORKFLOW')
                else Environment.DEV)
+
+USE_PROD_DB = os.getenv('USE_PROD_DB', IS_PROD)
 
 ADMINS = config('ADMINS', cast=lambda value: [
     tuple(name_and_email.split(','))
@@ -242,7 +245,7 @@ elif ENVIRONMENT == Environment.GITHUB_TEST:
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
-elif ENVIRONMENT == Environment.DEV and False:
+elif ENVIRONMENT == Environment.DEV and USE_PROD_DB:
     DATABASES = {
         'default': {
             'NAME': config('PROD_DB_NAME'),
@@ -379,6 +382,12 @@ USE_TZ = True
 # Google Cloud Storage bucket names
 GS_MEDIA_BUCKET_NAME = 'modularhistory-media'
 GS_STATIC_BUCKET_NAME = 'modularhistory-static'
+
+MEGA_USERNAME = config('MEGA_USERNAME', default=None)
+MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
+mega = None
+if IS_PROD and MEGA_USERNAME and MEGA_PASSWORD:
+    mega = Mega()
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

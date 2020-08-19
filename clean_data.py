@@ -23,12 +23,16 @@ from sources.models import Citation, Source, PageRange
 from occurrences.models import Occurrence
 from quotes.models import QuoteRelation, Quote
 from topics.models import Topic, TopicRelation
+from images.models import Image
 
 # occurrence_ct = ContentType.objects.get_for_model(Occurrence)
 # quote_ct = ContentType.objects.get_for_model(Quote)
 
 for occurrence in Occurrence.objects.all():
     occurrence.save()
+
+for image in Image.objects.all():
+    pass
 
 # mrm_topic = Topic.objects.get(key='Mormonism')
 # race_topic = Topic.objects.get(key='Race')

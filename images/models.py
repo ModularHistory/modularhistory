@@ -1,6 +1,7 @@
 from sys import stderr
 from typing import Optional
-
+from django.contrib.postgres.fields import JSONField
+from history.settings import mega, MEGA_USERNAME, MEGA_PASSWORD
 import pafy
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -36,6 +37,11 @@ image_types = (
 )
 
 
+STORAGE_OPTIONS = (
+    'mega',
+)
+
+
 class Image(MediaModel):
     """An image"""
     image = models.ImageField(
@@ -43,6 +49,7 @@ class Image(MediaModel):
         height_field='height', width_field='width',
         null=True
     )
+    links = JSONField(default=dict)
     type = models.CharField(max_length=14, choices=image_types, default='image')
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -130,6 +137,12 @@ class Image(MediaModel):
         super().clean()
         if not self.caption:
             raise ValidationError('Image needs a caption.')
+        if mega and not len(self.links):
+            pass
+            # TODO
+            # mega_client = mega.login(MEGA_USERNAME, MEGA_PASSWORD)
+            # mega_client.upload(self.image.url)
+            # input('continue?')
 
 
 class Video(MediaModel):
