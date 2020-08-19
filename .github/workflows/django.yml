@@ -17,7 +17,7 @@ jobs:
     services:
       # Label used to access the service container
       postgres:
-        image: postgres:10.8
+        image: postgres:12
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
@@ -40,6 +40,7 @@ jobs:
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
+        python manage.py migrate contenttypes
         python manage.py migrate
         python manage.py makemigrations
         python manage.py migrate
