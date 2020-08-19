@@ -1,6 +1,10 @@
 runtime: python37
-includes:
-  - env.yaml
+instance_class: F2  # https://cloud.google.com/appengine/docs/standard#instance_classes
+automatic_scaling:
+  max_instances: 10
+  target_cpu_utilization: 0.7
+  max_pending_latency: automatic
+  max_concurrent_requests: 10
 handlers:
   # This configures Google App Engine to serve the files in the app's
   # static directory.
@@ -11,4 +15,7 @@ handlers:
   # (along with the entire handlers section) when there are no static
   # files defined.
   - url: /.*
+    secure: always
     script: auto
+includes:
+  - env.yaml

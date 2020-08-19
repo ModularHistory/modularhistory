@@ -34,15 +34,21 @@ ENVIRONMENT = PRODUCTION if IS_PROD else DEVELOPMENT
 ADMINS = config('ADMINS', cast=lambda value: [
     tuple(name_and_email.split(','))
     for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
-]) if config('ADMINS') else []
+]) if config('ADMINS', default=None) else []
 
-sentry_sdk.init(
-    dsn="https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835",
-    environment=ENVIRONMENT,
-    integrations=[DjangoIntegration(), CeleryIntegration()],
-    # Associate users to errors (using django.contrib.auth) by sending PII data
-    send_default_pii=True
-)
+# Initialize the Sentry SDK for error reporting.
+if ENVIRONMENT != DEVELOPMENT:
+    integrations = [DjangoIntegration()]
+    # If not in Google Cloud, add the Celery integration.
+    if not IS_GCP:
+        integrations.append(CeleryIntegration())
+    sentry_sdk.init(
+        dsn="https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835",
+        environment=ENVIRONMENT,
+        integrations=integrations,
+        # Associate users to errors (using django.contrib.auth) by sending PII data
+        send_default_pii=True
+    )
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
@@ -502,7 +508,7 @@ SETTINGS_EXPORT = [
 
 
 def show_debug_toolbar(request) -> bool:
-    if DEBUG or request.META.HTTP_HOST == config('GC_TEST_DOMAIN'):
+    if DEBUG or request.META.get('HTTP_POST') == config('GC_TEST_DOMAIN'):
         return True
     return False
 

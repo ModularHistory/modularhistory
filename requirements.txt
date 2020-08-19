@@ -41,6 +41,7 @@ humanize==2.6.0
 kombu==4.6.11
 lxml==4.5.2
 markdown==3.2.2
+mega.py==1.0.8  # https://github.com/odwyersoftware/mega.py
 millify==0.1.1
 natural-keys==1.6.0
 pafy==0.5.5
