@@ -23,6 +23,9 @@ env/
 venv/
 .venv/
 
+# GitHub
+.github/
+
 # PyCharm / IntelliJ #
 .idea
 .idea/
