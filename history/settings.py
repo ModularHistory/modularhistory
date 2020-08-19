@@ -115,6 +115,7 @@ INSTALLED_APPS = [
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
     'django_celery_results',  # https://github.com/celery/django-celery-results
+    'django_nose',  # https://github.com/jazzband/django-nose
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
@@ -210,6 +211,8 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'history.wsgi.application'
 
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 if ENVIRONMENT == PRODUCTION:
@@ -222,7 +225,7 @@ if ENVIRONMENT == PRODUCTION:
             'PASSWORD': config('DB_PASSWORD'),
         }
     }
-elif os.environ.get('GITHUB_WORKFLOW') and sys.argv[1] == 'test':
+elif os.environ.get('GITHUB_WORKFLOW'):
     DATABASES = {
         'default': {
             'NAME': 'postgres',
