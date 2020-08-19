@@ -523,7 +523,7 @@ SETTINGS_EXPORT = [
 
 
 def show_debug_toolbar(request) -> bool:
-    if DEBUG or request.META.get('HTTP_POST') == config('GC_TEST_DOMAIN'):
+    if DEBUG or request.META.get('HTTP_POST') == config('GC_TEST_DOMAIN', default=None):
         return True
     return False
 
@@ -551,8 +551,8 @@ DEBUG_TOOLBAR_PANELS = [
     # 'debug_toolbar.panels.versions.VersionsPanel',
 ]
 
-X_RAPIDAPI_HOST = config('X_RAPIDAPI_HOST')
-X_RAPIDAPI_KEY = config('X_RAPIDAPI_KEY')
+X_RAPIDAPI_HOST = config('X_RAPIDAPI_HOST', default=None)
+X_RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default=None)
 
 # https://docs.djangoproject.com/en/3.0/ref/contrib/sites/
 SITE_ID = 1
