@@ -33,14 +33,6 @@ Accordion.template = 'forms/_accordion.html'
 AccordionGroup.template = 'forms/_accordion_group.html'
 
 
-CONTENT_TYPES = [
-    (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
-    (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
-    (ContentType.objects.get_for_model(Image).id, 'Images'),
-    (ContentType.objects.get_for_model(Source).id, 'Sources')
-]
-
-
 class SearchForm(Form):
     SUBMIT_BUTTON_TEXT = 'Search'
 
@@ -86,10 +78,17 @@ class SearchForm(Form):
         if not self.request.user.is_superuser:
             self.fields['quality'].widget.attrs['disabled'] = True
 
+        # TODO: optimize
         # Filter content types
-        initial_content_types = (pk for pk, name in CONTENT_TYPES if pk not in excluded_content_types)
+        content_types = [
+            (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
+            (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
+            (ContentType.objects.get_for_model(Image).id, 'Images'),
+            (ContentType.objects.get_for_model(Source).id, 'Sources')
+        ]
+        initial_content_types = (pk for pk, name in content_types if pk not in excluded_content_types)
         self.fields['content_types'] = MultipleChoiceField(
-            choices=CONTENT_TYPES,
+            choices=content_types,
             widget=CheckboxSelectMultiple,
             initial=initial_content_types,
             required=False

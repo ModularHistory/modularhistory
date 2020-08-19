@@ -17,9 +17,9 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
-from search.views import SearchResultsView
-from topics.views import TagSearchView
+
 from admin import admin_site
+from search.views import SearchResultsView
 
 urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
