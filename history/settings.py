@@ -29,6 +29,7 @@ class Environment(str, Enum):
 
 IS_GCP = os.getenv('GAE_APPLICATION', None)
 IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')
+TESTING = 'test' in sys.argv
 ENVIRONMENT = (Environment.PROD if IS_PROD
                else Environment.GITHUB_TEST if os.environ.get('GITHUB_WORKFLOW')
                else Environment.DEV)
@@ -213,6 +214,10 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 WSGI_APPLICATION = 'history.wsgi.application'
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = [
+    '--with-coverage',
+    # '--cover-package=foo,bar',  # which apps to measure coverage for
+]
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
