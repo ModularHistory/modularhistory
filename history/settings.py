@@ -225,10 +225,10 @@ if ENVIRONMENT == PRODUCTION:
 elif os.environ.get('GITHUB_WORKFLOW') and sys.argv[1] == 'test':
     DATABASES = {
         'default': {
-            'HOST': 'postgres',
             'NAME': 'postgres',
             'USER': 'postgres',
             'PASSWORD': 'postgres',
+            'HOST': 'postgres',
             'PORT': 5432,
             'ENGINE': 'django.db.backends.postgresql',
         }
