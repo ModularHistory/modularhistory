@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import sys
+from enum import Enum
 
 import sentry_sdk
 # noinspection PyPackageRequirements
@@ -17,7 +19,6 @@ from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
-from enum import Enum
 
 
 class Environments(str, Enum):
@@ -221,7 +222,17 @@ if ENVIRONMENT == PRODUCTION:
             'PASSWORD': config('DB_PASSWORD'),
         }
     }
-elif ENVIRONMENT == DEVELOPMENT and True:
+elif os.environ.get('GITHUB_WORKFLOW') and sys.argv[1] == 'test':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'HOST': 'localhost',
+            'PORT': 5432,
+        }
+    }
+elif ENVIRONMENT == DEVELOPMENT and False:
     DATABASES = {
         'default': {
             'NAME': config('PROD_DB_NAME'),
