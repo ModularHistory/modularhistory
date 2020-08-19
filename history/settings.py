@@ -21,16 +21,17 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 
-class Environments(str, Enum):
-    PRODUCTION = 'prod'
-    DEVELOPMENT = 'dev'
+class Environment(str, Enum):
+    PROD = 'prod'
+    DEV = 'dev'
+    GITHUB_TEST = 'test'
 
 
-PRODUCTION = 'prod'
-DEVELOPMENT = 'dev'
 IS_GCP = os.getenv('GAE_APPLICATION', None)
 IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')
-ENVIRONMENT = PRODUCTION if IS_PROD else DEVELOPMENT
+ENVIRONMENT = (Environment.PROD if IS_PROD
+               else Environment.GITHUB_TEST if os.environ.get('GITHUB_WORKFLOW')
+               else Environment.DEV)
 
 ADMINS = config('ADMINS', cast=lambda value: [
     tuple(name_and_email.split(','))
@@ -38,14 +39,14 @@ ADMINS = config('ADMINS', cast=lambda value: [
 ]) if config('ADMINS', default=None) else []
 
 # Initialize the Sentry SDK for error reporting.
-if ENVIRONMENT != DEVELOPMENT:
+if ENVIRONMENT != Environment.DEV:
     integrations = [DjangoIntegration()]
     # If not in Google Cloud, add the Celery integration.
     if not IS_GCP:
         integrations.append(CeleryIntegration())
     sentry_sdk.init(
         dsn="https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835",
-        environment=ENVIRONMENT,
+        environment=ENVIRONMENT.value,
         integrations=integrations,
         # Associate users to errors (using django.contrib.auth) by sending PII data
         send_default_pii=True
@@ -62,7 +63,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 # DEBUG must be False in production (for security)
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
-DEBUG = ENVIRONMENT != PRODUCTION if ENVIRONMENT else config('DEBUG', default=True, cast=bool)
+DEBUG = (ENVIRONMENT != Environment.PROD) if ENVIRONMENT else config('DEBUG', default=True, cast=bool)
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = not DEBUG
@@ -215,7 +216,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if ENVIRONMENT == PRODUCTION:
+if ENVIRONMENT == Environment.PROD:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -225,7 +226,7 @@ if ENVIRONMENT == PRODUCTION:
             'PASSWORD': config('DB_PASSWORD'),
         }
     }
-elif os.environ.get('GITHUB_WORKFLOW'):
+elif ENVIRONMENT == Environment.GITHUB_TEST:
     DATABASES = {
         'default': {
             'NAME': 'postgres',
@@ -236,7 +237,7 @@ elif os.environ.get('GITHUB_WORKFLOW'):
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
-elif ENVIRONMENT == DEVELOPMENT and False:
+elif ENVIRONMENT == Environment.DEV and False:
     DATABASES = {
         'default': {
             'NAME': config('PROD_DB_NAME'),
@@ -580,7 +581,7 @@ CELERY_BROKER_URL = 'amqp://localhost'
 
 # TODO
 # CELERY_CACHE_BACKEND = 'default'
-if ENVIRONMENT == DEVELOPMENT:
+if ENVIRONMENT == Environment.DEV:
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
