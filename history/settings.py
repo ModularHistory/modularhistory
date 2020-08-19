@@ -77,7 +77,11 @@ CSRF_COOKIE_SECURE = not DEBUG
 SECURE_REFERRER_POLICY = 'same-origin'
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-allowed-hosts
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default=['localhost', '127.0.0.1'],
+    cast=lambda v: [s.strip() for s in v.split(',')]
+)
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-internal-ips
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
