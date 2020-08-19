@@ -8,23 +8,30 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       max-parallel: 4
       matrix:
         python-version: [3.6, 3.7, 3.8]
 
     services:
-      image: postgres
-      env:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_BD: postgres
-      ports:
-      - 5432/tcp
-      options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_BD: postgres
+        ports:
+          - 5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
