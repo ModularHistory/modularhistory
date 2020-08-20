@@ -35,7 +35,8 @@ ENVIRONMENT = (Environment.PROD if IS_PROD
                else Environment.GITHUB_TEST if os.environ.get('GITHUB_WORKFLOW')
                else Environment.DEV)
 
-USE_PROD_DB = os.getenv('USE_PROD_DB', IS_PROD)
+USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD)
+print(USE_PROD_DB)
 
 ADMINS = config('ADMINS', cast=lambda value: [
     tuple(name_and_email.split(','))

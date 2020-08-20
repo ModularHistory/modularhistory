@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from .settings import IS_GCP
 
 # If not in Google Cloud, initialize Celery.

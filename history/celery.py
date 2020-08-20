@@ -2,22 +2,23 @@
 Celery is incompatible with Google Cloud.  : /
 """
 
+import os
+from getpass import getuser
+from glob import glob
+from sys import stderr
+
+from celery import Celery
+# noinspection PyPackageRequirements
+# from decouple import config
+from django.core import management
+# from paramiko import SSHClient
+# from scp import SCPClient
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+
 from history import settings
 
 if not settings.IS_GCP:
-    import os
-    from getpass import getuser
-    from glob import glob
-    from sys import stderr
-
-    from celery import Celery
-    # noinspection PyPackageRequirements
-    # from decouple import config
-    from django.core import management
-    # from paramiko import SSHClient
-    # from scp import SCPClient
-    from pydrive.auth import GoogleAuth
-    from pydrive.drive import GoogleDrive
 
     # set the default Django settings module for the 'celery' program.
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
