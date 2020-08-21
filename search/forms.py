@@ -32,6 +32,8 @@ from .models import Search
 Accordion.template = 'forms/_accordion.html'
 AccordionGroup.template = 'forms/_accordion_group.html'
 
+CONTENT_TYPE_OPTIONS = Search.CONTENT_TYPES
+
 
 class SearchForm(Form):
     SUBMIT_BUTTON_TEXT = 'Search'
@@ -80,15 +82,15 @@ class SearchForm(Form):
 
         # TODO: optimize
         # Filter content types
-        content_types = [
-            (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
-            (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
-            (ContentType.objects.get_for_model(Image).id, 'Images'),
-            (ContentType.objects.get_for_model(Source).id, 'Sources')
-        ]
-        initial_content_types = (pk for pk, name in content_types if pk not in excluded_content_types)
+        # content_types = [
+        #     (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
+        #     (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
+        #     (ContentType.objects.get_for_model(Image).id, 'Images'),
+        #     (ContentType.objects.get_for_model(Source).id, 'Sources')
+        # ]
+        initial_content_types = (pk for pk, name in CONTENT_TYPE_OPTIONS if pk not in excluded_content_types)
         self.fields['content_types'] = MultipleChoiceField(
-            choices=content_types,
+            choices=CONTENT_TYPE_OPTIONS,
             widget=CheckboxSelectMultiple,
             initial=initial_content_types,
             required=False

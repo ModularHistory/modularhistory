@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import ForeignKey, SET_NULL, CASCADE
-
+from typing import List, Tuple
 from account.models import User
 from history.fields import HistoricDateTimeField
 from history.models import Model, DatedModel, SearchableMixin, PolymorphicModel
@@ -21,19 +21,21 @@ class UserSearch(Model):
 
 class Search(Model):
     """A search."""
-    query = models.CharField(max_length=100, null=True, blank=True)
     ORDERING_CHOICES = (
         ('date', 'Date'),
         ('relevance', 'Relevance')
     )
+    CONTENT_TYPES: List[Tuple[int, str]]
+
+    query = models.CharField(max_length=100, null=True, blank=True)
     ordering = models.CharField(max_length=10, choices=ORDERING_CHOICES)
-    # content_types =
     start_year = HistoricDateTimeField(null=True, blank=True)
     end_year = HistoricDateTimeField(null=True, blank=True)
     # entities = ManyToManyField(
     #
     # )  # TODO
     # topics = ManyToManyField(  # TODO
+    # content_types =  # TODO
 
     class Meta:
         verbose_name_plural = 'Searches'

@@ -29,19 +29,19 @@ class Environment(str, Enum):
 
 IS_GCP = os.getenv('GAE_APPLICATION', None)
 IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')
-
+USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD, cast=bool)
 TESTING = 'test' in sys.argv
 ENVIRONMENT = (Environment.PROD if IS_PROD
                else Environment.GITHUB_TEST if os.environ.get('GITHUB_WORKFLOW')
                else Environment.DEV)
 
-USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD)
-print(USE_PROD_DB)
-
-ADMINS = config('ADMINS', cast=lambda value: [
-    tuple(name_and_email.split(','))
-    for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
-]) if config('ADMINS', default=None) else []
+ADMINS = config(
+    'ADMINS',
+    cast=lambda value: [
+        tuple(name_and_email.split(','))
+        for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
+    ]
+) if config('ADMINS', default=None) else []
 
 # Initialize the Sentry SDK for error reporting.
 if ENVIRONMENT != Environment.DEV:
@@ -257,6 +257,7 @@ elif ENVIRONMENT == Environment.DEV and USE_PROD_DB:
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
+    print(f'WARNING: Using production database!  Tread carefully!')
 else:
     DATABASES = {
         'default': {
@@ -542,16 +543,15 @@ SETTINGS_EXPORT = [
 ]
 
 
-def show_debug_toolbar(request) -> bool:
-    if DEBUG or request.META.get('HTTP_POST') == config('GC_TEST_DOMAIN', default=None):
-        return True
-    return False
-
-
-# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
-DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
-}
+# TODO: show debug toolbar in prod if desired
+# def show_debug_toolbar(request) -> bool:
+#     return DEBUG
+#
+#
+# # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
+# DEBUG_TOOLBAR_CONFIG = {
+#     'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
+# }
 
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-panels
 DEBUG_TOOLBAR_PANELS = [

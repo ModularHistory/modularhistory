@@ -8,7 +8,6 @@ from glob import glob
 from sys import stderr
 
 from celery import Celery
-# noinspection PyPackageRequirements
 # from decouple import config
 from django.core import management
 # from paramiko import SSHClient

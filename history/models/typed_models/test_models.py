@@ -2,10 +2,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import ForeignKey, PositiveIntegerField, CharField
-from django.utils.encoding import python_2_unicode_compatible
-from typedmodels.models import TypedModel
-
 from six import text_type
+from typedmodels.models import TypedModel
 
 
 class UniqueIdentifier(models.Model):
@@ -21,7 +19,6 @@ class UniqueIdentifierMixin(models.Model):
 
     class Meta:
         abstract = True
-
 
 
 class Animal(TypedModel, UniqueIdentifierMixin):

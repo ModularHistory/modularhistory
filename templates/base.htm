@@ -3,14 +3,22 @@
 {% load modal %}
 <html lang="en" xml:lang="en">
     <head>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-175229389-1"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'UA-175229389-1');
-        </script>
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-P68V7DK');</script>
+        <!-- End Google Tag Manager -->
+
+{#        <!-- Global site tag (gtag.js) - Google Analytics -->#}
+{#        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-175229389-1"></script>#}
+{#        <script>#}
+{#            window.dataLayer = window.dataLayer || [];#}
+{#            function gtag(){dataLayer.push(arguments);}#}
+{#            gtag('js', new Date());#}
+{#            gtag('config', 'UA-175229389-1');#}
+{#        </script>#}
 
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -44,9 +52,10 @@
 
         <!--<link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>-->
 
-        <!-- AnnotatorJS (http://docs.annotatorjs.org/en/) -->
-        <script src="{% static "libraries/annotator/annotator-full.min.js" %}" defer></script>
-        <link rel="stylesheet" href="{% static "libraries/annotator/annotator.min.css" %}">
+        <!-- TODO -->
+{#        <!-- AnnotatorJS (http://docs.annotatorjs.org/en/) -->#}
+{#        <script src="{% static "libraries/annotator/annotator-full.min.js" %}" defer></script>#}
+{#        <link rel="stylesheet" href="{% static "libraries/annotator/annotator.min.css" %}">#}
 
         <!-- Custom styles -->
         {% load sass_tags %}
@@ -103,6 +112,10 @@
         <script type="text/javascript" src='{% static "scripts/base.js" %}' defer></script>
     </head>
     <body>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
+                          height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
         <nav class="navbar navbar-expand-sm bg-dark navbar-dark" id="global-nav" style="min-height: 4rem">
             <!-- Logo -->
             <a class="navbar-brand" href="/">
