@@ -52,10 +52,12 @@ class Search(Model):
 
     @classmethod
     def get_content_type_options(cls):
-        cls.CONTENT_TYPE_OPTIONS = [
-            (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
-            (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
-            (ContentType.objects.get_for_model(Image).id, 'Images'),
-            (ContentType.objects.get_for_model(Source).id, 'Sources')
-        ]
+        content_type_options = getattr(cls, 'CONTENT_TYPE_OPTIONS', None)
+        if not content_type_options:
+            cls.CONTENT_TYPE_OPTIONS = [
+                (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
+                (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
+                (ContentType.objects.get_for_model(Image).id, 'Images'),
+                (ContentType.objects.get_for_model(Source).id, 'Sources')
+            ]
         return cls.CONTENT_TYPE_OPTIONS

@@ -3,7 +3,6 @@ from typing import List, Optional, Tuple
 from crispy_forms.bootstrap import Accordion, AccordionGroup
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Div, HTML
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import QuerySet
 from django.forms import (
     Form,
@@ -21,12 +20,7 @@ from entities.models import Entity
 from history.forms import HistoricDateFormField
 from history.widgets.historic_date_widget import YearInput
 # from django.core.paginator import Paginator
-from images.models import Image
-from occurrences.models import Occurrence
-from quotes.models import Quote
-from sources.models import Source
 from topics.models import Topic
-# from places.models import Place
 from .models import Search
 
 Accordion.template = 'forms/_accordion.html'
@@ -86,9 +80,12 @@ class SearchForm(Form):
         #     (ContentType.objects.get_for_model(Image).id, 'Images'),
         #     (ContentType.objects.get_for_model(Source).id, 'Sources')
         # ]
-        initial_content_types = (pk for pk, name in Search.CONTENT_TYPE_OPTIONS if pk not in excluded_content_types)
+
+        # TODO: optimize
+        content_type_options = Search.get_content_type_options()
+        initial_content_types = (pk for pk, name in content_type_options if pk not in excluded_content_types)
         self.fields['content_types'] = MultipleChoiceField(
-            choices=(Search.CONTENT_TYPE_OPTIONS or Search.get_content_type_options()),
+            choices=content_type_options,
             widget=CheckboxSelectMultiple,
             initial=initial_content_types,
             required=False
