@@ -27,7 +27,7 @@ class Environment(str, Enum):
     GITHUB_TEST = 'test'
 
 
-IS_GCP = os.getenv('GAE_APPLICATION', None)
+IS_GCP = bool(os.getenv('GAE_APPLICATION', None))
 IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')
 USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD, cast=bool)
 TESTING = 'test' in sys.argv
