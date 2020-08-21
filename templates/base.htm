@@ -210,9 +210,11 @@
                 <div class="container">
                     <!-- Call to action -->
                     <ul class="list-unstyled list-inline text-center py-2">
-                        <li class="list-inline-item">
-                            <a href="https://www.patreon.com/modularhistory" class="btn btn-outline-white">Support on Patreon</a>
-                        </li>
+                        {% if settings.ENABLE_PATREON %}
+                            <li class="list-inline-item">
+                                <a href="https://www.patreon.com/modularhistory" class="btn btn-outline-white">Support on Patreon</a>
+                            </li>
+                        {% endif %}
                     </ul>
 
                     <div class="row">

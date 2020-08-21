@@ -533,13 +533,15 @@ MENU_ITEMS = [
     ['Occurrences', 'occurrences'],
     ['People', 'entities'],
     # ['Places', 'places'],
-    ['Quotes', 'quotes'],
+    # ['Quotes', 'quotes'],
     # ['Sources', 'sources'],
     # ['Topics', 'topics'],
 ]
+ENABLE_PATREON = DEBUG and False
 
 SETTINGS_EXPORT = [
     'MENU_ITEMS',
+    'ENABLE_PATREON'
 ]
 
 
