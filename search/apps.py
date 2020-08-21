@@ -1,10 +1,11 @@
 from django.apps import AppConfig
-from django.db.utils import ProgrammingError
+# from django.db.utils import ProgrammingError
 
 
 class SearchConfig(AppConfig):
     name = 'search'
 
+    # TODO: clean up
     # def ready(self):
     #     from django.contrib.contenttypes.models import ContentType
     #     from images.models import Image

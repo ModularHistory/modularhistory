@@ -32,12 +32,7 @@ class Search(Model):
         ('date', 'Date'),
         ('relevance', 'Relevance')
     )
-    CONTENT_TYPE_OPTIONS: List[Tuple[int, str]] = [
-        (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
-        (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
-        (ContentType.objects.get_for_model(Image).id, 'Images'),
-        (ContentType.objects.get_for_model(Source).id, 'Sources')
-    ]
+    CONTENT_TYPE_OPTIONS: List[Tuple[int, str]]
 
     query = models.CharField(max_length=100, null=True, blank=True)
     ordering = models.CharField(max_length=10, choices=ORDERING_OPTIONS)
@@ -54,3 +49,13 @@ class Search(Model):
 
     def __str__(self):
         return str(self.query)
+
+    @classmethod
+    def get_content_type_options(cls):
+        cls.CONTENT_TYPE_OPTIONS = [
+            (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
+            (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
+            (ContentType.objects.get_for_model(Image).id, 'Images'),
+            (ContentType.objects.get_for_model(Source).id, 'Sources')
+        ]
+        return cls.CONTENT_TYPE_OPTIONS
