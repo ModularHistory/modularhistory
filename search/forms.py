@@ -32,7 +32,7 @@ from .models import Search
 Accordion.template = 'forms/_accordion.html'
 AccordionGroup.template = 'forms/_accordion_group.html'
 
-CONTENT_TYPE_OPTIONS = Search.CONTENT_TYPES
+CONTENT_TYPE_OPTIONS = Search.CONTENT_TYPE_OPTIONS
 
 
 class SearchForm(Form):
@@ -59,7 +59,7 @@ class SearchForm(Form):
         self.fields['query'] = CharField(required=False, initial=query)
         ordering = 'relevance' if order_by_relevance else 'date'
         self.fields['ordering'] = ChoiceField(
-            choices=Search.ORDERING_CHOICES,
+            choices=Search.ORDERING_OPTIONS,
             widget=RadioSelect,
             initial=ordering,
             required=False

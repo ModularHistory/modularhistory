@@ -1,9 +1,16 @@
+from typing import List, Tuple
+
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import ForeignKey, SET_NULL, CASCADE
-from typing import List, Tuple
+
 from account.models import User
 from history.fields import HistoricDateTimeField
 from history.models import Model, DatedModel, SearchableMixin, PolymorphicModel
+from images.models import Image
+from occurrences.models import Occurrence
+from quotes.models import Quote
+from sources.models import Source
 
 
 class UserSearch(Model):
@@ -21,14 +28,19 @@ class UserSearch(Model):
 
 class Search(Model):
     """A search."""
-    ORDERING_CHOICES = (
+    ORDERING_OPTIONS = (
         ('date', 'Date'),
         ('relevance', 'Relevance')
     )
-    CONTENT_TYPES: List[Tuple[int, str]]
+    CONTENT_TYPE_OPTIONS: List[Tuple[int, str]] = [
+        (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
+        (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
+        (ContentType.objects.get_for_model(Image).id, 'Images'),
+        (ContentType.objects.get_for_model(Source).id, 'Sources')
+    ]
 
     query = models.CharField(max_length=100, null=True, blank=True)
-    ordering = models.CharField(max_length=10, choices=ORDERING_CHOICES)
+    ordering = models.CharField(max_length=10, choices=ORDERING_OPTIONS)
     start_year = HistoricDateTimeField(null=True, blank=True)
     end_year = HistoricDateTimeField(null=True, blank=True)
     # entities = ManyToManyField(
