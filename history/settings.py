@@ -534,8 +534,8 @@ MENU_ITEMS = [
     ['People', 'entities'],
     # ['Places', 'places'],
     ['Quotes', 'quotes'],
-    ['Sources', 'sources'],
-    ['Topics', 'topics'],
+    # ['Sources', 'sources'],
+    # ['Topics', 'topics'],
 ]
 
 SETTINGS_EXPORT = [

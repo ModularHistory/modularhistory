@@ -54,7 +54,7 @@ class SourceFile(Model):
     def url(self) -> str:
         url = self.file.url
         if url.endswith('epub'):
-            url = f'/history/sources/epub{url}'
+            url = f'/sources/epub{url}'
         return url
 
     def full_clean(self, exclude=None, validate_unique=True):

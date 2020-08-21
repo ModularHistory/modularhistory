@@ -160,7 +160,7 @@
                             {% with menu_items=settings.MENU_ITEMS %}
                                 {% for title, app in menu_items %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="/history/{{ app }}/">{{ title }}</a>
+                                        <a class="nav-link" href="/{{ app }}/">{{ title }}</a>
                                     </li>
                                 {% endfor %}
                             {% endwith %}
@@ -172,7 +172,7 @@
 {#                                </a>#}
 {#                                <div class="dropdown-menu">#}
 {#                                    {% for title, app in settings.MENU_ITEMS %}#}
-{#                                        <a class="dropdown-item" href="/history/{{ app }}/">{{ title }}</a>#}
+{#                                        <a class="dropdown-item" href="/{{ app }}/">{{ title }}</a>#}
 {#                                        <!--<li class="nav-item ${'active' if False else ''}">-->#}
 {#                                        <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->#}
 {#                                        <!--</li>-->#}
