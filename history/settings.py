@@ -140,7 +140,7 @@ INSTALLED_APPS = [
     # 'menu',  # https://github.com/jazzband/django-simple-menu
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
-    # 'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
+    'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'rest_framework',  # https://github.com/encode/django-rest-framework
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
@@ -157,7 +157,6 @@ INSTALLED_APPS = [
     'quotes.apps.QuotesConfig',
     'sources.apps.SourcesConfig',
     'topics.apps.TopicsConfig',
-    'polymorphic.apps.PolymorphicConfig',  # TODO: replace with django-polymorphic when library is updated
 ]
 
 MIDDLEWARE = [

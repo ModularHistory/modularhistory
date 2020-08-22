@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from sys import stderr
+# from sys import stderr
 from typing import List, Optional, Union
 
 # from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
