@@ -25,14 +25,14 @@ django-imagekit==4.0.2
 django-mass-edit==3.2.0
 django-nested-admin==3.3.2
 django-nose==1.4.7  # https://github.com/jazzband/django-nose
-django-polymorphic==2.1.2
+django-polymorphic==3.0.0  # https://github.com/django-polymorphic/django-polymorphic
 django-sass-processor==0.8
 django-select2==7.4.2
 django-settings-export==1.2.1
 django-simple-menu==1.2.1
 django-storages[google]==1.9.1
 django-tinymce==3.0.2
-django-typed-models==0.10.0
+django-typed-models==0.10.0  # https://github.com/craigds/django-typed-models
 django-reverse-admin==2.9.0
 djangorestframework==3.11.1
 easy-thumbnails==2.7
@@ -64,7 +64,7 @@ sentry-sdk==0.16.5
 sigfig==1.1.8
 six==1.15.0
 social-auth-app-django==4.0.0
-supervisor==4.2.0
+supervisor==4.2.1
 sqlparse==0.3.1
 tabulate==0.8.7
 termcolor==1.1.0

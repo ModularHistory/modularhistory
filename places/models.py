@@ -8,7 +8,7 @@ prepositions = (
 )
 
 
-class Place(TypedModel):
+class Place(TypedModel, Model):
     """Where something has happened"""
     name = models.CharField(null=True, blank=True, max_length=40, unique=True)
     location = models.ForeignKey(

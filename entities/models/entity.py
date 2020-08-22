@@ -57,7 +57,6 @@ class EntityClassification(Model):
         return self.classification.weight
 
 
-# https://github.com/craigds/django-typed-models
 class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
     """An entity"""
     name = models.CharField(max_length=100, unique=True)

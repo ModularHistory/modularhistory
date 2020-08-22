@@ -145,6 +145,7 @@ INSTALLED_APPS = [
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
+    'typedmodels',  # https://github.com/craigds/django-typed-models
     'account.apps.AccountConfig',
     'entities.apps.EntitiesConfig',
     'home.apps.HomeConfig',
