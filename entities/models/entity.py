@@ -130,30 +130,24 @@ class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
         if not self.classifications.exists():
             return None
         words = []
-        noun_classifications = EntityClassification.objects.exclude(date__gt=date).filter(
-            entity=self, classification__part_of_speech='noun'
-        )
+        entity_classifications = EntityClassification.objects.filter(entity=self)
+        entity_classifications = entity_classifications.exclude(date__gt=date) if date else entity_classifications
+
+        noun_classifications = entity_classifications.filter(classification__part_of_speech='noun')
         if noun_classifications.exists():
-            noun = noun_classifications.order_by(
-                'classification__weight', 'date'
-            ).last()
+            noun = noun_classifications.order_by('classification__weight', 'date').last()
             words += str(noun).split(' ')
-        noun_adj_classifications = EntityClassification.objects.exclude(date__gt=date).filter(
-            entity=self, classification__part_of_speech='any'
-        )
+
+        noun_adj_classifications = entity_classifications.filter(classification__part_of_speech='any')
         if noun_adj_classifications.exists():
-            noun_adj = noun_adj_classifications.order_by(
-                'classification__weight', 'date'
-            ).last()
+            noun_adj = noun_adj_classifications.order_by('classification__weight', 'date').last()
             words = [word for word in str(noun_adj).split(' ') if word not in words] + words
-        adj_classifications = EntityClassification.objects.exclude(date__gt=date).filter(
-            entity=self, classification__part_of_speech='adj'
-        )
+
+        adj_classifications = entity_classifications.filter(classification__part_of_speech='adj')
         if adj_classifications.exists():
-            adj = adj_classifications.order_by(
-                'classification__weight', 'date'
-            ).last()
+            adj = adj_classifications.order_by('classification__weight', 'date').last()
             words = [word for word in str(adj).split(' ') if word not in words] + words
+
         # Final removal of duplicate words
         words = list(dict.fromkeys(words))
         return ' '.join(words)

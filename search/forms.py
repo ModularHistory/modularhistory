@@ -73,15 +73,6 @@ class SearchForm(Form):
             self.fields['quality'].widget.attrs['disabled'] = True
 
         # TODO: optimize
-        # Filter content types
-        # content_types = [
-        #     (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
-        #     (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
-        #     (ContentType.objects.get_for_model(Image).id, 'Images'),
-        #     (ContentType.objects.get_for_model(Source).id, 'Sources')
-        # ]
-
-        # TODO: optimize
         content_type_options = Search.get_content_type_options()
         initial_content_types = (pk for pk, name in content_type_options if pk not in excluded_content_types)
         self.fields['content_types'] = MultipleChoiceField(
