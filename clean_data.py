@@ -28,8 +28,11 @@ from images.models import Image
 # occurrence_ct = ContentType.objects.get_for_model(Occurrence)
 # quote_ct = ContentType.objects.get_for_model(Quote)
 
-for occurrence in Occurrence.objects.all():
-    occurrence.save()
+# for occurrence in Occurrence.objects.all():
+#     occurrence.save()
+
+for quote in Quote.objects.all():
+    quote.save()
 
 for image in Image.objects.all():
     pass

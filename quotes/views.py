@@ -7,8 +7,10 @@ class IndexView(generic.list.ListView):
     model = Quote
     template_name = 'quotes/index.html'
     context_object_name = 'quotes'
+    paginate_by = 20
 
     def get_queryset(self):
+        print('Hi')
         return Quote.objects.all()
 
 
