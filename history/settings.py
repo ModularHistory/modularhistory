@@ -316,7 +316,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html#personalized-configuration
-# https://python-social-auth-docs.readthedocs.io/en/latest/pipeline.html
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',

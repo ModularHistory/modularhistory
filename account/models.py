@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    email = models.EmailField('email address', blank=True, unique=True)
+    email = models.EmailField('email address', unique=True)
     avatar = ProcessedImageField(
         null=True, blank=True,
         upload_to='account/avatars',
