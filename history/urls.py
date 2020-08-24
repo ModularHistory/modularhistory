@@ -21,6 +21,12 @@ from django.urls import include, path, re_path
 from admin import admin_site
 from search.views import SearchResultsView
 
+
+def error(request):
+    print(f'Received request to trigger a server error: {request}')
+    raise Exception('Raising an exception for testing purposes.')
+
+
 urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
     re_path(r'^nested_admin/', include('nested_admin.urls')),
@@ -41,6 +47,7 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),
     path('', include('home.urls')),
+    path('error', error),  # error trigger (for testing purposes)
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
