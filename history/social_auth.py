@@ -9,6 +9,11 @@ from social_core.backends.twitter import TwitterOAuth
 
 def get_user_avatar(backend, response, user, *args, **kwargs):
     print('Attempting to retrieve user profile image...')
+    print(f'backend: {backend}')
+    print(f'response: {response}')
+    print(f'user: {user}')
+    print(f'args: {args}')
+    print(f'kwargs: {kwargs}')
     url = None
     try:
         if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
