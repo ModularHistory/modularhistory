@@ -16,6 +16,7 @@ def get_user_avatar(backend, response, user, *args, **kwargs):
     print(f'kwargs: {kwargs}')
     url = None
     try:
+        # Determine the profile image URL
         if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
             url = f'http://graph.facebook.com/{response["id"]}/picture?type=large&breaking_change=profile_picture'
         elif backend.name == 'twitter' or isinstance(backend, TwitterOAuth):
@@ -23,6 +24,10 @@ def get_user_avatar(backend, response, user, *args, **kwargs):
         elif backend.name.startswith('google') or isinstance(backend, GoogleOAuth2):
             if response.get('image') and response['image'].get('url'):
                 url = response['image'].get('url')
+        else:
+            print(f'Unable to determine profile image URL for unhandled auth backend: {backend.name}')
+
+        # Update the user's avatar
         if url:
             if not user.avatar:  # TODO: also check if image has been updated
                 print(f'{user} has no profile image.')
