@@ -63,7 +63,13 @@ class AdminMenu(Menu):
             items.MenuItem('Pages', '/admin/flatpages/flatpage/'),
             items.MenuItem('Tasks', children=[
                 items.MenuItem('Periodic tasks', '/admin/django_celery_beat/periodictask/'),
-                items.MenuItem('Task results', '/admin/django_celery_results/taskresult/')
+                items.MenuItem('Task results', '/admin/django_celery_results/taskresult/'),
+            ]),
+            items.MenuItem('Users', children=[
+                items.MenuItem('Users', '/admin/users/user/'),
+                items.MenuItem('Associations', '/admin/social_django/association/'),
+                items.MenuItem('Nonces', '/admin/social_django/nonce/'),
+                items.MenuItem('Social Auths', '/admin/social_django/usersocialauth/'),
             ])
         ]
 
