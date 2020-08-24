@@ -8,6 +8,7 @@ from social_core.backends.twitter import TwitterOAuth
 
 
 def get_user_avatar(backend, response, user, *args, **kwargs):
+    print('Attempting to retrieve user profile image...')
     url = None
     if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
         url = f'http://graph.facebook.com/{response["id"]}/picture?type=large'
@@ -18,7 +19,10 @@ def get_user_avatar(backend, response, user, *args, **kwargs):
             url = response['image'].get('url')
     if url:
         if not user.avatar:  # TODO: also check if image has been updated
+            print(f'{user} has no profile image.')
             img_temp = NamedTemporaryFile(delete=True)
             img_temp.write(urlopen(url).read())
             img_temp.flush()
             user.avatar.save(f'{user.pk}', File(img_temp))
+    else:
+        print(f'Unable to determine profile picture URL for {user}')
