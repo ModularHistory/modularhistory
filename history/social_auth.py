@@ -5,6 +5,11 @@ from django.core.files import File
 from social_core.backends.facebook import FacebookOAuth2
 from social_core.backends.google import GoogleOAuth2
 from social_core.backends.twitter import TwitterOAuth
+from social_core.backends.github import GithubOAuth2
+
+FACEBOOK = 'facebook'
+TWITTER = 'twitter'
+GOOGLE = 'google'
 
 
 def get_user_avatar(backend, response, user, *args, **kwargs):
@@ -19,6 +24,10 @@ def get_user_avatar(backend, response, user, *args, **kwargs):
         elif backend.name.startswith('google') or isinstance(backend, GoogleOAuth2):
             if response.get('image') and response['image'].get('url'):
                 url = response['image'].get('url')
+        elif backend.name == 'github' or isinstance(backend, GithubOAuth2):
+            details = kwargs.get('details', {})
+            username = kwargs.get('username', details.get('username', user.email.split('@')[0]))
+            url = f'https://github.com/{username}.png'
         else:
             print(f'Unable to determine profile image URL for unhandled auth backend: {backend.name}')
 
