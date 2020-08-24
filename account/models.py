@@ -3,6 +3,8 @@ from django.db import models
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 
+from history.fields.file_field import upload_to
+
 
 class UserManager(BaseUserManager):
     # TODO: Figure out how *args is determined; it needs to be the natural key fields, but it isn't.
@@ -23,7 +25,7 @@ class User(AbstractUser):
     email = models.EmailField('email address', unique=True)
     avatar = ProcessedImageField(
         null=True, blank=True,
-        upload_to='account/avatars',
+        upload_to=upload_to('account/avatars'),
         processors=[ResizeToFill(200, 200)],
         format='JPEG',
         options={'quality': 70}
