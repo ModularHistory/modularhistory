@@ -1,5 +1,7 @@
 """
 Celery is incompatible with Google Cloud.  : /
+
+TODO: https://eshlox.net/2020/05/08/google-app-engine-cloud-tasks-and-django-rest-framework-permissions
 """
 
 import json
@@ -10,7 +12,6 @@ from glob import glob
 from sys import stderr
 
 from celery import Celery
-# from decouple import config
 from django.core import management
 from google.cloud import tasks_v2 as tasks
 from google.protobuf import timestamp_pb2

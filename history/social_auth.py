@@ -28,6 +28,8 @@ def get_user_avatar(backend, response, user, *args, **kwargs):
             details = kwargs.get('details', {})
             username = kwargs.get('username', details.get('username', user.email.split('@')[0]))
             url = f'https://github.com/{username}.png'
+        elif response.get('picture'):
+            url = response['picture']
         else:
             print(f'Unable to determine profile image URL for unhandled auth backend: {backend.name}')
 

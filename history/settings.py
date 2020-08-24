@@ -413,6 +413,7 @@ USE_L10N = True
 USE_TZ = True
 
 # Google Cloud Storage bucket names
+# https://django-storages.readthedocs.io/en/latest/backends/gcloud.html
 GS_MEDIA_BUCKET_NAME = 'modularhistory-media'
 GS_STATIC_BUCKET_NAME = 'modularhistory-static'
 GS_LOCATION = 'media'  # Bucket subdirectory in which to store files. (Defaults to the bucket root.)
