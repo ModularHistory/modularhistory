@@ -33,7 +33,7 @@ USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD, cast=bool)
 TESTING = 'test' in sys.argv
 ENVIRONMENT = (Environment.PROD if IS_PROD
                else Environment.GITHUB_TEST if os.environ.get('GITHUB_WORKFLOW')
-else Environment.DEV)
+               else Environment.DEV)
 
 ADMINS = config(
     'ADMINS',
@@ -415,6 +415,7 @@ USE_TZ = True
 # Google Cloud Storage bucket names
 GS_MEDIA_BUCKET_NAME = 'modularhistory-media'
 GS_STATIC_BUCKET_NAME = 'modularhistory-static'
+GS_LOCATION = 'media'  # Bucket subdirectory in which to store files. (Defaults to the bucket root.)
 
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
@@ -636,3 +637,8 @@ if ENVIRONMENT == Environment.DEV:
             'LOCATION': 'cache',
         }
     }
+
+# Google Cloud settings
+GC_PROJECT = config('GC_PROJECT', default=None)
+GC_QUEUE = config('GC_QUEUE', default=None)
+GC_REGION = config('GC_REGION', default=None)

@@ -2,7 +2,9 @@
 Celery is incompatible with Google Cloud.  : /
 """
 
+import json
 import os
+import time
 from getpass import getuser
 from glob import glob
 from sys import stderr
@@ -10,6 +12,8 @@ from sys import stderr
 from celery import Celery
 # from decouple import config
 from django.core import management
+from google.cloud import tasks_v2 as tasks
+from google.protobuf import timestamp_pb2
 # from paramiko import SSHClient
 # from scp import SCPClient
 from pydrive.auth import GoogleAuth
@@ -17,11 +21,67 @@ from pydrive.drive import GoogleDrive
 
 from history import settings
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
+
+QUEUE_NAME = settings.GC_QUEUE
+
+
+class TaskMixin:
+    @property
+    def _cloud_task_client(self):
+        return tasks.CloudTasksClient()
+
+    def send_task(self, url, queue_name=QUEUE_NAME, http_method='POST', payload=None, schedule_time=None, name=None):
+        """Send task to be executed."""
+        if not settings.IS_GCP:
+            # TODO: Execute the task here instead of using Cloud Tasks
+            return
+        parent = self._cloud_task_client.queue_path(settings.GC_PROJECT, settings.GC_REGION, queue_name)
+
+        task = {
+            'app_engine_http_request': {
+                'http_method': http_method,
+                'relative_uri': url
+            }
+        }
+
+        if name:
+            task['name'] = name
+
+        if isinstance(payload, dict):
+            payload = json.dumps(payload)
+
+        # Construct the request body.
+        if payload is not None:
+            # The API expects a payload of type bytes.
+            converted_payload = payload.encode()
+            # Add the payload to the request.
+            task['app_engine_http_request']['body'] = converted_payload
+
+        if schedule_time is not None:
+            now = time.time() + schedule_time
+            seconds = int(now)
+            nanos = int((now - seconds) * 10 ** 9)
+
+            # Create Timestamp protobuf.
+            timestamp = timestamp_pb2.Timestamp(seconds=seconds, nanos=nanos)
+
+            # Add the timestamp to the task.
+            task['schedule_time'] = timestamp
+
+        response = self._cloud_task_client.create_task(parent, task)
+        print(f'Created task: {response.name}')
+
+
+def _debug(self):
+    print('Debugging....')
+    if hasattr(self, 'request'):
+        print('Request: {0!r}'.format(self.request))
+    print(f'User: {getuser()}', file=stderr)
+
+
 if not settings.IS_GCP:
-
-    # set the default Django settings module for the 'celery' program.
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
-
+    # Set the default Django settings module for the 'celery' program.
     app = Celery('history')
 
     # Using a string here means the worker doesn't have to serialize
@@ -36,9 +96,7 @@ if not settings.IS_GCP:
 
     @app.task(bind=True)
     def debug(self):
-        print('Debugging....')
-        print('Request: {0!r}'.format(self.request))
-        print(f'User: {getuser()}', file=stderr)
+        _debug(self)
 
 
     @app.task(bind=True)
