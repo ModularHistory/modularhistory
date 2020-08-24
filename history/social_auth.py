@@ -12,7 +12,7 @@ def get_user_avatar(backend, response, user, *args, **kwargs):
     url = None
     try:
         if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
-            url = f'http://graph.facebook.com/{response["id"]}/picture?type=large'
+            url = f'http://graph.facebook.com/{response["id"]}/picture?type=large&breaking_change=profile_picture'
         elif backend.name == 'twitter' or isinstance(backend, TwitterOAuth):
             url = response.get('profile_image_url', '').replace('_normal', '')
         elif backend.name.startswith('google') or isinstance(backend, GoogleOAuth2):
