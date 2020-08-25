@@ -578,6 +578,7 @@ MENU_ITEMS = [
     ['Quotes', 'quotes'],
     # ['Sources', 'sources'],
     # ['Topics', 'topics'],
+    ['About', 'about']
 ]
 
 ENABLE_PATREON = True
