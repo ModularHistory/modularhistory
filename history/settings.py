@@ -572,7 +572,7 @@ MENU_ITEMS = [
     # ['Topics', 'topics'],
 ]
 
-ENABLE_PATREON = DEBUG
+ENABLE_PATREON = True
 
 SETTINGS_EXPORT = [
     'MENU_ITEMS',

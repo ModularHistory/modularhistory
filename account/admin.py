@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, Permission
-
-from .models import User
-from admin import admin_site
+from social_django.models import UserSocialAuth
 
 # from .forms import UserCreationForm #  UserChangeForm
+from admin import admin_site, TabularInline
+from .models import User
 
 
 class UserCreationForm(forms.ModelForm):
@@ -119,6 +119,12 @@ class UserChangeForm(forms.ModelForm):
         )
 
 
+class SocialAuthInline(TabularInline):
+    model = UserSocialAuth
+    extra = 0
+    readonly_fields = []
+
+
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     form = UserChangeForm
@@ -134,13 +140,9 @@ class UserAdmin(BaseUserAdmin):
         ('Basic Information', {
             'classes': ('wide',),
             # 'fields': ('username', 'email', 'password1', ('password2','force_password_change',), )
-            'fields': ('username', 'email', )
+            'fields': ('username', 'email', 'first_name', 'last_name')
         }),
-        ('Additional Information', {
-            'classes': ('wide',),
-            'fields': ('first_name', 'last_name')
-        }),
-        ('Functional Information', {
+        ('Settings', {
             'classes': ('',),
             'fields': ('force_password_change', 'locked',)
         }),
@@ -170,6 +172,8 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('last_name', 'first_name')
 
     filter_horizontal = ()
+
+    inlines = [SocialAuthInline]
 
     # actions = ['some_action']
     #
