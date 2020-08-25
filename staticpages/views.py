@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.flatpages.models import FlatPage
+from .models import StaticPage
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
@@ -31,15 +31,15 @@ def staticpage(request, url):
             `staticpages.staticpages` object
     """
     if not url.startswith('/'):
-        url = '/' + url
+        url = f'/{url}'
     site_id = get_current_site(request).id
     try:
-        f = get_object_or_404(FlatPage, url=url, sites=site_id)
+        f = get_object_or_404(StaticPage, url=url, sites=site_id)
     except Http404:
         if not url.endswith('/') and settings.APPEND_SLASH:
             url += '/'
-            f = get_object_or_404(FlatPage, url=url, sites=site_id)
-            return HttpResponsePermanentRedirect('%s/' % request.path)
+            f = get_object_or_404(StaticPage, url=url, sites=site_id)
+            return HttpResponsePermanentRedirect(f'{request.path}/')
         else:
             raise
     return render_staticpage(request, f)
