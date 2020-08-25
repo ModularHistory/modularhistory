@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
 {% load modal %}
+{% load sass_tags %}
 <html lang="en" xml:lang="en">
     <head>
         <!-- Google Tag Manager -->
@@ -49,8 +50,9 @@
 {#        <link rel="stylesheet" href="{% static "libraries/annotator/annotator.min.css" %}">#}
 
         <!-- Custom styles -->
-        {% load sass_tags %}
-        <link rel="stylesheet" href="{% sass_src 'styles/base.scss' %}" type="text/css" />
+        <link rel="stylesheet"
+              href="{% if settings.ENVIRONMENT == 'dev' %}{% sass_src 'styles/base.scss' %}{% else %}{% static 'styles/base.css' %}{% endif %}"
+              type="text/css" />
 
         {% block styles %}{% endblock %}
 

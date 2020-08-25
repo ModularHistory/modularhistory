@@ -437,16 +437,15 @@ mega = None
 if IS_PROD and MEGA_USERNAME and MEGA_PASSWORD:
     mega = Mega()
 
-# Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
-if IS_PROD:
-    STATICFILES_STORAGE = 'history.storage.GoogleCloudStaticFileStorage'
+# TODO: Add storage bucket for static files in Google Cloud?
+# if IS_PROD:
+#     STATICFILES_STORAGE = 'history.storage.GoogleCloudStaticFileStorage'
 
 # Media files (images, etc. uploaded by users)
 MEDIA_URL = f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/' if IS_PROD else '/media/'
@@ -588,8 +587,10 @@ MENU_ITEMS = [
 ENABLE_PATREON = True
 
 SETTINGS_EXPORT = [
+    # 'Environment',  # TODO: Can't be exported as a class/enum
+    'ENVIRONMENT',
     'MENU_ITEMS',
-    'ENABLE_PATREON'
+    'ENABLE_PATREON',
 ]
 
 # TODO: show debug toolbar in prod if desired

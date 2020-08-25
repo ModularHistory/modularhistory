@@ -28,22 +28,6 @@ django.setup()
 # occurrence_ct = ContentType.objects.get_for_model(Occurrence)
 # quote_ct = ContentType.objects.get_for_model(Quote)
 
-from django.contrib.flatpages.models import FlatPage
-from staticpages.models import StaticPage
-
-for page in FlatPage.objects.all():
-    static_page = StaticPage.objects.create(
-        url=page.url,
-        title=page.title,
-        content=page.content,
-        enable_comments=page.enable_comments,
-        template_name=page.template_name,
-        registration_required=page.registration_required,
-    )
-    for site in page.sites.all():
-        static_page.sites.add(site)
-    static_page.save()
-
 
 # mrm_topic = Topic.objects.get(key='Mormonism')
 # race_topic = Topic.objects.get(key='Race')

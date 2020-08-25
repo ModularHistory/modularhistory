@@ -22,15 +22,25 @@ from nested_admin.polymorphic import (
 from sass_processor.processor import sass_processor
 from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOption
 from social_django.models import UserSocialAuth, Nonce, Association
-from tinymce.widgets import TinyMCE
+# from tinymce.widgets import TinyMCE
 
 from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
+from history import settings
 
 PolymorphicInlineSupportMixin = NestedPolymorphicInlineSupportMixin
 StackedPolymorphicInline = NestedStackedPolymorphicInline
 GenericTabularInline = NestedGenericTabularInline
 GenericStackedInline = NestedGenericStackedInline
+
+if settings.ENVIRONMENT == settings.Environment.DEV:
+    BASE_CSS = sass_processor('styles/base.scss')
+    MCE_CSS = sass_processor('styles/mce.scss')
+    ADMIN_CSS = sass_processor('styles/admin.scss')
+else:
+    BASE_CSS = 'styles/base.css'
+    MCE_CSS = 'styles/mce.css'
+    ADMIN_CSS = 'styles/admin.css'
 
 
 class Admin(NestedModelAdmin):
@@ -42,10 +52,8 @@ class Admin(NestedModelAdmin):
     class Media:
         css = {
             'all': (
-                'styles/base.css',
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                sass_processor('styles/mce.scss'),
-                sass_processor('styles/admin.scss'),
+                BASE_CSS, MCE_CSS, ADMIN_CSS,
             )
         }
         js = (
@@ -57,34 +65,34 @@ class Admin(NestedModelAdmin):
         )
 
 
+FORM_FIELD_OVERRIDES = {
+    HistoricDateTimeField: {'widget': HistoricDateWidget},
+    SourceFileField: {'widget': SourceFileInput},
+}
+
+
+def reorder_fields(fields):
+    for field_name in ('page_number', 'end_page_number', 'notes', 'position'):
+        if field_name in fields:
+            fields.remove(field_name)
+            fields.append(field_name)
+    return fields
+
+
 class StackedInline(NestedStackedInline):
-    formfield_overrides = {
-        HistoricDateTimeField: {'widget': HistoricDateWidget},
-        SourceFileField: {'widget': SourceFileInput},
-    }
+    formfield_overrides = FORM_FIELD_OVERRIDES
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
-        for field_name in ('page_number', 'end_page_number', 'notes', 'position'):
-            if field_name in fields:
-                fields.remove(field_name)
-                fields.append(field_name)
-        return fields
+        return reorder_fields(fields)
 
 
 class TabularInline(NestedTabularInline):
-    formfield_overrides = {
-        HistoricDateTimeField: {'widget': HistoricDateWidget},
-        SourceFileField: {'widget': SourceFileInput},
-    }
+    formfield_overrides = FORM_FIELD_OVERRIDES
 
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
-        for field_name in ('page_number', 'end_page_number', 'notes', 'position'):
-            if field_name in fields:
-                fields.remove(field_name)
-                fields.append(field_name)
-        return fields
+        return reorder_fields(fields)
 
 
 class AdminSite(BaseAdminSite):
