@@ -7,6 +7,7 @@
 .gcloudignore
 .git
 .gitignore
+.env
 
 # Ungathered static files
 static/
