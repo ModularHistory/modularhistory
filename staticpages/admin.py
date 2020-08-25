@@ -10,6 +10,10 @@ from .models import StaticPage
 class StaticPageForm(FlatpageForm):
     content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
 
+    class Meta:
+        model = StaticPage
+        fields = '__all__'
+
     class Media:
         js = ('scripts/mce.js',)
 
