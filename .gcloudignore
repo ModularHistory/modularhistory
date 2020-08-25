@@ -9,11 +9,16 @@
 .gcloudignore
 .git
 .gitignore
+
+# Unnecessary Django files
 db.sqlite3
 *.log
 *.pot
 *.pyc
 __pycache__
+
+# Ungathered static files
+static
 
 # Media files
 media
