@@ -80,18 +80,28 @@ class SettingsView(LoginRequiredMixin, View):
     """Account settings view"""
     def get(self, request):
         user = request.user
-        try:
-            google_login = user.social_auth.get(provider='google_oauth2')
-        except UserSocialAuth.DoesNotExist:
-            google_login = None
-        # try:
-        #     twitter_login = user.social_auth.get(provider='twitter')
-        # except UserSocialAuth.DoesNotExist:
-        #     twitter_login = None
-        try:
-            facebook_login = user.social_auth.get(provider='facebook')
-        except UserSocialAuth.DoesNotExist:
-            facebook_login = None
+        social_auth_backends = [
+            {'provider': 'google_oauth2', 'name': 'Google', 'auth': None, 'handle': None},
+            {'provider': 'facebook', 'name': 'Facebook', 'auth': None, 'handle': None},
+            {'provider': 'twitter', 'name': 'Twitter', 'auth': None, 'handle': None},
+            {'provider': 'github', 'name': 'GitHub', 'auth': None, 'handle': None},
+        ]
+        for backend in social_auth_backends:
+            provider = backend['provider']
+            name = backend['name']
+            try:
+                auth = user.social_auth.get(provider=provider)
+                backend['auth'] = auth
+                if provider == 'twitter':
+                    backend['handle'] = auth.extra_data['access_token']['screen_name']
+                elif provider == 'facebook':
+                    backend['handle'] = auth.extra_data['id']
+                # TODO: handle other backends
+            except UserSocialAuth.DoesNotExist:
+                pass
+            except Exception as e:
+                print(f'Error processing social auth integration: {type(e)}: {e}')
+            backend['domain'] = f'{name.lower()}.com'
 
         can_disconnect = (user.social_auth.count() > 1 or user.has_usable_password())
 
@@ -107,9 +117,7 @@ class SettingsView(LoginRequiredMixin, View):
             'name': user.get_full_name(),
             'email': user.email,
             'profile_image': profile_image,
-            'google_login': google_login,
-            # 'twitter_login': twitter_login,
-            'facebook_login': facebook_login,
+            'social_auth_backends': social_auth_backends,
             'can_disconnect': can_disconnect,
         }
         return render(request, 'account/settings.html', context)

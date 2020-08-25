@@ -23,13 +23,14 @@ from search.views import SearchResultsView
 
 
 def error(request):
+    """Raise an error, so that ModularHistory's server error page is rendered."""
     print(f'Received request to trigger a server error: {request}')
     raise Exception('Raising an exception for testing purposes.')
 
 
 urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
-    re_path(r'^nested_admin/', include('nested_admin.urls')),
+    path('nested_admin/', include('nested_admin.urls')),
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
     path('occurrences/', include(('occurrences.urls', 'occurrences'), namespace='occurrences')),
@@ -41,8 +42,8 @@ urlpatterns = [
     path('topics/', include(('topics.urls', 'topics'), namespace='topics')),
     re_path(r'search/?', SearchResultsView.as_view(), name='search'),
     path('search/', include(('search.urls', 'search'), namespace='search')),
-    path('account/', include(('account.urls', 'account'), namespace='account')),
     path('oauth/', include('social_django.urls', namespace='social')),
+    path('account/', include(('account.urls', 'account'), namespace='account')),
     path('api-auth/', include('rest_framework.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),

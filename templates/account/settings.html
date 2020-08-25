@@ -13,7 +13,7 @@
     <div class="container card-deck" style="margin: auto">
         <div class="card m-3">
             <div class="card-header">
-                Contact Information
+                <h3>Contact Information</h3>
             </div>
             <div class="card-body">
                 <h5 class="card-title">Email address</h5>
@@ -24,7 +24,7 @@
         </div>
         <div class="card m-3">
             <div class="card-header">
-                Login Information
+                <h3>Login Information</h3>
             </div>
             <div class="card-body">
                 <h5 class="card-title">Username</h5>
@@ -40,81 +40,39 @@
         </div>
         <div class="card m-3">
             <div class="card-header">
-                Social Media Connections
+                <h3>Social Media Connections</h3>
             </div>
             <div class="card-body">
-                <h5>Facebook</h5>
-                {% if facebook_login %}
-                    <p>Connected as <a href="https://facebook.com/{{ facebook_login.extra_data.id }}/"
-                                       target="_blank">{{ facebook_login.extra_data.id}}</a></p>
-                    {% if can_disconnect %}
-                        <form method="post"
-                              action="{% url 'social:disconnect' backend='facebook' %}">
-                            {% csrf_token %}
-                            <button type="submit">Disconnect from Facebook</button>
-                        </form>
+                {% for backend in social_auth_backends %}
+                    <h4>{{ backend.name }}</h4>
+                    {% if backend.auth %}
+                        <p>Connected
+                            {% if backend.handle %}
+                                as <a href="https://{{ backend.domain }}/{{ backend.handle }}" target="_blank">
+                                    {{ backend.handle }}</a>
+                            {% elif user.email %}
+                                as {{ user.email }}
+                            {% endif %}
+                        </p>
+                        {% if can_disconnect %}
+                            <form method="post" action="{% url 'social:disconnect' backend=backend.provider %}">
+                                {% csrf_token %}
+                                <button type="submit">Disconnect from {{ backend.name }}</button>
+                            </form>
+                        {% else %}
+                            <button type="button" disabled>Disconnect from {{ backend.name }}</button>
+                            <p style="color: red">You must <a href="">set a password</a> for your
+                                account before disconnecting from {{ backend.name }}.</p>
+                        {% endif %}
                     {% else %}
-                        <button type="button" disabled>Disconnect from Facebook</button>
-                        <p style="color: red">You must <a href="">define a password</a> for your
-                            account before disconnecting from Facebook.</p>
+                        <a href="{% url 'social:begin' backend=backend.provider %}"
+                           class="btn btn-block btn-social btn-{{ backend.name|lower }}"
+                           onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-{{ backend.name|lower }}']);">
+                            <span class="fab fa-{{ backend.name|lower }}"></span> Connect with {{ backend.name }}
+                        </a>
                     {% endif %}
-                    <br/>
-                {% else %}
-                    <a href="{% url 'social:begin' backend='facebook' %}"
-                       class="btn btn-block btn-social btn-facebook"
-                       onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
-                        <span class="fab fa-facebook-f"></span> Connect with Facebook
-                    </a>
-                {% endif %}
-                <h5>Twitter</h5>
-                {% if twitter_login %}
-                    <p>
-                        Connected as <a
-                            href="https://twitter.com/{{ twitter_login.extra_data.access_token.screen_name }}/"
-                            target="_blank">@{{ twitter_login.extra_data.access_token.screen_name }}</a>
-                    </p>
-                    ${ twitter_login.extra_data }
-                    {% if can_disconnect %}
-                        <form method="post"
-                              action="{% url 'social:disconnect' backend='twitter' %}">
-                            {% csrf_token %}
-                            <button type="submit">Disconnect from Twitter</button>
-                        </form>
-                    {% else %}
-                        <button type="button" disabled>Disconnect from Twitter</button>
-                        <p style="color: red">You must <a href="">define a password</a> for your
-                            account before disconnecting from Twitter.</p>
-                    {% endif %}
-                {% else %}
-                    <a href="{% url 'social:begin' backend='twitter' %}"
-                       class="btn btn-block btn-social btn-twitter"
-                       onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
-                        <span class="fab fa-twitter"></span> Connect with Twitter
-                    </a>
-                {% endif %}
-                <h5>Google</h5>
-                {% if google_login %}
-                    <p>
-                        Connected as {{ user.email }}
-                    </p>
-                    {% if can_disconnect %}
-                        <form method="post"
-                              action="{% url 'social:disconnect' backend='google' %}">
-                            {% csrf_token %}
-                            <button type="submit">Disconnect from Google</button>
-                        </form>
-                    {% else %}
-                        <button type="button" disabled>Disconnect from Google</button>
-                        <p style="color: red">You must <a href="">define a password</a> for your
-                            account before disconnecting from Google.</p>
-                    {% endif %}
-                {% else %}
-                    <a href="{% url 'social:begin' backend='google' %}"
-                       class="btn btn-block btn-social btn-twitter"
-                       onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
-                        <span class="fab fa-google"></span> Connect with Google
-                    </a>
-                {% endif %}
+                    <hr />
+                {% endfor %}
             </div>
         </div>
     </div>
