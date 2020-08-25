@@ -157,6 +157,7 @@ INSTALLED_APPS = [
     'quotes.apps.QuotesConfig',
     'sources.apps.SourcesConfig',
     'topics.apps.TopicsConfig',
+    'staticpages.apps.FlatpagesConfig',
 ]
 
 MIDDLEWARE = [

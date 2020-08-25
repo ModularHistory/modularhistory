@@ -1,8 +1,7 @@
 from django import forms
+from django.db import models
 from django.contrib.admin import AdminSite as BaseAdminSite
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.flatpages.admin import FlatPageAdmin, FlatpageForm
-from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 # from django.utils.translation import gettext_lazy as _
 from django_celery_beat.admin import (
@@ -96,26 +95,6 @@ admin_site = AdminSite(name='admin')
 admin_site.add_action(mass_change_selected)
 
 
-class CustomFlatpageForm(FlatpageForm):
-    class Media:
-        js = ('scripts/mce.js',)
-    content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
-
-
-class CustomFlatPageAdmin(FlatPageAdmin):
-    form = CustomFlatpageForm
-    fieldsets = (
-        (None, {'fields': ('url', 'title', 'content', 'sites')}),
-        (('Advanced options',), {
-            'classes': ('collapse', ),
-            'fields': (
-                'enable_comments',
-                'registration_required',
-                'template_name',
-            ),
-        }),
-    )
-
 # IntervalSchedule.objects.get_or_create(
 #     every=1,
 #     period=IntervalSchedule.DAYS
@@ -176,9 +155,6 @@ class ContentTypeAdmin(Admin):
 admin_site.register(Site)
 
 admin_site.register(ContentType, ContentTypeAdmin)
-
-# admin.site.unregister(FlatPage)
-admin_site.register(FlatPage, CustomFlatPageAdmin)
 
 admin_site.register(PeriodicTask, PeriodicTaskAdmin)
 admin_site.register(SolarSchedule)
