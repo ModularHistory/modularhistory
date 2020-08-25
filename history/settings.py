@@ -157,7 +157,7 @@ INSTALLED_APPS = [
     'quotes.apps.QuotesConfig',
     'sources.apps.SourcesConfig',
     'topics.apps.TopicsConfig',
-    'staticpages.apps.FlatpagesConfig',
+    'staticpages.apps.StaticPagesConfig',
 ]
 
 MIDDLEWARE = [
@@ -177,7 +177,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
+
+    # Staticpage middleware, based on Django's Flatpage middleware:
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
+    'staticpages.middleware.StaticPageFallbackMiddleware'
 ]
 
 ROOT_URLCONF = 'history.urls'

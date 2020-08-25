@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class FlatpagesConfig(AppConfig):
+class StaticPagesConfig(AppConfig):
     name = 'staticpages'
