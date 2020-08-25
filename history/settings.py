@@ -340,6 +340,9 @@ SOCIAL_AUTH_PIPELINE = (
     # Check if the current social-account is already associated in the site.
     'social_core.pipeline.social_auth.social_user',
 
+    # Get the user's email address, if it wasn't automatically obtained
+    'history.social_auth.get_user_email',
+
     # Make up a username for this person. Append a random string at the end if there's any collision.
     'social_core.pipeline.user.get_username',
 
@@ -359,6 +362,7 @@ SOCIAL_AUTH_PIPELINE = (
     # Update the user record with any changed info from the auth service.
     'social_core.pipeline.user.user_details',
 
+    # Get the user's profile picture
     'history.social_auth.get_user_avatar',
 )
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
@@ -382,7 +386,7 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email'}
 # GitHub auth settings
 SOCIAL_AUTH_GITHUB_KEY = config('SOCIAL_AUTH_GITHUB_KEY', default='')
 SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET', default='')
-SOCIAL_AUTH_GITHUB_SCOPE = SOCIAL_AUTH_SCOPE
+SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 # Google auth settings
 # SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', default='')
 # SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', default='')

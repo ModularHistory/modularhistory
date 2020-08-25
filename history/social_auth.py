@@ -1,18 +1,51 @@
+from pprint import pprint
 from tempfile import NamedTemporaryFile
+from typing import Dict, Union
 from urllib.request import urlopen
 
+import requests
 from django.core.files import File
 from social_core.backends.facebook import FacebookOAuth2
-from social_core.backends.google import GoogleOAuth2
-from social_core.backends.twitter import TwitterOAuth
 from social_core.backends.github import GithubOAuth2
+from social_core.backends.google import GoogleOAuth2
+from social_core.backends.oauth import BaseOAuth1, BaseOAuth2
+from social_core.backends.twitter import TwitterOAuth
+
+from account.models import User
 
 FACEBOOK = 'facebook'
 TWITTER = 'twitter'
 GOOGLE = 'google'
+GITHUB = 'github'
+
+Backend = Union[BaseOAuth1, BaseOAuth2]
 
 
-def get_user_avatar(backend, response, user, *args, **kwargs):
+def get_user_email(backend: Backend, response: Dict, **kwargs):
+    """
+    If a backend does not automatically supply the user's email address,
+    try to get the email address through the backend's API.
+    """
+    details = kwargs.get('details')
+    if details and details.get('email', None):
+        if backend.name == 'github' or isinstance(backend, GithubOAuth2):
+            access_token = response.get('access_token', None)
+            email = None
+            if access_token:
+                request_url = f'https://api.github.com/user/emails'
+                params = {"state": "open"}
+                headers = {'Authorization': f'token {access_token}'}
+                response = requests.get(request_url, headers=headers, params=params).json()
+                if isinstance(response, list):
+                    for item in response:
+                        if item.get('primary', False) and item.get('verified', False):
+                            email = item.get('email', None)
+            if email:
+                details['email'] = email
+                return {'details': details}
+
+
+def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwargs):
     """Retrieve and save the user's profile picture from the supplied auth backend."""
     url = None
     try:
