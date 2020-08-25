@@ -1,4 +1,7 @@
-# Django #
+# User scripts
+clean_data.py
+
+# Django
 *.log
 *.pot
 *.pyc

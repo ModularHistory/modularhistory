@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.flatpages.models import FlatPage
 from django.contrib.flatpages.admin import FlatPageAdmin, FlatpageForm
 from tinymce.widgets import TinyMCE
 
@@ -30,3 +31,4 @@ class StaticPageAdmin(FlatPageAdmin):
 
 # admin.site.unregister(FlatPage)
 admin_site.register(StaticPage, StaticPageAdmin)
+admin_site.register(FlatPage, FlatPageAdmin)
