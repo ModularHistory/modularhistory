@@ -1,3 +1,5 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
 name: Django CI/CD
 
 on:
@@ -7,66 +9,68 @@ on:
     branches: [ master ]
 
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    strategy:
-#      max-parallel: 3
-#      matrix:
-#        python-version: [3.6, 3.7]
-#    services:
-#      postgres:
-#        image: postgres:12
-#        env:
-#          POSTGRES_DB: postgres
-#          POSTGRES_USER: postgres
-#          POSTGRES_PASSWORD: postgres
-#        ports:
-#          - 5432:5432
-#        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-#    steps:
-#    - uses: actions/checkout@v2
-#    - name: Set up Python ${{ matrix.python-version }}
-#      uses: actions/setup-python@v2
-#      with:
-#        python-version: ${{ matrix.python-version }}
-#    - name: Install dependencies
-#      run: |
-#        python -m pip install --upgrade pip
-#        pip install -r requirements.txt
-#    - name: Run tests
-#      env:
-#        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-#      run: |
-#        python manage.py migrate
-#        python manage.py test
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.6, 3.7]
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run tests
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      run: |
+        python manage.py migrate
+        python manage.py test
   deploy:
-#    needs: build
+    needs: build
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
     steps:
     # Checkout master
     - name: Checkout master
       uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
-#    # Bump version and push tag
-#    - name: Bump version and push tag
-#      if: ${{ success() }}
-#      uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
-#      with:
-#        github_token: ${{ secrets.GITHUB_TOKEN }}
-#    # Set up Python 3.7
-#    - name: Set up Python 3.7
-#      if: ${{ success() }}
-#      uses: actions/setup-python@v2
-#      with:
-#        python-version: 3.7
-#    # Install dependencies
-#    - name: Install dependencies
-#      if: ${{ success() }}
-#      run: |
-#        python -m pip install --upgrade pip
-#        pip install -r requirements.txt
+    # Bump version and push tag
+    - name: Bump version and push tag
+      if: ${{ success() }}
+      uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    # Set up Python 3.7
+    - name: Set up Python 3.7
+      if: ${{ success() }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    # Install dependencies
+    - name: Install dependencies
+      if: ${{ success() }}
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
     # Setup gcloud environment
     - name: Setup gcloud environment
       if: ${{ success() }}
@@ -85,17 +89,16 @@ jobs:
       uses: GoogleCloudPlatform/github-actions/get-secretmanager-secrets@master  # https://github.com/GoogleCloudPlatform/github-actions/blob/master/get-secretmanager-secrets/README.md
       with:
         secrets: |-
-          SECRET_TOKEN:modularhistory/SECRET_TOKEN
+#          SECRET_TOKEN:modularhistory/SECRET_TOKEN
           DB_NAME:modularhistory/DB_NAME
           DB_USER:modularhistory/DB_USER
           DB_PASSWORD:modularhistory/DB_PASSWORD
     # Set environment vars
     - name: Set environment vars
       env:
-        SECRET_TOKEN: ${{steps.secrets.outputs.SECRET_TOKEN}}
-        DB_NAME: ${{steps.secrets.outputs.DB_NAME}}
-        DB_USER: ${{steps.secrets.outputs.DB_USER}}
-        DB_PASSWORD: ${{steps.secrets.outputs.DB_PASSWORD}}
+        DB_NAME: ${{ steps.secrets.outputs.DB_NAME }}
+        DB_USER: ${{ steps.secrets.outputs.DB_USER }}
+        DB_PASSWORD: ${{ steps.secrets.outputs.DB_PASSWORD }}
       run: gcloud info
     # Collect static files
     - name: Collect static files
