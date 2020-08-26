@@ -89,7 +89,6 @@ jobs:
       uses: GoogleCloudPlatform/github-actions/get-secretmanager-secrets@master  # https://github.com/GoogleCloudPlatform/github-actions/blob/master/get-secretmanager-secrets/README.md
       with:
         secrets: |-
-#          SECRET_TOKEN:modularhistory/SECRET_TOKEN
           DB_NAME:modularhistory/DB_NAME
           DB_USER:modularhistory/DB_USER
           DB_PASSWORD:modularhistory/DB_PASSWORD
@@ -104,12 +103,13 @@ jobs:
     - name: Collect static files
       if: ${{ success() }}
       run: python manage.py collectstatic
-#    - name: Create Sentry release
-#      if: ${{ success() }}
-#      uses: getsentry/action-release@v1.0.0
-#      env:
-#        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-#        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-#        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-#      with:
-#        environment: production
+    # Create Sentry release
+    - name: Create Sentry release
+      if: ${{ success() }}
+      uses: getsentry/action-release@v1.0.0
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      with:
+        environment: production
