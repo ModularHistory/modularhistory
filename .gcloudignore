@@ -7,6 +7,7 @@
 .gcloudignore
 .git
 .gitignore
+.coverage
 .env
 
 # Ungathered static files
@@ -22,6 +23,7 @@ venv/
 
 # GitHub
 .github/
+README.md
 
 # PyCharm / IntelliJ #
 .idea

@@ -1,4 +1,6 @@
-from .settings import IS_GCP
+import os
+
+IS_GCP = bool(os.getenv('GAE_APPLICATION', None))
 
 # If not in Google Cloud, initialize Celery.
 if not IS_GCP:

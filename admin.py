@@ -26,14 +26,15 @@ from social_django.models import UserSocialAuth, Nonce, Association
 
 from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
-from history import settings
+from history import settings, environments
+
 
 PolymorphicInlineSupportMixin = NestedPolymorphicInlineSupportMixin
 StackedPolymorphicInline = NestedStackedPolymorphicInline
 GenericTabularInline = NestedGenericTabularInline
 GenericStackedInline = NestedGenericStackedInline
 
-if settings.ENVIRONMENT == settings.Environment.DEV:
+if settings.ENVIRONMENT == environments.DEV:
     BASE_CSS = sass_processor('styles/base.scss')
     MCE_CSS = sass_processor('styles/mce.scss')
     ADMIN_CSS = sass_processor('styles/admin.scss')

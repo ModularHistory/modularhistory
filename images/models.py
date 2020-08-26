@@ -100,11 +100,10 @@ class Image(MediaModel):
         except KeyError as e:
             # TODO: Send email to admins about the error. Figure out why this happens.
             print(f'KeyError: {e}', file=stderr)
-            return None
         except OSError as e:
             # TODO: Send email to admins about the error. Figure out why this happens.
             print(f'OSError: {e}', file=stderr)
-            return None
+        return None
 
     @property
     def provider_string(self) -> Optional[str]:

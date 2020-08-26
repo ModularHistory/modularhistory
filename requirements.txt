@@ -37,6 +37,7 @@ django-reverse-admin==2.9.0
 djangorestframework==3.11.1
 easy-thumbnails==2.7
 Flask==1.1.2
+google-cloud-secret-manager
 google-cloud-storage
 google-cloud-tasks==1.5.0
 gunicorn==20.0.4
@@ -63,7 +64,7 @@ python-magic==0.4.18
 pytz==2020.1
 requests==2.24.0
 scp==0.13.2
-sentry-sdk==0.16.5
+sentry-sdk==0.17.0  # https://github.com/getsentry/sentry-python
 sigfig==1.1.8
 six==1.15.0
 social-auth-app-django==4.0.0
