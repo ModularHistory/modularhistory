@@ -83,7 +83,6 @@ jobs:
           DB_USER:modularhistory/DB_USER
           DB_PASSWORD:modularhistory/DB_PASSWORD
     - name: Set environment vars
-      uses: foo/bar@master
       env:
         SECRET_TOKEN: ${{steps.secrets.outputs.SECRET_TOKEN}}
         DB_NAME: ${{steps.secrets.outputs.DB_NAME}}
