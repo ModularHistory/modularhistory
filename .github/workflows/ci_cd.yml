@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout master
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
     - name: Bump version and push tag
@@ -59,6 +59,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: Install dependencies
+      if: ${{ success() }}
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
     - name: Collect static files
       if: ${{ success() }}
       run: python manage.py collectstatic
