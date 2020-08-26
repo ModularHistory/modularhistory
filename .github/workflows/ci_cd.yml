@@ -55,6 +55,7 @@ jobs:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
     # Bump version and push tag
     - name: Bump version and push tag
+      id: version
       if: ${{ success() }}
       uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
       with:
@@ -79,9 +80,10 @@ jobs:
         project_id: modularhistory
         service_account_key: ${{ secrets.GCP_CREDENTIALS }}
         export_default_credentials: true
-    # Debug
-    - run: gcloud info
+    # Print gcloud info
+    - name: Print gcloud info
       if: ${{ success() }}
+      run: gcloud info
     # Retrieve secrets
     - name: Retrieve secrets
       id: secrets
@@ -103,6 +105,10 @@ jobs:
     - name: Collect static files
       if: ${{ success() }}
       run: python manage.py collectstatic
+    # Deploy to Google Cloud
+    - name: Deploy
+      if: ${{ success() }}
+      run: gcloud app deploy app.yaml -v ${{ steps.version.outputs.new_version }}
     # Create Sentry release
     - name: Create Sentry release
       if: ${{ success() }}
