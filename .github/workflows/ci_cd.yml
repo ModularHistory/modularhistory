@@ -70,6 +70,7 @@ jobs:
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
         project_id: modularhistory
+        service_account_key: ${{ secrets.GCP_KEY }}
         export_default_credentials: true
     - run: gcloud info
       if: ${{ success() }}
