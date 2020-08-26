@@ -64,9 +64,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Collect static files
-      if: ${{ success() }}
-      run: python manage.py collectstatic
     - name: Setup gcloud environment
       if: ${{ success() }}
       # https://github.com/GoogleCloudPlatform/github-actions/blob/master/setup-gcloud/README.md
@@ -94,6 +91,9 @@ jobs:
         DB_USER: ${{steps.secrets.outputs.DB_USER}}
         DB_PASSWORD: ${{steps.secrets.outputs.DB_PASSWORD}}
       run: gcloud info
+    - name: Collect static files
+      if: ${{ success() }}
+      run: python manage.py collectstatic
 #    - name: Create Sentry release
 #      if: ${{ success() }}
 #      uses: getsentry/action-release@v1.0.0
