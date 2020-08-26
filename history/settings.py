@@ -46,7 +46,7 @@ if ENVIRONMENT != environments.DEV:
         integrations.append(CeleryIntegration())
     sentry_sdk.init(
         dsn='https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835',
-        environment=ENVIRONMENT.value,
+        environment=ENVIRONMENT,
         integrations=integrations,
         release='modularhistory@version',  # TODO: use git hash for version
         # Associate users to errors (using django.contrib.auth) by sending PII data
