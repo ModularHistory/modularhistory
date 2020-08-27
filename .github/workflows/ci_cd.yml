@@ -88,16 +88,6 @@ jobs:
     - name: Print gcloud info
       if: ${{ success() }}
       run: gcloud info
-    # Retrieve secrets
-    - name: Retrieve secrets
-      id: secrets
-      if: ${{ success() }}
-      uses: GoogleCloudPlatform/github-actions/get-secretmanager-secrets@master  # https://github.com/GoogleCloudPlatform/github-actions/blob/master/get-secretmanager-secrets/README.md
-      with:
-        secrets: |-
-          DB_NAME:modularhistory/DB_NAME
-          DB_USER:modularhistory/DB_USER
-          DB_PASSWORD:modularhistory/DB_PASSWORD
     # Inject environment vars
     - name: Set environment vars
       env:
@@ -105,9 +95,9 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        DB_NAME: ${{ steps.secrets.outputs.DB_NAME }}
-        DB_USER: ${{ steps.secrets.outputs.DB_USER }}
-        DB_PASSWORD: ${{ steps.secrets.outputs.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
         SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
         SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
@@ -124,10 +114,8 @@ jobs:
         MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_FILE }}
       run: |
-        pwd
         echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
-        ls
-        envsubst < env.yaml > env.yaml.tmp && mv env.yaml.tmp env.yaml
+        envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
     # Collect static files
     - name: Collect static files
       if: ${{ success() }}
@@ -135,9 +123,9 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: python manage.py collectstatic
     # Deploy to Google Cloud
-    - name: Deploy
+    - name: Deploy to Google Cloud
       if: ${{ success() }}
-      run: gcloud app deploy app.yaml
+      run: gcloud app deploy gc_app.yaml
     # Create Sentry release
     - name: Create Sentry release
       if: ${{ success() }}

@@ -7,8 +7,8 @@ clean_data.py
 *.pyc
 __pycache__
 db.sqlite3
-media
-staticfiles
+media/
+staticfiles/
 
 # Node JS
 node_modules/
@@ -22,17 +22,17 @@ env/
 venv/
 .venv/
 
-# Python #
+# Python
 *.py[cod]
 *$py.class
 
-# PyCharm / IntelliJ #
+# PyCharm / IntelliJ
 .idea
 .idea/
 .DS_Store
 *.iws /out/
 
-# Backup files #
+# Backup files
 *.bak
 backups/
 
@@ -71,14 +71,8 @@ coverage.xml
 *.cover
 .hypothesis/
 
-# pyenv
-.python-version
-
 # celery
 celerybeat-schedule.*
-
-# mkdocs documentation
-/site
 
 # mypy
 .mypy_cache/
