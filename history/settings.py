@@ -59,21 +59,20 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 # os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
+DEBUG = ENVIRONMENT == environments.DEV  # DEBUG must be False in production (for security)
+
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
 SECRET_KEY = config('SECRET_KEY')
 
-# DEBUG must be False in production (for security)
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
-DEBUG = (ENVIRONMENT != environments.PROD) if ENVIRONMENT else config('DEBUG', default=True, cast=bool)
-
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = ENVIRONMENT != environments.DEV
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-session-cookie-samesite
-SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = ENVIRONMENT != environments.DEV
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-csrf-cookie-secure
-CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = ENVIRONMENT != environments.DEV
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-referrer-policy
 # https://docs.djangoproject.com/en/3.0/ref/middleware/#referrer-policy

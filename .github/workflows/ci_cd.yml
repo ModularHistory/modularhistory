@@ -26,16 +26,22 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
+    # Check out master
     - uses: actions/checkout@v2
+    # Set up Python
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    # Install dependencies
     - name: Install dependencies
+      if: ${{ success() }}
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    # Run tests
     - name: Run tests
+      if: ${{ success() }}
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
@@ -45,8 +51,6 @@ jobs:
     needs: build
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
-    env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
     steps:
     # Checkout master
     - name: Checkout master
@@ -94,16 +98,42 @@ jobs:
           DB_NAME:modularhistory/DB_NAME
           DB_USER:modularhistory/DB_USER
           DB_PASSWORD:modularhistory/DB_PASSWORD
-    # Set environment vars
+    # Inject environment vars
     - name: Set environment vars
       env:
+        ADMINS: ${{ secrets.ADMINS }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DB_NAME: ${{ steps.secrets.outputs.DB_NAME }}
         DB_USER: ${{ steps.secrets.outputs.DB_USER }}
         DB_PASSWORD: ${{ steps.secrets.outputs.DB_PASSWORD }}
-      run: gcloud info
+        SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+        SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+        SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+        SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+        SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
+        SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+        EMAIL_HOST: ${{ EMAIL_HOST }}
+        EMAIL_PORT: ${{ EMAIL_PORT }}
+        EMAIL_HOST_USER: ${{ EMAIL_HOST_USER }}
+        EMAIL_HOST_PASSWORD: ${{ EMAIL_HOST_PASSWORD }}
+        ALPHA_VANTAGE_ACCESS_KEY: ${{ ALPHA_VANTAGE_ACCESS_KEY }}
+        X_RAPIDAPI_HOST: ${{ X_RAPIDAPI_HOST }}
+        X_RAPIDAPI_KEY: ${{ X_RAPIDAPI_KEY }}
+        MEGA_USERNAME: ${{ MEGA_USERNAME }}
+        MEGA_PASSWORD: ${{ MEGA_PASSWORD }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_FILE }}
+      run: |
+        pwd
+        echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
+        ls
+        envsubst < env.yaml > env.yaml.tmp && mv env.yaml.tmp env.yaml
     # Collect static files
     - name: Collect static files
       if: ${{ success() }}
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: python manage.py collectstatic
     # Deploy to Google Cloud
     - name: Deploy
