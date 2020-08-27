@@ -137,7 +137,7 @@ jobs:
     # Deploy to Google Cloud
     - name: Deploy
       if: ${{ success() }}
-      run: gcloud app deploy app.yaml -v ${{ steps.version.outputs.new_version }}
+      run: gcloud app deploy app.yaml
     # Create Sentry release
     - name: Create Sentry release
       if: ${{ success() }}
