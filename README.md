@@ -2,6 +2,8 @@
 
 https://www.modularhistory.com
 
+![CI](https://github.com/actions/modularhistory/workflows/CI/badge.svg)
+
 ---
 
 ## Installation

@@ -1,0 +1,33 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+name: CI
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [ macos-latest, ubuntu-latest ]
+        python-version: [3.6, 3.7]
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    # Check out master
+    - uses: actions/checkout@v2
+    # Run tests
+    - uses: ./.github/actions/test
+      with:
+        python-version: ${{ matrix.python-version }}
