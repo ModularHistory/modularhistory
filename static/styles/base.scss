@@ -39,6 +39,11 @@ body {
   }
 }
 
+.footer-links a {
+  display: inline-block;
+  margin: 0.5rem 1rem;
+}
+
 #collapsibleNavbar {
   @include mobileNavbar {
     background-color: inherit;
