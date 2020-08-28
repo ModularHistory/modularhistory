@@ -160,30 +160,28 @@
             <div class="collapse navbar-collapse order-2 order-sm-1" id="collapsibleNavbar">
                 <ul class="navbar-nav">
                     {% block main_menu %}
-                        {% if request.user.is_superuser %}
-                            {% with menu_items=settings.MENU_ITEMS %}
-                                {% for title, app in menu_items %}
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="/{{ app }}/">{{ title }}</a>
-                                    </li>
-                                {% endfor %}
-                            {% endwith %}
+                        {% with menu_items=settings.MENU_ITEMS %}
+                            {% for title, app in menu_items %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/{{ app }}/">{{ title }}</a>
+                                </li>
+                            {% endfor %}
+                        {% endwith %}
 
-{#                            <!-- Dropdown -->#}
-{#                            <li class="nav-item dropdown active">#}
-{#                                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}
-{#                                    History#}
-{#                                </a>#}
-{#                                <div class="dropdown-menu">#}
-{#                                    {% for title, app in settings.MENU_ITEMS %}#}
-{#                                        <a class="dropdown-item" href="/{{ app }}/">{{ title }}</a>#}
-{#                                        <!--<li class="nav-item ${'active' if False else ''}">-->#}
-{#                                        <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->#}
-{#                                        <!--</li>-->#}
-{#                                    {% endfor %}#}
-{#                                </div>#}
-{#                            </li>#}
-                        {% endif %}
+{#                        <!-- Dropdown -->#}
+{#                        <li class="nav-item dropdown active">#}
+{#                            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}
+{#                                History#}
+{#                            </a>#}
+{#                            <div class="dropdown-menu">#}
+{#                                {% for title, app in settings.MENU_ITEMS %}#}
+{#                                    <a class="dropdown-item" href="/{{ app }}/">{{ title }}</a>#}
+{#                                    <!--<li class="nav-item ${'active' if False else ''}">-->#}
+{#                                    <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->#}
+{#                                    <!--</li>-->#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                        </li>#}
                     {% endblock %}
                 </ul>
                 <ul class="navbar-nav ml-auto nav-flex-icons justify-content-end">
