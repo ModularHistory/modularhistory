@@ -32,6 +32,10 @@ class Search(Model):
         ('date', 'Date'),
         ('relevance', 'Relevance')
     )
+    OCCURRENCE_CT: int
+    QUOTE_CT: int
+    IMAGE_CT: int
+    SOURCE_CT: int
     CONTENT_TYPE_OPTIONS: List[Tuple[int, str]]
 
     query = models.CharField(max_length=100, null=True, blank=True)
@@ -51,13 +55,45 @@ class Search(Model):
         return str(self.query)
 
     @classmethod
+    def get_occurrence_ct(cls):
+        occurrence_ct = getattr(cls, 'OCCURRENCE_CT', None)
+        if not occurrence_ct:
+            cls.OCCURRENCE_CT = ContentType.objects.get_for_model(Occurrence).id
+        return cls.OCCURRENCE_CT
+
+    @classmethod
+    def get_quote_ct(cls):
+        quote_ct = getattr(cls, 'QUOTE_CT', None)
+        if not quote_ct:
+            cls.QUOTE_CT = ContentType.objects.get_for_model(Quote).id
+        return cls.QUOTE_CT
+
+    @classmethod
+    def get_image_ct(cls):
+        image_ct = getattr(cls, 'IMAGE_CT', None)
+        if not image_ct:
+            cls.IMAGE_CT = ContentType.objects.get_for_model(Image).id
+        return cls.IMAGE_CT
+
+    @classmethod
+    def get_source_ct(cls):
+        source_ct = getattr(cls, 'SOURCE_CT', None)
+        if not source_ct:
+            cls.SOURCE_CT = ContentType.objects.get_for_model(Source).id
+        return cls.SOURCE_CT
+
+    @classmethod
     def get_content_type_options(cls):
         content_type_options = getattr(cls, 'CONTENT_TYPE_OPTIONS', None)
         if not content_type_options:
+            cls.OCCURRENCE_CT = cls.get_occurrence_ct()
+            cls.QUOTE_CT = cls.get_quote_ct()
+            cls.IMAGE_CT = cls.get_image_ct()
+            cls.SOURCE_CT = cls.get_source_ct()
             cls.CONTENT_TYPE_OPTIONS = [
-                (ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'),
-                (ContentType.objects.get_for_model(Quote).id, 'Quotes'),
-                (ContentType.objects.get_for_model(Image).id, 'Images'),
-                (ContentType.objects.get_for_model(Source).id, 'Sources')
+                (cls.OCCURRENCE_CT, 'Occurrences'),
+                (cls.QUOTE_CT, 'Quotes'),
+                (cls.IMAGE_CT, 'Images'),
+                (cls.SOURCE_CT, 'Sources')
             ]
         return cls.CONTENT_TYPE_OPTIONS

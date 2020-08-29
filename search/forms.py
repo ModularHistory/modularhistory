@@ -36,7 +36,7 @@ class SearchForm(Form):
             query: Optional[str] = None,
             suppress_unverified: bool = True,
             order_by_relevance: bool = False,
-            excluded_content_types: List[Tuple[int, str]] = None,
+            excluded_content_types: List[int] = None,
             entities: Optional[QuerySet] = None,
             topics: Optional[QuerySet] = None,
             # places: Optional[QuerySet] = None,
@@ -74,7 +74,7 @@ class SearchForm(Form):
 
         # TODO: optimize
         content_type_options = Search.get_content_type_options()
-        initial_content_types = (pk for pk, name in content_type_options if pk not in excluded_content_types)
+        initial_content_types = [pk for pk, name in content_type_options if pk not in excluded_content_types]
         self.fields['content_types'] = MultipleChoiceField(
             choices=content_type_options,
             widget=CheckboxSelectMultiple,

@@ -4,6 +4,7 @@ from django.views import generic
 from polymorphic.query import PolymorphicQuerySet
 
 from search.forms import SearchForm
+from search.models import Search
 from .models import Occurrence
 
 
@@ -20,7 +21,8 @@ class ListView(generic.list.ListView):
     def get_context_data(self, *args, **kwargs) -> Dict:
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
-            request=self.request
+            request=self.request,
+            excluded_content_types=[Search.QUOTE_CT, Search.IMAGE_CT, Search.SOURCE_CT]
         )
         return context
 

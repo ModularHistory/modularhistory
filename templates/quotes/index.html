@@ -1,21 +1,7 @@
-{% extends "base.htm" %}
-{% load card %}
+{% extends 'list.html' %}
 
-{% block content %}
-    <div class="container">
-        {% if quotes|length %}
-            <div>
-                {% for quote in quotes %}
-                    {% card quote %}
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="lead">
-                Hell is other quotes.
-            </p>
-            <p>
-                If you have any questions, please <a href="/contact/">contact me</a>.
-            </p>
-        {% endif %}
-    </div>
+{% block list %}
+    {% with object_list=quotes %}
+        {{ block.super }}
+    {% endwith %}
 {% endblock %}

@@ -14,6 +14,7 @@ from history.structures.historic_datetime import HistoricDateTime
 class Manager(BaseManager):
     """Base manager for models."""
 
+    # TODO: optimize
     @property
     def occurrence_ct_id(self):
         from occurrences.models import Occurrence
