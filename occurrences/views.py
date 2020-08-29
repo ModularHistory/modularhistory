@@ -22,7 +22,7 @@ class ListView(generic.list.ListView):
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
-            excluded_content_types=[Search.QUOTE_CT, Search.IMAGE_CT, Search.SOURCE_CT]
+            excluded_content_types=[Search.get_quote_ct(), Search.get_image_ct(), Search.get_source_ct()]
         )
         return context
 
