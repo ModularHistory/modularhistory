@@ -32,7 +32,7 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ inputs.python-version }}
+        python-version: ${{ matrix.python-version }}
     # Install dependencies and run tests
     - name: Run tests
       uses: ./.github/actions/test
