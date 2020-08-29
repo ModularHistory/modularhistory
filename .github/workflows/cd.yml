@@ -35,6 +35,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     # Install dependencies and run tests
     - name: Run tests
+      if: ${{ success() }}
       uses: ./.github/actions/test
     # Bump version and push tag
     - name: Bump version and push tag
