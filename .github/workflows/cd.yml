@@ -28,10 +28,14 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
-    # Set up Python, install dependencies, and run tests
-    - uses: ./.github/actions/test
+    # Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ inputs.python-version }}
+    # Install dependencies and run tests
+    - name: Run tests
+      uses: ./.github/actions/test
     # Bump version and push tag
     - name: Bump version and push tag
       id: version

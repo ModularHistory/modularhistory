@@ -27,7 +27,10 @@ jobs:
     steps:
     # Check out master
     - uses: actions/checkout@v2
-    # Run tests
+    # Set up Python
+    - name: Set up Python ${{ inputs.python-version }}
+    uses: actions/setup-python@v2
+    with:
+      python-version: ${{ inputs.python-version }}
+    # Install dependencies and run tests
     - uses: ./.github/actions/test
-      with:
-        python-version: ${{ matrix.python-version }}

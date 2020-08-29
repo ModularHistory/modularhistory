@@ -1,18 +1,8 @@
 name: 'Test'
 description: "Run ModularHistory's test suite."
-inputs:
-  python-version:
-    description: 'Python version'
-    required: true
-    default: 3.7
 runs:
   using: 'composite'
   steps:
-    # Set up Python
-    - name: Set up Python ${{ inputs.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ inputs.python-version }}
     # Install dependencies
     - name: Install dependencies
       if: ${{ success() }}
