@@ -30,7 +30,7 @@ django-sass-processor==0.8
 django-select2==7.4.2
 django-settings-export==1.2.1
 django-simple-menu==1.2.1
-django-storages[google]==1.9.1
+django-storages[google]==1.10
 django-tinymce==3.0.2
 django-typed-models==0.10.0  # https://github.com/craigds/django-typed-models
 django-reverse-admin==2.9.0
