@@ -43,7 +43,7 @@ google-cloud-tasks==1.5.0
 gunicorn==20.0.4
 html5lib==1.1
 humanize==2.6.0
-kombu==4.6.11
+kombu==5.0.1
 lxml==4.5.2
 markdown==3.2.2
 mega.py==1.0.8  # https://github.com/odwyersoftware/mega.py
