@@ -16,7 +16,6 @@ Including another URLconf
 
 from django.conf import settings
 from django.conf.urls.static import static
-from django.http import Http404
 from django.urls import include, path, re_path
 
 from admin import admin_site
@@ -26,7 +25,6 @@ from search.views import SearchResultsView
 def error(request):
     """Raise an error, so that ModularHistory's server error page is rendered."""
     print(f'Received request to trigger a server error: {request}')
-    # raise Http404('Raising Http404 exception for testing purposes.')
     raise Exception('Raising an exception for testing purposes.')
 
 
