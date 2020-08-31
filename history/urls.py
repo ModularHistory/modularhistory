@@ -26,8 +26,8 @@ from search.views import SearchResultsView
 def error(request):
     """Raise an error, so that ModularHistory's server error page is rendered."""
     print(f'Received request to trigger a server error: {request}')
-    raise Http404('Raising Http404 exception for testing purposes.')
-    # raise Exception('Raising an exception for testing purposes.')
+    # raise Http404('Raising Http404 exception for testing purposes.')
+    raise Exception('Raising an exception for testing purposes.')
 
 
 urlpatterns = [
