@@ -60,8 +60,7 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
-# uncomment after adding error page: DEBUG = ENVIRONMENT == environments.DEV  # DEBUG must be False in production (for security)
-DEBUG = False
+DEBUG = ENVIRONMENT == environments.DEV  # DEBUG must be False in production (for security)
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
 SECRET_KEY = config('SECRET_KEY')
