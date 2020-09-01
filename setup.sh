@@ -21,18 +21,25 @@ if [ -z "${GAE_APPLICATION}" ]; then
   if [ -n "$poetry_version" ]; then
     poetry self update &>/dev/null || pip install -U poetry
   else
-    {
-      echo "Installing Poetry..."
-      curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-      echo "Sourcing Poetry environment..."
-      # shellcheck source=/dev/null
-      source "$HOME/.poetry/env"
-      echo ""
-    } || {
-      echo "Unable to use Poetry's custom installer; falling back on pip..."
-      pip install -U poetry
-      echo ""
-    }
+#    # TODO
+#    # Using the recommended custom installer for Poetry results in an error in GitHub
+#    # probably due to Poetry subsequently creating a virtualenv that is not sourced, as shown:
+#    # Creating virtualenv ***-fCb5YSGc-py3.7 in /home/runner/.cache/pypoetry/virtualenvs
+#    {
+#      echo "Installing Poetry..."
+#      curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+#      echo "Sourcing Poetry environment..."
+#      # shellcheck source=/dev/null
+#      source "$HOME/.poetry/env"
+#      echo ""
+#    } || {
+#      echo "Unable to use Poetry's custom installer; falling back on pip..."
+#      pip install -U poetry
+#      echo ""
+#    }
+    echo "Unable to use Poetry's custom installer; falling back on pip..."
+    pip install -U poetry
+    echo ""
     poetry_version=$(poetry --version)
     if [ -z "$poetry_version" ]; then
       echo "Error: Unable to install Poetry."
