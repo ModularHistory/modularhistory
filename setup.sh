@@ -14,27 +14,33 @@ if [ -z "${GAE_APPLICATION}" ]; then
     echo "then rerun this script."
     exit 1
   }
+  echo ""
 
   # Install Poetry
   poetry_version=$(poetry --version) &>/dev/null
   if [ -n "$poetry_version" ]; then
     poetry self update &>/dev/null || pip install -U poetry
-    echo ""
-    echo "Using $poetry_version"
-    echo ""
   else
-#      echo "Installing Poetry..."
-#      curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-#      echo "Sourcing Poetry environment..."
-#      # shellcheck source=/dev/null
-#      source "$HOME/.poetry/env"
-    echo "Unable to use Poetry's custom installer; falling back on pip..."
-    pip install -U poetry && poetry_version=$(poetry --version)
-    if [ -n "$poetry_version" ]; then
+    {
+      echo "Installing Poetry..."
+      curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+      echo "Sourcing Poetry environment..."
+      # shellcheck source=/dev/null
+      source "$HOME/.poetry/env"
+      echo ""
+    } || {
+      echo "Unable to use Poetry's custom installer; falling back on pip..."
+      pip install -U poetry
+      echo ""
+    }
+    poetry_version=$(poetry --version)
+    if [ -z "$poetry_version" ]; then
       echo "Error: Unable to install Poetry."
       exit 1
     fi
   fi
+  echo "Using $poetry_version"
+  echo ""
 
   # Install dependencies
   echo "Installing dependencies..."
