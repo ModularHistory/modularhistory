@@ -33,13 +33,20 @@ if [ -z "${GAE_APPLICATION}" ]; then
       echo "Error: Unable to install Poetry."
       exit 1
     }
+    poetry_version=$(poetry --version)
+    if [ -n "$poetry_version" ]; then
+      echo "Error: Unable to install Poetry."
+      exit 1
+    fi
   fi
 
   # Install dependencies
   poetry install
 
   # Create requirements.txt in case of manual deploys
-  rm requirements.txt
+  if [ -f "requirements.txt" ]; then
+    rm requirements.txt
+  fi
   poetry export -f requirements.txt > requirements.txt
 
   # Run database migrations
