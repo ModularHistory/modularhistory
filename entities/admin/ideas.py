@@ -1,4 +1,4 @@
-from admin import admin_site, Admin
+from history.admin import admin_site, Admin
 from .. import models
 from ..forms import (
     IdeaForm

@@ -1,23 +1,16 @@
+from typing import Optional
+
 from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 from django.db import models
+from django.db.models import QuerySet
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from social_django.models import UserSocialAuth
 
 from history.fields.file_field import upload_to
 
 
 class UserManager(BaseUserManager):
-    # TODO: Figure out how *args is determined; it needs to be the natural key fields, but it isn't.
-    # def get_by_natural_key(self, *args):
-    #     fields = self.model.natural_key_fields
-    #     natural_key = {}
-    #     print(f'natural key fields: {fields}')
-    #     print(f'args: {args}')
-    #     for n, field in enumerate(fields):
-    #         print(f'n: {n}')
-    #         print(f'args[n]: {args[n]}')
-    #         natural_key[field] = args[n]
-    #     return self.get(**natural_key)
     pass
 
 
@@ -44,36 +37,16 @@ class User(AbstractUser):
     # date_of_birth = models.DateField(null=True, blank=True)
     # email_subscription = models.NullBooleanField(default=None, choices=settings.EMAIL_SUBSCRIPTIONS)
 
-    natural_key_fields = ['email']
-    objects = UserManager()
+    social_auth: 'QuerySet[UserSocialAuth]'
+    objects: UserManager = UserManager()
 
     def __str__(self):
-        """Prints for debugging purposes"""
         return self.get_full_name()
 
-    @classmethod
-    def create(cls, username=None, first_name=None, last_name=None):
-        # if username is None:
-        #     username = f'{first_name} {last_name}'
-        user = cls()
-        user.username = username
-        user.first_name = first_name
-        user.last_name = last_name
-        user.save()
-        return user
-
-    # TODO: Natural key is not working; first name is sent to get_by_natural_key
-    # def natural_key(self) -> Tuple[Any]:
-    #     natural_key_fields = self.natural_key_fields
-    #     natural_key_values = []
-    #     for field in natural_key_fields:
-    #         value = getattr(self, field, None)
-    #         if not value:
-    #             raise AttributeError(f'Model has no `{field}` attribute.')
-    #         natural_key_values.append(value)
-    #     natural_key = tuple(value for value in natural_key_values)
-    #     print(f'returning natural key: {natural_key}')
-    #     return natural_key
+    @property
+    def social_auths(self) -> 'QuerySet[UserSocialAuth]':
+        """Wrapper for the reverse attribute of the UserSocialAuth–User relation."""
+        return self.social_auth
 
     def lock(self):
         self.locked = True

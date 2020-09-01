@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
 
-from admin import admin_site
+from history.admin import admin_site
 from search.views import SearchResultsView
 
 

@@ -1,4 +1,4 @@
-from admin import admin_site, Admin, TabularInline, Admin, TabularInline
+from history.admin import admin_site, Admin, TabularInline
 from .. import models
 
 
@@ -21,7 +21,7 @@ class RolesInline(TabularInline):
 
 
 class AffiliationAdmin(Admin):
-    list_display = ('entity', 'affiliated_entity', 'start_date', 'end_date')
+    list_display = ['entity', 'affiliated_entity', 'start_date', 'end_date']
     search_fields = list_display
     autocomplete_fields = ['entity', 'affiliated_entity']
     ordering = ('start_date', 'entity')

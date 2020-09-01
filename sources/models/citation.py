@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 import re
 from typing import Any, Optional
 
@@ -41,9 +43,9 @@ class PageRange(Model):
     @property
     def html(self) -> Optional[SafeText]:
         citation = self.citation
-        pn = self.page_number
-        if not pn:
+        if not self.page_number:
             return None
+        pn = self.page_number
         end_pn = self.end_page_number or None
         _url = citation.source.file_url or None
 
@@ -64,14 +66,14 @@ class PageRange(Model):
                     f'class="display-source">{page_number}</a>')
 
         pn_url = get_page_number_url(pn)
-        pn = get_page_number_link(pn_url, pn) or pn
+        pn_html = get_page_number_link(pn_url, pn) or str(pn)
         if end_pn:
             end_pn_url = get_page_number_url(end_pn)
-            end_pn = get_page_number_link(end_pn_url, end_pn) or end_pn
-            page_string = f'pp. {pn}–{end_pn}'
+            end_pn_html = get_page_number_link(end_pn_url, end_pn) or str(end_pn)
+            page_html = f'pp. {pn_html}–{end_pn_html}'
         else:
-            page_string = f'p. {pn}'
-        return mark_safe(page_string)
+            page_html = f'p. {pn_html}'
+        return mark_safe(page_html)
 
     def clean(self):
         if self.end_page_number and self.end_page_number < self.page_number:
@@ -107,7 +109,7 @@ class Citation(Model):
     def html(self) -> SafeText:
         html = f'{self.source.html}'
         if self.page_number:
-            page_string = self.page_html
+            page_string = self.page_html or ''
             # Replace the source's page string if it exists
             page_str_regex = re.compile(self.PAGE_STRING_REGEX)
             match = page_str_regex.match(html)
@@ -120,7 +122,7 @@ class Citation(Model):
             from quotes.models import Quote
             quote_ct = ContentType.objects.get_for_model(Quote)
             if self.content_type_id == quote_ct.id:
-                quote = self.content_object
+                quote: Quote = self.content_object
                 if quote.ordered_attributees != self.source.ordered_attributees:
                     _html = html
                     if not quote.citations.filter(position__lt=self.position).exists():

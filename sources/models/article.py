@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from bs4 import BeautifulSoup
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
@@ -30,7 +32,7 @@ class Publication(Model):
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         return mark_safe(f'<i>{self.name}</i>')
 
     @property

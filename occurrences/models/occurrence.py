@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from typing import Any, List, Optional
 
 from bs4 import BeautifulSoup
@@ -8,8 +10,7 @@ from django.utils.safestring import SafeText, mark_safe
 
 from history.fields import HistoricDateTimeField, HTMLField
 from history.models import (
-    TaggableModel, DatedModel,
-    RelatedQuotesMixin, SearchableMixin, SourcesMixin
+    TaggableModel, DatedModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin
 )
 from images.models import Image
 from quotes.models import quote_sorter_key

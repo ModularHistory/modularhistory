@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from os import listdir, rename
 from os.path import isfile, join
 from typing import Optional

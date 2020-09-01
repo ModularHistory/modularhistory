@@ -1,6 +1,8 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from bs4 import BeautifulSoup
 from django.db import models
-from django.utils.safestring import SafeText
+from django.utils.safestring import SafeText, mark_safe
 
 from places.models import Venue
 from .base import Source, TitleMixin
@@ -11,7 +13,7 @@ class SpokenSource(Source):
         abstract = True
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         raise NotImplementedError
 
 
@@ -38,7 +40,7 @@ class Speech(TitleMixin, SpokenSource):
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title_html}," ' if self.title else ''
         string += f'{self.type2}'
@@ -53,7 +55,7 @@ class Speech(TitleMixin, SpokenSource):
         else:
             string += ' ' if self.date.month_is_known else ' in '
         string += self.date.string
-        return string
+        return mark_safe(string)
 
 
 class Interview(SpokenSource):
@@ -65,10 +67,10 @@ class Interview(SpokenSource):
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         string = f'{self.attributee_string} to {self.interviewers or "interviewer"}, '
         string += f'{self.date.string}' if self.date else ''
-        return string
+        return mark_safe(string)
 
 
 class VideoSource(Source):
@@ -76,7 +78,7 @@ class VideoSource(Source):
         abstract = True
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         raise NotImplementedError
 
 
@@ -84,12 +86,12 @@ class Documentary(TitleMixin, VideoSource):
     class Meta:
         verbose_name_plural = 'Documentaries'
 
-    def __str__(self) -> SafeText:
+    def __str__(self) -> str:
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         string = f'{self.attributee_string}, '
         string += f'<em>{self.title_html}</em>," ' if self.title else ''
         string += f'{self.date.string}' if self.date else ''
-        return string
+        return mark_safe(string)

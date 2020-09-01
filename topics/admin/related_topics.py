@@ -1,6 +1,6 @@
 from django.contrib.admin import SimpleListFilter
 
-from admin import GenericTabularInline
+from history.admin import GenericTabularInline
 from ..models import TopicRelation
 
 

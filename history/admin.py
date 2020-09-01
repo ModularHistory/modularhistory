@@ -1,6 +1,9 @@
-from django import forms
-from django.db import models
+# type: ignore
+# TODO: remove above line after fixing typechecking
+from typing import List, Type, Union
+
 from django.contrib.admin import AdminSite as BaseAdminSite
+from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 # from django.utils.translation import gettext_lazy as _
@@ -22,12 +25,11 @@ from nested_admin.polymorphic import (
 from sass_processor.processor import sass_processor
 from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOption
 from social_django.models import UserSocialAuth, Nonce, Association
-# from tinymce.widgets import TinyMCE
 
+from history import settings, environments
+# from tinymce.widgets import TinyMCE
 from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
-from history import settings, environments
-
 
 PolymorphicInlineSupportMixin = NestedPolymorphicInlineSupportMixin
 StackedPolymorphicInline = NestedStackedPolymorphicInline
@@ -49,6 +51,12 @@ class Admin(NestedModelAdmin):
         HistoricDateTimeField: {'widget': HistoricDateWidget},
         SourceFileField: {'widget': SourceFileInput},
     }
+
+    list_display: List[str]
+    list_filter: List[Union[str, Type[ListFilter]]]
+    ordering: List[str]
+    readonly_fields: List[str]
+    search_fields: List[str]
 
     class Media:
         css = {
@@ -72,7 +80,7 @@ FORM_FIELD_OVERRIDES = {
 }
 
 
-def reorder_fields(fields):
+def reorder_fields(fields) -> List[str]:
     for field_name in ('page_number', 'end_page_number', 'notes', 'position'):
         if field_name in fields:
             fields.remove(field_name)
@@ -83,7 +91,7 @@ def reorder_fields(fields):
 class StackedInline(NestedStackedInline):
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, request, obj=None) -> List[str]:
         fields = super().get_fields(request, obj)
         return reorder_fields(fields)
 
@@ -91,7 +99,7 @@ class StackedInline(NestedStackedInline):
 class TabularInline(NestedTabularInline):
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, request, obj=None) -> List[str]:
         fields = super().get_fields(request, obj)
         return reorder_fields(fields)
 
@@ -156,7 +164,7 @@ admin_site.add_action(mass_change_selected)
 
 class ContentTypeAdmin(Admin):
     list_display = ['app_label', 'model', 'pk']
-    list_filter = ('app_label',)
+    list_filter = ['app_label']
     readonly_fields = ['pk', 'app_label', 'model']
     ordering = ['app_label']
 

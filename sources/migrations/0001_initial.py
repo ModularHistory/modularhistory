@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             name='SourceFile',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', history.fields.file_field.SourceFileField(blank=True, null=True, unique=True, upload_to=functools.partial(history.fields.file_field._update_filename, *(), **{'path': 'sources/'}))),
+                ('file', history.fields.file_field.SourceFileField(blank=True, null=True, unique=True, upload_to=functools.partial(history.fields.file_field._generate_upload_path, *(), **{'path': 'sources/'}))),
                 ('name', models.CharField(blank=True, max_length=100, null=True, unique=True)),
                 ('page_offset', models.SmallIntegerField(blank=True, default=0, help_text='The difference between the page numbers displayed on the pages and the actual page numbers of the electronic file (a positive number if the electronic page number is greater than the textualpage number; a negative number if the textual page number is greater than the electronic page number).')),
                 ('first_page_number', models.SmallIntegerField(blank=True, default=1, help_text='The page number that is visibly displayed on the page on which the relevant text begins (usually 1).')),

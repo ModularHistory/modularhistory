@@ -11,7 +11,7 @@ from account.models import User
 class LoginForm(AuthenticationForm):
     """Crispy login form."""
     def __init__(self, request=None, *args, **kwargs):
-        super().__init__(request=request, *args, **kwargs)
+        super().__init__(request, *args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
         self.helper.form_id = 'loginForm'

@@ -1,7 +1,9 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 import os
 from functools import partial
 from os.path import isfile, join
-from typing import Optional
+from typing import Callable, Optional
 
 from django.db.models import FileField, Model
 from django.forms import Field
@@ -37,15 +39,18 @@ def dedupe_files(path: str, new_file_name: Optional[str] = None):
                 os.remove(join(settings.MEDIA_ROOT, file_path))
 
 
-def _update_filename(instance: Model, filename: str, path: str):
+def _generate_upload_path(instance: Model, filename: str, path: str) -> str:
+    if settings.DEBUG:
+        print(f'Generating upload path for {filename} (associated with {instance})...')
     path, filename = path, filename
     filename = filename.replace(' ', '_')
     dedupe_files(path, new_file_name=filename)
     return join(path, filename)
 
 
-def upload_to(path):
-    return partial(_update_filename, path=path)
+def upload_to(path) -> Callable:
+    """https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.FileField.upload_to"""
+    return partial(_generate_upload_path, path=path)
 
 
 class SourceFileField(FileField):

@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-
+from typing import List
 from .models import Entity, Group, Idea, Person, Organization
 
 
@@ -7,7 +7,7 @@ class EntityForm(ModelForm):
 
     class Meta:
         model = Entity
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

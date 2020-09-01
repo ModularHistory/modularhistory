@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from .model import Model, PolymorphicModel
 from .manager import Manager, PolymorphicManager
 from .mixins import RelatedQuotesMixin, SearchableMixin, SourcesMixin

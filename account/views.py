@@ -5,7 +5,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import View
 from social_django.models import UserSocialAuth
-
+from django.http import HttpRequest, HttpResponse
+from .models import User
 from .forms import LoginForm, RegistrationForm
 
 
@@ -46,26 +47,30 @@ class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
 
 
 class RegisterView(View):
-    def get(self, request):
-        form = RegistrationForm()
+    """Account registration view"""
+    def get(self, request: HttpRequest) -> HttpResponse:
+        form: RegistrationForm = RegistrationForm()
         context = {'form': form}
         return render(request, 'account/register.html', context)
 
-    def post(self, request):
-        form = RegistrationForm(request.POST)
+    def post(self, request: HttpRequest) -> HttpResponse:
+        form: RegistrationForm = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return redirect('/')
+            if isinstance(user, User):
+                login(request, user)
+                return redirect('/')
+            else:
+                print(f'Unexpected authentication result: {type(user): {user}}')
         return render(request, 'account/register.html', {'form': form})
 
 
 class ProfileView(LoginRequiredMixin, View):
     """Profile view"""
-    def get(self, request):
+    def get(self, request: HttpRequest) -> HttpResponse:
         user = request.user
         context = {
             'user': user,
@@ -78,7 +83,8 @@ class ProfileView(LoginRequiredMixin, View):
 
 class SettingsView(LoginRequiredMixin, View):
     """Account settings view"""
-    def get(self, request):
+    @staticmethod
+    def get(request: HttpRequest) -> HttpResponse:
         user = request.user
         social_auth_backends = [
             {'provider': 'google_oauth2', 'name': 'Google', 'auth': None, 'handle': None},
@@ -87,8 +93,7 @@ class SettingsView(LoginRequiredMixin, View):
             {'provider': 'github', 'name': 'GitHub', 'auth': None, 'handle': None},
         ]
         for backend in social_auth_backends:
-            provider = backend['provider']
-            name = backend['name']
+            name, provider = backend['name'], backend['provider']
             try:
                 auth = user.social_auth.get(provider=provider)
                 backend['auth'] = auth
@@ -107,8 +112,6 @@ class SettingsView(LoginRequiredMixin, View):
 
         if user.avatar is not None:
             profile_image = user.avatar
-        elif user.gender == 'F':
-            profile_image = 'nobody_f.jpg'
         else:
             profile_image = 'nobody_m.jpg'
 

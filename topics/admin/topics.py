@@ -1,4 +1,4 @@
-from admin import admin_site, Admin, TabularInline, StackedInline
+from history.admin import admin_site, Admin, TabularInline, StackedInline
 from .. import models
 
 
@@ -37,17 +37,17 @@ class ChildTopicsInline(TabularInline):
 
 
 class TopicAdmin(Admin):
-    list_display = (
+    list_display = [
         'key',
         'detail_link',
         'description',
         'parent_topics_string',
         'child_topics_string',
         'tags_string'
-    )
-    list_filter = ('related_topics',)
-    search_fields = ('key', 'aliases', 'description')
-    ordering = ('key',)
+    ]
+    list_filter = ['related_topics']
+    search_fields = ['key', 'aliases', 'description']
+    ordering = ['key']
 
     inlines = [
         ParentTopicsInline,
@@ -85,9 +85,9 @@ class SupportiveFactsInline(StackedInline):
 
 
 class FactAdmin(Admin):
-    list_display = ('text',)
-    list_filter = ('related_entities', 'related_occurrences')
-    search_fields = ('text',)
+    list_display = ['text']
+    list_filter = ['related_entities', 'related_occurrences']
+    search_fields = ['text']
     # ordering = ('datetime', 'start_date', 'end_date')
 
     inlines = [

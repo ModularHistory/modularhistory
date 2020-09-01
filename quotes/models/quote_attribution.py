@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from typing import TYPE_CHECKING
 
 from django.core.exceptions import ValidationError

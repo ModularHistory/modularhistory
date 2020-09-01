@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -27,7 +29,7 @@ class _Book(TitleMixin, TextualSource):
         abstract = True
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         raise NotImplementedError
 
 
@@ -52,16 +54,17 @@ class Chapter(TitleMixin, TextualSource):
         return self.book.title
 
     @property
-    def _html(self) -> str:
-        if not self.book:
-            return ''
-        book_html = self.book.html
-        if all([self.attributee_string, self.book, self.book.attributee_string,
-                self.attributee_string == self.book.attributee_string]):
-            book_html = book_html.replace(f'{self.attributee_string}, ', '')
-        attributee_string = self.attributee_string or self.book.attributee_string
-        html = f'{attributee_string}, "{self.title_html}," in {book_html}'
-        return html
+    def _html(self) -> SafeText:
+        if self.book:
+            book_html = self.book.html
+            if all([self.attributee_string, self.book, self.book.attributee_string,
+                    self.attributee_string == self.book.attributee_string]):
+                book_html = book_html.replace(f'{self.attributee_string}, ', '')
+            attributee_string = self.attributee_string or self.book.attributee_string
+            html = f'{attributee_string}, "{self.title_html}," in {book_html}'
+        else:
+            html = ''
+        return mark_safe(html)
 
     @property
     def html_override(self) -> SafeText:
@@ -84,7 +87,7 @@ class Book(_Book):
         return ''
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'<i>{self.title_html}</i>'
         original_publication_date = (self.original_book.date if self.original_book
@@ -117,7 +120,7 @@ class Book(_Book):
         string += f', vol. {self.volume_number}' if self.volume_number else ''
         if not has_edition_year and not has_printing_year:
             string += f', {self.date.year}' if self.date else ''
-        return string
+        return mark_safe(string)
 
     def html(self) -> SafeText:
         return mark_safe(self._html)

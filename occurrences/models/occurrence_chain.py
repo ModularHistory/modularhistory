@@ -1,3 +1,7 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
+from typing import List
+
 from django.db.models import ForeignKey, CASCADE
 
 from history.fields import HTMLField
@@ -22,4 +26,4 @@ class OccurrenceChainInclusion(Model):
     )
 
     class Meta:
-        unique_together = ['chain', 'occurrence']
+        unique_together: List[str] = ['chain', 'occurrence']

@@ -1,16 +1,17 @@
 from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models import Q
 from django.views import generic
-
+from django.http import HttpRequest, JsonResponse
+from django.db.models.query import QuerySet
 from topics.models import Topic
 
 
 class TagSearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         return super().get(request, *args, **kwargs)
 
-    def get_queryset(self):
+    def get_queryset(self) -> 'QuerySet[Topic]':
         queryset = Topic.objects.all()
         term = self.term
         if term:
@@ -26,7 +27,7 @@ class IndexView(generic.list.ListView):
     template_name = 'topics/index.html'
     context_object_name = 'topics'
 
-    def get_queryset(self):
+    def get_queryset(self) -> 'QuerySet[Topic]':
         return Topic.objects.all()
 
 

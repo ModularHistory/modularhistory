@@ -1,7 +1,7 @@
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 
-from admin import admin_site, Admin, TabularInline, GenericTabularInline
+from history.admin import admin_site, Admin, TabularInline, GenericTabularInline
 from .. import models
 
 

@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ('caption', history.fields.HTMLField(blank=True, null=True)),
                 ('description', history.fields.HTMLField(blank=True, null=True)),
                 ('provider', models.CharField(blank=True, max_length=200, null=True)),
-                ('image', models.ImageField(height_field='height', null=True, upload_to=functools.partial(history.fields.file_field._update_filename, *(), **{'path': 'images/'}), width_field='width')),
+                ('image', models.ImageField(height_field='height', null=True, upload_to=functools.partial(history.fields.file_field._generate_upload_path, *(), **{'path': 'images/'}), width_field='width')),
                 ('width', models.PositiveSmallIntegerField(blank=True, null=True)),
                 ('height', models.PositiveSmallIntegerField(blank=True, null=True)),
                 ('type', models.CharField(choices=[('image', 'Image'), ('photo', 'Photo'), ('illustration', 'Illustration'), ('painting', 'Painting'), ('portrait', 'Portrait'), ('diagram', 'Diagram'), ('reconstruction', 'Reconstruction'), ('photomontage', 'Photomontage'), ('model', 'Model')], default='image', max_length=14)),

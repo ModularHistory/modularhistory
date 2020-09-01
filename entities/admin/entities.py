@@ -1,4 +1,4 @@
-from admin import admin_site, Admin, TabularInline
+from history.admin import admin_site, Admin, TabularInline
 from occurrences.models import OccurrenceEntityInvolvement
 from quotes.models import Quote
 from topics.models import EntityFactRelation

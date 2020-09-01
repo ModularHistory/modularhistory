@@ -31,23 +31,6 @@ django.setup()
 from django.contrib.flatpages.models import FlatPage
 from staticpages.models import StaticPage
 
-for page in FlatPage.objects.all():
-    static_page = StaticPage()
-    static_page.url = page.url
-    static_page.title = page.title
-    static_page.content = page.content
-    static_page.enable_comments = page.enable_comments
-    static_page.template_name = page.template_name
-    static_page.registration_required = page.registration_required
-    sites = []
-    for site in page.sites.all():
-        sites.append(site)
-    page.delete()
-    static_page.save()
-    for site in sites:
-        static_page.sites.add(site)
-
-
 # mrm_topic = Topic.objects.get(key='Mormonism')
 # race_topic = Topic.objects.get(key='Race')
 # for q in Quote.objects.filter(verified=True):

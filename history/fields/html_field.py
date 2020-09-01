@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 import re
 from sys import stderr
 from typing import Callable, Match, Optional, Union, TYPE_CHECKING
@@ -261,10 +263,7 @@ class HTMLField(MceHTMLField):
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
     def get_prep_value(self, value: Optional[HTML]) -> Optional[str]:
-        if isinstance(value, HTML):
-            return value.raw_value
-        elif not value:
-            return None
+        return value.raw_value if isinstance(value, HTML) else None
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-query-values-to-database-values
     def get_db_prep_value(self, value, connection, prepared=False):

@@ -1,6 +1,6 @@
 from django.contrib.admin import SimpleListFilter
 
-from admin import admin_site, Admin
+from history.admin import admin_site, Admin
 from .admin import SourcesInline
 from .. import models
 

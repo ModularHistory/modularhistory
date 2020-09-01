@@ -14,12 +14,12 @@ from sys import stderr
 from celery import Celery
 from django.core import management
 from google.cloud import tasks_v2 as tasks
-from google.protobuf import timestamp_pb2
+from google.protobuf.timestamp_pb2 import Timestamp
 # from paramiko import SSHClient
 # from scp import SCPClient
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-
+from typing import Any, Dict
 from history import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
@@ -39,7 +39,7 @@ class TaskMixin:
             return
         parent = self._cloud_task_client.queue_path(settings.GC_PROJECT, settings.GC_REGION, queue_name)
 
-        task = {
+        task: Dict[str, Any] = {
             'app_engine_http_request': {
                 'http_method': http_method,
                 'relative_uri': url
@@ -65,7 +65,7 @@ class TaskMixin:
             nanos = int((now - seconds) * 10 ** 9)
 
             # Create Timestamp protobuf.
-            timestamp = timestamp_pb2.Timestamp(seconds=seconds, nanos=nanos)
+            timestamp = Timestamp(seconds=seconds, nanos=nanos)
 
             # Add the timestamp to the task.
             task['schedule_time'] = timestamp
@@ -74,7 +74,7 @@ class TaskMixin:
         print(f'Created task: {response.name}')
 
 
-def _debug(self):
+def _debug(self) -> None:
     print('Debugging....')
     if hasattr(self, 'request'):
         print('Request: {0!r}'.format(self.request))

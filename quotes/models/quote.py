@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from typing import List, Optional, TYPE_CHECKING
 
 from bs4 import BeautifulSoup

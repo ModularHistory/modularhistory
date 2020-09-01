@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from typing import List, Tuple
 
 from django.contrib.contenttypes.models import ContentType

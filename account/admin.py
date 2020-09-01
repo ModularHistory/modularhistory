@@ -1,10 +1,12 @@
+from typing import List
+
 from django import forms
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, Permission
 from social_django.models import UserSocialAuth
 
 # from .forms import UserCreationForm #  UserChangeForm
-from admin import admin_site, TabularInline
+from history.admin import admin_site, TabularInline
 from .models import User
 
 
@@ -122,7 +124,7 @@ class UserChangeForm(forms.ModelForm):
 class SocialAuthInline(TabularInline):
     model = UserSocialAuth
     extra = 0
-    readonly_fields = []
+    readonly_fields: List[str] = []
 
 
 class UserAdmin(BaseUserAdmin):
@@ -132,9 +134,9 @@ class UserAdmin(BaseUserAdmin):
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin that reference specific fields on auth.User.
-    list_display = ('first_name', 'last_name', 'email', 'username', 'last_login')
+    list_display = ['first_name', 'last_name', 'email', 'username', 'last_login']
 
-    list_filter = ('groups', 'is_superuser', 'is_active',)
+    list_filter = ['groups', 'is_superuser', 'is_active']
 
     fieldsets = (
         ('Basic Information', {

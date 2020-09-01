@@ -53,4 +53,4 @@ class ModularHistoryAutoConfig(AutoConfig):
     #     return super().__call__(*args, **kwargs)
 
 
-config = ModularHistoryAutoConfig()
+config: ModularHistoryAutoConfig = ModularHistoryAutoConfig()

@@ -1,5 +1,6 @@
 from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models import Q
+from django.http import HttpRequest, JsonResponse
 from django.views import generic
 
 from .models import Entity  # , Person, Organization
@@ -7,7 +8,7 @@ from .models import Entity  # , Person, Organization
 
 class EntitySearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):

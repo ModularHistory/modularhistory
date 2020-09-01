@@ -1,11 +1,12 @@
-from admin import GenericTabularInline
+from history.admin import GenericTabularInline
 from .. import models
+from typing import List
 
 
 class RelatedQuotesInline(GenericTabularInline):
     model = models.QuoteRelation
-    autocomplete_fields = ['quote']
-    readonly_fields = ['quote_pk']
+    autocomplete_fields: List[str] = ['quote']
+    readonly_fields: List[str] = ['quote_pk']
     # verbose_name = 'citation'
     # verbose_name_plural = 'citations'
 

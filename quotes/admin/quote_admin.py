@@ -3,7 +3,7 @@
 # from django.db.models import QuerySet
 from django.urls import path
 
-from admin import admin_site, Admin, TabularInline
+from history.admin import admin_site, Admin, TabularInline
 from entities.views import EntitySearchView
 from history.models.taggable_model import TopicFilter
 # from occurrences.models import Occurrence

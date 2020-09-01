@@ -56,7 +56,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    # Install dependencies and run tests
+    # Set up ModularHistory
+    - name: Set up ModularHistory
+      if: ${{ success() }}
+      uses: ./.github/actions/setup
+    # Run tests
     - name: Run tests
       if: ${{ success() }}
       uses: ./.github/actions/test

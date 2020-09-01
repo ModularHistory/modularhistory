@@ -1,4 +1,4 @@
-from admin import admin_site, Admin, TabularInline
+from history.admin import admin_site, Admin, TabularInline
 from . import models
 from .forms import PlaceForm
 
@@ -9,10 +9,10 @@ class LocationInline(TabularInline):
 
 
 class LocationAdmin(Admin):
-    list_display = ('name', 'location')
-    list_filter = ('location',)
-    search_fields = ('name',)
-    ordering = ('name', 'location__name')
+    list_display = ['name', 'location']
+    list_filter = ['location']
+    search_fields = ['name']
+    ordering = ['name', 'location__name']
     form = PlaceForm
     add_form = PlaceForm
 

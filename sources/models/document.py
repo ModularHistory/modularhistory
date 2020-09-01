@@ -1,9 +1,10 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 from django.utils.safestring import SafeText, mark_safe
-
 from history.models import Model
 from .base import TitleMixin, TextualSource
 from .piece import _Piece
@@ -66,13 +67,13 @@ class Collection(Model):
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         string = ''
         if self.name:
             string += f'{self.name}' if self.name else ''
             string += ', ' if self.repository else ''
         string += f'{self.repository}' if self.repository else ''
-        return string
+        return mark_safe(string)
 
     @property
     def html(self) -> SafeText:
@@ -91,11 +92,9 @@ class Repository(Model):
         verbose_name_plural = 'Repositories'
 
     def __str__(self):
-        string = self.name
-        if self.owner:
-            string += f', {self.owner}'
-        if self.location:
-            string += f', {self.location.string}'
+        location_string = self.location.string if self.location else None
+        components = [self.name, self.owner, location_string]
+        string = ', '.join([component for component in components if component])
         return string
 
 
@@ -105,7 +104,7 @@ class Document(TitleMixin, _Document):
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         string = ''
         string += f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title_html}," ' if self.title else 'untitled document, '
@@ -134,7 +133,7 @@ class Letter(_Document):
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         html = f'{self.attributee_string}, '
         if self.href:
             html += f'<a href="{self.href}" target="_blank">'
@@ -148,7 +147,7 @@ class Letter(_Document):
             html += f', {self.descriptive_phrase}'
         if self.collection:
             html += f', archived in {self.collection}'
-        return html
+        return mark_safe(html)
 
 
 class Affidavit(_Document):
@@ -158,10 +157,10 @@ class Affidavit(_Document):
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def _html(self) -> SafeText:
         string = f'{self.attributee_string}, '
         string += f'affidavit sworn {self.date_html} at {self.location} before {self.certifier}'
-        return string
+        return mark_safe(string)
 
     def clean(self):
         super().clean()
@@ -173,7 +172,7 @@ class JournalEntry(_Piece):
     class Meta:
         verbose_name_plural = 'Journal entries'
 
-    def __str__(self) -> SafeText:
+    def __str__(self) -> str:
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property

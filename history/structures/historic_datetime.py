@@ -48,7 +48,7 @@ class HistoricDateTime(datetime):
         # Python can only create date objects with year >= 1.
         # All historic dates BCE are set with a year value of 1 in the db.
         # The year BCE is calculated from the object's second and microsecond values.
-        return self.year <= 1 and self.microsecond
+        return bool(self.year <= 1 and self.microsecond)
 
     @property
     def is_circa(self) -> bool:

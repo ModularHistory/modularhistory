@@ -3,8 +3,8 @@ from polymorphic.admin import (
     PolymorphicChildModelAdmin
 )
 
-from admin import GenericTabularInline
-from admin import admin_site, Admin, TabularInline, StackedInline, PolymorphicInlineSupportMixin
+from history.admin import GenericTabularInline
+from history.admin import admin_site, Admin, TabularInline, StackedInline, PolymorphicInlineSupportMixin
 from .filters import (HasContainerFilter, HasFileFilter, HasFilePageOffsetFilter,
                       HasPageNumber, ImpreciseDateFilter, ContentTypeFilter)
 from .. import models

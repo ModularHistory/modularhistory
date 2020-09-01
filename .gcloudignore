@@ -7,8 +7,16 @@
 .gcloudignore
 .git
 .gitignore
-.coverage
-.env
+
+# All files specified in .gitignore (with exceptions)
+#!include:.gitignore
+
+# Exceptions (explicitly included)
+!requirements.txt
+!staticfiles/
+!.credentials/
+!.secrets/
+!*credentials.json
 
 # Ungathered static files
 static/
@@ -16,27 +24,14 @@ static/
 # Media files
 media/
 
-# Virtual Python environment
-env/
-venv/
-.venv/
+# User scripts
+setup.sh
 
 # GitHub
 .github/
 README.md
 
-# PyCharm / IntelliJ #
+# PyCharm / IntelliJ
 .idea
 .idea/
 .DS_Store
-*.iws /out/
-
-# Django files
-db.sqlite3
-*.log
-*.pot
-*.pyc
-__pycache__
-
-# Ignored by the build system
-/setup.cfg

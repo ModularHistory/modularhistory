@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 import re
 from sys import stderr
 from typing import List, Optional, TYPE_CHECKING

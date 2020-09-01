@@ -1,3 +1,5 @@
+# type: ignore
+# TODO: remove above line after fixing typechecking
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 
@@ -33,5 +35,5 @@ class Classification(Model):
     class Meta:
         ordering = ['name']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name

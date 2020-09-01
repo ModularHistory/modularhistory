@@ -1,63 +1,57 @@
 # User scripts
 clean_data.py
 
-# Django
-*.log
-*.pot
-*.pyc
-__pycache__
-db.sqlite3
-media/
-staticfiles/
-
-# Node JS
-node_modules/
-
 # Environment & credentials
 .env
 *credentials.json
+.credentials/
+.secrets/
+
+# Legacy dependency management
+requirements.txt
 
 # Virtual Python environment
 env/
 venv/
 .venv/
 
+# Django
+media/
+staticfiles/
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+
+# Node JS
+node_modules/
+
 # Python
 *.py[cod]
 *$py.class
+
+# MyPy
+.mypy_cache/
 
 # PyCharm / IntelliJ
 .idea
 .idea/
 .DS_Store
-*.iws /out/
 
 # Backup files
 *.bak
 backups/
 
 # Distribution / packaging
-.Python build/
-develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
 wheels/
-*.egg-info/
 .installed.cfg
 *.egg
 *.manifest
 *.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
@@ -73,6 +67,3 @@ coverage.xml
 
 # celery
 celerybeat-schedule.*
-
-# mypy
-.mypy_cache/
