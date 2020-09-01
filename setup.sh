@@ -21,22 +21,18 @@ if [ -z "${GAE_APPLICATION}" ]; then
   if [ -n "$poetry_version" ]; then
     poetry self update &>/dev/null || pip install -U poetry
   else
-#    # TODO
-#    # Using the recommended custom installer for Poetry results in an error in GitHub
-#    # probably due to Poetry subsequently creating a virtualenv that is not sourced, as shown:
-#    # Creating virtualenv ***-fCb5YSGc-py3.7 in /home/runner/.cache/pypoetry/virtualenvs
-#    {
-#      echo "Installing Poetry..."
-#      curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-#      echo "Sourcing Poetry environment..."
-#      # shellcheck source=/dev/null
-#      source "$HOME/.poetry/env"
-#      echo ""
-#    } || {
-#      echo "Unable to use Poetry's custom installer; falling back on pip..."
-#      pip install -U poetry
-#      echo ""
-#    }
+    {
+      echo "Installing Poetry..."
+      curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+      echo "Sourcing Poetry environment..."
+      # shellcheck source=/dev/null
+      source "$HOME/.poetry/env"
+      echo ""
+    } || {
+      echo "Unable to use Poetry's custom installer; falling back on pip..."
+      pip install -U poetry
+      echo ""
+    }
     echo "Unable to use Poetry's custom installer; falling back on pip..."
     pip install -U poetry
     echo ""
@@ -47,11 +43,11 @@ if [ -z "${GAE_APPLICATION}" ]; then
     fi
   fi
   echo "Using $poetry_version"
-  echo ""
 
-  # Install dependencies
-  echo "Installing dependencies..."
-  poetry install
+  # Prevent Poetry from creating virtual environments;
+  # this is essential to avoid errors in GitHub builds.
+  poetry config virtualenvs.create false
+  poetry config --list
   echo ""
 
   # Create requirements.txt in case of manual deploys
@@ -60,6 +56,11 @@ if [ -z "${GAE_APPLICATION}" ]; then
     rm requirements.txt
   fi
   poetry export -f requirements.txt > requirements.txt
+  echo ""
+
+  # Install dependencies
+  echo "Installing dependencies..."
+  poetry install || pip install -r requirements.txt
   echo ""
 
   # Run database migrations
