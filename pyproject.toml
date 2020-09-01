@@ -10,6 +10,7 @@ repository = "https://github.com/ModularHistory/modularhistory"
 [tool.poetry.dependencies]
 python = "^3.7"
 appdirs = "==1.4.4"
+asgiref = "==3.2.10"
 beautifulsoup4 = "==4.9.1"
 celery = "==4.4.7"
 certifi = "==2020.6.20"
@@ -87,7 +88,7 @@ tinycss = "==0.4"
 virtualenv = "==20.0.31"
 wcwidth = "==0.2.5"
 websocket-client = "==0.40.0"
-asgiref = "==3.2.10"
+youtube-dl = "^2020.7.28"
 
 [tool.poetry.dev-dependencies]
 django-stubs = "==1.5.0"
