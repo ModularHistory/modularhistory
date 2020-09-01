@@ -31,9 +31,6 @@ if [ -z "${GAE_APPLICATION}" ]; then
     {
       echo "Unable to use Poetry's custom installer; falling back on pip..."
       pip install -U poetry
-    } || {
-      echo "Error: Unable to install Poetry."
-      exit 1
     }
     poetry_version=$(poetry --version)
     if [ -n "$poetry_version" ]; then
