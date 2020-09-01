@@ -24,6 +24,8 @@ if [ -z "${GAE_APPLICATION}" ]; then
     {
       echo "Installing Poetry..."
       curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+      # shellcheck source=/dev/null
+      source "$HOME/.poetry/env"
     } || {
       echo "Unable to use Poetry's custom installer; falling back on pip..."
       pip install -U poetry
