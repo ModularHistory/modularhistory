@@ -1,3 +1,10 @@
+[build-system]
+requires = ["poetry>=1.0.5"]
+build-backend = "poetry.masonry.api"
+
+[tool.nitpick]
+style = "https://raw.githubusercontent.com/wemake-services/wemake-python-styleguide/master/styles/nitpick-style.toml"
+
 [tool.poetry]
 name = "modularhistory"
 version = "0.1.0"
@@ -91,11 +98,17 @@ websocket-client = "==0.40.0"
 youtube-dl = "^2020.7.28"
 
 [tool.poetry.dev-dependencies]
+binaryornot = "^0.4"
 django-stubs = "==1.5.0"
 djangorestframework-stubs = "==1.2.0"
+docker-compose = "^1.26"
+docker-image-size-limit = "^0.3"
+flake8-pytest-style = "^1.3"
+nitpick = "^0.22"
+pytest = "^5.4"
+pytest-cookies = "^0.5"
+pytest-randomly = "^3.4"
+safety = "^1.9"
+tomlkit = "^0.7.0"
 virtualenv-clone = "==0.5.4"
 wemake-python-styleguide = "^0.14.1"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
