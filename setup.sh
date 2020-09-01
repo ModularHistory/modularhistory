@@ -56,6 +56,8 @@ if [ -z "${GAE_APPLICATION}" ]; then
     rm requirements.txt
   fi
   poetry export -f requirements.txt > requirements.txt
+  # Remove hashes from requirements.txt so Google Cloud can read the file correctly
+  sed -e '/--hash/d' -e 's/ \\//g' ./requirements.txt > requirements.tmp && mv requirements.tmp requirements.txt
   echo ""
 
   # Install dependencies
