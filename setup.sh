@@ -19,20 +19,17 @@ if [ -z "${GAE_APPLICATION}" ]; then
   poetry_version=$(poetry --version) &>/dev/null
   if [ -n "$poetry_version" ]; then
     poetry self update &>/dev/null || pip install -U poetry
+    echo ""
     echo "Using $poetry_version"
+    echo ""
   else
-#    {
 #      echo "Installing Poetry..."
 #      curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 #      echo "Sourcing Poetry environment..."
 #      # shellcheck source=/dev/null
 #      source "$HOME/.poetry/env"
-#    } ||
-    {
-      echo "Unable to use Poetry's custom installer; falling back on pip..."
-      pip install -U poetry
-    }
-    poetry_version=$(poetry --version)
+    echo "Unable to use Poetry's custom installer; falling back on pip..."
+    pip install -U poetry && poetry_version=$(poetry --version)
     if [ -n "$poetry_version" ]; then
       echo "Error: Unable to install Poetry."
       exit 1
@@ -40,18 +37,22 @@ if [ -z "${GAE_APPLICATION}" ]; then
   fi
 
   # Install dependencies
+  echo "Installing dependencies..."
   poetry install
+  echo ""
 
   # Create requirements.txt in case of manual deploys
+  echo "Exporting requirements.txt..."
   if [ -f "requirements.txt" ]; then
     rm requirements.txt
   fi
   poetry export -f requirements.txt > requirements.txt
+  echo ""
 
   # Run database migrations
   if [ -z "${USE_PROD_DB}" ]; then
-    echo ""
     echo "Running database migrations..."
     python manage.py migrate
+    echo ""
   fi
 fi
