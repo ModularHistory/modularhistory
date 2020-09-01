@@ -94,6 +94,7 @@ youtube-dl = "^2020.7.28"
 django-stubs = "==1.5.0"
 djangorestframework-stubs = "==1.2.0"
 virtualenv-clone = "==0.5.4"
+wemake-python-styleguide = "^0.14.1"
 
 [build-system]
 requires = ["poetry>=0.12"]
