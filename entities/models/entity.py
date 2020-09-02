@@ -1,14 +1,13 @@
 # type: ignore
 # TODO: remove above line after fixing typechecking
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
 
-from entities.models.entity_class import Categorization, Classification
 from history.fields import ArrayField, HistoricDateTimeField, HTMLField
 from history.models import (
     Model, TaggableModel, TypedModel,
@@ -16,6 +15,9 @@ from history.models import (
 )
 from history.structures import HistoricDateTime
 from images.models import Image
+
+if TYPE_CHECKING:
+    from entities.models import Categorization
 
 
 class EntityImage(Model):
@@ -56,12 +58,6 @@ class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
     categories = ManyToManyField(
         'entities.Category',
         through='entities.Categorization',
-        related_name='entities',
-        blank=True
-    )
-    classifications = ManyToManyField(
-        Classification,
-        through='entities.EntityClassification',
         related_name='entities',
         blank=True
     )
@@ -109,39 +105,40 @@ class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
         if not self.verbose_name:
             self.verbose_name = self.name
 
-    def get_classification(self, date: HistoricDateTime) -> Optional['EntityClassification']:
+    def get_categorization(self, date: HistoricDateTime) -> Optional['Categorization']:
         """TODO: add docstring."""
         if not self.categories.exists():
             return None
-        classifications = Classification.objects.filter(entity=self, date__lte=date)
-        if not len(classifications):
-            classifications = self.categorizations.all()
-        classification = classifications.order_by('date', 'classification__weight').last()
-        return classification
+        categorizations = self.categorizations.all()
+        categorizations = categorizations.exclude(date__gt=date) if date else categorizations
+        if not len(categorizations):
+            categorizations = self.categorizations.all()
+        categorization = categorizations.order_by('date', 'category__weight').last()
+        return categorization
 
-    def get_classification_string(
+    def get_categorization_string(
             self, date: HistoricDateTime
     ) -> Optional[str]:
-        """Intelligently build a classification string, like `conservative LDS apostle`."""
+        """Intelligently build a categorization string, like `conservative LDS apostle`."""
         if not self.categories.exists():
             return None
         words = []
         categorizations = self.categorizations.all()
         categorizations = categorizations.exclude(date__gt=date) if date else categorizations
 
-        noun_categorizations = categorizations.filter(classification__part_of_speech='noun')
+        noun_categorizations = categorizations.filter(category__part_of_speech='noun')
         if noun_categorizations.exists():
-            noun = noun_categorizations.order_by('classification__weight', 'date').last()
+            noun = noun_categorizations.order_by('category__weight', 'date').last()
             words += str(noun).split(' ')
 
-        noun_adj_categorizations = categorizations.filter(classification__part_of_speech='any')
+        noun_adj_categorizations = categorizations.filter(category__part_of_speech='any')
         if noun_adj_categorizations.exists():
-            noun_adj = noun_adj_categorizations.order_by('classification__weight', 'date').last()
+            noun_adj = noun_adj_categorizations.order_by('category__weight', 'date').last()
             words = [word for word in str(noun_adj).split(' ') if word not in words] + words
 
-        adj_categorizations = categorizations.filter(classification__part_of_speech='adj')
+        adj_categorizations = categorizations.filter(category__part_of_speech='adj')
         if adj_categorizations.exists():
-            adj = adj_categorizations.order_by('classification__weight', 'date').last()
+            adj = adj_categorizations.order_by('category__weight', 'date').last()
             words = [word for word in str(adj).split(' ') if word not in words] + words
 
         # Final removal of duplicate words

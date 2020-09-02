@@ -12,4 +12,3 @@ class CategoryAdmin(Admin):
 
 
 admin_site.register(models.Category, CategoryAdmin)
-admin_site.register(models.Classification, CategoryAdmin)

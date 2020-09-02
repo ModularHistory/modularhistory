@@ -5,13 +5,14 @@ from typing import List, Type, Union
 from django.contrib.admin import AdminSite as BaseAdminSite
 from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import JSONField
 from django.contrib.sites.models import Site
-# from django.utils.translation import gettext_lazy as _
 from django_celery_beat.admin import (
     PeriodicTask, PeriodicTaskAdmin,
     CrontabSchedule, IntervalSchedule, SolarSchedule
 )
 from django_celery_results.admin import TaskResult, TaskResultAdmin
+from django_json_widget.widgets import JSONEditorWidget
 from massadmin.massadmin import mass_change_selected
 from nested_admin.nested import (
     NestedModelAdmin,
@@ -27,7 +28,6 @@ from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOp
 from social_django.models import UserSocialAuth, Nonce, Association
 
 from history import settings, environments
-# from tinymce.widgets import TinyMCE
 from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
 
@@ -52,6 +52,7 @@ class Admin(NestedModelAdmin):
     formfield_overrides = {
         HistoricDateTimeField: {'widget': HistoricDateWidget},
         SourceFileField: {'widget': SourceFileInput},
+        JSONField: {'widget': JSONEditorWidget},
     }
 
     list_display: List[str]

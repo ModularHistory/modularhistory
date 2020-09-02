@@ -1,5 +1,5 @@
 from entities import models
-from entities.admin.admin_filters import ClassificationFilter, HasImageFilter, HasQuotesFilter
+from entities.admin.admin_filters import CategoriesFilter, HasImageFilter, HasQuotesFilter
 from entities.admin.affiliations import RolesInline
 from entities.forms import (
     PersonForm, GroupForm,
@@ -36,15 +36,6 @@ class ImagesInline(TabularInline):
     model = models.Entity.images.through
     extra = 1
     autocomplete_fields = ['image']
-
-
-class ClassificationsInline(TabularInline):
-    """TODO: add docstring."""
-
-    model = models.EntityClassification
-    extra = 1
-    autocomplete_fields = ['classification']
-    readonly_fields = ['weight']
 
 
 class CategorizationsInline(TabularInline):
@@ -98,14 +89,13 @@ class EntityAdmin(Admin):
     list_filter = [
         HasQuotesFilter,
         HasImageFilter,
-        ClassificationFilter
+        CategoriesFilter
     ]
     search_fields = ['name', 'aliases']
     ordering = ['name', 'birth_date']
     # list_editable = []
     inlines = [
         ImagesInline,
-        ClassificationsInline,
         CategorizationsInline,
         FactsInline,
         AffiliationsInline,

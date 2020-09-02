@@ -17,7 +17,7 @@ class EntitySerializer(serializers.ModelSerializer):
             'birth_date',
             'death_date',
             'description',
-            'classifications',
+            'categories',
             'images',
             'affiliated_entities',
         ]

@@ -2,11 +2,11 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 
 
-class ClassificationFilter(AutocompleteFilter):
+class CategoriesFilter(AutocompleteFilter):
     """TODO: add docstring."""
 
-    title = 'Classification'
-    field_name = 'classifications'
+    title = 'Categories'
+    field_name = 'categories'
 
 
 class HasQuotesFilter(SimpleListFilter):

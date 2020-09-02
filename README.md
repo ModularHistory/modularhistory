@@ -8,49 +8,54 @@ https://www.modularhistory.com
 
 ## Installation
 
-- 
+### Prerequisites
+
+OS: MacOS or Ubuntu
+
+(ModularHistory cannot be run on Windows.)
 
 ### Clone
 
-- Clone this repo to your local machine using `https://github.com/fvcproductions/SOMEREPO`
+Clone ModularHistory to your local machine, as follows:
+
+```shell script
+git clone https://github.com/ModularHistory/modularhistory.git
+```
 
 ### Setup
 
-- If you want more syntax highlighting, format your code like this:
+Enter the cloned project directory and run the setup script, as follows:
 
-> update and install this package first
-
-```shell
-$ brew update
-$ brew install fvcproductions
+```shell script
+cd modularhistory
+./setup.sh
 ```
+The setup script installs project dependencies.
 
-> now install npm and bower packages
-
-```shell
-$ npm install
-$ bower install
-```
-
-- For all the possible languages that support syntax highlithing on GitHub (which is basically all of them), refer <a href="https://github.com/github/linguist/blob/master/lib/linguist/languages.yml" target="_blank">here</a>.
 
 ---
 
 ## Contributing
 
-> To get started...
+To contribute to ModularHistory's developent, follow the steps below.
 
-### Step 1
+### Join the PivotalTracker project
 
-- ...
-    - ...
+First, join ModularHistory's PivotalTracker project:
 
-- ...
-    - ...
+https://www.pivotaltracker.com/projects/2460843
+
+PivotalTracker is used for task management and planning.
 
 ### Step 2
 
 - ...
+- ...
+    - ...
+
+- ...
+    - ...
+
 
 ### Step 3
 
@@ -77,7 +82,14 @@ How to reset migrations:
 https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html
 
 Before running migrations, create a db backup:
-``python manage.py dbbackup``
+```
+python manage.py dbbackup
+```
+
+Lint the code (using [flake8](https://flake8.pycqa.org/en/latest)):
+```
+flake8
+```
 
 ---
 

@@ -1,6 +1,6 @@
 {% extends "_card.html" %}
 {% load get_detail_url %}
-{% load get_classification %}
+{% load get_categorization_string %}
 
 {% block edit %}
     {% with object=quote request=request %}
@@ -29,10 +29,10 @@
                 {% if quote.attributee_string %}
                     {{ quote.attributee_string }}
                     {% if quote.attributees.all|length == 1%}
-                        {% with classification=quote.attributees.first|get_classification:quote.date %}
-                            {% if classification %}
+                        {% with categorization=quote.attributees.first|get_categorization_string:quote.date %}
+                            {% if categorization %}
                                 <span style="opacity: 0.5; margin-left: 0.5rem;">
-                                    ({{ classification }})
+                                    ({{ categorization }})
                                 </span>
                             {% endif %}
                         {% endwith %}

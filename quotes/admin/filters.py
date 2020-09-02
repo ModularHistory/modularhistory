@@ -42,11 +42,11 @@ class AttributeeFilter(AutocompleteFilter):
             return queryset
 
 
-class AttributeeClassificationFilter(AutocompleteFilter):
+class AttributeeCategoryFilter(AutocompleteFilter):
     """TODO: add docstring."""
 
-    title = 'attributee classification'
-    field_name = 'attributees__classifications'
+    title = 'attributee categories'
+    field_name = 'attributees__categories'
 
 
 class HasSourceFilter(SimpleListFilter):
