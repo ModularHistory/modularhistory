@@ -8,6 +8,8 @@ from .models import StaticPage
 
 
 class StaticPageForm(FlatpageForm):
+    """TODO: add docstring."""
+
     content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
 
     class Meta:
@@ -19,6 +21,8 @@ class StaticPageForm(FlatpageForm):
 
 
 class StaticPageAdmin(FlatPageAdmin):
+    """TODO: add docstring."""
+
     form = StaticPageForm
     fieldsets = (
         (None, {'fields': ('url', 'title', 'content', 'sites')}),

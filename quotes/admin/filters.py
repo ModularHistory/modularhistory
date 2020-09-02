@@ -10,12 +10,15 @@ from entities.models import Entity
 
 
 class AttributeeFilter(AutocompleteFilter):
+    """TODO: add docstring."""
+
     title = 'attributee'
     field_name = 'attributees'
 
     PARAMETER_NAME = 'attributees__pk__exact'
 
     def __init__(self, request, params, model, model_admin):
+        """TODO: add docstring."""
         super().__init__(request, params, model, model_admin)
         rendered_widget = self.rendered_widget
         if self.value():
@@ -28,9 +31,11 @@ class AttributeeFilter(AutocompleteFilter):
         self.rendered_widget = rendered_widget
 
     def get_autocomplete_url(self, request, model_admin):
+        """TODO: add docstring."""
         return reverse('admin:entity_search')
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         if self.value():
             return queryset.filter(**{self.PARAMETER_NAME: self.value()})
         else:
@@ -38,21 +43,27 @@ class AttributeeFilter(AutocompleteFilter):
 
 
 class AttributeeClassificationFilter(AutocompleteFilter):
+    """TODO: add docstring."""
+
     title = 'attributee classification'
     field_name = 'attributees__classifications'
 
 
 class HasSourceFilter(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'has source'
     parameter_name = 'has_source'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         return (
             ('Yes', 'Yes'),
             ('No', 'No'),
         )
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         if self.value() == 'Yes':
             return queryset.exclude(sources=None)
         if self.value() == 'No':
@@ -60,10 +71,13 @@ class HasSourceFilter(SimpleListFilter):
 
 
 class AttributeeCountFilter(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'attributee count'
     parameter_name = 'attributee_count'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         return (
             (0, '0'),
             (1, '1'),
@@ -73,6 +87,7 @@ class AttributeeCountFilter(SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         queryset = queryset.annotate(attributee_count=Count('attributees'))
         try:
             n = int(self.value())
@@ -84,16 +99,20 @@ class AttributeeCountFilter(SimpleListFilter):
 
 
 class HasMultipleCitationsFilter(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'has multiple citations'
     parameter_name = 'has_multiple_citations'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         return (
             ('Yes', 'Yes'),
             ('No', 'No'),
         )
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         queryset = queryset.annotate(citation_count=Count('citations'))
         if self.value() == 'Yes':
             return queryset.exclude(citation_count__lt=2)

@@ -8,10 +8,13 @@ from topics.models import Topic
 
 class TagSearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
+
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        """TODO: add docstring."""
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self) -> 'QuerySet[Topic]':
+        """TODO: add docstring."""
         queryset = Topic.objects.all()
         term = self.term
         if term:
@@ -23,21 +26,28 @@ class TagSearchView(AutocompleteJsonView):
 
 
 class IndexView(generic.list.ListView):
+    """TODO: add docstring."""
+
     model = Topic
     template_name = 'topics/index.html'
     context_object_name = 'topics'
 
     def get_queryset(self) -> 'QuerySet[Topic]':
+        """TODO: add docstring."""
         return Topic.objects.all()
 
 
 class DetailPartView(generic.detail.DetailView):
+    """TODO: add docstring."""
+
     model = Topic
     template_name = 'topics/_detail.html'
     context_object_name = 'topic'
 
 
 class DetailView(generic.detail.DetailView):
+    """TODO: add docstring."""
+
     model = Topic
     template_name = 'topics/detail.html'
     context_object_name = 'topic'

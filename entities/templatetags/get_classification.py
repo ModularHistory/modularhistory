@@ -10,6 +10,7 @@ register = template.Library()
 
 @register.filter
 def get_classification(value: Entity, date: HistoricDateTime) -> Optional[EntityClassification]:
+    """TODO: add docstring."""
     entity = value
     if not entity:
         return None

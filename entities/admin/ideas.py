@@ -1,11 +1,13 @@
-from history.admin import admin_site, Admin
-from .. import models
-from ..forms import (
+from entities import models
+from entities.forms import (
     IdeaForm
 )
+from history.admin import admin_site, Admin
 
 
 class IdeaAdmin(Admin):
+    """TODO: add docstring."""
+
     model = models.Idea
     add_form = IdeaForm
 

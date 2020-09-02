@@ -46,6 +46,8 @@ from .. import models
 
 
 class AttributeesInline(TabularInline):
+    """TODO: add docstring."""
+
     model = models.QuoteAttribution
     autocomplete_fields = ['attributee']
 
@@ -58,11 +60,15 @@ class AttributeesInline(TabularInline):
 
 
 class BitesInline(TabularInline):
+    """TODO: add docstring."""
+
     model = models.QuoteBite
     extra = 0
 
 
 class QuoteAdmin(Admin):
+    """TODO: add docstring."""
+
     # form = QuoteForm
     list_display = [
         'pk',

@@ -30,16 +30,19 @@ def get_month_from_season(season: str) -> int:
 
 
 class HistoricDateTime(datetime):
+    """TODO: add docstring."""
+
     ybp_lower_limit = 29999  # 30000 with rounding error protection
     bce_threshold = ybp_lower_limit - 1950
     significant_figures = 4
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return self.string
 
     @property
     def html(self) -> SafeText:
-        """Whether the date is before common era (BCE)."""
+        """TODO: write docstring."""
         return mark_safe(f'<span style="display: inline-block; white-space: nowrap;">{self.string}</span>')
 
     @property
@@ -52,27 +55,32 @@ class HistoricDateTime(datetime):
 
     @property
     def is_circa(self) -> bool:
+        """TODO: write docstring."""
         return True if (self.is_bce and self.year_bce <= 9999) else False
 
     @property
     def season_is_known(self) -> bool:
+        """TODO: write docstring."""
         return self.hour != 1
 
     @property
     def month_is_known(self) -> bool:
+        """TODO: write docstring."""
         return self.minute != 1
 
     @property
     def day_is_known(self) -> bool:
+        """TODO: write docstring."""
         return not self.second
 
     @property
     def use_ybp(self) -> bool:
+        """TODO: write docstring."""
         return self.is_bce and self.year_bce > self.bce_threshold
 
     @property
     def year_bce(self) -> Optional[int]:
-        """BCE"""
+        """BCE."""
         if self.is_bce and self.microsecond:
             getcontext().prec = self.significant_figures
             inv_exponent = self.second
@@ -89,7 +97,7 @@ class HistoricDateTime(datetime):
 
     @property
     def year_bp(self) -> int:
-        """YBP"""
+        """YBP."""
         getcontext().prec = self.significant_figures
         current_year = datetime.now().year
         if self.is_bce:
@@ -105,6 +113,7 @@ class HistoricDateTime(datetime):
 
     @property
     def season(self) -> Optional[str]:
+        """TODO: write docstring."""
         return str(get_season_from_month(self.month)) if self.season_is_known else None
 
     @property
@@ -119,6 +128,7 @@ class HistoricDateTime(datetime):
 
     @property
     def string(self) -> SafeText:
+        """TODO: write docstring."""
         year_string = self.year_string
         if self.day_is_known:
             year_string = f'{self.strftime("%-d %b")} {year_string}'
@@ -130,6 +140,7 @@ class HistoricDateTime(datetime):
 
     @property
     def year_string(self) -> str:
+        """TODO: write docstring."""
         if not self.is_bce:
             # CE dates
             year_string = str(self.year)

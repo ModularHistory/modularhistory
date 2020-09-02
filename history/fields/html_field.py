@@ -87,11 +87,13 @@ class HTMLField(MceHTMLField):
     processor: Optional[Callable] = DEFAULT_PROCESSOR
 
     def __init__(self, *args, **kwargs):
+        """TODO: add docstring."""
         if 'processor' in kwargs and kwargs['processor'] != self.DEFAULT_PROCESSOR:
             self.processor = kwargs['processor']
         super().__init__(*args, **kwargs)
 
     def clean(self, value, model_instance) -> HTML:
+        """TODO: add docstring."""
         html = super().clean(value=value, model_instance=model_instance)
 
         # Add Bootstrap classes to blockquotes and tables
@@ -229,6 +231,7 @@ class HTMLField(MceHTMLField):
         return html
 
     def deconstruct(self):
+        """TODO: add docstring."""
         field_class = 'history.fields.HTMLField'
         name, path, args, kwargs = super().deconstruct()
         if self.processor != self.DEFAULT_PROCESSOR:
@@ -263,10 +266,12 @@ class HTMLField(MceHTMLField):
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
     def get_prep_value(self, value: Optional[HTML]) -> Optional[str]:
+        """TODO: add docstring."""
         return value.raw_value if isinstance(value, HTML) else None
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-query-values-to-database-values
     def get_db_prep_value(self, value, connection, prepared=False):
+        """TODO: add docstring."""
         return self.get_prep_value(value)
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#id2
@@ -276,6 +281,7 @@ class HTMLField(MceHTMLField):
 
 
 def get_quote_html(quote: 'Quote'):
+    """TODO: add docstring."""
     return (
         f'<blockquote class="blockquote">'
         f'{quote.text.html}'
@@ -287,6 +293,7 @@ def get_quote_html(quote: 'Quote'):
 
 
 def get_image_html(image: Union['Image', Match]):
+    """TODO: add docstring."""
     if hasattr(image, 'group'):
         match = image
         key = match.group(1).strip()
@@ -308,6 +315,7 @@ def get_image_html(image: Union['Image', Match]):
 
 
 def get_citation_html(citation_match: Match):
+    """TODO: add docstring."""
     match = citation_match
     key = match.group(1).strip()
     from sources.models import Citation
@@ -339,5 +347,6 @@ def get_citation_html(citation_match: Match):
 
 
 def get_source_html(source: 'Source'):
+    """TODO: add docstring."""
     source_html = ''
     return source_html

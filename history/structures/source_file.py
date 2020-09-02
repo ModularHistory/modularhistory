@@ -7,6 +7,7 @@ from history import settings
 
 
 class TextualSourceFile(FieldFile):
+    """TODO: add docstring."""
 
     @staticmethod
     def dedupe():

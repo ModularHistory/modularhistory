@@ -6,10 +6,13 @@ from .. import models
 
 
 class ContentTypeFilter(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'content type'
     parameter_name = 'content_type'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         content_types = models.Citation.objects.all().values('content_type').distinct()
         content_types = ContentType.objects.filter(id__in=content_types)
         return [
@@ -17,6 +20,7 @@ class ContentTypeFilter(SimpleListFilter):
         ]
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         value = self.value()
         if not value:
             return queryset
@@ -28,23 +32,29 @@ class ContentTypeFilter(SimpleListFilter):
 
 
 class CitationAdmin(Admin):
+    """TODO: add docstring."""
     list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
     search_fields = ['source__db_string']
     list_filter = [ContentTypeFilter]
 
 
 class PagesInline(TabularInline):
+    """TODO: add docstring."""
+
     model = models.PageRange
     verbose_name = 'page range'
     verbose_name_plural = 'pages'
 
     def get_extra(self, request, obj=None, **kwargs):
+        """TODO: add docstring."""
         if obj and obj.pages.count():
             return 0
         return 1
 
 
 class CitationsInline(GenericTabularInline):
+    """TODO: add docstring."""
+
     model = models.Citation
     autocomplete_fields = ['source']
     readonly_fields = ['pk']
@@ -57,6 +67,7 @@ class CitationsInline(GenericTabularInline):
     sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):
+        """TODO: add docstring."""
         if obj and obj.citations.count():
             return 0
         return 1

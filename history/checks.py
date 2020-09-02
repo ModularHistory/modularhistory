@@ -16,7 +16,8 @@ from mypy import api
 #     def __init__(self, location):
 #         self.location = location
 #
-#     def __str__(self):
+#     def __str__(self) -> str:
+#         """TODO: write docstring."""
 #         return self.location
 #
 #

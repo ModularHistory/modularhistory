@@ -18,14 +18,15 @@ from history.models import (
     RelatedQuotesMixin, SearchableMixin, SourcesMixin
 )
 from images.models import Image
-from ..manager import Manager
+from quotes.manager import Manager
 
 if TYPE_CHECKING:
     pass
 
 
 class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin):
-    """A quote"""
+    """A quote."""
+
     text = HTMLField(verbose_name='Text')
     bite = HTMLField(verbose_name='Bite', null=True, blank=True)
     pretext = HTMLField(verbose_name='Pretext', null=True, blank=True,
@@ -34,12 +35,15 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
                         help_text='Content to be displayed after the quote')
     date = HistoricDateTimeField(null=True, blank=True)
     attributees = ManyToManyField(
-        Entity, related_name='quotes',
+        Entity,
         through='quotes.QuoteAttribution',
+        related_name='quotes',
         blank=True
     )
     related = GenericManyToManyField(
-        'occurrences.Occurrence', 'entities.Entity', 'quotes.Quote',
+        'occurrences.Occurrence',
+        'entities.Entity',
+        'quotes.Quote',
         through='quotes.QuoteRelation',
         related_name='related_quotes',
         blank=True
@@ -55,7 +59,8 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
     ]
     objects: Manager = Manager()
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return mark_safe(f'{self.attributee_string or "<Unknown>"}'
                          f'{(", " + self.date.string) if self.date else ""}: '
                          f'{self.bite.text}')
@@ -97,6 +102,7 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
 
     @property
     def html(self) -> SafeText:
+        """TODO: write docstring."""
         html = f'<div class="quote-context">{self.pretext.html}</div>' if self.pretext else ''
         html += (
             f'<blockquote class="blockquote">'
@@ -111,6 +117,7 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
 
     @property
     def image(self) -> Optional[Image]:
+        """TODO: write docstring."""
         if self.attributees.exists() and self.attributees.first().images.exists():
             attributee = self.attributees.first()
             if self.date:
@@ -122,6 +129,7 @@ class Quote(DatedModel, TaggableModel, RelatedQuotesMixin, SearchableMixin, Sour
 
     @property
     def ordered_attributees(self) -> Optional[List[Entity]]:
+        """TODO: write docstring."""
         if not self.pk or not self.attributees.exists():
             return None
         return [attribution.attributee for attribution in self.attributions.all()]

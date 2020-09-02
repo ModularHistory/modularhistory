@@ -28,6 +28,8 @@ AccordionGroup.template = 'forms/_accordion_group.html'
 
 
 class SearchForm(Form):
+    """TODO: add docstring."""
+
     SUBMIT_BUTTON_TEXT = 'Search'
 
     def __init__(
@@ -45,6 +47,7 @@ class SearchForm(Form):
             *args,
             **kwargs
     ):
+        """TODO: add docstring."""
         super().__init__(*args, **kwargs)
         excluded_content_types = excluded_content_types or []
         self.request = request

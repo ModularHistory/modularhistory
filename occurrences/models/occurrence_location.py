@@ -16,7 +16,8 @@ importance_options = (
 
 
 class OccurrenceLocation(Model):
-    """A place being a site of an occurrence"""
+    """A place being a site of an occurrence."""
+
     occurrence = models.ForeignKey('occurrences.Occurrence', on_delete=CASCADE)
     location = models.ForeignKey(
         'places.Place',
@@ -30,7 +31,8 @@ class OccurrenceLocation(Model):
 
 
 class OccurrenceEntityInvolvement(Model):
-    """An involvement of an entity in an occurrence"""
+    """An involvement of an entity in an occurrence."""
+
     occurrence = models.ForeignKey('occurrences.Occurrence', on_delete=CASCADE)
     entity = models.ForeignKey(
         'entities.Entity',
@@ -42,12 +44,14 @@ class OccurrenceEntityInvolvement(Model):
     class Meta:
         unique_together = ['occurrence', 'entity']
 
-    def __str__(self) -> SafeText:
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return mark_safe(f'{self.occurrence.date_string}: {self.occurrence.summary}')
 
 
 class OccurrenceQuoteRelation(Model):
-    """An involvement of an entity in an occurrence"""
+    """An involvement of an entity in an occurrence."""
+
     occurrence = models.ForeignKey(
         'occurrences.Occurrence',
         related_name='occurrence_quote_relations',
@@ -64,9 +68,11 @@ class OccurrenceQuoteRelation(Model):
         unique_together = ['occurrence', 'quote']
         ordering = ['position', 'quote']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return mark_safe(f'{self.quote.citation}')
 
     @property
     def quote_pk(self) -> str:
+        """TODO: write docstring."""
         return self.quote.pk

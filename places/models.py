@@ -9,7 +9,8 @@ prepositions = (
 
 
 class Place(TypedModel, Model):
-    """Where something has happened"""
+    """Where something has happened."""
+
     name = models.CharField(null=True, blank=True, max_length=40, unique=True)
     location = models.ForeignKey(
         'self',
@@ -22,7 +23,8 @@ class Place(TypedModel, Model):
     class Meta:
         unique_together = ['name', 'location']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         location = self.location
         return self.name + (f', {location}' if location else '')
 
@@ -39,39 +41,46 @@ class Place(TypedModel, Model):
 
 
 class Venue(Place):
-    """A venue: a place where something happens (e.g., a university)"""
+    """A specific place where something happens (e.g., a university)."""
+
     class Meta:
         verbose_name_plural = 'Venues'
 
 
 class City(Place):
-    """A city"""
+    """A city."""
+
     class Meta:
         verbose_name_plural = 'Cities'
 
 
 class County(Place):
-    """A city"""
+    """A county."""
+
     class Meta:
         verbose_name_plural = 'Counties'
 
 
 class State(Place):
-    """A state"""
+    """A state."""
+
     pass
 
 
 class Region(Place):
-    """A region"""
+    """A region."""
+
     pass
 
 
 class Country(Place):
-    """A country"""
+    """A country."""
+
     class Meta:
         verbose_name_plural = 'Countries'
 
 
 class Continent(Place):
-    """A continent"""
+    """A continent."""
+
     pass

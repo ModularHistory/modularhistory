@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class QuoteRelation(Model):
     """A relation to a quote (by any other model)."""
+
     quote = ForeignKey('quotes.Quote', related_name='relations', on_delete=CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
@@ -23,7 +24,8 @@ class QuoteRelation(Model):
         help_text='Determines the order of quotes.'
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self.quote.bite.html, features='lxml').get_text()
 
     class Meta:

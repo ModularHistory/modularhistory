@@ -6,6 +6,8 @@ from .models import Image, Video
 
 
 class EntitiesInline(TabularInline):
+    """TODO: add docstring."""
+
     model = EntityImage
     verbose_name = 'entity'
     extra = 1
@@ -13,6 +15,8 @@ class EntitiesInline(TabularInline):
 
 
 class OccurrencesInline(TabularInline):
+    """TODO: add docstring."""
+
     model = OccurrenceImage
     verbose_name = 'occurrence'
     extra = 1
@@ -20,6 +24,8 @@ class OccurrencesInline(TabularInline):
 
 
 class ImageAdmin(ImageCroppingMixin, Admin):
+    """TODO: add docstring."""
+
     list_display = [
         'admin_image_element',
         'detail_link',
@@ -32,6 +38,7 @@ class ImageAdmin(ImageCroppingMixin, Admin):
     readonly_fields = ['height', 'width']
 
     def get_fields(self, request, obj=None):
+        """TODO: add docstring."""
         fields = super().get_fields(request, obj)
         for field_name in ('date_is_circa', 'date', 'type', 'image', 'hidden', 'verified'):
             if field_name in fields:
@@ -45,6 +52,8 @@ class ImageAdmin(ImageCroppingMixin, Admin):
 
 
 class VideoAdmin(Admin):
+    """TODO: add docstring."""
+
     list_display = ['title', 'url']
     search_fields = ['title']
     readonly_fields = ['duration']

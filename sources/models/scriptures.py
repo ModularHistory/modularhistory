@@ -5,6 +5,8 @@ from history.models import Model
 
 
 class HolyBook(Model):
+    """TODO: add docstring."""
+
     collection = ForeignKey(
         'Collection', related_name='%(class)s',
         null=True, blank=True,

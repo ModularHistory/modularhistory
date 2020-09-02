@@ -12,13 +12,18 @@ from history.structures.source_file import TextualSourceFile
 
 
 class ClearableFileInput(BaseClearableFileInput):
+    """TODO: add docstring."""
+
     template_name = 'forms/clearable_file_input.html'
 
 
 class SourceFileInput(MultiWidget):
+    """TODO: add docstring."""
+
     template_name = 'forms/source_file_input.html'
 
     def __init__(self, attrs: Optional[Dict] = None):
+        """TODO: add docstring."""
         file_choices = [(None, '-----')]
         for file_name in os.listdir(f'{settings.MEDIA_ROOT}/sources'):
             file_choices.append((f'sources/{file_name}', file_name))
@@ -33,12 +38,14 @@ class SourceFileInput(MultiWidget):
         super().__init__(widgets, attrs)
 
     def decompress(self, value: Optional[TextualSourceFile]):
+        """TODO: add docstring."""
         if not value:
             return [None, None, None, None, None]
         ct = ContentType.objects.get_for_model(value.instance)
         return [value, value.name, value.name, ct.id, value.instance.id]
 
     def value_from_datadict(self, data, files, name) -> Optional[str]:
+        """TODO: add docstring."""
         values = super().value_from_datadict(data, files, name)
         if len(values) != 5:
             raise ValueError

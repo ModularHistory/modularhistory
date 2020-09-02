@@ -1,9 +1,12 @@
-from django.forms import ModelForm
 from typing import List
-from .models import Entity, Group, Idea, Person, Organization
+
+from django.forms import ModelForm
+
+from entities.models import Entity, Group, Idea, Person, Organization
 
 
 class EntityForm(ModelForm):
+    """TODO: add docstring."""
 
     class Meta:
         model = Entity
@@ -15,6 +18,7 @@ class EntityForm(ModelForm):
 
 
 class OrganizationForm(ModelForm):
+    """TODO: add docstring."""
 
     class Meta:
         model = Organization
@@ -26,6 +30,7 @@ class OrganizationForm(ModelForm):
 
 
 class PersonForm(ModelForm):
+    """TODO: add docstring."""
 
     class Meta:
         model = Person
@@ -43,6 +48,7 @@ class PersonForm(ModelForm):
 
 
 class GroupForm(ModelForm):
+    """TODO: add docstring."""
 
     class Meta:
         model = Group
@@ -54,6 +60,7 @@ class GroupForm(ModelForm):
 
 
 class IdeaForm(ModelForm):
+    """TODO: add docstring."""
 
     class Meta:
         model = Idea

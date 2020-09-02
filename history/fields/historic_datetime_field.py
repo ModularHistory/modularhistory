@@ -18,6 +18,8 @@ DateTime = type(datetime)
 # TODO: https://dateparser.readthedocs.io/en/latest/
 # TODO: https://dateutil.readthedocs.io/en/stable/
 class HistoricDateTimeField(DateTimeField):
+    """TODO: add docstring."""
+
     year: int
 
     def __init__(self, verbose_name=None, name=None,
@@ -26,9 +28,11 @@ class HistoricDateTimeField(DateTimeField):
                          auto_now=auto_now, auto_now_add=auto_now_add, **kwargs)
 
     def clean(self, value, model_instance):
+        """TODO: add docstring."""
         return super().clean(value, model_instance)
 
     def formfield(self, **kwargs) -> Field:
+        """TODO: add docstring."""
         return super(DateTimeField, self).formfield(**{
             'form_class': HistoricDateFormField,
             **kwargs,

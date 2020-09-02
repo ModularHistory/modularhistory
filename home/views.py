@@ -8,6 +8,8 @@ from search.forms import SearchForm
 
 
 class HomePageView(TemplateView):
+    """TODO: add docstring."""
+
     template_name = 'home/index.html'
 
     excluded_content_types: Optional[List[Tuple[int, str]]] = None

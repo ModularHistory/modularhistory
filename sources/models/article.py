@@ -18,6 +18,8 @@ publication_types = (
 
 
 class Publication(Model):
+    """TODO: add docstring."""
+
     type2 = models.CharField(max_length=10, null=True, blank=True, choices=publication_types)
     name = models.CharField(max_length=100, null=True, blank=True, unique=True)
     aliases = models.CharField(max_length=100, null=True, blank=True)
@@ -28,15 +30,18 @@ class Publication(Model):
 
     searchable_fields = ['name', 'aliases']
 
-    def __str__(self) -> SafeText:
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> SafeText:
-        return mark_safe(f'<i>{self.name}</i>')
+    def _html(self) -> str:
+        """TODO: write docstring."""
+        return f'<i>{self.name}</i>'
 
     @property
     def html(self) -> SafeText:
+        """TODO: write docstring."""
         return mark_safe(self._html)
 
 
@@ -47,11 +52,13 @@ class Article(TitleMixin, _Piece):
 
     searchable_fields = ['db_string', 'publication__name']
 
-    def __str__(self) -> SafeText:
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: write docstring."""
         string = f'{self.attributee_string}, ' if self.pk and self.attributee_string else ''
         title_html = self.title_html.replace('"', "'") if self.title else None
         string += f'"{title_html}," ' if self.title else ''
@@ -59,22 +66,24 @@ class Article(TitleMixin, _Piece):
         string += f', vol. {self.volume}' if self.volume else ''
         string += f', no. {self.number}' if self.number else ''
         string += f', {self.date.string}' if self.date else ''
-        return mark_safe(string)
+        return string
 
 
 class WebPage(TitleMixin, TextualSource):
     website_title = models.CharField(max_length=100, null=True, blank=True)
     organization_name = models.CharField(max_length=100, null=True, blank=True)
 
-    def __str__(self) -> SafeText:
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: write docstring."""
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title_html}," ' if self.title else ''
         string += f'<i>{self.website_title}</i>'
         string += f', {self.organization_name}' if self.organization_name else ''
         string += f', {self.date.string}' if self.date else ''
         string += f', retrieved from <a target="_blank" href="{self.url}">{self.url}</a>'
-        return mark_safe(string)
+        return string

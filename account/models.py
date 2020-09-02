@@ -11,10 +11,14 @@ from history.fields.file_field import upload_to
 
 
 class UserManager(BaseUserManager):
+    """TODO: add docstring."""
+
     pass
 
 
 class User(AbstractUser):
+    """TODO: add docstring."""
+
     email = models.EmailField('email address', unique=True)
     avatar = ProcessedImageField(
         null=True, blank=True,
@@ -40,7 +44,8 @@ class User(AbstractUser):
     social_auth: 'QuerySet[UserSocialAuth]'
     objects: UserManager = UserManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return self.get_full_name()
 
     @property

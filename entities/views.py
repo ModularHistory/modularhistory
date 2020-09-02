@@ -3,12 +3,14 @@ from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
 from django.views import generic
 
-from .models import Entity  # , Person, Organization
+from entities.models import Entity  # , Person, Organization
 
 
 class EntitySearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
+
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        """TODO: add docstring."""
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -23,6 +25,8 @@ class EntitySearchView(AutocompleteJsonView):
 
 
 class IndexView(generic.ListView):
+    """TODO: add docstring."""
+
     model = Entity
     template_name = 'entities/index.html'
     # paginate_by = 10
@@ -34,6 +38,8 @@ class IndexView(generic.ListView):
 
 
 class BaseDetailView(generic.detail.DetailView):
+    """TODO: add docstring."""
+
     model = Entity
     context_object_name = 'entity'
 

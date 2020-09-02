@@ -1,10 +1,13 @@
 from rest_framework import serializers
-from .models import Entity
+
+from entities.models import Entity
 
 
 # TODO: https://www.valentinog.com/blog/drf/
 
 class EntitySerializer(serializers.ModelSerializer):
+    """TODO: add docstring."""
+
     class Meta:
         model = Entity
         fields = [

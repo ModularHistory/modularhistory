@@ -54,9 +54,12 @@ def get_year(year: int, year_system: str = 'CE') -> Tuple[int, int, int]:
 
 
 class YearInput(MultiWidget):
+    """TODO: add docstring."""
+
     template_name = 'forms/year_input.html'
 
     def __init__(self, attrs: Optional[Dict] = None):
+        """TODO: add docstring."""
         attrs = attrs or {'class': 'form-control'}
         widgets = [
             forms.NumberInput(attrs={**attrs, **{'min': '1', 'class': 'form-control'}}),
@@ -65,6 +68,7 @@ class YearInput(MultiWidget):
         super().__init__(widgets, attrs)
 
     def decompress(self, value: Union[HistoricDateTime, int, str]):
+        """TODO: add docstring."""
         year, year_system = (None, None)
         if isinstance(value, HistoricDateTime):
             if value.use_ybp:
@@ -92,7 +96,10 @@ class YearInput(MultiWidget):
 
 
 class HistoricDateWidget(MultiWidget):
+    """TODO: add docstring."""
+
     def __init__(self, attrs: Optional[Dict] = None):
+        """TODO: add docstring."""
         attrs = {'style': 'margin-right: 1rem'} if not attrs else {
             **attrs, **{'style': 'margin-right: 1rem'}
         }
@@ -107,6 +114,7 @@ class HistoricDateWidget(MultiWidget):
         super().__init__(widgets, attrs)
 
     def decompress(self, value: Union[datetime, date, str]):
+        """TODO: add docstring."""
         year, year_system, season, month, day, time = (None, None, None, None, None, None)
         hour, minute, second, microsecond = None, None, None, None
         if isinstance(value, (datetime, date, str)):

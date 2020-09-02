@@ -4,6 +4,8 @@ from .models import Place
 
 
 class IndexView(generic.list.ListView):
+    """TODO: add docstring."""
+
     model = Place
     template_name = 'places/index.html'
     context_object_name = 'places'
@@ -14,19 +16,23 @@ class IndexView(generic.list.ListView):
 
 
 class DetailView(generic.detail.DetailView):
+    """TODO: add docstring."""
+
     model = Place
     template_name = 'places/detail.html'
     context_object_name = 'place'
 
 
 class DetailPartView(generic.detail.DetailView):
+    """TODO: add docstring."""
+
     model = Place
     template_name = 'places/_detail.html'
     context_object_name = 'place'
 
 
 # def add(request):
-#     """add an occurrence"""
+#     """add an occurrence."""
 #     num_divisions = request.GET.get('numDivisions') if 'numDivisions' in request.GET else None
 #     form = CreateForm(request, num_divisions=(num_divisions if num_divisions else 3))
 #     if request.method == 'POST': # just submitted the form

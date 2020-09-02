@@ -8,8 +8,8 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.shortcuts import reverse
 from django.utils.safestring import mark_safe, SafeText
 
+from history.models import Model
 from topics.models import Topic
-from .model import Model
 
 if TYPE_CHECKING:
     from topics.models import Topic
@@ -24,10 +24,12 @@ class TaggableModel(Model):
 
     @property
     def has_tags(self) -> bool:
+        """TODO: write docstring."""
         return bool(self.related_topics)
 
     @property
     def related_topics(self) -> List['Topic']:
+        """TODO: write docstring."""
         if not self.tags.exists():
             return []
         related_topics = [tag.topic for tag in self.tags.all()]
@@ -35,6 +37,7 @@ class TaggableModel(Model):
 
     @property
     def tags_string(self) -> Optional[str]:
+        """TODO: write docstring."""
         if self.has_tags:
             related_topics = [topic.key for topic in self.related_topics]
             if related_topics:
@@ -43,6 +46,7 @@ class TaggableModel(Model):
 
     @property
     def tags_html(self) -> Optional[SafeText]:
+        """TODO: write docstring."""
         if self.has_tags:
             return mark_safe(
                 ' '.join([
@@ -54,12 +58,15 @@ class TaggableModel(Model):
 
 
 class TopicFilter(AutocompleteFilter):
+    """TODO: add docstring."""
+
     title = 'tags'
     field_name = 'tags'
 
     PARAMETER_NAME = 'tags__topic__pk__exact'
 
     def __init__(self, request, params, model, model_admin):
+        """TODO: add docstring."""
         super().__init__(request, params, model, model_admin)
         rendered_widget = self.rendered_widget
         if self.value():
@@ -72,9 +79,11 @@ class TopicFilter(AutocompleteFilter):
         self.rendered_widget = rendered_widget
 
     def get_autocomplete_url(self, request, model_admin):
+        """TODO: add docstring."""
         return reverse('admin:tag_search')
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         if self.value():
             return queryset.filter(**{self.PARAMETER_NAME: self.value()})
         else:

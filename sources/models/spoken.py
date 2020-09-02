@@ -13,7 +13,8 @@ class SpokenSource(Source):
         abstract = True
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: write docstring."""
         raise NotImplementedError
 
 
@@ -36,11 +37,13 @@ class Speech(TitleMixin, SpokenSource):
     class Meta:
         verbose_name_plural = 'Speeches'
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: write docstring."""
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'"{self.title_html}," ' if self.title else ''
         string += f'{self.type2}'
@@ -55,7 +58,7 @@ class Speech(TitleMixin, SpokenSource):
         else:
             string += ' ' if self.date.month_is_known else ' in '
         string += self.date.string
-        return mark_safe(string)
+        return string
 
 
 class Interview(SpokenSource):
@@ -63,14 +66,16 @@ class Interview(SpokenSource):
 
     interviewers = models.CharField(max_length=200, null=True, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: write docstring."""
         string = f'{self.attributee_string} to {self.interviewers or "interviewer"}, '
         string += f'{self.date.string}' if self.date else ''
-        return mark_safe(string)
+        return string
 
 
 class VideoSource(Source):
@@ -78,7 +83,8 @@ class VideoSource(Source):
         abstract = True
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: write docstring."""
         raise NotImplementedError
 
 
@@ -87,11 +93,13 @@ class Documentary(TitleMixin, VideoSource):
         verbose_name_plural = 'Documentaries'
 
     def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: add docstring."""
         string = f'{self.attributee_string}, '
         string += f'<em>{self.title_html}</em>," ' if self.title else ''
         string += f'{self.date.string}' if self.date else ''
-        return mark_safe(string)
+        return string

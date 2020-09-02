@@ -5,6 +5,8 @@ from history.models import Manager as BaseManager
 
 
 class Manager(BaseManager):
+    """TODO: add docstring."""
+
     def search(
             self,
             query: Optional[str] = None,

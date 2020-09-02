@@ -33,21 +33,23 @@ class _Piece(TextualSource):
         return None
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
         raise NotImplementedError
 
 
 class Piece(TitleMixin, _Piece):
-    type2 = models.CharField(max_length=10, choices=piece_types, default='essay')
+    TYPE_MAX_LENGTH: int = 10
+    type2 = models.CharField(max_length=TYPE_MAX_LENGTH, choices=piece_types, default='essay')
 
     def __str__(self) -> SafeText:
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: write docstring."""
         string = f'{self.attributee_string}, ' or ''
         string += f'"{self.title_html}"'
         # NOTE: punctuation (quotation marks and commas) are rearranged in the string
         string += f', {self.date.string}' if self.date else ''  # + (', ' if self.container else '')
         string = string.replace('",', ',"')
-        return mark_safe(string)
+        return string

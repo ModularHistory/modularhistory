@@ -4,11 +4,15 @@ from .forms import PlaceForm
 
 
 class LocationInline(TabularInline):
+    """TODO: add docstring."""
+
     model = models.Place
     autocomplete_fields = ['location']
 
 
 class LocationAdmin(Admin):
+    """TODO: add docstring."""
+
     list_display = ['name', 'location']
     list_filter = ['location']
     search_fields = ['name']

@@ -3,38 +3,46 @@ from typing import Any, List, Optional, Tuple
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as BaseModel
 from django.urls import reverse
-from polymorphic.models import PolymorphicModel as BasePolymorphicModel
 from django.utils.safestring import SafeText, mark_safe
+from polymorphic.models import PolymorphicModel as BasePolymorphicModel
 
-from .manager import Manager, PolymorphicManager
+from history.models.manager import Manager, PolymorphicManager
 
 
 class Model(BaseModel):
+    """TODO: add docstring."""
+
     objects: Manager = Manager()
     searchable_fields: Optional[List] = None
 
     @classmethod
     def get_searchable_fields(cls) -> List:
+        """TODO: add docstring."""
         return cls.searchable_fields or []
 
     @property
     def admin_url(self) -> str:
+        """TODO: add docstring."""
         return self.get_admin_url()
 
     @property
     def ctype(self) -> ContentType:
+        """TODO: add docstring."""
         return ContentType.objects.get_for_model(self)
 
     @property
     def detail_link(self) -> SafeText:
+        """TODO: add docstring."""
         return self.get_detail_link()
 
     @property
     def detail_url(self) -> str:
+        """TODO: add docstring."""
         return reverse(f'{self._meta.app_label}:detail', args=[self.id])
 
     @property
     def natural_key_fields(self) -> Optional[List]:
+        """TODO: add docstring."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
             if not (isinstance(unique_together, (list, tuple))
@@ -54,14 +62,17 @@ class Model(BaseModel):
                                   'and/or `natural_key_fields` method defined.')
 
     def get_admin_url(self):
+        """TODO: add docstring."""
         return reverse(f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
                        args=[self.id])
 
     def get_detail_link(self) -> SafeText:
+        """TODO: add docstring."""
         return mark_safe(f'<a href="{self.detail_url}" target="_blank">'
                          f'<i class="fas fa-info-circle"></i></a>')
 
     def natural_key(self) -> Tuple[Any]:
+        """TODO: add docstring."""
         natural_key_fields = self.natural_key_fields
         natural_key_values = []
         for field in natural_key_fields:
@@ -76,6 +87,8 @@ class Model(BaseModel):
 
 
 class PolymorphicModel(BasePolymorphicModel, Model):
+    """TODO: add docstring."""
+
     objects = PolymorphicManager()
 
     class Meta:
@@ -83,12 +96,15 @@ class PolymorphicModel(BasePolymorphicModel, Model):
 
     @property
     def ctype(self) -> ContentType:
+        """TODO: add docstring."""
         return ContentType.objects.get_for_id(self.polymorphic_ctype_id)
 
     @property
     def detail_url(self) -> str:
+        """TODO: add docstring."""
         return reverse(f'{self.ctype.app_label}:detail', args=[self.id])
 
     def get_admin_url(self):
+        """TODO: add docstring."""
         return reverse(f'admin:{self.ctype.app_label}_{self.ctype.model}_change',
                        args=[self.id])

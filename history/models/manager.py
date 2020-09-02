@@ -17,20 +17,24 @@ class Manager(BaseManager):
     # TODO: optimize
     @property
     def occurrence_ct_id(self):
+        """TODO: add docstring."""
         from occurrences.models import Occurrence
         return (ContentType.objects.get_for_model(Occurrence)).id
 
     @property
     def quote_ct_id(self):
+        """TODO: add docstring."""
         from quotes.models import Quote
         return (ContentType.objects.get_for_model(Quote)).id
 
     @property
     def entity_ct_id(self):
+        """TODO: add docstring."""
         from entities.models import Entity
         return (ContentType.objects.get_for_model(Entity)).id
 
     def get_by_natural_key(self, *args):
+        """TODO: add docstring."""
         fields = self.model.natural_key_fields
         natural_key = {}
         for n, field in enumerate(fields):
@@ -48,6 +52,7 @@ class Manager(BaseManager):
             suppress_unverified: bool = True,
             db: str = 'default'
     ) -> Union[QuerySet, PolymorphicQuerySet]:
+        """TODO: add docstring."""
         qs = self._queryset_class(model=self.model, using=db, hints=self._hints)
         if suppress_unverified:
             qs = qs.filter(verified=True)
@@ -94,6 +99,7 @@ class Manager(BaseManager):
 
     def get_closest_to_datetime(self, datetime_value: Union[date, datetime, HistoricDateTime],
                                 datetime_attr: str = 'date'):
+        """TODO: add docstring."""
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()
         lesser = qs.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()
@@ -128,4 +134,5 @@ class Manager(BaseManager):
 
 class PolymorphicManager(BasePolymorphicManager, Manager):
     """Wrapper for PolymorphicManager."""
+
     pass

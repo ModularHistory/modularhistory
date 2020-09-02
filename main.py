@@ -1,4 +1,4 @@
-"""Google Cloud App Engine entrypoint"""
+"""Google Cloud App Engine entrypoint."""
 
 from history.wsgi import application
 

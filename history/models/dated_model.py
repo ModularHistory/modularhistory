@@ -2,12 +2,15 @@ from typing import Optional
 
 from django.db.models import BooleanField
 from django.utils.safestring import SafeText, mark_safe
-from history.structures import HistoricDateTime
+
 from history.fields import HistoricDateTimeField
-from .model import Model
+from history.models import Model
+from history.structures import HistoricDateTime
 
 
 class DatedModel(Model):
+    """TODO: add docstring."""
+
     date_is_circa = BooleanField(blank=True, default=False)
     date = HistoricDateTimeField(null=True, blank=True)
 

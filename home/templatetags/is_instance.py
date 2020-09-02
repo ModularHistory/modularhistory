@@ -8,6 +8,7 @@ register = template.Library()
 
 @register.filter()
 def is_instance(value, arg: str):
+    """TODO: add docstring."""
     module, model = arg.split('.')
     cls = apps.all_models.get(module).get(model.lower())
     return isinstance(value, cls)

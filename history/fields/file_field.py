@@ -14,6 +14,7 @@ from history.structures.source_file import TextualSourceFile
 
 
 def dedupe_files(path: str, new_file_name: Optional[str] = None):
+    """TODO: add docstring."""
     # TODO: implement file dedupe for cloud storage
     if not settings.IS_GCP:
         full_path = join(settings.MEDIA_ROOT, path)
@@ -48,8 +49,11 @@ def _generate_upload_path(instance: Model, filename: str, path: str) -> str:
     return join(path, filename)
 
 
-def upload_to(path) -> Callable:
-    """https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.FileField.upload_to"""
+def upload_to(path: str) -> Callable:
+    """
+    Return the upload path, based on the relative media path (`path` arg, e.g. "sources" or "sources/").
+    https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.FileField.upload_to
+    """
     return partial(_generate_upload_path, path=path)
 
 

@@ -18,7 +18,8 @@ from ..manager import Manager
 
 
 class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, SearchableMixin):
-    """Something that happened"""
+    """Something that happened."""
+
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
     summary = HTMLField(verbose_name='Summary', null=True, blank=True)
@@ -26,23 +27,28 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
     postscript = HTMLField(verbose_name='Postscript', null=True, blank=True,
                            help_text='Content to be displayed below all related data')
     locations = ManyToManyField(
-        'places.Place', through='occurrences.OccurrenceLocation',
+        'places.Place',
+        through='occurrences.OccurrenceLocation',
         related_name='occurrences',
         blank=True
     )
     images = ManyToManyField(
-        Image, related_name='occurrences',
+        Image,
         through='occurrences.OccurrenceImage',
+        related_name='occurrences',
         blank=True
     )
     occurrence_images: Any
     involved_entities = ManyToManyField(
-        'entities.Entity', related_name='involved_occurrences',
-        through='occurrences.OccurrenceEntityInvolvement', blank=True
+        'entities.Entity',
+        through='occurrences.OccurrenceEntityInvolvement',
+        related_name='involved_occurrences',
+        blank=True
     )
     chains = ManyToManyField(
-        'occurrences.OccurrenceChain', related_name='occurrences',
-        through='occurrences.OccurrenceChainInclusion'
+        'occurrences.OccurrenceChain',
+        through='occurrences.OccurrenceChainInclusion',
+        related_name='occurrences'
     )
 
     class Meta:
@@ -56,11 +62,13 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
     ]
     objects: Manager = Manager()
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return self.summary.text or '...'
 
     @property
     def description__truncated(self) -> Optional[SafeText]:
+        """TODO: write docstring."""
         if not self.description:
             return None
         description = BeautifulSoup(self.description.html, features='lxml')
@@ -70,6 +78,7 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
 
     @property
     def entity_images(self) -> Optional[List[Image]]:
+        """TODO: write docstring."""
         if self.involved_entities.exists():
             images = []
             for entity in self.involved_entities.all():
@@ -82,6 +91,7 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
 
     @property
     def image(self) -> Optional[Image]:
+        """TODO: write docstring."""
         if self.images.exists():
             return self.images.first()
         elif self.involved_entities.exists():
@@ -93,11 +103,13 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
         return None
 
     def full_clean(self, exclude=None, validate_unique=True):
+        """TODO: add docstring."""
         super().full_clean(exclude, validate_unique)
         if not self.date:
             raise ValidationError('Occurrence needs a date.')
 
     def get_context(self):
+        """TODO: add docstring."""
         quotes = ([quote_relation.quote for quote_relation in self.quote_relations.all()]
                   if self.quote_relations.exists() else [])
         return {
@@ -110,5 +122,6 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
         }
 
     def save(self, *args, **kwargs):
+        """TODO: add docstring."""
         self.full_clean()
         super().save(*args, **kwargs)

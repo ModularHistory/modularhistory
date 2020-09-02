@@ -2,9 +2,9 @@
 # TODO: remove above line after fixing typechecking
 from sys import stderr
 from typing import Optional
-from django.contrib.postgres.fields import JSONField
-from history.settings import mega, MEGA_USERNAME, MEGA_PASSWORD
+
 import pafy
+from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import SafeText, mark_safe
@@ -14,10 +14,13 @@ from image_cropping import ImageRatioField
 from history.fields import HTMLField
 from history.fields.file_field import upload_to
 from history.models import Model, DatedModel, TaggableModel, SearchableMixin
-from .manager import Manager as ImageManager
+from history.settings import mega
+from images.manager import Manager as ImageManager
 
 
 class MediaModel(TaggableModel, DatedModel, SearchableMixin):
+    """TODO: add docstring."""
+
     caption = HTMLField(null=True, blank=True)
     description = HTMLField(null=True, blank=True)
     provider = models.CharField(max_length=200, null=True, blank=True)
@@ -45,7 +48,8 @@ STORAGE_OPTIONS = (
 
 
 class Image(MediaModel):
-    """An image"""
+    """An image."""
+
     image = models.ImageField(
         upload_to=upload_to('images/'),
         height_field='height', width_field='width',
@@ -66,11 +70,13 @@ class Image(MediaModel):
     searchable_fields = ['caption', 'description', 'provider']
     objects: ImageManager = ImageManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return self.caption.text if self.caption else self.image.name
 
     @property
     def admin_image_element(self) -> SafeText:
+        """TODO: add docstring."""
         height = 150
         max_width = 300
         width = height * self.aspect_ratio
@@ -80,6 +86,7 @@ class Image(MediaModel):
 
     @property
     def aspect_ratio(self) -> float:
+        """TODO: add docstring."""
         return self.width / self.height
 
     @property
@@ -122,6 +129,7 @@ class Image(MediaModel):
 
     @property
     def src_url(self) -> str:
+        """TODO: add docstring."""
         return self.cropped_image_url or self.image.url
 
     @property
@@ -139,6 +147,7 @@ class Image(MediaModel):
         return 'center' if not self.height > (1.2 * self.width) else 'center 10%'
 
     def clean(self):
+        """TODO: add docstring."""
         super().clean()
         if not self.caption:
             raise ValidationError('Image needs a caption.')
@@ -151,7 +160,8 @@ class Image(MediaModel):
 
 
 class Video(MediaModel):
-    """A video"""
+    """A video."""
+
     title = models.CharField(max_length=200, null=True)
     url = models.URLField(null=True, unique=True)
     embed_code = models.CharField(max_length=200, null=True)
@@ -161,6 +171,7 @@ class Video(MediaModel):
         unique_together = ['title', 'url']
 
     def clean(self):
+        """TODO: add docstring."""
         if not self.url:
             raise ValidationError('Video needs a link.')
         try:

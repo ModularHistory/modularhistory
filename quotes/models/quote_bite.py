@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 class QuoteBite(TaggableModel):
     """A piece of a larger quote."""
+
     quote = ForeignKey('quotes.Quote', on_delete=CASCADE, related_name='bites')
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()

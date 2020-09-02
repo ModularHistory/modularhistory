@@ -11,6 +11,8 @@ from .. import models
 
 
 class AttributeesInline(TabularInline):
+    """TODO: add docstring."""
+
     model = models.Source.attributees.through
     autocomplete_fields = ['attributee']
 
@@ -18,12 +20,15 @@ class AttributeesInline(TabularInline):
     sortable_field_name = 'position'
 
     def get_extra(self, request, obj=None, **kwargs):
+        """TODO: add docstring."""
         if obj and obj.attributees.count():
             return 0
         return 1
 
 
 class ContainersInline(TabularInline):
+    """TODO: add docstring."""
+
     verbose_name = 'container'
     verbose_name_plural = 'containers'
     model = models.Source.containers.through
@@ -33,6 +38,8 @@ class ContainersInline(TabularInline):
 
 
 class ContainedSourcesInline(TabularInline):
+    """TODO: add docstring."""
+
     verbose_name = 'contained source'
     verbose_name_plural = 'contained sources'
     model = models.Source.containers.through
@@ -42,6 +49,8 @@ class ContainedSourcesInline(TabularInline):
 
 
 class RelatedInline(GenericTabularInline):
+    """TODO: add docstring."""
+
     model = models.Citation
     extra = 0
     verbose_name = 'related object'
@@ -52,6 +61,8 @@ class RelatedInline(GenericTabularInline):
 
 
 class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Admin):
+    """TODO: add docstring."""
+
     base_model = models.Source
     child_models = [
         models.Book,
@@ -102,6 +113,8 @@ class SourceAdmin(PolymorphicInlineSupportMixin, PolymorphicParentModelAdmin, Ad
 
 
 class ChildModelAdmin(PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin, Admin):
+    """TODO: add docstring."""
+
     base_model = models.Source
     list_display = [
         'pk',
@@ -120,6 +133,7 @@ class ChildModelAdmin(PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin,
     autocomplete_fields = SourceAdmin.autocomplete_fields
 
     def get_fields(self, request, obj=None):
+        """TODO: add docstring."""
         fields = super().get_fields(request, obj)
         for field_name in ('title', 'creators', 'db_string'):
             if field_name in fields:
@@ -136,49 +150,67 @@ class ChildModelAdmin(PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin,
 
 
 class PublicationAdmin(Admin):
+    """TODO: add docstring."""
+
     list_display = ['__str__', 'description', 'type2']
     search_fields = ['name']
     list_filter = ['type2']
 
 
 class ArticleAdmin(ChildModelAdmin):
+    """TODO: add docstring."""
+
     list_display = ['pk', 'html', 'publication', 'description', 'date_string']
     autocomplete_fields = ChildModelAdmin.autocomplete_fields + ['publication']
     ordering = ChildModelAdmin.ordering
 
 
 class BookAdmin(ChildModelAdmin):
+    """TODO: add docstring."""
+
     list_display = ChildModelAdmin.list_display
     autocomplete_fields = ChildModelAdmin.autocomplete_fields + ['original_book']
     ordering = ChildModelAdmin.ordering
 
 
 class ArticlesInline(StackedInline):
+    """TODO: add docstring."""
+
     model = models.Article
     extra = 1
 
 
 class SpeechAdmin(ChildModelAdmin):
+    """TODO: add docstring."""
+
     list_display = ['string', 'type2', 'location', 'date_string']
     search_fields = ['db_string', 'location__name']
 
 
 class CollectionAdmin(Admin):
+    """TODO: add docstring."""
+
     search_fields = ['name', 'repository__name', 'repository__location__name']
     autocomplete_fields = ['repository']
 
 
 class DocumentAdmin(ChildModelAdmin):
+    """TODO: add docstring."""
+
     search_fields = ChildModelAdmin.search_fields
     autocomplete_fields = ['collection', 'db_file']
 
 
 class RepositoryAdmin(Admin):
+    """TODO: add docstring."""
+
     search_fields = ['name', 'location__name']
     autocomplete_fields = ['location']
 
 
 class SourcesInline(TabularInline):
+    """TODO: add docstring."""
+
     model = models.Source
     extra = 0
     fields = ['verified', 'hidden', 'date_is_circa', 'creators', 'url', 'date', 'publication_date']

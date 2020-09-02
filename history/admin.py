@@ -47,6 +47,8 @@ else:
 
 
 class Admin(NestedModelAdmin):
+    """TODO: add docstring."""
+
     formfield_overrides = {
         HistoricDateTimeField: {'widget': HistoricDateWidget},
         SourceFileField: {'widget': SourceFileInput},
@@ -89,6 +91,8 @@ def reorder_fields(fields) -> List[str]:
 
 
 class StackedInline(NestedStackedInline):
+    """TODO: add docstring."""
+
     formfield_overrides = FORM_FIELD_OVERRIDES
 
     def get_fields(self, request, obj=None) -> List[str]:
@@ -97,6 +101,8 @@ class StackedInline(NestedStackedInline):
 
 
 class TabularInline(NestedTabularInline):
+    """TODO: add docstring."""
+
     formfield_overrides = FORM_FIELD_OVERRIDES
 
     def get_fields(self, request, obj=None) -> List[str]:
@@ -105,6 +111,8 @@ class TabularInline(NestedTabularInline):
 
 
 class AdminSite(BaseAdminSite):
+    """TODO: add docstring."""
+
     site_header = 'History administration'
 
 
@@ -163,6 +171,8 @@ admin_site.add_action(mass_change_selected)
 
 
 class ContentTypeAdmin(Admin):
+    """TODO: add docstring."""
+
     list_display = ['app_label', 'model', 'pk']
     list_filter = ['app_label']
     readonly_fields = ['pk', 'app_label', 'model']

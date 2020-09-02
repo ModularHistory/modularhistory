@@ -3,7 +3,7 @@ import datetime
 from django.test import TestCase, Client
 # from django.urls import reverse
 from django.utils import timezone
-# from .models import Entity
+# from entities.models import Entity
 
 
 # class EntityModelTests(TestCase):

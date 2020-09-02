@@ -1,5 +1,16 @@
-from history.admin import admin_site, Admin, TabularInline, StackedInline
-from .. import models
+from history.admin import admin_site, Admin, TabularInline
+from topics import models
+
+
+class TopicRelationsInline(TabularInline):
+    """TODO: add docstring."""
+
+    model = models.Topic.related_topics.through
+    fk_name = 'from_topic'
+    autocomplete_fields = ['to_topic']
+    extra = 1
+    verbose_name_plural = 'related topics'
+    verbose_name = 'related topic'
 
 
 # class RelatedOccurrencesInline(TabularInline):
@@ -9,16 +20,9 @@ from .. import models
 #     verbose_name = 'related occurrence'
 
 
-class TopicRelationsInline(TabularInline):
-    model = models.Topic.related_topics.through
-    fk_name = 'from_topic'
-    autocomplete_fields = ['to_topic']
-    extra = 1
-    verbose_name_plural = 'related topics'
-    verbose_name = 'related topic'
-
-
 class ParentTopicsInline(TabularInline):
+    """TODO: add docstring."""
+
     model = models.Topic.parent_topics.through
     fk_name = 'child_topic'
     autocomplete_fields = ['parent_topic']
@@ -28,6 +32,8 @@ class ParentTopicsInline(TabularInline):
 
 
 class ChildTopicsInline(TabularInline):
+    """TODO: add docstring."""
+
     model = models.Topic.parent_topics.through
     fk_name = 'parent_topic'
     autocomplete_fields = ['child_topic']
@@ -37,6 +43,8 @@ class ChildTopicsInline(TabularInline):
 
 
 class TopicAdmin(Admin):
+    """TODO: add docstring."""
+
     list_display = [
         'key',
         'detail_link',
@@ -57,47 +65,4 @@ class TopicAdmin(Admin):
     ]
 
 
-class FactEntitiesInline(TabularInline):
-    model = models.Fact.related_entities.through
-    extra = 1
-
-
-# class FactTopicsInline(TabularInline):
-#     model = models.Fact.related_topics.through
-#     extra = 1
-
-
-class OccurrencesInline(TabularInline):
-    model = models.Fact.related_occurrences.through
-    extra = 1
-
-
-class SupportedFactsInline(StackedInline):
-    model = models.FactSupport
-    fk_name = 'supported_fact'
-    extra = 1
-
-
-class SupportiveFactsInline(StackedInline):
-    model = models.FactSupport
-    fk_name = 'supportive_fact'
-    extra = 1
-
-
-class FactAdmin(Admin):
-    list_display = ['text']
-    list_filter = ['related_entities', 'related_occurrences']
-    search_fields = ['text']
-    # ordering = ('datetime', 'start_date', 'end_date')
-
-    inlines = [
-        FactEntitiesInline,
-        # FactTopicsInline,
-        OccurrencesInline,
-        SupportedFactsInline,
-        SupportiveFactsInline
-    ]
-
-
 admin_site.register(models.Topic, TopicAdmin)
-admin_site.register(models.Fact, FactAdmin)

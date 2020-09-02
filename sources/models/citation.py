@@ -29,6 +29,8 @@ citation_phrase_options = (
 
 
 class PageRange(Model):
+    """TODO: add docstring."""
+
     citation = ForeignKey('Citation', on_delete=CASCADE, related_name='pages')
     page_number = PositiveSmallIntegerField()
     end_page_number = PositiveSmallIntegerField(null=True, blank=True)
@@ -37,11 +39,13 @@ class PageRange(Model):
         ordering = ['page_number']
         unique_together = ['citation', 'page_number']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self.html, features='lxml').get_text()
 
     @property
     def html(self) -> Optional[SafeText]:
+        """TODO: write docstring."""
         citation = self.citation
         if not self.page_number:
             return None
@@ -82,6 +86,7 @@ class PageRange(Model):
 
 class Citation(Model):
     """A reference to a source (from any other model)."""
+
     citation_phrase = models.CharField(max_length=25, choices=citation_phrase_options,
                                        default=None, null=True, blank=True)
     source = ForeignKey(Source, related_name='citations', on_delete=CASCADE)
@@ -102,11 +107,13 @@ class Citation(Model):
         unique_together = ['source', 'content_type', 'object_id', 'position']
         ordering = ['position', 'source']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self.html, features='lxml').get_text()
 
     @property
     def html(self) -> SafeText:
+        """TODO: write docstring."""
         html = f'{self.source.html}'
         if self.page_number:
             page_string = self.page_html or ''
@@ -160,6 +167,7 @@ class Citation(Model):
 
     @property
     def html_id(self) -> Optional[str]:
+        """TODO: write docstring."""
         if self.pk:
             return f'citation-{self.pk}'
         return None
@@ -170,18 +178,21 @@ class Citation(Model):
 
     @property
     def page_number(self) -> Optional[int]:
+        """TODO: write docstring."""
         if not self.pages.exists():
             return None
         return self.pages.first().page_number
 
     @property
     def page_html(self) -> Optional[str]:
+        """TODO: write docstring."""
         page_strings = [pr.html for pr in self.pages.all()]
         page_string = ', '.join(page_strings)
         return mark_safe(page_string)
 
     @property
     def source_file_page_number(self) -> Optional[int]:
+        """TODO: write docstring."""
         file = self.source.file
         if file:
             if self.page_number:
@@ -192,6 +203,7 @@ class Citation(Model):
 
     @property
     def source_file_url(self) -> Optional[str]:
+        """TODO: write docstring."""
         file_url = self.source.file_url
         if file_url and self.source_file_page_number:
             if 'page=' in file_url:

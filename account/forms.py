@@ -10,7 +10,9 @@ from account.models import User
 
 class LoginForm(AuthenticationForm):
     """Crispy login form."""
+
     def __init__(self, request=None, *args, **kwargs):
+        """TODO: add docstring."""
         super().__init__(request, *args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
@@ -68,6 +70,8 @@ class LoginForm(AuthenticationForm):
 
 
 class UserCreationForm(BaseUserCreationForm):
+    """TODO: add docstring."""
+
     class Meta:
         model = User
         exclude = ()
@@ -82,6 +86,7 @@ class RegistrationForm(UserCreationForm):
         fields = ('first_name', 'last_name', 'username', 'email')
 
     def __init__(self, *args, **kwargs):
+        """TODO: add docstring."""
         super().__init__(*args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
@@ -141,6 +146,7 @@ class RegistrationForm(UserCreationForm):
         )
 
     def clean_email(self):
+        """TODO: add docstring."""
         email = self.cleaned_data.get('email')
         if not self.cleaned_data.get('username'):
             self.cleaned_data['username'] = email
@@ -149,6 +155,7 @@ class RegistrationForm(UserCreationForm):
         return email
 
     def clean_username(self):
+        """TODO: add docstring."""
         email = self.cleaned_data.get('email')
         username = self.cleaned_data.get('username') if self.cleaned_data.get('username') else email
         if email:
@@ -160,16 +167,19 @@ class RegistrationForm(UserCreationForm):
         return username
 
     def clean_first_name(self):
+        """TODO: add docstring."""
         first_name = self.cleaned_data.get('first_name')
         first_name = first_name.title()
         return first_name
 
     def clean_last_name(self):
+        """TODO: add docstring."""
         last_name = self.cleaned_data.get('last_name')
         last_name = last_name.title()
         return last_name
 
     def clean(self):
+        """TODO: add docstring."""
         cleaned_data = super().clean()
         # if cleaned_data.get('username') is None:
         #     cleaned_data['username'] = cleaned_data.get('email')

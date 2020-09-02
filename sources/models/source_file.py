@@ -14,6 +14,8 @@ from history.models import Model
 
 
 class SourceFile(Model):
+    """TODO: add docstring."""
+
     file = SourceFileField(upload_to=upload_to('sources/'), null=True, blank=True, unique=True)
     name = models.CharField(max_length=100, null=True, blank=True, unique=True)
     page_offset = models.SmallIntegerField(
@@ -33,7 +35,8 @@ class SourceFile(Model):
     class Meta:
         ordering = ['name']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return f'{self.file_name} (page offset: {self.page_offset})'
 
     @property
@@ -43,28 +46,33 @@ class SourceFile(Model):
 
     @property
     def file_name(self) -> Optional[str]:
+        """TODO: add docstring."""
         if self.file:
             return self.file.name.replace('sources/', '')
         return None
 
     @property
     def link(self) -> Optional[SafeText]:
+        """TODO: add docstring."""
         return mark_safe(f'<a href="{self.url}" class="display-source" target="_blank">'
                          f'<i class="fa fa-search"></i></a>')
 
     @property
     def url(self) -> str:
+        """TODO: add docstring."""
         url = self.file.url
         if url.endswith('epub'):
             url = f'/sources/epub{url}'
         return url
 
     def full_clean(self, exclude=None, validate_unique=True):
+        """TODO: add docstring."""
         super().full_clean(exclude=exclude, validate_unique=validate_unique)
         if not self.file:
             raise ValidationError('No file.')
 
     def save(self, *args, **kwargs):
+        """TODO: add docstring."""
         if self.name and self.name != self.file_name:
             full_path = join(settings.MEDIA_ROOT, 'sources')
             files = [f for f in listdir(full_path) if isfile(join(full_path, f))]

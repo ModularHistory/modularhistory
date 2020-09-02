@@ -17,6 +17,7 @@ from sources.models import Source
 
 class UserSearch(Model):
     """An instance of a search by a user."""
+
     user = ForeignKey(
         User, related_name='searches',
         null=True, blank=True, on_delete=SET_NULL
@@ -30,6 +31,7 @@ class UserSearch(Model):
 
 class Search(Model):
     """A search."""
+
     ORDERING_OPTIONS = (
         ('date', 'Date'),
         ('relevance', 'Relevance')
@@ -53,7 +55,8 @@ class Search(Model):
     class Meta:
         verbose_name_plural = 'Searches'
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return str(self.query)
 
     @classmethod

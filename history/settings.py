@@ -19,8 +19,8 @@ from mega import Mega
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from . import environments
-from .config import config
+from history import environments
+from history.config import config
 
 IS_GCP = bool(os.getenv('GAE_APPLICATION', None))
 IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')

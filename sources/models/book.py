@@ -12,6 +12,8 @@ from .base import TitleMixin, TextualSource
 
 
 class _Book(TitleMixin, TextualSource):
+    """TODO: add docstring."""
+
     translator = models.CharField(max_length=100, null=True, blank=True)
     publisher = models.CharField(max_length=100, null=True, blank=True)
     edition_number = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -29,7 +31,8 @@ class _Book(TitleMixin, TextualSource):
         abstract = True
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: add docstring."""
         raise NotImplementedError
 
 
@@ -40,21 +43,27 @@ section_types = (
 
 
 class Chapter(TitleMixin, TextualSource):
+    """TODO: add docstring."""
+
     type2 = models.CharField(max_length=7, choices=section_types, default='chapter')
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return BeautifulSoup(self._html, features='lxml').get_text()
 
     @property
     def book(self) -> 'Book':
+        """TODO: add docstring."""
         return self.container
 
     @property
     def book_title(self):
+        """TODO: add docstring."""
         return self.book.title
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: add docstring."""
         if self.book:
             book_html = self.book.html
             if all([self.attributee_string, self.book, self.book.attributee_string,
@@ -68,26 +77,33 @@ class Chapter(TitleMixin, TextualSource):
 
     @property
     def html_override(self) -> SafeText:
+        """TODO: add docstring."""
         return mark_safe(self._html)
 
     @property
     def string_override(self) -> SafeText:
+        """TODO: add docstring."""
         return mark_safe(self.html)
 
     def full_clean(self, exclude=None, validate_unique=True):
+        """TODO: add docstring."""
         super().full_clean(exclude, validate_unique)
         if self.pk and self.container and not isinstance(self.container, Book):
             raise ValidationError('Chapter container must be a book.')
 
 
 class Book(_Book):
-    def __str__(self):
+    """TODO: add docstring."""
+
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         if self.pk:
             return BeautifulSoup(self._html, features='lxml').get_text()
         return ''
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
+        """TODO: add docstring."""
         string = f'{self.attributee_string}, ' if self.attributee_string else ''
         string += f'<i>{self.title_html}</i>'
         original_publication_date = (self.original_book.date if self.original_book
@@ -120,9 +136,10 @@ class Book(_Book):
         string += f', vol. {self.volume_number}' if self.volume_number else ''
         if not has_edition_year and not has_printing_year:
             string += f', {self.date.year}' if self.date else ''
-        return mark_safe(string)
+        return string
 
     def html(self) -> SafeText:
+        """TODO: add docstring."""
         return mark_safe(self._html)
     html.admin_order_field = 'db_string'
     html = property(html)

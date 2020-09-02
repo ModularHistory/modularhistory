@@ -9,6 +9,8 @@ from history.models import Model
 
 
 class Highlight(Model):
+    """TODO: add docstring."""
+
     agent = models.ForeignKey(User, related_name='highlights', on_delete=models.CASCADE)
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()
@@ -21,6 +23,8 @@ class Highlight(Model):
 
 
 class Comment(Model):
+    """TODO: add docstring."""
+
     author = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
     text = models.TextField(blank=False)
     created_at = models.DateTimeField(auto_now_add=True)

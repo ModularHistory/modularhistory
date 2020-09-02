@@ -1,59 +1,78 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import View
 from social_django.models import UserSocialAuth
-from django.http import HttpRequest, HttpResponse
-from .models import User
-from .forms import LoginForm, RegistrationForm
+
+from account.forms import LoginForm, RegistrationForm
+from account.models import User
 
 
 class LoginView(auth_views.LoginView):
+    """TODO: add docstring."""
+
     form_class = LoginForm
     template_name = 'account/login.html'
 
 
 class LogoutView(auth_views.LogoutView):
+    """TODO: add docstring."""
+
     pass
 
 
 class PasswordChangeView(auth_views.PasswordChangeView):
+    """TODO: add docstring."""
+
     template_name = 'account/password_change_form.html'
     success_url = reverse_lazy('account:password_change_done')
 
 
 class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
+    """TODO: add docstring."""
+
     template_name = 'account/password_change_done.html'
 
 
 class PasswordResetView(auth_views.PasswordResetView):
+    """TODO: add docstring."""
+
     template_name = 'account/password_reset_form.html'
     email_template_name = 'account/password_reset_email.html'
     success_url = reverse_lazy('account:password_reset_done')
 
 
 class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+    """TODO: add docstring."""
+
     template_name = 'account/password_reset_done.html'
 
 
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    """TODO: add docstring."""
+
     template_name = 'account/password_reset_confirm.html'
 
 
 class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    """TODO: add docstring."""
     template_name = 'account/password_reset_complete.html'
 
 
 class RegisterView(View):
-    """Account registration view"""
+    """Account registration view."""
+
     def get(self, request: HttpRequest) -> HttpResponse:
+        """TODO: add docstring."""
         form: RegistrationForm = RegistrationForm()
         context = {'form': form}
         return render(request, 'account/register.html', context)
 
     def post(self, request: HttpRequest) -> HttpResponse:
+        """TODO: add docstring."""
         form: RegistrationForm = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
@@ -69,8 +88,10 @@ class RegisterView(View):
 
 
 class ProfileView(LoginRequiredMixin, View):
-    """Profile view"""
+    """Profile view."""
+
     def get(self, request: HttpRequest) -> HttpResponse:
+        """TODO: add docstring."""
         user = request.user
         context = {
             'user': user,
@@ -82,7 +103,7 @@ class ProfileView(LoginRequiredMixin, View):
 
 
 class SettingsView(LoginRequiredMixin, View):
-    """Account settings view"""
+    """Account settings view."""
     @staticmethod
     def get(request: HttpRequest) -> HttpResponse:
         user = request.user
@@ -131,7 +152,7 @@ class SettingsView(LoginRequiredMixin, View):
 # @view_function
 # @login_required(login_url='/account/login')
 # def process_request(request):
-#     """User Details"""
+#     """User Details."""
 #     user = request.user
 #     if user.avatar:
 #         profile_image_url = user.avatar.url
@@ -151,7 +172,7 @@ class SettingsView(LoginRequiredMixin, View):
 # @view_function
 # @login_required(login_url='/account/login')
 # def edit(request):
-#     """Page for editing user profile"""
+#     """Page for editing user profile."""
 #     # process the form
 #     form = ChangeForm(request, instance=request.user)
 #     if form.is_valid():

@@ -5,16 +5,20 @@ from ..models import Source
 
 
 class HasContainerFilter(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'has container'
     parameter_name = 'has_container'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         return (
             ('Yes', 'Yes'),
             ('No', 'No'),
         )
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         if self.value() == 'Yes':
             return queryset.exclude(containers=None)
         if self.value() == 'No':
@@ -22,16 +26,20 @@ class HasContainerFilter(SimpleListFilter):
 
 
 class HasFileFilter(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'has file'
     parameter_name = 'has_file'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         return (
             ('Yes', 'Yes'),
             ('No', 'No'),
         )
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         if self.value() == 'Yes':
             return queryset.filter(file__isnull=False).exclude(file__file='')
         if self.value() == 'No':
@@ -39,16 +47,20 @@ class HasFileFilter(SimpleListFilter):
 
 
 class HasPageNumber(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'has page number'
     parameter_name = 'has_page_number'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         return (
             ('Yes', 'Yes'),
             ('No', 'No'),
         )
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         queryset = queryset.filter(db_file__isnull=False).exclude(db_file__file='')
         ids = []
         if self.value() == 'Yes':
@@ -68,16 +80,20 @@ class HasPageNumber(SimpleListFilter):
 
 
 class HasFilePageOffsetFilter(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'has file page offset'
     parameter_name = 'has_file_page_offset'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         return (
             ('Yes', 'Yes'),
             ('No', 'No'),
         )
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         sources_with_files = queryset.filter(db_file__isnull=False).exclude(db_file__file='')
         ids = []
         if self.value() == 'Yes':
@@ -95,31 +111,38 @@ class HasFilePageOffsetFilter(SimpleListFilter):
 
 
 class ImpreciseDateFilter(SimpleListFilter):
+    """TODO: add docstring."""
     title = 'date is imprecise'
     parameter_name = 'date_is_imprecise'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         return (
             ('Yes', 'Yes'),
             # ('No', 'No'),
         )
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         if self.value() == 'Yes':
             return queryset.filter(date__second='01', date__minute='01', date__hour='01')
         return queryset
 
 
 class ContentTypeFilter(SimpleListFilter):
+    """TODO: add docstring."""
+
     title = 'content type'
     parameter_name = 'content_type'
 
     def lookups(self, request, model_admin):
+        """TODO: add docstring."""
         content_types = Source.objects.all().values('polymorphic_ctype').distinct()
         content_types = ContentType.objects.filter(id__in=content_types)
         return [(f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types]
 
     def queryset(self, request, queryset):
+        """TODO: add docstring."""
         value = self.value()
         if not value:
             return queryset

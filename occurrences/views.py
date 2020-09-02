@@ -3,12 +3,14 @@ from typing import Dict
 from django.views import generic
 from polymorphic.query import PolymorphicQuerySet
 
+from occurrences.models import Occurrence
 from search.forms import SearchForm
 from search.models import Search
-from .models import Occurrence
 
 
 class ListView(generic.list.ListView):
+    """TODO: add docstring."""
+
     model = Occurrence
     template_name = 'occurrences/index.html'
     context_object_name = 'occurrences'
@@ -19,6 +21,7 @@ class ListView(generic.list.ListView):
         return Occurrence.objects.filter(verified=True)
 
     def get_context_data(self, *args, **kwargs) -> Dict:
+        """TODO: write docstring."""
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
@@ -28,6 +31,8 @@ class ListView(generic.list.ListView):
 
 
 class BaseDetailView(generic.detail.DetailView):
+    """TODO: add docstring."""
+
     model = Occurrence
     context_object_name = 'occurrence'
 
@@ -41,15 +46,19 @@ class BaseDetailView(generic.detail.DetailView):
 
 
 class DetailView(BaseDetailView):
+    """TODO: add docstring."""
+
     template_name = 'occurrences/detail.html'
 
 
 class DetailPartialView(BaseDetailView):
+    """TODO: add docstring."""
+
     template_name = 'occurrences/_detail.html'
 
 
 # def add(request):
-#     """add an occurrence"""
+#     """add an occurrence."""
 #     num_divisions = request.GET.get('numDivisions') if 'numDivisions' in request.GET else None
 #     form = CreateForm(request, num_divisions=(num_divisions if num_divisions else 3))
 #     if request.method == 'POST': # just submitted the form

@@ -3,6 +3,8 @@ from django.apps import AppConfig
 
 
 class SearchConfig(AppConfig):
+    """TODO: add docstring."""
+
     name = 'search'
 
     # TODO: clean up

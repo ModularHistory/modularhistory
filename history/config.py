@@ -38,7 +38,10 @@ PROJECT_ID = 'modularhistory'
 
 
 class ModularHistoryAutoConfig(AutoConfig):
+    """TODO: add docstring."""
+
     def __init__(self, *args, **kwargs):
+        """TODO: add docstring."""
         super().__init__(*args, **kwargs)
 
     # def __call__(self, *args, **kwargs):

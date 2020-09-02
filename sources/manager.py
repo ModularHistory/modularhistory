@@ -5,6 +5,8 @@ from history.models import PolymorphicManager
 
 
 class Manager(PolymorphicManager):
+    """TODO: add docstring."""
+
     def search(
             self,
             query: Optional[str] = None,

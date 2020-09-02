@@ -20,6 +20,7 @@ from topics.models import Topic
 
 
 def date_sorter(x: Union[Model, DatedModel]):
+    """TODO: add docstring."""
     date = None
     if hasattr(x, 'get_date'):
         date = x.get_date()
@@ -36,6 +37,7 @@ def date_sorter(x: Union[Model, DatedModel]):
 
 
 def rank_sorter(x: Union[Model]):
+    """TODO: add docstring."""
     rank = getattr(x, 'rank', None)
     if not rank:
         raise Exception('No rank')
@@ -46,6 +48,8 @@ def rank_sorter(x: Union[Model]):
 # TODO: https://docs.djangoproject.com/en/3.0/topics/db/search/
 # TODO: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/
 class SearchResultsView(ListView):
+    """TODO: add docstring."""
+
     template_name = 'search/search_results.html'
     results_count = 0
     paginate_by = 10
@@ -59,6 +63,7 @@ class SearchResultsView(ListView):
     db: str = 'default'
 
     def get_context_data(self, *args, **kwargs) -> Dict:
+        """TODO: add docstring."""
         context = super().get_context_data(*args, **kwargs)
         context['count'] = self.results_count or 0
         query = self.request.GET.get('query')
@@ -86,6 +91,7 @@ class SearchResultsView(ListView):
         return context
 
     def get_queryset(self) -> Union[QuerySet, List]:
+        """TODO: add docstring."""
         request = self.request
         query = request.GET.get('query', None)
 

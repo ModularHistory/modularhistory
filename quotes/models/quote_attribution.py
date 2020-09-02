@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class QuoteAttribution(Model):
+    """TODO: add docstring."""
+
     quote = ForeignKey('quotes.Quote', related_name='attributions', on_delete=CASCADE)
     attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
     position = models.PositiveSmallIntegerField(default=0, blank=True)
@@ -24,7 +26,8 @@ class QuoteAttribution(Model):
         unique_together = ['quote', 'attributee']
         ordering = ['position']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return str(self.attributee)
 
     def clean(self):

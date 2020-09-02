@@ -29,8 +29,9 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         max_length=500, blank=True, unique=True
     )
     attributees = ManyToManyField(
-        'entities.Entity', related_name='attributed_sources',
+        'entities.Entity',
         through='SourceAttribution',
+        related_name='attributed_sources',
         blank=True  # Some sources may not have attributees.
     )
     url = models.URLField(max_length=100, null=True, blank=True)
@@ -49,14 +50,16 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     )
     creators = models.CharField(max_length=100, null=True, blank=True)
     containers = ManyToManyField(
-        'self', related_name='contained_sources',
+        'self',
         through='SourceContainment',
         through_fields=('source', 'container'),
+        related_name='contained_sources',
         symmetrical=False,
         blank=True
     )
     related = GenericManyToManyField(
-        'quotes.Quote', 'occurrences.Occurrence',
+        'quotes.Quote',
+        'occurrences.Occurrence',
         through='sources.Citation',
         related_name='sources',
         blank=True
@@ -70,11 +73,13 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
     class Meta:
         ordering = ['creators', '-date']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return str(self.object)
 
     @property
     def admin_file_link(self) -> SafeText:
+        """TODO: write docstring."""
         element = ''
         if self.file:
             element = (f'<a class="btn btn-small btn-default display-source"'
@@ -84,6 +89,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     @property
     def attributee_string(self) -> Optional[str]:
+        """TODO: write docstring."""
         if self.creators:
             return self.creators
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
@@ -99,30 +105,35 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             string += f', {attributees[1]}, and {attributees[2]}'
         elif n_attributions > 3:
             string += f' et al.'
-        return mark_safe(string)
+        return string
 
     @property
     def container(self) -> Optional['Source']:
+        """TODO: write docstring."""
         if not self.containment:
             return None
         return self.containment.container
 
     @property
     def containment(self) -> Optional['SourceContainment']:
+        """TODO: write docstring."""
         if not self.source_containments.exists():
             return None
         return self.source_containments.order_by('position')[0]
 
     @property
     def file(self) -> Optional[SourceFile]:
+        """TODO: write docstring."""
         return self.db_file or (self.container.db_file if self.container else None)
 
     @file.setter
     def file(self, value):
+        """TODO: write docstring."""
         self.db_file = value
 
     @property
     def file_url(self) -> Optional[str]:
+        """TODO: write docstring."""
         file = self.file
         if not file:
             return None
@@ -131,6 +142,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     @property
     def href(self) -> Optional[str]:
+        """TODO: write docstring."""
         url = self.url
         if self.file_url:
             url = self.file_url
@@ -145,11 +157,12 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         return url
 
     @property
-    def _html(self) -> SafeText:
+    def _html(self) -> str:
         """Must be defined by inheriting models."""
         return self.object._html
 
     def html(self) -> SafeText:
+        """TODO: write docstring."""
         # TODO: html methods should be split into different classes and/or mixins.
         if hasattr(self.object, 'html_override'):
             return mark_safe(self.object.html_override)
@@ -157,6 +170,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         _url = self.file_url or None
 
         def get_page_number_url(page_number, url=_url, file=self.file) -> Optional[str]:
+            """TODO: write docstring."""
             if not url:
                 return None
             page_number += file.page_offset
@@ -167,12 +181,14 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
             return url
 
         def get_page_number_link(url, page_number) -> Optional[str]:
+            """TODO: write docstring."""
             if not url:
                 return None
             return (f'<a href="{url}" target="_blank" '
                     f'class="display-source">{page_number}</a>')
 
         def get_page_number_html(page_number, end_page_number=None, file=self.file) -> str:
+            """TODO: write docstring."""
             pn = page_number
             pn_url = get_page_number_url(pn)
             pn = get_page_number_link(pn_url, pn) or pn
@@ -185,6 +201,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                 return f'p. {pn}'
 
         if self.source_containments.exists():
+            """TODO: write docstring."""
             containments = self.source_containments.order_by('position')[:2]
             container_strings = []
             same_creator = True
@@ -248,6 +265,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     @property
     def link(self) -> Optional[SafeText]:
+        """TODO: write docstring."""
         return f'<a target="_blank" href="{self.url}">{self.url}</a>' if self.url else None
 
     @property
@@ -265,18 +283,21 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
     @property
     def ordered_attributees(self) -> Optional[List['Entity']]:
+        """TODO: write docstring."""
         if not self.pk or not self.attributees.exists():
             return None
         return [attribution.attributee for attribution in self.attributions.all()]
 
     @property
     def string(self) -> str:
+        """TODO: write docstring."""
         # TODO: String methods should be split into different classes and/or mixins.
         if hasattr(self.object, 'string_override'):
             return self.object.string_override
         return BeautifulSoup(self.html, features='lxml').get_text()
 
     def clean(self):
+        """TODO: write docstring."""
         super().clean()
         if Source.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
             raise ValidationError(
@@ -292,6 +313,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
                     )
 
     def get_date(self) -> Optional[HistoricDateTime]:
+        """TODO: write docstring."""
         if self.date:
             return self.date
         elif self.container and self.container.date:
@@ -305,6 +327,7 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
         #     )
 
     def save(self, *args, **kwargs):
+        """TODO: write docstring."""
         self.db_string = self.string
         super().save(*args, **kwargs)
         self.clean()
@@ -313,6 +336,8 @@ class Source(PolymorphicModel, DatedModel, SearchableMixin):
 
 
 class TitleMixin(Model):
+    """TODO: write docstring."""
+
     title = models.CharField(max_length=250, null=True, blank=True)
 
     file: Optional[SourceFile]
@@ -323,6 +348,7 @@ class TitleMixin(Model):
 
     @property
     def title_html(self) -> SafeText:
+        """TODO: write docstring."""
         html = self.title
         href = self.href
         if href:
@@ -344,6 +370,8 @@ containment_phrases = (
 
 
 class SourceContainment(Model):
+    """TODO: add docstring."""
+
     source = ForeignKey(Source, on_delete=CASCADE, related_name='source_containments')
     container = ForeignKey(Source, on_delete=CASCADE, related_name='container_containments')
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -354,7 +382,8 @@ class SourceContainment(Model):
     class Meta:
         ordering = ['position', 'source']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return mark_safe(f'{self.phrase} in {self.container}')
 
 
@@ -366,6 +395,7 @@ class TextualSource(Source):
 
     @property
     def file_page_number(self) -> Optional[int]:
+        """TODO: write docstring."""
         file = self.file
         if file:
             if self.containment and self.containment.page_number:
@@ -375,6 +405,7 @@ class TextualSource(Source):
 
     @property
     def file_url(self) -> Optional[str]:
+        """TODO: write docstring."""
         file_url = super().file_url
         if file_url and self.file_page_number:
             file_url += f'#page={self.file_page_number}'
@@ -383,13 +414,13 @@ class TextualSource(Source):
 
 class SourceAttribution(Model):
     """An entity (e.g., a writer or organization) to which a source is attributed."""
-    source = ForeignKey(Source, on_delete=CASCADE,
-                        related_name='attributions')
-    attributee = ForeignKey('entities.Entity', on_delete=CASCADE,
-                            related_name='source_attributions')
+
+    source = ForeignKey(Source, on_delete=CASCADE, related_name='attributions')
+    attributee = ForeignKey('entities.Entity', on_delete=CASCADE, related_name='source_attributions')
     position = models.PositiveSmallIntegerField(null=True, blank=True)  # TODO: add cleaning logic
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return self.attributee.verbose_name or f'{self.attributee}'
 
 

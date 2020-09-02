@@ -4,6 +4,8 @@ from .models import Image
 
 
 class IndexView(generic.ListView):
+    """TODO: add docstring."""
+
     model = Image
     template_name = 'images/index.html'
     # paginate_by = 10
@@ -15,12 +17,16 @@ class IndexView(generic.ListView):
 
 
 class DetailView(generic.DetailView):
+    """TODO: add docstring."""
+
     model = Image
     template_name = 'images/detail.html'
     context_object_name = 'image'
 
 
 class DetailPartView(generic.DetailView):
+    """TODO: add docstring."""
+
     model = Image
     template_name = 'images/_detail.html'
     context_object_name = 'image'

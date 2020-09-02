@@ -9,6 +9,8 @@ if TYPE_CHECKING:
 
 
 class SourcesMixin(BaseModel):
+    """TODO: add docstring."""
+
     sources: Any
 
     citations = GenericRelation('sources.Citation')
@@ -18,18 +20,21 @@ class SourcesMixin(BaseModel):
 
     @property
     def source_file_url(self) -> Optional[str]:
+        """TODO: write docstring."""
         if self.citation:
             return self.citation.source_file_url
         return None
 
     @property
     def citation(self) -> Optional['Citation']:
+        """TODO: write docstring."""
         if not len(self.citations.all()):
             return None
         return self.citations.order_by('position')[0]
 
     @property
     def citation_html(self) -> Optional[SafeText]:
+        """TODO: write docstring."""
         if not self.citations.exists():
             return None
         citations = self.citations.all()
@@ -46,6 +51,7 @@ class SourcesMixin(BaseModel):
         return mark_safe(citations)
 
     def clean(self):
+        """TODO: add docstring."""
         super().clean()
         # TODO: Do this check in forms rather than in the model, since there's already some bad data
         # if len(self.citations.filter(position=1)) > 1:

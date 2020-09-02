@@ -1,18 +1,15 @@
 # type: ignore
 # TODO: remove above line after fixing typechecking
-from typing import TYPE_CHECKING
-
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 
 from history.fields import HTMLField
 from history.models import Model
-from .topics import Topic
-
-if TYPE_CHECKING:
-    pass
+from topics.models.topics import Topic
 
 
 class FactRelation(Model):
+    """TODO: add docstring."""
+
     class Meta:
         abstract = True
 
@@ -28,6 +25,7 @@ class EntityFactRelation(FactRelation):
 
 class TopicFactRelation(FactRelation):
     """A relation of a fact to a topic."""
+
     topic = ForeignKey(Topic, related_name='topic_fact_relations', on_delete=CASCADE)
     fact = ForeignKey('Fact', related_name='fact_topic_relations', on_delete=CASCADE)
 
@@ -37,6 +35,7 @@ class TopicFactRelation(FactRelation):
 
 class OccurrenceFactRelation(FactRelation):
     """A relation of a fact to an occurrence."""
+
     occurrence = ForeignKey('occurrences.Occurrence', related_name='occurrence_fact_relations', on_delete=CASCADE)
     fact = ForeignKey('Fact', related_name='fact_occurrence_relations', on_delete=CASCADE)
 
@@ -53,26 +52,33 @@ class FactSupport(FactRelation):
 
 
 class Fact(Model):
+    """TODO: add docstring."""
+
     text = HTMLField(unique=True)
     supportive_facts = ManyToManyField(
-        'self', related_name='supported_facts',
+        'self',
         through=FactSupport,
+        related_name='supported_facts',
         symmetrical=False
     )
     related_entities = ManyToManyField(
-        'entities.Entity', related_name='facts',
-        through=EntityFactRelation
+        'entities.Entity',
+        through=EntityFactRelation,
+        related_name='facts'
     )
     related_topics = ManyToManyField(
-        'topics.Topic', related_name='facts',
-        through=TopicFactRelation
+        'topics.Topic',
+        through=TopicFactRelation,
+        related_name='facts'
     )
     related_occurrences = ManyToManyField(
-        'occurrences.Occurrence', related_name='facts',
-        through=OccurrenceFactRelation
+        'occurrences.Occurrence',
+        through=OccurrenceFactRelation,
+        related_name='facts'
     )
 
     searchable_fields = ['text']
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """TODO: write docstring."""
         return self.text.text
