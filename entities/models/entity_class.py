@@ -13,7 +13,7 @@ parts_of_speech = (
 )
 
 
-class EntityClass(Model):
+class Category(Model):
     """TODO: add docstring."""
 
     NAME_MAX_LENGTH: int = 100
@@ -35,11 +35,42 @@ class EntityClass(Model):
     weight = models.PositiveSmallIntegerField(default=1, blank=True)
 
     class Meta:
+        verbose_name_plural = 'categories'
         ordering = ['name']
 
     def __str__(self) -> str:
         """TODO: write docstring."""
         return self.name
+
+
+class Categorization(Model):
+    """TODO: add docstring."""
+
+    entity = ForeignKey(
+        'entities.Entity',
+        related_name='categorizations',
+        on_delete=CASCADE
+    )
+    category = ForeignKey(
+        Category,
+        related_name='categorizations',
+        on_delete=CASCADE,
+        null=True, blank=True
+    )
+    date = HistoricDateTimeField(null=True, blank=True)
+    end_date = HistoricDateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ['entity', 'category']
+
+    def __str__(self) -> str:
+        """TODO: write docstring."""
+        return str(self.category)
+
+    @property
+    def weight(self) -> int:
+        """TODO: add docstring."""
+        return self.category.weight
 
 
 class Classification(Model):
@@ -83,12 +114,6 @@ class EntityClassification(Model):
         Classification,
         related_name='entity_classifications',
         on_delete=SET_NULL,
-        null=True, blank=True
-    )
-    entity_class = ForeignKey(
-        EntityClass,
-        related_name='entity_classifications',
-        on_delete=CASCADE,
         null=True, blank=True
     )
     date = HistoricDateTimeField(null=True, blank=True)

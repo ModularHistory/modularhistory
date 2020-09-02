@@ -2,7 +2,7 @@ from entities import models
 from history.admin import admin_site, Admin
 
 
-class EntityClassAdmin(Admin):
+class CategoryAdmin(Admin):
     """TODO: add docstring."""
 
     list_display = ['pk', 'name', 'part_of_speech', 'aliases', 'weight']
@@ -11,5 +11,5 @@ class EntityClassAdmin(Admin):
     ordering = ('name',)
 
 
-admin_site.register(models.EntityClass, EntityClassAdmin)
-admin_site.register(models.entity_class.Classification, EntityClassAdmin)
+admin_site.register(models.Category, CategoryAdmin)
+admin_site.register(models.Classification, CategoryAdmin)

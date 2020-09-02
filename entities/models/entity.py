@@ -8,7 +8,7 @@ from django.db.models import ForeignKey, ManyToManyField, CASCADE, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.safestring import SafeText, mark_safe
 
-from entities.models.entity_class import EntityClass, Classification
+from entities.models.entity_class import Categorization, Classification
 from history.fields import ArrayField, HistoricDateTimeField, HTMLField
 from history.models import (
     Model, TaggableModel, TypedModel,
@@ -53,16 +53,16 @@ class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
     description = HTMLField(null=True, blank=True)
-    classes = ManyToManyField(
-        EntityClass,
+    categories = ManyToManyField(
+        'entities.Category',
+        through='entities.Categorization',
         related_name='entities',
-        through='entities.EntityClassification',
         blank=True
     )
     classifications = ManyToManyField(
         Classification,
-        related_name='entities',
         through='entities.EntityClassification',
+        related_name='entities',
         blank=True
     )
     images = ManyToManyField(
@@ -111,11 +111,11 @@ class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
 
     def get_classification(self, date: HistoricDateTime) -> Optional['EntityClassification']:
         """TODO: add docstring."""
-        if not self.classes.exists():
+        if not self.categories.exists():
             return None
-        classifications = EntityClassification.objects.filter(entity=self, date__lte=date)
+        classifications = Classification.objects.filter(entity=self, date__lte=date)
         if not len(classifications):
-            classifications = self.entity_classifications.all()
+            classifications = self.categorizations.all()
         classification = classifications.order_by('date', 'classification__weight').last()
         return classification
 
@@ -123,25 +123,25 @@ class Entity(TypedModel, TaggableModel, RelatedQuotesMixin):
             self, date: HistoricDateTime
     ) -> Optional[str]:
         """Intelligently build a classification string, like `conservative LDS apostle`."""
-        if not self.classes.exists():
+        if not self.categories.exists():
             return None
         words = []
-        entity_classifications = EntityClassification.objects.filter(entity=self)
-        entity_classifications = entity_classifications.exclude(date__gt=date) if date else entity_classifications
+        categorizations = self.categorizations.all()
+        categorizations = categorizations.exclude(date__gt=date) if date else categorizations
 
-        noun_classifications = entity_classifications.filter(classification__part_of_speech='noun')
-        if noun_classifications.exists():
-            noun = noun_classifications.order_by('classification__weight', 'date').last()
+        noun_categorizations = categorizations.filter(classification__part_of_speech='noun')
+        if noun_categorizations.exists():
+            noun = noun_categorizations.order_by('classification__weight', 'date').last()
             words += str(noun).split(' ')
 
-        noun_adj_classifications = entity_classifications.filter(classification__part_of_speech='any')
-        if noun_adj_classifications.exists():
-            noun_adj = noun_adj_classifications.order_by('classification__weight', 'date').last()
+        noun_adj_categorizations = categorizations.filter(classification__part_of_speech='any')
+        if noun_adj_categorizations.exists():
+            noun_adj = noun_adj_categorizations.order_by('classification__weight', 'date').last()
             words = [word for word in str(noun_adj).split(' ') if word not in words] + words
 
-        adj_classifications = entity_classifications.filter(classification__part_of_speech='adj')
-        if adj_classifications.exists():
-            adj = adj_classifications.order_by('classification__weight', 'date').last()
+        adj_categorizations = categorizations.filter(classification__part_of_speech='adj')
+        if adj_categorizations.exists():
+            adj = adj_categorizations.order_by('classification__weight', 'date').last()
             words = [word for word in str(adj).split(' ') if word not in words] + words
 
         # Final removal of duplicate words

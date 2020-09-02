@@ -39,6 +39,7 @@ class AdminMenu(Menu):
                 items.MenuItem('Roles', '/admin/entities/role/'),
                 items.MenuItem('Ideas', '/admin/entities/idea/'),
                 items.MenuItem('Classifications', '/admin/entities/classification/'),
+                items.MenuItem('Categories', '/admin/entities/category/'),
             ]),
             items.MenuItem('Quotes', '/admin/quotes/quote/'),
             items.MenuItem('Occurrences', children=[

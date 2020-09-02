@@ -47,6 +47,15 @@ class ClassificationsInline(TabularInline):
     readonly_fields = ['weight']
 
 
+class CategorizationsInline(TabularInline):
+    """TODO: add docstring."""
+
+    model = models.Categorization
+    extra = 1
+    autocomplete_fields = ['category']
+    readonly_fields = ['weight']
+
+
 class OccurrencesInline(TabularInline):
     """TODO: add docstring."""
 
@@ -97,6 +106,7 @@ class EntityAdmin(Admin):
     inlines = [
         ImagesInline,
         ClassificationsInline,
+        CategorizationsInline,
         FactsInline,
         AffiliationsInline,
         OccurrencesInline,
