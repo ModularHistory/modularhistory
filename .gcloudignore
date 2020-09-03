@@ -18,6 +18,10 @@
 !.secrets/
 !*credentials.json
 
+# GitHub
+.github/
+README.md
+
 # Ungathered static files
 static/
 
@@ -26,10 +30,6 @@ media/
 
 # User scripts
 setup.sh
-
-# GitHub
-.github/
-README.md
 
 # PyCharm / IntelliJ
 .idea

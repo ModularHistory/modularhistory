@@ -37,17 +37,23 @@ The setup script installs project dependencies.
 
 ## Contributing
 
-To contribute to ModularHistory's developent, follow the steps below.
+To contribute to ModularHistory's development, follow the steps below.
 
-### Join the PivotalTracker project
+### Join the project and find/create a card
 
 First, join ModularHistory's PivotalTracker project:
 
 https://www.pivotaltracker.com/projects/2460843
 
-PivotalTracker is used for task management and planning.
+PivotalTracker is used for task management and planning. However, we're transitioning to a GitHub project.  All new tasks and issues should be added to the kanban board on GitHub:
 
-### Step 2
+https://github.com/ModularHistory/modularhistory/projects/1
+
+If you would like to contribute regularly to ModularHistory, you can request to be added to the repository members so that you can create branches.  Otherwise, you can fork the project to make changes without joining the repo.
+
+
+### Fork or branch the repo
+If you've been added to the repo members, you can create a branch for your changes.
 
 - ...
 - ...

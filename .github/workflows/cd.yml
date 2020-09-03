@@ -5,6 +5,14 @@ name: CD
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - '.gitignore'
+      - '.gcloudignore'
+      - '.github/**'
+      - '.idea/**'
+      - '**.txt'
+      - '**.md'
+      - 'setup.**'
 
 jobs:
   deploy:
