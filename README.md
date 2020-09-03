@@ -63,24 +63,15 @@ If you've been added to the repo members, you can create a branch for your chang
     - ...
 
 
-### Step 3
+### Make your changes
 
-- ...
+Run the setup script before working on any code changes:
 
----
+```
+./setup.sh
+```
 
-## Development
-Install requirements:
-
-```pip install -Ur requirements.txt```
-
-Write your code.
-
-After adding some code, check coverage to determine what needs to be tested:
-
-```coverage run --source='.' manage.py test && coverage html```
-
-See https://coverage.readthedocs.io/en/coverage-5.2/.
+Then write your code.
 
 Make migrations.
 
@@ -91,6 +82,15 @@ Before running migrations, create a db backup:
 ```
 python manage.py dbbackup
 ```
+### Write tests
+
+After adding some code, check coverage to determine what needs to be tested:
+
+```coverage run --source='.' manage.py test && coverage html```
+
+See https://coverage.readthedocs.io/en/coverage-5.2/.
+
+### Review your changes
 
 Lint the code (using [flake8](https://flake8.pycqa.org/en/latest)):
 ```
@@ -99,28 +99,22 @@ flake8
 
 ---
 
-## Team
-
-...
-
----
-
 ## Support
 
-Reach out to me at one of the following places!
+Reach out to ModularHistory:
 
-- ...
-- Twitter at <a href="" target="_blank">...</a>
-- ...
+- By email: modularhistory@gmail.com
+- On Facebook: [https://www.facebook.com/modularhistory](https://www.facebook.com/modularhistory)
+- On Twitter: [https://twitter.com/ModularHistory](https://twitter.com/ModularHistory)
 
 ---
 
-## Donations (Optional)
+## Donations
 
-...
+You can support ModularHistory through [Patreon](https://www.patreon.com/modularhistory).
 
 ---
 
 ## License
 
-...
+ModularHistory has an [ISC License](https://github.com/ModularHistory/modularhistory/blob/master/LICENSE.txt).
