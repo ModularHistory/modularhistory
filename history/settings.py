@@ -11,11 +11,14 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import sys
 from enum import Enum
+from importlib.util import find_spec
+from typing import Dict, List
 
 import sentry_sdk
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from mega import Mega
+from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -40,7 +43,9 @@ ADMINS = config(
 
 # Initialize the Sentry SDK for error reporting.
 if ENVIRONMENT != environments.DEV:
-    integrations = [DjangoIntegration()]
+    integrations: List[Integration] = [
+        DjangoIntegration(),
+    ]
     # If not in Google Cloud, add the Celery integration.
     if not IS_GCP:
         integrations.append(CeleryIntegration())
@@ -52,6 +57,11 @@ if ENVIRONMENT != environments.DEV:
         # Associate users to errors (using django.contrib.auth) by sending PII data
         send_default_pii=True
     )
+
+# TODO
+# https://www.ralphminderhoud.com/blog/django-mypy-check-runs/
+if ENVIRONMENT == environments.DEV:
+    from history import checks
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
@@ -563,8 +573,8 @@ ADMIN_TOOLS_THEMING_CSS = 'styles/admin.css'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
 CRISPY_FAIL_SILENTLY = not DEBUG
-CRISPY_CLASS_CONVERTERS = {
-    # 'textinput': "textinput inputtext"
+CRISPY_CLASS_CONVERTERS: Dict[str, str] = {
+    # 'textinput': 'textinput inputtext'
 }
 
 # https://django-select2.readthedocs.io/en/latest/django_select2.html#module-django_select2.conf

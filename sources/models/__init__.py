@@ -1,5 +1,5 @@
 # type: ignore
-# TODO: remove above line after fixing typechecking
+
 from .article import Publication, Article, WebPage
 from .base import (
     Source, SourceFile, SourceContainment,

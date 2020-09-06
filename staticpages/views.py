@@ -56,7 +56,7 @@ def render_staticpage(request, f):
         from django.contrib.auth.views import redirect_to_login
         return redirect_to_login(request.path)
     if f.template_name:
-        template = loader.select_template((f.template_name, DEFAULT_TEMPLATE))
+        template = loader.select_template([f.template_name, DEFAULT_TEMPLATE])
     else:
         template = loader.get_template(DEFAULT_TEMPLATE)
 

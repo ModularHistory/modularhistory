@@ -34,7 +34,7 @@ class Manager(PolymorphicManager):
 
         searchable_fields = self.model.get_searchable_fields()
         if query and searchable_fields:
-            query = SearchQuery(query)
+            search_query = SearchQuery(query)
             # https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/#weighting-queries
             vectors = []
             for searchable_field in searchable_fields:
@@ -49,6 +49,6 @@ class Manager(PolymorphicManager):
                     vector += v
             annotations = {'search': vector}
             if rank:
-                annotations['rank'] = SearchRank(vector, query)
-            qs = qs.annotate(**annotations).filter(search=query)
+                annotations['rank'] = SearchRank(vector, search_query)
+            qs = qs.annotate(**annotations).filter(search=search_query)
         return qs.order_by('id').distinct('id')

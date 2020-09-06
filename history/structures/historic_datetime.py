@@ -86,8 +86,7 @@ class HistoricDateTime(datetime):
             inv_exponent = self.second
             inv_decimal_num = self.microsecond
             exponent = -(inv_exponent - 30)
-            decimal_num = '{:.4e}'.format(-(inv_decimal_num - 100000))
-            decimal_num = Decimal(decimal_num.split('e+')[0])
+            decimal_num = Decimal(('{:.4e}'.format(-(inv_decimal_num - 100000))).split('e+')[0])
             multiplier = Decimal(10**exponent)
             bce = int(Decimal(decimal_num * multiplier))
             if bce > 10000:  # if prehistory
@@ -101,10 +100,10 @@ class HistoricDateTime(datetime):
         getcontext().prec = self.significant_figures
         current_year = datetime.now().year
         if self.is_bce:
-            ybp = Decimal(self.year_bce + 2000)
+            _ybp = Decimal(self.year_bce + 2000)
         else:
-            ybp = Decimal(current_year - self.year)
-        ybp = int(sigfig.round(ybp, sigfigs=self.significant_figures))
+            _ybp = Decimal(current_year - self.year)
+        ybp = int(sigfig.round(_ybp, sigfigs=self.significant_figures))
         # Correct rounding error if needed
         if 1000000 > ybp > 10000:  # Should use BCE is smaller than this
             scale = 500

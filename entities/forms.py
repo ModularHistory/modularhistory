@@ -22,7 +22,7 @@ class OrganizationForm(ModelForm):
 
     class Meta:
         model = Organization
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,7 +34,7 @@ class PersonForm(ModelForm):
 
     class Meta:
         model = Person
-        exclude = ['parent_organization']
+        exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,7 +52,7 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = Group
-        exclude = ['parent_organization']
+        exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -64,4 +64,4 @@ class IdeaForm(ModelForm):
 
     class Meta:
         model = Idea
-        exclude = []
+        exclude: List[str] = []

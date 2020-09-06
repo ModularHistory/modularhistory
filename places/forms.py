@@ -1,3 +1,5 @@
+from typing import List
+
 from django.forms import ModelForm
 
 from .models import Place, Continent, Country, Region, State, County, City, Venue
@@ -8,7 +10,7 @@ class PlaceForm(ModelForm):
 
     class Meta:
         model = Place
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -21,7 +23,7 @@ class ContinentForm(ModelForm):
 
     class Meta:
         model = Continent
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -34,7 +36,7 @@ class CountryForm(ModelForm):
 
     class Meta:
         model = Country
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -47,7 +49,7 @@ class RegionForm(ModelForm):
 
     class Meta:
         model = Region
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -60,7 +62,7 @@ class StateForm(ModelForm):
 
     class Meta:
         model = State
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -73,7 +75,7 @@ class CountyForm(ModelForm):
 
     class Meta:
         model = County
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -86,7 +88,7 @@ class CityForm(ModelForm):
 
     class Meta:
         model = City
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -99,7 +101,7 @@ class VenueForm(ModelForm):
 
     class Meta:
         model = Venue
-        exclude = []
+        exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""

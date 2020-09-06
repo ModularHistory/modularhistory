@@ -60,6 +60,7 @@ class Admin(NestedModelAdmin):
     ordering: List[str]
     readonly_fields: List[str]
     search_fields: List[str]
+    autocomplete_fields: List[str]
 
     class Media:
         css = {
