@@ -49,7 +49,6 @@ django-debug-toolbar = "^2.2"
 django-extra-views = "==0.13.0"
 django-filter = "==2.3.0"
 django-gm2m = "==1.0"
-django-haystack = "==2.8.1"
 django-image-cropping = "==1.4.0"
 django-imagekit = "==4.0.2"
 django-jsonstore = {git = "https://github.com/ModularHistory/jsonstore.git"}
