@@ -3,9 +3,9 @@ from typing import Dict
 from django.views import generic
 from polymorphic.query import PolymorphicQuerySet
 
+from history.constants import IMAGE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
 from occurrences.models import Occurrence
 from search.forms import SearchForm
-from search.models import Search
 
 
 class ListView(generic.list.ListView):
@@ -25,7 +25,11 @@ class ListView(generic.list.ListView):
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
-            excluded_content_types=[Search.get_quote_ct(), Search.get_image_ct(), Search.get_source_ct()]
+            excluded_content_types=[
+                QUOTE_CT_ID,
+                IMAGE_CT_ID,
+                SOURCE_CT_ID
+            ]
         )
         return context
 
@@ -39,10 +43,10 @@ class BaseDetailView(generic.detail.DetailView):
     object: Occurrence
 
     def get_context_data(self, *args, **kwargs) -> Dict:
+        """TODO: add docstring."""
         context = super().get_context_data(*args, **kwargs)
         occurrence = self.object
-        context = {**context, **occurrence.get_context()}
-        return context
+        return {**context, **occurrence.get_context()}
 
 
 class DetailView(BaseDetailView):

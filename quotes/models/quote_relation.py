@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from bs4 import BeautifulSoup
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -7,9 +5,6 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
 
 from history.models import Model
-
-if TYPE_CHECKING:
-    pass
 
 
 class QuoteRelation(Model):
@@ -34,4 +29,5 @@ class QuoteRelation(Model):
 
     @property
     def quote_pk(self) -> str:
+        """TODO: write docstring."""
         return self.quote.pk

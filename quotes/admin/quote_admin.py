@@ -1,24 +1,44 @@
-# import re
-# from django.contrib.contenttypes.models import ContentType
-# from django.db.models import QuerySet
+"""Admin for the quotes app."""
+
 from django.urls import path
 
-from history.admin import admin_site, Admin, TabularInline
 from entities.views import EntitySearchView
+from admin.admin import Admin, TabularInline, admin_site
 from history.models.taggable_model import TopicFilter
-# from occurrences.models import Occurrence
-from sources.admin.citations import CitationsInline
-from topics.admin import RelatedTopicsInline, HasTagsFilter
-from topics.views import TagSearchView
-from .filters import (
-    AttributeeFilter,
-    # AttributeeClassificationFilter,
-    HasSourceFilter,
+from quotes import models
+from quotes.admin.filters import (
     AttributeeCountFilter,
-    HasMultipleCitationsFilter
+    # AttributeeClassificationFilter,
+    AttributeeFilter,
+    HasMultipleCitationsFilter,
+    HasSourceFilter
 )
-from .related_quotes_inline import RelatedQuotesInline
-from .. import models
+from quotes.admin.related_quotes_inline import RelatedQuotesInline
+from sources.admin.citations import CitationsInline
+from topics.admin import HasTagsFilter, RelatedTopicsInline
+from topics.views import TagSearchView
+
+
+class AttributeesInline(TabularInline):
+    """TODO: add docstring."""
+
+    model = models.QuoteAttribution
+    autocomplete_fields = ['attributee']
+
+    sortable_field_name = 'position'
+
+    def get_extra(self, request, obj=None, **kwargs):
+        """TODO: add docstring."""
+        if obj and obj.attributees.count():
+            return 0
+        return 1
+
+
+class BitesInline(TabularInline):
+    """TODO: add docstring."""
+
+    model = models.QuoteBite
+    extra = 0
 
 
 # TODO: try to get this reverse relationship working
@@ -43,27 +63,6 @@ from .. import models
 #         if len(self.get_queryset(request)):
 #             return 0
 #         return 1
-
-
-class AttributeesInline(TabularInline):
-    """TODO: add docstring."""
-
-    model = models.QuoteAttribution
-    autocomplete_fields = ['attributee']
-
-    sortable_field_name = 'position'
-
-    def get_extra(self, request, obj=None, **kwargs):
-        if obj and obj.attributees.count():
-            return 0
-        return 1
-
-
-class BitesInline(TabularInline):
-    """TODO: add docstring."""
-
-    model = models.QuoteBite
-    extra = 0
 
 
 class QuoteAdmin(Admin):
@@ -91,8 +90,8 @@ class QuoteAdmin(Admin):
         'attributees__categories'
     ]
     search_fields = models.Quote.searchable_fields
-    ordering = ('date',)
-    autocomplete_fields = []
+    ordering = ['date']
+    # autocomplete_fields = []
     readonly_fields = ['citation_html']
     inlines = [
         AttributeesInline,
@@ -104,6 +103,7 @@ class QuoteAdmin(Admin):
     ]
 
     def get_fields(self, request, obj=None):
+        """TODO: add docstring."""
         fields = super().get_fields(request, obj)
         for field_name in ('date', 'date_is_circa'):
             if fields and field_name in fields:
@@ -112,14 +112,19 @@ class QuoteAdmin(Admin):
         return fields
 
     def get_urls(self):
+        """TODO: add docstring."""
         urls = super().get_urls()
         custom_urls = [
-            path('tag_search/',
-                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
-                 name='tag_search'),
-            path('entity_search/',
-                 self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
-                 name='entity_search')
+            path(
+                'tag_search/',
+                self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
+                name='tag_search'
+            ),
+            path(
+                'entity_search/',
+                self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
+                name='entity_search'
+            )
         ]
         return custom_urls + urls
 

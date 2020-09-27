@@ -1,5 +1,4 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Model classes for ideas."""
 
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
@@ -9,11 +8,11 @@ from history.models import (
     Model
 )
 
+NAME_MAX_LENGTH: int = 100
+
 
 class Idea(Model):
     """TODO: add docstring."""
-
-    NAME_MAX_LENGTH: int = 100
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     description = HTMLField(null=True, blank=True)

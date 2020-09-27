@@ -1,4 +1,3 @@
-from pprint import pprint
 from tempfile import NamedTemporaryFile
 from typing import Dict, Union
 from urllib.request import urlopen
@@ -23,8 +22,10 @@ Backend = Union[BaseOAuth1, BaseOAuth2]
 
 def get_user_email(backend: Backend, response: Dict, **kwargs):
     """
-    If a backend does not automatically supply the user's email address,
-    try to get the email address through the backend's API.
+    Get the user's email address if it has not already been retrieved.
+
+    In most cases, the backend should automatically supply the user's email address.
+    If it doesn't, try to get the email address through the backend's API.
     """
     details = kwargs.get('details')
     if details and details.get('email', None):
@@ -32,14 +33,16 @@ def get_user_email(backend: Backend, response: Dict, **kwargs):
             access_token = response.get('access_token', None)
             email = None
             if access_token:
-                request_url = f'https://api.github.com/user/emails'
-                params = {"state": "open"}
+                request_url = 'https://api.github.com/user/emails'
+                params = {'state': 'open'}
                 headers = {'Authorization': f'token {access_token}'}
                 response = requests.get(request_url, headers=headers, params=params).json()
-                if isinstance(response, list):
+                try:
                     for item in response:
                         if item.get('primary', False) and item.get('verified', False):
                             email = item.get('email', None)
+                except Exception as e:
+                    print(f'Error processing response from {request_url}: {type(e)}: {e}')
             if email:
                 details['email'] = email
                 return {'details': details}
@@ -68,15 +71,16 @@ def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwarg
 
         # Update the user's avatar
         if url:
-            if not user.avatar:
+            if user.avatar:
+                print(f'{user} already has an avatar: {user.avatar}')
+                # TODO: check if image has been updated
+            else:
                 print(f'{user} has no profile image.')
                 img_temp = NamedTemporaryFile(delete=True)
+                # TODO: Use requests instead of urllib?
                 img_temp.write(urlopen(url).read())
                 img_temp.flush()
                 user.avatar.save(f'{user.pk}', File(img_temp))
-            else:
-                print(f'{user} already has an avatar: {user.avatar}')
-                # TODO: check if image has been updated
     except Exception as e:
         print(f'>>> {type(e)} in get_user_avatar: {e}')
         raise

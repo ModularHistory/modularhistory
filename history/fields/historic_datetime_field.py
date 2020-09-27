@@ -1,6 +1,5 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
-import datetime
+"""ModularHistory's HistoricDateTimeField (for use in models)."""
+
 from datetime import datetime
 from typing import Optional, Union
 
@@ -12,7 +11,7 @@ from history import settings
 from history.forms import HistoricDateFormField
 from history.structures.historic_datetime import HistoricDateTime
 
-DateTime = type(datetime)
+DateTime = datetime
 
 
 # TODO: https://dateparser.readthedocs.io/en/latest/
@@ -22,14 +21,22 @@ class HistoricDateTimeField(DateTimeField):
 
     year: int
 
-    def __init__(self, verbose_name=None, name=None,
-                 auto_now=False, auto_now_add=False, **kwargs):
-        super().__init__(verbose_name=verbose_name, name=name,
-                         auto_now=auto_now, auto_now_add=auto_now_add, **kwargs)
-
-    def clean(self, value, model_instance):
+    def __init__(
+        self,
+        verbose_name=None,
+        name=None,
+        auto_now=False,
+        auto_now_add=False,
+        **kwargs
+    ):
         """TODO: add docstring."""
-        return super().clean(value, model_instance)
+        super().__init__(
+            verbose_name=verbose_name,
+            name=name,
+            auto_now=auto_now,
+            auto_now_add=auto_now_add,
+            **kwargs
+        )
 
     def formfield(self, **kwargs) -> Field:
         """TODO: add docstring."""
@@ -39,34 +46,60 @@ class HistoricDateTimeField(DateTimeField):
         })
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
-    def from_db_value(self, value: Optional[DateTime], expression, connection) -> Optional[HistoricDateTime]:
+    def from_db_value(
+        self,
+        value: Optional[DateTime],
+        expression,
+        connection
+    ) -> Optional[HistoricDateTime]:
+        """TODO: add docstring."""
         if value is None:
             return value
-        return HistoricDateTime(value.year, value.month, value.day,
-                                value.hour, value.minute, value.second, value.microsecond)
+        return HistoricDateTime(
+            value.year,
+            value.month,
+            value.day,
+            value.hour,
+            value.minute,
+            value.second,
+            value.microsecond
+        )
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
     def to_python(
-            self, value: Optional[Union[HistoricDateTime, DateTime, str]]
+        self,
+        value: Optional[Union[HistoricDateTime, DateTime, str]]
     ) -> Optional[HistoricDateTime]:
+        """TODO: add docstring."""
         if not value:
             return None
         elif isinstance(value, HistoricDateTime):
             return value
         elif isinstance(value, datetime):
-            return HistoricDateTime(value.year, value.month, value.day,
-                                    value.hour, value.minute, value.second, value.microsecond)
+            return HistoricDateTime(
+                value.year,
+                value.month,
+                value.day,
+                value.hour,
+                value.minute,
+                value.second,
+                value.microsecond
+            )
         elif isinstance(value, str):
             raise TypeError
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
-    def get_prep_value(self, value: Optional[HistoricDateTime]) -> Optional[DateTime]:
+    def get_prep_value(
+        self,
+        value: Optional[HistoricDateTime]
+    ) -> Optional[DateTime]:
+        """TODO: add docstring."""
         if not value:
             return None
-        value = self.to_python(value)
-        if value and settings.USE_TZ and is_naive(value):
-            value = make_aware(value)
-        return super().get_prep_value(value)
+        preprep_value: Union[HistoricDateTime, DateTime] = self.to_python(value)
+        if preprep_value and settings.USE_TZ and is_naive(preprep_value):
+            preprep_value = make_aware(preprep_value)
+        return super().get_prep_value(preprep_value)
 
     #
     # # https://docs.djangoproject.com/en/3.0/howto/customg-model-fields/#converting-query-values-to-database-values

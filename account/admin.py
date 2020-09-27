@@ -7,7 +7,7 @@ from social_django.models import UserSocialAuth
 
 from account.models import User
 # from account.forms import UserCreationForm #  UserChangeForm
-from history.admin import admin_site, TabularInline
+from admin.admin import admin_site, TabularInline
 
 MAX_EMAIL_LENGTH: int = 100
 MAX_NAME_LENGTH: int = 100
@@ -16,6 +16,7 @@ MAX_NAME_LENGTH: int = 100
 class UserCreationForm(forms.ModelForm):
     """
     A form for creating new users.
+
     Includes all the required fields, plus a repeated password.
     """
 
@@ -46,22 +47,24 @@ class UserCreationForm(forms.ModelForm):
         initial=True
     )
     groups = forms.ModelMultipleChoiceField(
-        label="Groups",
+        label='Groups',
         required=False,
         queryset=Group.objects.all(),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control'})
     )
     permissions = forms.ModelMultipleChoiceField(
-        label="Permissions",
+        label='Permissions',
         required=False,
         queryset=Permission.objects.all(),
-        help_text=('Specifying permissions individually is not necessary '
-                   'if the user belongs to a group to which those permissions are already allocated.')
+        help_text=(
+            'Specifying permissions individually is not necessary '
+            'if the user belongs to a group to which those permissions are already allocated.'
+        )
     )
 
     class Meta:
         model = User
-        fields = (
+        fields = [
             'email',
             'password',
             'first_name',
@@ -77,7 +80,7 @@ class UserCreationForm(forms.ModelForm):
             'avatar',
             'is_superuser',
             'force_password_change'
-        )
+        ]
 
     def clean_email(self):
         """TODO: add docstring."""
@@ -88,7 +91,7 @@ class UserCreationForm(forms.ModelForm):
 
     def clean_username(self):
         """TODO: add docstring."""
-        username = self.cleaned_data.get('email') if not self.cleaned_data.get("username") else self.cleaned_data.get("username")
+        username = self.cleaned_data.get('username') or self.cleaned_data.get('email')
         if User.objects.filter(username=username).count() > 0:
             raise forms.ValidationError('An account with this username has already been created.')
         return username
@@ -96,18 +99,18 @@ class UserCreationForm(forms.ModelForm):
     def clean_password2(self):
         """TODO: add docstring."""
         # Check that the two password entries match
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
         if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("Passwords don't match.")
+            raise forms.ValidationError('Passwords do not match.')
         return password2
 
     def save(self, commit=True):
         """TODO: add docstring."""
         # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
-        user.username = self.cleaned_data.get("email") if not self.cleaned_data.get("username") else self.cleaned_data.get("username")
-        user.set_password(self.cleaned_data["password1"])
+        user.username = self.cleaned_data.get('username') or self.cleaned_data.get('email')
+        user.set_password(self.cleaned_data['password1'])
         if commit:
             user.save()
         return user
@@ -115,38 +118,52 @@ class UserCreationForm(forms.ModelForm):
 
 class UserChangeForm(forms.ModelForm):
     """
-    A form for updating users. Includes all the fields on
-    the user, but replaces the password field with admin's
-    password hash display field.
+    A form for updating users.
+
+    Includes all the fields on the user, but replaces the password field
+    with the admin's password hash display field.
     """
 
-    # password = ReadOnlyPasswordHashField()
-    # gender = forms.ChoiceField(label='Gender', required=True, choices=settings.GENDERS, widget=forms.Select(attrs={}))
     username = forms.CharField(required=False, widget=forms.HiddenInput())
-    email = forms.EmailField(label='Email', required=True, max_length=MAX_EMAIL_LENGTH,
-                             widget=forms.TextInput(attrs={'class': 'form-control'}))
-    first_name = forms.CharField(label='First Name', required=False, max_length=MAX_NAME_LENGTH,
-                                 widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(label='Last Name', required=False, max_length=MAX_NAME_LENGTH,
-                                widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(
+        label='Email',
+        required=True,
+        max_length=MAX_EMAIL_LENGTH,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    first_name = forms.CharField(
+        label='First Name',
+        required=False,
+        max_length=MAX_NAME_LENGTH,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    last_name = forms.CharField(
+        label='Last Name',
+        required=False,
+        max_length=MAX_NAME_LENGTH,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
     force_password_change = forms.BooleanField(label='Force password change', required=False)
     locked = forms.BooleanField(label='Locked', required=False)
-    # password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    # password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
-    # force_password_change = forms.BooleanField(help_text='Prompt user to change password upon first login', required=False, initial=True)
     groups = forms.ModelMultipleChoiceField(
-        label="Groups", required=False, queryset=Group.objects.all(),
+        label='Groups',
+        required=False,
+        queryset=Group.objects.all(),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control'})
     )
     permissions = forms.ModelMultipleChoiceField(
-        label="Permissions", required=False, queryset=Permission.objects.all(),
-        help_text=('Specifying permissions individually is not necessary if the user belongs to a group '
-                   'to which those permissions are already allocated.')
+        label='Permissions',
+        required=False,
+        queryset=Permission.objects.all(),
+        help_text=(
+            'Specifying permissions individually is not necessary if the user belongs to a group '
+            'to which those permissions are already allocated.'
+        )
     )
 
     class Meta:
         model = User
-        fields = (
+        fields = [
             'email',
             # 'password',
             'first_name',
@@ -160,7 +177,7 @@ class UserChangeForm(forms.ModelForm):
             'avatar',
             'is_superuser',
             'force_password_change'
-        )
+        ]
 
 
 class SocialAuthInline(TabularInline):
@@ -192,10 +209,10 @@ class UserAdmin(BaseUserAdmin):
         }),
         ('Settings', {
             'classes': ('',),
-            'fields': ('force_password_change', 'locked',)
+            'fields': ('force_password_change', 'locked')
         }),
         ('Permissions', {
-            'fields': ('is_superuser', 'groups', 'permissions',)
+            'fields': ('is_superuser', 'groups', 'permissions')
         }),
     )
 
@@ -204,20 +221,20 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         ('Basic Information (Required)', {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', ('password2', 'force_password_change',), )
+            'fields': ('username', 'email', 'password1', ('password2', 'force_password_change'))
         }),
         ('Optional Information', {
             'classes': ('wide',),
             'fields': ('first_name', 'last_name')
         }),
         ('Permissions', {
-            'fields': ('is_superuser', 'groups', 'permissions',)
+            'fields': ('is_superuser', 'groups', 'permissions')
         }),
     )
 
-    search_fields = ('first_name', 'last_name', 'email', 'username')
+    search_fields = ['first_name', 'last_name', 'email', 'username']
 
-    ordering = ('last_name', 'first_name')
+    ordering = ['last_name', 'first_name']
 
     filter_horizontal = ()
 

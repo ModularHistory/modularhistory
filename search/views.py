@@ -1,14 +1,19 @@
+# type: ignore
+# TODO: stop ignoring types when mypy bug is fixed
+
+"""Views for the search app."""
+
 # from django.shortcuts import render
 from itertools import chain
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q, QuerySet, Subquery
 from django.views.generic import ListView
 
 from entities.models import Entity
+from history.constants import IMAGE_CT_ID, OCCURRENCE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
 # from django.core.paginator import Paginator
-from history.models import Model, DatedModel
+from history.models import DatedModel, Model
 from history.structures.historic_datetime import HistoricDateTime
 from images.models import Image
 from occurrences.models import Occurrence
@@ -21,17 +26,18 @@ from topics.models import Topic
 
 def date_sorter(x: Union[Model, DatedModel]):
     """TODO: add docstring."""
-    date = None
-    if hasattr(x, 'get_date'):
-        date = x.get_date()
-    elif hasattr(x, 'date'):
-        date = x.date
+    get_date = getattr(x, 'get_date', None)
+    if get_date is not None:
+        date = get_date()
+    else:
+        date = getattr(x, 'date', None)
     if not date:
         date = HistoricDateTime(1, 1, 1, 0, 0, 0)
 
     # Display precise dates before ranges, e.g., "1500" before "1500 – 2000"
-    if hasattr(x, 'end_date') and getattr(x, 'end_date'):
-        date = date.replace(microsecond=date.microsecond+1)
+    if getattr(x, 'end_date', None):
+        microsecond = date.microsecond + 1
+        date = date.replace(microsecond=microsecond)
 
     return date
 
@@ -54,7 +60,7 @@ class SearchResultsView(ListView):
     results_count = 0
     paginate_by = 10
 
-    excluded_content_types: Optional[List[Tuple[int, str]]] = None
+    excluded_content_types: Optional[List[int]] = None
     sort_by_relevance: bool = False
     suppress_unverified: bool = True
     entities: Optional[QuerySet] = None
@@ -75,7 +81,6 @@ class SearchResultsView(ListView):
         #     'entities': None,
         #     'topics': None,
         # }
-
         search_form = SearchForm(
             request=self.request,
             query=query,
@@ -88,37 +93,35 @@ class SearchResultsView(ListView):
             # initial=data
         )
         context['search_form'] = search_form
+        # context['object_list'] = self.get_object_list()
         return context
 
-    def get_queryset(self) -> Union[QuerySet, List]:
+    def get_object_list(self) -> Union[QuerySet, List]:
         """TODO: add docstring."""
         request = self.request
         query = request.GET.get('query', None)
-
-        occurrence_ct = ContentType.objects.get_for_model(Occurrence)
-        quote_ct = ContentType.objects.get_for_model(Quote)
 
         db = self.db
 
         sort_by_relevance = request.GET.get('ordering') == 'relevance'
         self.sort_by_relevance = sort_by_relevance
 
-        suppress_unverified = not request.GET.get('quality') == 'unverified'
+        suppress_unverified = request.GET.get('quality') != 'unverified'
         self.suppress_unverified = suppress_unverified
 
-        ct_ids = request.GET.getlist('content_types', None)
+        ct_ids = [int(ct_id) for ct_id in (request.GET.getlist('content_types') or [])]
         start_year = request.GET.get('start_year_0', None)
         year_type = request.GET.get('start_year_1', None)
         if start_year and year_type:
             pass
-            # TODO: Create historic datetime object from year and year type
+            # TODO: Create historic datetime obj from year and year type
         end_year = request.GET.get('end_year_0', None)
-        entity_ids = request.GET.getlist('entities', None)
-        topic_ids = request.GET.getlist('topics', None)
-        content_types = []
-        for ct_id in ct_ids:
-            ct = ContentType.objects.get_for_id(ct_id).model_class()
-            content_types.append(ct)
+
+        entities = request.GET.getlist('entities', None)
+        entity_ids = [int(entity) for entity in entities] if entities else None
+
+        topics = request.GET.getlist('topics', None)
+        topic_ids = [int(topic) for topic in topics] if topics else None
 
         search_kwargs = {
             'query': query,
@@ -126,33 +129,27 @@ class SearchResultsView(ListView):
             'end_year': end_year,
             'rank': sort_by_relevance,
             'suppress_unverified': suppress_unverified,
-            'db': db
+            'db': db,
+            'entity_ids': entity_ids,
+            'topic_ids': topic_ids
         }
 
         # Occurrences
         occurrence_result_ids = []
-        if Occurrence in content_types or not content_types:
-            occurrence_results = Occurrence.objects.search(
-                **search_kwargs,
-                entity_ids=entity_ids,
-                topic_ids=topic_ids,
-            )
+        if OCCURRENCE_CT_ID in ct_ids or not ct_ids:
+            occurrence_results = Occurrence.objects.search(**search_kwargs)
             occurrence_result_ids = [o.id for o in occurrence_results]
         else:
             occurrence_results = Occurrence.objects.none()
 
         # Quotes
         quote_result_ids = []
-        if Quote in content_types or not content_types:
-            quote_results = Quote.objects.search(
-                **search_kwargs,
-                entity_ids=entity_ids,
-                topic_ids=topic_ids
-            )
+        if QUOTE_CT_ID in ct_ids or not ct_ids:
+            quote_results = Quote.objects.search(**search_kwargs)
             if occurrence_results:
                 # TODO: refactor
                 quote_results = quote_results.exclude(
-                    Q(relations__content_type_id=occurrence_ct) &
+                    Q(relations__content_type_id=OCCURRENCE_CT_ID) &
                     Q(relations__object_id__in=occurrence_result_ids)
                 )
             quote_result_ids = [q.id for q in quote_results]
@@ -160,12 +157,8 @@ class SearchResultsView(ListView):
             quote_results = Quote.objects.using(db).none()
 
         # Images
-        if Image in content_types or not content_types:
-            image_results = Image.objects.search(
-                **search_kwargs,
-                entity_ids=entity_ids,
-                topic_ids=topic_ids
-            ).filter(entities=None)
+        if IMAGE_CT_ID in ct_ids or not ct_ids:
+            image_results = Image.objects.search(**search_kwargs).filter(entities=None)
             if occurrence_results:
                 image_results = image_results.exclude(
                     Q(occurrences__in=occurrence_results) |
@@ -177,12 +170,8 @@ class SearchResultsView(ListView):
             image_results = Image.objects.using(db).none()
 
         # Sources
-        if Source in content_types or not content_types:
-            source_results = Source.objects.search(
-                **search_kwargs,
-                entity_ids=entity_ids,
-                topic_ids=topic_ids
-            )
+        if SOURCE_CT_ID in ct_ids or not ct_ids:
+            source_results = Source.objects.search(**search_kwargs)
             # TODO: This was broken by conversion to generic relations with quotes & occurrences
             # source_results = source_results.exclude(
             #     Q(occurrences__in=occurrence_results) |
@@ -195,40 +184,38 @@ class SearchResultsView(ListView):
         else:
             source_results = Source.objects.using(db).none()
 
-        self.entities = Entity.objects.using(db).filter(pk__in=Subquery(Entity.objects.filter(
-            Q(involved_occurrences__in=occurrence_results) |
-            Q(quotes__in=quote_results) |
-            Q(attributed_sources__in=source_results)
-        ).order_by('id').distinct('id').values('pk'))).order_by('name')
+        entity_subquery = Subquery(
+            Entity.objects.filter(
+                Q(involved_occurrences__in=occurrence_results) |
+                Q(quotes__in=quote_results) |
+                Q(attributed_sources__in=source_results)
+            ).order_by('id').distinct('id').values('pk')
+        )
+        self.entities = Entity.objects.using(db).filter(pk__in=entity_subquery).order_by('name')
 
         # TODO: refactor
         topics_ids = []
         from topics.models import TopicRelation
-        for relation in TopicRelation.objects.filter(
-            Q(content_type=occurrence_ct) & Q(object_id__in=occurrence_result_ids)
-        ):
+
+        # occurrence topic relations
+        occurrence_topic_relations = TopicRelation.objects.filter(
+            Q(content_type_id=OCCURRENCE_CT_ID) & Q(object_id__in=occurrence_result_ids)
+        )
+        for relation in occurrence_topic_relations:
             topics_ids.append(relation.topic.id)
-        for relation in TopicRelation.objects.filter(
-            Q(content_type=quote_ct) & Q(object_id__in=quote_result_ids)
-        ):
+
+        # quote topic relations
+        quote_topic_relations = TopicRelation.objects.filter(
+            Q(content_type_id=QUOTE_CT_ID) & Q(object_id__in=quote_result_ids)
+        )
+        for relation in quote_topic_relations:
             topics_ids.append(relation.topic.id)
+
         self.topics = Topic.objects.using(db).filter(pk__in=topics_ids).order_by('key')
         # self.places = Place.objects.filter(
         #     Q(occurrences__in=occurrence_results)
         #     | Q(publications__in=source_results)
         # ).distinct
-
-        # # Content types
-        # content_types = []
-        # if len(occurrence_results):
-        #     content_types.append((ContentType.objects.get_for_model(Occurrence).id, 'Occurrences'))
-        # if len(quote_results):
-        #     content_types.append((ContentType.objects.get_for_model(Quote).id, 'Quotes'))
-        # if len(image_results):
-        #     content_types.append((ContentType.objects.get_for_model(Image).id, 'Images'))
-        # if len(source_results):
-        #     content_types.append((ContentType.objects.get_for_model(Source).id, 'Sources'))
-        # self.content_types = content_types
 
         # Combine querysets
         queryset_chain = chain(
@@ -245,3 +232,14 @@ class SearchResultsView(ListView):
         self.results_count = len(qs)
 
         return qs
+
+    def get_queryset(self) -> QuerySet:
+        """
+        Required because SearchResultsView inherits from the generic Django ListView.
+
+        Returns an empty queryset.
+
+        SearchResultsView uses `get_object_list` instead of `get_queryset` to set
+        the context variable containing the list of search results.
+        """
+        return self.get_object_list()

@@ -1,4 +1,8 @@
-"""https://docs.djangoproject.com/en/3.1/topics/checks/"""
+"""
+MyPy static typing check.
+
+See https://docs.djangoproject.com/en/3.1/topics/checks/.
+"""
 
 import argparse
 import configparser
@@ -9,7 +13,8 @@ import re
 # from os import path
 import sys
 from collections import defaultdict
-from typing import Any, List, Optional, Set, Sequence, Dict, Tuple, Union, DefaultDict, Pattern, Iterator
+from typing import *
+from typing import Pattern  # not include in *
 
 # from django.core.checks.messages import CheckMessage, DEBUG, INFO, WARNING, ERROR
 from django.conf import settings
@@ -20,9 +25,13 @@ from history.checks import utils
 
 MultiOptions = Union[Sequence[str], str]
 
+ERROR_CODE_LIST_URL: str = 'https://mypy.readthedocs.io/en/stable/error_code_list.html'
+
 MYPY_SCRIPT_NAME: str = 'mypyrun'
 CONFIG_FILE = 'setup.cfg'
 CONFIG_FILES = (CONFIG_FILE,)
+
+os.environ['MYPY_DJANGO_CONFIG'] = f'./{CONFIG_FILE}'
 
 # Example:
 # history/checks.py:17: error: Need type annotation for 'errors'
@@ -44,24 +53,27 @@ GLOBAL_ONLY_OPTIONS = [
     'mypy_executable',
 ]
 
+PER_MODULE_OPTIONS = [
+    'select',
+    'ignore',
+    'warn',
+    'include',
+    'error_filters',
+    'warning_filters',
+]
+
 
 class Options:
     """Options common to both the config file and the cli."""
-    PER_MODULE_OPTIONS = [
-        'select',
-        'ignore',
-        'warn',
-        'include',
-        'error_filters',
-        'warning_filters',
-    ]
     # error codes:
     select: Optional[Set[str]] = None
     ignore: Optional[Set[str]] = None
     warn: Optional[Set[str]] = None
+
     # paths:
     include: List[Pattern] = None
     exclude: List[Pattern] = None
+
     # messages:
     error_filters: List[Pattern] = None
     warning_filters: List[Pattern] = None
@@ -74,9 +86,11 @@ class Options:
     mypy_executable: Optional[str] = None
 
     def __str__(self):
+        """TODO: write docstring."""
         return f'{self.__dict__}'
 
     def __init__(self):
+        """TODO: write docstring."""
         self.select = ALL
         self.ignore = set()
         self.warn = set()
@@ -112,8 +126,10 @@ def mypy(app_configs: Optional[List], **kwargs) -> List:
     if options.select and options.ignore:
         overlap = options.select.intersection(options.ignore)
         if overlap:
-            print(f'The same option must not be both selected and ignored: {", ".join(overlap)}',
-                  file=sys.stderr)
+            print(
+                f'The same option must not be both selected and ignored: {", ".join(overlap)}',
+                file=sys.stderr
+            )
             sys.exit(PARSING_FAIL)
 
     # By default, run mypy against the whole database everytime checks are performed.
@@ -150,12 +166,11 @@ def mypy(app_configs: Optional[List], **kwargs) -> List:
 
         # Exclude errors from specific files
         if options.is_excluded_path(filename):
-            print(f'Excluding {filename}...')
             filtered[filename] += 1
             continue
 
         # Use module options if applicable
-        for key, _options in module_options:
+        for _key, _options in module_options:
             if _options.is_included_path(filename):
                 options = _options
 
@@ -167,18 +182,23 @@ def mypy(app_configs: Optional[List], **kwargs) -> List:
 
         # Change the level based on config
         if level == 'error':
-            # If we have specified something to check for
-            if options.select is not ALL and error_code in options.select:
-                level = 'error' if not utils.match(options.error_filters, message) else None
-            # If we have specified something to ignore (specific selects override this)
-            elif options.ignore is ALL or error_code in options.ignore:
+            error_is_ignored = any([
+                utils.match(options.error_filters, message),
+                options.ignore is ALL,
+                error_code in options.ignore
+            ])
+            # If error is to be ignored
+            if error_is_ignored:
                 level = None
+            # If we have specified something to check for
+            elif options.select and error_code in options.select:
+                level = 'error'
             # If we have specified something to warn (ignore overrides this)
             elif options.warn is ALL or error_code in options.warn:
-                level = 'warning' if not utils.match(options.warning_filters, message) else None
+                level = 'warning'
             # If checking everything
             elif options.select is ALL:
-                level = 'error' if not utils.match(options.error_filters, message) else None
+                level = 'error'
             else:
                 level = None
 
@@ -198,9 +218,11 @@ def mypy(app_configs: Optional[List], **kwargs) -> List:
             else:
                 matched_error = None
         elif level == 'note' and matched_error is not None:
-            report(options, filename, line_number, level, message, not matched_error[0], matched_error[1])
+            is_filtered = not matched_error[0]
+            report(options, filename, line_number, level, message, is_filtered, matched_error[1])
         elif level == 'note' and message.startswith(REVEALED_TYPE):
-            report(options, filename, line_number, level, message, False)
+            is_filtered = False
+            report(options, filename, line_number, level, message, is_filtered)
 
         # message_level = DEBUG
         # if level == 'note':
@@ -238,8 +260,15 @@ def mypy(app_configs: Optional[List], **kwargs) -> List:
     return messages
 
 
-def report(options: Options, filename: str, line_number: str, status: str, msg: str, is_filtered: bool,
-           error_key: Optional[str] = None) -> None:
+def report(
+    options: Options,
+    filename: str,
+    line_number: str,
+    status: str,
+    msg: str,
+    is_filtered: bool,
+    error_key: Optional[str] = None
+) -> None:
     """Report an error to stdout."""
     display_attrs = ['dark'] if options.show_ignored and is_filtered else None
     filename = utils.colored(filename, 'cyan', attrs=display_attrs)
@@ -247,17 +276,27 @@ def report(options: Options, filename: str, line_number: str, status: str, msg: 
     color = utils.COLORS[status]
     status = utils.colored(f'{status}', color, attrs=display_attrs)
     msg = utils.colored(msg, color, attrs=display_attrs)
-    print(f'{"IGNORED: " if options.show_ignored and is_filtered else ""}'
-          f'{filename}:{line_number}: {status}: {msg}  [{error_key}]')
+    print(
+        f'{"IGNORED: " if options.show_ignored and is_filtered else ""}'
+        f'{filename}:{line_number}: {msg}  [{error_key}: {ERROR_CODE_LIST_URL}]'
+    )
 
 
 # Options Handling
 
 def _parse_multi_options(options: MultiOptions, split_token: str = ',') -> List[str]:
     """Split and strip and discard empties."""
+    parsed_options: Sequence[str] = []
     if isinstance(options, str):
-        options = options.split(split_token)
-    return [o.strip() for o in options if o.strip()]
+        options = options.strip()
+        # Split the options by the specified split token, or by newlines
+        if split_token in options:
+            parsed_options = options.split(split_token)
+        else:
+            parsed_options = options.split('\n')
+    else:
+        parsed_options = options
+    return [o.strip() for o in parsed_options if o.strip()]
 
 
 def _glob_to_regex(s):
@@ -290,7 +329,7 @@ config_types = {
     'select': _error_set,
     'ignore': _error_set,
     'warn': _error_set,
-    'args':  _parse_multi_options,
+    'args': _parse_multi_options,
     'include': _glob_list,
     'exclude': _glob_list,
     'error_filters': _regex_list,
@@ -299,14 +338,14 @@ config_types = {
 
 
 class BaseOptionsParser:
-    """."""
+    """TODO: add docstring."""
 
     def extract_updates(self, options: Options) -> Iterator[Tuple[Dict[str, object], Optional[str]]]:
-        """."""
+        """TODO: add docstring."""
         raise NotImplementedError
 
     def apply(self, options: Options, module_options: List[Tuple[str, Options]]) -> None:
-        """."""
+        """TODO: add docstring."""
         for updates, key in self.extract_updates(options):
             if updates:
                 if key is None:
@@ -319,23 +358,25 @@ class BaseOptionsParser:
 
 
 class ConfigFileOptionsParser(BaseOptionsParser):
-    """."""
+    """TODO: add docstring."""
 
     def __init__(self, filename=None):
+        """TODO: add docstring."""
         self.filename = filename
 
     def _parse_section(self, prefix: str, template: Options, section: configparser.SectionProxy) -> Dict[str, object]:
-        """."""
+        """TODO: add docstring."""
         results: Dict[str, object] = {}
-        for key in section:
+        for key, value in section.items():
             ct: Any
-            if key in config_types:
-                ct = config_types[key]
-            else:
+            ct = config_types.get(key)
+            if not ct:
                 dv = getattr(template, key, None)
                 if dv is None:
-                    print(f'{prefix}: Unrecognized option: {key} = {section[key]}',
-                          file=sys.stderr)
+                    print(
+                        f'{prefix}: Unrecognized option: {key} = {value}',
+                        file=sys.stderr
+                    )
                     continue
                 ct = type(dv)
             v: Any
@@ -358,7 +399,7 @@ class ConfigFileOptionsParser(BaseOptionsParser):
         return results
 
     def extract_updates(self, options: Options) -> Iterator[Tuple[Dict[str, object], Optional[str]]]:
-        """."""
+        """TODO: add docstring."""
         if self.filename is not None:
             config_files: Tuple[str, ...] = (self.filename,)
         else:
@@ -394,42 +435,47 @@ class ConfigFileOptionsParser(BaseOptionsParser):
                 updates = self._parse_section(prefix, options, section)
 
                 if set(updates).intersection(GLOBAL_ONLY_OPTIONS):
-                    print(f'{prefix}: Per-module sections should only specify '
-                          f'per-module flags ({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
-                          file=sys.stderr)
-                    updates = {k: v for k, v in updates.items() if k in Options.PER_MODULE_OPTIONS}
+                    print(
+                        f'{prefix}: Per-module sections should only specify '
+                        f'per-module flags ({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
+                        file=sys.stderr
+                    )
+                    updates = {k: v for k, v in updates.items() if k in PER_MODULE_OPTIONS}
                 globs = name[8:]
                 for glob in globs.split(','):
                     yield updates, glob
 
 
 class JsonOptionsParser(BaseOptionsParser):
-    """."""
+    """TODO: add docstring."""
 
     def __init__(self, json_data):
+        """TODO: add docstring."""
         self.json_data = json_data
 
     def extract_updates(self, options: Options) -> Iterator[Tuple[Dict[str, object], Optional[str]]]:
-        """."""
+        """TODO: add docstring."""
         if self.json_data:
             results: Dict[str, object] = {}
-            for key, v in self.json_data.items():
-                if key in config_types:
-                    ct = config_types[key]
-                    v = ct(v)
+            for key, value in self.json_data.items():
+                processed_value: Any = value
+                cast: Callable = config_types.get(key)  # type: ignore
+                if cast is not None:
+                    processed_value = cast(value)
                 else:
                     dv = getattr(options, key, None)
                     if dv is None:
-                        print(f'Unrecognized option: {key} = {v}', file=sys.stderr)
+                        print(f'Unrecognized option: {key} = {value}', file=sys.stderr)
                         continue
-                results[key] = v
+                results[key] = processed_value
             yield results, None
 
 
 class JsonEnvVarOptionsParser(JsonOptionsParser):
-    """."""
+    """TODO: add docstring."""
 
     def __init__(self):
+        """TODO: add docstring."""
         opts = os.environ.get('MYPYRUN_OPTIONS')
         json_data = json.loads(opts) if opts else None
         super(JsonEnvVarOptionsParser, self).__init__(json_data)

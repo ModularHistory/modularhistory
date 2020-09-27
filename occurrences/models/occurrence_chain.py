@@ -1,5 +1,5 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Occurrence chains."""
+
 from typing import List
 
 from django.db.models import ForeignKey, CASCADE
@@ -7,11 +7,13 @@ from django.db.models import ForeignKey, CASCADE
 from history.fields import HTMLField
 from history.models import Model
 
+DESCRIPTION_MAX_LENGTH = 200
+
 
 class OccurrenceChain(Model):
     """TODO: add docstring."""
 
-    description = HTMLField(max_length=200, null=True, unique=True)
+    description = HTMLField(max_length=DESCRIPTION_MAX_LENGTH, null=True, unique=True)
     parent_chain = ForeignKey('self', on_delete=CASCADE, related_name='sub_chains')
 
 

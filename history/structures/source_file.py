@@ -3,6 +3,7 @@ from os import listdir, remove
 from os.path import isfile, join
 
 from django.db.models.fields.files import FieldFile
+
 from history import settings
 
 
@@ -11,6 +12,7 @@ class TextualSourceFile(FieldFile):
 
     @staticmethod
     def dedupe():
+        """TODO: add docstring."""
         from sources.models import Source
         path = join(settings.MEDIA_ROOT, 'sources')
         files = [f.replace('.pdf', '') for f in listdir(path) if isfile(join(path, f))]

@@ -1,104 +1,194 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Model classes for documents (as sources)."""
+
 from bs4 import BeautifulSoup
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import ForeignKey, CASCADE
-from django.utils.safestring import SafeText, mark_safe
+from django.db.models import CASCADE, ForeignKey
+from django.utils.html import SafeString, format_html
+
+from history.fields import ExtraField
 from history.models import Model
-from .base import TitleMixin, TextualSource
-from .piece import _Piece
+from sources.models.piece import SourceWithPageNumbers
+from sources.models.source import OldTitledSource
+from sources.models.textual_source import OldTextualSource
+
+NAME_MAX_LENGTH: int = 100
+LOCATION_INFO_MAX_LENGTH: int = 400
+DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
+URL_MAX_LENGTH: int = 100
 
 
-class DocumentMixin(Model):
+class OldDocumentMixin(Model):
     """TODO: add docstring."""
 
     collection = ForeignKey('Collection', related_name='%(class)s', null=True, blank=True, on_delete=CASCADE)
     collection_number = models.PositiveSmallIntegerField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         help_text='aka acquisition number'
     )
     location_info = models.CharField(
-        max_length=400, null=True, blank=True,
+        max_length=LOCATION_INFO_MAX_LENGTH,
+        null=True,
+        blank=True,
         help_text='Ex: John H. Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
     )
-
-    HISTORICAL_ITEM_TYPE = 'writing'
 
     class Meta:
         abstract = True
 
 
-class _Document(DocumentMixin, TextualSource):
+class _Document(OldDocumentMixin, OldTextualSource):
     """TODO: add docstring."""
 
     descriptive_phrase = models.CharField(
-        max_length=100, null=True, blank=True,
+        max_length=DESCRIPTIVE_PHRASE_MAX_LENGTH,
+        null=True,
+        blank=True,
         help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"'
     )
-    collection = ForeignKey('Collection', related_name='%(class)s', null=True, blank=True, on_delete=CASCADE)
+    collection = ForeignKey(
+        'Collection',
+        related_name='%(class)s',
+        null=True,
+        blank=True,
+        on_delete=CASCADE
+    )
     collection_number = models.PositiveSmallIntegerField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         help_text='aka acquisition number'
     )
     location_info = models.CharField(
-        max_length=400, null=True, blank=True,
+        max_length=LOCATION_INFO_MAX_LENGTH,
+        null=True,
+        blank=True,
         help_text='Ex: John H. Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
     )
     information_url = models.URLField(
-        max_length=100, null=True, blank=True,
+        max_length=URL_MAX_LENGTH,
+        null=True,
+        blank=True,
         help_text='URL for information regarding the document'
     )
-
-    HISTORICAL_ITEM_TYPE = 'writing'
 
     class Meta:
         abstract = True
 
-    def _html(self) -> str:
+    def __html__(self) -> str:
         """TODO: write docstring."""
         raise NotImplementedError
+
+
+class DocumentSource(SourceWithPageNumbers):
+    """A historical document (as a source)."""
+
+    # collection_number = jsonstore.PositiveSmallIntegerField(
+    #     null=True,
+    #     blank=True,
+    #     help_text='aka acquisition number',
+    #     json_field_name=JSON_FIELD_NAME
+    # )
+
+    collection_number = ExtraField(json_field_name='extra')
+
+    # location_info = jsonstore.CharField(
+    #     max_length=LOCATION_INFO_MAX_LENGTH,
+    #     null=True,
+    #     blank=True,
+    #     help_text='Ex: John H. Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1',
+    #     json_field_name=JSON_FIELD_NAME
+    # )
+
+    location_info = ExtraField(json_field_name='extra')
+
+    # descriptive_phrase = jsonstore.CharField(
+    #     max_length=DESCRIPTIVE_PHRASE_MAX_LENGTH,
+    #     null=True,
+    #     blank=True,
+    #     help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
+    #     json_field_name=JSON_FIELD_NAME
+    # )
+
+    descriptive_phrase = ExtraField(json_field_name='extra')
+
+    # information_url = jsonstore.URLField(
+    #     max_length=URL_MAX_LENGTH,
+    #     null=True,
+    #     blank=True,
+    #     help_text='URL for information regarding the document',
+    #     json_field_name=JSON_FIELD_NAME
+    # )
+
+    information_url = ExtraField(json_field_name='extra')
 
 
 class Collection(Model):
     """TODO: add docstring."""
 
-    name = models.CharField(max_length=100, help_text='e.g., "Adam S. Bennion papers"', null=True, blank=True)
-    repository = ForeignKey('Repository', on_delete=CASCADE, help_text='the collecting institution')
-    link = models.URLField(max_length=100, null=True, blank=True)
+    name = models.CharField(
+        max_length=NAME_MAX_LENGTH,
+        help_text='e.g., "Adam S. Bennion papers"',
+        null=True,
+        blank=True
+    )
+    repository = ForeignKey(
+        'sources.Repository',
+        on_delete=CASCADE,
+        help_text='the collecting institution'
+    )
+    url = models.URLField(
+        max_length=URL_MAX_LENGTH,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         unique_together = ['name', 'repository']
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self._html, features='lxml').get_text()
+        return BeautifulSoup(self.__html__, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def html(self) -> SafeString:
         """TODO: write docstring."""
-        string = ''
-        if self.name:
-            string += f'{self.name}' if self.name else ''
-            string += ', ' if self.repository else ''
-        string += f'{self.repository}' if self.repository else ''
-        return string
+        return format_html(self.__html__)
 
     @property
-    def html(self) -> SafeText:
+    def __html__(self) -> str:
         """TODO: write docstring."""
-        return mark_safe(self._html)
+        components = [
+            f'{self.name}',
+            f'{self.repository}',
+        ]
+        # Remove blank values
+        components = [component for component in components if component]
+        # Join components; rearrange commas and double quotes
+        return ', '.join(components).replace('",', ',"')
 
 
 class Repository(Model):
     """TODO: add docstring."""
 
-    name = models.CharField(max_length=100, null=True, blank=True,
-                            help_text='e.g., "L. Tom Perry Special Collections"')
-    owner = models.CharField(max_length=100, null=True, blank=True,
-                             help_text='e.g., "Harold B. Lee Library, Brigham Young University"')
-    location = ForeignKey('places.Place', on_delete=models.SET_NULL,
-                          related_name='repositories', null=True, blank=True)
+    name = models.CharField(
+        max_length=NAME_MAX_LENGTH,
+        null=True,
+        blank=True,
+        help_text='e.g., "L. Tom Perry Special Collections"'
+    )
+    owner = models.CharField(
+        max_length=NAME_MAX_LENGTH,
+        null=True,
+        blank=True,
+        help_text='e.g., "Harold B. Lee Library, Brigham Young University"'
+    )
+    location = ForeignKey(
+        'places.Place',
+        on_delete=models.SET_NULL,
+        related_name='repositories',
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name_plural = 'Repositories'
@@ -107,104 +197,54 @@ class Repository(Model):
         """TODO: write docstring."""
         location_string = self.location.string if self.location else None
         components = [self.name, self.owner, location_string]
-        string = ', '.join([component for component in components if component])
-        return string
+        return ', '.join([component for component in components if component])
 
 
-class Document(TitleMixin, _Document):
+class OldDocument(OldTitledSource, _Document):
     """A historical document."""
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self._html, features='lxml').get_text()
+        return BeautifulSoup(self.__html__, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def __html__(self) -> str:
         """TODO: write docstring."""
-        string = ''
-        string += f'{self.attributee_string}, ' if self.attributee_string else ''
-        string += f'"{self.title_html}," ' if self.title else 'untitled document, '
-        string += f'{self.date.string}' if self.date else 'date unknown'
-        string += f', {self.descriptive_phrase}' if self.descriptive_phrase else ''
-        string += f', archived in {self.collection}' if self.collection else ''
-        return string
+        components = [
+            self.attributee_string,
+            self.linked_title if self.title else 'untitled document',
+            self.date.string if self.date else 'date unknown',
+            self.descriptive_phrase,
+            f'archived in {self.collection}' if self.collection else ''
+        ]
+
+        # Remove blank values
+        components = [component for component in components if component]
+
+        # Join components; rearrange commas and double quotes
+        return ', '.join(components).replace('",', ',"')
 
 
-letter_types = (
-    ('email', 'email'),
-    ('letter', 'letter'),
-    ('memorandum', 'memorandum'),
-)
-
-
-class Letter(_Document):
-    """TODO: add docstring."""
-
-    recipient = models.CharField(max_length=100, null=True, blank=True)
-    type2 = models.CharField(max_length=10, choices=letter_types, default='letter')
-
-    class Meta:
-        verbose_name = 'correspondence'
-        verbose_name_plural = 'correspondence'
+class Document(DocumentSource):
+    """A historical document (as a source)."""
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self._html, features='lxml').get_text()
+        return BeautifulSoup(self.__html__, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
+    def __html__(self) -> str:
         """TODO: write docstring."""
-        html = f'{self.attributee_string}, '
-        if self.href:
-            html += f'<a href="{self.href}" target="_blank">'
-        html += f'{self.type2} to {self.recipient or "<Unknown>"}'
-        if self.date:
-            html += ', dated ' if self.date.day_is_known else ', '
-            html += self.date.string
-        if self.href:
-            html += '</a>'
-        if self.descriptive_phrase:
-            html += f', {self.descriptive_phrase}'
-        if self.collection:
-            html += f', archived in {self.collection}'
-        return html
+        components = [
+            self.attributee_string,
+            self.linked_title if self.title else 'untitled document',
+            self.date.string if self.date else 'date unknown',
+            self.descriptive_phrase,
+            f'archived in {self.collection}' if self.collection else ''
+        ]
 
+        # Remove blank values
+        components = [component for component in components if component]
 
-class Affidavit(_Document):
-    """TODO: add docstring."""
-
-    certifier = models.CharField(max_length=100, null=True, blank=True)
-
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return BeautifulSoup(self._html, features='lxml').get_text()
-
-    @property
-    def _html(self) -> str:
-        string = f'{self.attributee_string}, '
-        string += f'affidavit sworn {self.date_html} at {self.location} before {self.certifier}'
-        return string
-
-    def clean(self):
-        """TODO: add docstring."""
-        super().clean()
-        if not self.location:
-            raise ValidationError('Affidavit needs a certification location.')
-
-
-class JournalEntry(_Piece):
-    """TODO: add docstring."""
-
-    class Meta:
-        verbose_name_plural = 'Journal entries'
-
-    def __str__(self) -> str:
-        """TODO: add docstring."""
-        return BeautifulSoup(self._html, features='lxml').get_text()
-
-    @property
-    def _html(self) -> str:
-        """TODO: add docstring."""
-        string = f'{self.attributee_string}, journal ' if self.attributee_string else 'Journal '
-        string += f'entry dated {self.date.string}' if self.date else ''
-        return string
+        # Join components; rearrange commas and double quotes
+        return ', '.join(components).replace('",', ',"')

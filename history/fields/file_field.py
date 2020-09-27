@@ -1,5 +1,5 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""ModularHistory's SourceFileField class."""
+
 import os
 from functools import partial
 from os.path import isfile, join
@@ -18,9 +18,7 @@ def dedupe_files(path: str, new_file_name: Optional[str] = None):
     # TODO: implement file dedupe for cloud storage
     if not settings.IS_GCP:
         full_path = join(settings.MEDIA_ROOT, path)
-        if not new_file_name:
-            raise NotImplementedError
-        else:
+        if new_file_name:
             # If uploading a new file, replace an older version if one exists.
             # TODO: Ensure this doesn't result in replacements of unrelated files that happen to have the same name.
             new_file_name, extension = os.path.splitext(new_file_name)
@@ -38,12 +36,14 @@ def dedupe_files(path: str, new_file_name: Optional[str] = None):
             for file_path in to_remove:
                 print(f'Removing old version of {file_path} ...')
                 os.remove(join(settings.MEDIA_ROOT, file_path))
+        else:
+            raise NotImplementedError
 
 
 def _generate_upload_path(instance: Model, filename: str, path: str) -> str:
+    """TODO: add docstring."""
     if settings.DEBUG:
         print(f'Generating upload path for {filename} (associated with {instance})...')
-    path, filename = path, filename
     filename = filename.replace(' ', '_')
     dedupe_files(path, new_file_name=filename)
     return join(path, filename)
@@ -51,16 +51,21 @@ def _generate_upload_path(instance: Model, filename: str, path: str) -> str:
 
 def upload_to(path: str) -> Callable:
     """
-    Return the upload path, based on the relative media path (`path` arg, e.g. "sources" or "sources/").
+    Return the upload path for a file.
+
+    The upload path is based on the relative media path (`path` arg, e.g. "sources" or "sources/").
     https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.FileField.upload_to
     """
     return partial(_generate_upload_path, path=path)
 
 
 class SourceFileField(FileField):
+    """TODO: add docstring."""
+
     attr_class = TextualSourceFile
 
     def formfield(self, **kwargs) -> Field:
+        """TODO: add docstring."""
         return super(FileField, self).formfield(**{
             'form_class': SourceFileFormField,
             **kwargs,

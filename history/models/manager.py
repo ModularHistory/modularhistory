@@ -1,37 +1,19 @@
+"""Manager classes for ModularHistory's models."""
+
 from datetime import date, datetime
-# from sys import stderr
 from typing import List, Optional, Union
 
 # from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import QuerySet, Manager as BaseManager
+from django.db.models import Manager as ModelManager, QuerySet
 from polymorphic.managers import PolymorphicManager as BasePolymorphicManager
 from polymorphic.query import PolymorphicQuerySet
+from typedmodels.models import TypedModelManager as BaseTypedModelManager
 
 from history.structures.historic_datetime import HistoricDateTime
 
 
-class Manager(BaseManager):
-    """Base manager for models."""
-
-    # TODO: optimize
-    @property
-    def occurrence_ct_id(self):
-        """TODO: add docstring."""
-        from occurrences.models import Occurrence
-        return (ContentType.objects.get_for_model(Occurrence)).id
-
-    @property
-    def quote_ct_id(self):
-        """TODO: add docstring."""
-        from quotes.models import Quote
-        return (ContentType.objects.get_for_model(Quote)).id
-
-    @property
-    def entity_ct_id(self):
-        """TODO: add docstring."""
-        from entities.models import Entity
-        return (ContentType.objects.get_for_model(Entity)).id
+class Manager(ModelManager):
+    """Base manager for ModularHistory's models."""
 
     def get_by_natural_key(self, *args):
         """TODO: add docstring."""
@@ -42,15 +24,15 @@ class Manager(BaseManager):
         return self.get(**natural_key)
 
     def search(
-            self,
-            query: Optional[str] = None,
-            start_year: Optional[int] = None,
-            end_year: Optional[int] = None,
-            entity_ids: Optional[List[int]] = None,
-            topic_ids: Optional[List[int]] = None,
-            rank: bool = False,
-            suppress_unverified: bool = True,
-            db: str = 'default'
+        self,
+        query: Optional[str] = None,
+        start_year: Optional[int] = None,
+        end_year: Optional[int] = None,
+        entity_ids: Optional[List[int]] = None,
+        topic_ids: Optional[List[int]] = None,
+        rank: bool = False,
+        suppress_unverified: bool = True,
+        db: str = 'default'
     ) -> Union[QuerySet, PolymorphicQuerySet]:
         """TODO: add docstring."""
         qs = self._queryset_class(model=self.model, using=db, hints=self._hints)
@@ -97,23 +79,22 @@ class Manager(BaseManager):
         #     ).order_by('id').distinct('id')
         # return qs
 
-    def get_closest_to_datetime(self, datetime_value: Union[date, datetime, HistoricDateTime],
-                                datetime_attr: str = 'date'):
+    def get_closest_to_datetime(
+        self,
+        datetime_value: Union[date, datetime, HistoricDateTime],
+        datetime_attr: str = 'date'
+    ):
         """TODO: add docstring."""
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()
         lesser = qs.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()
         if not greater and not lesser:  # TODO
-            first_item = qs.first()
-            # print(f'No items with {datetime_attr} attribute; '
-            #       f'returning first item instead: {first_item}', file=stderr)
-            return first_item
+            return qs.first()
         elif greater and lesser:
             greater_diff = abs(getattr(greater, datetime_attr) - datetime_value)
             lesser_diff = abs(getattr(lesser, datetime_attr) - datetime_value)
             return greater if greater_diff < lesser_diff else lesser
-        else:
-            return greater or lesser
+        return greater or lesser
 
     # def with_counts(self):
     #     from django.db import connection
@@ -130,6 +111,12 @@ class Manager(BaseManager):
     #             p.num_responses = row[3]
     #             result_list.append(p)
     #     return result_list
+
+
+class TypedModelManager(BaseTypedModelManager, Manager):
+    """Wrapper for PolymorphicManager."""
+
+    pass
 
 
 class PolymorphicManager(BasePolymorphicManager, Manager):

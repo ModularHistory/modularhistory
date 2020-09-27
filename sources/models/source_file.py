@@ -1,9 +1,9 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Model classes for source files."""
+
 from os import listdir, rename
 from os.path import isfile, join
 from typing import Optional
-from django.utils.safestring import SafeText, mark_safe
+from django.utils.html import SafeString, format_html
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -20,16 +20,20 @@ class SourceFile(Model):
     name = models.CharField(max_length=100, null=True, blank=True, unique=True)
     page_offset = models.SmallIntegerField(
         default=0, blank=True,
-        help_text='The difference between the page numbers displayed on the pages '
-                  'and the actual page numbers of the electronic file (a positive '
-                  'number if the electronic page number is greater than the textual'
-                  'page number; a negative number if the textual page number is '
-                  'greater than the electronic page number).'
+        help_text=(
+            'The difference between the page numbers displayed on the pages '
+            'and the actual page numbers of the electronic file (a positive '
+            'number if the electronic page number is greater than the textual'
+            'page number; a negative number if the textual page number is '
+            'greater than the electronic page number).'
+        )
     )
     first_page_number = models.SmallIntegerField(
         default=1, blank=True,
-        help_text='The page number that is visibly displayed on the page '
-                  'on which the relevant text begins (usually 1).'
+        help_text=(
+            'The page number that is visibly displayed on the page '
+            'on which the relevant text begins (usually 1).'
+        )
     )
 
     class Meta:
@@ -52,10 +56,12 @@ class SourceFile(Model):
         return None
 
     @property
-    def link(self) -> Optional[SafeText]:
+    def link(self) -> Optional[SafeString]:
         """TODO: add docstring."""
-        return mark_safe(f'<a href="{self.url}" class="display-source" target="_blank">'
-                         f'<i class="fa fa-search"></i></a>')
+        return format_html(
+            f'<a href="{self.url}" class="display-source" target="_blank">'
+            f'<i class="fa fa-search"></i></a>'
+        )
 
     @property
     def url(self) -> str:

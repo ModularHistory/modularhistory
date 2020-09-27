@@ -1,5 +1,5 @@
-from django.apps import AppConfig
 # from django.db.utils import ProgrammingError
+from django.apps import AppConfig
 
 
 class SearchConfig(AppConfig):

@@ -1,12 +1,15 @@
+# type: ignore
+# TODO: stop ignoring types when mypy bug is fixed
+
 import re
 
-from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count
 from django.urls import reverse
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from entities.models import Entity
+from admin.admin import AutocompleteFilter
 
 
 class AttributeeFilter(AutocompleteFilter):
@@ -15,20 +18,15 @@ class AttributeeFilter(AutocompleteFilter):
     title = 'attributee'
     field_name = 'attributees'
 
-    PARAMETER_NAME = 'attributees__pk__exact'
+    _parameter_name = 'attributees__pk__exact'
 
     def __init__(self, request, params, model, model_admin):
         """TODO: add docstring."""
         super().__init__(request, params, model, model_admin)
-        rendered_widget = self.rendered_widget
         if self.value():
             entity = Entity.objects.get(pk=self.value())
-            rendered_widget = mark_safe(
-                re.sub(r'(selected>).+(</option>)',
-                       rf'\g<1>{entity}\g<2>',
-                       rendered_widget)
-            )
-        self.rendered_widget = rendered_widget
+            rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{entity}\g<2>', self.rendered_widget)
+            self.rendered_widget = format_html(rendered_widget)
 
     def get_autocomplete_url(self, request, model_admin):
         """TODO: add docstring."""
@@ -37,9 +35,8 @@ class AttributeeFilter(AutocompleteFilter):
     def queryset(self, request, queryset):
         """TODO: add docstring."""
         if self.value():
-            return queryset.filter(**{self.PARAMETER_NAME: self.value()})
-        else:
-            return queryset
+            return queryset.filter(**{self._parameter_name: self.value()})
+        return queryset
 
 
 class AttributeeCategoryFilter(AutocompleteFilter):

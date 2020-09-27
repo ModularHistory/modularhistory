@@ -8,4 +8,5 @@ runs:
       shell: bash
       run: |
         python manage.py migrate
+        pytest --hypothesis-show-statistics
         python manage.py test

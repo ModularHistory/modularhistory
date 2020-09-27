@@ -1,10 +1,12 @@
+"""Views for the quotes app."""
+
 from typing import Dict
 
 from django.views import generic
 
-from search.models import Search
+from quotes.models import Quote
 from search.forms import SearchForm
-from .models import Quote
+from search.models import Search
 
 
 class ListView(generic.list.ListView):

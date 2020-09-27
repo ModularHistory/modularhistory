@@ -1,55 +1,61 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
-from typing import Optional
-
 from bs4 import BeautifulSoup
 from django.db import models
-from django.utils.safestring import SafeText, mark_safe
 
-from .base import TitleMixin, TextualSource
+from sources.models.source import OldTitledSource
+from sources.models.source_with_page_numbers import OldSourceWithPageNumbers, SourceWithPageNumbers
 
-piece_types = (
+TYPE_MAX_LENGTH: int = 10
+
+PIECE_TYPES = (
     ('essay', 'Essay'),
 )
 
 
-class _Piece(TextualSource):
-    page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
+class OldPiece(OldTitledSource, OldSourceWithPageNumbers):
+    """TODO: add docstring."""
 
-    class Meta:
-        abstract = True
+    type2 = models.CharField(max_length=TYPE_MAX_LENGTH, choices=PIECE_TYPES, default='essay')
 
-    @property
-    def file_page_number(self) -> Optional[int]:
-        file = self.file
-        if file:
-            if self.page_number:
-                return self.page_number + file.page_offset
-            elif self.container:
-                containment = self.source_containments.get(container=self.container)
-                if containment.page_number:
-                    return containment.page_number + file.page_offset
-        return None
+    def __str__(self) -> str:
+        """TODO: add docstring."""
+        return BeautifulSoup(self.__html__, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
-        raise NotImplementedError
-
-
-class Piece(TitleMixin, _Piece):
-    TYPE_MAX_LENGTH: int = 10
-    type2 = models.CharField(max_length=TYPE_MAX_LENGTH, choices=piece_types, default='essay')
-
-    def __str__(self) -> SafeText:
-        return BeautifulSoup(self._html, features='lxml').get_text()
-
-    @property
-    def _html(self) -> str:
+    def __html__(self) -> str:
         """TODO: write docstring."""
-        string = f'{self.attributee_string}, ' or ''
-        string += f'"{self.title_html}"'
-        # NOTE: punctuation (quotation marks and commas) are rearranged in the string
-        string += f', {self.date.string}' if self.date else ''  # + (', ' if self.container else '')
-        string = string.replace('",', ',"')
-        return string
+        components = [
+            self.attributee_string,
+            f'"{self.linked_title}"',
+            self.date.string if self.date else ''
+        ]
+        # Remove blank values
+        components = [component for component in components if component]
+        # Join components; rearrange commas and double quotes
+        return ', '.join(components).replace('",', ',"')
+
+
+class Piece(SourceWithPageNumbers):
+    """A piece (e.g., essay)."""
+
+    def __str__(self) -> str:
+        """TODO: add docstring."""
+        return BeautifulSoup(self.__html__, features='lxml').get_text()
+
+    @property
+    def __html__(self) -> str:
+        """TODO: write docstring."""
+        components = [
+            self.attributee_string,
+            f'"{self.linked_title}"',
+            self.date.string if self.date else ''
+        ]
+        # Remove blank values
+        components = [component for component in components if component]
+        # Join components; rearrange commas and double quotes
+        return ', '.join(components).replace('",', ',"')
+
+
+class Essay(Piece):
+    """An essay (as a source)."""
+
+    pass

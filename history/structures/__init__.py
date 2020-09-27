@@ -1,4 +1,4 @@
-# type: ignore
+"""ModularHistory's custom data structures."""
 
 from .historic_datetime import HistoricDateTime
 from .html import HTML

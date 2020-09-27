@@ -1,5 +1,5 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Quote bites."""
+
 from typing import TYPE_CHECKING
 
 from django.db import models

@@ -1,12 +1,16 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Model classes for entity categories/categorizations."""
+
+from typing import Tuple
+
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 
 from history.fields import ArrayField, HistoricDateTimeField
 from history.models import Model
 
-parts_of_speech = (
+NAME_MAX_LENGTH: int = 100
+
+PARTS_OF_SPEECH: Tuple[Tuple[str, str], ...] = (
     ('noun', 'noun'),
     ('adj', 'adjective'),
     ('any', 'noun / adjective'),
@@ -16,11 +20,9 @@ parts_of_speech = (
 class Category(Model):
     """TODO: add docstring."""
 
-    NAME_MAX_LENGTH: int = 100
-
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     part_of_speech = models.CharField(
-        max_length=9, choices=parts_of_speech,
+        max_length=9, choices=PARTS_OF_SPEECH,
         default='adj'
     )
     aliases = ArrayField(

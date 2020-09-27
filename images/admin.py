@@ -1,8 +1,9 @@
 from image_cropping import ImageCroppingMixin
-from history.admin import admin_site, Admin, TabularInline
+
 from entities.models import EntityImage
+from admin.admin import Admin, TabularInline, admin_site
+from images.models import Image, Video
 from occurrences.models import OccurrenceImage
-from .models import Image, Video
 
 
 class EntitiesInline(TabularInline):

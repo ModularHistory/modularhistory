@@ -1,18 +1,15 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Taggable models."""
+
 import re
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional
 
 from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.contenttypes.fields import GenericRelation
 from django.shortcuts import reverse
-from django.utils.safestring import mark_safe, SafeText
+from django.utils.html import SafeString, format_html
 
 from history.models import Model
 from topics.models import Topic
-
-if TYPE_CHECKING:
-    from topics.models import Topic
 
 
 class TaggableModel(Model):
@@ -32,8 +29,7 @@ class TaggableModel(Model):
         """TODO: write docstring."""
         if not self.tags.exists():
             return []
-        related_topics = [tag.topic for tag in self.tags.all()]
-        return related_topics
+        return [tag.topic for tag in self.tags.all()]
 
     @property
     def tags_string(self) -> Optional[str]:
@@ -45,10 +41,10 @@ class TaggableModel(Model):
         return None
 
     @property
-    def tags_html(self) -> Optional[SafeText]:
+    def tags_html(self) -> Optional[SafeString]:
         """TODO: write docstring."""
         if self.has_tags:
-            return mark_safe(
+            return format_html(
                 ' '.join([
                     f'<li class="topic-tag"><a>{topic.key}</a></li>'
                     for topic in self.related_topics
@@ -63,18 +59,20 @@ class TopicFilter(AutocompleteFilter):
     title = 'tags'
     field_name = 'tags'
 
-    PARAMETER_NAME = 'tags__topic__pk__exact'
+    _parameter_name = 'tags__topic__pk__exact'
 
     def __init__(self, request, params, model, model_admin):
         """TODO: add docstring."""
         super().__init__(request, params, model, model_admin)
-        rendered_widget = self.rendered_widget
+        rendered_widget: SafeString = self.rendered_widget  # type: ignore
         if self.value():
             topic = Topic.objects.get(pk=self.value())
-            rendered_widget = mark_safe(
-                re.sub(r'(selected>).+(</option>)',
-                       rf'\g<1>{topic}\g<2>',
-                       rendered_widget)
+            rendered_widget = format_html(
+                re.sub(
+                    r'(selected>).+(</option>)',
+                    rf'\g<1>{topic}\g<2>',
+                    rendered_widget
+                )
             )
         self.rendered_widget = rendered_widget
 
@@ -85,6 +83,5 @@ class TopicFilter(AutocompleteFilter):
     def queryset(self, request, queryset):
         """TODO: add docstring."""
         if self.value():
-            return queryset.filter(**{self.PARAMETER_NAME: self.value()})
-        else:
-            return queryset
+            return queryset.filter(**{self._parameter_name: self.value()})
+        return queryset

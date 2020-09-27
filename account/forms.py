@@ -3,7 +3,7 @@ from crispy_forms.layout import Submit, Layout, Field, HTML
 # from forms.form import FormMixIn, CustomForm
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm as BaseUserCreationForm
 from django.forms import ValidationError
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 
 from account.models import User
 
@@ -75,7 +75,7 @@ class UserCreationForm(BaseUserCreationForm):
     class Meta:
         model = User
         exclude = ()
-        # fields = ('username', 'email')
+        # fields = ['username', 'email']
 
 
 class RegistrationForm(UserCreationForm):
@@ -83,7 +83,7 @@ class RegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'username', 'email')
+        fields = ['first_name', 'last_name', 'username', 'email']
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -97,23 +97,25 @@ class RegistrationForm(UserCreationForm):
         self.helper.label_class = 'hidden'
         # self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            HTML('<p class="h4 mb-4">Register account</p>'),
-            HTML(f'''
-                <div class="form-row mb-4">
-                    <div class="col">
-                        <!-- First name -->
-            '''),
+            HTML(
+                '<p class="h4 mb-4">Register account</p>'
+            ),
+            HTML(
+                '<div class="form-row mb-4">'
+                '<div class="col">'
+                '<!-- First name -->'
+            ),
             Field('first_name', placeholder='First name'),
-            HTML(f'''
-                    </div>
-                    <div class="col">
-                        <!-- Last name -->
-            '''),
+            HTML(
+                '</div>'
+                '<div class="col">'
+                '<!-- Last name -->'
+            ),
             Field('last_name', placeholder='Last name'),
-            HTML(f'''
-                    </div>
-                </div>
-            '''),
+            HTML(
+                '</div>'
+                '</div>'
+            ),
             Field('email', css_class='form-control mb-4', placeholder='Email address'),
             Field('username', css_class='form-control mb-4', placeholder='Username'),
             Field('password1', css_class='form-control mb-4', placeholder='Password'),
@@ -168,15 +170,11 @@ class RegistrationForm(UserCreationForm):
 
     def clean_first_name(self):
         """TODO: add docstring."""
-        first_name = self.cleaned_data.get('first_name')
-        first_name = first_name.title()
-        return first_name
+        return self.cleaned_data.get('first_name').title()
 
     def clean_last_name(self):
         """TODO: add docstring."""
-        last_name = self.cleaned_data.get('last_name')
-        last_name = last_name.title()
-        return last_name
+        return self.cleaned_data.get('last_name').title()
 
     def clean(self):
         """TODO: add docstring."""
@@ -188,64 +186,6 @@ class RegistrationForm(UserCreationForm):
         return cleaned_data
 
 
-# class ChangeForm(FormMixIn, forms.ModelForm):
-#     # Form for updating user information
-#     form_id = 'changeform' # set in __init__ below
-#     action = None # None means form submits to the current page
-#     method = 'POST'
-#     enctype = "multipart/form-data"
-#     submit = 'Update'
-#     classes = [ 'formlib-form form-horizontal' ] # list of default classes for the form: <form>
-#     field_classes = [ '' ]
-#
-#     class Meta:
-#         model = User
-#         fields = [ 'first_name', 'last_name', 'email', 'username', 'address', 'address2', 'city', 'state', 'zip_code', 'date_of_birth', 'phone_number', ]
-#         widgets = {
-#             # 'name': forms.TextInput(attrs={'class': 'form-control'}),
-#         }
-#
-#     def init(self):
-#         self.fields['first_name'] = forms.CharField(required=True, max_length=100, initial=self.request.user.first_name, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['last_name'] = forms.CharField(required=True, max_length=100, initial=self.request.user.last_name, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['email'] = forms.EmailField(required=True, initial=self.request.user.email, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['username'] = forms.CharField(required=True, initial=self.request.user.username, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['address'] = forms.CharField(required=False, max_length=100, initial=self.request.user.address, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['address2'] = forms.CharField(label='Address (line 2)', initial=self.request.user.address2, required=False, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['city'] = forms.CharField(required=False, max_length=40, initial=self.request.user.city, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['state'] = forms.CharField(required=False, max_length=2, initial=self.request.user.state, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['zip_code'] = forms.CharField(required=False, max_length=5, initial=self.request.user.zip_code, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         self.fields['date_of_birth'] = forms.DateField(label='Date of birth', required=False, initial=self.request.user.date_of_birth, widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
-#         self.fields['phone_number'] = forms.CharField(required=False, max_length=20, initial=self.request.user.phone_number, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#         # self.fields['picture'] = forms.ImageField(label='Profile picture', rinitial=self.request.user.pict, equired=False)
-#         p = self.request.user
-#
-#     def clean_picture(self):
-#         picture = self.cleaned_data.get("picture", False)
-#         if picture and picture.file:
-#             picture.file.seek(0)
-#             mime = magic.from_buffer(picture.file.getvalue(), mime=True)
-#             print(">>> The mime type is %s." % mime)
-#             if mime not in ("image/png", "image/jpeg", "image/jpg"):
-#                 raise forms.ValidationError("The file type must be JPG or PNG.")
-#         return picture
-#
-#     def clean_username(self):
-#         username = self.cleaned_data.get('username')
-#         if username != self.request.user.username: # the username has been changed
-#             try:
-#                 user = User.objects.get(username=self.cleaned_data.get('username'))
-#                 raise forms.ValidationError('This username has been taken.')
-#             except User.DoesNotExist:
-#                 pass
-#         return username
-#
-#     def clean_date_of_birth(self):
-#         if self.cleaned_data.get('date_of_birth') is not None and self.cleaned_data.get('date_of_birth') > datetime.date.today():
-#             raise forms.ValidationError('This date is in the future. Currently, we only support users who were born in the past... (: ')
-#         return self.cleaned_data.get('date_of_birth')
-#
-#
 # class PictureForm(FormMixIn, forms.Form):
 #     form_id = 'pictureform'
 #     action = '/account/profile.picture/'

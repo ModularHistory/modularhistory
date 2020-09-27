@@ -1,6 +1,6 @@
-from history.admin import admin_site, Admin, TabularInline
-from . import models
-from .forms import PlaceForm
+from admin.admin import admin_site, Admin, TabularInline
+from places import models
+from places.forms import PlaceForm
 
 
 class LocationInline(TabularInline):

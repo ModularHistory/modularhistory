@@ -1,12 +1,13 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Model classes for topics."""
 
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from gm2m import GM2MField as GenericManyToManyField
 
 from history.fields import ArrayField, HTMLField
-from history.models import Model, RelatedQuotesMixin
+from history.models import Model, ModelWithRelatedQuotes
+
+KEY_MAX_LENGTH: int = 25
 
 
 class TopicTopicRelation(Model):
@@ -39,10 +40,10 @@ class TopicParentChildRelation(Model):
         return f'{self.parent_topic} > {self.child_topic}'
 
 
-class Topic(Model, RelatedQuotesMixin):
+class Topic(ModelWithRelatedQuotes):
     """A topic."""
 
-    key = models.CharField(max_length=25, unique=True)
+    key = models.CharField(max_length=KEY_MAX_LENGTH, unique=True)
     aliases = ArrayField(models.CharField(max_length=100), null=True, blank=True)
     description = HTMLField(null=True, blank=True)
     parent_topics = ManyToManyField(

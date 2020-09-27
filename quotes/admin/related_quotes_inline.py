@@ -1,6 +1,7 @@
-from history.admin import GenericTabularInline
-from .. import models
 from typing import List
+
+from admin.admin import GenericTabularInline
+from quotes import models
 
 
 class RelatedQuotesInline(GenericTabularInline):

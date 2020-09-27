@@ -1,0 +1,77 @@
+from typing import Optional
+
+from django.db.models import CharField, ForeignKey, SET_NULL
+
+from history.fields import ExtraField, HistoricDateTimeField
+from sources.models.source import MAX_CREATOR_STRING_LENGTH, Source, TypedSource
+
+
+class TextualSource(TypedSource):
+    """Mixin model for textual sources."""
+
+    original_edition = ForeignKey(
+        'self',
+        related_name='subsequent_editions',
+        blank=True,
+        null=True,
+        on_delete=SET_NULL
+    )
+    original_publication_date = HistoricDateTimeField(null=True, blank=True)
+
+    # editors = jsonstore.CharField(
+    #     max_length=MAX_CREATOR_STRING_LENGTH,
+    #     null=True,
+    #     blank=True,
+    #     json_field_name=JSON_FIELD_NAME
+    # )
+
+    editors = ExtraField(json_field_name='extra')
+
+    @property
+    def file_page_number(self) -> Optional[int]:
+        """TODO: write docstring."""
+        file = self.file
+        if file:
+            if self.containment and self.containment.page_number:
+                return self.containment.page_number + file.page_offset
+            return file.first_page_number + file.page_offset
+        return None
+
+    @property
+    def file_url(self) -> Optional[str]:
+        """TODO: write docstring."""
+        file_url = super().file_url
+        if file_url and self.file_page_number:
+            file_url = f'{file_url}#page={self.file_page_number}'
+        return file_url
+
+
+class OldTextualSource(Source):
+    """TODO: add docstring."""
+
+    editors = CharField(
+        max_length=MAX_CREATOR_STRING_LENGTH,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        abstract = True
+
+    @property
+    def file_page_number(self) -> Optional[int]:
+        """TODO: write docstring."""
+        file = self.file
+        if file:
+            if self.containment and self.containment.page_number:
+                return self.containment.page_number + file.page_offset
+            return file.first_page_number + file.page_offset
+        return None
+
+    @property
+    def file_url(self) -> Optional[str]:
+        """TODO: write docstring."""
+        file_url = super().file_url
+        if file_url and self.file_page_number:
+            file_url = f'{file_url}#page={self.file_page_number}'
+        return file_url

@@ -3,22 +3,23 @@ from typing import Any
 from django import template
 from django.template import loader
 from django.template.context import RequestContext
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from entities.models import Entity
 # from django.apps import apps
 from images.models import Image
 from occurrences.models import Occurrence
 from quotes.models import Quote
+from search.templatetags.highlight import highlight
 from sources.models import Source
 from topics.models import Topic
-from .highlight import highlight
 
 register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
 def detail(context: RequestContext, obj: Any):
+    """TODO: add docstring."""
     obj_name: str
     template_directory_name: str = ''
 
@@ -41,15 +42,11 @@ def detail(context: RequestContext, obj: Any):
     # TODO
     template_directory_name = template_directory_name or f'{obj_name}s'
 
-    context = {**context.flatten(), **{
+    greater_context = {**context.flatten(), **{
         obj_name: obj,
     }}
 
     t = loader.get_template(f'{template_directory_name}/_detail.html')
-    response = t.render(context)
-
-    query = context.get('query')
-    if query:
-        return mark_safe(highlight(response, text=query))
-
-    return response
+    response = t.render(greater_context)
+    query = greater_context.get('query')
+    return format_html(highlight(response, text=query)) if query else response

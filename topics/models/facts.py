@@ -1,5 +1,5 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Model classes for facts."""
+
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 
 from history.fields import HTMLField
@@ -44,6 +44,8 @@ class OccurrenceFactRelation(FactRelation):
 
 
 class FactSupport(FactRelation):
+    """TODO: add docstring."""
+
     supported_fact = ForeignKey('Fact', on_delete=CASCADE, related_name='supported_fact_supports')
     supportive_fact = ForeignKey('Fact', on_delete=CASCADE, related_name='supportive_fact_supports')
 

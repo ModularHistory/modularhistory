@@ -1,89 +1,119 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Model classes for articles."""
+
+from typing import List
+
 from bs4 import BeautifulSoup
 from django.db import models
-from django.db.models import ForeignKey, CASCADE
-from django.utils.safestring import SafeText, mark_safe
+from django.db.models import CASCADE, ForeignKey
 
-from history.fields import HTMLField
-from history.models import Model
-from .base import TextualSource, TitleMixin
-from .piece import _Piece
-
-publication_types = (
-    ('journal', 'Journal'),
-    ('newspaper', 'Newspaper'),
-    ('magazine', 'Magazine'),
-)
+from history.fields import ExtraField
+from sources.models.piece import OldSourceWithPageNumbers, SourceWithPageNumbers
+from sources.models.source import OldTitledSource
 
 
-class Publication(Model):
-    """TODO: add docstring."""
+class Article(SourceWithPageNumbers):
+    """A published article (as a source)."""
 
-    type2 = models.CharField(max_length=10, null=True, blank=True, choices=publication_types)
-    name = models.CharField(max_length=100, null=True, blank=True, unique=True)
-    aliases = models.CharField(max_length=100, null=True, blank=True)
-    description = HTMLField(null=True, blank=True)
+    # Moved to base class
+    # publication = ForeignKey(
+    #     'sources.Publication',
+    #     null=True,
+    #     blank=True,
+    #     on_delete=CASCADE
+    # )
 
-    class Meta:
-        ordering = ['name']
+    # JSON fields
+    # number = jsonstore.PositiveSmallIntegerField(
+    #     null=True,
+    #     blank=True,
+    #     json_field_name=JSON_FIELD_NAME
+    # )
 
-    searchable_fields = ['name', 'aliases']
+    number = ExtraField(json_field_name='extra')
 
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return BeautifulSoup(self._html, features='lxml').get_text()
+    # volume = jsonstore.PositiveSmallIntegerField(
+    #     null=True,
+    #     blank=True,
+    #     json_field_name=JSON_FIELD_NAME
+    # )
 
-    @property
-    def _html(self) -> str:
-        """TODO: write docstring."""
-        return f'<i>{self.name}</i>'
-
-    @property
-    def html(self) -> SafeText:
-        """TODO: write docstring."""
-        return mark_safe(self._html)
-
-
-class Article(TitleMixin, _Piece):
-    number = models.PositiveSmallIntegerField(null=True, blank=True)
-    volume = models.PositiveSmallIntegerField(null=True, blank=True)
-    publication = ForeignKey(Publication, null=True, blank=True, on_delete=CASCADE)
+    volume = ExtraField(json_field_name='extra')
 
     searchable_fields = ['db_string', 'publication__name']
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self._html, features='lxml').get_text()
+        return BeautifulSoup(self.__html__, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
-        """TODO: write docstring."""
-        string = f'{self.attributee_string}, ' if self.pk and self.attributee_string else ''
-        title_html = self.title_html.replace('"', "'") if self.title else None
-        string += f'"{title_html}," ' if self.title else ''
-        string += f'{self.publication.html}' if self.publication else ''  # TODO: make required
-        string += f', vol. {self.volume}' if self.volume else ''
-        string += f', no. {self.number}' if self.number else ''
-        string += f', {self.date.string}' if self.date else ''
-        return string
+    def __html__(self) -> str:
+        """
+        Return the article's HTML string representation.
+
+        The string has the following form:
+            ... TODO
+        """
+        attributee_html = self.attributee_string
+        title = self.linked_title.replace('"', "'") if self.title else ''
+        publication_html = self.publication.html if self.publication else ''  # TODO: make required
+        volume = f'vol. {self.volume}' if self.volume else ''
+        number = f'no. {self.number}' if self.number else ''
+        date = self.date.string if self.date else ''
+        components: List[str] = [
+            attributee_html,
+            f'"{title}"' if title else '',
+            publication_html,
+            volume,
+            number,
+            date
+        ]
+        # Remove blank values
+        components = [component for component in components if component]
+        # Join components; rearrange commas and double quotes
+        return ', '.join(components).replace('",', ',"')
 
 
-class WebPage(TitleMixin, TextualSource):
-    website_title = models.CharField(max_length=100, null=True, blank=True)
-    organization_name = models.CharField(max_length=100, null=True, blank=True)
+class OldArticle(OldTitledSource, OldSourceWithPageNumbers):
+    """TODO: write docstring."""
+
+    number = models.PositiveSmallIntegerField(null=True, blank=True)
+    volume = models.PositiveSmallIntegerField(null=True, blank=True)
+    publication = ForeignKey(
+        'sources.Publication',
+        null=True,
+        blank=True,
+        on_delete=CASCADE
+    )
+
+    searchable_fields = ['db_string', 'publication__name']
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self._html, features='lxml').get_text()
+        return BeautifulSoup(self.__html__, features='lxml').get_text()
 
     @property
-    def _html(self) -> str:
-        """TODO: write docstring."""
-        string = f'{self.attributee_string}, ' if self.attributee_string else ''
-        string += f'"{self.title_html}," ' if self.title else ''
-        string += f'<i>{self.website_title}</i>'
-        string += f', {self.organization_name}' if self.organization_name else ''
-        string += f', {self.date.string}' if self.date else ''
-        string += f', retrieved from <a target="_blank" href="{self.url}">{self.url}</a>'
-        return string
+    def __html__(self) -> str:
+        """
+        Return the article's HTML string representation.
+
+        The string has the following form:
+            ... TODO
+        """
+        attributee_html = self.attributee_string
+        title = self.linked_title.replace('"', "'") if self.title else ''
+        publication_html = self.publication.html if self.publication else ''  # TODO: make required
+        volume = f'vol. {self.volume}' if self.volume else ''
+        number = f'no. {self.number}' if self.number else ''
+        date = self.date.string if self.date else ''
+        components: List[str] = [
+            attributee_html,
+            f'"{title}"' if title else '',
+            publication_html,
+            volume,
+            number,
+            date
+        ]
+        # Remove blank values
+        components = [component for component in components if component]
+        # Join components; rearrange commas and double quotes
+        return ', '.join(components).replace('",', ',"')

@@ -14,9 +14,9 @@ OS: MacOS or Ubuntu
 
 (ModularHistory cannot be run on Windows.)
 
-### Clone
+### Cloning
 
-Clone ModularHistory to your local machine, as follows:
+Clone ModularHistory to your local machine:
 
 ```shell script
 git clone https://github.com/ModularHistory/modularhistory.git
@@ -24,13 +24,23 @@ git clone https://github.com/ModularHistory/modularhistory.git
 
 ### Setup
 
-Enter the cloned project directory and run the setup script, as follows:
-
+Enter the cloned project directory: 
 ```shell script
 cd modularhistory
+```
+
+Execute the setup script (which installs all dependencies):
+
+```shell script
 ./setup.sh
 ```
-The setup script installs project dependencies.
+
+Run tests:
+
+```shell script
+pytest --hypothesis-show-statistics
+```
+
 
 
 ---

@@ -3,7 +3,7 @@ from typing import Any
 from django import template
 from django.template import loader
 from django.template.context import RequestContext
-from django.utils.safestring import mark_safe
+from django.utils.html import SafeString, format_html
 
 from entities.models import Entity
 # from django.apps import apps
@@ -11,18 +11,20 @@ from images.models import Image
 from occurrences.models import Occurrence
 from places.models import Place
 from quotes.models import Quote
+from search.templatetags.highlight import highlight
 from sources.models import Source
 from topics.models import Topic
-from .highlight import highlight
 
 register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def card(context: RequestContext, obj: Any):
+def card(context: RequestContext, obj: Any) -> SafeString:
+    """Returns the card HTML for a supported ModularHistory object."""
     obj_name: str
     template_directory_name: str = ''
 
+    # TODO: refactor
     if isinstance(obj, Occurrence):
         obj_name = 'occurrence'
     elif isinstance(obj, Quote):
@@ -44,16 +46,8 @@ def card(context: RequestContext, obj: Any):
     # TODO
     template_directory_name = template_directory_name or f'{obj_name}s'
 
-    context = {**context.flatten(), **{
-        'object': obj,
-        obj_name: obj,
-    }}
-
+    greater_context = {**context.flatten(), **{'object': obj, obj_name: obj}}
     t = loader.get_template(f'{template_directory_name}/_card.html')
-    response = t.render(context)
-
-    query = context.get('query')
-    if query:
-        return mark_safe(highlight(response, text=query))
-
-    return response
+    response = t.render(greater_context)
+    query = greater_context.get('query')
+    return format_html(highlight(response, text=query)) if query else response

@@ -15,6 +15,9 @@ env/
 venv/
 .venv/
 
+# Artifacts
+.artifacts/
+
 # Django
 media/
 staticfiles/
@@ -40,20 +43,18 @@ node_modules/
 *.bak
 backups/
 
-# MyPy
-.mypy_cache/
-
-# Unit test / linting / coverage reports
-htmlcov/
-.tox/
+# Testing / linting / coverage reports
 .coverage
 .coverage.*
 .cache
-.pytest_cache/
-nosetests.xml
-coverage.xml
-*.cover
 .hypothesis/
+.mypy_cache/
+.pytest_cache/
+.tox/
+*.cover
+coverage.xml
+htmlcov/
+nosetests.xml
 
 # Celery
 celerybeat-schedule.*

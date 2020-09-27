@@ -1,3 +1,3 @@
-from .admin import *
-from .citations import *
-from .source_files import *
+from .sources import SourceAdmin, SourcesInline
+from .citations import CitationAdmin, CitationsInline
+from .source_files import SourceFileAdmin

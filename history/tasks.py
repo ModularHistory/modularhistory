@@ -10,16 +10,15 @@ import time
 from getpass import getuser
 from glob import glob
 from sys import stderr
+from typing import Any, Dict
 
 from celery import Celery
 from django.core import management
 from google.cloud import tasks_v2 as tasks
 from google.protobuf.timestamp_pb2 import Timestamp
-# from paramiko import SSHClient
-# from scp import SCPClient
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-from typing import Any, Dict
+
 from history import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
@@ -90,7 +89,7 @@ if not settings.IS_GCP:
     app = Celery('history')
 
     # Using a string here means the worker doesn't have to serialize
-    # the configuration object to child processes.
+    # the configuration obj to child processes.
     # namespace='CELERY' means all celery-related configuration keys
     # should have a `CELERY_` prefix.
     app.config_from_object('django.conf:settings', namespace='CELERY')
@@ -98,25 +97,24 @@ if not settings.IS_GCP:
     # Load task modules from all registered Django app configs.
     app.autodiscover_tasks()
 
-
     @app.task(bind=True)
     def debug(self):
+        """TODO: add docstring."""
         _debug(self)
-
 
     @app.task(bind=True)
     def back_up_db(self):
         """Create a database backup file."""
         print(f'Received request to back up database: {self.request}')
         if not settings.DEBUG:
-            print(f'Backing up database....')
+            print('Backing up database....')
             # Create backup file
             management.call_command('dbbackup --clean')
             # Select latest backup file
             os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
             files = glob('*sql')  # .psql or .sql files
             if not files:
-                print(f'Could not find a db backup file.')
+                print('Could not find a db backup file.')
                 return None
             backup_file = max(files, key=os.path.getmtime)
 

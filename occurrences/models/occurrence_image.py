@@ -1,8 +1,8 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Occurrence images."""
+
 from django.db import models
 from django.db.models import CASCADE
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from history.models import Model
 from images.models import Image
@@ -27,7 +27,7 @@ class OccurrenceImage(Model):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return mark_safe(f'{self.position}: {self.image.caption}')
+        return format_html(f'{self.position}: {self.image.caption}')
 
     @property
     def is_positioned(self) -> bool:
@@ -42,4 +42,4 @@ class OccurrenceImage(Model):
     @property
     def key(self) -> str:
         """TODO: write docstring."""
-        return self.image.key
+        return f'{self.image.key}'

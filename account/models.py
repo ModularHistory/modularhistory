@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 from django.db import models
 from django.db.models import QuerySet
@@ -9,11 +7,18 @@ from social_django.models import UserSocialAuth
 
 from history.fields.file_field import upload_to
 
+AVATAR_QUALITY: int = 70
+AVATAR_WIDTH: int = 200
+AVATAR_HEIGHT: int = AVATAR_WIDTH
+
 
 class UserManager(BaseUserManager):
     """TODO: add docstring."""
 
-    pass
+    @classmethod
+    def locked(cls) -> 'QuerySet[User]':
+        """TODO: add docstring."""
+        return User.objects.filter(locked=True)
 
 
 class User(AbstractUser):
@@ -23,9 +28,9 @@ class User(AbstractUser):
     avatar = ProcessedImageField(
         null=True, blank=True,
         upload_to=upload_to('account/avatars'),
-        processors=[ResizeToFill(200, 200)],
+        processors=[ResizeToFill(AVATAR_WIDTH, AVATAR_HEIGHT)],
         format='JPEG',
-        options={'quality': 70}
+        options={'quality': AVATAR_QUALITY}
     )
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, auto_now=True)
@@ -54,10 +59,11 @@ class User(AbstractUser):
         return self.social_auth
 
     def lock(self):
+        """TODO: write docstring."""
         self.locked = True
         self.save()
 
     def unlock(self):
+        """TODO: write docstring."""
         self.locked = False
         self.save()
-

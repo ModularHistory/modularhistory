@@ -1,13 +1,18 @@
 from django.conf import settings
 from django.contrib.flatpages.middleware import FlatpageFallbackMiddleware
-from staticpages.views import staticpage
 from django.http import Http404
+
+from staticpages.views import staticpage
+
+HTTP404_RESPONSE_CODE = 404
 
 
 class StaticPageFallbackMiddleware(FlatpageFallbackMiddleware):
+    """TODO: add docstring."""
+
     def process_response(self, request, response):
         """Attempt to fall back on a static page."""
-        if response.status_code != 404:
+        if response.status_code != HTTP404_RESPONSE_CODE:
             return response  # No need to check for a flatpage for non-404 responses.
         try:
             return staticpage(request, request.path_info)

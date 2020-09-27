@@ -1,3 +1,3 @@
-from django.shortcuts import render
+"""Views for the frontend app."""
 
-# Create your views here.
+# from django.shortcuts import render

@@ -1,18 +1,11 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
-from typing import TYPE_CHECKING
+"""Quote attributions."""
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 
 from entities.models import Entity
-from history.models import (
-    Model
-)
-
-if TYPE_CHECKING:
-    pass
+from history.models import Model
 
 
 class QuoteAttribution(Model):
@@ -31,12 +24,16 @@ class QuoteAttribution(Model):
         return str(self.attributee)
 
     def clean(self):
+        """TODO: write docstring."""
         super().clean()
-        if self.position > 0 and len(QuoteAttribution.objects.exclude(pk=self.pk).filter(
+        if self.position > 0:
+            duplications = QuoteAttribution.objects.exclude(pk=self.pk).filter(
                 quote=self.quote, attributee=self.attributee, position=self.position
-        )) > 1:
-            raise ValidationError('Attribution position should be unique.')
+            )
+            if duplications.exists():
+                raise ValidationError('Attribution position should be unique.')
 
     def save(self, *args, **kwargs):
+        """TODO: write docstring."""
         self.clean()
         super().save(*args, **kwargs)

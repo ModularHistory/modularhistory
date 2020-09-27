@@ -1,5 +1,4 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Model classes for entity engagements, roles, affiliations, etc."""
 
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
@@ -8,6 +7,8 @@ from history.fields import HistoricDateTimeField, HTMLField
 from history.models import (
     Model
 )
+
+MAX_NAME_LENGTH: int = 100
 
 
 class _Engagement(Model):
@@ -41,8 +42,6 @@ class Affiliation(_Engagement):
 
 class Role(Model):
     """TODO: add docstring."""
-
-    MAX_NAME_LENGTH: int = 100
 
     name = models.CharField(max_length=MAX_NAME_LENGTH, unique=True)
     description = HTMLField(null=True, blank=True)

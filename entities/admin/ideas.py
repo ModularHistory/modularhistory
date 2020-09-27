@@ -2,7 +2,7 @@ from entities import models
 from entities.forms import (
     IdeaForm
 )
-from history.admin import admin_site, Admin
+from admin.admin import admin_site, Admin
 
 
 class IdeaAdmin(Admin):

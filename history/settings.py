@@ -10,14 +10,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import sys
-from enum import Enum
-from importlib.util import find_spec
+# from importlib.util import find_spec
 from typing import Dict, List
 
 import sentry_sdk
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
-from mega import Mega
+# from mega import Mega
 from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -29,9 +28,14 @@ IS_GCP = bool(os.getenv('GAE_APPLICATION', None))
 IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')
 USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD, cast=bool)
 TESTING = 'test' in sys.argv
-ENVIRONMENT = (environments.PROD if IS_PROD
-               else environments.GITHUB_TEST if os.environ.get('GITHUB_WORKFLOW')
-               else environments.DEV)
+
+# Environment
+if IS_PROD:
+    ENVIRONMENT = environments.PROD
+elif os.environ.get('GITHUB_WORKFLOW'):
+    ENVIRONMENT = environments.GITHUB_TEST
+else:
+    ENVIRONMENT = environments.DEV
 
 ADMINS = config(
     'ADMINS',
@@ -74,6 +78,10 @@ DEBUG = ENVIRONMENT == environments.DEV  # DEBUG must be False in production (fo
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
 SECRET_KEY = config('SECRET_KEY')
+
+# https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
+PREPEND_WWW = IS_PROD
+APPEND_SLASH = IS_PROD
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = ENVIRONMENT != environments.DEV
@@ -127,7 +135,6 @@ INSTALLED_APPS = [
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
     'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_json_widget',  # https://github.com/jmrivas86/django-json-widget
-    'django_nose',  # https://github.com/jazzband/django-nose
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
@@ -165,15 +172,33 @@ INSTALLED_APPS = [
     'topics.apps.TopicsConfig',
     'staticpages.apps.StaticPagesConfig',
 ]
+if ENVIRONMENT == environments.DEV:
+    INSTALLED_APPS += [
+        'django_spaghetti',  # https://github.com/LegoStormtroopr/django-spaghetti-and-meatballs
+    ]
 
 MIDDLEWARE = [
+    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
 
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 
+    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    'django.middleware.cache.UpdateCacheMiddleware',
+
+    # Set the site attribute on every request obj, so request.site returns the current site:
+    # 'django.contrib.sites.middleware.CurrentSiteMiddleware',
+
+    # https://docs.djangoproject.com/en/3.1/topics/http/sessions/
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
     'django.middleware.common.CommonMiddleware',
+
+    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    'django.middleware.cache.FetchFromCacheMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
 
     # # https://github.com/yandex/django_replicated
@@ -227,7 +252,6 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'history.wsgi.application'
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--with-coverage',
     # '--cover-package=foo,bar',  # which apps to measure coverage for
@@ -267,26 +291,26 @@ elif ENVIRONMENT == environments.DEV and USE_PROD_DB:
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
-    print(f'WARNING: Using production database!  Tread carefully!')
+    print('WARNING: Using production database!  Tread carefully!')
 else:
     DATABASES = {
         'default': {
-            'NAME': config('DB_NAME'),
-            'USER': config('DB_USER'),
+            'NAME': config('DB_NAME', default='modularhistory'),
+            'USER': config('DB_USER', default='postgres'),
             'PASSWORD': config('DB_PASSWORD'),
             'HOST': config('DB_HOST', default='localhost'),
             'ENGINE': 'django.db.backends.postgresql',
         },
         'slave': {
             'NAME': 'slave',
-            'USER': config('DB_USER'),
+            'USER': config('DB_USER', default='postgres'),
             'PASSWORD': config('DB_PASSWORD'),
             'HOST': config('DB_HOST', default='localhost'),
             'ENGINE': 'django.db.backends.postgresql',
         },
         'backup': {
             'NAME': 'backup',
-            'USER': config('DB_USER'),
+            'USER': config('DB_USER', default='postgres'),
             'PASSWORD': config('DB_PASSWORD'),
             'HOST': config('DB_HOST', default='localhost'),
             'ENGINE': 'django.db.backends.postgresql',
@@ -434,14 +458,16 @@ USE_TZ = True
 # Google Cloud Storage bucket names
 # https://django-storages.readthedocs.io/en/latest/backends/gcloud.html
 GS_MEDIA_BUCKET_NAME = 'modularhistory-media'
-GS_STATIC_BUCKET_NAME = 'modularhistory-static'
 GS_LOCATION = 'media'  # Bucket subdirectory in which to store files. (Defaults to the bucket root.)
+GS_STATIC_BUCKET_NAME = 'modularhistory-static'
+GS_ARTIFACTS_BUCKET_NAME = 'modularhistory-artifacts'
 
-MEGA_USERNAME = config('MEGA_USERNAME', default=None)
-MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
-mega = None
-if IS_PROD and MEGA_USERNAME and MEGA_PASSWORD:
-    mega = Mega()
+# TODO: Mega backups?
+# MEGA_USERNAME = config('MEGA_USERNAME', default=None)
+# MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
+# mega = None
+# if IS_PROD and MEGA_USERNAME and MEGA_PASSWORD:
+#     mega = Mega()
 
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -454,11 +480,19 @@ SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 #     STATICFILES_STORAGE = 'history.storage.GoogleCloudStaticFileStorage'
 
 # Media files (images, etc. uploaded by users)
+# https://docs.djangoproject.com/en/3.0/topics/files/
 MEDIA_URL = f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/' if IS_PROD else '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if IS_PROD:
     DEFAULT_FILE_STORAGE = 'history.storage.GoogleCloudMediaFileStorage'
     GS_BUCKET_NAME = GS_MEDIA_BUCKET_NAME
+
+ARTIFACTS_URL = f'https://storage.googleapis.com/{GS_ARTIFACTS_BUCKET_NAME}/' if IS_PROD else '/artifacts/'
+ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
+if IS_PROD:
+    ARTIFACTS_STORAGE = 'history.storage.GoogleCloudArtifactsStorage'
+else:
+    ARTIFACTS_STORAGE = 'history.storage.LocalArtifactsStorage'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -492,8 +526,10 @@ TINYMCE_DEFAULT_CONFIG = {
         'nonbreaking anchor | image media link | code | smallcaps highlight | '
         'spellchecker preview | undo redo'
     ),
-    'contextmenu': ('formats | blockquote | highlight smallcaps | link media image '
-                    'charmap hr | code | pastetext'),
+    'contextmenu': (
+        'formats | blockquote | highlight smallcaps | link media image '
+        'charmap hr | code | pastetext'
+    ),
     'menubar': True,
     'statusbar': True,
     'branding': False,
@@ -566,7 +602,7 @@ BOOTSTRAP4 = {'include_jquery': False}
 ADMIN_LOGO = 'logo_head_white.png'
 
 # https://django-admin-tools.readthedocs.io/en/latest/customization.html
-ADMIN_TOOLS_MENU = 'history.admin_menu.AdminMenu'
+ADMIN_TOOLS_MENU = 'admin.admin_menu.AdminMenu'
 ADMIN_TOOLS_THEMING_CSS = 'styles/admin.css'
 
 # https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
@@ -642,6 +678,58 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
 
+# http://127.0.0.1:8000/plate/
+SPAGHETTI_SAUCE = {
+    'apps': ['sources', 'quotes'],
+    'show_fields': False,
+    'exclude': {'account': ['user']},
+}
+
+# Caching settings
+if ENVIRONMENT == environments.DEV:
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'djpymemcache.backend.PyMemcacheCache',
+    #         'LOCATION': [
+    #             '127.0.0.1:11211',
+    #         ],
+    #         'TIMEOUT': 300  # TODO
+    #         # 'OPTIONS': {
+    #         #     'serializer': <your_serializer>,
+    #         #     'deserializer': <your_deserializer>,
+    #         # },
+    #     },
+    # }
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
+    #         'LOCATION': '127.0.0.1:11211',
+    #     }
+    # }
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    #         'LOCATION': 'unique-snowflake',
+    #     }
+    # }
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+    #         'LOCATION': ARTIFACTS_ROOT,
+    #     }
+    # }
+    # CACHES = {
+    #     'default': {
+    #         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+    #         'LOCATION': 'cache',
+    #     }
+    # }
+
 # Celery settings
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
@@ -652,13 +740,6 @@ CELERY_BROKER_URL = 'amqp://localhost'
 
 # TODO
 # CELERY_CACHE_BACKEND = 'default'
-if ENVIRONMENT == environments.DEV:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-            'LOCATION': 'cache',
-        }
-    }
 
 # Google Cloud settings
 GC_PROJECT = config('GC_PROJECT', default=None)

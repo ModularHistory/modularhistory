@@ -1,6 +1,8 @@
+from typing import Any, Dict, List, Optional
+
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import QuerySet, Q
-from typing import List, Optional
+
 from history.models import Manager as BaseManager
 
 
@@ -8,16 +10,17 @@ class Manager(BaseManager):
     """TODO: add docstring."""
 
     def search(
-            self,
-            query: Optional[str] = None,
-            start_year: Optional[int] = None,
-            end_year: Optional[int] = None,
-            entity_ids: Optional[List[int]] = None,
-            topic_ids: Optional[List[int]] = None,
-            rank: bool = False,
-            suppress_unverified: bool = True,
-            db: str = 'default'
+        self,
+        query: Optional[str] = None,
+        start_year: Optional[int] = None,
+        end_year: Optional[int] = None,
+        entity_ids: Optional[List[int]] = None,
+        topic_ids: Optional[List[int]] = None,
+        rank: bool = False,
+        suppress_unverified: bool = True,
+        db: str = 'default'
     ) -> QuerySet:
+        """TODO: add docstring."""
         qs = super().search(db=db, suppress_unverified=suppress_unverified)
 
         # Limit to specified date range
@@ -40,21 +43,21 @@ class Manager(BaseManager):
 
         searchable_fields = self.model.get_searchable_fields()
         if query and searchable_fields:
-            query = SearchQuery(query)
+            search_query = SearchQuery(query)
             # https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/#weighting-queries
             vectors = []
             for searchable_field in searchable_fields:
-                if isinstance(searchable_field, tuple) or isinstance(searchable_field, list):
+                if isinstance(searchable_field, (list, tuple)):
                     field, weight = searchable_field
                     vectors.append(SearchVector(field, weight=weight))
                 else:
                     vectors.append(SearchVector(searchable_field))
-            vector = vectors[0]
+            vector: SearchVector = vectors[0]
             if len(vectors) > 1:
                 for v in vectors[1:]:
                     vector += v
-            annotations = {'search': vector}
+            annotations: Dict[str, Any] = {'search': vector}
             if rank:
-                annotations['rank'] = SearchRank(vector, query)
-            qs = qs.annotate(**annotations).filter(search=query)
+                annotations['rank'] = SearchRank(vector, search_query)
+            qs = qs.annotate(**annotations).filter(search=search_query)
         return qs.order_by('id').distinct('id')

@@ -1,17 +1,18 @@
 from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models import Q
-from django.views import generic
-from django.http import HttpRequest, JsonResponse
 from django.db.models.query import QuerySet
+# from django.http import HttpRequest, JsonResponse
+from django.views import generic
+
 from topics.models import Topic
 
 
 class TagSearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        """TODO: add docstring."""
-        return super().get(request, *args, **kwargs)
+    # def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    #     """TODO: add docstring."""
+    #     return super().get(request, *args, **kwargs)
 
     def get_queryset(self) -> 'QuerySet[Topic]':
         """TODO: add docstring."""

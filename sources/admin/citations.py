@@ -1,8 +1,8 @@
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 
-from history.admin import admin_site, Admin, TabularInline, GenericTabularInline
-from .. import models
+from admin.admin import admin_site, Admin, TabularInline, GenericTabularInline
+from sources import models
 
 
 class ContentTypeFilter(SimpleListFilter):
@@ -13,8 +13,8 @@ class ContentTypeFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         """TODO: add docstring."""
-        content_types = models.Citation.objects.all().values('content_type').distinct()
-        content_types = ContentType.objects.filter(id__in=content_types)
+        content_type_ids = models.Citation.objects.all().values('content_type').distinct()
+        content_types = ContentType.objects.filter(id__in=content_type_ids)
         return [
             (f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types
         ]

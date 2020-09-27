@@ -1,8 +1,8 @@
 from django.contrib.admin import SimpleListFilter
 
-from history.admin import admin_site, Admin
-from .admin import SourcesInline
-from .. import models
+from admin.admin import admin_site, Admin
+from sources import models
+from sources.admin.sources import SourcesInline
 
 
 class PdfFilter(SimpleListFilter):

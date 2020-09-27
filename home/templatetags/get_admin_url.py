@@ -9,6 +9,7 @@ register = template.Library()
 
 @register.filter()
 def get_admin_url(obj: Model) -> Optional[str]:
+    """TODO: add docstring."""
     if obj:
         if not isinstance(obj, Model):
             raise ValueError(f'Object should be a model but instead is type "{type(obj)}": {obj}')

@@ -13,6 +13,7 @@ class EntityForm(ModelForm):
         exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
+        """TODO: add docstring."""
         super().__init__(*args, **kwargs)
         self.initial['type'] = self.instance.type
 
@@ -25,6 +26,7 @@ class OrganizationForm(ModelForm):
         exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
+        """TODO: add docstring."""
         super().__init__(*args, **kwargs)
         self.initial['type'] = 'entities.organization'
 
@@ -37,6 +39,7 @@ class PersonForm(ModelForm):
         exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
+        """TODO: add docstring."""
         super().__init__(*args, **kwargs)
         self.initial['type'] = 'entities.person'
 
@@ -55,6 +58,7 @@ class GroupForm(ModelForm):
         exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
+        """TODO: add docstring."""
         super().__init__(*args, **kwargs)
         self.initial['type'] = 'entities.group'
 

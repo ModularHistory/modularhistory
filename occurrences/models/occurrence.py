@@ -1,31 +1,41 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
 from typing import Any, List, Optional
 
 from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.db.models import ManyToManyField
 from django.template.defaultfilters import truncatechars_html
-from django.utils.safestring import SafeText, mark_safe
+from django.utils.html import SafeString, format_html
 
-from history.fields import HistoricDateTimeField, HTMLField
-from history.models import (
-    TaggableModel, DatedModel, RelatedQuotesMixin, SearchableMixin, SourcesMixin
-)
+from history.fields import HTMLField, HistoricDateTimeField
+from history.models import (DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSources, TaggableModel)
 from images.models import Image
+from occurrences.manager import Manager
 from quotes.models import quote_sorter_key
-from ..manager import Manager
+
+TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
-class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, SearchableMixin):
+class Occurrence(DatedModel, TaggableModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel):
     """Something that happened."""
 
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
-    summary = HTMLField(verbose_name='Summary', null=True, blank=True)
-    description = HTMLField(verbose_name='Description', null=True, blank=True)
-    postscript = HTMLField(verbose_name='Postscript', null=True, blank=True,
-                           help_text='Content to be displayed below all related data')
+    summary = HTMLField(
+        verbose_name='Summary',
+        null=True,
+        blank=True
+    )
+    description = HTMLField(
+        verbose_name='Description',
+        null=True,
+        blank=True
+    )
+    postscript = HTMLField(
+        verbose_name='Postscript',
+        null=True,
+        blank=True,
+        help_text='Content to be displayed below all related data'
+    )
     locations = ManyToManyField(
         'places.Place',
         through='occurrences.OccurrenceLocation',
@@ -56,9 +66,13 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
         ordering = ['-date']
 
     searchable_fields = [
-        'summary', 'description', 'date__year',
-        'involved_entities__name', 'involved_entities__aliases',
-        'tags__topic__key', 'tags__topic__aliases'
+        'summary',
+        'description',
+        'date__year',
+        'involved_entities__name',
+        'involved_entities__aliases',
+        'tags__topic__key',
+        'tags__topic__aliases'
     ]
     objects: Manager = Manager()
 
@@ -67,14 +81,16 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
         return self.summary.text or '...'
 
     @property
-    def description__truncated(self) -> Optional[SafeText]:
+    def truncated_description(self) -> Optional[SafeString]:
         """TODO: write docstring."""
         if not self.description:
             return None
         description = BeautifulSoup(self.description.html, features='lxml')
         if description.find('img'):
             description.find('img').decompose()
-        return mark_safe(truncatechars_html(description.prettify(), 250))
+        return format_html(
+            truncatechars_html(description.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
+        )
 
     @property
     def entity_images(self) -> Optional[List[Image]]:
@@ -110,15 +126,19 @@ class Occurrence(DatedModel, TaggableModel, RelatedQuotesMixin, SourcesMixin, Se
 
     def get_context(self):
         """TODO: add docstring."""
-        quotes = ([quote_relation.quote for quote_relation in self.quote_relations.all()]
-                  if self.quote_relations.exists() else [])
+        quotes = (
+            [quote_relation.quote for quote_relation in self.quote_relations.all()]
+            if self.quote_relations.exists() else []
+        )
         return {
             'occurrence': self,
             'quotes': sorted(quotes, key=quote_sorter_key),
             # 'unpositioned_images' is a little misleading;
             # these are positioned by their `position` attribute rather than manually positioned.
-            'unpositioned_images': [image for image in self.occurrence_images.all()
-                                    if not image.is_positioned]
+            'unpositioned_images': [
+                image for image in self.occurrence_images.all()
+                if not image.is_positioned
+            ]
         }
 
     def save(self, *args, **kwargs):

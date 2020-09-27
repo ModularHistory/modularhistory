@@ -1,7 +1,10 @@
-"""https://docs.djangoproject.com/en/3.1/topics/checks/"""
+"""
+Utils for checks.
+
+https://docs.djangoproject.com/en/3.1/topics/checks/
+"""
 
 from typing import List, Pattern
-
 
 COLORS = {
     'error': 'red',
@@ -30,6 +33,7 @@ TERM_RESET = '\033[0m'
 
 
 def colored(text, color=None, attrs=None):
+    """TODO: add docstring."""
     esc = '\033[%dm%s'
     if color is not None:
         text = esc % (TERM_COLORS[color], text)
@@ -41,6 +45,7 @@ def colored(text, color=None, attrs=None):
 
 
 def match(regex_list: List[Pattern], s: str) -> bool:
+    """TODO: add docstring."""
     for regex in regex_list:
         if regex.search(s):
             return True
@@ -49,10 +54,13 @@ def match(regex_list: List[Pattern], s: str) -> bool:
 
 # The check framework is used for multiple different kinds of checks. As such, errors
 # and warnings can originate from models or other django objects. The `CheckMessage`
-# requires an object as the source of the message and so we create a temporary object
+# requires an obj as the source of the message and so we create a temporary obj
 # that simply displays the file and line number associated with the message (i.e. "location")
 class ErrorLocation:
+    """TODO: add docstring."""
+
     def __init__(self, location):
+        """TODO: add docstring."""
         self.location = location
 
     def __str__(self) -> str:

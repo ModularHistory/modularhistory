@@ -1,6 +1,6 @@
 from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models import Q
-from django.http import HttpRequest, JsonResponse
+# from django.http import HttpRequest, JsonResponse
 from django.views import generic
 
 from entities.models import Entity  # , Person, Organization
@@ -9,11 +9,12 @@ from entities.models import Entity  # , Person, Organization
 class EntitySearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        """TODO: add docstring."""
-        return super().get(request, *args, **kwargs)
+    # def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    #     """TODO: add docstring."""
+    #     return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
+        """TODO: add docstring."""
         queryset = Entity.objects.all()
         term = self.term
         if term:
@@ -34,7 +35,7 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Entity.objects.exclude(type='entities.deity').order_by('birth_date')
+        return Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
 
 
 class BaseDetailView(generic.detail.DetailView):
@@ -45,8 +46,12 @@ class BaseDetailView(generic.detail.DetailView):
 
 
 class DetailView(BaseDetailView):
+    """TODO: add docstring."""
+
     template_name = 'entities/detail.html'
 
 
 class DetailPartView(BaseDetailView):
+    """TODO: add docstring."""
+
     template_name = 'entities/_detail.html'

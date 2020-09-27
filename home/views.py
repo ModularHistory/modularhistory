@@ -1,5 +1,4 @@
-# from django.shortcuts import render
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from django.db.models import QuerySet
 from django.views.generic import TemplateView  # , RedirectView
@@ -12,7 +11,7 @@ class HomePageView(TemplateView):
 
     template_name = 'home/index.html'
 
-    excluded_content_types: Optional[List[Tuple[int, str]]] = None
+    excluded_content_types: Optional[List[int]] = None
     sort_by_relevance: bool = False
     suppress_unverified: bool = True
     entities: Optional[QuerySet] = None
@@ -21,6 +20,7 @@ class HomePageView(TemplateView):
     db: str = 'default'
 
     def get_context_data(self, **kwargs) -> Dict:
+        """TODO: add docstring."""
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get('query')
         context['query'] = query

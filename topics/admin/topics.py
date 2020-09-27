@@ -1,4 +1,4 @@
-from history.admin import admin_site, Admin, TabularInline
+from admin.admin import admin_site, Admin, TabularInline
 from topics import models
 
 

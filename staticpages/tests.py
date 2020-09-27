@@ -1,3 +1,18 @@
-from django.test import TestCase
+"""Tests for the staticpages app."""
 
-# Create your tests here.
+import pytest
+from hypothesis import given, example
+from hypothesis.strategies import text
+
+
+@pytest.mark.django_db
+class TestNothing:
+    """TODO: add docstring."""
+
+    do_nothing: bool = True
+
+    @given(string=text())
+    @example(string='Not doing anything')
+    def test_nothing(self, string: str):
+        """TODO: add docstring."""
+        assert self.do_nothing

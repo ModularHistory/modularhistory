@@ -288,7 +288,7 @@ $(function() {
 
     // Enable hiding admin controls
     $('.hide-admin-controls').click(function(event) {
-        // $('.edit-object-button').hide();
+        // $('.edit-obj-button').hide();
         event.preventDefault();
         $('head').append(`<style>.edit-object-button {display: none}</style>`);
     });

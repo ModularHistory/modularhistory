@@ -24,10 +24,10 @@ class HasQuotesFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         """TODO: add docstring."""
-        value = self.value()
-        if value == 'Yes':
+        option = self.value()
+        if option == 'Yes':
             return queryset.exclude(quotes=None)
-        elif value == 'No':
+        elif option == 'No':
             return queryset.filter(quotes=None)
         return queryset
 
@@ -47,9 +47,9 @@ class HasImageFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         """TODO: add docstring."""
-        value = self.value()
-        if value == 'Yes':
+        option = self.value()
+        if option == 'Yes':
             return queryset.exclude(images=None)
-        elif value == 'No':
+        elif option == 'No':
             return queryset.filter(images=None)
         return queryset

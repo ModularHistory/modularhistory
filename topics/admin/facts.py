@@ -1,4 +1,4 @@
-from history.admin import admin_site, Admin, TabularInline, StackedInline
+from admin.admin import admin_site, Admin, TabularInline, StackedInline
 from topics import models
 
 
@@ -43,7 +43,7 @@ class FactAdmin(Admin):
     list_display = ['text']
     list_filter = ['related_entities', 'related_occurrences']
     search_fields = ['text']
-    # ordering = ('datetime', 'start_date', 'end_date')
+    # ordering = ['datetime', 'start_date', 'end_date']
 
     inlines = [
         FactEntitiesInline,

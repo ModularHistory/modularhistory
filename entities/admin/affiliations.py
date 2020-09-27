@@ -1,5 +1,5 @@
 from entities import models
-from history.admin import admin_site, Admin, TabularInline
+from admin.admin import admin_site, Admin, TabularInline
 
 
 class RoleAdmin(Admin):
@@ -15,9 +15,9 @@ class RolesInline(TabularInline):
     autocomplete_fields = ['role']
     extra = 0
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, *args, **kwargs):
         """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
+        fields = super().get_fields(*args, **kwargs)
         for field in ('start_date', 'end_date'):
             if field in fields:
                 fields.remove(field)
@@ -31,7 +31,18 @@ class AffiliationAdmin(Admin):
     list_display = ['entity', 'affiliated_entity', 'start_date', 'end_date']
     search_fields = list_display
     autocomplete_fields = ['entity', 'affiliated_entity']
-    ordering = ('start_date', 'entity')
+    ordering = ['start_date', 'entity']
+    inlines = [RolesInline]
+
+
+class AffiliationsInline(TabularInline):
+    """TODO: add docstring."""
+
+    model = models.Affiliation
+    fk_name = 'affiliated_entity'
+    extra = 1
+    show_change_link = True
+    autocomplete_fields = ['affiliated_entity']
     inlines = [RolesInline]
 
 

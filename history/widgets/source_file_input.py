@@ -1,7 +1,7 @@
-# type: ignore
-# TODO: remove above line after fixing typechecking
+"""Form widgets for source files."""
+
 import os
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Tuple
 
 from django import forms
 from django.contrib.contenttypes.models import ContentType
@@ -24,10 +24,9 @@ class SourceFileInput(MultiWidget):
 
     def __init__(self, attrs: Optional[Dict] = None):
         """TODO: add docstring."""
-        file_choices = [(None, '-----')]
-        for file_name in os.listdir(f'{settings.MEDIA_ROOT}/sources'):
+        file_choices: List[Tuple[Optional[str], str]] = [(None, '-----')]
+        for file_name in os.listdir(os.path.join(settings.MEDIA_ROOT, 'sources')):
             file_choices.append((f'sources/{file_name}', file_name))
-        file_choices = ((value, string) for value, string in file_choices)
         widgets = [
             ClearableFileInput(attrs=attrs),
             forms.Select(attrs=attrs, choices=file_choices),
