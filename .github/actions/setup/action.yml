@@ -5,4 +5,4 @@ runs:
   steps:
     - name: Run the setup script
       shell: bash
-      run: ./setup.sh
+      run: ./setup.sh --noninteractive

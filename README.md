@@ -47,7 +47,7 @@ pytest --hypothesis-show-statistics
 
 ## Contributing
 
-Please see our [contribution guidelines](https://github.com/ModularHistory/modularhistory/wiki/Contribution-Guidelines).
+Please see ModularHistory's [contribution guidelines](https://github.com/ModularHistory/modularhistory/wiki/Contribution-Guidelines).
 
 ---
 
