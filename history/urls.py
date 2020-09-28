@@ -19,7 +19,7 @@ Examples:
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
-
+from history import environments
 from admin.admin import admin_site
 from search.views import SearchResultsView
 
@@ -51,10 +51,12 @@ urlpatterns = [
     path('select2/', include('django_select2.urls')),
     path('', include('home.urls')),
     path('error', error),  # error trigger (for testing purposes)
-    path('plate/', include('django_spaghetti.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if settings.ENVIRONMENT == environments.DEV:
+    urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
 
 if settings.DEBUG:
     import debug_toolbar

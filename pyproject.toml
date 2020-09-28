@@ -26,6 +26,19 @@ norecursedirs = [
     "*env",
 ]
 
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py38
+
+[testenv]
+skip_install = true
+whitelist_externals = poetry
+commands =
+    poetry install -vv
+    pytest --hypothesis-show-statistics
+"""
+
 [tool.poetry.dependencies]
 python = "^3.7"
 appdirs = "==1.4.4"
@@ -129,3 +142,4 @@ tomlkit = "^0.7.0"
 virtualenv-clone = "==0.5.4"
 wemake-python-styleguide = "^0.14.1"
 django-pymemcache = "^1.0.0"
+tox = "^3.20.0"

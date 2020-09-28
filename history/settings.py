@@ -30,7 +30,7 @@ GC_QUEUE = config('GC_QUEUE', default=None)
 GC_REGION = config('GC_REGION', default=None)
 
 IS_GCP = bool(os.getenv('GAE_APPLICATION', None))
-IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')
+IS_PROD = IS_GCP
 USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD, cast=bool)
 TESTING = 'test' in sys.argv
 

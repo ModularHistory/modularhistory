@@ -104,12 +104,12 @@ class Model(DjangoModel):
         return tuple(natural_key_values)
 
     @classmethod
-    def get_object_html(cls, match: Match, use_preretrieved_html: bool) -> str:
+    def get_object_html(cls, match: 'Match', use_preretrieved_html: bool) -> str:
         """Must be implemented in inheriting model classes."""
         raise NotImplementedError
 
     @classmethod
-    def get_updated_placeholder(cls, match: Match) -> str:
+    def get_updated_placeholder(cls, match: 'Match') -> str:
         """Must be implemented in inheriting model classes."""
         raise NotImplementedError
 
