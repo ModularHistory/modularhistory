@@ -84,7 +84,9 @@ def _debug(self) -> None:
     print(f'User: {getuser()}', file=stderr)
 
 
-if not settings.IS_GCP:
+if settings.IS_GCP:
+    app = None
+else:  # If not running in Google Cloud
     # Set the default Django settings module for the 'celery' program.
     app = Celery('history')
 

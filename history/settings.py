@@ -24,6 +24,11 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from history import environments
 from history.config import config
 
+# Google Cloud settings
+GC_PROJECT = config('GC_PROJECT', default=None)
+GC_QUEUE = config('GC_QUEUE', default=None)
+GC_REGION = config('GC_REGION', default=None)
+
 IS_GCP = bool(os.getenv('GAE_APPLICATION', None))
 IS_PROD = IS_GCP and os.getenv('GAE_ENV', '').startswith('standard')
 USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD, cast=bool)
@@ -673,7 +678,11 @@ SITE_ID = 1
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='localhost')
-EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
+try:
+    EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
+except Exception as e:
+    print(f'{e}', file=sys.stderr)
+    EMAIL_PORT = 25
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
@@ -740,8 +749,3 @@ CELERY_BROKER_URL = 'amqp://localhost'
 
 # TODO
 # CELERY_CACHE_BACKEND = 'default'
-
-# Google Cloud settings
-GC_PROJECT = config('GC_PROJECT', default=None)
-GC_QUEUE = config('GC_QUEUE', default=None)
-GC_REGION = config('GC_REGION', default=None)
