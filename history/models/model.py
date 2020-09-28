@@ -1,7 +1,6 @@
 """Base model classes for ModularHistory."""
 
-from re import Match
-from typing import Any, ClassVar, List, Optional, Pattern, Tuple, Type
+from typing import Any, ClassVar, List, Optional, Pattern, TYPE_CHECKING, Tuple, Type
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
@@ -11,6 +10,9 @@ from polymorphic.models import PolymorphicModel as BasePolymorphicModel
 from typedmodels.models import TypedModel as BaseTypedModel
 
 from history.models.manager import Manager, PolymorphicManager
+
+if TYPE_CHECKING:
+    from re import Match
 
 FieldList = List[str]
 

@@ -682,7 +682,7 @@ try:
     EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 except Exception as e:
     print(f'{e}', file=sys.stderr)
-    EMAIL_PORT = 25
+    EMAIL_PORT = 587
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
