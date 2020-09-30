@@ -2,9 +2,9 @@
 
 from django.db import migrations, models
 import functools
-import history.fields.file_field
-import history.fields.historic_datetime_field
-import history.fields.html_field
+import modularhistory.fields.file_field
+import modularhistory.fields.historic_datetime_field
+import modularhistory.fields.html_field
 import uuid
 
 
@@ -21,12 +21,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
-                ('date', history.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('date', modularhistory.fields.HistoricDateTimeField(blank=True, null=True)),
                 ('verified', models.BooleanField(blank=True, default=False)),
                 ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
                 ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('caption', history.fields.HTMLField(blank=True, null=True)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
+                ('caption', modularhistory.fields.HTMLField(blank=True, null=True)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
                 ('provider', models.CharField(blank=True, max_length=200, null=True)),
                 ('title', models.CharField(max_length=200, null=True)),
                 ('link', models.URLField(null=True, unique=True)),
@@ -42,14 +42,14 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
-                ('date', history.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('date', modularhistory.fields.HistoricDateTimeField(blank=True, null=True)),
                 ('verified', models.BooleanField(blank=True, default=False)),
                 ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
                 ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('caption', history.fields.HTMLField(blank=True, null=True)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
+                ('caption', modularhistory.fields.HTMLField(blank=True, null=True)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
                 ('provider', models.CharField(blank=True, max_length=200, null=True)),
-                ('image', models.ImageField(height_field='height', null=True, upload_to=functools.partial(history.fields.file_field._generate_upload_path, *(), **{'path': 'images/'}), width_field='width')),
+                ('image', models.ImageField(height_field='height', null=True, upload_to=functools.partial(modularhistory.fields.file_field._generate_upload_path, *(), **{'path': 'images/'}), width_field='width')),
                 ('width', models.PositiveSmallIntegerField(blank=True, null=True)),
                 ('height', models.PositiveSmallIntegerField(blank=True, null=True)),
                 ('type', models.CharField(choices=[('image', 'Image'), ('photo', 'Photo'), ('illustration', 'Illustration'), ('painting', 'Painting'), ('portrait', 'Portrait'), ('diagram', 'Diagram'), ('reconstruction', 'Reconstruction'), ('photomontage', 'Photomontage'), ('model', 'Model')], default='image', max_length=14)),

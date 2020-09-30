@@ -8,9 +8,9 @@ from django.utils.html import SafeString, format_html
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from history import settings
-from history.fields.file_field import SourceFileField, upload_to
-from history.models import Model
+from modularhistory import settings
+from modularhistory.fields.file_field import SourceFileField, upload_to
+from modularhistory.models import Model
 
 
 class SourceFile(Model):

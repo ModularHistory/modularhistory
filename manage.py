@@ -8,7 +8,7 @@ import sys
 
 def main():
     """TODO: add docstring."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

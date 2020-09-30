@@ -6,8 +6,8 @@ from django.db.models import ManyToManyField
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import SafeString, format_html
 
-from history.fields import HTMLField, HistoricDateTimeField
-from history.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel
+from modularhistory.fields import HTMLField, HistoricDateTimeField
+from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel
 from images.models import Image
 from occurrences.manager import Manager
 from quotes.models import quote_sorter_key

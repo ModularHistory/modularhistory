@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import QuerySet, Q
 
-from history.models import Manager as BaseManager
+from modularhistory.models import Manager as BaseManager
 
 
 class Manager(BaseManager):

@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import history.fields
-import history.fields.historic_datetime_field
+import modularhistory.fields
+import modularhistory.fields.historic_datetime_field
 import uuid
 
 
@@ -24,11 +24,11 @@ class Migration(migrations.Migration):
                 ('verified', models.BooleanField(blank=True, default=False)),
                 ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
                 ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('text', history.fields.HTMLField(verbose_name='Text')),
-                ('bite', history.fields.HTMLField(blank=True, null=True, verbose_name='Bite')),
-                ('pretext', history.fields.HTMLField(blank=True, help_text='Content to be displayed before the quote', null=True, verbose_name='Pretext')),
-                ('context', history.fields.HTMLField(blank=True, help_text='Content to be displayed after the quote', null=True, verbose_name='Context')),
-                ('date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('text', modularhistory.fields.HTMLField(verbose_name='Text')),
+                ('bite', modularhistory.fields.HTMLField(blank=True, null=True, verbose_name='Bite')),
+                ('pretext', modularhistory.fields.HTMLField(blank=True, help_text='Content to be displayed before the quote', null=True, verbose_name='Pretext')),
+                ('context', modularhistory.fields.HTMLField(blank=True, help_text='Content to be displayed after the quote', null=True, verbose_name='Context')),
+                ('date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
                 ('_attributee', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='quotes', to='entities.Entity')),
             ],
             options={

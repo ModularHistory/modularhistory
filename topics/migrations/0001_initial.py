@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import history.fields
-import history.fields.array_field
+import modularhistory.fields
+import modularhistory.fields.array_field
 
 
 class Migration(migrations.Migration):
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
             name='Fact',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', history.fields.HTMLField(unique=True)),
+                ('text', modularhistory.fields.HTMLField(unique=True)),
                 ('related_entities', models.ManyToManyField(related_name='facts', through='topics.EntityFactRelation', to='entities.Entity')),
             ],
             options={
@@ -48,8 +48,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('key', models.CharField(max_length=25, unique=True)),
-                ('aliases', history.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
+                ('aliases', modularhistory.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
             ],
             options={
                 'ordering': ['key'],

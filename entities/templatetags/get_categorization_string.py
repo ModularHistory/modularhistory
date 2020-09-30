@@ -10,7 +10,7 @@ from typing import Optional
 from django import template
 
 from entities.models import Entity
-from history.structures import HistoricDateTime
+from modularhistory.structures import HistoricDateTime
 
 register = template.Library()
 

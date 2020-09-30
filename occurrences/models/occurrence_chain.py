@@ -4,8 +4,8 @@ from typing import List
 
 from django.db.models import ForeignKey, CASCADE
 
-from history.fields import HTMLField
-from history.models import Model
+from modularhistory.fields import HTMLField
+from modularhistory.models import Model
 
 DESCRIPTION_MAX_LENGTH = 200
 

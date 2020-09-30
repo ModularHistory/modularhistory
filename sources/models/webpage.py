@@ -2,7 +2,7 @@
 
 from bs4 import BeautifulSoup
 
-from history.fields import ExtraField
+from modularhistory.fields import ExtraField
 from sources.models.textual_source import TextualSource
 
 

@@ -5,8 +5,8 @@ from typing import Tuple
 from django.db import models
 from django.db.models import ForeignKey, CASCADE
 
-from history.fields import ArrayField, HistoricDateTimeField
-from history.models import Model
+from modularhistory.fields import ArrayField, HistoricDateTimeField
+from modularhistory.models import Model
 
 NAME_MAX_LENGTH: int = 100
 

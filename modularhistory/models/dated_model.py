@@ -3,9 +3,9 @@ from typing import Optional
 from django.db.models import BooleanField
 from django.utils.html import SafeString, format_html
 
-from history.fields import HistoricDateTimeField
-from history.models import Model
-from history.structures import HistoricDateTime
+from modularhistory.fields import HistoricDateTimeField
+from modularhistory.models import Model
+from modularhistory.structures import HistoricDateTime
 
 
 class DatedModel(Model):

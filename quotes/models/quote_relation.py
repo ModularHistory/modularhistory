@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
 
-from history.models import Model
+from modularhistory.models import Model
 
 
 class QuoteRelation(Model):

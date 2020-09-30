@@ -12,8 +12,8 @@ from django.utils.html import SafeString, format_html
 from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
-from history.fields import HTMLField, HistoricDateTimeField
-from history.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel
+from modularhistory.fields import HTMLField, HistoricDateTimeField
+from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel
 from quotes.manager import QuoteManager
 
 if TYPE_CHECKING:

@@ -2,7 +2,7 @@ from typing import Optional
 
 from django.db.models import ForeignKey, SET_NULL
 
-from history.fields import ExtraField, HistoricDateTimeField
+from modularhistory.fields import ExtraField, HistoricDateTimeField
 from sources.models.source import Source
 
 

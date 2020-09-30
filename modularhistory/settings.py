@@ -21,8 +21,8 @@ from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from history import environments
-from history.config import config
+from modularhistory import environments
+from modularhistory.config import config
 
 # Google Cloud settings
 GC_PROJECT = config('GC_PROJECT', default=None)
@@ -70,7 +70,7 @@ if ENVIRONMENT != environments.DEV:
 # TODO
 # https://www.ralphminderhoud.com/blog/django-mypy-check-runs/
 if ENVIRONMENT == environments.DEV:
-    from history import checks
+    from modularhistory import checks
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
@@ -219,7 +219,7 @@ MIDDLEWARE = [
     'staticpages.middleware.StaticPageFallbackMiddleware'
 ]
 
-ROOT_URLCONF = 'history.urls'
+ROOT_URLCONF = 'modularhistory.urls'
 
 TEMPLATES = [
     {
@@ -255,7 +255,7 @@ TEMPLATES = [
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
-WSGI_APPLICATION = 'history.wsgi.application'
+WSGI_APPLICATION = 'modularhistory.wsgi.application'
 
 NOSE_ARGS = [
     '--with-coverage',
@@ -380,7 +380,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_user',
 
     # Get the user's email address, if it wasn't automatically obtained
-    'history.social_auth.get_user_email',
+    'modularhistory.social_auth.get_user_email',
 
     # Make up a username for this person. Append a random string at the end if there's any collision.
     'social_core.pipeline.user.get_username',
@@ -402,7 +402,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 
     # Get the user's profile picture
-    'history.social_auth.get_user_avatar',
+    'modularhistory.social_auth.get_user_avatar',
 )
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
@@ -482,22 +482,22 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 # TODO: Add storage bucket for static files in Google Cloud?
 # if IS_PROD:
-#     STATICFILES_STORAGE = 'history.storage.GoogleCloudStaticFileStorage'
+#     STATICFILES_STORAGE = 'modularhistory.storage.GoogleCloudStaticFileStorage'
 
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/3.0/topics/files/
 MEDIA_URL = f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/' if IS_PROD else '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if IS_PROD:
-    DEFAULT_FILE_STORAGE = 'history.storage.GoogleCloudMediaFileStorage'
+    DEFAULT_FILE_STORAGE = 'modularhistory.storage.GoogleCloudMediaFileStorage'
     GS_BUCKET_NAME = GS_MEDIA_BUCKET_NAME
 
 ARTIFACTS_URL = f'https://storage.googleapis.com/{GS_ARTIFACTS_BUCKET_NAME}/' if IS_PROD else '/artifacts/'
 ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
 if IS_PROD:
-    ARTIFACTS_STORAGE = 'history.storage.GoogleCloudArtifactsStorage'
+    ARTIFACTS_STORAGE = 'modularhistory.storage.GoogleCloudArtifactsStorage'
 else:
-    ARTIFACTS_STORAGE = 'history.storage.LocalArtifactsStorage'
+    ARTIFACTS_STORAGE = 'modularhistory.storage.LocalArtifactsStorage'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -647,7 +647,7 @@ SETTINGS_EXPORT = [
 #
 # # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
 # DEBUG_TOOLBAR_CONFIG = {
-#     'SHOW_TOOLBAR_CALLBACK': 'history.settings.show_debug_toolbar'
+#     'SHOW_TOOLBAR_CALLBACK': 'modularhistory.settings.show_debug_toolbar'
 # }
 
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-panels

@@ -2,9 +2,9 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import history.fields.array_field
-import history.fields.historic_datetime_field
-import history.fields.html_field
+import modularhistory.fields.array_field
+import modularhistory.fields.historic_datetime_field
+import modularhistory.fields.html_field
 
 
 class Migration(migrations.Migration):
@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
             name='Affiliation',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_date', history.fields.HistoricDateTimeField(blank=True, null=True)),
-                ('end_date', history.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('start_date', modularhistory.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('end_date', modularhistory.fields.HistoricDateTimeField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, unique=True)),
-                ('aliases', history.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
+                ('aliases', modularhistory.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
                 ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='entities.Classification')),
             ],
             options={
@@ -42,10 +42,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('type', models.CharField(choices=[('entities.person', 'person'), ('entities.deity', 'deity'), ('entities.group', 'group'), ('entities.organization', 'organization')], db_index=True, max_length=255)),
                 ('name', models.CharField(max_length=100, unique=True)),
-                ('aliases', history.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
-                ('birth_date', history.fields.HistoricDateTimeField(blank=True, null=True)),
-                ('death_date', history.fields.HistoricDateTimeField(blank=True, null=True)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
+                ('aliases', modularhistory.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
+                ('birth_date', modularhistory.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('death_date', modularhistory.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
                 ('affiliated_entities', models.ManyToManyField(blank=True, related_name='_entity_affiliated_entities_+', through='entities.Affiliation', to='entities.Entity')),
             ],
             options={
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, unique=True)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='roles', to='entities.Entity')),
             ],
             options={
@@ -69,8 +69,8 @@ class Migration(migrations.Migration):
             name='RoleFulfillment',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_date', history.fields.HistoricDateTimeField(blank=True, null=True)),
-                ('end_date', history.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('start_date', modularhistory.fields.HistoricDateTimeField(blank=True, null=True)),
+                ('end_date', modularhistory.fields.HistoricDateTimeField(blank=True, null=True)),
                 ('affiliation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='role_fulfillments', to='entities.Affiliation')),
                 ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fulfillments', to='entities.Role')),
             ],
@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, unique=True)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
                 ('promoters', models.ManyToManyField(blank=True, related_name='ideas', to='entities.Entity')),
             ],
             options={

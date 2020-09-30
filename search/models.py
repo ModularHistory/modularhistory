@@ -6,9 +6,9 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey, SET_NULL
 
 from account.models import User
-from history.constants import CONTENT_TYPE_IDS
-from history.fields import HistoricDateTimeField
-from history.models import Model
+from modularhistory.constants import CONTENT_TYPE_IDS
+from modularhistory.fields import HistoricDateTimeField
+from modularhistory.models import Model
 
 CONTENT_TYPE_OPTIONS: List[Tuple[int, str]] = [
     (CONTENT_TYPE_IDS['occurrence'], 'Occurrences'),

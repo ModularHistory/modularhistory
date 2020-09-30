@@ -4,8 +4,8 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from gm2m import GM2MField as GenericManyToManyField
 
-from history.fields import ArrayField, HTMLField
-from history.models import Model, ModelWithRelatedQuotes
+from modularhistory.fields import ArrayField, HTMLField
+from modularhistory.models import Model, ModelWithRelatedQuotes
 
 KEY_MAX_LENGTH: int = 25
 

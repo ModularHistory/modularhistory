@@ -5,8 +5,8 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.html import SafeString, format_html
 
-from history.fields import ExtraField
-from history.models import Model
+from modularhistory.fields import ExtraField
+from modularhistory.models import Model
 from sources.models.piece import SourceWithPageNumbers
 
 NAME_MAX_LENGTH: int = 100

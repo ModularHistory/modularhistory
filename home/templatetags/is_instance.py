@@ -4,7 +4,7 @@ from django import template
 from django.apps import apps
 from django.utils.module_loading import import_string
 
-from history.constants import MODEL_CLASS_PATHS
+from modularhistory.constants import MODEL_CLASS_PATHS
 
 register = template.Library()
 

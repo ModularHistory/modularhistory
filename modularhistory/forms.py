@@ -6,8 +6,8 @@ from django.contrib.postgres.forms import (
 )
 from django.forms import DateTimeField, FileField
 
-from history.widgets.historic_date_widget import HistoricDateWidget
-from history.widgets.source_file_input import SourceFileInput
+from modularhistory.widgets.historic_date_widget import HistoricDateWidget
+from modularhistory.widgets.source_file_input import SourceFileInput
 
 
 class SimpleArrayField(BaseSimpleArrayField):

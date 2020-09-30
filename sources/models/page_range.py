@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
 from django.utils.html import SafeString, format_html
 
-from history.models import Model
+from modularhistory.models import Model
 
 
 class PageRange(Model):

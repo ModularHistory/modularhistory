@@ -1,7 +1,7 @@
 from django.db import models
 
-from history.fields import HTMLField
-from history.models import DatedModel, SearchableModel
+from modularhistory.fields import HTMLField
+from modularhistory.models import DatedModel, SearchableModel
 
 PROVIDER_MAX_LENGTH: int = 200
 

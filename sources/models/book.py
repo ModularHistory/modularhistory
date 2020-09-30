@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.html import SafeString, format_html
 from humanize import ordinal
 
-from history.fields import ExtraField
+from modularhistory.fields import ExtraField
 from sources.models.textual_source import TextualSource
 
 

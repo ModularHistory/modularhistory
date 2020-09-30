@@ -3,7 +3,7 @@ from typing import Dict
 from django.db.models import QuerySet
 from django.views import generic
 
-from history.constants import IMAGE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
+from modularhistory.constants import IMAGE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
 from occurrences.models import Occurrence
 from search.forms import SearchForm
 

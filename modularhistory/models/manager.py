@@ -9,7 +9,7 @@ from django.db.models import Manager as ModelManager, QuerySet
 # from polymorphic.query import PolymorphicQuerySet
 from typedmodels.models import TypedModelManager as BaseTypedModelManager
 
-from history.structures.historic_datetime import HistoricDateTime
+from modularhistory.structures.historic_datetime import HistoricDateTime
 
 
 class Manager(ModelManager):

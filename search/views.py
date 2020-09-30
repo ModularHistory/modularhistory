@@ -11,10 +11,10 @@ from django.db.models import Q, QuerySet, Subquery
 from django.views.generic import ListView
 
 from entities.models import Entity
-from history.constants import IMAGE_CT_ID, OCCURRENCE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
+from modularhistory.constants import IMAGE_CT_ID, OCCURRENCE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
 # from django.core.paginator import Paginator
-from history.models import DatedModel, Model
-from history.structures.historic_datetime import HistoricDateTime
+from modularhistory.models import DatedModel, Model
+from modularhistory.structures.historic_datetime import HistoricDateTime
 from images.models import Image
 from occurrences.models import Occurrence
 # from places.models import Place

@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Optional
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import Q, QuerySet  # , Subquery
 
-from history.constants import OCCURRENCE_CT_ID
-from history.models import Manager as BaseManager
+from modularhistory.constants import OCCURRENCE_CT_ID
+from modularhistory.models import Manager as BaseManager
 
 
 class QuoteManager(BaseManager):

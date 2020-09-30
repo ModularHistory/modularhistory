@@ -23,9 +23,9 @@ from sass_processor.processor import sass_processor
 from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOption
 from social_django.models import UserSocialAuth, Nonce, Association
 
-from history import settings, environments
-from history.fields import HistoricDateTimeField, SourceFileField
-from history.forms import HistoricDateWidget, SourceFileInput
+from modularhistory import settings, environments
+from modularhistory.fields import HistoricDateTimeField, SourceFileField
+from modularhistory.forms import HistoricDateWidget, SourceFileInput
 
 GenericTabularInline = NestedGenericTabularInline
 GenericStackedInline = NestedGenericStackedInline

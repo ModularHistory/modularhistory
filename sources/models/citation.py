@@ -12,8 +12,8 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, SET_NULL
 from django.utils.html import SafeString, format_html
 
-from history.constants import QUOTE_CT_ID
-from history.models import Model
+from modularhistory.constants import QUOTE_CT_ID
+from modularhistory.models import Model
 
 if TYPE_CHECKING:
     from quotes.models import Quote

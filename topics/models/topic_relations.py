@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 
-from history.models import Model
+from modularhistory.models import Model
 from topics.models.topics import Topic
 
 MAX_WEIGHT = 1000

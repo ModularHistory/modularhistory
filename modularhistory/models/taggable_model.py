@@ -8,7 +8,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.shortcuts import reverse
 from django.utils.html import SafeString, format_html
 
-from history.models import Model
+from modularhistory.models import Model
 from topics.models import Topic
 
 

@@ -7,11 +7,11 @@ from django.utils.html import SafeString
 from django.utils.module_loading import import_string
 from tinymce.models import HTMLField as MceHTMLField
 
-from history.constants import MODEL_CLASS_PATHS
-from history.structures.html import HTML
+from modularhistory.constants import MODEL_CLASS_PATHS
+from modularhistory.structures.html import HTML
 
 if TYPE_CHECKING:
-    from history.models import Model
+    from modularhistory.models import Model
 
 # group 1: entity pk
 # group 2: entity name
@@ -121,7 +121,7 @@ class HTMLField(MceHTMLField):
 
     def deconstruct(self):
         """TODO: add docstring."""
-        field_class = 'history.fields.HTMLField'
+        field_class = 'modularhistory.fields.HTMLField'
         name, path, args, kwargs = super().deconstruct()
         if self.processor != self.default_processor:
             kwargs['processor'] = self.processor
@@ -182,7 +182,7 @@ def _get_model_class(ct: ContentType) -> Type['Model']:
     model_class = ct.model_class()
     if model_class is None:
         raise ValueError(f'Could not retrieve model class for {ct}.')
-    from history.models import Model
+    from modularhistory.models import Model
     if not issubclass(model_class, Model):
         raise ValueError(f'{model_class} is not subclassed from custom model class.')
     return model_class

@@ -3,7 +3,7 @@
 from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 
-from history.fields import ExtraField
+from modularhistory.fields import ExtraField
 from sources.models.document import DocumentSource
 
 NAME_MAX_LENGTH: int = 100

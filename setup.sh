@@ -4,7 +4,7 @@
 shopt -s expand_aliases
 
 RED='\033[0;31m'
-NC='\033[0m'  # No Color
+NC='\033[0m' # No Color
 
 MAC_OS="MacOS"
 LINUX="Linux"
@@ -12,12 +12,12 @@ LINUX="Linux"
 VIRTUAL_ENV_PATTERN='*env'
 PREFERRED_VENV_NAME='.venv'
 
-function error {
+function error() {
   # shellcheck disable=SC2059
   printf "${RED}$1${NC}" && echo ""
 }
 
-function usage {
+function usage() {
   cat - >&2 <<EOF
 NAME
     setup.sh - Setup script for ModularHistory development
@@ -41,7 +41,7 @@ OPTIONS
 EOF
 }
 
-function fatal {
+function fatal() {
   for i; do
     echo -e "${i}" >&2
   done
@@ -49,7 +49,7 @@ function fatal {
 }
 
 # For long option processing
-function next_arg {
+function next_arg() {
   if [[ $OPTARG == *=* ]]; then
     # for cases like '--opt=arg'
     OPTARG="${OPTARG#*=}"
@@ -64,27 +64,33 @@ function next_arg {
 # first ':' which make getopts run in silent mode. We handle errors with
 # wildcard case catch. Long options are considered as the '-' character
 optspec=":hfb:-:"
-args=("" "$@")  # dummy first element so $1 and $args[1] are aligned
+args=("" "$@") # dummy first element so $1 and $args[1] are aligned
 while getopts "$optspec" optchar; do
   case "$optchar" in
-    h) usage; exit 0 ;;
-    -) # long option processing
-      case "$OPTARG" in
-        help)
-          usage; exit 0 ;;
-        noninteractive)
-          noninteractive=true ;;
-        -) break ;;
-        *) fatal "Unknown option '--${OPTARG}'" "See '${0} --help' for usage" ;;
-      esac
+  h)
+    usage
+    exit 0
+    ;;
+  -) # long option processing
+    case "$OPTARG" in
+    help)
+      usage
+      exit 0
       ;;
-    *) fatal "Unknown option: '-${OPTARG}'" "See '${0} --help' for usage" ;;
+    noninteractive)
+      noninteractive=true
+      ;;
+    -) break ;;
+    *) fatal "Unknown option '--${OPTARG}'" "See '${0} --help' for usage" ;;
+    esac
+    ;;
+  *) fatal "Unknown option: '-${OPTARG}'" "See '${0} --help' for usage" ;;
   esac
 done
 
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
-if [[ "$noninteractive" = true ]]; then
+if [[ "$noninteractive" == true ]]; then
   interactive=false
 else
   interactive=true
@@ -121,13 +127,13 @@ elif [[ "$os" == "$LINUX" ]]; then
   apt-get update -y && apt-get upgrade -y
 fi
 
-if [[ "$interactive" = true ]]; then
+if [[ "$interactive" == true ]]; then
   # Make sure pyenv is installed
   echo "Checking for pyenv..."
   pyenv --version &>/dev/null || {
     if [[ "$os" == "$MAC_OS" ]]; then
       brew install pyenv
-      echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
+      echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >>~/.bash_profile
     elif [[ "$os" == "$LINUX" ]]; then
       error "Please install and configure pyenv (https://github.com/pyenv/pyenv), then rerun this script."
       exit 1
@@ -155,15 +161,15 @@ pip --version &>/dev/null || {
   exit 1
 }
 
-if [[ "$interactive" = true ]]; then
+if [[ "$interactive" == true ]]; then
   # Make sure that Postgres is installed
   psql -V &>/dev/null || {
     echo "Installing PostgreSQL..."
     if [[ "$os" == "$MAC_OS" ]]; then
       brew install postgres &&
-      initdb /usr/local/var/postgres
+        initdb /usr/local/var/postgres
       brew services start postgresql &&
-      brew services list
+        brew services list
     elif [[ "$os" == "$LINUX" ]]; then
       sudo apt-get install wget ca-certificates
       wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
@@ -205,7 +211,7 @@ if [[ "$interactive" = true ]]; then
   # Activate virtual Python environment
   echo "Activating virtual Python environment..."
   in_venv=0
-  num=$( find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -exec echo x \; | wc -l | tr -d '[:space:]' )
+  num=$(find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -exec echo x \; | wc -l | tr -d '[:space:]')
   if [[ "$num" -gt 0 ]]; then
     # Attempt to activate existing virtual environment
     find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -print0 |
@@ -226,7 +232,7 @@ if [[ "$interactive" = true ]]; then
       in_venv=1
     fi
   fi
-  if [[ "$in_venv" = 0 ]]; then
+  if [[ "$in_venv" == 0 ]]; then
     error "Unable to activate virtual Python environment."
     echo "Create a virtual environment named $PREFERRED_VENV_NAME in your project root, then rerun this script."
     exit 1
@@ -238,30 +244,23 @@ fi
 pip install --upgrade pip &>/dev/null
 
 # Install Poetry
-poetry_version=$(poetry --version) &>/dev/null
-if [[ -n "$poetry_version" ]]; then
-  echo "Updating Poetry..."
-  poetry self update &>/dev/null || pip install -U poetry &>/dev/null
-else
-  {
-    echo "Installing Poetry..."
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-    echo "Sourcing Poetry environment..."
-    # shellcheck source=/dev/null
-    source "$HOME/.poetry/env"
-  } || {
+poetry --version &>/dev/null || {
+  echo "Installing Poetry..."
+  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python &>/dev/null
+  # shellcheck source=/dev/null
+  source "$HOME/.poetry/env"
+  poetry --version &>/dev/null || {
     echo "Unable to use Poetry's custom installer; falling back on pip..."
     pip install -U poetry
   }
-  echo "Unable to use Poetry's custom installer; falling back on pip..."
-  pip install -U poetry
   poetry_version=$(poetry --version)
   if [ -z "$poetry_version" ]; then
     echo "Error: Unable to install Poetry."
     exit 1
   fi
-fi
-echo "Using $poetry_version"
+}
+poetry self update &>/dev/null
+echo "Using $(poetry --version)..."
 
 # Prevent Poetry from creating virtual environments;
 # this is essential to avoid errors in GitHub builds.
@@ -279,16 +278,20 @@ sed -e '/--hash/d' -e 's/ \\//g' ./requirements.txt > requirements.tmp && mv req
 
 # Install dependencies
 echo "Installing dependencies..."
-poetry install || pip install -r requirements.txt
+poetry install || {
+  error "Failed to install dependencies with Poetry."
+  echo "Falling back on pip..."
+  pip install -r requirements.txt
+}
 
 # Grant the db user access to create databases (so that tests can be run, etc.)
-db_user=$(python -c 'from history.settings import DATABASES; print(DATABASES["default"]["USER"])')
+db_user=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["USER"])')
 echo "Granting $db_user permission to create databases..."
 psql postgres -c "ALTER USER $db_user CREATEDB" &>/dev/null
 
-if [[ "$interactive" = true ]]; then
+if [[ "$interactive" == true ]]; then
   # Check if default db exists
-  db_name=$(python -c 'from history.settings import DATABASES; print(DATABASES["default"]["NAME"])')
+  db_name=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["NAME"])')
   echo "Checking if db named $db_name (specified in project settings) exists..."
   # Check if db already exists
   if psql "$db_name" -c '\q' 2>&1; then
@@ -296,7 +299,7 @@ if [[ "$interactive" = true ]]; then
     while [ "$create_database" != "y" ] && [ "$create_database" != "n" ]; do
       read -rp "Recreate database? (WARNING: All local changes will be obliterated.) [y/n] " create_database
     done
-    if [[ "$create_database" = "y" ]]; then
+    if [[ "$create_database" == "y" ]]; then
       echo "Dropping $db_name..."
       lsof -t -i tcp:8000 | xargs kill -9 &>/dev/null
       dropdb "$db_name" || {
@@ -310,7 +313,7 @@ if [[ "$interactive" = true ]]; then
   fi
 
   # Create db (if it does not already exist)
-  if [[ "$create_database" = "y" ]]; then
+  if [[ "$create_database" == "y" ]]; then
     echo "Creating $db_name..."
     createdb "$db_name" || error "Failed to create database."
 
@@ -318,7 +321,7 @@ if [[ "$interactive" = true ]]; then
       read -r -p "Build db from a SQL backup file? [y/n] " use_sql_file
     done
 
-    if [[ "$use_sql_file" = "y" ]]; then
+    if [[ "$use_sql_file" == "y" ]]; then
       while [[ ! -f "$sql_file" ]]; do
         read -r -e -p "Enter path to SQL file (to build db): " sql_file
         sql_file="${sql_file/\~/$HOME}"
@@ -327,7 +330,7 @@ if [[ "$interactive" = true ]]; then
         fi
       done
       echo "Importing $sql_file..."
-      psql "$db_name" < "$sql_file" &>/dev/null || error "Failed to import $sql_file."
+      psql "$db_name" <"$sql_file" &>/dev/null || error "Failed to import $sql_file."
 
       # Set db permissions correctly
       psql "$db_name" -c "alter database $db_name owner to $db_user" &>/dev/null
@@ -357,5 +360,3 @@ if [[ -z "${USE_PROD_DB}" ]]; then
   python manage.py migrate
   echo ""
 fi
-
-}

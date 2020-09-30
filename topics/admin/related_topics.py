@@ -6,7 +6,7 @@ from admin.admin import GenericTabularInline
 from topics.models import TopicRelation
 
 if TYPE_CHECKING:
-    from history.models import TaggableModel
+    from modularhistory.models import TaggableModel
 
 
 class RelatedTopicsInline(GenericTabularInline):

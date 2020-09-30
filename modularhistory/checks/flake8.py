@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Sequence, Union
 # from django.core.checks.messages import CheckMessage, DEBUG, INFO, WARNING, ERROR
 from django.core.checks import register
 
-from history.checks import utils
+from modularhistory.checks import utils
 
 MultiOptions = Union[Sequence[str], str]
 

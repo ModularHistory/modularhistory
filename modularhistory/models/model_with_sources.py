@@ -5,7 +5,7 @@ from typing import Any, Optional, TYPE_CHECKING
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import SafeString, format_html
 
-from history.models.model import Model
+from modularhistory.models.model import Model
 
 if TYPE_CHECKING:
     from sources.models import Citation

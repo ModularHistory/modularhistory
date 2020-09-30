@@ -2,7 +2,7 @@ from typing import List
 
 from django.db import models
 
-from history.models import Model, TypedModel
+from modularhistory.models import Model, TypedModel
 
 PREPOSITION_CHOICES = (
     ('in', 'in'),

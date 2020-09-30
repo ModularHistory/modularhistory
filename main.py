@@ -1,6 +1,6 @@
 """Google Cloud App Engine entrypoint."""
 
-from history.wsgi import application
+from modularhistory.wsgi import application
 
 # App Engine by default looks for a main.py file at the root of the app
 # directory with a WSGI-compatible obj called app.
