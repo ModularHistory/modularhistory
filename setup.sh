@@ -245,8 +245,7 @@ if [[ -n "$poetry_version" ]]; then
 else
   {
     echo "Installing Poetry..."
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-    echo "Sourcing Poetry environment..."
+    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python &>/dev/null
     # shellcheck source=/dev/null
     source "$HOME/.poetry/env"
   } || {
@@ -254,7 +253,7 @@ else
     pip install -U poetry
   }
   echo "Unable to use Poetry's custom installer; falling back on pip..."
-  pip install -U poetry
+  pip install -U poetry &>/dev/null
   poetry_version=$(poetry --version)
   if [ -z "$poetry_version" ]; then
     echo "Error: Unable to install Poetry."

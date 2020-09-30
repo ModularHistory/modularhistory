@@ -10,10 +10,23 @@ authors = ["Jacob Fredericksen <jacob.t.fredericksen@gmail.com>"]
 license = "ISC"
 readme = 'README.md'  # Markdown files are supported
 repository = "https://github.com/ModularHistory/modularhistory"
-packages = [
-    { include = "my_package" },
-    { include = "extra_package/**/*.py" },
-]
+#packages = [
+#    { include = "modularhistory" },
+#    { include = "account" },
+#    { include = "admin" },
+#    { include = "entities" },
+#    { include = "frontend" },
+#    { include = "home" },
+#    { include = "images" },
+#    { include = "markup" },
+#    { include = "occurrences" },
+#    { include = "places" },
+#    { include = "quotes" },
+#    { include = "search" },
+#    { include = "sources" },
+#    { include = "staticpages" },
+#    { include = "topics" },
+#]
 
 [tool.nitpick]
 style = "https://raw.githubusercontent.com/wemake-services/wemake-python-styleguide/master/styles/nitpick-style.toml"
