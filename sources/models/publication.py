@@ -3,8 +3,8 @@ from django.db import models
 from django.utils.html import SafeString, format_html
 from typedmodels.models import TypedModel
 
-from history.fields import HTMLField
-from history.models import Model
+from modularhistory.fields import HTMLField
+from modularhistory.models import Model
 
 PUBLICATION_TYPES = (
     ('journal', 'Journal'),

@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from django.urls import include, path, re_path
 
 from admin.admin import admin_site
-from history import environments
+from modularhistory import environments
 from search.views import SearchResultsView
 
 

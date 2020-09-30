@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from account.models import User
-from history.models import Model
+from modularhistory.models import Model
 
 
 class Highlight(Model):

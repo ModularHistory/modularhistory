@@ -19,9 +19,9 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
-from history import settings
+from modularhistory import settings
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'history.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 
 QUEUE_NAME = settings.GC_QUEUE
 
@@ -88,7 +88,7 @@ if settings.IS_GCP:
     app = None
 else:  # If not running in Google Cloud
     # Set the default Django settings module for the 'celery' program.
-    app = Celery('history')
+    app = Celery('modularhistory')
 
     # Using a string here means the worker doesn't have to serialize
     # the configuration obj to child processes.
@@ -113,7 +113,7 @@ else:  # If not running in Google Cloud
             # Create backup file
             management.call_command('dbbackup --clean')
             # Select latest backup file
-            os.chdir(os.path.join(f'{settings.BASE_DIR}', 'history/backups/'))
+            os.chdir(os.path.join(f'{settings.BASE_DIR}', 'modularhistory/backups/'))
             files = glob('*sql')  # .psql or .sql files
             if not files:
                 print('Could not find a db backup file.')

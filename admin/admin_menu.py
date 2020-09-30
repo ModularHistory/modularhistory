@@ -2,7 +2,7 @@
 ModularHistory's custom admin menu.
 
 This custom admin menu is activated by the following line in settings.py:
-    ADMIN_TOOLS_MENU = 'history.admin_menu.AdminMenu'
+    ADMIN_TOOLS_MENU = 'modularhistory.admin_menu.AdminMenu'
 """
 
 from admin_tools.menu import Menu, items
@@ -79,7 +79,7 @@ class AdminMenu(Menu):
     #     """Use this method if you need to access the request context."""
     #     super().init_with_context(context)
     #     # Use sessions to store the visited pages stack
-    #     # history = request.session.get('history', [])
+    #     # history = request.session.get('modularhistory', [])
     #     # for item in history:
     #     #     self.children.append(MenuItem(
     #     #         title=item['title'],
@@ -92,4 +92,4 @@ class AdminMenu(Menu):
     #     # })
     #     # if len(history) > 10:
     #     #     history = history[:10]
-    #     # request.session['history'] = history
+    #     # request.session['modularhistory'] = history

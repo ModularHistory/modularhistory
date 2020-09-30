@@ -282,13 +282,13 @@ echo "Installing dependencies..."
 poetry install || pip install -r requirements.txt
 
 # Grant the db user access to create databases (so that tests can be run, etc.)
-db_user=$(python -c 'from history.settings import DATABASES; print(DATABASES["default"]["USER"])')
+db_user=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["USER"])')
 echo "Granting $db_user permission to create databases..."
 psql postgres -c "ALTER USER $db_user CREATEDB" &>/dev/null
 
 if [[ "$interactive" = true ]]; then
   # Check if default db exists
-  db_name=$(python -c 'from history.settings import DATABASES; print(DATABASES["default"]["NAME"])')
+  db_name=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["NAME"])')
   echo "Checking if db named $db_name (specified in project settings) exists..."
   # Check if db already exists
   if psql "$db_name" -c '\q' 2>&1; then
@@ -357,5 +357,3 @@ if [[ -z "${USE_PROD_DB}" ]]; then
   python manage.py migrate
   echo ""
 fi
-
-}

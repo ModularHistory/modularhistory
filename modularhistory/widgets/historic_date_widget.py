@@ -8,7 +8,7 @@ from django import forms
 from django.forms import MultiWidget
 from sigfig import round
 
-from history.structures.historic_datetime import (
+from modularhistory.structures.historic_datetime import (
     HistoricDateTime,
     SEASONS,
     get_month_from_season,

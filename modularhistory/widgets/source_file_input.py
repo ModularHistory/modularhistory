@@ -7,8 +7,8 @@ from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.forms import MultiWidget, ClearableFileInput as BaseClearableFileInput
 
-from history import settings
-from history.structures.source_file import TextualSourceFile
+from modularhistory import settings
+from modularhistory.structures.source_file import TextualSourceFile
 
 
 class ClearableFileInput(BaseClearableFileInput):

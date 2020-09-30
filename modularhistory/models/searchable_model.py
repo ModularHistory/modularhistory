@@ -4,7 +4,7 @@ import uuid
 
 from django.db.models import BooleanField, UUIDField
 
-from history.models.taggable_model import TaggableModel
+from modularhistory.models.taggable_model import TaggableModel
 
 
 class SearchableModel(TaggableModel):

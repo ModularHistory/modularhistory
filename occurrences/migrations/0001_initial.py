@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import history.fields
-import history.fields.historic_datetime_field
+import modularhistory.fields
+import modularhistory.fields.historic_datetime_field
 import uuid
 
 
@@ -23,11 +23,11 @@ class Migration(migrations.Migration):
                 ('verified', models.BooleanField(blank=True, default=False)),
                 ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
                 ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('end_date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('summary', history.fields.HTMLField(blank=True, null=True, verbose_name='Summary')),
-                ('description', history.fields.HTMLField(blank=True, null=True, verbose_name='Description')),
-                ('postscript', history.fields.HTMLField(blank=True, help_text='Content to be displayed below all related data', null=True, verbose_name='Postscript')),
+                ('date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('end_date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('summary', modularhistory.fields.HTMLField(blank=True, null=True, verbose_name='Summary')),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True, verbose_name='Description')),
+                ('postscript', modularhistory.fields.HTMLField(blank=True, help_text='Content to be displayed below all related data', null=True, verbose_name='Postscript')),
             ],
             options={
                 'ordering': ['-date'],
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
             name='OccurrenceChain',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', history.fields.HTMLField(max_length=200, null=True, unique=True)),
+                ('description', modularhistory.fields.HTMLField(max_length=200, null=True, unique=True)),
             ],
             options={
                 'abstract': False,

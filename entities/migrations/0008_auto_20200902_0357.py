@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import history.fields.array_field
+import modularhistory.fields.array_field
 
 
 class Migration(migrations.Migration):
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, unique=True)),
                 ('part_of_speech', models.CharField(choices=[('noun', 'noun'), ('adj', 'adjective'), ('any', 'noun / adjective')], default='adj', max_length=9)),
-                ('aliases', history.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
+                ('aliases', modularhistory.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None)),
                 ('weight', models.PositiveSmallIntegerField(blank=True, default=1)),
                 ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='entities.EntityClass')),
             ],

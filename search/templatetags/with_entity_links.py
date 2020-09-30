@@ -5,7 +5,7 @@ from django import template
 from django.urls import reverse
 from django.utils.html import format_html
 
-from history.fields.html_field import ENTITY_NAME_REGEX
+from modularhistory.fields.html_field import ENTITY_NAME_REGEX
 
 register = template.Library()
 

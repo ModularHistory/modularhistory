@@ -2,7 +2,7 @@
 from django.contrib.postgres.fields import ArrayField as PostgresArrayField
 from django.forms import Field
 
-from history.forms import SimpleArrayField
+from modularhistory.forms import SimpleArrayField
 
 
 class ArrayField(PostgresArrayField):

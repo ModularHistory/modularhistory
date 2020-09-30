@@ -9,8 +9,8 @@ from django.http import HttpRequest
 from django_select2.forms import Select2MultipleWidget
 
 from entities.models import Entity
-from history.forms import HistoricDateFormField
-from history.widgets.historic_date_widget import YearInput
+from modularhistory.forms import HistoricDateFormField
+from modularhistory.widgets.historic_date_widget import YearInput
 from search.models import CONTENT_TYPE_OPTIONS, ORDERING_OPTIONS
 # from django.core.paginator import Paginator
 from topics.models import Topic

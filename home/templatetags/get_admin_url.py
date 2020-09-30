@@ -2,7 +2,7 @@ from typing import Optional
 
 from django import template
 
-from history.models import Model
+from modularhistory.models import Model
 
 register = template.Library()
 

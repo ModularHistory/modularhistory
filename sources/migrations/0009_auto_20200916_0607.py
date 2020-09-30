@@ -3,8 +3,8 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import gm2m.fields
-import history.fields
-import history.fields.historic_datetime_field
+import modularhistory.fields
+import modularhistory.fields.historic_datetime_field
 
 
 class Migration(migrations.Migration):
@@ -44,9 +44,9 @@ class Migration(migrations.Migration):
                 ('type', models.CharField(choices=[], db_index=True, max_length=255)),
                 ('db_string', models.CharField(blank=True, max_length=500, unique=True, verbose_name='database string')),
                 ('url', models.URLField(blank=True, max_length=100, null=True)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
-                ('date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('publication_date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
+                ('date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('publication_date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
                 ('creators', models.CharField(blank=True, max_length=100, null=True)),
                 ('attributees', models.ManyToManyField(blank=True, through='sources.SourceAttribution', to='entities.Entity')),
                 ('containers', models.ManyToManyField(blank=True, through='sources.SourceContainment', to='sources.TypedSource')),

@@ -4,9 +4,9 @@ from django.db import migrations, models
 import django.db.models.deletion
 import functools
 import gm2m.fields
-import history.fields
-import history.fields.file_field
-import history.fields.historic_datetime_field
+import modularhistory.fields
+import modularhistory.fields.file_field
+import modularhistory.fields.historic_datetime_field
 import uuid
 
 
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('type2', models.CharField(blank=True, choices=[('journal', 'Journal'), ('newspaper', 'Newspaper'), ('magazine', 'Magazine')], max_length=10, null=True)),
                 ('name', models.CharField(blank=True, max_length=100, null=True, unique=True)),
                 ('aliases', models.CharField(blank=True, max_length=100, null=True)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
             ],
             options={
                 'ordering': ['name'],
@@ -59,9 +59,9 @@ class Migration(migrations.Migration):
                 ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
                 ('db_string', models.CharField(blank=True, max_length=500, unique=True, verbose_name='database string')),
                 ('url', models.URLField(blank=True, max_length=100, null=True)),
-                ('description', history.fields.HTMLField(blank=True, null=True)),
-                ('date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('publication_date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
+                ('date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('publication_date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
                 ('creators', models.CharField(blank=True, max_length=100, null=True)),
             ],
             options={
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             name='SourceFile',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', history.fields.file_field.SourceFileField(blank=True, null=True, unique=True, upload_to=functools.partial(history.fields.file_field._generate_upload_path, *(), **{'path': 'sources/'}))),
+                ('file', modularhistory.fields.file_field.SourceFileField(blank=True, null=True, unique=True, upload_to=functools.partial(modularhistory.fields.file_field._generate_upload_path, *(), **{'path': 'sources/'}))),
                 ('name', models.CharField(blank=True, max_length=100, null=True, unique=True)),
                 ('page_offset', models.SmallIntegerField(blank=True, default=0, help_text='The difference between the page numbers displayed on the pages and the actual page numbers of the electronic file (a positive number if the electronic page number is greater than the textualpage number; a negative number if the textual page number is greater than the electronic page number).')),
                 ('first_page_number', models.SmallIntegerField(blank=True, default=1, help_text='The page number that is visibly displayed on the page on which the relevant text begins (usually 1).')),
@@ -309,7 +309,7 @@ class Migration(migrations.Migration):
                 ('edition_year', models.CharField(blank=True, max_length=4, null=True)),
                 ('printing_number', models.PositiveSmallIntegerField(blank=True, null=True)),
                 ('volume_number', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('original_publication_date', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('original_publication_date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
                 ('original_book', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='subsequent_editions', to='sources.Book')),
             ],
             options={

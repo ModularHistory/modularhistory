@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey
 
 from entities.models import Entity
-from history.models import Model
+from modularhistory.models import Model
 
 
 class QuoteAttribution(Model):

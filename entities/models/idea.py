@@ -3,8 +3,8 @@
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
 
-from history.fields import HTMLField
-from history.models import (
+from modularhistory.fields import HTMLField
+from modularhistory.models import (
     Model
 )
 

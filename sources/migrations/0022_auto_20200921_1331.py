@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import history.fields.historic_datetime_field
+import modularhistory.fields.historic_datetime_field
 
 
 class Migration(migrations.Migration):
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='typedsource',
             name='original_publication_date',
-            field=history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True),
+            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
             model_name='typedsource',

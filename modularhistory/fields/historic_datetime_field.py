@@ -7,9 +7,9 @@ from django.db.models import DateTimeField
 from django.forms import Field
 from django.utils.timezone import make_aware, is_naive
 
-from history import settings
-from history.forms import HistoricDateFormField
-from history.structures.historic_datetime import HistoricDateTime
+from modularhistory import settings
+from modularhistory.forms import HistoricDateFormField
+from modularhistory.structures.historic_datetime import HistoricDateTime
 
 DateTime = datetime
 

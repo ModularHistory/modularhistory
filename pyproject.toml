@@ -20,7 +20,7 @@ style = "https://raw.githubusercontent.com/wemake-services/wemake-python-stylegu
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra --ds='history.settings' --hypothesis-show-statistics"
+addopts = "-ra --ds='modularhistory.settings' --hypothesis-show-statistics"
 python_files = [
     "tests.py",
     "test_*.py",

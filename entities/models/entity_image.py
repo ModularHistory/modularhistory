@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.db.models import ForeignKey, CASCADE
 
-from history.models import (
+from modularhistory.models import (
     Model
 )
 from images.models import Image

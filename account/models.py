@@ -5,7 +5,7 @@ from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from social_django.models import UserSocialAuth
 
-from history.fields.file_field import upload_to
+from modularhistory.fields.file_field import upload_to
 
 AVATAR_QUALITY: int = 70
 AVATAR_WIDTH: int = 200

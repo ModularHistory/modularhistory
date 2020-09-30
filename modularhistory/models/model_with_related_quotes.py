@@ -2,7 +2,7 @@
 
 from django.contrib.contenttypes.fields import GenericRelation
 
-from history.models.model import Model
+from modularhistory.models.model import Model
 
 
 class ModelWithRelatedQuotes(Model):

@@ -4,7 +4,7 @@ from django.urls import path
 
 from entities.views import EntitySearchView
 from admin.admin import Admin, TabularInline, admin_site
-from history.models.taggable_model import TopicFilter
+from modularhistory.models.taggable_model import TopicFilter
 from quotes import models
 from quotes.admin.filters import (
     AttributeeCountFilter,

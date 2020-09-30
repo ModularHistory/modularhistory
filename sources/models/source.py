@@ -11,9 +11,9 @@ from django.utils.html import SafeString, format_html
 from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
-from history.fields import HTMLField, HistoricDateTimeField, JSONField
-from history.models import DatedModel, SearchableModel
-from history.structures.historic_datetime import HistoricDateTime
+from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
+from modularhistory.models import DatedModel, SearchableModel
+from modularhistory.structures.historic_datetime import HistoricDateTime
 from sources.manager import SourceManager
 from sources.models.source_file import SourceFile
 

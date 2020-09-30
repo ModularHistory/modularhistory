@@ -8,9 +8,9 @@ from typing import Callable, Optional
 from django.db.models import FileField, Model
 from django.forms import Field
 
-from history import settings
-from history.forms import SourceFileFormField
-from history.structures.source_file import TextualSourceFile
+from modularhistory import settings
+from modularhistory.forms import SourceFileFormField
+from modularhistory.structures.source_file import TextualSourceFile
 
 
 def dedupe_files(path: str, new_file_name: Optional[str] = None):

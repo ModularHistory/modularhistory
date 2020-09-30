@@ -2,7 +2,7 @@
 
 from bs4 import BeautifulSoup
 
-from history.fields import ExtraField
+from modularhistory.fields import ExtraField
 from sources.models.spoken_source import SpokenSource
 
 INTERVIEWERS_MAX_LENGTH: int = 200

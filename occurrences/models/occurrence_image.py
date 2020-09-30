@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import CASCADE
 from django.utils.html import format_html
 
-from history.models import Model
+from modularhistory.models import Model
 from images.models import Image
 
 

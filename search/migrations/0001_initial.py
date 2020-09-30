@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import history.fields.historic_datetime_field
+import modularhistory.fields.historic_datetime_field
 
 
 class Migration(migrations.Migration):
@@ -21,8 +21,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('query', models.CharField(blank=True, max_length=100, null=True)),
                 ('ordering', models.CharField(choices=[('date', 'Date'), ('relevance', 'Relevance')], max_length=10)),
-                ('start_year', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('end_year', history.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('start_year', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                ('end_year', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
             ],
             options={
                 'verbose_name_plural': 'Searches',

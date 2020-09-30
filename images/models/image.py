@@ -10,8 +10,8 @@ from django.utils.html import SafeString, format_html
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
 
-from history.fields.file_field import upload_to
-# from history.settings import mega  # TODO
+from modularhistory.fields.file_field import upload_to
+# from modularhistory.settings import mega  # TODO
 from images.manager import Manager as ImageManager
 from images.models.media_model import MediaModel
 

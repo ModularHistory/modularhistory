@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import history.fields.json_field
+import modularhistory.fields.json_field
 
 
 class Migration(migrations.Migration):
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='typedsource',
             name='extra',
-            field=history.fields.json_field.JSONField(blank=True, default=dict, null=True),
+            field=modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True),
         ),
         migrations.AddField(
             model_name='typedsource',

@@ -4,7 +4,7 @@ from os.path import isfile, join
 
 from django.db.models.fields.files import FieldFile
 
-from history import settings
+from modularhistory import settings
 
 
 class TextualSourceFile(FieldFile):

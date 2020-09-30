@@ -9,7 +9,7 @@ from django.utils.html import SafeString, format_html
 # from polymorphic.models import PolymorphicModel as BasePolymorphicModel
 from typedmodels.models import TypedModel as BaseTypedModel
 
-from history.models.manager import Manager  # , PolymorphicManager
+from modularhistory.models.manager import Manager  # , PolymorphicManager
 
 if TYPE_CHECKING:
     from re import Match

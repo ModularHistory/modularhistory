@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 
-from history.models import Model
+from modularhistory.models import Model
 
 
 class SourceAttribution(Model):

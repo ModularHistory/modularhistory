@@ -21,7 +21,7 @@ from django.conf import settings
 from django.core.checks import register
 from mypy import api as mypy_client
 
-from history.checks import utils
+from modularhistory.checks import utils
 
 MultiOptions = Union[Sequence[str], str]
 

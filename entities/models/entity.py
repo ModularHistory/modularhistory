@@ -6,13 +6,13 @@ from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import SafeString, format_html
 
-from history.fields import ArrayField, HistoricDateTimeField, HTMLField
-from history.models import (
+from modularhistory.fields import ArrayField, HistoricDateTimeField, HTMLField
+from modularhistory.models import (
     TaggableModel,
     TypedModel,
     ModelWithRelatedQuotes
 )
-from history.structures import HistoricDateTime
+from modularhistory.structures import HistoricDateTime
 from images.models import Image
 
 if TYPE_CHECKING:
