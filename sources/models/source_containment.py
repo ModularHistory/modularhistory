@@ -1,7 +1,7 @@
 """Source containments."""
 
 from django.db import models
-from django.db.models import CASCADE, ForeignKey, SET_NULL
+from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 
 from history.models import Model
@@ -24,26 +24,14 @@ class SourceContainment(Model):
 
     source = ForeignKey(
         'sources.Source',
-        on_delete=SET_NULL,
-        related_name='source_containments',
-        null=True
-    )
-    typed_source = ForeignKey(
-        'sources.TypedSource',
         on_delete=CASCADE,
-        related_name='typed_source_containments',
+        related_name='source_containments',
         null=True
     )
     container = ForeignKey(
         'sources.Source',
-        on_delete=SET_NULL,
-        related_name='container_containments',
-        null=True
-    )
-    typed_container = ForeignKey(
-        'sources.TypedSource',
         on_delete=CASCADE,
-        related_name='typed_container_containments',
+        related_name='container_containments',
         null=True
     )
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)

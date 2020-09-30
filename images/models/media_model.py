@@ -1,12 +1,12 @@
 from django.db import models
 
 from history.fields import HTMLField
-from history.models import DatedModel, SearchableModel, TaggableModel
+from history.models import DatedModel, SearchableModel
 
 PROVIDER_MAX_LENGTH: int = 200
 
 
-class MediaModel(TaggableModel, DatedModel, SearchableModel):
+class MediaModel(DatedModel, SearchableModel):
     """TODO: add docstring."""
 
     caption = HTMLField(null=True, blank=True)

@@ -1,5 +1,4 @@
 from django.contrib.admin import SimpleListFilter
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 from sources.models import Source
@@ -42,9 +41,9 @@ class HasFileFilter(SimpleListFilter):
     def queryset(self, request, queryset):
         """TODO: add docstring."""
         if self.value() == 'Yes':
-            return queryset.filter(file__isnull=False).exclude(file__file='')
+            return queryset.filter(db_file__isnull=False).exclude(db_file__file='')
         if self.value() == 'No':
-            return queryset.filter(Q(file__isnull=True) | Q(file__file=''))
+            return queryset.filter(Q(db_file__isnull=True) | Q(db_file__file=''))
 
 
 class HasPageNumber(SimpleListFilter):
@@ -129,7 +128,7 @@ class ImpreciseDateFilter(SimpleListFilter):
         return queryset
 
 
-class ContentTypeFilter(SimpleListFilter):
+class TypeFilter(SimpleListFilter):
     """TODO: add docstring."""
 
     title = 'content type'
@@ -137,9 +136,8 @@ class ContentTypeFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         """TODO: add docstring."""
-        content_type_ids = Source.objects.all().values('polymorphic_ctype').distinct()
-        content_types = ContentType.objects.filter(id__in=content_type_ids)
-        return [(f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types]
+        type_labels = Source.objects.all().values('type').distinct()
+        return [(f'{type_label}', f'{type_label}') for type_label in type_labels]
 
     def queryset(self, request, queryset):
         """TODO: add docstring."""
@@ -147,8 +145,6 @@ class ContentTypeFilter(SimpleListFilter):
         if not value:
             return queryset
         if '.' in value:
-            app_name, model_name = value.split('.')
-            ct = ContentType.objects.get(app_label=app_name, model=model_name)
-            object_ids = [obj.id for obj in queryset if obj.ctype == ct]
-            return queryset.filter(id__in=object_ids)
+            # app_name, model_name = value.split('.')
+            return queryset.filter(type=value)
         return queryset

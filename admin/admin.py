@@ -19,10 +19,6 @@ from nested_admin.nested import (
     NestedStackedInline, NestedTabularInline,
     NestedGenericStackedInline, NestedGenericTabularInline
 )
-from nested_admin.polymorphic import (
-    NestedPolymorphicInlineSupportMixin,
-    NestedStackedPolymorphicInline
-)
 from sass_processor.processor import sass_processor
 from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOption
 from social_django.models import UserSocialAuth, Nonce, Association
@@ -31,8 +27,6 @@ from history import settings, environments
 from history.fields import HistoricDateTimeField, SourceFileField
 from history.forms import HistoricDateWidget, SourceFileInput
 
-PolymorphicInlineSupportMixin = NestedPolymorphicInlineSupportMixin
-StackedPolymorphicInline = NestedStackedPolymorphicInline
 GenericTabularInline = NestedGenericTabularInline
 GenericStackedInline = NestedGenericStackedInline
 

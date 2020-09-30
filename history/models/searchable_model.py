@@ -4,10 +4,10 @@ import uuid
 
 from django.db.models import BooleanField, UUIDField
 
-from history.models import Model
+from history.models.taggable_model import TaggableModel
 
 
-class SearchableModel(Model):
+class SearchableModel(TaggableModel):
     """
     A model that shows up in ModularHistory's search results; e.g., a quote or occurrence.
 

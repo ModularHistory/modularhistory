@@ -16,7 +16,6 @@ PUBLICATION_TYPES = (
 class Publication(TypedModel, Model):
     """A publication, such as a newspaper, magazine, journal, or website."""
 
-    type2 = models.CharField(max_length=10, null=True, blank=True, choices=PUBLICATION_TYPES)
     name = models.CharField(max_length=100, null=True, blank=True, unique=True)
     aliases = models.CharField(max_length=100, null=True, blank=True)
     description = HTMLField(null=True, blank=True)

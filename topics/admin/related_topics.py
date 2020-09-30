@@ -1,7 +1,12 @@
+from typing import Optional, TYPE_CHECKING
+
 from django.contrib.admin import SimpleListFilter
 
 from admin.admin import GenericTabularInline
 from topics.models import TopicRelation
+
+if TYPE_CHECKING:
+    from history.models import TaggableModel
 
 
 class RelatedTopicsInline(GenericTabularInline):
@@ -9,12 +14,12 @@ class RelatedTopicsInline(GenericTabularInline):
 
     model = TopicRelation
     autocomplete_fields = ['topic']
-    extra = 1
 
-    # def get_extra(self, request, obj=None, **kwargs):
-    #     if obj and obj.topic_relations.count():
-    #         return 0
-    #     return 1
+    def get_extra(self, request, obj: Optional['TaggableModel'] = None, **kwargs) -> int:
+        """Return the number of extra (blank) input rows to display."""
+        if obj and obj.tags.count():
+            return 0
+        return 1
 
 
 class HasTagsFilter(SimpleListFilter):

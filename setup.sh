@@ -121,6 +121,21 @@ elif [[ "$os" == "$LINUX" ]]; then
   apt-get update -y && apt-get upgrade -y
 fi
 
+if [[ "$interactive" = true ]]; then
+  # Make sure pyenv is installed
+  echo "Checking for pyenv..."
+  pyenv --version &>/dev/null || {
+    if [[ "$os" == "$MAC_OS" ]]; then
+      brew install pyenv
+      echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
+    elif [[ "$os" == "$LINUX" ]]; then
+      error "Please install and configure pyenv (https://github.com/pyenv/pyenv), then rerun this script."
+      exit 1
+    fi
+  }
+  echo "Using $(pyenv --version)..."
+fi
+
 # Make sure correct version of Python is used
 echo "Checking Python version..."
 python --version &>/dev/null || {
@@ -191,7 +206,7 @@ if [[ "$interactive" = true ]]; then
   echo "Activating virtual Python environment..."
   in_venv=0
   num=$( find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -exec echo x \; | wc -l | tr -d '[:space:]' )
-  if [ "$num" -gt 0 ]; then
+  if [[ "$num" -gt 0 ]]; then
     # Attempt to activate existing virtual environment
     find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -print0 |
       while IFS= read -r -d '' path; do
@@ -211,7 +226,7 @@ if [[ "$interactive" = true ]]; then
       in_venv=1
     fi
   fi
-  if [ "$in_venv" = 0 ]; then
+  if [[ "$in_venv" = 0 ]]; then
     error "Unable to activate virtual Python environment."
     echo "Create a virtual environment named $PREFERRED_VENV_NAME in your project root, then rerun this script."
     exit 1
@@ -224,7 +239,7 @@ pip install --upgrade pip &>/dev/null
 
 # Install Poetry
 poetry_version=$(poetry --version) &>/dev/null
-if [ -n "$poetry_version" ]; then
+if [[ -n "$poetry_version" ]]; then
   echo "Updating Poetry..."
   poetry self update &>/dev/null || pip install -U poetry &>/dev/null
 else
@@ -253,9 +268,9 @@ echo "Using $poetry_version"
 poetry config virtualenvs.create false
 # poetry config --list
 
-# Create requirements.txt in case of manual deploys
+# Create requirements.txt in case of manual deploys; TODO: move this to a test
 echo "Exporting requirements.txt..."
-if [ -f "requirements.txt" ]; then
+if [[ -f "requirements.txt" ]]; then
   rm requirements.txt
 fi
 poetry export -f requirements.txt > requirements.txt
@@ -266,12 +281,12 @@ sed -e '/--hash/d' -e 's/ \\//g' ./requirements.txt > requirements.tmp && mv req
 echo "Installing dependencies..."
 poetry install || pip install -r requirements.txt
 
-if [[ "$interactive" = true ]]; then
-  # Grant the db user access to create databases
-  db_user=$(python -c 'from history.settings import DATABASES; print(DATABASES["default"]["USER"])')
-  echo "Granting $db_user permission to create databases..."
-  psql postgres -c "ALTER USER $db_user CREATEDB" &>/dev/null
+# Grant the db user access to create databases (so that tests can be run, etc.)
+db_user=$(python -c 'from history.settings import DATABASES; print(DATABASES["default"]["USER"])')
+echo "Granting $db_user permission to create databases..."
+psql postgres -c "ALTER USER $db_user CREATEDB" &>/dev/null
 
+if [[ "$interactive" = true ]]; then
   # Check if default db exists
   db_name=$(python -c 'from history.settings import DATABASES; print(DATABASES["default"]["NAME"])')
   echo "Checking if db named $db_name (specified in project settings) exists..."
@@ -281,11 +296,12 @@ if [[ "$interactive" = true ]]; then
     while [ "$create_database" != "y" ] && [ "$create_database" != "n" ]; do
       read -rp "Recreate database? (WARNING: All local changes will be obliterated.) [y/n] " create_database
     done
-    if [ "$create_database" = "y" ]; then
+    if [[ "$create_database" = "y" ]]; then
       echo "Dropping $db_name..."
+      lsof -t -i tcp:8000 | xargs kill -9 &>/dev/null
       dropdb "$db_name" || {
         error "Failed to drop database '$db_name'"
-        echo "Hint: Try stopping the development server and rerunning this script."
+        error "Hint: Try stopping the development server and rerunning this script."
         exit 1
       }
     fi
@@ -294,7 +310,7 @@ if [[ "$interactive" = true ]]; then
   fi
 
   # Create db (if it does not already exist)
-  if [ "$create_database" = "y" ]; then
+  if [[ "$create_database" = "y" ]]; then
     echo "Creating $db_name..."
     createdb "$db_name" || error "Failed to create database."
 
@@ -302,11 +318,11 @@ if [[ "$interactive" = true ]]; then
       read -r -p "Build db from a SQL backup file? [y/n] " use_sql_file
     done
 
-    if [ "$use_sql_file" = "y" ]; then
-      while [ ! -f "$sql_file" ]; do
+    if [[ "$use_sql_file" = "y" ]]; then
+      while [[ ! -f "$sql_file" ]]; do
         read -r -e -p "Enter path to SQL file (to build db): " sql_file
         sql_file="${sql_file/\~/$HOME}"
-        if [ ! -f "$sql_file" ]; then
+        if [[ ! -f "$sql_file" ]]; then
           echo "$sql_file does not exist."
         fi
       done
@@ -336,8 +352,10 @@ if [[ "$interactive" = true ]]; then
 fi
 
 # Run database migrations
-if [ -z "${USE_PROD_DB}" ]; then
+if [[ -z "${USE_PROD_DB}" ]]; then
   echo "Running database migrations..."
   python manage.py migrate
   echo ""
 fi
+
+}

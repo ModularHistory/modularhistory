@@ -8,75 +8,11 @@ from django.utils.html import SafeString, format_html
 from history.fields import ExtraField
 from history.models import Model
 from sources.models.piece import SourceWithPageNumbers
-from sources.models.source import OldTitledSource
-from sources.models.textual_source import OldTextualSource
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400
 DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
 URL_MAX_LENGTH: int = 100
-
-
-class OldDocumentMixin(Model):
-    """TODO: add docstring."""
-
-    collection = ForeignKey('Collection', related_name='%(class)s', null=True, blank=True, on_delete=CASCADE)
-    collection_number = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        help_text='aka acquisition number'
-    )
-    location_info = models.CharField(
-        max_length=LOCATION_INFO_MAX_LENGTH,
-        null=True,
-        blank=True,
-        help_text='Ex: John H. Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
-    )
-
-    class Meta:
-        abstract = True
-
-
-class _Document(OldDocumentMixin, OldTextualSource):
-    """TODO: add docstring."""
-
-    descriptive_phrase = models.CharField(
-        max_length=DESCRIPTIVE_PHRASE_MAX_LENGTH,
-        null=True,
-        blank=True,
-        help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"'
-    )
-    collection = ForeignKey(
-        'Collection',
-        related_name='%(class)s',
-        null=True,
-        blank=True,
-        on_delete=CASCADE
-    )
-    collection_number = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        help_text='aka acquisition number'
-    )
-    location_info = models.CharField(
-        max_length=LOCATION_INFO_MAX_LENGTH,
-        null=True,
-        blank=True,
-        help_text='Ex: John H. Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
-    )
-    information_url = models.URLField(
-        max_length=URL_MAX_LENGTH,
-        null=True,
-        blank=True,
-        help_text='URL for information regarding the document'
-    )
-
-    class Meta:
-        abstract = True
-
-    def __html__(self) -> str:
-        """TODO: write docstring."""
-        raise NotImplementedError
 
 
 class DocumentSource(SourceWithPageNumbers):
@@ -198,31 +134,6 @@ class Repository(Model):
         location_string = self.location.string if self.location else None
         components = [self.name, self.owner, location_string]
         return ', '.join([component for component in components if component])
-
-
-class OldDocument(OldTitledSource, _Document):
-    """A historical document."""
-
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
-
-    @property
-    def __html__(self) -> str:
-        """TODO: write docstring."""
-        components = [
-            self.attributee_string,
-            self.linked_title if self.title else 'untitled document',
-            self.date.string if self.date else 'date unknown',
-            self.descriptive_phrase,
-            f'archived in {self.collection}' if self.collection else ''
-        ]
-
-        # Remove blank values
-        components = [component for component in components if component]
-
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
 
 
 class Document(DocumentSource):

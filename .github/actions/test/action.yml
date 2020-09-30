@@ -3,9 +3,7 @@ description: "Run ModularHistory's test suite."
 runs:
   using: "composite"
   steps:
-    # Run tests
     - name: Run tests
       shell: bash
       run: |
-        python manage.py migrate
         pytest --hypothesis-show-statistics

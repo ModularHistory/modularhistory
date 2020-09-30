@@ -4,10 +4,10 @@ from typing import Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import SafeString
+from django.utils.module_loading import import_string
 from tinymce.models import HTMLField as MceHTMLField
 
-from history.constants import CONTENT_TYPE_IDS, MODEL_CLASSES
-from django.utils.module_loading import import_string
+from history.constants import MODEL_CLASS_PATHS
 from history.structures.html import HTML
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ def process(_, html: str, processable_content_types: Iterable[str]) -> str:
     for match in OBJECT_REGEX.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(1)
-        model_cls_str = MODEL_CLASSES.get(object_type)
+        model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
             model_cls: Type[Model] = import_string(model_cls_str)
             # TODO
@@ -60,17 +60,23 @@ class HTMLField(MceHTMLField):
         """TODO: add docstring."""
         html = super().clean(value=value, model_instance=model_instance)
 
-        raw_html = html
+        raw_html = html.raw_value
         replacements = (
-            ('<blockquote>', '<blockquote class="blockquote">'),
-            ('<table>', '<table class="table">'),
+            (r'<blockquote>', '<blockquote class="blockquote">'),
+            (r'<table>', '<table class="table">'),
             # Remove empty divs
             (r'\n?<div[^>]+?>&nbsp;<\/div>', ''),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
             (r'<p>&nbsp;<\/p>', '')
         )
         for pattern, replacement in replacements:
-            raw_html = re.sub(pattern, replacement, raw_html).strip()
+            try:
+                raw_html = re.sub(pattern, replacement, raw_html).strip()
+            except Exception as e:
+                raise Exception(
+                    f'Failed to replace `{pattern}` ({type(pattern)}) with `{replacement}` ({type(replacement)} '
+                    f'in {raw_html}\n({type(raw_html)})\n{e}'
+                )
 
         # Insert links for entity names.
         has_entity_relations = hasattr(model_instance, 'attributees') or hasattr(model_instance, 'involved_entities')
@@ -83,10 +89,10 @@ class HTMLField(MceHTMLField):
                 entities = entities.all()
                 from entities.models import Entity
                 for entity in entities:
-                    e: Entity = entity
-                    aliases = e.aliases or []
-                    for name in set([e.name] + aliases):
-                        opening_span_tag = f'<span class="entity-name" data-entity-id="{e.pk}">'
+                    ent: Entity = entity
+                    aliases = ent.aliases or []
+                    for name in set([ent.name] + aliases):
+                        opening_span_tag = f'<span class="entity-name" data-entity-id="{ent.pk}">'
                         closing_span_tag = '</span>'
                         raw_html = re.sub(
                             # match instances not in quotations
@@ -98,11 +104,9 @@ class HTMLField(MceHTMLField):
         # Update obj placeholders.
         # This (1) improves readability when editing and (2) reduces time to process search results.
         for content_type in self.processable_content_types:
-            ct_id: int = CONTENT_TYPE_IDS.get(content_type)
-            if ct_id:
-                ct = ContentType.objects.get_for_id(ct_id)
-                model_cls: Type['Model'] = _get_model_class(ct)
-
+            model_cls_str = MODEL_CLASS_PATHS.get(content_type)
+            if model_cls_str:
+                model_cls = import_string(model_cls_str)
                 for match in model_cls.admin_placeholder_regex.finditer(raw_html):
                     placeholder = match.group(0)
                     updated_placeholder = model_cls.get_updated_placeholder(match)
@@ -139,7 +143,9 @@ class HTMLField(MceHTMLField):
             try:
                 html = self.processor(html, self.processable_content_types)
             except RecursionError as e:
-                print(f'Unable to process HTML; encountered exception: {e}', file=stderr)
+                print(f'Unable to process HTML; encountered recursion error: {e}', file=stderr)
+            except Exception as e:
+                print(f'Unable to process HTML; encountered error: {e}\n\n{html}', file=stderr)
         return HTML(value, processed_value=html)
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
@@ -152,11 +158,13 @@ class HTMLField(MceHTMLField):
         return HTML(value)
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
-    def get_prep_value(self, value: Optional[HTML]) -> Optional[str]:
+    def get_prep_value(self, value: Optional[Union[HTML, str]]) -> Optional[str]:
         """TODO: add docstring."""
         if not value:
             return None
-        return value.raw_value
+        elif isinstance(value, HTML):
+            return value.raw_value
+        return value
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-query-values-to-database-values
     def get_db_prep_value(self, value, connection, prepared=False):

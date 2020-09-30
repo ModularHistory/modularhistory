@@ -4,7 +4,7 @@ from django import template
 from django.apps import apps
 from django.utils.module_loading import import_string
 
-from history.constants import MODEL_CLASSES
+from history.constants import MODEL_CLASS_PATHS
 
 register = template.Library()
 
@@ -18,7 +18,7 @@ def is_instance(obj, arg: str) -> bool:
     """
     module_name, model_name = arg.split('.')
     model_name = model_name.lower()
-    model_cls_path: str = MODEL_CLASSES.get(model_name)
+    model_cls_path: str = MODEL_CLASS_PATHS.get(model_name)
     if model_cls_path:
         model_class = import_string(model_cls_path)
     else:

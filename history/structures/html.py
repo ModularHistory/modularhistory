@@ -1,7 +1,7 @@
 from typing import Optional
 
 from bs4 import BeautifulSoup
-from django.utils.html import SafeString, format_html
+from django.utils.html import SafeString, format_html, mark_safe
 
 
 class HTML:
@@ -15,8 +15,9 @@ class HTML:
         """TODO: add docstring."""
         if raw_value:
             raw_value = raw_value.strip()
+            processed_value = processed_value or raw_value  # .replace('{{', '').replace('}}', '')
             self.raw_value = raw_value
-            self.html = format_html(processed_value or raw_value)
+            self.html = format_html(processed_value)
             self.text = BeautifulSoup(self.raw_value, features='lxml').get_text()
         else:
             self.raw_value = ''
@@ -24,12 +25,17 @@ class HTML:
             self.text = ''
 
     # for Django Admin templates
-    def __str__(self) -> str:
-        """TODO: write docstring."""
+    def __str__(self) -> SafeString:
+        """
+        Return the string representation of the HTML object.
+
+        This value is displayed (and modified) in the Django admin site.
+        """
         # TODO: Add logic for converting back to unparsed Python vars so self.html can be used.
-        # Don't directly use self.html here;
-        # Python vars need to remain unparsed.
-        return format_html(self.raw_value)
+        # Do not directly use self.html here; Python vars need to remain unparsed.
+        # Also, do not use format_html; curly brackets ({{ ... }}) are used for object placeholders
+        # but would be processed by format_html, resulting in key errors.
+        return mark_safe(self.raw_value)
 
     # for BeautifulSoup
     def __len__(self):

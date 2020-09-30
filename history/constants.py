@@ -12,7 +12,7 @@ class ModelNameSet:
     source = 'source'
 
 
-MODEL_CLASSES = {
+MODEL_CLASS_PATHS = {
     ModelNameSet.citation: 'sources.models.Citation',
     ModelNameSet.entity: 'entities.models.Entity',
     ModelNameSet.image: 'images.models.Image',
@@ -29,7 +29,7 @@ CONTENT_TYPE_IDS = {
     ModelNameSet.occurrence: 24,
     ModelNameSet.place: 41,
     ModelNameSet.quote: 49,
-    ModelNameSet.source: 52,
+    ModelNameSet.source: 142,
 }
 
 OCCURRENCE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.occurrence)

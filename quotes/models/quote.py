@@ -13,8 +13,8 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
 from history.fields import HTMLField, HistoricDateTimeField
-from history.models import (DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSources, TaggableModel)
-from quotes.manager import QuoteManager as QuoteManager
+from history.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel
+from quotes.manager import QuoteManager
 
 if TYPE_CHECKING:
     from images.models import Image
@@ -28,7 +28,7 @@ ADMIN_PLACEHOLDER_REGEX = r'{{\ ?quote:\ ?([\w\d]+?)(:([^}]+?))?(\ ?}})'
 BITE_MAX_LENGTH: int = 400
 
 
-class Quote(DatedModel, TaggableModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSources):
+class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSources):
     """A quote."""
 
     text = HTMLField(verbose_name='Text')

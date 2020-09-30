@@ -6,10 +6,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
 from django.utils.html import SafeString, format_html
-from polymorphic.models import PolymorphicModel as BasePolymorphicModel
+# from polymorphic.models import PolymorphicModel as BasePolymorphicModel
 from typedmodels.models import TypedModel as BaseTypedModel
 
-from history.models.manager import Manager, PolymorphicManager
+from history.models.manager import Manager  # , PolymorphicManager
 
 if TYPE_CHECKING:
     from re import Match
@@ -114,27 +114,27 @@ class Model(DjangoModel):
         raise NotImplementedError
 
 
-class PolymorphicModel(BasePolymorphicModel, Model):
-    """TODO: add docstring."""
-
-    objects = PolymorphicManager()
-
-    class Meta:
-        abstract = True
-
-    @property
-    def ctype(self) -> ContentType:
-        """TODO: add docstring."""
-        return ContentType.objects.get_for_id(self.polymorphic_ctype_id)
-
-    @property
-    def detail_url(self) -> str:
-        """TODO: add docstring."""
-        return reverse(f'{self.ctype.app_label}:detail', args=[self.id])
-
-    def get_admin_url(self):
-        """TODO: add docstring."""
-        return reverse(
-            f'admin:{self.ctype.app_label}_{self.ctype.model}_change',
-            args=[self.id]
-        )
+# class PolymorphicModel(BasePolymorphicModel, Model):
+#     """TODO: add docstring."""
+#
+#     objects = PolymorphicManager()
+#
+#     class Meta:
+#         abstract = True
+#
+#     @property
+#     def ctype(self) -> ContentType:
+#         """TODO: add docstring."""
+#         return ContentType.objects.get_for_id(self.polymorphic_ctype_id)
+#
+#     @property
+#     def detail_url(self) -> str:
+#         """TODO: add docstring."""
+#         return reverse(f'{self.ctype.app_label}:detail', args=[self.id])
+#
+#     def get_admin_url(self):
+#         """TODO: add docstring."""
+#         return reverse(
+#             f'admin:{self.ctype.app_label}_{self.ctype.model}_change',
+#             args=[self.id]
+#         )

@@ -5,8 +5,8 @@ from typing import List, Optional, Union
 
 # from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import Manager as ModelManager, QuerySet
-from polymorphic.managers import PolymorphicManager as BasePolymorphicManager
-from polymorphic.query import PolymorphicQuerySet
+# from polymorphic.managers import PolymorphicManager as BasePolymorphicManager
+# from polymorphic.query import PolymorphicQuerySet
 from typedmodels.models import TypedModelManager as BaseTypedModelManager
 
 from history.structures.historic_datetime import HistoricDateTime
@@ -33,7 +33,7 @@ class Manager(ModelManager):
         rank: bool = False,
         suppress_unverified: bool = True,
         db: str = 'default'
-    ) -> Union[QuerySet, PolymorphicQuerySet]:
+    ) -> QuerySet:
         """TODO: add docstring."""
         qs = self._queryset_class(model=self.model, using=db, hints=self._hints)
         if suppress_unverified:
@@ -114,12 +114,12 @@ class Manager(ModelManager):
 
 
 class TypedModelManager(BaseTypedModelManager, Manager):
-    """Wrapper for PolymorphicManager."""
+    """Wrapper for TypedModelManager."""
 
     pass
 
 
-class PolymorphicManager(BasePolymorphicManager, Manager):
-    """Wrapper for PolymorphicManager."""
-
-    pass
+# class PolymorphicManager(BasePolymorphicManager, Manager):
+#     """Wrapper for PolymorphicManager."""
+#
+#     pass

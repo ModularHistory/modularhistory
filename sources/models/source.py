@@ -1,11 +1,9 @@
 """Model classes for sources."""
 
 import re
-from sys import stderr
 from typing import List, Optional, TYPE_CHECKING
 
 from bs4 import BeautifulSoup
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField, SET_NULL
@@ -14,9 +12,9 @@ from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
 from history.fields import HTMLField, HistoricDateTimeField, JSONField
-from history.models import DatedModel, PolymorphicModel, SearchableModel
+from history.models import DatedModel, SearchableModel
 from history.structures.historic_datetime import HistoricDateTime
-from sources.manager import OldManager, SourceManager
+from sources.manager import SourceManager
 from sources.models.source_file import SourceFile
 
 if TYPE_CHECKING:
@@ -47,24 +45,9 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class TypedSource(TypedModel, DatedModel, SearchableModel):
+class Source(TypedModel, DatedModel, SearchableModel):
     """A source for quotes or historical information."""
 
-    containers = ManyToManyField(
-        'self',
-        through='sources.SourceContainment',
-        through_fields=('typed_source', 'typed_container'),
-        # related_name='contained_sources',
-        symmetrical=False,
-        blank=True
-    )
-    related = GenericManyToManyField(
-        'quotes.Quote',
-        'occurrences.Occurrence',
-        through='sources.Citation',
-        # related_name='sources',
-        blank=True
-    )
     db_string = models.CharField(
         verbose_name='database string',
         max_length=MAX_DB_STRING_LENGTH,
@@ -80,7 +63,7 @@ class TypedSource(TypedModel, DatedModel, SearchableModel):
     attributees = ManyToManyField(
         'entities.Entity',
         through='SourceAttribution',
-        # related_name='attributed_sources',
+        related_name='attributed_sources',
         blank=True  # Some sources may not have attributees.
     )
     url = models.URLField(max_length=MAX_URL_LENGTH, null=True, blank=True)
@@ -108,14 +91,30 @@ class TypedSource(TypedModel, DatedModel, SearchableModel):
         blank=True
     )
 
+    containers = ManyToManyField(
+        'self',
+        through='sources.SourceContainment',
+        through_fields=('source', 'container'),
+        # related_name='contained_sources',
+        symmetrical=False,
+        blank=True
+    )
+    related = GenericManyToManyField(
+        'quotes.Quote',
+        'occurrences.Occurrence',
+        through='sources.Citation',
+        related_name='sources',
+        blank=True
+    )
+
     # TODO: forbid access by non-document sources
     # TODO: make many to many
     collection = ForeignKey(
         'sources.Collection',
-        related_name='%(class)s',
+        related_name='documents',
         null=True,
         blank=True,
-        on_delete=CASCADE
+        on_delete=SET_NULL
     )
 
     # TODO: forbid access by non-document sources
@@ -144,347 +143,6 @@ class TypedSource(TypedModel, DatedModel, SearchableModel):
             element = (
                 f'<a class="btn btn-small btn-default display-source"'
                 f' href="{self.file_url}" target="_blank">'
-                f'<i class="fa fa-search"></i></a>'
-            )
-        return format_html(element)
-
-    @property
-    def attributee_string(self) -> Optional[str]:
-        """TODO: write docstring."""
-        if self.creators:
-            return self.creators
-        # Check for pk to avoid RecursionErrors with not-yet-saved objects
-        elif not self.pk or not self.attributees.exists():
-            return None
-        attributees = self.ordered_attributees
-        n_attributions = len(attributees)
-        first_attributee = attributees[0]
-        string = str(first_attributee)
-        if n_attributions == 2:
-            string = f'{string} and {attributees[1]}'
-        elif n_attributions == 3:
-            string = f'{string}, {attributees[1]}, and {attributees[2]}'
-        elif n_attributions > 3:
-            string = f'{string} et al.'
-        return string
-
-    @property
-    def container(self) -> Optional['Source']:
-        """TODO: write docstring."""
-        if not self.containment:
-            return None
-        return self.containment.container
-
-    @property
-    def containment(self) -> Optional['SourceContainment']:
-        """TODO: write docstring."""
-        if not self.typed_source_containments.exists():
-            return None
-        return self.typed_source_containments.order_by('position')[0]
-
-    @property
-    def file(self) -> Optional[SourceFile]:
-        """TODO: write docstring."""
-        if self.db_file:
-            return self.db_file
-        return self.container.db_file if self.container else None
-
-    @file.setter
-    def file(self, value):
-        """TODO: write docstring."""
-        self.db_file = value
-
-    @property
-    def file_url(self) -> Optional[str]:
-        """TODO: write docstring."""
-        return self.file.url if self.file else None
-
-    def get_container_strings(self) -> Optional[List[str]]:
-        """Return a list of strings representing the source's containers."""
-        containments = self.typed_source_containments.order_by('position')[:2]
-        container_strings = []
-        same_creator = True
-        for c in containments:
-            container_html: str = c.container.html
-
-            if c.container.attributee_string != self.attributee_string:
-                same_creator = False
-
-            # Remove redundant creator string
-            creator_string_is_duplicated = all([
-                same_creator,
-                self.attributee_string,
-            ]) and self.attributee_string in container_html
-            if creator_string_is_duplicated:
-                container_html = container_html[len(f'{self.attributee_string}, '):]
-
-            # Include the page number
-            if c.page_number:
-                page_number_html = _get_page_number_html(
-                    c.source, c.source.file, c.page_number, c.end_page_number
-                )
-                container_html = f'{container_html}, {page_number_html}'
-
-            container_html = (
-                f'{c.phrase} in {container_html}' if c.phrase
-                else f'in {container_html}'
-            )
-            container_strings.append(container_html)
-        return container_strings
-
-    @property
-    def href(self) -> Optional[str]:
-        """TODO: write docstring."""
-        url = self.url
-        if self.file_url:
-            url = self.file_url
-            page_number = self.file.default_page_number
-            if hasattr(self, 'page_number') and getattr(self, 'page_number', None):
-                page_number = self.page_number + self.file.page_offset
-            if page_number:
-                if 'page=' in url:
-                    url = re.sub(r'page=\d+', f'page={page_number}', url)
-                else:
-                    url = f'{url}#page={page_number}'
-        return url
-
-    def _html(self) -> SafeString:
-        """
-        Return the HTML representation of the source.
-
-        This method should be called indirectly via the `html` property
-        (defined subsequently).
-        """
-        # TODO: html methods should be split into different classes and/or mixins.
-        html = self.__html__
-
-        if self.typed_source_containments.exists():
-            container_strings = self.get_container_strings()
-            containers = ', and '.join(container_strings)
-            html = f'{html}, {containers}'
-        elif getattr(self, 'page_number', None):
-            page_number_html = _get_page_number_html(
-                self, self.file, self.page_number, self.end_page_number
-            )
-            html = f'{html}, {page_number_html}'
-        if not self.file:
-            if self.url and self.link not in html:
-                html = f'{html}, retrieved from {self.link}'
-        if getattr(self, 'information_url', None) and self.information_url:
-            html = (
-                f'{html}, information available at '
-                f'<a target="_blank" href="{self.information_url}">{self.information_url}</a>'
-            )
-        # Fix placement of commas after double-quoted titles
-        html = html.replace('," ,', ',"')
-        html = html.replace('",', ',"')
-        return format_html(html)
-        # TODO: Remove search icon; insert link intelligently
-        # if self.file_url:
-        #     html += (
-        #         f'<a href="{self.file_url}" class="mx-1 display-source"'
-        #         f' data-toggle="modal" data-target="#modal">'
-        #         f'<i class="fas fa-search"></i>'
-        #         f'</a>'
-        #     )
-        # elif self.url:
-        #     link = self.url
-        #     if self.page_number and 'www.sacred-texts.com' in link:
-        #         link = f'{link}#page_{self.page_number}'
-        #     html += (
-        #         f'<a href="{link}" class="mx-1" target="_blank">'
-        #         f'<i class="fas fa-search"></i>'
-        #         f'</a>'
-        #     )
-    _html.admin_order_field = 'db_string'
-    html: SafeString = property(_html)
-
-    @property
-    def link(self) -> Optional[SafeString]:
-        """TODO: write docstring."""
-        return f'<a target="_blank" href="{self.url}">{self.url}</a>' if self.url else None
-
-    @property
-    def ordered_attributees(self) -> Optional[List['Entity']]:
-        """TODO: write docstring."""
-        if not self.pk or not self.attributees.exists():
-            return None
-        return [attribution.attributee for attribution in self.attributions.all()]
-
-    @property
-    def string(self) -> str:
-        """TODO: write docstring."""
-        return BeautifulSoup(self.html, features='lxml').get_text()
-
-    @property
-    def linked_title(self) -> Optional[SafeString]:
-        """TODO: write docstring."""
-        if not self.title:
-            return None
-        html = (
-            f'<a href="{self.href}" target="_blank" class="source-title display-source">'
-            f'{self.title}'
-            '</a>'
-        ) if self.href else self.title
-        return format_html(html)
-
-    def clean(self):
-        """TODO: write docstring."""
-        super().clean()
-        if not self.db_string:
-            self.db_string = self.string
-            if not self.db_string:
-                raise ValidationError('Cannot generate string representation.')
-        if self.pk:  # If this source is not being newly created
-            if TypedSource.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
-                raise ValidationError(
-                    f'Unable to save this source because it duplicates an existing source '
-                    f'or has an identical string: {self.db_string}'
-                )
-            for container in self.containers.all():
-                if self in container.containers.all():
-                    raise ValidationError(
-                        f'This source cannot be contained by {container}, '
-                        f'because that source is already contained by this source.'
-                    )
-
-    def get_date(self) -> Optional[HistoricDateTime]:
-        """TODO: write docstring."""
-        if self.date:
-            return self.date
-        elif self.container and self.container.date:
-            return self.container.date
-        return None
-
-    def save(self, *args, **kwargs):
-        """TODO: write docstring."""
-        self.db_string = self.string
-        super().save(*args, **kwargs)
-        self.clean()
-        self.db_string = self.string
-        super().save(*args, **kwargs)
-
-    @property
-    def __html__(self) -> str:
-        """
-        Return the source's HTML representation.
-
-        Must be defined by models inheriting from Source.
-        """
-        raise NotImplementedError
-
-    @classmethod
-    def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
-        """Return the obj's HTML based on a placeholder in the admin."""
-        if not re.match(ADMIN_PLACEHOLDER_REGEX, match.group(0)):
-            raise ValueError(f'{match} does not match {ADMIN_PLACEHOLDER_REGEX}')
-
-        if use_preretrieved_html:
-            # Return the pre-retrieved HTML (already included in placeholder)
-            pass
-            # TODO
-            # preretrieved_html = match.group(3)
-            # if preretrieved_html:
-            #     return preretrieved_html.strip()
-
-        key = match.group(1).strip()
-        source = cls.objects.get(pk=key)
-        return source.html
-
-    @classmethod
-    def get_updated_placeholder(cls, match: re.Match) -> str:
-        """Return an up-to-date placeholder for an obj included in an HTML field."""
-        placeholder = match.group(0)
-        appendage = match.group(2)
-        updated_appendage = f': {cls.get_object_html(match)}'
-        if appendage:
-            updated_placeholder = placeholder.replace(appendage, updated_appendage)
-        else:
-            updated_placeholder = (
-                f'{placeholder.replace(" }}", "").replace("}}", "")}'
-                f'{updated_appendage}'
-            ) + '}}'  # Angle brackets can't be included in f-string literals
-        return updated_placeholder
-
-
-# Make sure this matches the name of the JSONField
-JSON_FIELD_NAME = 'extra'
-
-
-class Source(PolymorphicModel, DatedModel, SearchableModel):
-    """A source for quotes or historical information."""
-
-    new_source = models.OneToOneField(
-        'sources.TypedSource',
-        on_delete=SET_NULL,
-        related_name='old_source',
-        null=True
-    )
-    db_string = models.CharField(
-        verbose_name='database string',
-        max_length=MAX_DB_STRING_LENGTH, blank=True, unique=True
-    )
-    attributees = ManyToManyField(
-        'entities.Entity',
-        through='SourceAttribution',
-        related_name='attributed_sources',
-        blank=True  # Some sources may not have attributees.
-    )
-    url = models.URLField(max_length=MAX_URL_LENGTH, null=True, blank=True)
-    description = HTMLField(null=True, blank=True)
-    date = HistoricDateTimeField(null=True, blank=True)
-    publication_date = HistoricDateTimeField(null=True, blank=True)
-    location = ForeignKey(
-        'places.Place', related_name='publications',
-        null=True, blank=True,
-        on_delete=SET_NULL
-    )
-    db_file = ForeignKey(
-        SourceFile, related_name='sources',
-        null=True, blank=True,
-        on_delete=SET_NULL, verbose_name='file'
-    )
-    creators = models.CharField(
-        max_length=MAX_CREATOR_STRING_LENGTH,
-        null=True,
-        blank=True
-    )
-    containers = ManyToManyField(
-        'self',
-        through='sources.SourceContainment',
-        through_fields=('source', 'container'),
-        related_name='contained_sources',
-        symmetrical=False,
-        blank=True
-    )
-    related = GenericManyToManyField(
-        'quotes.Quote',
-        'occurrences.Occurrence',
-        through='sources.Citation',
-        related_name='sources',
-        blank=True
-    )
-
-    objects: OldManager = OldManager()
-    searchable_fields = ['db_string', 'description']
-
-    admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
-
-    class Meta:
-        ordering = ['creators', '-date']
-
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return str(self.obj)
-
-    @property
-    def admin_file_link(self) -> SafeString:
-        """TODO: write docstring."""
-        element = ''
-        if self.file:
-            element = (
-                f'<a class="btn btn-small btn-default display-source"'
-                f' href="{self.obj.file_url}" target="_blank">'
                 f'<i class="fa fa-search"></i></a>'
             )
         return format_html(element)
@@ -597,8 +255,6 @@ class Source(PolymorphicModel, DatedModel, SearchableModel):
         (defined subsequently).
         """
         # TODO: html methods should be split into different classes and/or mixins.
-        if hasattr(self.obj, 'html_override'):
-            return format_html(self.obj.html_override)
         html = self.__html__
 
         if self.source_containments.exists():
@@ -613,7 +269,7 @@ class Source(PolymorphicModel, DatedModel, SearchableModel):
         if not self.file:
             if self.url and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
-        if getattr(self.obj, 'information_url', None) and self.information_url:
+        if getattr(self, 'information_url', None) and self.information_url:
             html = (
                 f'{html}, information available at '
                 f'<a target="_blank" href="{self.information_url}">{self.information_url}</a>'
@@ -648,18 +304,6 @@ class Source(PolymorphicModel, DatedModel, SearchableModel):
         return f'<a target="_blank" href="{self.url}">{self.url}</a>' if self.url else None
 
     @property
-    def obj(self) -> 'Source':
-        """Return the object with the correct content type."""
-        polymorphic_ctype_id = getattr(self, 'polymorphic_ctype_id', None)
-        if polymorphic_ctype_id:
-            try:
-                ct = ContentType.objects.get(id=polymorphic_ctype_id)
-                return ct.model_class().objects.get(id=self.id)
-            except Exception as e:
-                print(f'Encountered error trying to get child obj for {self}: {e}', file=stderr)
-        return self
-
-    @property
     def ordered_attributees(self) -> Optional[List['Entity']]:
         """TODO: write docstring."""
         if not self.pk or not self.attributees.exists():
@@ -669,24 +313,33 @@ class Source(PolymorphicModel, DatedModel, SearchableModel):
     @property
     def string(self) -> str:
         """TODO: write docstring."""
-        # TODO: String methods should be split into different classes and/or mixins.
-        if hasattr(self.obj, 'string_override'):
-            return self.obj.string_override
         return BeautifulSoup(self.html, features='lxml').get_text()
+
+    @property
+    def linked_title(self) -> Optional[SafeString]:
+        """TODO: write docstring."""
+        if not self.title:
+            return None
+        html = (
+            f'<a href="{self.href}" target="_blank" class="source-title display-source">'
+            f'{self.title}'
+            '</a>'
+        ) if self.href else self.title
+        return format_html(html)
 
     def clean(self):
         """TODO: write docstring."""
+        super().clean()
         if not self.db_string:
             self.db_string = self.string
             if not self.db_string:
                 raise ValidationError('Cannot generate string representation.')
-        super().clean()
-        if Source.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
-            raise ValidationError(
-                f'Unable to save this source because it duplicates an existing source '
-                f'or has an identical string: {self.db_string}'
-            )
-        if self.id or self.pk:  # If this source is not being newly created
+        if self.pk:  # If this source is not being newly created
+            if Source.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
+                raise ValidationError(
+                    f'Unable to save this source because it duplicates an existing source '
+                    f'or has an identical string: {self.db_string}'
+                )
             for container in self.containers.all():
                 if self in container.containers.all():
                     raise ValidationError(
@@ -717,7 +370,7 @@ class Source(PolymorphicModel, DatedModel, SearchableModel):
 
         Must be defined by models inheriting from Source.
         """
-        return self.obj.__html__
+        raise NotImplementedError
 
     @classmethod
     def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
@@ -734,15 +387,25 @@ class Source(PolymorphicModel, DatedModel, SearchableModel):
             #     return preretrieved_html.strip()
 
         key = match.group(1).strip()
-        source = cls.objects.get(pk=key)
+        try:
+            source = cls.objects.get(pk=key)
+        except Exception as e:
+            if f'{key}' == '484':
+                source = cls.objects.get(id=252)
+            else:
+                raise Exception(f'key: {key}: {e}')
         return source.html
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
         """Return an up-to-date placeholder for an obj included in an HTML field."""
+        print('Getting updated placeholder...')
         placeholder = match.group(0)
+        print(f'placeholder: {placeholder}\n')
+        input('Continue? ')
         appendage = match.group(2)
         updated_appendage = f': {cls.get_object_html(match)}'
+        print(f'\nupdated_appendage: {updated_appendage}\n')
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
@@ -751,30 +414,6 @@ class Source(PolymorphicModel, DatedModel, SearchableModel):
                 f'{updated_appendage}'
             ) + '}}'  # Angle brackets can't be included in f-string literals
         return updated_placeholder
-
-
-class OldTitledSource(Source):
-    """TODO: write docstring."""
-
-    title = models.CharField(
-        max_length=MAX_TITLE_LENGTH,
-        null=True,
-        blank=True
-    )
-
-    class Meta:
-        abstract = True
-
-    @property
-    def linked_title(self) -> Optional[SafeString]:
-        """TODO: write docstring."""
-        if not self.title:
-            return None
-        html = (
-            f'<a href="{self.href}" target="_blank" '
-            f'class="source-title display-source">{self.title}</a>'
-        ) if self.href else self.title
-        return format_html(html)
 
 
 def _get_page_number_url(source: Source, file: SourceFile, page_number: int) -> Optional[str]:

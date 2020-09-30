@@ -112,9 +112,6 @@ class Options:
 @register()
 def mypy(app_configs: Optional[List], **kwargs) -> List:
     """."""
-    # print('Performing mypy checks...\n')
-    # print(f'app_configs: {app_configs}')
-    # print(f'kwargs: {kwargs}')
     options = Options()
     module_options: List[Tuple[str, Options]] = []
     parsers = [

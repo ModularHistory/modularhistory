@@ -1,7 +1,7 @@
 from typing import Dict
 
+from django.db.models import QuerySet
 from django.views import generic
-from polymorphic.query import PolymorphicQuerySet
 
 from history.constants import IMAGE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
 from occurrences.models import Occurrence
@@ -16,7 +16,7 @@ class ListView(generic.list.ListView):
     context_object_name = 'occurrences'
     paginate_by = 20
 
-    def get_queryset(self) -> PolymorphicQuerySet:
+    def get_queryset(self) -> QuerySet:
         """Return the queryset."""
         return Occurrence.objects.filter(verified=True)
 

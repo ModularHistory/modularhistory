@@ -1,12 +1,12 @@
 from typing import Optional
 
-from django.db.models import CharField, ForeignKey, SET_NULL
+from django.db.models import ForeignKey, SET_NULL
 
 from history.fields import ExtraField, HistoricDateTimeField
-from sources.models.source import MAX_CREATOR_STRING_LENGTH, Source, TypedSource
+from sources.models.source import Source
 
 
-class TextualSource(TypedSource):
+class TextualSource(Source):
     """Mixin model for textual sources."""
 
     original_edition = ForeignKey(
@@ -26,37 +26,6 @@ class TextualSource(TypedSource):
     # )
 
     editors = ExtraField(json_field_name='extra')
-
-    @property
-    def file_page_number(self) -> Optional[int]:
-        """TODO: write docstring."""
-        file = self.file
-        if file:
-            if self.containment and self.containment.page_number:
-                return self.containment.page_number + file.page_offset
-            return file.first_page_number + file.page_offset
-        return None
-
-    @property
-    def file_url(self) -> Optional[str]:
-        """TODO: write docstring."""
-        file_url = super().file_url
-        if file_url and self.file_page_number:
-            file_url = f'{file_url}#page={self.file_page_number}'
-        return file_url
-
-
-class OldTextualSource(Source):
-    """TODO: add docstring."""
-
-    editors = CharField(
-        max_length=MAX_CREATOR_STRING_LENGTH,
-        null=True,
-        blank=True
-    )
-
-    class Meta:
-        abstract = True
 
     @property
     def file_page_number(self) -> Optional[int]:

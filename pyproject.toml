@@ -10,6 +10,10 @@ authors = ["Jacob Fredericksen <jacob.t.fredericksen@gmail.com>"]
 license = "ISC"
 readme = 'README.md'  # Markdown files are supported
 repository = "https://github.com/ModularHistory/modularhistory"
+packages = [
+    { include = "my_package" },
+    { include = "extra_package/**/*.py" },
+]
 
 [tool.nitpick]
 style = "https://raw.githubusercontent.com/wemake-services/wemake-python-styleguide/master/styles/nitpick-style.toml"
@@ -25,19 +29,6 @@ python_files = [
 norecursedirs = [
     "*env",
 ]
-
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-envlist = py38
-
-[testenv]
-skip_install = true
-whitelist_externals = poetry
-commands =
-    poetry install -vv
-    pytest --hypothesis-show-statistics
-"""
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -125,6 +116,7 @@ jsonschema = "^3.2.0"
 
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"
+django-pymemcache = "^1.0.0"
 django-spaghetti-and-meatballs = "^0.3.1"
 django-stubs = "==1.5.0"
 djangorestframework-stubs = "==1.2.0"
@@ -139,7 +131,6 @@ pytest-randomly = "^3.4"
 pytest-xdist = "^2.1.0"
 safety = "^1.9"
 tomlkit = "^0.7.0"
+tox = "^3.20.0"
 virtualenv-clone = "==0.5.4"
 wemake-python-styleguide = "^0.14.1"
-django-pymemcache = "^1.0.0"
-tox = "^3.20.0"

@@ -19,8 +19,9 @@ Examples:
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
-from history import environments
+
 from admin.admin import admin_site
+from history import environments
 from search.views import SearchResultsView
 
 

@@ -63,12 +63,6 @@ class Citation(Model):
         on_delete=SET_NULL,
         null=True
     )
-    typed_source = ForeignKey(
-        'sources.TypedSource',
-        related_name='citations',
-        on_delete=SET_NULL,
-        null=True
-    )
     content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(
@@ -76,8 +70,6 @@ class Citation(Model):
         fk_field='object_id'
     )
     pages: Any
-    # page_number = PositiveSmallIntegerField(null=True, blank=True)
-    # end_page_number = PositiveSmallIntegerField(null=True, blank=True)
     position = PositiveSmallIntegerField(
         null=True,
         blank=True,  # TODO: add cleaning logic
