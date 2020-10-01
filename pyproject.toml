@@ -108,7 +108,7 @@ termcolor = "==1.1.0"
 tinycss = "==0.4"
 virtualenv = "==20.0.31"
 wcwidth = "==0.2.5"
-websocket-client = "==0.40.0"
+websocket-client = "==0.57.0"
 youtube-dl = "^2020.7.28"
 
 [tool.poetry.dev-dependencies]
