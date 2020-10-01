@@ -28,9 +28,6 @@ static/
 # Media files
 media/
 
-# Checks
-checks/
-
 # User scripts
 setup.sh
 

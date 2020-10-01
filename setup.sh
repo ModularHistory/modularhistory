@@ -90,6 +90,11 @@ done
 
 shift $((OPTIND - 1))
 
+if [[ -n "${USE_PROD_DB}" ]]; then
+  error "Cannot run setup script while connected to production database."
+  exit 1
+fi
+
 if [[ "$noninteractive" == true ]]; then
   interactive=false
 else
@@ -140,6 +145,20 @@ if [[ "$interactive" == true ]]; then
     fi
   }
   echo "Using $(pyenv --version)..."
+  echo "Installing required Python versions..."
+  while IFS= read -r pyversion; do
+    if [[ -n $pyversion ]]; then
+      pyenv install "$pyversion"
+    fi
+  done < .python-version
+fi
+
+# Install gettext (for envsubst)
+if [[ "$os" == "$MAC_OS" ]]; then
+  brew install gettext
+  brew link --force gettext
+elif [[ "$os" == "$LINUX" ]]; then
+  apt-get install envsubst
 fi
 
 # Make sure correct version of Python is used
@@ -297,7 +316,8 @@ if [[ "$interactive" == true ]]; then
   if psql "$db_name" -c '\q' 2>&1; then
     echo "Database named $db_name already exists."
     while [ "$create_database" != "y" ] && [ "$create_database" != "n" ]; do
-      read -rp "Recreate database? (WARNING: All local changes will be obliterated.) [y/n] " create_database
+      echo "Recreate database? (WARNING: All local changes will be obliterated.) [y/n] "
+      read -r create_database
     done
     if [[ "$create_database" == "y" ]]; then
       echo "Dropping $db_name..."

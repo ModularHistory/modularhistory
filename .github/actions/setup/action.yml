@@ -1,8 +1,0 @@
-name: "Setup"
-description: "Set up ModularHistory."
-runs:
-  using: "composite"
-  steps:
-    - name: Run the setup script
-      shell: bash
-      run: ./setup.sh --noninteractive

@@ -61,8 +61,8 @@ jobs:
     # Set up ModularHistory
     - name: Set up ModularHistory
       if: ${{ success() }}
-      uses: ./.github/actions/setup
+      run: ./setup.sh --noninteractive
     # Run tests
     - name: Run tests
       if: ${{ success() }}
-      uses: ./.github/actions/test
+      run: invoke test
