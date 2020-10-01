@@ -49,6 +49,7 @@ backups/
 .cache
 .hypothesis/
 .mypy_cache/
+.nox/
 .pytest_cache/
 .tox/
 *.cover
@@ -60,9 +61,10 @@ nosetests.xml
 celerybeat-schedule.*
 
 # Distribution / packaging
+*.egg-info/
+.eggs/
 dist/
 eggs/
-.eggs/
 wheels/
 .installed.cfg
 *.egg

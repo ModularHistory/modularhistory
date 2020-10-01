@@ -1,9 +1,0 @@
-name: "Test"
-description: "Run ModularHistory's test suite."
-runs:
-  using: "composite"
-  steps:
-    - name: Run tests
-      shell: bash
-      run: |
-        pytest --hypothesis-show-statistics
