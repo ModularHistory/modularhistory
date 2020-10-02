@@ -95,8 +95,8 @@ def squash_migrations(context):
     # Make sure models fit the current db schema
     for environment, prod_db_env_var_value in prod_db_env_var_values:
         os.environ[prod_db_env_var] = prod_db_env_var_value
-        context.run('python manage.py makemigrations')
-        context.run('python manage.py migrate')
+        print(f'Making sure that models fit the current {environment} db schema...')
+        context.run('python manage.py makemigrations && python manage.py migrate')
         input('Continue? [Y/n] ')
         del os.environ[prod_db_env_var]
 

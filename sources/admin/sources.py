@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from admin.admin import (Admin, GenericTabularInline, StackedInline, TabularInline, admin_site)
 from sources import models
@@ -10,21 +10,23 @@ from sources.admin.source_filters import (
     ImpreciseDateFilter,
     TypeFilter
 )
+from sources.models import Source
 
 
 class AttributeesInline(TabularInline):
     """TODO: add docstring."""
 
-    model = models.Source.attributees.through
+    model = Source.attributees.through
     autocomplete_fields = ['attributee']
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def get_extra(self, request, obj=None, **kwargs):
+    def get_extra(self, request, obj: Optional[Source] = None, **kwargs):
         """TODO: add docstring."""
-        if obj and obj.attributees.count():
-            return 0
+        if obj:
+            if obj.attributees.count():
+                return 0
         return 1
 
 
@@ -33,7 +35,7 @@ class ContainersInline(TabularInline):
 
     verbose_name = 'container'
     verbose_name_plural = 'containers'
-    model = models.Source.containers.through
+    model = Source.containers.through
     fk_name = 'source'
     extra = 0
     autocomplete_fields = ['container']
@@ -44,7 +46,7 @@ class ContainedSourcesInline(TabularInline):
 
     verbose_name = 'contained source'
     verbose_name_plural = 'contained sources'
-    model = models.Source.containers.through
+    model = Source.containers.through
     fk_name = 'container'
     extra = 0
     autocomplete_fields = ['source']
@@ -65,7 +67,7 @@ class RelatedInline(GenericTabularInline):
 class SourceAdmin(Admin):
     """TODO: add docstring."""
 
-    model = models.Source
+    model = Source
     list_display = [
         'pk',
         'html',
@@ -85,7 +87,7 @@ class SourceAdmin(Admin):
         TypeFilter
     ]
     readonly_fields = ['db_string']
-    search_fields = models.Source.searchable_fields
+    search_fields = Source.searchable_fields
     ordering = ['date', 'db_string']
     inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
     autocomplete_fields = ['db_file', 'location']
@@ -109,11 +111,6 @@ class ChildModelAdmin(SourceAdmin):
         'date_string'
     ]
     list_filter = ['verified', 'attributees']
-    readonly_fields = ['db_string']
-    search_fields = ['db_string']
-    ordering = ['date', 'db_string']
-    # inlines = SourceAdmin.inlines
-    # autocomplete_fields = SourceAdmin.autocomplete_fields
 
     def get_fields(self, request, obj=None):
         """TODO: add docstring."""
@@ -208,12 +205,12 @@ class RepositoryAdmin(Admin):
 class SourcesInline(TabularInline):
     """TODO: add docstring."""
 
-    model = models.Source
+    model = Source
     extra = 0
     fields = ['verified', 'hidden', 'date_is_circa', 'creators', 'url', 'date', 'publication_date']
 
 
-admin_site.register(models.Source, SourceAdmin)
+admin_site.register(Source, SourceAdmin)
 
 admin_site.register(models.Article, ArticleAdmin)
 admin_site.register(models.Book, BookAdmin)
