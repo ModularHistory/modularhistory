@@ -116,23 +116,23 @@ echo "Detected $os."
 # Enter the project
 cd "$(dirname "$0")" && echo "Running in $(pwd)..." || exit 1
 
-# Update package managers
-echo "Checking package manager..."
-if [[ "$os" == "$MAC_OS" ]]; then
-  # Install/update Homebrew
-  brew help &>/dev/null || {
-    echo "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-  }
-  echo "Updating packages..."
-  brew update
-  brew tap homebrew/services
-elif [[ "$os" == "$LINUX" ]]; then
-  # Update/upgrade apt-get
-  apt-get update -y && apt-get upgrade -y
-fi
-
 if [[ "$interactive" == true ]]; then
+  # Update package managers
+  echo "Checking package manager..."
+  if [[ "$os" == "$MAC_OS" ]]; then
+    # Install/update Homebrew
+    brew help &>/dev/null || {
+      echo "Installing Homebrew..."
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    }
+    echo "Updating packages..."
+    brew update
+    brew tap homebrew/services
+  elif [[ "$os" == "$LINUX" ]]; then
+    # Update/upgrade apt-get
+    apt-get update -y && apt-get upgrade -y
+  fi
+
   # Make sure pyenv is installed
   echo "Checking for pyenv..."
   pyenv --version &>/dev/null || {
@@ -151,14 +151,14 @@ if [[ "$interactive" == true ]]; then
       pyenv install "$pyversion"
     fi
   done < .python-version
-fi
 
-# Install gettext (for envsubst)
-if [[ "$os" == "$MAC_OS" ]]; then
-  brew install gettext
-  brew link --force gettext
-elif [[ "$os" == "$LINUX" ]]; then
-  apt-get install envsubst
+  # Install gettext (for envsubst)
+  if [[ "$os" == "$MAC_OS" ]]; then
+    brew install gettext
+    brew link --force gettext
+  elif [[ "$os" == "$LINUX" ]]; then
+    apt-get install envsubst
+  fi
 fi
 
 # Make sure correct version of Python is used
@@ -236,7 +236,7 @@ if [[ "$interactive" == true ]]; then
     find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -print0 |
       while IFS= read -r -d '' path; do
         echo "Inspecting $path"
-        ls "$path/bin/activate" &>/dev/null && virtual_env_dir="$path" && source "$virtual_env_dir"/bin/activate
+        ls "$path/bin/activate" && virtual_env_dir="$path" && source "$virtual_env_dir"/bin/activate
       done
     if [[ $(python -c 'import sys; print(sys.prefix)') == *"$(pwd)"* ]]; then
       in_venv=1
@@ -284,23 +284,25 @@ echo "Using $(poetry --version)..."
 # Prevent Poetry from creating virtual environments;
 # this is essential to avoid errors in GitHub builds.
 poetry config virtualenvs.create false
-# poetry config --list
+
+# Install dependencies with Poetry
+echo "Installing dependencies..."
+poetry install --no-root || {
+  error "Failed to install dependencies with Poetry."
+  exit 1
+}
+
+# TODO: remove lock command after https://github.com/python-poetry/poetry/issues/3023 is fixed
+poetry lock
 
 # Create requirements.txt in case of manual deploys; TODO: move this to a test
 echo "Exporting requirements.txt..."
-if [[ -f "requirements.txt" ]]; then
-  rm requirements.txt
-fi
-poetry export -f requirements.txt > requirements.txt
-# Remove hashes from requirements.txt so Google Cloud can read the file correctly
-sed -e '/--hash/d' -e 's/ \\//g' ./requirements.txt > requirements.tmp && mv requirements.tmp requirements.txt
-
-# Install dependencies
-echo "Installing dependencies..."
-poetry install || {
-  error "Failed to install dependencies with Poetry."
-  echo "Falling back on pip..."
-  pip install -r requirements.txt
+rm requirements.txt &>/dev/null
+poetry export --without-hashes -f requirements.txt > requirements.txt
+# Install requirements from requirements.txt (only to ensure requirements.txt is valid)
+pip install -r requirements.txt || {
+  error "Unable to install requirements from requirements.txt."
+  exit 1
 }
 
 # Grant the db user access to create databases (so that tests can be run, etc.)
