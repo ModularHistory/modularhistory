@@ -1,9 +1,10 @@
 """
 These "tasks" or commands can be invoked from the console with an `invoke ` preface.  For example:
-    invoke setup
-    invoke lint
-    invoke test
-
+``
+invoke setup
+invoke lint
+invoke test
+``
 Note: Invoke must first be installed by running setup.sh or `poetry install`.
 
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
@@ -13,6 +14,8 @@ import os
 
 from invoke import task
 
+PROD_DB_ENV_VAR = 'USE_PROD_DB'
+
 
 @task
 def commit(context):
@@ -20,7 +23,7 @@ def commit(context):
     # Check that the branch is correct
     context.run('git branch')
     print()
-    print(f'Current branch: ')
+    print('Current branch: ')
     branch = context.run('git branch --show-current').stdout
     print()
     input('If you are on the intended branch, hit enter to continue. ')
@@ -41,15 +44,21 @@ def commit(context):
         if commit_msg and '"' not in commit_msg:
             request_commit_msg = False
     print(f'\n{commit_msg}\n')
+
+    # Commit the changes
     if input('Is this commit message correct? [Y/n] ') != 'n':
         context.run(f'git commit -m "{commit_msg}"')
     print()
-    if input('Push changes to remote branch? [Y/n] ') != 'n':
-        context.run(f'git push')
-        print(f'View diff: https://github.com/ModularHistory/modularhistory/compare/{branch}')
-    else:
+
+    # Push the changes, if desired
+    if input('Push changes to remote branch? [Y/n] ') == 'n':
         print('To push your changes to the repository, use the following command:')
         print('git push')
+    else:
+        context.run('git push')
+        print()
+        diff_link = f'https://github.com/ModularHistory/modularhistory/compare/{branch}'
+        print(f'Create pull request / view diff: {diff_link}')
 
 
 @task
@@ -90,7 +99,6 @@ def squash_migrations(context):
 
     See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
     """
-    prod_db_env_var = 'USE_PROD_DB'
     prod_db_env_var_values = (
         ('local', ''),
         ('production', 'True')
@@ -101,11 +109,11 @@ def squash_migrations(context):
 
     # Make sure models fit the current db schema
     for environment, prod_db_env_var_value in prod_db_env_var_values:
-        os.environ[prod_db_env_var] = prod_db_env_var_value
+        set_prod_db_env_var(prod_db_env_var_value)
         print(f'Making sure that models fit the current {environment} db schema...')
         context.run('python manage.py makemigrations && python manage.py migrate')
         input('Continue? [Y/n] ')
-        del os.environ[prod_db_env_var]
+        del os.environ[PROD_DB_ENV_VAR]
 
     # Show current migrations
     print('Migrations before squashing:')
@@ -128,10 +136,10 @@ def squash_migrations(context):
     )
     for app in apps_with_migrations:
         for environment, prod_db_env_var_value in prod_db_env_var_values:
-            os.environ[prod_db_env_var] = prod_db_env_var_value
+            set_prod_db_env_var(prod_db_env_var_value)
             print(f'Clearing migration history for the {app} app in {environment} ...')
             context.run(f'python manage.py migrate --fake {app} zero')
-            del os.environ[prod_db_env_var]
+            del os.environ[PROD_DB_ENV_VAR]
         input('Proceed to delete migration files? [Y/n] ')
         context.run(f'find {app} -path migrations/*.py -not -name "__init__.py" -delete')
         context.run(f'find {app} -path migrations/*.pyc" -delete')
@@ -145,10 +153,10 @@ def squash_migrations(context):
 
     # Fake the migrations
     for environment, prod_db_env_var_value in prod_db_env_var_values:
-        os.environ[prod_db_env_var] = prod_db_env_var_value
+        set_prod_db_env_var(prod_db_env_var_value)
         print(f'Running fake migrations for {environment} db...')
         context.run('python manage.py migrate --fake-initial')
-        del os.environ[prod_db_env_var]
+        del os.environ[PROD_DB_ENV_VAR]
         print()
     print('Migrations after squashing:')
     context.run('python manage.py showmigrations')
@@ -161,6 +169,11 @@ def squash_migrations(context):
 def test(context):
     """Run tests."""
     context.run('pytest -n 3 --hypothesis-show-statistics')
+
+
+def set_prod_db_env_var(value: str):
+    """Set the env var that specifies whether to use the production database."""
+    os.environ[PROD_DB_ENV_VAR] = value
 
 
 # TODO

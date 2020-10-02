@@ -3,21 +3,17 @@ from sys import stderr
 from typing import Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 
 from django.contrib.contenttypes.models import ContentType
+# from django.forms import ValidationError
+from django.core.exceptions import ValidationError
 from django.utils.html import SafeString
 from django.utils.module_loading import import_string
 from tinymce.models import HTMLField as MceHTMLField
-# from django.forms import ValidationError
-from django.core.exceptions import ValidationError
-
-if TYPE_CHECKING:
-    from entities.models import Entity
-
-
 
 from modularhistory.constants import MODEL_CLASS_PATHS
 from modularhistory.structures.html import HTML
 
 if TYPE_CHECKING:
+    from entities.models import Entity
     from modularhistory.models import Model
 
 # group 1: entity pk
