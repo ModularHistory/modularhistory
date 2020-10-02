@@ -236,7 +236,7 @@ if [[ "$interactive" == true ]]; then
     find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -print0 |
       while IFS= read -r -d '' path; do
         echo "Inspecting $path"
-        ls "$path/bin/activate" &>/dev/null && virtual_env_dir="$path" && source "$virtual_env_dir"/bin/activate
+        ls "$path/bin/activate" && virtual_env_dir="$path" && source "$virtual_env_dir"/bin/activate
       done
     if [[ $(python -c 'import sys; print(sys.prefix)') == *"$(pwd)"* ]]; then
       in_venv=1
@@ -285,15 +285,15 @@ echo "Using $(poetry --version)..."
 # this is essential to avoid errors in GitHub builds.
 poetry config virtualenvs.create false
 
-# TODO: remove lock command after https://github.com/python-poetry/poetry/issues/3023 is fixed
-poetry lock
-
 # Install dependencies with Poetry
 echo "Installing dependencies..."
 poetry install --no-root || {
   error "Failed to install dependencies with Poetry."
   exit 1
 }
+
+# TODO: remove lock command after https://github.com/python-poetry/poetry/issues/3023 is fixed
+poetry lock
 
 # Create requirements.txt in case of manual deploys; TODO: move this to a test
 echo "Exporting requirements.txt..."
