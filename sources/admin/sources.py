@@ -191,7 +191,6 @@ class CollectionAdmin(Admin):
 class DocumentAdmin(ChildModelAdmin):
     """TODO: add docstring."""
 
-    search_fields = ChildModelAdmin.search_fields
     autocomplete_fields = ['collection', 'db_file']
 
 

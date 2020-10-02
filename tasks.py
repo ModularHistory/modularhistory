@@ -20,6 +20,9 @@ def commit(context):
     # Check that the branch is correct
     context.run('git branch')
     print()
+    print(f'Current branch: ')
+    branch = context.run('git branch --show-current').stdout
+    print()
     input('If you are on the intended branch, hit enter to continue. ')
 
     # Stage files, if needed
@@ -41,8 +44,12 @@ def commit(context):
     if input('Is this commit message correct? [Y/n] ') != 'n':
         context.run(f'git commit -m "{commit_msg}"')
     print()
-    print('To push your changes to the repository, use the following command:')
-    print('git push')
+    if input('Push changes to remote branch? [Y/n] ') != 'n':
+        context.run(f'git push')
+        print(f'View diff: https://github.com/ModularHistory/modularhistory/compare/{branch}')
+    else:
+        print('To push your changes to the repository, use the following command:')
+        print('git push')
 
 
 @task
