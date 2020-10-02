@@ -9,6 +9,8 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
+import os
+
 from invoke import task
 
 
@@ -57,7 +59,7 @@ def lint(context, *args):
 
 @task
 def nox(context, *args):
-    """Run nox (to run linters and tests in multiple environments)."""
+    """Run linters and tests in multiple environments using nox."""
     nox_cmd = ' '.join(['nox', *args])
     context.run(nox_cmd)
     context.run('rm -r modularhistory.egg-info')
@@ -72,6 +74,80 @@ def setup(context, noninteractive=False):
     command = ' '.join(args).strip()
     context.run(command)
     context.run('rm -r modularhistory.egg-info')
+
+
+@task
+def squash_migrations(context):
+    """
+    Squash migrations.
+
+    See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
+    """
+    prod_db_env_var = 'USE_PROD_DB'
+    prod_db_env_var_values = (
+        ('local', ''),
+        ('production', 'True')
+    )
+
+    # Connect to production db
+    context.run('cloud_sql_proxy --help')
+
+    # Make sure models fit the current db schema
+    for environment, prod_db_env_var_value in prod_db_env_var_values:
+        os.environ[prod_db_env_var] = prod_db_env_var_value
+        context.run('python manage.py makemigrations')
+        context.run('python manage.py migrate')
+        input('Continue? [Y/n] ')
+        del os.environ[prod_db_env_var]
+
+    # Show current migrations
+    print('Migrations before squashing:')
+    context.run('python manage.py showmigrations')
+    input('Continue? [Y/n] ')
+
+    # Clear the migrations history for each app
+    apps_with_migrations = (
+        'account',
+        'entities',
+        'images',
+        'markup',
+        'occurrences',
+        'places',
+        'quotes',
+        'search',
+        'sources',
+        'staticpages',
+        'topics'
+    )
+    for app in apps_with_migrations:
+        for environment, prod_db_env_var_value in prod_db_env_var_values:
+            os.environ[prod_db_env_var] = prod_db_env_var_value
+            print(f'Clearing migration history for the {app} app in {environment} ...')
+            context.run(f'python manage.py migrate --fake {app} zero')
+            del os.environ[prod_db_env_var]
+        input('Proceed to delete migration files? [Y/n] ')
+        context.run(f'find {app} -path migrations/*.py -not -name "__init__.py" -delete')
+        context.run(f'find {app} -path migrations/*.pyc" -delete')
+        input('Continue? [Y/n] ')
+    print()
+
+    # Regenerate migrations
+    print('Regenerating migrations...')
+    context.run('python manage.py makemigrations')
+    input('Continue? [Y/n] ')
+
+    # Fake the migrations
+    for environment, prod_db_env_var_value in prod_db_env_var_values:
+        os.environ[prod_db_env_var] = prod_db_env_var_value
+        print(f'Running fake migrations for {environment} db...')
+        context.run('python manage.py migrate --fake-initial')
+        del os.environ[prod_db_env_var]
+        print()
+    print('Migrations after squashing:')
+    context.run('python manage.py showmigrations')
+
+    # Done
+    print('Successfully squashed migrations.')
 
 
 @task
