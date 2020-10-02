@@ -1,6 +1,7 @@
 """Model classes for sources."""
 
 import re
+from sys import stderr
 from typing import List, Optional, TYPE_CHECKING
 
 from bs4 import BeautifulSoup
@@ -390,7 +391,9 @@ class Source(TypedModel, DatedModel, SearchableModel):
         try:
             source = cls.objects.get(pk=key)
         except Exception as e:
+            # TODO
             if f'{key}' == '484':
+                print('>>> Translating bad key of 404 to 252 ...', file=stderr)
                 source = cls.objects.get(id=252)
             else:
                 raise Exception(f'key: {key}: {e}')

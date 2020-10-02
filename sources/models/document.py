@@ -94,7 +94,7 @@ class Collection(Model):
     def __html__(self) -> str:
         """TODO: write docstring."""
         components = [
-            f'{self.name}',
+            f'{self.name}' if self.name else '',
             f'{self.repository}',
         ]
         # Remove blank values

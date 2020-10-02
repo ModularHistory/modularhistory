@@ -14,6 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='attributees',
-            field=models.ManyToManyField(blank=True, related_name='attributed_sources', through='sources.SourceAttribution', to='entities.Entity'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='attributed_sources',
+                through='sources.SourceAttribution',
+                to='entities.Entity'
+            ),
         ),
     ]

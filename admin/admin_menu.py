@@ -48,9 +48,7 @@ class AdminMenu(Menu):
                 items.MenuItem('Occurrence chains', '/admin/occurrences/occurrencechain/'),
             ]),
             items.MenuItem('Sources', children=[
-                items.MenuItem('All', '/admin/sources/source/'),
-                items.MenuItem('Articles', '/admin/sources/article/'),
-                items.MenuItem('Books', '/admin/sources/book/'),
+                items.MenuItem('Sources', '/admin/sources/source/'),
                 items.MenuItem('Citations', '/admin/sources/citation/'),
                 items.MenuItem('Collections', '/admin/sources/collection/'),
                 items.MenuItem('Files', '/admin/sources/sourcefile/'),

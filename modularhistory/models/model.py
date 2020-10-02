@@ -1,18 +1,14 @@
 """Base model classes for ModularHistory."""
 
-from typing import Any, ClassVar, List, Optional, Pattern, TYPE_CHECKING, Tuple, Type
+from typing import Any, ClassVar, List, Match, Optional, Pattern, Tuple, Type
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
 from django.utils.html import SafeString, format_html
-# from polymorphic.models import PolymorphicModel as BasePolymorphicModel
 from typedmodels.models import TypedModel as BaseTypedModel
 
-from modularhistory.models.manager import Manager  # , PolymorphicManager
-
-if TYPE_CHECKING:
-    from re import Match
+from modularhistory.models.manager import Manager
 
 FieldList = List[str]
 
@@ -104,12 +100,12 @@ class Model(DjangoModel):
         return tuple(natural_key_values)
 
     @classmethod
-    def get_object_html(cls, match: 'Match', use_preretrieved_html: bool) -> str:
+    def get_object_html(cls, match: Match, use_preretrieved_html: bool) -> str:
         """Must be implemented in inheriting model classes."""
         raise NotImplementedError
 
     @classmethod
-    def get_updated_placeholder(cls, match: 'Match') -> str:
+    def get_updated_placeholder(cls, match: Match) -> str:
         """Must be implemented in inheriting model classes."""
         raise NotImplementedError
 

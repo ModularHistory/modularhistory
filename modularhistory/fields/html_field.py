@@ -3,6 +3,8 @@ from sys import stderr
 from typing import Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 
 from django.contrib.contenttypes.models import ContentType
+# from django.forms import ValidationError
+from django.core.exceptions import ValidationError
 from django.utils.html import SafeString
 from django.utils.module_loading import import_string
 from tinymce.models import HTMLField as MceHTMLField
@@ -11,6 +13,7 @@ from modularhistory.constants import MODEL_CLASS_PATHS
 from modularhistory.structures.html import HTML
 
 if TYPE_CHECKING:
+    from entities.models import Entity
     from modularhistory.models import Model
 
 # group 1: entity pk
@@ -87,9 +90,8 @@ class HTMLField(MceHTMLField):
             )
             if entities and entities.exists():
                 entities = entities.all()
-                from entities.models import Entity
                 for entity in entities:
-                    ent: Entity = entity
+                    ent: 'Entity' = entity
                     aliases = ent.aliases or []
                     for name in set([ent.name] + aliases):
                         opening_span_tag = f'<span class="entity-name" data-entity-id="{ent.pk}">'
@@ -106,11 +108,14 @@ class HTMLField(MceHTMLField):
         for content_type in self.processable_content_types:
             model_cls_str = MODEL_CLASS_PATHS.get(content_type)
             if model_cls_str:
-                model_cls = import_string(model_cls_str)
-                for match in model_cls.admin_placeholder_regex.finditer(raw_html):
-                    placeholder = match.group(0)
-                    updated_placeholder = model_cls.get_updated_placeholder(match)
-                    raw_html = raw_html.replace(placeholder, updated_placeholder)
+                try:
+                    model_cls = import_string(model_cls_str)
+                    for match in model_cls.admin_placeholder_regex.finditer(raw_html):
+                        placeholder = match.group(0)
+                        updated_placeholder = model_cls.get_updated_placeholder(match)
+                        raw_html = raw_html.replace(placeholder, updated_placeholder)
+                except Exception as e:
+                    raise ValidationError(f'{e}')
 
         # Wrap HTML content in a <p> tag if necessary
         if not raw_html.startswith('<') and raw_html.endswith('>'):
