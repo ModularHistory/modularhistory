@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Enable aliases
-shopt -s expand_aliases
-
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
@@ -167,15 +164,10 @@ python --version &>/dev/null || {
   error "Could not detect Python. Install Python 3.7 and rerun this script."
   exit 1
 }
-if [[ "$os" == "$MAC_OS" ]]; then
-  python3 --version && alias python=python3
-fi
 echo "Using $(python --version)..."
 
 # Make sure Pip is installed
 pip --version &>/dev/null || {
-  pip3 --version &>/dev/null && alias pip=pip3
-} || {
   error "Pip is not installed; unable to proceed."
   exit 1
 }
@@ -235,28 +227,44 @@ if [[ "$interactive" == true ]]; then
     # Attempt to activate existing virtual environment
     find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -print0 |
       while IFS= read -r -d '' path; do
-        echo "Inspecting $path"
-        ls "$path/bin/activate" && virtual_env_dir="$path" && source "$virtual_env_dir"/bin/activate
+        echo "Inspecting $path..." &&
+        activation_path="$path/bin/activate" &&
+        ls "$activation_path" &>/dev/null &&
+        echo "Found $activation_path" &&
+        source "$activation_path" &&
+        break
       done
-    if [[ $(python -c 'import sys; print(sys.prefix)') == *"$(pwd)"* ]]; then
+    echo "Checking if virtual environment is active..."
+    echo "Active Python is $(command -v python)."
+    python_prefix=$(python -c 'import sys; print(sys.prefix)')
+    if [[ "$python_prefix" == *"$(pwd)"* ]]; then
       in_venv=1
     fi
   fi
   if [ "$num" = 0 ] || [ "$in_venv" = 0 ]; then
-    # Attempt to create the virtual environment
-    echo "Creating virtual environment..."
-    rm -r "$PREFERRED_VENV_NAME" &>/dev/null
-    virtualenv "$PREFERRED_VENV_NAME" && source "$PREFERRED_VENV_NAME/bin/activate"
+    create_venv=true
+    if [[ ! "$num" = 0 ]]; then
+      read -rp "Overwrite virtual env directory? [Y\n] " create_venv
+      if [[ "$create_venv" = "n" ]]; then
+        create_venv=false
+      fi
+    fi
+    if [[ "$create_venv" = true ]]; then
+      # Attempt to create the virtual environment
+      echo "Creating virtual environment..."
+      rm -r "$PREFERRED_VENV_NAME" &>/dev/null
+      virtualenv "$PREFERRED_VENV_NAME" && source "$PREFERRED_VENV_NAME/bin/activate" &&
+      echo "Activated virtual environment at $VIRTUAL_ENV"
+    fi
     if [[ $(python -c 'import sys; print(sys.prefix)') == *"$(pwd)"* ]]; then
       in_venv=1
     fi
   fi
   if [[ "$in_venv" == 0 ]]; then
     error "Unable to activate virtual Python environment."
-    echo "Create a virtual environment named $PREFERRED_VENV_NAME in your project root, then rerun this script."
+    error "Create and activate a virtual environment named $PREFERRED_VENV_NAME in your project root, then rerun this script."
     exit 1
   fi
-  echo "Activated virtual environment at $VIRTUAL_ENV"
 fi
 
 # Update Pip
@@ -295,7 +303,7 @@ poetry install --no-root || {
 # TODO: remove lock command after https://github.com/python-poetry/poetry/issues/3023 is fixed
 poetry lock
 
-# Create requirements.txt in case of manual deploys; TODO: move this to a test
+# Create requirements.txt (for deployments to Google Cloud)
 echo "Exporting requirements.txt..."
 rm requirements.txt &>/dev/null
 poetry export --without-hashes -f requirements.txt > requirements.txt

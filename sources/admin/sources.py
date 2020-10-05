@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from admin.admin import (Admin, GenericTabularInline, StackedInline, TabularInline, admin_site)
 from sources import models
@@ -10,6 +10,8 @@ from sources.admin.source_filters import (
     ImpreciseDateFilter,
     TypeFilter
 )
+from django.http.request import HttpRequest
+from django.db.models.query import QuerySet
 from sources.models import Source
 
 
@@ -73,7 +75,8 @@ class SourceAdmin(Admin):
         'html',
         'date_string',
         'location',
-        'admin_file_link'
+        'admin_file_link',
+        'type'
     ]
     list_filter = [
         'verified',
@@ -91,6 +94,10 @@ class SourceAdmin(Admin):
     ordering = ['date', 'db_string']
     inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
     autocomplete_fields = ['db_file', 'location']
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
+    save_as = True
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
+    save_as_continue = True
 
     def get_fields(self, request, obj=None):
         """TODO: add docstring."""
@@ -99,6 +106,15 @@ class SourceAdmin(Admin):
             fields.remove('database_string')
             fields.insert(0, 'database_string')
         return fields
+
+    def get_search_results(
+        self, request: HttpRequest, queryset: QuerySet, search_term: str
+    ) -> Tuple[QuerySet, bool]:
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        print(f'Django admin search function returned queryset: {queryset}')
+        print(f'Falling back on sources.manager.search with query={search_term}...')
+        queryset = Source.objects.search(search_term, suppress_unverified=False)
+        return queryset, use_distinct
 
 
 class ChildModelAdmin(SourceAdmin):

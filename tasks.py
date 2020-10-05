@@ -30,6 +30,7 @@ def commit(context):
 
     # Stage files, if needed
     context.run('git status')
+    print()
     while input('Do files need to be staged? [Y/n] ') != 'n':
         files_to_stage = input('Enter filenames and/or patterns: ')
         context.run(f'git add {files_to_stage}')
@@ -84,7 +85,7 @@ def nox(context, *args):
 @task
 def setup(context, noninteractive=False):
     """Install all dependencies; set up the ModularHistory application."""
-    args = ['./setup.sh']
+    args = ['source setup.sh']
     if noninteractive:
         args.append('--noninteractive')
     command = ' '.join(args).strip()
