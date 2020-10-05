@@ -106,7 +106,7 @@ sqlparse = "==0.3.1"
 tabulate = "==0.8.7"
 termcolor = "==1.1.0"
 tinycss = "==0.4"
-virtualenv = "==20.0.31"
+virtualenv = "==20.0.33"
 wcwidth = "==0.2.5"
 youtube-dl = "^2020.7.28"
 
