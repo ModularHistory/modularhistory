@@ -30,6 +30,7 @@ def commit(context):
 
     # Stage files, if needed
     context.run('git status')
+    print()
     while input('Do files need to be staged? [Y/n] ') != 'n':
         files_to_stage = input('Enter filenames and/or patterns: ')
         context.run(f'git add {files_to_stage}')
@@ -40,6 +41,7 @@ def commit(context):
     commit_msg = None
     request_commit_msg = True
     while request_commit_msg:
+        print()
         commit_msg = input('Enter a commit message (without double quotes): ')
         if commit_msg and '"' not in commit_msg:
             request_commit_msg = False
