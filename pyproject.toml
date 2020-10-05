@@ -31,7 +31,7 @@ norecursedirs = [
 python = "^3.7"
 appdirs = "==1.4.4"
 asgiref = "==3.2.10"
-beautifulsoup4 = "==4.9.1"
+beautifulsoup4 = "==4.9.3"
 celery = "==4.4.7"
 certifi = "==2020.6.20"
 coverage = ">=5.3"
