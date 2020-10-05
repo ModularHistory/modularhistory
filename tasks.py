@@ -41,6 +41,7 @@ def commit(context):
     commit_msg = None
     request_commit_msg = True
     while request_commit_msg:
+        print()
         commit_msg = input('Enter a commit message (without double quotes): ')
         if commit_msg and '"' not in commit_msg:
             request_commit_msg = False
@@ -85,7 +86,7 @@ def nox(context, *args):
 @task
 def setup(context, noninteractive=False):
     """Install all dependencies; set up the ModularHistory application."""
-    args = ['source setup.sh']
+    args = ['./setup.sh']
     if noninteractive:
         args.append('--noninteractive')
     command = ' '.join(args).strip()
