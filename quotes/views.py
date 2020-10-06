@@ -4,9 +4,9 @@ from typing import Dict
 
 from django.views import generic
 
+from modularhistory.constants import IMAGE_CT_ID, OCCURRENCE_CT_ID, SOURCE_CT_ID
 from quotes.models import Quote
 from search.forms import SearchForm
-from search.models import Search
 
 
 class ListView(generic.list.ListView):
@@ -26,7 +26,7 @@ class ListView(generic.list.ListView):
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
-            excluded_content_types=[Search.get_occurrence_ct(), Search.get_image_ct(), Search.get_source_ct()]
+            excluded_content_types=[OCCURRENCE_CT_ID, IMAGE_CT_ID, SOURCE_CT_ID]
         )
         return context
 
