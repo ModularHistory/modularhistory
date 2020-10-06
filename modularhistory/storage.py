@@ -1,8 +1,8 @@
 import os
 from urllib.parse import urljoin
-
+from datetime import datetime
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import FileSystemStorage, Storage
 from storages.backends.gcloud import GoogleCloudStorage
 from storages.utils import setting
 
@@ -19,6 +19,21 @@ class LocalArtifactsStorage(FileSystemStorage):
             # TODO: Make sure this does not break if writing permissions are missing
             os.makedirs(self.location)
         super().__init__(*args, **kwargs)
+
+
+class MegaStorage(Storage):
+    """TODO: add docstring."""
+
+    def delete(self, name: str) -> None:
+        return super().delete(name)
+
+    def exists(self, name: str) -> bool:
+        return super().exists(name)
+
+    def get_accessed_time(self, name: str) -> datetime:
+        return super().get_accessed_time(name)
+
+    # TODO: https://docs.djangoproject.com/en/3.1/ref/files/storage/
 
 
 class GoogleCloudArtifactsStorage(GoogleCloudStorage):
