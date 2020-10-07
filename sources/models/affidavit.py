@@ -39,7 +39,7 @@ class Affidavit(DocumentSource):
         """TODO: add docstring."""
         components = [
             self.attributee_string,
-            f'affidavit sworn {self.date_html} at {self.location} before {self.certifier}'
+            f'affidavit sworn {self.date_html} at {self.location.string} before {self.certifier}'
         ]
         # Remove blank values
         components = [component for component in components if component]

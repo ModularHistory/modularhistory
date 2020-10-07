@@ -1,7 +1,46 @@
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
-
+from admin_auto_filters.filters import AutocompleteFilter
+from django.utils.html import SafeString, format_html
 from sources.models import Source
+from entities.models import Entity
+from django.urls import reverse
+import re
+from pprint import pprint
+
+
+class AttributeeFilter(AutocompleteFilter):
+    """TODO: add docstring."""
+
+    title = 'attributee'
+    field_name = 'attributees'
+
+    _parameter_name = 'attributees__pk__exact'
+
+    def __init__(self, request, params, model, model_admin):
+        """TODO: add docstring."""
+        super().__init__(request, params, model, model_admin)
+        rendered_widget: SafeString = self.rendered_widget  # type: ignore
+        if self.value():
+            attributee = Entity.objects.get(pk=self.value())
+            rendered_widget = format_html(
+                re.sub(
+                    r'(selected>).+(</option>)',
+                    rf'\g<1>{attributee}\g<2>',
+                    rendered_widget
+                )
+            )
+        self.rendered_widget = rendered_widget
+
+    def get_autocomplete_url(self, request, model_admin):
+        """TODO: add docstring."""
+        return reverse('admin:attributee_search')
+
+    def queryset(self, request, queryset):
+        """TODO: add docstring."""
+        if self.value():
+            return queryset.filter(**{self._parameter_name: self.value()})
+        return queryset
 
 
 class HasContainerFilter(SimpleListFilter):
@@ -131,13 +170,12 @@ class ImpreciseDateFilter(SimpleListFilter):
 class TypeFilter(SimpleListFilter):
     """TODO: add docstring."""
 
-    title = 'content type'
-    parameter_name = 'content_type'
+    title = 'type'
+    parameter_name = 'type'
 
     def lookups(self, request, model_admin):
         """TODO: add docstring."""
-        type_labels = Source.objects.all().values('type').distinct()
-        return [(f'{type_label}', f'{type_label}') for type_label in type_labels]
+        return Source._meta.get_field('type').choices
 
     def queryset(self, request, queryset):
         """TODO: add docstring."""
