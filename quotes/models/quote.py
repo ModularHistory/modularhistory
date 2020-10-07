@@ -219,7 +219,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSource
             updated_placeholder = (
                 f'{placeholder.replace(" }}", "").replace("}}", "")}'
                 f'{updated_appendage}'
-            ) + '}}'  # Angle brackets can't be included in f-string literals
+            ) + ' }}'  # Angle brackets can't be included in f-string literals
         return updated_placeholder
 
 

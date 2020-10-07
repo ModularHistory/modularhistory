@@ -51,7 +51,7 @@ class HTMLField(MceHTMLField):
     processor: Optional[Callable] = default_processor
 
     # Types of processable objects included in HTML
-    processable_content_types: Iterable[str] = ['quote', 'image', 'citation']
+    processable_content_types: Iterable[str] = ['quote', 'image', 'citation', 'source']
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -62,7 +62,6 @@ class HTMLField(MceHTMLField):
     def clean(self, value, model_instance) -> HTML:
         """TODO: add docstring."""
         html = super().clean(value=value, model_instance=model_instance)
-
         raw_html = html.raw_value
         replacements = (
             (r'<blockquote>', '<blockquote class="blockquote">'),
@@ -108,14 +107,11 @@ class HTMLField(MceHTMLField):
         for content_type in self.processable_content_types:
             model_cls_str = MODEL_CLASS_PATHS.get(content_type)
             if model_cls_str:
-                try:
-                    model_cls = import_string(model_cls_str)
-                    for match in model_cls.admin_placeholder_regex.finditer(raw_html):
-                        placeholder = match.group(0)
-                        updated_placeholder = model_cls.get_updated_placeholder(match)
-                        raw_html = raw_html.replace(placeholder, updated_placeholder)
-                except Exception as e:
-                    raise ValidationError(f'{e}')
+                model_cls = import_string(model_cls_str)
+                for match in model_cls.admin_placeholder_regex.finditer(raw_html):
+                    placeholder = match.group(0)
+                    updated_placeholder = model_cls.get_updated_placeholder(match)
+                    raw_html = raw_html.replace(placeholder, updated_placeholder)
 
         # Wrap HTML content in a <p> tag if necessary
         if not raw_html.startswith('<') and raw_html.endswith('>'):
