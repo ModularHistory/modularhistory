@@ -64,7 +64,7 @@ django-storages = {extras = ["google"], version = "^1.10"}
 django-tinymce = "==3.0.2"
 django-typed-models = "^0.10.0"
 django-reverse-admin = "==2.9.0"
-djangorestframework = "==3.11.1"
+djangorestframework = "==3.12.1"
 easy-thumbnails = "==2.7"
 Flask = "==1.1.2"
 google-cloud-secret-manager = "==2.0.0"
