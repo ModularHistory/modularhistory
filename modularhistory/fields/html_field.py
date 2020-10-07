@@ -3,8 +3,6 @@ from sys import stderr
 from typing import Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 
 from django.contrib.contenttypes.models import ContentType
-# from django.forms import ValidationError
-from django.core.exceptions import ValidationError
 from django.utils.html import SafeString
 from django.utils.module_loading import import_string
 from tinymce.models import HTMLField as MceHTMLField

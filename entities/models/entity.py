@@ -1,19 +1,15 @@
 from datetime import datetime
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Match, Optional, TYPE_CHECKING
 
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import SafeString, format_html
 
-from modularhistory.fields import ArrayField, HistoricDateTimeField, HTMLField
-from modularhistory.models import (
-    TaggableModel,
-    TypedModel,
-    ModelWithRelatedQuotes
-)
-from modularhistory.structures import HistoricDateTime
 from images.models import Image
+from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
+from modularhistory.models import (ModelWithRelatedQuotes, TaggableModel, TypedModel)
+from modularhistory.structures import HistoricDateTime
 
 if TYPE_CHECKING:
     from entities.models import Categorization
@@ -134,6 +130,16 @@ class Entity(TypedModel, TaggableModel, ModelWithRelatedQuotes):
         """TODO: add docstring."""
         self.clean()
         super().save(*args, **kwargs)
+
+    @classmethod
+    def get_object_html(cls, match: Match, use_preretrieved_html: bool) -> str:
+        """TODO: add docstring."""
+        raise NotImplementedError
+
+    @classmethod
+    def get_updated_placeholder(cls, match: Match) -> str:
+        """TODO: add docstring."""
+        raise NotImplementedError
 
 
 class Person(Entity):

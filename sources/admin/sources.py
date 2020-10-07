@@ -2,10 +2,11 @@ from typing import List, Optional, Tuple
 
 from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
-
+from django.urls import path
 from admin.admin import (Admin, GenericTabularInline, StackedInline, TabularInline, admin_site)
 from sources import models
 from sources.admin.source_filters import (
+    AttributeeFilter,
     HasContainerFilter,
     HasFileFilter,
     HasFilePageOffsetFilter,
@@ -14,6 +15,7 @@ from sources.admin.source_filters import (
     TypeFilter
 )
 from sources.models import Source
+from entities.views import AttributeeSearchView
 
 
 class AttributeesInline(TabularInline):
@@ -87,7 +89,7 @@ class SourceAdmin(Admin):
         HasPageNumber,
         ImpreciseDateFilter,
         'hidden',
-        'attributees',
+        AttributeeFilter,
         TypeFilter
     ]
     readonly_fields = ['db_string']
@@ -111,11 +113,25 @@ class SourceAdmin(Admin):
     def get_search_results(
         self, request: HttpRequest, queryset: QuerySet, search_term: str
     ) -> Tuple[QuerySet, bool]:
+        """Custom implementation for searching sources in the admin."""
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
-        print(f'Django admin search function returned queryset: {queryset}')
-        print(f'Falling back on sources.manager.search with query={search_term}...')
-        queryset = Source.objects.search(search_term, suppress_unverified=False)
+        if search_term:
+            print(f'Django admin search function returned queryset: {queryset}')
+            print(f'Falling back on sources.manager.search with query={search_term}...')
+            queryset = Source.objects.search(search_term, suppress_unverified=False)
         return queryset, use_distinct
+
+    def get_urls(self):
+        """TODO: add docstring."""
+        urls = super().get_urls()
+        additional_urls = [
+            path(
+                'attributee_search/',
+                self.admin_site.admin_view(AttributeeSearchView.as_view(model_admin=self)),
+                name='attributee_search'
+            ),
+        ]
+        return additional_urls + urls
 
 
 class ChildModelAdmin(SourceAdmin):
@@ -127,7 +143,10 @@ class ChildModelAdmin(SourceAdmin):
         'detail_link',
         'date_string'
     ]
-    list_filter = ['verified', 'attributees']
+    list_filter = [
+        'verified',
+        AttributeeFilter
+    ]
 
     def get_fields(self, request, obj=None):
         """TODO: add docstring."""

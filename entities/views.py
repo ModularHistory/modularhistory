@@ -1,9 +1,28 @@
+# from django.http import HttpRequest, JsonResponse
+
 from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models import Q
+from django.db.models.query import QuerySet
 # from django.http import HttpRequest, JsonResponse
 from django.views import generic
 
 from entities.models import Entity  # , Person, Organization
+
+
+class AttributeeSearchView(AutocompleteJsonView):
+    """Used by autocomplete widget in admin."""
+
+    def get_queryset(self) -> 'QuerySet[Entity]':
+        """TODO: add docstring."""
+        queryset = Entity.objects.all()
+        term = self.term
+        if term:
+            queryset = queryset.filter(
+                Q(name__icontains=term) |
+                Q(unabbreviated_name__icontains=term) |
+                Q(aliases__icontains=term)
+            )
+        return queryset
 
 
 class EntitySearchView(AutocompleteJsonView):
