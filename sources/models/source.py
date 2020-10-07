@@ -381,11 +381,9 @@ class Source(TypedModel, DatedModel, SearchableModel):
 
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            pass
-            # TODO
-            # preretrieved_html = match.group(3)
-            # if preretrieved_html:
-            #     return preretrieved_html.strip()
+            preretrieved_html = match.group(3)
+            if preretrieved_html:
+                return preretrieved_html.strip()
 
         key = match.group(1).strip()
         try:
@@ -393,7 +391,7 @@ class Source(TypedModel, DatedModel, SearchableModel):
         except Exception as e:
             # TODO
             if f'{key}' == '484':
-                print('>>> Translating bad key of 404 to 252 ...', file=stderr)
+                print('>>> Translating bad key of 484 to 252 ...', file=stderr)
                 source = cls.objects.get(id=252)
             else:
                 raise Exception(f'key: {key}: {e}')
@@ -402,20 +400,16 @@ class Source(TypedModel, DatedModel, SearchableModel):
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
         """Return an up-to-date placeholder for an obj included in an HTML field."""
-        print('Getting updated placeholder...')
         placeholder = match.group(0)
-        print(f'placeholder: {placeholder}\n')
-        input('Continue? ')
         appendage = match.group(2)
         updated_appendage = f': {cls.get_object_html(match)}'
-        print(f'\nupdated_appendage: {updated_appendage}\n')
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
             updated_placeholder = (
                 f'{placeholder.replace(" }}", "").replace("}}", "")}'
                 f'{updated_appendage}'
-            ) + '}}'  # Angle brackets can't be included in f-string literals
+            ) + ' }}'  # Angle brackets can't be included in f-string literals
         return updated_placeholder
 
 

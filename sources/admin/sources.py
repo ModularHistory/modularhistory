@@ -1,5 +1,8 @@
 from typing import List, Optional, Tuple
 
+from django.db.models.query import QuerySet
+from django.http.request import HttpRequest
+
 from admin.admin import (Admin, GenericTabularInline, StackedInline, TabularInline, admin_site)
 from sources import models
 from sources.admin.source_filters import (
@@ -10,8 +13,6 @@ from sources.admin.source_filters import (
     ImpreciseDateFilter,
     TypeFilter
 )
-from django.http.request import HttpRequest
-from django.db.models.query import QuerySet
 from sources.models import Source
 
 

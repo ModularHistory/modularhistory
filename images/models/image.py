@@ -203,7 +203,7 @@ class Image(MediaModel):
             updated_placeholder = (
                 f'{placeholder.replace(" }}", "").replace("}}", "")}'
                 f'{updated_appendage}'
-            ) + '}}'  # Angle brackets can't be included in f-string literals
+            ) + ' }}'  # Angle brackets can't be included in f-string literals
         else:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
