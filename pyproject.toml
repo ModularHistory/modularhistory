@@ -30,7 +30,7 @@ norecursedirs = [
 [tool.poetry.dependencies]
 python = "^3.7"
 appdirs = "==1.4.4"
-asgiref = "==3.2.10"
+asgiref = "==3.3.0"
 beautifulsoup4 = "==4.9.3"
 celery = "==4.4.7"
 certifi = "==2020.6.20"
