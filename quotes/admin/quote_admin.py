@@ -89,8 +89,8 @@ class QuoteAdmin(Admin):
         HasTagsFilter,
         TopicFilter,
         AttributeeFilter,
+        AttributeeCategoryFilter,
         AttributeeCountFilter,
-        AttributeeCategoryFilter
     ]
     search_fields = models.Quote.searchable_fields
     ordering = ['date']

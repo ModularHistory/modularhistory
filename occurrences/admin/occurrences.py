@@ -28,7 +28,6 @@ class OccurrenceAdmin(Admin):
         'detail_link',
         'truncated_description',
         'date_string',
-        # 'tags_string'
     ]
     list_filter = [
         'verified',
@@ -41,8 +40,10 @@ class OccurrenceAdmin(Admin):
     search_fields = models.Occurrence.searchable_fields
     ordering = ['date']
     inlines = [
-        RelatedQuotesInline, InvolvedEntitiesInline,
-        LocationsInline, ImagesInline,
+        RelatedQuotesInline,
+        InvolvedEntitiesInline,
+        LocationsInline,
+        ImagesInline,
         CitationsInline,
         RelatedTopicsInline
     ]

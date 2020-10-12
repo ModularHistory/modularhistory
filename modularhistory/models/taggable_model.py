@@ -1,13 +1,12 @@
 """Taggable models."""
 
-import re
 from typing import List, Optional
 
-from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.contenttypes.fields import GenericRelation
 from django.shortcuts import reverse
 from django.utils.html import SafeString, format_html
 
+from admin.autocomplete_filter import ManyToManyAutocompleteFilter
 from modularhistory.models import Model
 from topics.models import Topic
 
@@ -53,35 +52,15 @@ class TaggableModel(Model):
         return None
 
 
-class TopicFilter(AutocompleteFilter):
+class TopicFilter(ManyToManyAutocompleteFilter):
     """TODO: add docstring."""
 
     title = 'tags'
     field_name = 'tags'
 
     _parameter_name = 'tags__topic__pk__exact'
-
-    def __init__(self, request, params, model, model_admin):
-        """TODO: add docstring."""
-        super().__init__(request, params, model, model_admin)
-        rendered_widget: SafeString = self.rendered_widget  # type: ignore
-        if self.value():
-            topic = Topic.objects.get(pk=self.value())
-            rendered_widget = format_html(
-                re.sub(
-                    r'(selected>).+(</option>)',
-                    rf'\g<1>{topic}\g<2>',
-                    rendered_widget
-                )
-            )
-        self.rendered_widget = rendered_widget
+    m2m_cls = Topic
 
     def get_autocomplete_url(self, request, model_admin):
         """TODO: add docstring."""
         return reverse('admin:tag_search')
-
-    def queryset(self, request, queryset):
-        """TODO: add docstring."""
-        if self.value():
-            return queryset.filter(**{self._parameter_name: self.value()})
-        return queryset

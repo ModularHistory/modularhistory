@@ -10,11 +10,6 @@ class EntityFilter(AutocompleteFilter):
     field_name = 'involved_entities'
 
 
-# class TopicFilter(AutocompleteFilter):
-#     title = 'topic'
-#     field_name = 'related_topics'
-
-
 class LocationFilter(AutocompleteFilter):
     """TODO: add docstring."""
 

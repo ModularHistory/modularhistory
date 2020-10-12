@@ -1,6 +1,6 @@
 import re
 
-from admin_auto_filters.filters import AutocompleteFilter
+from admin.autocomplete_filter import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
 from django.urls import reverse
