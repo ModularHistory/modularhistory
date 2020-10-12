@@ -170,7 +170,8 @@ def squash_migrations(context):
 @task
 def test(context):
     """Run tests."""
-    context.run('pytest -n 3 --hypothesis-show-statistics')
+    context.run('coverage run -m pytest -n 3 --hypothesis-show-statistics')
+    context.run('coverage combine && coverage report')
 
 
 def set_prod_db_env_var(value: str):

@@ -8,7 +8,7 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
-from entities.models import Entity
+from entities.models import Entity, Category
 from admin.admin import AutocompleteFilter
 
 
@@ -30,7 +30,7 @@ class AttributeeFilter(AutocompleteFilter):
 
     def get_autocomplete_url(self, request, model_admin):
         """TODO: add docstring."""
-        return reverse('admin:entity_search')
+        return reverse('admin:entity_category_search')
 
     def queryset(self, request, queryset):
         """TODO: add docstring."""
@@ -43,7 +43,27 @@ class AttributeeCategoryFilter(AutocompleteFilter):
     """TODO: add docstring."""
 
     title = 'attributee categories'
-    field_name = 'attributees__categories'
+    field_name = 'attributees'
+
+    _parameter_name = 'attributees__categorizations__category__pk__exact'
+
+    def __init__(self, request, params, model, model_admin):
+        """TODO: add docstring."""
+        super().__init__(request, params, model, model_admin)
+        if self.value():
+            category = Category.objects.get(pk=self.value())
+            rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{category}\g<2>', self.rendered_widget)
+            self.rendered_widget = format_html(rendered_widget)
+
+    def get_autocomplete_url(self, request, model_admin):
+        """TODO: add docstring."""
+        return reverse('admin:entity_category_search')
+
+    def queryset(self, request, queryset):
+        """TODO: add docstring."""
+        if self.value():
+            return queryset.filter(**{self._parameter_name: self.value()})
+        return queryset
 
 
 class HasSourceFilter(SimpleListFilter):

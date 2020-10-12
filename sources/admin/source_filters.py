@@ -1,12 +1,13 @@
+import re
+
+from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
-from admin_auto_filters.filters import AutocompleteFilter
-from django.utils.html import SafeString, format_html
-from sources.models import Source
-from entities.models import Entity
 from django.urls import reverse
-import re
-from pprint import pprint
+from django.utils.html import SafeString, format_html
+
+from entities.models import Entity
+from sources.models import Source
 
 
 class AttributeeFilter(AutocompleteFilter):
@@ -179,10 +180,7 @@ class TypeFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         """TODO: add docstring."""
-        value = self.value()
-        if not value:
+        type_value = self.value()
+        if not type_value:
             return queryset
-        if '.' in value:
-            # app_name, model_name = value.split('.')
-            return queryset.filter(type=value)
-        return queryset
+        return queryset.filter(type=type_value)
