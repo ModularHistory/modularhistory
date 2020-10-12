@@ -33,6 +33,10 @@ class Model(DjangoModel):
         """TODO: add docstring."""
         return cls.searchable_fields or []
 
+    @classmethod
+    def get_meta(cls):
+        return cls._meta
+
     @property
     def admin_url(self) -> str:
         """TODO: add docstring."""

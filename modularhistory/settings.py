@@ -70,7 +70,7 @@ if ENVIRONMENT != environments.DEV:
 # TODO
 # https://www.ralphminderhoud.com/blog/django-mypy-check-runs/
 if ENVIRONMENT == environments.DEV:
-    from modularhistory import checks
+    pass
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
@@ -467,9 +467,10 @@ GS_LOCATION = 'media'  # Bucket subdirectory in which to store files. (Defaults 
 GS_STATIC_BUCKET_NAME = 'modularhistory-static'
 GS_ARTIFACTS_BUCKET_NAME = 'modularhistory-artifacts'
 
+MEGA_USERNAME = config('MEGA_USERNAME', default=None)
+MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
+
 # TODO: Mega backups?
-# MEGA_USERNAME = config('MEGA_USERNAME', default=None)
-# MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 # mega = None
 # if IS_PROD and MEGA_USERNAME and MEGA_PASSWORD:
 #     mega = Mega()

@@ -1,20 +1,22 @@
 """Admin for the quotes app."""
 
+from typing import Optional
+
 from django.urls import path
 
-from entities.views import EntitySearchView
 from admin.admin import Admin, TabularInline, admin_site
+from entities.views import EntityCategorySearchView, EntitySearchView
 from modularhistory.models.taggable_model import TopicFilter
 from quotes import models
 from quotes.admin.filters import (
+    AttributeeCategoryFilter,
     AttributeeCountFilter,
-    # AttributeeClassificationFilter,
     AttributeeFilter,
     HasMultipleCitationsFilter,
     HasSourceFilter
 )
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
-from sources.admin.citations import CitationsInline
+from sources.admin.citations_admin import CitationsInline
 from topics.admin import HasTagsFilter, RelatedTopicsInline
 from topics.views import TagSearchView
 
@@ -27,7 +29,7 @@ class AttributeesInline(TabularInline):
 
     sortable_field_name = 'position'
 
-    def get_extra(self, request, obj=None, **kwargs):
+    def get_extra(self, request, obj: Optional[models.Quote] = None, **kwargs):
         """TODO: add docstring."""
         if obj and obj.attributees.count():
             return 0
@@ -68,6 +70,8 @@ class BitesInline(TabularInline):
 class QuoteAdmin(Admin):
     """TODO: add docstring."""
 
+    model = models.Quote
+
     # form = QuoteForm
     list_display = [
         'pk',
@@ -86,8 +90,7 @@ class QuoteAdmin(Admin):
         TopicFilter,
         AttributeeFilter,
         AttributeeCountFilter,
-        # AttributeeClassificationFilter  # broken
-        'attributees__categories'
+        AttributeeCategoryFilter
     ]
     search_fields = models.Quote.searchable_fields
     ordering = ['date']
@@ -102,14 +105,30 @@ class QuoteAdmin(Admin):
         BitesInline
     ]
 
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
+    date_hierarchy = 'date'
+
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    list_per_page = 10
+
     def get_fields(self, request, obj=None):
         """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
+        fields = list(super().get_fields(request, obj))
         for field_name in ('date', 'date_is_circa'):
             if fields and field_name in fields:
                 fields.remove(field_name)
                 fields.append(field_name)
         return fields
+
+    def get_queryset(self, request):
+        """
+        https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
+        """
+        qs = models.Quote.objects.prefetch_related('attributees')
+        ordering = self.get_ordering(request)
+        if ordering and ordering != models.Quote.get_meta().ordering:
+            qs = qs.order_by(*ordering)
+        return qs
 
     def get_urls(self):
         """TODO: add docstring."""
@@ -124,6 +143,11 @@ class QuoteAdmin(Admin):
                 'entity_search/',
                 self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
                 name='entity_search'
+            ),
+            path(
+                'entity_category_search/',
+                self.admin_site.admin_view(EntityCategorySearchView.as_view(model_admin=self)),
+                name='entity_category_search'
             )
         ]
         return custom_urls + urls

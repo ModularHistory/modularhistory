@@ -6,7 +6,7 @@ from django.db.models.query import QuerySet
 # from django.http import HttpRequest, JsonResponse
 from django.views import generic
 
-from entities.models import Entity  # , Person, Organization
+from entities.models import Entity, Category  # , Person, Organization
 
 
 class AttributeeSearchView(AutocompleteJsonView):
@@ -35,6 +35,21 @@ class EntitySearchView(AutocompleteJsonView):
     def get_queryset(self):
         """TODO: add docstring."""
         queryset = Entity.objects.all()
+        term = self.term
+        if term:
+            queryset = queryset.filter(
+                Q(name__icontains=term) |
+                Q(aliases__icontains=term)
+            )
+        return queryset
+
+
+class EntityCategorySearchView(AutocompleteJsonView):
+    """Used by autocomplete widget in admin."""
+
+    def get_queryset(self):
+        """TODO: add docstring."""
+        queryset = Category.objects.all()
         term = self.term
         if term:
             queryset = queryset.filter(

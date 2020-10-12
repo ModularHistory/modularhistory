@@ -1,9 +1,11 @@
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
 from django.urls import path
-from admin.admin import (Admin, GenericTabularInline, StackedInline, TabularInline, admin_site)
+
+from admin.admin import Admin, StackedInline, TabularInline, admin_site
+from entities.views import AttributeeSearchView
 from sources import models
 from sources.admin.source_filters import (
     AttributeeFilter,
@@ -14,59 +16,8 @@ from sources.admin.source_filters import (
     ImpreciseDateFilter,
     TypeFilter
 )
+from sources.admin.source_inlines import AttributeesInline, ContainedSourcesInline, ContainersInline, RelatedInline
 from sources.models import Source
-from entities.views import AttributeeSearchView
-
-
-class AttributeesInline(TabularInline):
-    """TODO: add docstring."""
-
-    model = Source.attributees.through
-    autocomplete_fields = ['attributee']
-
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
-    sortable_field_name = 'position'
-
-    def get_extra(self, request, obj: Optional[Source] = None, **kwargs):
-        """TODO: add docstring."""
-        if obj:
-            if obj.attributees.count():
-                return 0
-        return 1
-
-
-class ContainersInline(TabularInline):
-    """TODO: add docstring."""
-
-    verbose_name = 'container'
-    verbose_name_plural = 'containers'
-    model = Source.containers.through
-    fk_name = 'source'
-    extra = 0
-    autocomplete_fields = ['container']
-
-
-class ContainedSourcesInline(TabularInline):
-    """TODO: add docstring."""
-
-    verbose_name = 'contained source'
-    verbose_name_plural = 'contained sources'
-    model = Source.containers.through
-    fk_name = 'container'
-    extra = 0
-    autocomplete_fields = ['source']
-
-
-class RelatedInline(GenericTabularInline):
-    """TODO: add docstring."""
-
-    model = models.Citation
-    extra = 0
-    verbose_name = 'related obj'
-    verbose_name_plural = 'related objects (not yet implemented)'
-
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
-    sortable_field_name = 'position'
 
 
 class SourceAdmin(Admin):
@@ -97,8 +48,16 @@ class SourceAdmin(Admin):
     ordering = ['date', 'db_string']
     inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
     autocomplete_fields = ['db_file', 'location']
+
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
+    date_hierarchy = 'date'
+
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    list_per_page = 20
+
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
     save_as = True
+
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
     save_as_continue = True
 
