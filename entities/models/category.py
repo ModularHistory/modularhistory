@@ -3,7 +3,8 @@
 from typing import Tuple
 
 from django.db import models
-from django.db.models import ForeignKey, CASCADE
+from django.db.models import CASCADE, ForeignKey
+from django.db.models.functions import Lower
 
 from modularhistory.fields import ArrayField, HistoricDateTimeField
 from modularhistory.models import Model
@@ -38,7 +39,7 @@ class Category(Model):
 
     class Meta:
         verbose_name_plural = 'categories'
-        ordering = ['name']
+        ordering = [Lower('name')]
 
     def __str__(self) -> str:
         """TODO: write docstring."""

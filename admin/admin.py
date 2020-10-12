@@ -1,29 +1,31 @@
 from typing import List, Type, Union
 
-from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter
-from django.contrib.admin import AdminSite as BaseAdminSite
-from django.contrib.admin import ListFilter
+from django.contrib.admin import AdminSite as BaseAdminSite, ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from django.contrib.sites.models import Site
-from django.utils.html import SafeString
 from django_celery_beat.admin import (
-    PeriodicTask, PeriodicTaskAdmin,
-    CrontabSchedule, IntervalSchedule, SolarSchedule
+    CrontabSchedule,
+    IntervalSchedule,
+    PeriodicTask,
+    PeriodicTaskAdmin,
+    SolarSchedule
 )
 from django_celery_results.admin import TaskResult, TaskResultAdmin
 from django_json_widget.widgets import JSONEditorWidget
 from massadmin.massadmin import mass_change_selected
 from nested_admin.nested import (
+    NestedGenericStackedInline,
+    NestedGenericTabularInline,
     NestedModelAdmin,
-    NestedStackedInline, NestedTabularInline,
-    NestedGenericStackedInline, NestedGenericTabularInline
+    NestedStackedInline,
+    NestedTabularInline
 )
 from sass_processor.processor import sass_processor
-from social_django.admin import UserSocialAuthOption, NonceOption, AssociationOption
-from social_django.models import UserSocialAuth, Nonce, Association
+from social_django.admin import AssociationOption, NonceOption, UserSocialAuthOption
+from social_django.models import Association, Nonce, UserSocialAuth
 
-from modularhistory import settings, environments
+from modularhistory import environments, settings
 from modularhistory.fields import HistoricDateTimeField, SourceFileField
 from modularhistory.forms import HistoricDateWidget, SourceFileInput
 
@@ -38,12 +40,6 @@ else:
     BASE_CSS = 'styles/base.css'
     MCE_CSS = 'styles/mce.css'
     ADMIN_CSS = 'styles/admin.css'
-
-
-class AutocompleteFilter(BaseAutocompleteFilter):
-    """TODO: add docstring."""
-
-    rendered_widget: SafeString
 
 
 class Admin(NestedModelAdmin):

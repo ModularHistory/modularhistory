@@ -1,69 +1,88 @@
-# type: ignore
 # TODO: stop ignoring types when mypy bug is fixed
 
 import re
 
+from admin_auto_filters.filters import AutocompleteSelect
 from django.contrib.admin import SimpleListFilter
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
-from entities.models import Entity, Category
-from admin.admin import AutocompleteFilter
+from admin.autocomplete_filter import BaseAutocompleteFilter, ManyToManyAutocompleteFilter
+from entities.models import Category, Entity
 
 
-class AttributeeFilter(AutocompleteFilter):
+class AttributeeFilter(ManyToManyAutocompleteFilter):
     """TODO: add docstring."""
 
     title = 'attributee'
     field_name = 'attributees'
 
     _parameter_name = 'attributees__pk__exact'
-
-    def __init__(self, request, params, model, model_admin):
-        """TODO: add docstring."""
-        super().__init__(request, params, model, model_admin)
-        if self.value():
-            entity = Entity.objects.get(pk=self.value())
-            rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{entity}\g<2>', self.rendered_widget)
-            self.rendered_widget = format_html(rendered_widget)
+    m2m_cls = Entity
 
     def get_autocomplete_url(self, request, model_admin):
         """TODO: add docstring."""
-        return reverse('admin:entity_category_search')
-
-    def queryset(self, request, queryset):
-        """TODO: add docstring."""
-        if self.value():
-            return queryset.filter(**{self._parameter_name: self.value()})
-        return queryset
+        return reverse('admin:attributee_search')
 
 
-class AttributeeCategoryFilter(AutocompleteFilter):
+class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
     """TODO: add docstring."""
 
     title = 'attributee categories'
-    field_name = 'attributees'
+    field_name = 'attributee__categories'
 
-    _parameter_name = 'attributees__categorizations__category__pk__exact'
-
-    def __init__(self, request, params, model, model_admin):
-        """TODO: add docstring."""
-        super().__init__(request, params, model, model_admin)
-        if self.value():
-            category = Category.objects.get(pk=self.value())
-            rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{category}\g<2>', self.rendered_widget)
-            self.rendered_widget = format_html(rendered_widget)
+    _parameter_name = 'attributees__categories__pk__exact'
+    _rel = Entity.categories.through._meta.get_field('category').remote_field
+    m2m_cls = Category
 
     def get_autocomplete_url(self, request, model_admin):
         """TODO: add docstring."""
         return reverse('admin:entity_category_search')
 
-    def queryset(self, request, queryset):
+    def __init__(self, request, params, model, model_admin):
         """TODO: add docstring."""
+        try:
+            super().__init__(request, params, model, model_admin)
+        except FieldDoesNotExist:
+            if self.parameter_name is None:
+                self.parameter_name = self.field_name
+                if self.use_pk_exact:
+                    self.parameter_name += '__{}__exact'.format(self.field_pk)
+            super(BaseAutocompleteFilter, self).__init__(request, params, model, model_admin)
+            if self.rel_model:
+                model = self.rel_model
+            remote_field = self._rel
+            widget = AutocompleteSelect(
+                remote_field,
+                model_admin.admin_site,
+                custom_url=self.get_autocomplete_url(request, model_admin)
+            )
+            form_field = self.get_form_field()
+            field = form_field(
+                queryset=self.get_queryset_for_field(model, self.field_name),
+                widget=widget,
+                required=False,
+            )
+            self._add_media(model_admin, widget)
+            attrs = self.widget_attrs.copy()
+            attrs['id'] = f'id-{self.parameter_name}-dal-filter'
+            if self.is_placeholder_title:
+                # Upper case letter P as dirty hack for bypass django2 widget force placeholder value as empty string ("")
+                attrs['data-Placeholder'] = self.title
+            self.rendered_widget = field.widget.render(
+                name=self.parameter_name,
+                value=self.used_parameters.get(self.parameter_name, ''),
+                attrs=attrs
+            )
         if self.value():
-            return queryset.filter(**{self._parameter_name: self.value()})
-        return queryset
+            obj = self.m2m_cls.objects.get(pk=self.value())
+            rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{obj}\g<2>', self.rendered_widget)
+            self.rendered_widget = format_html(rendered_widget)
+
+    def get_queryset_for_field(self, model, name):
+        return self.m2m_cls.objects.all()
 
 
 class HasSourceFilter(SimpleListFilter):
