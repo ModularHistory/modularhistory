@@ -5,7 +5,6 @@ from typing import List, Optional, TYPE_CHECKING
 
 from bs4 import BeautifulSoup
 from debug_toolbar.panels.sql.tracking import SQLQueryTriggered
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db.models import ManyToManyField, Q, QuerySet, CharField
 from django.urls import reverse
@@ -14,7 +13,7 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
 from modularhistory.fields import HTMLField, HistoricDateTimeField
-from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel
+from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources
 from modularhistory.constants import OCCURRENCE_CT_ID
 from quotes.manager import QuoteManager
 
@@ -30,7 +29,7 @@ ADMIN_PLACEHOLDER_REGEX = r'<<\ ?quote:\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?
 BITE_MAX_LENGTH: int = 400
 
 
-class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSources):
+class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
     """A quote."""
 
     text = HTMLField(verbose_name='Text')
@@ -62,11 +61,6 @@ class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSource
         related_name='related_quotes',
         blank=True
     )
-    db_attributee_html = CharField(
-        max_length=500,
-        null=True,
-        blank=True
-    )
 
     class Meta:
         unique_together = ['date', 'bite']
@@ -94,9 +88,8 @@ class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSource
     def _attributee_html(self) -> Optional[SafeString]:
         """See also the `attributee_string` property."""
         # TODO: make sure it's updated correctly
-        if self.db_attributee_html:
-            attributee_html = self.db_attributee_html
-        else:
+        attributee_html = self.computations.get('attributee_html')
+        if not attributee_html:
             attributees = self.ordered_attributees
             if attributees:
                 n_attributions = len(attributees)
