@@ -4,16 +4,17 @@ import re
 from typing import List, Optional, TYPE_CHECKING
 
 from bs4 import BeautifulSoup
-from django.contrib.contenttypes.models import ContentType
+from debug_toolbar.panels.sql.tracking import SQLQueryTriggered
 from django.core.exceptions import ValidationError
-from django.db.models import ManyToManyField, Q, QuerySet
+from django.db.models import ManyToManyField, Q, QuerySet, CharField
 from django.urls import reverse
 from django.utils.html import SafeString, format_html
 from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
 from modularhistory.fields import HTMLField, HistoricDateTimeField
-from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel
+from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources
+from modularhistory.constants import OCCURRENCE_CT_ID
 from quotes.manager import QuoteManager
 
 if TYPE_CHECKING:
@@ -23,12 +24,12 @@ if TYPE_CHECKING:
 # group 2: ignore
 # group 3: quote HTML
 # group 4: closing brackets
-ADMIN_PLACEHOLDER_REGEX = r'{{\ ?quote:\ ?([\w\d]+?)(:([^}]+?))?(\ ?}})'
+ADMIN_PLACEHOLDER_REGEX = r'<<\ ?quote:\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?>>)'
 
 BITE_MAX_LENGTH: int = 400
 
 
-class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSources):
+class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
     """A quote."""
 
     text = HTMLField(verbose_name='Text')
@@ -86,26 +87,31 @@ class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSource
     # so that its `admin_order_field` attribute can be modified
     def _attributee_html(self) -> Optional[SafeString]:
         """See also the `attributee_string` property."""
-        if not self.pk or not self.attributees.exists():
-            return None
-        attributees = self.ordered_attributees
-        n_attributions = len(attributees)
-        first_attributee = attributees[0]
+        # TODO: make sure it's updated correctly
+        attributee_html = self.computations.get('attributee_html')
+        if not attributee_html:
+            attributees = self.ordered_attributees
+            if attributees:
+                n_attributions = len(attributees)
+                first_attributee = attributees[0]
 
-        def _html(attributee) -> str:
-            return (
-                f'<a href="{reverse("entities:detail", args=[attributee.id])}" '
-                f'target="_blank">{attributee}</a>'
-            )
+                def _html(attributee) -> str:
+                    return (
+                        f'<a href="{reverse("entities:detail", args=[attributee.id])}" '
+                        f'target="_blank">{attributee}</a>'
+                    )
 
-        html = _html(first_attributee)
-        if n_attributions == 2:
-            html = f'{html} and {_html(attributees[1])}'
-        elif n_attributions == 3:
-            html = f'{html}, {_html(attributees[1])}, and {_html(attributees[2])}'
-        elif n_attributions > 3:
-            html = f'{html} et al.'
-        return format_html(html)
+                html = _html(first_attributee)
+                if n_attributions == 2:
+                    html = f'{html} and {_html(attributees[1])}'
+                elif n_attributions == 3:
+                    html = f'{html}, {_html(attributees[1])}, and {_html(attributees[2])}'
+                elif n_attributions > 3:
+                    html = f'{html} et al.'
+                attributee_html = html
+            else:
+                return None
+        return format_html(attributee_html)
     # TODO: Order by `attributee_string` instead of `attributee`
     _attributee_html.admin_order_field = 'attributee'
     attributee_html = property(_attributee_html)
@@ -138,32 +144,40 @@ class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSource
 
     @property
     def image(self) -> Optional['Image']:
-        """TODO: write docstring."""
-        if self.attributees.exists() and self.attributees.first().images.exists():
+        """Returns an image associated with the quote, if one exists."""
+        try:
             attributee = self.attributees.first()
             if self.date:
                 return attributee.images.get_closest_to_datetime(self.date)
             return attributee.images.first()
-        elif self.related_occurrences.exists():
-            return self.related_occurrences.first().image
+        except SQLQueryTriggered:
+            pass
+        except Exception as e:
+            print(f'{e}')
+            if self.related_occurrences.exists():
+                return self.related_occurrences.first().image
         return None
 
     @property
     def ordered_attributees(self) -> Optional[List[Entity]]:
         """TODO: write docstring."""
-        if not self.pk or not self.attributees.exists():
+        try:
+            attributions = self.attributions.select_related('attributee')
+            return [attribution.attributee for attribution in attributions]
+        except SQLQueryTriggered:
+            pass
+        except Exception as e:
+            print(f'{type(e)}: {e}')
             return None
-        return [attribution.attributee for attribution in self.attributions.all()]
 
     @property
     def related_occurrences(self) -> QuerySet:
         """TODO: write docstring."""
         # TODO: refactor
         from occurrences.models import Occurrence
-        occurrence_ct = ContentType.objects.get_for_model(Occurrence)
-        occurrence_ids = [
-            o.id for o in self.relations.filter(Q(content_type_id=occurrence_ct.id))
-        ]
+        occurrence_ids = self.relations.filter(
+            Q(content_type_id=OCCURRENCE_CT_ID)
+        ).values_list('id', flat=True)
         return Occurrence.objects.filter(id__in=occurrence_ids)
 
     def clean(self):
@@ -217,9 +231,9 @@ class Quote(DatedModel, ModelWithRelatedQuotes, SearchableModel, ModelWithSource
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
             updated_placeholder = (
-                f'{placeholder.replace(" }}", "").replace("}}", "")}'
-                f'{updated_appendage}'
-            ) + ' }}'  # Angle brackets can't be included in f-string literals
+                f'{placeholder.replace(" >>", "").replace(">>", "")}'
+                f'{updated_appendage} >>'
+            )
         return updated_placeholder
 
 

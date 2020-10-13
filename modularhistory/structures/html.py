@@ -15,9 +15,9 @@ class HTML:
         """TODO: add docstring."""
         if raw_value:
             raw_value = raw_value.strip()
-            processed_value = processed_value or raw_value  # .replace('{{', '').replace('}}', '')
+            processed_value = processed_value or raw_value
             self.raw_value = raw_value
-            self.html = format_html(processed_value)
+            self.html = mark_safe(processed_value)  # TODO: update to use format_html
             self.text = BeautifulSoup(self.raw_value, features='lxml').get_text()
         else:
             self.raw_value = ''

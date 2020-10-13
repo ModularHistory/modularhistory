@@ -7,7 +7,7 @@ from django.template.defaultfilters import truncatechars_html
 from django.utils.html import SafeString, format_html
 
 from modularhistory.fields import HTMLField, HistoricDateTimeField
-from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources, SearchableModel
+from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources
 from images.models import Image
 from occurrences.manager import Manager
 from quotes.models import quote_sorter_key
@@ -15,7 +15,7 @@ from quotes.models import quote_sorter_key
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
-class Occurrence(DatedModel, SearchableModel, ModelWithRelatedQuotes, ModelWithSources):
+class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
     """Something that happened."""
 
     date = HistoricDateTimeField(null=True, blank=True)

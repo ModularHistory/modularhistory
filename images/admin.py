@@ -38,6 +38,9 @@ class ImageAdmin(ImageCroppingMixin, Admin):
     search_fields = Image.searchable_fields
     readonly_fields = ['height', 'width']
 
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    list_per_page = 10
+
     def get_fields(self, request, obj=None):
         """TODO: add docstring."""
         fields = super().get_fields(request, obj)

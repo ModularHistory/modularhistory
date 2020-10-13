@@ -11,7 +11,6 @@ from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
 
 from modularhistory.fields.file_field import upload_to
-# from modularhistory.settings import mega  # TODO
 from images.manager import Manager as ImageManager
 from images.models.media_model import MediaModel
 
@@ -19,9 +18,9 @@ FLOAT_UPPER_WIDTH_LIMIT: int = 300
 CENTER_UPPER_WIDTH_LIMIT: int = 500
 
 # group 1: image pk
-# group 2: ignore
+# group 2: ignore (appendage)
 # group 3: image HTML
-ADMIN_PLACEHOLDER_REGEX = r'{{\ ?image:\ ?(.+?)(:([^}]+?))?\ ?}}'
+ADMIN_PLACEHOLDER_REGEX = r'<<\ ?image:\ ?([\d\w-]+?)(:\ ?(?!>>)([\s\S]+?))?\ ?>>'
 
 IMAGE_TYPES = (
     ('image', 'Image'),
@@ -180,8 +179,8 @@ class Image(MediaModel):
         try:
             image = cls.objects.get(pk=key)
         except ValueError as e:  # legacy key
-            print(f'{e}', file=stderr)
             image = cls.objects.get(key=key)
+            print(f'image {key} --> {image.pk}: {e}', file=stderr)
             # img_placeholder = img_placeholder.replace(key, str(image.pk))  # TODO
         image_html = render_to_string(
             'images/_card.html',
@@ -200,10 +199,10 @@ class Image(MediaModel):
         appendage = match.group(2)
         updated_appendage = f': {cls.get_object_html(match)}'
         if appendage:
-            updated_placeholder = (
-                f'{placeholder.replace(" }}", "").replace("}}", "")}'
-                f'{updated_appendage}'
-            ) + ' }}'  # Angle brackets can't be included in f-string literals
-        else:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
+        else:
+            updated_placeholder = (
+                f'{placeholder.replace(" >>", "").replace(">>", "")}'
+                f'{updated_appendage} >>'
+            )
         return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')

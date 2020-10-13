@@ -31,10 +31,10 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
     """TODO: add docstring."""
 
     title = 'attributee categories'
-    field_name = 'attributee__categories'
+    field_name = 'attributee_categories'
 
     _parameter_name = 'attributees__categories__pk__exact'
-    _rel = Entity.categories.through._meta.get_field('category').remote_field
+    _rel = Entity.categories.through.get_meta().get_field('category').remote_field
     m2m_cls = Category
 
     def get_autocomplete_url(self, request, model_admin):
@@ -49,13 +49,12 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             if self.parameter_name is None:
                 self.parameter_name = self.field_name
                 if self.use_pk_exact:
-                    self.parameter_name += '__{}__exact'.format(self.field_pk)
+                    self.parameter_name = f'{self.parameter_name}__{self.field_pk}__exact'
             super(BaseAutocompleteFilter, self).__init__(request, params, model, model_admin)
             if self.rel_model:
                 model = self.rel_model
-            remote_field = self._rel
             widget = AutocompleteSelect(
-                remote_field,
+                self._rel,
                 model_admin.admin_site,
                 custom_url=self.get_autocomplete_url(request, model_admin)
             )
@@ -77,6 +76,7 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
                 attrs=attrs
             )
         if self.value():
+            print('There is a value!!!!')
             obj = self.m2m_cls.objects.get(pk=self.value())
             rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{obj}\g<2>', self.rendered_widget)
             self.rendered_widget = format_html(rendered_widget)

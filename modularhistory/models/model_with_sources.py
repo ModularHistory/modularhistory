@@ -3,15 +3,16 @@
 from typing import Any, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models import CharField
 from django.utils.html import SafeString, format_html
 
-from modularhistory.models.model import Model
+from modularhistory.models.searchable_model import SearchableModel
 
 if TYPE_CHECKING:
     from sources.models import Citation
 
 
-class ModelWithSources(Model):
+class ModelWithSources(SearchableModel):
     """
     A model that has sources; e.g., a quote or occurrence.
 
@@ -43,17 +44,11 @@ class ModelWithSources(Model):
     @property
     def citation_html(self) -> Optional[SafeString]:
         """TODO: write docstring."""
-        if not self.citations.exists():
-            return None
-        citations = self.citations.all()
-        primary_citation = citations[0]
-        citation_html = primary_citation.html
-        if len(citations) > 1:
-            prev_citation = primary_citation
-            for citation in citations[1:]:
-                more_html = citation.html
-                if citation.source.attributee_string == prev_citation.source.attributee_string:
-                    more_html = more_html[len(f'{citation.source.attributee_string}, '):]
-                citation_html = f'{citation_html}; {more_html}'
-        citations = '; '.join([citation.html for citation in self.citations.all()])
-        return format_html(citations)
+        # TODO: make sure this is updated correctly
+        citation_html = self.computations.get('citation_html')
+        if not citation_html:
+            if self.citations.exists():
+                citation_html = '; '.join([citation.html for citation in self.citations.all()])
+            else:
+                return None
+        return format_html(citation_html)
