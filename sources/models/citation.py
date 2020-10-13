@@ -26,8 +26,8 @@ if TYPE_CHECKING:
 # group 6: ignore
 # group 7: citation HTML
 ADMIN_PLACEHOLDER_REGEX = (
-    r'\ ?{{\ ?citation:\ ?([\d\w]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?\ ?'
-    r'(<span style="display: none;?">(.+)<\/span>)?\ ?}}'
+    r'\ ?<<\ ?citation:\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?\ ?'
+    r'(<span style="display: none;?">(.+)<\/span>)?\ ?>>'
 )
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
@@ -69,6 +69,7 @@ class Citation(Model):
         ct_field='content_type',
         fk_field='object_id'
     )
+
     pages: Any
     position = PositiveSmallIntegerField(
         null=True,
@@ -236,6 +237,6 @@ class Citation(Model):
         else:
             updated_placeholder = (
                 f'{placeholder.replace(" }}", "").replace("}}", "")}'
-                f'{updated_appendage}'
-            ) + ' }}'  # Angle brackets can't be included in f-string literals
+                f'{updated_appendage} >>'
+            )
         return updated_placeholder

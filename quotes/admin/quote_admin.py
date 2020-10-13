@@ -124,7 +124,12 @@ class QuoteAdmin(Admin):
         """
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
-        qs = models.Quote.objects.prefetch_related('attributees')
+        qs = models.Quote.objects.prefetch_related(
+            'attributees',  # 2353 -> 2261 queries
+            'tags',  # 2261 -> 2184 queries
+            # 'citations__source',  # 5840
+            # 'citations',  # 5851
+        )
         ordering = self.get_ordering(request)
         if ordering and ordering != models.Quote.get_meta().ordering:
             qs = qs.order_by(*ordering)

@@ -20,7 +20,6 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
     """Autocomplete filter for many2many fields."""
 
     _parameter_name: str
-    _rel: Any
     m2m_cls: Type[Model]
 
     def __init__(self, request, params, model, model_admin):

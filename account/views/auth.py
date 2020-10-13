@@ -39,7 +39,7 @@ class RegisterView(View):
                 login(request, user)
                 return redirect('/')
             else:
-                print(f'Unexpected authentication result: {type(user): {user}}')
+                print(f'Unexpected authentication result: {type(user)}: {user}')
         return render(request, 'account/register.html', {'form': form})
 
 

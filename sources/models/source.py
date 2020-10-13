@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 # group 2: ignore (entire appendage including HTML and closing curly brackets)
 # group 3: source HTML
 # group 4: closing brackets
-ADMIN_PLACEHOLDER_REGEX = r'{{\ ?source:\ ?([\w\d]+?)(:([^}]+?))?(\ ?}})'
+ADMIN_PLACEHOLDER_REGEX = r'<<\ ?source:\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?>>)'
 
 MAX_DB_STRING_LENGTH: int = 500
 MAX_URL_LENGTH: int = 100
@@ -398,9 +398,9 @@ class Source(TypedModel, DatedModel, SearchableModel):
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
             updated_placeholder = (
-                f'{placeholder.replace(" }}", "").replace("}}", "")}'
-                f'{updated_appendage}'
-            ) + ' }}'  # Angle brackets can't be included in f-string literals
+                f'{placeholder.replace(" >>", "").replace(">>", "")}'
+                f'{updated_appendage} >>'
+            )
         return updated_placeholder
 
 

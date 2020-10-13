@@ -193,25 +193,27 @@ class SearchResultsView(ListView):
         )
         self.entities = Entity.objects.using(db).filter(pk__in=entity_subquery).order_by('name')
 
-        # TODO: refactor
-        topics_ids = []
-        from topics.models import TopicRelation
+        # # occurrence topic relations
+        # for topic_id in TopicRelation.objects.filter(
+        #     Q(content_type_id=OCCURRENCE_CT_ID) & Q(object_id__in=occurrence_result_ids)
+        # ).values_list('topic_id', flat=True).distinct():
+        #     print(topic_id)
+        #     topics_ids.append(topic_id)
+        #
+        # # quote topic relations
+        # for topic_id in TopicRelation.objects.filter(
+        #     Q(content_type_id=QUOTE_CT_ID) & Q(object_id__in=quote_result_ids)
+        # ).values_list('topic_id', flat=True).distinct():
+        #     print(topic_id)
+        #     topics_ids.append(topic_id)
 
-        # occurrence topic relations
-        occurrence_topic_relations = TopicRelation.objects.filter(
-            Q(content_type_id=OCCURRENCE_CT_ID) & Q(object_id__in=occurrence_result_ids)
-        )
-        for relation in occurrence_topic_relations:
-            topics_ids.append(relation.topic.id)
+        self.topics = Topic.objects.using(db).filter(
+            Q(topic_relations__content_type_id=QUOTE_CT_ID,
+              topic_relations__object_id__in=quote_result_ids) |
+            Q(topic_relations__content_type_id=OCCURRENCE_CT_ID,
+              topic_relations__object_id__in=occurrence_result_ids)
+        ).order_by('key').distinct()
 
-        # quote topic relations
-        quote_topic_relations = TopicRelation.objects.filter(
-            Q(content_type_id=QUOTE_CT_ID) & Q(object_id__in=quote_result_ids)
-        )
-        for relation in quote_topic_relations:
-            topics_ids.append(relation.topic.id)
-
-        self.topics = Topic.objects.using(db).filter(pk__in=topics_ids).order_by('key')
         # self.places = Place.objects.filter(
         #     Q(occurrences__in=occurrence_results)
         #     | Q(publications__in=source_results)

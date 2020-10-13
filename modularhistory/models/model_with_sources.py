@@ -4,11 +4,13 @@ from typing import Any, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import SafeString, format_html
-
+from django.db.models import CharField
 from modularhistory.models.model import Model
 
 if TYPE_CHECKING:
     from sources.models import Citation
+
+CITATION_HTML_MAX_LENGTH = 3000
 
 
 class ModelWithSources(Model):
@@ -22,6 +24,13 @@ class ModelWithSources(Model):
     sources: Any
 
     citations = GenericRelation('sources.Citation')
+
+    db_citation_html = CharField(
+        verbose_name='database string',
+        max_length=CITATION_HTML_MAX_LENGTH,
+        null=False,
+        blank=True
+    )
 
     class Meta:
         abstract = True
@@ -43,17 +52,12 @@ class ModelWithSources(Model):
     @property
     def citation_html(self) -> Optional[SafeString]:
         """TODO: write docstring."""
-        if not self.citations.exists():
-            return None
-        citations = self.citations.all()
-        primary_citation = citations[0]
-        citation_html = primary_citation.html
-        if len(citations) > 1:
-            prev_citation = primary_citation
-            for citation in citations[1:]:
-                more_html = citation.html
-                if citation.source.attributee_string == prev_citation.source.attributee_string:
-                    more_html = more_html[len(f'{citation.source.attributee_string}, '):]
-                citation_html = f'{citation_html}; {more_html}'
-        citations = '; '.join([citation.html for citation in self.citations.all()])
-        return format_html(citations)
+        # TODO: make sure this is updated correctly
+        if self.db_citation_html:
+            citation_html = self.db_citation_html
+        else:
+            if self.citations.exists():
+                citation_html = '; '.join([citation.html for citation in self.citations.all()])
+            else:
+                return None
+        return format_html(citation_html)

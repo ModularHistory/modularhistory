@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
 # group 1: obj type
-OBJECT_REGEX = re.compile(r'{{ ?(\w+):(?!}})[\s\S]+? ?}}')
+OBJECT_REGEX = re.compile(r'<< ?(\w+):(?!>>)[\s\S]+? ?>>')
 
 
 def process(_, html: str, processable_content_types: Iterable[str]) -> str:
@@ -133,10 +133,32 @@ class HTMLField(MceHTMLField):
             return value
         if not value.startswith('<') and value.endswith('>'):
             value = f'<p>{value}</p>'
-        # Remove empty divs
-        value = re.sub(r'\n?<div[^>]+?>&nbsp;<\/div>', '', value)
-        value = re.sub(r'<div id=\"i4c-draggable-container\"[^\/]+</div>', '', value)
-        value = re.sub(r'<p>&nbsp;<\/p>', '', value)
+        replacements = (
+            (r'074c54e4-ff1d-4952-9964-7d1e52cec4db', '6'),
+            (r'354f9d11-74bb-4e2a-8e0d-5df877b4c461', '86'),
+            (r'53a517fc-68a6-42bd-ac6b-e3a84a617ace', '8'),
+            (r'd8d7199b-4eaa-4189-bd29-b33dc9de4c8c', '90'),
+            (r'aa7291c7-55bf-4ff0-981f-38c259bc160e', '244'),
+            (r'e1e1cf34-b070-41d4-b8ba-604a3a257ace', '88'),
+            (r'a662f48d-9674-4154-9d8f-3456efe7aebf', '70'),
+            (r'993f6db6-c815-4521-b8a0-65e19d0dbe25', '204'),
+            (r'7c86ed23-d548-4aef-81a1-1a16d6ecd7cb', '72'),
+            (r'27c0d6f6-8306-4b3f-a60b-c842857ea1ab', '73'),
+            (r'7579f024-9a48-4f55-b7c7-a1e88b866a0c', '246'),
+            (r'260c4e8e-a35b-4306-a0ce-17cfcb7de47d', '268'),
+            (r'f0af0a2b-68e5-484e-8f08-5de0179a185c', '229'),
+            (r'19e0f153-b248-4147-a09b-ee35c5e4fdaf', '250'),
+            (r'5610f0f6-8bba-4647-9642-e0a623c266d9', '261'),
+            (r'e93eda83-560d-4a8a-8eac-8c28798b52ff', '262'),
+            (r'ed35a437-15a0-4c03-9661-903db39fe216', '91'),
+            (r'\n?<div[^>]+?>&nbsp;<\/div>', ''),
+            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
+            (r'<p>&nbsp;<\/p>', ''),
+            (r'\{\{', '<<'),
+            (r'\}\}', '>>'),
+        )
+        for pattern, replacement in replacements:
+            value = re.sub(pattern, replacement, value)
         html = value
         if self.processor:
             try:
