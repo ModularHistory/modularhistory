@@ -31,11 +31,12 @@ class TaggableModel(ModelWithComputations):
         try:
             tags = self.tags.select_related('topic')
             return [tag.topic for tag in tags]
-        except (AttributeError, ObjectDoesNotExist) as e:
+        except (AttributeError, ObjectDoesNotExist):
             return []
 
     @property
     def tag_keys(self) -> Optional[List[str]]:
+        """Returns a list of tag keys (e.g., ['race', 'religion'])."""
         tag_keys = self.computations.get('tag_keys')
         if not tag_keys:
             tag_keys = [topic.key for topic in self.related_topics]
@@ -46,7 +47,7 @@ class TaggableModel(ModelWithComputations):
 
     @property
     def tags_string(self) -> Optional[str]:
-        """TODO: write docstring."""
+        """Returns a comma-delimited list of tags as a string."""
         if self.has_tags:
             return ', '.join(self.tag_keys)
         return None

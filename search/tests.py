@@ -1,6 +1,9 @@
 import pytest
 from hypothesis import given, example
 from hypothesis.strategies import text
+from django_webtest import WebTest
+
+SUCCESS = 200
 
 
 @pytest.mark.django_db
@@ -14,3 +17,12 @@ class TestNothing:
     def test_nothing(self, string: str):
         """TODO: add docstring."""
         assert self.do_nothing
+
+
+@pytest.mark.django_db
+class TestSearch(WebTest):
+    """TODO: add docstring."""
+
+    def test_search(self):
+        response = self.app.get('/search/')
+        assert response.status_code == SUCCESS
