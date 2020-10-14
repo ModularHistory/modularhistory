@@ -104,7 +104,8 @@ class Entity(TypedModel, TaggableModel, ModelWithRelatedQuotes):
 
     def get_categorizations(self, date: Optional[HistoricDateTime] = None) -> 'QuerySet[Categorization]':
         """Return a list of all applicable categorizations."""
-        return self.categorizations.exclude(date__gt=date) if date else self.categorizations.all()
+        categorizations = self.categorizations.exclude(date__gt=date) if date else self.categorizations.all()
+        return categorizations.select_related('category')
 
     def get_categorization_string(self, date: Optional[HistoricDateTime] = None) -> Optional[str]:
         """Intelligently build a categorization string, like `conservative LDS apostle`."""

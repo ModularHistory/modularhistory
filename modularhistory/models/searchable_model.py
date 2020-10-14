@@ -4,7 +4,6 @@ import uuid
 
 from django.db.models import BooleanField, UUIDField
 
-from modularhistory.fields import JSONField
 from modularhistory.models.taggable_model import TaggableModel
 
 
@@ -22,8 +21,6 @@ class SearchableModel(TaggableModel):
         help_text="Don't let this item appear in search results."
     )
     key = UUIDField(primary_key=False, default=uuid.uuid4, editable=False, unique=True)
-
-    computations = JSONField(null=True, blank=True, default=dict)
 
     class Meta:
         abstract = True
