@@ -3,10 +3,8 @@
 import json
 from typing import Any, Dict, Optional, Type, Union
 
-# import inspect
 from django.core.exceptions import ValidationError
-from django.contrib.postgres.fields import JSONField as BaseJSONField
-from django.db.models import Model  # , JSONField as BaseJSONField
+from django.db.models import Model, JSONField as BaseJSONField
 from jsonschema import exceptions as jsonschema_exceptions, validate
 
 

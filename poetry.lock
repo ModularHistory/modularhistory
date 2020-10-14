@@ -46,7 +46,7 @@ test = ["coverage", "flake8", "pexpect", "wheel"]
 
 [[package]]
 name = "asgiref"
-version = "3.3.0"
+version = "3.2.10"
 description = "ASGI specs, helper code, and adapters"
 category = "main"
 optional = false
@@ -368,14 +368,14 @@ python-versions = "*"
 
 [[package]]
 name = "django"
-version = "3.0.10"
+version = "3.1.2"
 description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-asgiref = ">=3.2,<4.0"
+asgiref = ">=3.2.10,<3.3.0"
 pytz = "*"
 sqlparse = ">=0.2.2"
 
@@ -3015,7 +3015,7 @@ testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "d2adad4bbe8073421579a6e6aaa93f1d3b0849530e951831f86cd1d82f5b807f"
+content-hash = "8683326b16b6e71e01d9ac4c83be1a9d57c5c297926cc3c7428ead59ad289456"
 
 [metadata.files]
 alabaster = [
@@ -3039,8 +3039,8 @@ argcomplete = [
     {file = "argcomplete-1.12.1.tar.gz", hash = "sha256:849c2444c35bb2175aea74100ca5f644c29bf716429399c0f2203bb5d9a8e4e6"},
 ]
 asgiref = [
-    {file = "asgiref-3.3.0-py3-none-any.whl", hash = "sha256:a5098bc870b80e7b872bff60bb363c7f2c2c89078759f6c47b53ff8c525a152e"},
-    {file = "asgiref-3.3.0.tar.gz", hash = "sha256:cd88907ecaec59d78e4ac00ea665b03e571cb37e3a0e37b3702af1a9e86c365a"},
+    {file = "asgiref-3.2.10-py3-none-any.whl", hash = "sha256:9fc6fb5d39b8af147ba40765234fa822b39818b12cc80b35ad9b0cef3a476aed"},
+    {file = "asgiref-3.2.10.tar.gz", hash = "sha256:7e51911ee147dd685c3c8b805c0ad0cb58d360987b56953878f8c06d2d1c6f1a"},
 ]
 astor = [
     {file = "astor-0.8.1-py2.py3-none-any.whl", hash = "sha256:070a54e890cefb5b3739d19f30f5a5ec840ffc9c50ffa7d23cc9fc1a38ebbfc5"},
@@ -3238,8 +3238,8 @@ distro = [
     {file = "distro-1.5.0.tar.gz", hash = "sha256:0e58756ae38fbd8fc3020d54badb8eae17c5b9dcbed388b17bb55b8a5928df92"},
 ]
 django = [
-    {file = "Django-3.0.10-py3-none-any.whl", hash = "sha256:313d0b8f96685e99327785cc600a5178ca855f8e6f4ed162e671e8c3cf749739"},
-    {file = "Django-3.0.10.tar.gz", hash = "sha256:2d14be521c3ae24960e5e83d4575e156a8c479a75c935224b671b1c6e66eddaf"},
+    {file = "Django-3.1.2-py3-none-any.whl", hash = "sha256:c93c28ccf1d094cbd00d860e83128a39e45d2c571d3b54361713aaaf9a94cac4"},
+    {file = "Django-3.1.2.tar.gz", hash = "sha256:a2127ad0150ec6966655bedf15dbbff9697cc86d61653db2da1afa506c0b04cc"},
 ]
 django-admin-autocomplete-filter = [
     {file = "django-admin-autocomplete-filter-0.6.1.tar.gz", hash = "sha256:0358594110e5e498306388a9e4a0a2b57dde3abd302f9945337396003345af04"},

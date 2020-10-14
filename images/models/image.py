@@ -2,17 +2,17 @@ import re
 from sys import stderr
 from typing import Optional
 
-from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import JSONField
 from django.template.loader import render_to_string
 from django.utils.html import SafeString, format_html
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
 
-from modularhistory.fields.file_field import upload_to
 from images.manager import Manager as ImageManager
 from images.models.media_model import MediaModel
+from modularhistory.fields.file_field import upload_to
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
 CENTER_UPPER_WIDTH_LIMIT: int = 500

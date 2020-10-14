@@ -2,8 +2,8 @@ from typing import List, Type, Union
 
 from django.contrib.admin import AdminSite as BaseAdminSite, ListFilter
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.fields import JSONField
 from django.contrib.sites.models import Site
+from django.db.models import JSONField
 from django_celery_beat.admin import (
     CrontabSchedule,
     IntervalSchedule,
