@@ -1,24 +1,22 @@
 """Model classes for the quotes app."""
 
 import re
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from debug_toolbar.panels.sql.tracking import SQLQueryTriggered
-from django.core.exceptions import ValidationError
-from django.db.models import ManyToManyField, Q, QuerySet, CharField
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import ManyToManyField, Q, QuerySet
 from django.urls import reverse
 from django.utils.html import SafeString, format_html
 from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
+from images.models import Image
+from modularhistory.constants import OCCURRENCE_CT_ID
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources
-from modularhistory.constants import OCCURRENCE_CT_ID
 from quotes.manager import QuoteManager
-
-if TYPE_CHECKING:
-    from images.models import Image
 
 # group 1: quote pk
 # group 2: ignore
@@ -109,6 +107,10 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
                 elif n_attributions > 3:
                     html = f'{html} et al.'
                 attributee_html = html
+
+                # TODO: update asynchronously
+                self.computations['attributee_html'] = attributee_html
+                self.save()
             else:
                 return None
         return format_html(attributee_html)
@@ -145,18 +147,25 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
     @property
     def image(self) -> Optional['Image']:
         """Returns an image associated with the quote, if one exists."""
+        image, image_pk = None, self.computations.get('image')
         try:
-            attributee = self.attributees.first()
-            if self.date:
-                return attributee.images.get_closest_to_datetime(self.date)
-            return attributee.images.first()
-        except SQLQueryTriggered:
-            pass
-        except Exception as e:
-            print(f'{e}')
-            if self.related_occurrences.exists():
-                return self.related_occurrences.first().image
-        return None
+            image = Image.objects.get(pk=image_pk)
+        except (ValueError, ObjectDoesNotExist):
+            try:
+                attributee = self.attributees.first()
+                if self.date:
+                    image = attributee.images.get_closest_to_datetime(self.date)
+                else:
+                    image = attributee.images.first()
+            except (ObjectDoesNotExist, AttributeError):
+                pass
+            if image is None and self.related_occurrences.exists():
+                image = self.related_occurrences.first().image
+            if image:
+                # TODO: update asynchronously
+                self.computations['image'] = image.pk
+                self.save()
+        return image
 
     @property
     def ordered_attributees(self) -> Optional[List[Entity]]:
@@ -164,10 +173,8 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
         try:
             attributions = self.attributions.select_related('attributee')
             return [attribution.attributee for attribution in attributions]
-        except SQLQueryTriggered:
-            pass
-        except Exception as e:
-            print(f'{type(e)}: {e}')
+        except (AttributeError, ObjectDoesNotExist) as e:
+            print(f'>>> {type(e)}: {e}')
             return None
 
     @property

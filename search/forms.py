@@ -52,9 +52,10 @@ class SearchForm(forms.Form):
             required=False
         )
 
-        # Disable sorting by relevance if there are no criteria
-        if not any([query, entities, topics]):
-            self.fields['ordering'].widget.attrs['disabled'] = True
+        # TODO: refactor (to not increase queries/page load time) and uncomment
+        # # Disable sorting by relevance if there are no criteria
+        # if not any([query, entities, topics]):
+        #     self.fields['ordering'].widget.attrs['disabled'] = True
 
         # Filter unverified items
         quality = 'verified' if suppress_unverified else 'unverified'

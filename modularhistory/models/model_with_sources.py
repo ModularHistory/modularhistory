@@ -3,7 +3,6 @@
 from typing import Any, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db.models import CharField
 from django.utils.html import SafeString, format_html
 
 from modularhistory.models.searchable_model import SearchableModel
@@ -36,19 +35,22 @@ class ModelWithSources(SearchableModel):
 
     @property
     def citation(self) -> Optional['Citation']:
-        """TODO: write docstring."""
-        if not len(self.citations.all()):
+        """Returns the quote's primary citation, if a citation exists."""
+        try:
+            return self.citations.order_by('position')[0]
+        except IndexError:
             return None
-        return self.citations.order_by('position')[0]
 
     @property
     def citation_html(self) -> Optional[SafeString]:
-        """TODO: write docstring."""
-        # TODO: make sure this is updated correctly
+        """Returns the quote's citation HTML, if a citation exists."""
         citation_html = self.computations.get('citation_html')
         if not citation_html:
             if self.citations.exists():
                 citation_html = '; '.join([citation.html for citation in self.citations.all()])
+                # TODO: update asynchronously
+                self.computations['citation_html'] = citation_html
+                self.save()
             else:
                 return None
         return format_html(citation_html)

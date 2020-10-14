@@ -3,16 +3,18 @@
 from typing import List, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import reverse
 from django.utils.html import SafeString, format_html
 
 from admin.autocomplete_filter import ManyToManyAutocompleteFilter
-from modularhistory.models import Model
+from modularhistory.models.model_with_computations import ModelWithComputations
 from topics.models import Topic
 
 
-class TaggableModel(Model):
+class TaggableModel(ModelWithComputations):
     """Mixin for models that are topic-taggable."""
+
     tags = GenericRelation('topics.TopicRelation')
 
     class Meta:
@@ -26,17 +28,27 @@ class TaggableModel(Model):
     @property
     def related_topics(self) -> List['Topic']:
         """TODO: write docstring."""
-        if not self.tags.exists():
+        try:
+            tags = self.tags.select_related('topic')
+            return [tag.topic for tag in tags]
+        except (AttributeError, ObjectDoesNotExist) as e:
             return []
-        return [tag.topic for tag in self.tags.all()]
+
+    @property
+    def tag_keys(self) -> Optional[List[str]]:
+        tag_keys = self.computations.get('tag_keys')
+        if not tag_keys:
+            tag_keys = [topic.key for topic in self.related_topics]
+            # TODO: update asynchronously
+            self.computations['tag_keys'] = tag_keys
+            self.save()
+        return tag_keys
 
     @property
     def tags_string(self) -> Optional[str]:
         """TODO: write docstring."""
         if self.has_tags:
-            related_topics = [topic.key for topic in self.related_topics]
-            if related_topics:
-                return ', '.join(related_topics)
+            return ', '.join(self.tag_keys)
         return None
 
     @property
@@ -45,8 +57,8 @@ class TaggableModel(Model):
         if self.has_tags:
             return format_html(
                 ' '.join([
-                    f'<li class="topic-tag"><a>{topic.key}</a></li>'
-                    for topic in self.related_topics
+                    f'<li class="topic-tag"><a>{tag_key}</a></li>'
+                    for tag_key in self.tag_keys
                 ])
             )
         return None
