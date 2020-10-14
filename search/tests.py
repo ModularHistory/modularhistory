@@ -3,8 +3,10 @@ import pytest
 # from hypothesis.strategies import text
 from django_webtest import WebTest
 from django.urls import reverse
+from modularhistory import settings
 
 SUCCESS = 200
+PERMANENT_REDIRECT = 301
 
 
 # @pytest.mark.django_db
@@ -26,4 +28,7 @@ class TestSearch(WebTest):
 
     def test_search(self):
         response = self.app.get(reverse('search'))
-        assert response.status_code == SUCCESS
+        if settings.SECURE_SSL_REDIRECT:
+            assert response.status_code == PERMANENT_REDIRECT
+        else:
+            assert response.status_code == SUCCESS
