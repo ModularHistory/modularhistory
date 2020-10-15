@@ -67,10 +67,10 @@ if ENVIRONMENT != environments.DEV:
         send_default_pii=True
     )
 
-# TODO
-# https://www.ralphminderhoud.com/blog/django-mypy-check-runs/
 if ENVIRONMENT == environments.DEV:
-    pass
+    # Make sure the celery app is imported when Django starts,
+    # so that shared_task will use the app.
+    from .tasks import app as celery_app  # noqa: F401
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
