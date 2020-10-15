@@ -89,13 +89,13 @@ PREPEND_WWW = IS_PROD
 APPEND_SLASH = IS_PROD
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
-SECURE_SSL_REDIRECT = ENVIRONMENT != environments.DEV
+SECURE_SSL_REDIRECT = IS_PROD
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-session-cookie-samesite
-SESSION_COOKIE_SECURE = ENVIRONMENT != environments.DEV
+SESSION_COOKIE_SECURE = IS_PROD
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-csrf-cookie-secure
-CSRF_COOKIE_SECURE = ENVIRONMENT != environments.DEV
+CSRF_COOKIE_SECURE = IS_PROD
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-referrer-policy
 # https://docs.djangoproject.com/en/3.0/ref/middleware/#referrer-policy
