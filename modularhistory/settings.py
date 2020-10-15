@@ -24,6 +24,8 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from modularhistory import environments
 from modularhistory.config import config
 
+ENABLE_ASGI: bool = False
+
 # Google Cloud settings
 GC_PROJECT: Optional[str] = config('GC_PROJECT', default=None)
 GC_QUEUE: Optional[str] = config('GC_QUEUE', default=None)
@@ -112,12 +114,11 @@ ALLOWED_HOSTS = config(
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
 INTERNAL_IPS = ['127.0.0.1']
 
-# https://channels.readthedocs.io/en/latest/
-ASGI_APPLICATION = 'modularhistory.routing.application'
+if ENABLE_ASGI:
+    # https://channels.readthedocs.io/en/latest/
+    ASGI_APPLICATION = 'modularhistory.routing.application'
 
 INSTALLED_APPS = [
-    'channels',  # https://channels.readthedocs.io/en/latest/index.html
-
     # admin_menu come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
     # 'admin_menu',  # This breaks mass_edit; TODO: test locally and fix it
     # admin_tools and its modules must come before django.contrib.admin
@@ -125,7 +126,6 @@ INSTALLED_APPS = [
     'admin_tools.menu',
     # 'admin_tools.theming',
     # 'admin_tools.dashboard',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -182,6 +182,10 @@ INSTALLED_APPS = [
     'topics.apps.TopicsConfig',
     'staticpages.apps.StaticPagesConfig',
 ]
+if ENABLE_ASGI:
+    INSTALLED_APPS = [
+        'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    ] + INSTALLED_APPS
 if ENVIRONMENT == environments.DEV:
     INSTALLED_APPS += [
         'django_spaghetti',  # https://github.com/LegoStormtroopr/django-spaghetti-and-meatballs
