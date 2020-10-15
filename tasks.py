@@ -31,14 +31,14 @@ def commit(context):
     # Stage files, if needed
     context.run('git status')
     print()
-    if input('Stage all changed files? [Y/n] ') != 'n':
-        context.run(f'git add .')
-    else:
+    if input('Stage all changed files? [Y/n] ') == 'n':
         while input('Do files need to be staged? [Y/n] ') != 'n':
             files_to_stage = input('Enter filenames and/or patterns: ')
             context.run(f'git add {files_to_stage}')
             print()
             context.run('git status')
+    else:
+        context.run('git add .')
 
     # Set the commit message
     commit_msg = None

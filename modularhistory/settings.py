@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import sys
 # from importlib.util import find_spec
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import sentry_sdk
 from django.conf.locale.en import formats as en_formats
@@ -25,14 +25,14 @@ from modularhistory import environments
 from modularhistory.config import config
 
 # Google Cloud settings
-GC_PROJECT = config('GC_PROJECT', default=None)
-GC_QUEUE = config('GC_QUEUE', default=None)
-GC_REGION = config('GC_REGION', default=None)
+GC_PROJECT: Optional[str] = config('GC_PROJECT', default=None)
+GC_QUEUE: Optional[str] = config('GC_QUEUE', default=None)
+GC_REGION: Optional[str] = config('GC_REGION', default=None)
 
-IS_GCP = bool(os.getenv('GAE_APPLICATION', None))
+IS_GCP: Optional[bool] = bool(os.getenv('GAE_APPLICATION', None))
 IS_PROD = IS_GCP
-USE_PROD_DB = config('USE_PROD_DB', default=IS_PROD, cast=bool)
-TESTING = 'test' in sys.argv
+USE_PROD_DB: bool = config('USE_PROD_DB', default=IS_PROD, cast=bool)
+TESTING: bool = 'test' in sys.argv
 
 # Environment
 if IS_PROD:
@@ -112,9 +112,12 @@ ALLOWED_HOSTS = config(
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
 INTERNAL_IPS = ['127.0.0.1']
 
-# Application definition
+# https://channels.readthedocs.io/en/latest/
+ASGI_APPLICATION = 'modularhistory.routing.application'
 
 INSTALLED_APPS = [
+    'channels',  # https://channels.readthedocs.io/en/latest/index.html
+
     # admin_menu come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
     # 'admin_menu',  # This breaks mass_edit; TODO: test locally and fix it
     # admin_tools and its modules must come before django.contrib.admin
@@ -122,6 +125,7 @@ INSTALLED_APPS = [
     'admin_tools.menu',
     # 'admin_tools.theming',
     # 'admin_tools.dashboard',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -165,6 +169,7 @@ INSTALLED_APPS = [
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'account.apps.AccountConfig',
+    'chat.apps.ChatConfig',
     'entities.apps.EntitiesConfig',
     'home.apps.HomeConfig',
     'markup.apps.MarkupConfig',
