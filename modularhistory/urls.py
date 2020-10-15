@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
 
-from admin.admin import admin_site
+from admin.model_admin import admin_site
 from modularhistory import environments
 from search.views import SearchResultsView
 

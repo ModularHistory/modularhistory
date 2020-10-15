@@ -7,7 +7,7 @@ from social_django.models import UserSocialAuth
 
 from account.models import User
 # from account.forms import UserCreationForm #  UserChangeForm
-from admin.admin import admin_site, TabularInline
+from admin import TabularInline, admin_site
 
 MAX_EMAIL_LENGTH: int = 100
 MAX_NAME_LENGTH: int = 100

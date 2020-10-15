@@ -1,8 +1,8 @@
-from admin.admin import Admin, admin_site
+from admin.model_admin import ModelAdmin, admin_site
 from search import models
 
 
-class SearchAdmin(Admin):
+class SearchAdmin(ModelAdmin):
     """Admin for user searches."""
 
     list_display = [

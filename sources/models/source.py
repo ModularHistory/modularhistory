@@ -4,10 +4,11 @@ import re
 from typing import List, Optional, TYPE_CHECKING
 
 from bs4 import BeautifulSoup
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField, SET_NULL
-from django.utils.html import SafeString, format_html
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
@@ -296,19 +297,23 @@ class Source(TypedModel, DatedModel, SearchableModel):
         #         f'</a>'
         #     )
     _html.admin_order_field = 'db_string'
-    html: SafeString = property(_html)
+    html: SafeString = property(_html)  # type: ignore
 
     @property
     def link(self) -> Optional[SafeString]:
-        """TODO: write docstring."""
-        return f'<a target="_blank" href="{self.url}">{self.url}</a>' if self.url else None
+        """Returns an HTML link element containing the source URL, if one exists."""
+        if self.url:
+            return format_html(f'<a target="_blank" href="{self.url}">{self.url}</a>')
+        return None
 
     @property
     def ordered_attributees(self) -> Optional[List['Entity']]:
         """TODO: write docstring."""
-        if not self.pk or not self.attributees.exists():
+        try:
+            attributions = self.attributions.select_related('attributee')
+            return [attribution.attributee for attribution in attributions]
+        except (AttributeError, ObjectDoesNotExist):
             return None
-        return [attribution.attributee for attribution in self.attributions.all()]
 
     @property
     def string(self) -> str:

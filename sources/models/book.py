@@ -2,7 +2,8 @@
 
 from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
-from django.utils.html import SafeString, format_html
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from humanize import ordinal
 
 from modularhistory.fields import ExtraField
@@ -137,7 +138,7 @@ class Book(TextualSource):
         """TODO: add docstring."""
         return format_html(self.__html__)
     _html.admin_order_field = 'db_string'
-    html = property(_html)
+    html: SafeString = property(_html)  # type: ignore
 
 
 class SectionSource(TextualSource):
@@ -151,7 +152,7 @@ class SectionSource(TextualSource):
         """TODO: add docstring."""
         return format_html(self.__html__)
     _html.admin_order_field = 'db_string'
-    html = property(_html)
+    html: SafeString = property(_html)  # type: ignore
 
     def full_clean(self, exclude=None, validate_unique=True):
         """TODO: add docstring."""
@@ -165,7 +166,7 @@ class SectionSource(TextualSource):
         """Return the section/chapter's HTML representation."""
         container_html = None
         if self.container:
-            container_html = self.container.html
+            container_html = f'{self.container.html}'
             if self.attributee_string:
                 if self.attributee_string == self.container.attributee_string:
                     container_html = container_html.replace(f'{self.attributee_string}, ', '')

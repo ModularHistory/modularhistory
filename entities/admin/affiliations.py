@@ -1,8 +1,8 @@
+from admin import ModelAdmin, TabularInline, admin_site
 from entities import models
-from admin.admin import admin_site, Admin, TabularInline
 
 
-class RoleAdmin(Admin):
+class RoleAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     search_fields = ['name']
@@ -25,7 +25,7 @@ class RolesInline(TabularInline):
         return fields
 
 
-class AffiliationAdmin(Admin):
+class AffiliationAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     list_display = ['entity', 'affiliated_entity', 'start_date', 'end_date']

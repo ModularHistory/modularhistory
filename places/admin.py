@@ -1,4 +1,4 @@
-from admin.admin import admin_site, Admin, TabularInline
+from admin import ModelAdmin, TabularInline, admin_site
 from places import models
 from places.forms import PlaceForm
 
@@ -10,7 +10,7 @@ class LocationInline(TabularInline):
     autocomplete_fields = ['location']
 
 
-class LocationAdmin(Admin):
+class LocationAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     list_display = ['name', 'location']

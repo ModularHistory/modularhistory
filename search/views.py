@@ -208,10 +208,14 @@ class SearchResultsView(ListView):
         #     topics_ids.append(topic_id)
 
         self.topics = Topic.objects.using(db).filter(
-            Q(topic_relations__content_type_id=QUOTE_CT_ID,
-              topic_relations__object_id__in=quote_result_ids) |
-            Q(topic_relations__content_type_id=OCCURRENCE_CT_ID,
-              topic_relations__object_id__in=occurrence_result_ids)
+            Q(
+                topic_relations__content_type_id=QUOTE_CT_ID,
+                topic_relations__object_id__in=quote_result_ids
+            ) |
+            Q(
+                topic_relations__content_type_id=OCCURRENCE_CT_ID,
+                topic_relations__object_id__in=occurrence_result_ids
+            )
         ).order_by('key').distinct()
 
         # self.places = Place.objects.filter(

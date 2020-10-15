@@ -2,10 +2,10 @@ from entities import models
 from entities.forms import (
     IdeaForm
 )
-from admin.admin import admin_site, Admin
+from admin.model_admin import admin_site, ModelAdmin
 
 
-class IdeaAdmin(Admin):
+class IdeaAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     model = models.Idea

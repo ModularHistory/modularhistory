@@ -9,11 +9,11 @@ from entities.admin.entity_inlines import (
     FactsInline
 )
 from entities.forms import PersonForm, GroupForm, OrganizationForm
-from admin.admin import admin_site, Admin
+from admin.model_admin import admin_site, ModelAdmin
 from quotes.admin import RelatedQuotesInline
 
 
-class EntityAdmin(Admin):
+class EntityAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     model = models.Entity

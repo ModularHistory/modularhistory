@@ -64,14 +64,16 @@ def commit(context):
 
 
 @task
-def lint(context, *args):
+def lint(context, directory='.', *args):
     """Run linters."""
     # Run Flake8
-    flake8_cmd = ' '.join(['flake8', *args])
+    flake8_cmd = ' '.join(['flake8', directory, *args])
+    print(flake8_cmd)
     context.run(flake8_cmd)
 
     # Run MyPy
-    mypy_cmd = ' '.join(['mypy', *args, '--show-error-codes'])
+    mypy_cmd = ' '.join(['mypy', directory, *args, '--show-error-codes'])
+    print(mypy_cmd)
     context.run(mypy_cmd)
 
 
@@ -171,7 +173,7 @@ def squash_migrations(context):
 def test(context):
     """Run tests."""
     context.run('coverage run -m pytest -n 3 --hypothesis-show-statistics')
-    context.run('coverage combine && coverage report')
+    context.run('coverage combine')
 
 
 def set_prod_db_env_var(value: str):

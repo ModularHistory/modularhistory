@@ -3,7 +3,8 @@ from typing import Any
 from django import template
 from django.template import loader
 from django.template.context import RequestContext
-from django.utils.html import SafeString, format_html
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 from entities.models import Entity
 # from django.apps import apps

@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.db.models import ManyToManyField
 from django.template.defaultfilters import truncatechars_html
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources

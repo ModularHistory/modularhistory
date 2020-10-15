@@ -5,7 +5,8 @@ from typing import List, Optional
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import reverse
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from admin.autocomplete_filter import ManyToManyAutocompleteFilter
 from modularhistory.models.model_with_computations import ModelWithComputations

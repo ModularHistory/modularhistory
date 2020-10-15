@@ -4,7 +4,8 @@ from admin.autocomplete_filter import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
 from django.urls import reverse
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from entities.models import Entity
 from sources.models import Source

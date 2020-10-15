@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from admin.admin import Admin, admin_site
+from admin.model_admin import ModelAdmin, admin_site
 from modularhistory.models.taggable_model import TopicFilter
 from occurrences import models
 from occurrences.admin.occurrence_filters import EntityFilter, HasDateFilter, HasQuotesFilter, LocationFilter
@@ -18,10 +18,18 @@ from topics.admin import RelatedTopicsInline
 from topics.views import TagSearchView
 
 
-class OccurrenceAdmin(Admin):
+class OccurrenceAdmin(ModelAdmin):
     """TODO: add docstring."""
 
-    base_model = models.Occurrence
+    model = models.Occurrence
+    inlines = [
+        RelatedQuotesInline,
+        InvolvedEntitiesInline,
+        LocationsInline,
+        ImagesInline,
+        CitationsInline,
+        RelatedTopicsInline
+    ]
     list_display = [
         'pk',
         'summary',
@@ -37,16 +45,9 @@ class OccurrenceAdmin(Admin):
         TopicFilter,
         LocationFilter
     ]
-    search_fields = models.Occurrence.searchable_fields
     ordering = ['date']
-    inlines = [
-        RelatedQuotesInline,
-        InvolvedEntitiesInline,
-        LocationsInline,
-        ImagesInline,
-        CitationsInline,
-        RelatedTopicsInline
-    ]
+    readonly_fields = ['computations']
+    search_fields = models.Occurrence.searchable_fields
 
     def get_urls(self):
         """TODO: add docstring."""
@@ -61,7 +62,7 @@ class OccurrenceAdmin(Admin):
         return custom_urls + urls
 
 
-class OccurrenceChainAdmin(Admin):
+class OccurrenceChainAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     base_model = models.OccurrenceChain

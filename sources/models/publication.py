@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from django.db import models
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 from typedmodels.models import TypedModel
 
 from modularhistory.fields import HTMLField

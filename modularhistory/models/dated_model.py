@@ -1,7 +1,8 @@
 from typing import Optional
 
 from django.db.models import BooleanField
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.models import Model
@@ -9,7 +10,7 @@ from modularhistory.structures import HistoricDateTime
 
 
 class DatedModel(Model):
-    """TODO: add docstring."""
+    """A model with a date (e.g., a quote or occurrence)."""
 
     date_is_circa = BooleanField(blank=True, default=False)
     date = HistoricDateTimeField(null=True, blank=True)
@@ -34,7 +35,7 @@ class DatedModel(Model):
         date = self.get_date()
         if not date:
             return None
-        date_html = date.html
+        date_html = f'{date.html}'
         if date_html and self.date_is_circa and not date_html.startswith('c. '):
             date_html = f'c. {date_html}'
             date_html = date_html.replace('c. c. ', 'c. ')

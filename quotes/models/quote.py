@@ -4,11 +4,11 @@ import re
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
-from debug_toolbar.panels.sql.tracking import SQLQueryTriggered
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField, Q, QuerySet
 from django.urls import reverse
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity

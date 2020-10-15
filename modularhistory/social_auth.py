@@ -78,7 +78,7 @@ def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwarg
                 print(f'{user} has no profile image.')
                 img_temp = NamedTemporaryFile(delete=True)
                 # TODO: Use requests instead of urllib?
-                img_temp.write(urlopen(url).read())
+                img_temp.write(urlopen(url).read())  # noqa: S310
                 img_temp.flush()
                 user.avatar.save(f'{user.pk}', File(img_temp))
     except Exception as e:

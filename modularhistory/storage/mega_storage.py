@@ -5,7 +5,9 @@ from typing import Any, IO, List, Optional, Tuple
 
 import requests
 from django.conf import settings
+from django.core.exceptions import SuspiciousFileOperation
 from django.core.files.storage import File, Storage
+from django.utils.crypto import get_random_string
 from mega import Mega
 from mega.mega import (
     AES,
@@ -20,6 +22,9 @@ from mega.mega import (
 )
 
 SIXTEEN = 16
+THIRTY_TWO = 32
+SIXTY_FOUR = 64
+ONE_TWENTY_EIGHT = 128
 
 
 class MegaClient(Mega):
@@ -74,12 +79,12 @@ class MegaClient(Mega):
             delete=False
         ) as temp_output_file:
             k_str = a32_to_str(k)
-            counter = Counter.new(128, initial_value=((iv[0] << 32) + iv[1]) << 64)
+            counter = Counter.new(ONE_TWENTY_EIGHT, initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR)
             aes = AES.new(k_str, AES.MODE_CTR, counter=counter)
             mac_str = '\0' * SIXTEEN
-            mac_encryptor = AES.new(k_str, AES.MODE_CBC, mac_str.encode("utf8"))
+            mac_encryptor = AES.new(k_str, AES.MODE_CBC, mac_str.encode('utf8'))
             iv_str = a32_to_str([iv[0], iv[1], iv[0], iv[1]])
-            for chunk_start, chunk_size in get_chunks(file_size):
+            for _chunk_start, chunk_size in get_chunks(file_size):
                 chunk = input_file.read(chunk_size)
                 chunk = aes.decrypt(chunk)
                 temp_output_file.write(chunk)
@@ -100,7 +105,8 @@ class MegaClient(Mega):
                 print(f'{file_info.st_size} of {file_size} downloaded')
             file_mac = str_to_a32(mac_str)
             # check mac integrity
-            if (file_mac[0] ^ file_mac[1], file_mac[2] ^ file_mac[3]) != meta_mac:
+            new_meta_mac = (file_mac[0] ^ file_mac[1], file_mac[2] ^ file_mac[3])
+            if new_meta_mac != meta_mac:
                 raise ValueError('Mismatched mac')
             print(file_info)
             return temp_output_file
@@ -140,6 +146,14 @@ class MegaStorage(Storage):
         url = mega_client.get_url_from_name(name)
         return datetime.fromtimestamp(mega_client.get_file_info(url).st_atime)
 
+    def get_alternative_name(self, file_root, file_ext):
+        """
+        Return an alternative filename, by adding an underscore and a random 7
+        character alphanumeric string (before the file extension, if one
+        exists) to the filename.
+        """
+        return '%s_%s%s' % (file_root, get_random_string(7), file_ext)
+
     def get_available_name(self, name: str, max_length: Optional[int] = 100) -> str:
         """
         Returns a filename (based on the name parameter) that is available on Mega.
@@ -149,7 +163,30 @@ class MegaStorage(Storage):
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_available_name
         """
         # TODO
-        return super().get_available_name(name, max_length)
+        dir_name, file_name = os.path.split(name)
+        file_root, file_ext = os.path.splitext(file_name)
+        # If the filename already exists, generate an alternative filename
+        # until it doesn't exist.
+        # Truncate original name if required, so the new filename does not
+        # exceed the max_length.
+        while self.exists(name) or (max_length and len(name) > max_length):
+            # file_ext includes the dot.
+            name = os.path.join(dir_name, self.get_alternative_name(file_root, file_ext))
+            if max_length is None:
+                continue
+            # Truncate file_root if max_length exceeded.
+            truncation = len(name) - max_length
+            if truncation > 0:
+                file_root = file_root[:-truncation]
+                # Entire file_root was truncated in attempt to find an available filename.
+                if not file_root:
+                    raise SuspiciousFileOperation(
+                        'Storage can not find an available filename for "%s". '
+                        'Please make sure that the corresponding file field '
+                        'allows sufficient "max_length".' % name
+                    )
+                name = os.path.join(dir_name, self.get_alternative_name(file_root, file_ext))
+        return name
 
     def get_created_time(self, name: str) -> datetime:
         """
@@ -169,15 +206,6 @@ class MegaStorage(Storage):
         url = mega_client.get_url_from_name(name)
         return datetime.fromtimestamp(mega_client.get_file_info(url).st_mtime)
 
-    def get_valid_name(self, name: str) -> str:
-        """
-        Returns a filename (based on the name parameter) suitable for use in Mega storage.
-
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_valid_name
-        """
-        # TODO
-        return super().get_valid_name(name)
-
     def generate_filename(self, filename: str) -> str:
         """
         Validates the filename by calling get_valid_name() and returns a filename to be passed to the save() method.
@@ -191,7 +219,8 @@ class MegaStorage(Storage):
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.generate_filename
         """
         # TODO
-        return super().generate_filename(filename)
+        dirname, filename = os.path.split(filename)
+        return os.path.normpath(os.path.join(dirname, self.get_valid_name(filename)))
 
     def listdir(self, path: str) -> Tuple[List[str], List[str]]:
         """

@@ -2,7 +2,8 @@ from datetime import datetime
 from decimal import Decimal, getcontext
 from typing import Optional
 
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 import sigfig
 from millify import prettify, millify
 

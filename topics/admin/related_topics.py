@@ -2,7 +2,7 @@ from typing import Optional, TYPE_CHECKING
 
 from django.contrib.admin import SimpleListFilter
 
-from admin.admin import GenericTabularInline
+from admin import GenericTabularInline
 from topics.models import TopicRelation
 
 if TYPE_CHECKING:
