@@ -1,11 +1,11 @@
 """AutocompleteFilter based on https://github.com/farhan0581/django-admin-autocomplete-filter."""
 
 import re
-from typing import Any, Type
+from typing import Type
 
-from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter, AutocompleteSelect
-from django.core.exceptions import FieldDoesNotExist
-from django.utils.html import SafeString, format_html
+from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from modularhistory.models import Model
 
@@ -24,10 +24,7 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
 
     def __init__(self, request, params, model, model_admin):
         """TODO: add docstring."""
-        try:
-            super().__init__(request, params, model, model_admin)
-        except FieldDoesNotExist:
-            raise
+        super().__init__(request, params, model, model_admin)
         if self.value():
             obj = self.m2m_cls.objects.get(pk=self.value())
             rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{obj}\g<2>', self.rendered_widget)

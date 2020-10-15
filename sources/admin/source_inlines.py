@@ -1,6 +1,6 @@
 from typing import Optional
 
-from admin.admin import GenericTabularInline, TabularInline
+from admin import GenericTabularInline, TabularInline
 from sources import models
 from sources.models import Source
 

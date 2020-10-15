@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
 from django.urls import path
 
-from admin.admin import Admin, StackedInline, TabularInline, admin_site
+from admin import ModelAdmin, StackedInline, TabularInline, admin_site
 from entities.views import AttributeeSearchView
 from sources import models
 from sources.admin.source_filters import (
@@ -20,7 +20,7 @@ from sources.admin.source_inlines import AttributeesInline, ContainedSourcesInli
 from sources.models import Source
 
 
-class SourceAdmin(Admin):
+class SourceAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     model = Source
@@ -139,7 +139,7 @@ class ChildModelAdmin(SourceAdmin):
         return fields
 
 
-class PublicationAdmin(Admin):
+class PublicationAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     list_display = ['__str__', 'description']
@@ -176,7 +176,7 @@ class SpeechAdmin(ChildModelAdmin):
     search_fields = ['db_string', 'location__name']
 
 
-class CollectionAdmin(Admin):
+class CollectionAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     search_fields = ['name', 'repository__name', 'repository__location__name']
@@ -189,7 +189,7 @@ class DocumentAdmin(ChildModelAdmin):
     autocomplete_fields = ['collection', 'db_file']
 
 
-class RepositoryAdmin(Admin):
+class RepositoryAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     search_fields = ['name', 'location__name']

@@ -1,8 +1,13 @@
+from typing import Optional, TYPE_CHECKING
+
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 
-from admin.admin import admin_site, Admin, TabularInline, GenericTabularInline
+from admin import GenericTabularInline, ModelAdmin, TabularInline, admin_site
 from sources import models
+
+if TYPE_CHECKING:
+    from modularhistory.models import ModelWithSources
 
 
 class ContentTypeFilter(SimpleListFilter):
@@ -15,9 +20,7 @@ class ContentTypeFilter(SimpleListFilter):
         """TODO: add docstring."""
         content_type_ids = models.Citation.objects.all().values('content_type').distinct()
         content_types = ContentType.objects.filter(id__in=content_type_ids)
-        return [
-            (f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types
-        ]
+        return [(f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types]
 
     def queryset(self, request, queryset):
         """TODO: add docstring."""
@@ -31,7 +34,7 @@ class ContentTypeFilter(SimpleListFilter):
         return queryset
 
 
-class CitationAdmin(Admin):
+class CitationAdmin(ModelAdmin):
     """TODO: add docstring."""
     list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
     search_fields = ['source__db_string']
@@ -45,7 +48,7 @@ class PagesInline(TabularInline):
     verbose_name = 'page range'
     verbose_name_plural = 'pages'
 
-    def get_extra(self, request, obj=None, **kwargs):
+    def get_extra(self, request, obj: Optional[models.Citation] = None, **kwargs):
         """TODO: add docstring."""
         if obj and obj.pages.count():
             return 0
@@ -66,7 +69,7 @@ class CitationsInline(GenericTabularInline):
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def get_extra(self, request, obj=None, **kwargs):
+    def get_extra(self, request, obj: Optional['ModelWithSources'] = None, **kwargs):
         """TODO: add docstring."""
         if obj and obj.citations.count():
             return 0

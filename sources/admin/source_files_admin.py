@@ -1,6 +1,6 @@
 from django.contrib.admin import SimpleListFilter
 
-from admin.admin import admin_site, Admin
+from admin.model_admin import admin_site, ModelAdmin
 from sources import models
 from sources.admin.sources_admin import SourcesInline
 
@@ -26,7 +26,7 @@ class PdfFilter(SimpleListFilter):
             return queryset.exclude(name__icontains='pdf')
 
 
-class SourceFileAdmin(Admin):
+class SourceFileAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     list_display = ['__str__', 'name', 'page_offset', 'link']

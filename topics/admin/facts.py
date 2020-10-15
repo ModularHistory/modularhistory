@@ -1,4 +1,4 @@
-from admin.admin import admin_site, Admin, TabularInline, StackedInline
+from admin import ModelAdmin, StackedInline, TabularInline, admin_site
 from topics import models
 
 
@@ -37,7 +37,7 @@ class SupportiveFactsInline(StackedInline):
     extra = 1
 
 
-class FactAdmin(Admin):
+class FactAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     list_display = ['text']

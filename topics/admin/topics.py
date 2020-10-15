@@ -1,4 +1,4 @@
-from admin.admin import admin_site, Admin, TabularInline
+from admin import ModelAdmin, TabularInline, admin_site
 from topics import models
 
 
@@ -42,7 +42,7 @@ class ChildTopicsInline(TabularInline):
     verbose_name = 'child topic'
 
 
-class TopicAdmin(Admin):
+class TopicAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     list_display = [

@@ -10,7 +10,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, SET_NULL
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from modularhistory.constants import QUOTE_CT_ID
 from modularhistory.models import Model
@@ -220,8 +221,7 @@ class Citation(Model):
                 source_string = f'{source_string}, {page_str}'
         if quotation:
             source_string = f'{source_string}: {quotation}'
-        # TODO: test using raw string (with r' prefix) instead of double backslash
-        source_string = source_string.replace('"', '\\"').replace("'", "\\'")
+        source_string = source_string.replace('"', '&quot;').replace("'", '&#39;')
         return (
             f'<a href="#{html_id}" title="{source_string}"><sup>{citation.number}</sup></a>'
         )

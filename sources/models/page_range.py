@@ -4,7 +4,8 @@ from typing import Optional, Union
 from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from modularhistory.models import Model
 

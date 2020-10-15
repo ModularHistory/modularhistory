@@ -1,5 +1,5 @@
+from admin import TabularInline
 from entities import models
-from admin.admin import TabularInline
 from occurrences.models import OccurrenceEntityInvolvement
 from quotes.models import Quote
 from topics.models import EntityFactRelation

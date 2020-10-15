@@ -64,14 +64,16 @@ def commit(context):
 
 
 @task
-def lint(context, *args):
+def lint(context, directory='.', *args):
     """Run linters."""
     # Run Flake8
-    flake8_cmd = ' '.join(['flake8', *args])
+    flake8_cmd = ' '.join(['flake8', directory, *args])
+    print(flake8_cmd)
     context.run(flake8_cmd)
 
     # Run MyPy
-    mypy_cmd = ' '.join(['mypy', *args, '--show-error-codes'])
+    mypy_cmd = ' '.join(['mypy', directory, *args, '--show-error-codes'])
+    print(mypy_cmd)
     context.run(mypy_cmd)
 
 

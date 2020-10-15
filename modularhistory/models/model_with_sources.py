@@ -3,7 +3,8 @@
 from typing import Any, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from modularhistory.models.searchable_model import SearchableModel
 

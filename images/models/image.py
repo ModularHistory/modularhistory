@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import JSONField
 from django.template.loader import render_to_string
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
 

@@ -750,3 +750,6 @@ CELERY_BROKER_URL = 'amqp://localhost'
 
 # TODO
 # CELERY_CACHE_BACKEND = 'default'
+
+if ENVIRONMENT == environments.DEV:
+    from modularhistory import checks  # noqa: F401

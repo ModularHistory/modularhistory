@@ -4,7 +4,8 @@ from typing import List, Match, Optional, TYPE_CHECKING
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
 from django.template.defaultfilters import truncatechars_html
-from django.utils.html import SafeString, format_html
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 from images.models import Image
 from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField

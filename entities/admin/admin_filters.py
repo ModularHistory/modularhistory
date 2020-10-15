@@ -1,5 +1,6 @@
-from admin.autocomplete_filter import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
+
+from admin.autocomplete_filter import AutocompleteFilter
 
 
 class CategoriesFilter(AutocompleteFilter):

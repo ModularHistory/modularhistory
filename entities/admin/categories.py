@@ -1,8 +1,8 @@
 from entities import models
-from admin.admin import admin_site, Admin
+from admin.model_admin import admin_site, ModelAdmin
 
 
-class CategoryAdmin(Admin):
+class CategoryAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     list_display = ['pk', 'name', 'part_of_speech', 'aliases', 'weight']

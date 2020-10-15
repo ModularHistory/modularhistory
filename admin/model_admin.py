@@ -1,6 +1,6 @@
 from typing import List, Type, Union
 
-from django.contrib.admin import AdminSite as BaseAdminSite, ListFilter
+from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db.models import JSONField
@@ -13,24 +13,21 @@ from django_celery_beat.admin import (
 )
 from django_celery_results.admin import TaskResult, TaskResultAdmin
 from django_json_widget.widgets import JSONEditorWidget
-from massadmin.massadmin import mass_change_selected
-from nested_admin.nested import (
-    NestedGenericStackedInline,
-    NestedGenericTabularInline,
-    NestedModelAdmin,
-    NestedStackedInline,
-    NestedTabularInline
-)
+from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 from social_django.admin import AssociationOption, NonceOption, UserSocialAuthOption
 from social_django.models import Association, Nonce, UserSocialAuth
 
+from admin.admin_site import admin_site
 from modularhistory import environments, settings
 from modularhistory.fields import HistoricDateTimeField, SourceFileField
 from modularhistory.forms import HistoricDateWidget, SourceFileInput
 
-GenericTabularInline = NestedGenericTabularInline
-GenericStackedInline = NestedGenericStackedInline
+FORM_FIELD_OVERRIDES = {
+    HistoricDateTimeField: {'widget': HistoricDateWidget},
+    SourceFileField: {'widget': SourceFileInput},
+    JSONField: {'widget': JSONEditorWidget}
+}
 
 if settings.ENVIRONMENT == environments.DEV:
     BASE_CSS = sass_processor('styles/base.scss')
@@ -42,14 +39,10 @@ else:
     ADMIN_CSS = 'styles/admin.css'
 
 
-class Admin(NestedModelAdmin):
+class ModelAdmin(NestedModelAdmin):
     """TODO: add docstring."""
 
-    formfield_overrides = {
-        HistoricDateTimeField: {'widget': HistoricDateWidget},
-        SourceFileField: {'widget': SourceFileInput},
-        JSONField: {'widget': JSONEditorWidget},
-    }
+    formfield_overrides = FORM_FIELD_OVERRIDES
 
     list_display: List[str]
     list_filter: List[Union[str, Type[ListFilter]]]
@@ -72,53 +65,6 @@ class Admin(NestedModelAdmin):
             'scripts/mce.js',
             'scripts/base.js'
         )
-
-
-FORM_FIELD_OVERRIDES = {
-    HistoricDateTimeField: {'widget': HistoricDateWidget},
-    SourceFileField: {'widget': SourceFileInput},
-}
-
-
-def reorder_fields(fields) -> List[str]:
-    """TODO: add docstring."""
-    for field_name in ('page_number', 'end_page_number', 'notes', 'position'):
-        if field_name in fields:
-            fields.remove(field_name)
-            fields.append(field_name)
-    return fields
-
-
-class StackedInline(NestedStackedInline):
-    """TODO: add docstring."""
-
-    formfield_overrides = FORM_FIELD_OVERRIDES
-
-    def get_fields(self, request, obj=None) -> List[str]:
-        """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
-        return reorder_fields(fields)
-
-
-class TabularInline(NestedTabularInline):
-    """TODO: add docstring."""
-
-    formfield_overrides = FORM_FIELD_OVERRIDES
-
-    def get_fields(self, request, obj=None) -> List[str]:
-        """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
-        return reorder_fields(fields)
-
-
-class AdminSite(BaseAdminSite):
-    """TODO: add docstring."""
-
-    site_header = 'ModularHistory administration'
-
-
-admin_site = AdminSite(name='admin')
-admin_site.add_action(mass_change_selected)
 
 
 # IntervalSchedule.objects.get_or_create(
@@ -173,7 +119,7 @@ admin_site.add_action(mass_change_selected)
 #     form = CustomPeriodicTaskForm
 
 
-class ContentTypeAdmin(Admin):
+class ContentTypeAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     model = ContentType
@@ -186,7 +132,7 @@ class ContentTypeAdmin(Admin):
 admin_site.register(ContentType, ContentTypeAdmin)
 
 
-class SiteAdmin(Admin):
+class SiteAdmin(ModelAdmin):
     """
     Admin for sites.
 

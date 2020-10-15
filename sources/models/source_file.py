@@ -3,7 +3,8 @@
 from os import listdir, rename
 from os.path import isfile, join
 from typing import Optional
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from django.core.exceptions import ValidationError
 from django.db import models

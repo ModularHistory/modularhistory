@@ -68,7 +68,7 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             attrs = self.widget_attrs.copy()
             attrs['id'] = f'id-{self.parameter_name}-dal-filter'
             if self.is_placeholder_title:
-                # Upper case letter P as dirty hack for bypass django2 widget force placeholder value as empty string ("")
+                # Use upper-case letter P as a dirty hack
                 attrs['data-Placeholder'] = self.title
             self.rendered_widget = field.widget.render(
                 name=self.parameter_name,
@@ -82,6 +82,7 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             self.rendered_widget = format_html(rendered_widget)
 
     def get_queryset_for_field(self, model, name):
+        """Override."""
         return self.m2m_cls.objects.all()
 
 

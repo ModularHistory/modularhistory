@@ -1,7 +1,8 @@
 from typing import Optional
 
 from bs4 import BeautifulSoup
-from django.utils.html import SafeString, format_html, mark_safe
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 
 class HTML:
@@ -17,7 +18,7 @@ class HTML:
             raw_value = raw_value.strip()
             processed_value = processed_value or raw_value
             self.raw_value = raw_value
-            self.html = mark_safe(processed_value)  # TODO: update to use format_html
+            self.html = format_html(processed_value)
             self.text = BeautifulSoup(self.raw_value, features='lxml').get_text()
         else:
             self.raw_value = ''
@@ -33,9 +34,7 @@ class HTML:
         """
         # TODO: Add logic for converting back to unparsed Python vars so self.html can be used.
         # Do not directly use self.html here; Python vars need to remain unparsed.
-        # Also, do not use format_html; curly brackets ({{ ... }}) are used for object placeholders
-        # but would be processed by format_html, resulting in key errors.
-        return mark_safe(self.raw_value)
+        return format_html(self.raw_value)
 
     # for BeautifulSoup
     def __len__(self):

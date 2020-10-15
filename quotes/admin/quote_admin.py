@@ -2,9 +2,10 @@
 
 from typing import Optional
 
+from django.db.models.query import QuerySet
 from django.urls import path
 
-from admin.admin import Admin, TabularInline, admin_site
+from admin import ModelAdmin, TabularInline, admin_site
 from entities.views import EntityCategorySearchView, EntitySearchView
 from modularhistory.models.taggable_model import TopicFilter
 from quotes import models
@@ -67,7 +68,7 @@ class BitesInline(TabularInline):
 #         return 1
 
 
-class QuoteAdmin(Admin):
+class QuoteAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     model = models.Quote
@@ -120,8 +121,10 @@ class QuoteAdmin(Admin):
                 fields.append(field_name)
         return fields
 
-    def get_queryset(self, request):
+    def get_queryset(self, request) -> 'QuerySet[models.Quote]':
         """
+        Return the queryset of quotes to be displayed in the admin.
+
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
         qs = models.Quote.objects.prefetch_related(

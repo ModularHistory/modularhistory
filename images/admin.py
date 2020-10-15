@@ -1,7 +1,7 @@
 from image_cropping import ImageCroppingMixin
 
+from admin import ModelAdmin, TabularInline, admin_site
 from entities.models import EntityImage
-from admin.admin import Admin, TabularInline, admin_site
 from images.models import Image, Video
 from occurrences.models import OccurrenceImage
 
@@ -24,7 +24,7 @@ class OccurrencesInline(TabularInline):
     autocomplete_fields = ['occurrence']
 
 
-class ImageAdmin(ImageCroppingMixin, Admin):
+class ImageAdmin(ImageCroppingMixin, ModelAdmin):
     """TODO: add docstring."""
 
     list_display = [
@@ -55,7 +55,7 @@ class ImageAdmin(ImageCroppingMixin, Admin):
         return fields
 
 
-class VideoAdmin(Admin):
+class VideoAdmin(ModelAdmin):
     """TODO: add docstring."""
 
     list_display = ['title', 'url']

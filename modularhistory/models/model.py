@@ -5,7 +5,8 @@ from typing import Any, ClassVar, List, Match, Optional, Pattern, Tuple, Type
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 from typedmodels.models import TypedModel as BaseTypedModel
 
 from modularhistory.models.manager import Manager
@@ -35,6 +36,11 @@ class Model(DjangoModel):
 
     @classmethod
     def get_meta(cls):
+        """
+        Returns the model's _meta attribute value.
+
+        This is used purely to avoid warnings about accessing a private attribute.
+        """
         return cls._meta
 
     @property

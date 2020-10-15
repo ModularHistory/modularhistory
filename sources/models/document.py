@@ -3,7 +3,8 @@
 from bs4 import BeautifulSoup
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
-from django.utils.html import SafeString, format_html
+from django.utils.safestring import SafeString
+from django.utils.html import format_html
 
 from modularhistory.fields import ExtraField
 from modularhistory.models import Model
