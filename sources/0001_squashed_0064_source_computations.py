@@ -1093,7 +1093,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='collection',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='source', to='sources.collection'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='source',
+                to='sources.collection'
+            ),
         ),
         migrations.DeleteModel(
             name='OldSource',
@@ -1101,7 +1107,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='collection',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='documents', to='sources.collection'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='documents',
+                to='sources.collection'
+            ),
         ),
         migrations.AlterModelOptions(
             name='sourcecontainment',
