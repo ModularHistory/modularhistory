@@ -345,9 +345,11 @@ else:
 #     # '/users/': 'slave',
 # }
 
-# https://django-dbbackup.readthedocs.io/en/latest/installation.html
+# https://django-dbbackup.readthedocs.io/en/master/
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': config('DBBACKUP_STORAGE_LOCATION', default=None)}
+DBBACKUP_STORAGE_OPTIONS = {
+    'location': os.path.join(BASE_DIR, '.backups/')
+}
 
 AUTH_USER_MODEL = 'account.User'
 LOGIN_URL = 'account/login'

@@ -2,9 +2,9 @@
 
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
+
 # from chat.consumers import AdminChatConsumer, PublicChatConsumer
 import chat.routing
-
 
 application = ProtocolTypeRouter({
     'websocket': AuthMiddlewareStack(
