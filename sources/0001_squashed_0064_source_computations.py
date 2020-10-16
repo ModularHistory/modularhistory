@@ -35,7 +35,72 @@ class RenameModelAndBaseOperation(migrations.RenameModel):
 
 class Migration(migrations.Migration):
 
-    replaces = [('sources', '0001_initial'), ('sources', '0002_pagerange'), ('sources', '0003_auto_20200503_0704'), ('sources', '0004_auto_20200503_0707'), ('sources', '0005_auto_20200503_0841'), ('sources', '0006_auto_20200503_0854'), ('sources', '0007_auto_20200503_0912'), ('sources', '0008_auto_20200915_0511'), ('sources', '0009_auto_20200916_0607'), ('sources', '0010_auto_20200917_0237'), ('sources', '0011_auto_20200917_0506'), ('sources', '0012_auto_20200917_0511'), ('sources', '0013_auto_20200917_0520'), ('sources', '0014_auto_20200917_0523'), ('sources', '0015_auto_20200917_0531'), ('sources', '0016_auto_20200917_0824'), ('sources', '0017_auto_20200917_1445'), ('sources', '0018_auto_20200921_0816'), ('sources', '0019_auto_20200921_1255'), ('sources', '0020_auto_20200921_1301'), ('sources', '0021_auto_20200921_1313'), ('sources', '0022_auto_20200921_1331'), ('sources', '0023_auto_20200923_0100'), ('sources', '0024_auto_20200923_0450'), ('sources', '0025_auto_20200923_0503'), ('sources', '0026_auto_20200923_0522'), ('sources', '0027_auto_20200923_0527'), ('sources', '0028_auto_20200923_0535'), ('sources', '0029_auto_20200923_0539'), ('sources', '0030_auto_20200923_0543'), ('sources', '0031_auto_20200923_0550'), ('sources', '0032_auto_20200923_0553'), ('sources', '0033_auto_20200923_0557'), ('sources', '0034_auto_20200923_0559'), ('sources', '0035_auto_20200923_0605'), ('sources', '0036_auto_20200923_0608'), ('sources', '0037_auto_20200923_0609'), ('sources', '0038_auto_20200923_0612'), ('sources', '0039_auto_20200923_0615'), ('sources', '0040_auto_20200923_1351'), ('sources', '0041_auto_20200923_1400'), ('sources', '0042_auto_20200924_0047'), ('sources', '0043_auto_20200924_0049'), ('sources', '0044_auto_20200924_0050'), ('sources', '0045_remove_typedsource_old_source'), ('sources', '0046_source_new_source'), ('sources', '0047_auto_20200926_1024'), ('sources', '0048_auto_20200926_1052'), ('sources', '0049_auto_20200926_1151'), ('sources', '0050_auto_20200927_0617'), ('sources', '0051_auto_20200928_1332'), ('sources', '0052_auto_20200928_2312'), ('sources', '0053_auto_20200929_0108'), ('sources', '0054_auto_20200929_0138'), ('sources', '0055_remove_source_polymorphic_ctype'), ('sources', '0056_auto_20200929_0145'), ('sources', '0057_auto_20200929_0223'), ('sources', '0058_auto_20200929_0350'), ('sources', '0059_auto_20200929_0410'), ('sources', '0060_auto_20200929_0416'), ('sources', '0061_auto_20200929_0515'), ('sources', '0062_auto_20200929_0616'), ('sources', '0063_auto_20201001_0757'), ('sources', '0064_source_computations')]
+    replaces = [
+        ('sources', '0001_initial'),
+        ('sources', '0002_pagerange'),
+        ('sources', '0003_auto_20200503_0704'),
+        ('sources', '0004_auto_20200503_0707'),
+        ('sources', '0005_auto_20200503_0841'),
+        ('sources', '0006_auto_20200503_0854'),
+        ('sources', '0007_auto_20200503_0912'),
+        ('sources', '0008_auto_20200915_0511'),
+        ('sources', '0009_auto_20200916_0607'),
+        ('sources', '0010_auto_20200917_0237'),
+        ('sources', '0011_auto_20200917_0506'),
+        ('sources', '0012_auto_20200917_0511'),
+        ('sources', '0013_auto_20200917_0520'),
+        ('sources', '0014_auto_20200917_0523'),
+        ('sources', '0015_auto_20200917_0531'),
+        ('sources', '0016_auto_20200917_0824'),
+        ('sources', '0017_auto_20200917_1445'),
+        ('sources', '0018_auto_20200921_0816'),
+        ('sources', '0019_auto_20200921_1255'),
+        ('sources', '0020_auto_20200921_1301'),
+        ('sources', '0021_auto_20200921_1313'),
+        ('sources', '0022_auto_20200921_1331'),
+        ('sources', '0023_auto_20200923_0100'),
+        ('sources', '0024_auto_20200923_0450'),
+        ('sources', '0025_auto_20200923_0503'),
+        ('sources', '0026_auto_20200923_0522'),
+        ('sources', '0027_auto_20200923_0527'),
+        ('sources', '0028_auto_20200923_0535'),
+        ('sources', '0029_auto_20200923_0539'),
+        ('sources', '0030_auto_20200923_0543'),
+        ('sources', '0031_auto_20200923_0550'),
+        ('sources', '0032_auto_20200923_0553'),
+        ('sources', '0033_auto_20200923_0557'),
+        ('sources', '0034_auto_20200923_0559'),
+        ('sources', '0035_auto_20200923_0605'),
+        ('sources', '0036_auto_20200923_0608'),
+        ('sources', '0037_auto_20200923_0609'),
+        ('sources', '0038_auto_20200923_0612'),
+        ('sources', '0039_auto_20200923_0615'),
+        ('sources', '0040_auto_20200923_1351'),
+        ('sources', '0041_auto_20200923_1400'),
+        ('sources', '0042_auto_20200924_0047'),
+        ('sources', '0043_auto_20200924_0049'),
+        ('sources', '0044_auto_20200924_0050'),
+        ('sources', '0045_remove_typedsource_old_source'),
+        ('sources', '0046_source_new_source'),
+        ('sources', '0047_auto_20200926_1024'),
+        ('sources', '0048_auto_20200926_1052'),
+        ('sources', '0049_auto_20200926_1151'),
+        ('sources', '0050_auto_20200927_0617'),
+        ('sources', '0051_auto_20200928_1332'),
+        ('sources', '0052_auto_20200928_2312'),
+        ('sources', '0053_auto_20200929_0108'),
+        ('sources', '0054_auto_20200929_0138'),
+        ('sources', '0055_remove_source_polymorphic_ctype'),
+        ('sources', '0056_auto_20200929_0145'),
+        ('sources', '0057_auto_20200929_0223'),
+        ('sources', '0058_auto_20200929_0350'),
+        ('sources', '0059_auto_20200929_0410'),
+        ('sources', '0060_auto_20200929_0416'),
+        ('sources', '0061_auto_20200929_0515'),
+        ('sources', '0062_auto_20200929_0616'),
+        ('sources', '0063_auto_20201001_0757'),
+        ('sources', '0064_source_computations')
+    ]
 
     initial = True
 
@@ -893,7 +958,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='typedsource',
             name='related',
-            field=gm2m.fields.GM2MField('quotes.Quote', 'occurrences.Occurrence', blank=True, through='sources.Citation', through_fields=['source', 'content_object', 'content_type', 'object_id']),
+            field=gm2m.fields.GM2MField(
+                'quotes.Quote',
+                'occurrences.Occurrence',
+                blank=True,
+                through='sources.Citation',
+                through_fields=['source', 'content_object', 'content_type', 'object_id']
+            ),
         ),
         migrations.AlterModelOptions(
             name='citation',
@@ -914,7 +985,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='typedsource',
             name='related',
-            field=gm2m.fields.GM2MField('quotes.Quote', 'occurrences.Occurrence', blank=True, related_name='sources', through='sources.Citation', through_fields=['source', 'content_object', 'content_type', 'object_id']),
+            field=gm2m.fields.GM2MField(
+                'quotes.Quote',
+                'occurrences.Occurrence',
+                blank=True,
+                related_name='sources',
+                through='sources.Citation',
+                through_fields=['source', 'content_object', 'content_type', 'object_id']
+            ),
         ),
         migrations.AlterUniqueTogether(
             name='citation',
