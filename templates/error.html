@@ -8,12 +8,13 @@
     <div id="HTTP-error">
         <div class="HTTP-error">
             <div class="HTTP-error-content">
-                <h1>Oops!</h1>
+                <h1>Error</h1>
                 <h2>
-                    {% block message %}{% endblock %}
+                    {% block message %}
+                        An error was encountered.
+                    {% endblock %}
                 </h2>
             </div>
-            {#  <a href="/">Go TO Homepage</a>  #}
         </div>
     </div>
 {% endblock content %}

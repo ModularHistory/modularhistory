@@ -248,7 +248,7 @@ class Source(TypedModel, DatedModel, SearchableModel):
                     url = f'{url}#page={page_number}'
         return url
 
-    def _html(self) -> SafeString:
+    def html(self) -> SafeString:
         """
         Return the HTML representation of the source.
 
@@ -296,8 +296,8 @@ class Source(TypedModel, DatedModel, SearchableModel):
         #         f'<i class="fas fa-search"></i>'
         #         f'</a>'
         #     )
-    _html.admin_order_field = 'db_string'
-    html: SafeString = property(_html)  # type: ignore
+    html.admin_order_field = 'db_string'
+    html: SafeString = property(html)  # type: ignore
 
     @property
     def link(self) -> Optional[SafeString]:
@@ -336,9 +336,7 @@ class Source(TypedModel, DatedModel, SearchableModel):
         """TODO: write docstring."""
         super().clean()
         if not self.db_string:
-            self.db_string = self.string
-            if not self.db_string:
-                raise ValidationError('Cannot generate string representation.')
+            raise ValidationError('Cannot generate string representation.')
         if self.pk:  # If this source is not being newly created
             if Source.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
                 raise ValidationError(
@@ -362,10 +360,11 @@ class Source(TypedModel, DatedModel, SearchableModel):
 
     def save(self, *args, **kwargs):
         """TODO: write docstring."""
+        # TODO: avoid saving twice somehow
         self.db_string = self.string
+        self.clean()
         super().save(*args, **kwargs)
         self.clean()
-        self.db_string = self.string
         super().save(*args, **kwargs)
 
     @property

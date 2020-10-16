@@ -27,26 +27,24 @@ class SpokenSource(Source):
     def __html__(self) -> str:
         """TODO: write docstring."""
         type_label = str(self.type_label)
-
-        # Build delivery string
-        if type_label == 'statement':
-            delivery_string = f'{type_label}'
-        else:
-            delivery_string = f'{type_label} delivered'
-        if self.audience or self.location:
-            if self.audience:
-                delivery_string = f'{delivery_string} to {self.audience}'
-            if self.location:
-                location, location_string = self.location, self.location.string
-                preposition = location.preposition if isinstance(location, Venue) else 'in'
-                delivery_string = f'{delivery_string} {preposition} {location_string}'
-            if self.date:
-                delivery_string = f'{delivery_string}, {self.date_string}'
-        elif self.date.month_is_known:
-            delivery_string = f'{delivery_string} {self.date_string}'
-        else:
-            delivery_string = f'{delivery_string} in {self.date_string}'
-
+        delivery_string = f'{type_label}'
+        audience, location, date = self.audience, self.location, self.date
+        if any([audience, location, date]):
+            if type_label != 'statement':
+                delivery_string = f'{type_label} delivered'
+            if audience or location:
+                if audience:
+                    delivery_string = f'{delivery_string} to {audience}'
+                if location:
+                    preposition = location.preposition if isinstance(location, Venue) else 'in'
+                    delivery_string = f'{delivery_string} {preposition} {location.string}'
+                if date:
+                    delivery_string = f'{delivery_string}, {self.date_string}'
+            elif date:
+                if date.month_is_known:
+                    delivery_string = f'{delivery_string} {self.date_string}'
+                else:
+                    delivery_string = f'{delivery_string} in {self.date_string}'
         # Build full string
         components = [
             self.attributee_string,

@@ -134,11 +134,11 @@ class Book(TextualSource):
         # Join components; rearrange commas and double quotes
         return ', '.join(components).replace('",', ',"')
 
-    def _html(self) -> SafeString:
+    def html(self) -> SafeString:
         """TODO: add docstring."""
         return format_html(self.__html__)
-    _html.admin_order_field = 'db_string'
-    html: SafeString = property(_html)  # type: ignore
+    html.admin_order_field = 'db_string'
+    html: SafeString = property(html)  # type: ignore
 
 
 class SectionSource(TextualSource):
@@ -148,11 +148,11 @@ class SectionSource(TextualSource):
         """TODO: write docstring."""
         return BeautifulSoup(self.html, features='lxml').get_text()
 
-    def _html(self) -> SafeString:
+    def html(self) -> SafeString:
         """TODO: add docstring."""
         return format_html(self.__html__)
-    _html.admin_order_field = 'db_string'
-    html: SafeString = property(_html)  # type: ignore
+    html.admin_order_field = 'db_string'
+    html: SafeString = property(html)  # type: ignore
 
     def full_clean(self, exclude=None, validate_unique=True):
         """TODO: add docstring."""

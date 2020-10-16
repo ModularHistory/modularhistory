@@ -41,6 +41,7 @@ node_modules/
 
 # Backup files
 *.bak
+.backups/
 backups/
 
 # Testing / linting / coverage reports

@@ -87,7 +87,7 @@ done
 
 shift $((OPTIND - 1))
 
-if [[ -n "${USE_PROD_DB}" ]]; then
+if [[ "${USE_PROD_DB}" == 'True' ]]; then
   error "Cannot run setup script while connected to production database."
   exit 1
 fi
@@ -112,6 +112,9 @@ echo "Detected $os."
 
 # Enter the project
 cd "$(dirname "$0")" && echo "Running in $(pwd)..." || exit 1
+
+# Create a directory for db backups
+mkdir .backups &>/dev/null
 
 if [[ "$interactive" == true ]]; then
   # Update package managers
@@ -385,7 +388,7 @@ if [[ "$interactive" == true ]]; then
 fi
 
 # Run database migrations
-if [[ -z "${USE_PROD_DB}" ]]; then
+if [[ "${USE_PROD_DB}" != 'True' ]]; then
   echo "Running database migrations..."
   python manage.py migrate
   echo ""
