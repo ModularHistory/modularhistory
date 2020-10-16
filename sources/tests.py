@@ -1,16 +1,25 @@
 import pytest
-from hypothesis import given, example
+from hypothesis import assume, given
+# from hypothesis.extra.django import from_model
 from hypothesis.strategies import text
+
+from sources.models import Source
 
 
 @pytest.mark.django_db
-class TestNothing:
-    """TODO: add docstring."""
+class TestSources:
+    """Test the sources app."""
 
-    do_nothing: bool = True
-
-    @given(string=text())
-    @example(string='Not doing anything')
-    def test_nothing(self, string: str):
+    @pytest.mark.parametrize('source_type', ['sources.book', 'sources.article'])
+    # @given(title=text())
+    def test_source(self, source_type: str):
         """TODO: add docstring."""
-        assert self.do_nothing
+        title = f'asdf {source_type}'
+        source = Source(
+            type=source_type,
+            title=title
+        )
+        source.recast(source_type)
+        source.save()
+        print(source)
+        assert len(f'{source}')

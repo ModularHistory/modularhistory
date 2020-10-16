@@ -105,18 +105,19 @@ def squash_migrations(context):
 
     See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
     """
+    max_migration_count = 3
     prod_db_env_var_values = (
         ('local', ''),
         ('production', 'True')
     )
-    max_migration_count = 3
-    # # Make sure models fit the current db schema
-    # for environment, prod_db_env_var_value in prod_db_env_var_values:
-    #     set_prod_db_env_var(prod_db_env_var_value)
-    #     print(f'Making sure that models fit the current {environment} db schema...')
-    #     context.run('python manage.py makemigrations && python manage.py migrate')
-    #     input('Continue? [Y/n] ')
-    #     del os.environ[PROD_DB_ENV_VAR]
+
+    # Make sure models fit the current db schema
+    for environment, prod_db_env_var_value in prod_db_env_var_values:
+        set_prod_db_env_var(prod_db_env_var_value)
+        print(f'Making sure that models fit the current {environment} db schema...')
+        context.run('python manage.py makemigrations && python manage.py migrate')
+        input('Continue? [Y/n] ')
+        del os.environ[PROD_DB_ENV_VAR]
 
     # Show current migrations
     print('Migrations before squashing:')
@@ -179,7 +180,13 @@ def squash_migrations(context):
 @task
 def test(context):
     """Run tests."""
-    context.run('coverage run -m pytest -n 3 --hypothesis-show-statistics')
+    pytest_args = [
+        '-n 3',
+        # '-x',
+        '--maxfail=2',
+        # '--hypothesis-show-statistics',
+    ]
+    context.run(f'coverage run -m pytest {" ".join(pytest_args)}')
     context.run('coverage combine')
 
 
