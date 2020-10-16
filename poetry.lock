@@ -41,6 +41,9 @@ category = "dev"
 optional = false
 python-versions = "*"
 
+[package.dependencies]
+importlib-metadata = {version = ">=0.23,<3", markers = "python_version == \"3.7\""}
+
 [package.extras]
 test = ["coverage", "flake8", "pexpect", "wheel"]
 
@@ -1535,8 +1538,8 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 attrs = ">=19.2.0"
-django = {version = ">=2.2", optional = true, markers = "extra == \"all\""}
-pytz = {version = ">=2014.1", optional = true, markers = "extra == \"all\""}
+django = {version = ">=2.2", optional = true, markers = "extra == \"django\""}
+pytz = {version = ">=2014.1", optional = true, markers = "extra == \"django\""}
 sortedcontainers = ">=2.1.0,<3.0.0"
 
 [package.extras]
@@ -2955,11 +2958,11 @@ attrs = ">=19.2.0"
 Automat = ">=0.3.0"
 constantly = ">=15.1"
 hyperlink = ">=17.1.1"
-idna = {version = ">=0.6,<2.3 || >2.3", optional = true, markers = "extra == \"all_non_platform\""}
+idna = {version = ">=0.6,<2.3 || >2.3", optional = true, markers = "extra == \"tls\""}
 incremental = ">=16.10.1"
 PyHamcrest = ">=1.9.0,<1.10.0 || >1.10.0"
-pyopenssl = {version = ">=16.0.0", optional = true, markers = "extra == \"all_non_platform\""}
-service_identity = {version = ">=18.1.0", optional = true, markers = "extra == \"all_non_platform\""}
+pyopenssl = {version = ">=16.0.0", optional = true, markers = "extra == \"tls\""}
+service_identity = {version = ">=18.1.0", optional = true, markers = "extra == \"tls\""}
 "zope.interface" = ">=4.4.2"
 
 [package.extras]

@@ -1,7 +1,6 @@
 """
 These "tasks" or commands can be invoked from the console with an `invoke ` preface.  For example:
 ``
-invoke setup
 invoke lint
 invoke test
 ``
@@ -110,17 +109,14 @@ def squash_migrations(context):
         ('local', ''),
         ('production', 'True')
     )
-
-    # Connect to production db
-    context.run('cloud_sql_proxy --help')
-
-    # Make sure models fit the current db schema
-    for environment, prod_db_env_var_value in prod_db_env_var_values:
-        set_prod_db_env_var(prod_db_env_var_value)
-        print(f'Making sure that models fit the current {environment} db schema...')
-        context.run('python manage.py makemigrations && python manage.py migrate')
-        input('Continue? [Y/n] ')
-        del os.environ[PROD_DB_ENV_VAR]
+    max_migration_count = 3
+    # # Make sure models fit the current db schema
+    # for environment, prod_db_env_var_value in prod_db_env_var_values:
+    #     set_prod_db_env_var(prod_db_env_var_value)
+    #     print(f'Making sure that models fit the current {environment} db schema...')
+    #     context.run('python manage.py makemigrations && python manage.py migrate')
+    #     input('Continue? [Y/n] ')
+    #     del os.environ[PROD_DB_ENV_VAR]
 
     # Show current migrations
     print('Migrations before squashing:')
@@ -142,31 +138,39 @@ def squash_migrations(context):
         'topics'
     )
     for app in apps_with_migrations:
-        for environment, prod_db_env_var_value in prod_db_env_var_values:
-            set_prod_db_env_var(prod_db_env_var_value)
-            print(f'Clearing migration history for the {app} app in {environment} ...')
-            context.run(f'python manage.py migrate --fake {app} zero')
-            del os.environ[PROD_DB_ENV_VAR]
-        input('Proceed to delete migration files? [Y/n] ')
-        context.run(f'find {app} -path migrations/*.py -not -name "__init__.py" -delete')
-        context.run(f'find {app} -path migrations/*.pyc" -delete')
+        n_migrations = int(
+            context.run(
+                f'find {app}/migrations -type f -name "*.py" -not -name "__init__.py" | wc -l'
+            ).stdout
+        )
+        if n_migrations > max_migration_count:
+            last_migration_id = str(n_migrations).zfill(4)
+            context.run(f'python manage.py squashmigrations {app} {last_migration_id} --no-input')
+            # for environment, prod_db_env_var_value in prod_db_env_var_values:
+            #     set_prod_db_env_var(prod_db_env_var_value)
+            #     print(f'Clearing migration history for the {app} app in {environment} ...')
+            #     context.run(f'python manage.py migrate --fake {app} zero')
+            #     del os.environ[PROD_DB_ENV_VAR]
+            # input('Proceed to delete migration files? [Y/n] ')
+            # context.run(f'find {app} -path migrations/*.py -not -name "__init__.py" -delete')
+            # context.run(f'find {app} -path migrations/*.pyc" -delete')
         input('Continue? [Y/n] ')
     print()
 
-    # Regenerate migrations
-    print('Regenerating migrations...')
-    context.run('python manage.py makemigrations')
-    input('Continue? [Y/n] ')
-
-    # Fake the migrations
-    for environment, prod_db_env_var_value in prod_db_env_var_values:
-        set_prod_db_env_var(prod_db_env_var_value)
-        print(f'Running fake migrations for {environment} db...')
-        context.run('python manage.py migrate --fake-initial')
-        del os.environ[PROD_DB_ENV_VAR]
-        print()
-    print('Migrations after squashing:')
-    context.run('python manage.py showmigrations')
+    # # Regenerate migrations
+    # print('Regenerating migrations...')
+    # context.run('python manage.py makemigrations')
+    # input('Continue? [Y/n] ')
+    #
+    # # Fake the migrations
+    # for environment, prod_db_env_var_value in prod_db_env_var_values:
+    #     set_prod_db_env_var(prod_db_env_var_value)
+    #     print(f'Running fake migrations for {environment} db...')
+    #     context.run('python manage.py migrate --fake-initial')
+    #     del os.environ[PROD_DB_ENV_VAR]
+    #     print()
+    # print('Migrations after squashing:')
+    # context.run('python manage.py showmigrations')
 
     # Done
     print('Successfully squashed migrations.')
