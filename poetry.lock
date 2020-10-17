@@ -672,17 +672,6 @@ python-monkey-business = ">=1.0.0"
 six = "*"
 
 [[package]]
-name = "django-polymorphic"
-version = "3.0.0"
-description = "Seamless polymorphic inheritance for Django models"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-Django = ">=2.1"
-
-[[package]]
 name = "django-pymemcache"
 version = "1.0.0"
 description = "Django cache backend based on Pinterest's pymemcache client."
@@ -3221,7 +3210,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "addc5a832961f1b71dcf8778e3d9dc6e56893eab011dac9ec63bda5fd801b005"
+content-hash = "28009ea1c0cabd4f3990e5ac7e1670374082c21a695dd2765b337cd34b6cbd50"
 
 [metadata.files]
 alabaster = [
@@ -3534,10 +3523,6 @@ django-mass-edit = [
 django-nested-admin = [
     {file = "django-nested-admin-3.3.2.tar.gz", hash = "sha256:7ec58af67107e6d7b2d0fd4fe03629eff8f7957c4aef5033c4700da1bd2d7870"},
     {file = "django_nested_admin-3.3.2-py2.py3-none-any.whl", hash = "sha256:2e6706050057f5dc5664bc90d034d4ed9e3ae032ead6b063da9982c9e45ab7f3"},
-]
-django-polymorphic = [
-    {file = "django-polymorphic-3.0.0.tar.gz", hash = "sha256:9d886f19f031d26bb1391c055ed9be06fb226a04a4cec1842b372c58873b3caa"},
-    {file = "django_polymorphic-3.0.0-py2.py3-none-any.whl", hash = "sha256:73b75eb44ea302bd32820f8661e469509d245ce7f7ff09cd2ad149e5c42034ff"},
 ]
 django-pymemcache = [
     {file = "django-pymemcache-1.0.0.tar.gz", hash = "sha256:e2a9185dff1fc77c11c462f21cc4d8353683e354b85409639eaf77c9b373ffd8"},
