@@ -118,29 +118,3 @@ class Model(DjangoModel):
     def get_updated_placeholder(cls, match: Match) -> str:
         """Must be implemented in inheriting model classes."""
         raise NotImplementedError
-
-
-# class PolymorphicModel(BasePolymorphicModel, Model):
-#     """TODO: add docstring."""
-#
-#     objects = PolymorphicManager()
-#
-#     class Meta:
-#         abstract = True
-#
-#     @property
-#     def ctype(self) -> ContentType:
-#         """TODO: add docstring."""
-#         return ContentType.objects.get_for_id(self.polymorphic_ctype_id)
-#
-#     @property
-#     def detail_url(self) -> str:
-#         """TODO: add docstring."""
-#         return reverse(f'{self.ctype.app_label}:detail', args=[self.id])
-#
-#     def get_admin_url(self):
-#         """TODO: add docstring."""
-#         return reverse(
-#             f'admin:{self.ctype.app_label}_{self.ctype.model}_change',
-#             args=[self.id]
-#         )
