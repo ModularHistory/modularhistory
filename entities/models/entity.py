@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Match, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
@@ -132,16 +132,6 @@ class Entity(TypedModel, TaggableModel, ModelWithRelatedQuotes):
         """TODO: add docstring."""
         self.clean()
         super().save(*args, **kwargs)
-
-    @classmethod
-    def get_object_html(cls, match: Match, use_preretrieved_html: bool) -> str:
-        """TODO: add docstring."""
-        raise NotImplementedError
-
-    @classmethod
-    def get_updated_placeholder(cls, match: Match) -> str:
-        """TODO: add docstring."""
-        raise NotImplementedError
 
 
 class Person(Entity):

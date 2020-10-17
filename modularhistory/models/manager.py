@@ -80,7 +80,7 @@ class SearchableModelQuerySet(QuerySet):
         rank: bool = False
     ) -> 'SearchableModelQuerySet':
         """Returns search results from occurrences."""
-        qs = self
+        qs: 'SearchableModelQuerySet' = self
         searchable_fields = qs.model.get_searchable_fields()
         if query and searchable_fields:
             search_query = SearchQuery(query)

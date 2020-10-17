@@ -4,7 +4,7 @@ from .models import Image
 
 
 class IndexView(generic.ListView):
-    """TODO: add docstring."""
+    """List view of all images."""
 
     model = Image
     template_name = 'images/index.html'

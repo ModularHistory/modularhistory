@@ -7,7 +7,7 @@ from occurrences.models import OccurrenceImage
 
 
 class EntitiesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for entities (in image admin)."""
 
     model = EntityImage
     verbose_name = 'entity'
@@ -16,7 +16,7 @@ class EntitiesInline(TabularInline):
 
 
 class OccurrencesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for occurrences (in image admin)."""
 
     model = OccurrenceImage
     verbose_name = 'occurrence'
@@ -25,7 +25,7 @@ class OccurrencesInline(TabularInline):
 
 
 class ImageAdmin(ImageCroppingMixin, ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for images."""
 
     list_display = [
         'admin_image_element',
@@ -56,7 +56,7 @@ class ImageAdmin(ImageCroppingMixin, ModelAdmin):
 
 
 class VideoAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for videos."""
 
     list_display = ['title', 'url']
     search_fields = ['title']

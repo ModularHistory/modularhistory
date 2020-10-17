@@ -2,10 +2,10 @@
 
 from typing import List, Optional
 
-from django.db.models import Q, QuerySet
+from django.db.models import Q
 
 from modularhistory.constants import OCCURRENCE_CT_ID
-from modularhistory.models import SearchableModelManager
+from modularhistory.models.manager import SearchableModelManager, SearchableModelQuerySet
 
 
 class QuoteManager(SearchableModelManager):
@@ -21,7 +21,7 @@ class QuoteManager(SearchableModelManager):
         rank: bool = False,
         suppress_unverified: bool = True,
         db: str = 'default'
-    ) -> QuerySet:
+    ) -> SearchableModelQuerySet:
         """Return search results from quotes."""
         qs = super().search(
             db=db,

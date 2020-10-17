@@ -49,7 +49,6 @@ GLOBAL_ONLY_OPTIONS = [
     'show_ignored',
     'daemon',
     'exclude',
-    'mypy_executable',
 ]
 
 PER_MODULE_OPTIONS = [
@@ -87,7 +86,6 @@ class Options:
     color: bool = True
     show_ignored: bool = False
     daemon: bool = False
-    mypy_executable: Optional[str] = None
 
     def __str__(self):
         """TODO: write docstring."""

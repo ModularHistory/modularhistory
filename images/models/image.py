@@ -73,12 +73,12 @@ class Image(MediaModel):
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the string representation of the image."""
         return self.caption.text if self.caption else self.image.name
 
     @property
     def admin_image_element(self) -> SafeString:
-        """TODO: add docstring."""
+        """Returns an image element to be displayed in the image admin."""
         height = 150
         max_width = 300
         width = height * self.aspect_ratio
@@ -88,7 +88,7 @@ class Image(MediaModel):
 
     @property
     def aspect_ratio(self) -> float:
-        """TODO: add docstring."""
+        """Returns the image's aspect ratio as a float."""
         return self.width / self.height
 
     @property

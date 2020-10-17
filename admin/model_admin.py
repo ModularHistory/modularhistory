@@ -45,7 +45,7 @@ else:
 
 
 class ModelAdmin(NestedModelAdmin):
-    """TODO: add docstring."""
+    """Base admin class for ModularHistory's models."""
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
@@ -142,7 +142,7 @@ class SearchableModelAdmin(ModelAdmin):
 
 
 class ContentTypeAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for content types."""
 
     model = ContentType
     list_display = ['app_label', 'model', 'pk']

@@ -28,10 +28,6 @@ class AttributeeSearchView(AutocompleteJsonView):
 class EntitySearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
 
-    # def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-    #     """TODO: add docstring."""
-    #     return super().get(request, *args, **kwargs)
-
     def get_queryset(self):
         """TODO: add docstring."""
         queryset = Entity.objects.all()

@@ -24,7 +24,7 @@ OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+\d+)\s+(.+)')
 
 @register()
 def flake8(app_configs: Optional[List], **kwargs) -> List:
-    """TODO: write docstring."""
+    """Runs flake8 (linter)."""
     print()
     proc = subprocess.Popen('flake8', stdout=subprocess.PIPE, shell=False)
     _output, _err = proc.communicate()

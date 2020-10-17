@@ -3,10 +3,10 @@ from typing import Any, Dict, List, Optional
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import QuerySet, Q
 
-from modularhistory.models import TypedModelManager  # , PolymorphicManager
+from modularhistory.models import TypedModelManager, SearchableModelManager
 
 
-class SourceManager(TypedModelManager):
+class SourceManager(TypedModelManager, SearchableModelManager):
     """Manager for sources."""
 
     def search(
