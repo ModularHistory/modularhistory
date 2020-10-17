@@ -31,7 +31,4 @@ class Interview(SpokenSource):
             f'{self.attributee_string} to {self.interviewers or "interviewer"}',
             self.date.string if self.date else ''
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

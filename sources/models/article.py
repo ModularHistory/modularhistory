@@ -64,7 +64,4 @@ class Article(SourceWithPageNumbers):
             number,
             date
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

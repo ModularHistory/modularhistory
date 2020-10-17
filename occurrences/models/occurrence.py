@@ -10,7 +10,7 @@ from django.utils.html import format_html
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources
 from images.models import Image
-from occurrences.manager import Manager
+from occurrences.manager import OccurrenceManager
 from quotes.models import quote_sorter_key
 
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
@@ -75,7 +75,7 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
         'tags__topic__key',
         'tags__topic__aliases'
     ]
-    objects: Manager = Manager()
+    objects: OccurrenceManager = OccurrenceManager()
 
     def __str__(self) -> str:
         """TODO: write docstring."""

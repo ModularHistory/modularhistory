@@ -27,7 +27,4 @@ class JournalEntry(SourceWithPageNumbers):
             self.attributee_string,
             f'{"journal" if self.attributee_string else "Journal"} entry dated {self.date.string}'
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

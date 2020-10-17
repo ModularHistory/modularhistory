@@ -51,10 +51,7 @@ class SpokenSource(Source):
             f'"{self.linked_title}"' if self.title else '',
             delivery_string
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)
 
     @property
     def type_label(self) -> str:

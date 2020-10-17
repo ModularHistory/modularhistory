@@ -7,12 +7,11 @@ See https://docs.djangoproject.com/en/3.1/topics/checks/.
 import argparse
 import configparser
 import fnmatch
-import json
 import os
-from glob import glob
 import re
 import sys
 from collections import defaultdict
+from glob import glob
 from typing import *
 from typing import Pattern  # not included in * for some reason
 
@@ -62,6 +61,8 @@ PER_MODULE_OPTIONS = [
     'warning_filters',
 ]
 
+PerFileIgnore = Tuple[str, Set[str]]
+
 
 class Options:
     """Options common to both the config file and the cli."""
@@ -75,7 +76,7 @@ class Options:
     exclude: Optional[List[Pattern]] = None
 
     # per-file ignores:
-    per_file_ignores: Optional[List[str]] = None
+    per_file_ignores: Optional[List[PerFileIgnore]] = None
 
     # messages:
     error_filters: List[Pattern] = None
@@ -125,10 +126,7 @@ def mypy(app_configs: Optional[List] = None, **kwargs) -> List:
     """."""
     options = Options()
     module_options: List[Tuple[str, Options]] = []
-    parsers = [
-        ConfigFileOptionsParser(),
-        JsonEnvVarOptionsParser(),
-    ]
+    parsers = [ConfigFileOptionsParser()]
     for p in parsers:
         p.apply(options, module_options)
     if options.select and options.ignore:
@@ -233,38 +231,6 @@ def mypy(app_configs: Optional[List] = None, **kwargs) -> List:
             is_filtered = False
             report(options, filename, line_number, level, message, is_filtered)
 
-        # message_level = DEBUG
-        # if level == 'note':
-        #     message_level = INFO
-        # elif level == 'warning':
-        #     message_level = WARNING
-        # elif level == 'error':
-        #     message_level = ERROR
-        # else:
-        #     print(f'Unrecognized mypy level: {level}')
-        # message_level = WARNING
-        # messages.append(CheckMessage(message_level, message, obj=MyPyErrorLocation(location)))
-
-    # def print_stat(key, value):
-    #     print("{:.<50}{:.>8}".format(key, value))
-    #
-    # error_files = set(errors.keys())
-    # warning_files = set(warnings.keys())
-    # filtered_files = set(filtered.keys())
-    #
-    # print()
-    # print_stat("Errors", sum(errors.values()))
-    # print_stat("Warnings", sum(warnings.values()))
-    # print_stat("Filtered", sum(filtered.values()))
-    # print()
-    # for (code, count) in sorted(errors_by_type.items(), key=lambda v: v[1],
-    #                             reverse=True):
-    #     print_stat(code, count)
-    # print()
-    # print_stat("Files with errors or warnings (excluding filtered)",
-    #            len(error_files | warning_files))
-    # print_stat("Files with errors or warnings (including filtered)",
-    #            len(error_files | warning_files | filtered_files))
     print()
     return messages
 
@@ -464,38 +430,3 @@ class ConfigFileOptionsParser(BaseOptionsParser):
                 globs = name[8:]
                 for file_glob in globs.split(','):
                     yield updates, file_glob
-
-
-class JsonOptionsParser(BaseOptionsParser):
-    """TODO: add docstring."""
-
-    def __init__(self, json_data):
-        """TODO: add docstring."""
-        self.json_data = json_data
-
-    def extract_updates(self, options: Options) -> Iterator[Tuple[Dict[str, object], Optional[str]]]:
-        """TODO: add docstring."""
-        if self.json_data:
-            results: Dict[str, object] = {}
-            for key, value in self.json_data.items():
-                processed_value: Any = value
-                cast: Callable = config_types.get(key)  # type: ignore
-                if cast is not None:
-                    processed_value = cast(value)
-                else:
-                    dv = getattr(options, key, None)
-                    if dv is None:
-                        print(f'Unrecognized option: {key} = {value}', file=sys.stderr)
-                        continue
-                results[key] = processed_value
-            yield results, None
-
-
-class JsonEnvVarOptionsParser(JsonOptionsParser):
-    """TODO: add docstring."""
-
-    def __init__(self):
-        """TODO: add docstring."""
-        opts = os.environ.get('MYPYRUN_OPTIONS')
-        json_data = json.loads(opts) if opts else None
-        super(JsonEnvVarOptionsParser, self).__init__(json_data)

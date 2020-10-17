@@ -44,7 +44,4 @@ class WebPage(TextualSource):
             self.date.string if self.date else '',
             f'retrieved from <a target="_blank" href="{self.url}">{self.url}</a>'
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

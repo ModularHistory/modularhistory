@@ -1,10 +1,10 @@
 """A modification of Django's JSONField."""
 
 import json
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
-from django.db.models import Model, JSONField as BaseJSONField
+from django.db.models import JSONField as BaseJSONField, Model  # type: ignore
 from jsonschema import exceptions as jsonschema_exceptions, validate
 
 
@@ -84,19 +84,15 @@ class ExtraField:
             return self
         json_value = getattr(instance, self.json_field_name)
         if isinstance(json_value, dict):
-            field_value = json_value.get(self.name, None)
-            if hasattr(self, 'from_json'):
-                field_value = self.from_json(field_value)
-            return field_value
+            return self.from_json(json_value.get(self.name, None))
         return None
 
     def __set__(self, instance: Model, value: Any):
         """See https://docs.python.org/3/reference/datamodel.html#object.__set__."""
         json_value = self.get_json_field_value(instance)
 
-        # # Transform the value to valid JSON
-        if hasattr(self, 'to_json'):
-            value = self.to_json(value)
+        # Transform the value to valid JSON
+        value = self.to_json(value)
 
         # Set the attribute
         if value:
@@ -124,6 +120,16 @@ class ExtraField:
             del json_value[self.name]
         except KeyError:
             pass
+
+    @staticmethod
+    def from_json(value) -> Any:
+        """Transforms a JSON value to its intended Python value."""
+        return value
+
+    @staticmethod
+    def to_json(value) -> Union[str, int, List, Dict]:
+        """Transforms a value to a format suitable for storage in JSON."""
+        return value
 
     def get_json_field_value(self, instance: Model):
         """Retrieve the value of the JSON field."""

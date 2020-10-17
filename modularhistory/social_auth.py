@@ -71,16 +71,21 @@ def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwarg
 
         # Update the user's avatar
         if url:
-            if user.avatar:
-                print(f'{user} already has an avatar: {user.avatar}')
-                # TODO: check if image has been updated
-            else:
-                print(f'{user} has no profile image.')
-                img_temp = NamedTemporaryFile(delete=True)
-                # TODO: Use requests instead of urllib?
-                img_temp.write(urlopen(url).read())  # noqa: S310
-                img_temp.flush()
-                user.avatar.save(f'{user.pk}', File(img_temp))
+            _update_user_avatar(user, url)
     except Exception as e:
         print(f'>>> {type(e)} in get_user_avatar: {e}')
         raise
+
+
+def _update_user_avatar(user: User, url: str):
+    """Update the user's avatar with the image located at the given URL."""
+    if user.avatar:
+        print(f'{user} already has an avatar: {user.avatar}')
+        # TODO: check if image has been updated
+    else:
+        print(f'{user} has no profile image.')
+        img_temp = NamedTemporaryFile(delete=True)
+        # TODO: Use requests instead of urllib?
+        img_temp.write(urlopen(url).read())  # noqa: S310
+        img_temp.flush()
+        user.avatar.save(f'{user.pk}', File(img_temp))

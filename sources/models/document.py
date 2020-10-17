@@ -98,10 +98,7 @@ class Collection(Model):
             f'{self.name}' if self.name else '',
             f'{self.repository}',
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return DocumentSource.components_to_html(components)
 
 
 class Repository(Model):
@@ -154,9 +151,4 @@ class Document(DocumentSource):
             self.descriptive_phrase,
             f'archived in {self.collection}' if self.collection else ''
         ]
-
-        # Remove blank values
-        components = [component for component in components if component]
-
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

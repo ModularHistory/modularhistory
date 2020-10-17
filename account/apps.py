@@ -2,6 +2,6 @@ from django.apps import AppConfig
 
 
 class AccountConfig(AppConfig):
-    """TODO: add docstring."""
+    """Config for the account app."""
 
     name = 'account'

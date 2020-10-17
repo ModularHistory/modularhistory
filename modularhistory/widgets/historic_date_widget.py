@@ -124,50 +124,50 @@ class HistoricDateWidget(MultiWidget):
         nones = (None, None, None, None, None, None)
         year, year_system, season, month, day, time = nones
         hour, minute, second, microsecond = None, None, None, None
-        if not isinstance(value, (datetime, date, str)):
-            return nones
-        elif isinstance(value, (datetime, date)):
-            year, month, day = value.year, value.month, value.day
-            season = get_season_from_month(month)
-            if isinstance(value, datetime):
-                hour, minute, second, microsecond = (
-                    value.hour, value.minute, value.second, value.microsecond
+        if isinstance(value, (datetime, date, str)):
+            if isinstance(value, (datetime, date)):
+                year, month, day = value.year, value.month, value.day
+                season = get_season_from_month(month)
+                if isinstance(value, datetime):
+                    hour, minute, second, microsecond = (
+                        value.hour, value.minute, value.second, value.microsecond
+                    )
+                    time = value.strftime('%H:%M:%S.%f')
+            elif isinstance(value, str):
+                year_str, month_str, day_str = value.split('-')
+                hour_str, minute_str, second_str, microsecond_str = ('0', '0', '0', '0')
+                if ' ' in day_str:
+                    day_str, time_str = day_str.split(' ')
+                    if ':' in time_str:
+                        hour_str, minute_str, second_str = time_str.split(':')
+                        if '.' in second_str:
+                            second_str, microsecond_str = second_str.split('.')
+                str_values = (year_str, month_str, day_str, hour_str, minute_str, second_str, microsecond_str)
+                year, month, day, hour, minute, second, microsecond = (int(string) for string in str_values)
+            if not isinstance(value, HistoricDateTime):
+                value = HistoricDateTime(
+                    year, month, day,
+                    hour or 0,
+                    minute or 0,
+                    second or 0,
+                    microsecond or 0
                 )
-                time = value.strftime('%H:%M:%S.%f')
-        elif isinstance(value, str):
-            year_str, month_str, day_str = value.split('-')
-            hour_str, minute_str, second_str, microsecond_str = ('0', '0', '0', '0')
-            if ' ' in day_str:
-                day_str, time_str = day_str.split(' ')
-                if ':' in time_str:
-                    hour_str, minute_str, second_str = time_str.split(':')
-                    if '.' in second_str:
-                        second_str, microsecond_str = second_str.split('.')
-            str_values = (year_str, month_str, day_str, hour_str, minute_str, second_str, microsecond_str)
-            year, month, day, hour, minute, second, microsecond = (int(string) for string in str_values)
-        if not isinstance(value, HistoricDateTime):
-            value = HistoricDateTime(
-                year, month, day,
-                hour or 0,
-                minute or 0,
-                second or 0,
-                microsecond or 0
-            )
-        if value.use_ybp:
-            year, year_system = value.year_bp, YBP
-        elif value.is_bce:
-            year, year_system = value.year_bce, BCE
-        else:
-            year_system = CE
-        if not value.day_is_known:
-            day = None
-            if not value.month_is_known:
-                month = None
-                if not value.season_is_known:
-                    season = None
-        if 0 in {hour, minute, second} or 1 in {hour, minute, second}:
-            time = None
-        return [year, year_system, season, month, day, time]
+            if value.use_ybp:
+                year, year_system = value.year_bp, YBP
+            elif value.is_bce:
+                year, year_system = value.year_bce, BCE
+            else:
+                year_system = CE
+            if not value.day_is_known:
+                day = None
+                if not value.month_is_known:
+                    month = None
+                    if not value.season_is_known:
+                        season = None
+            if 0 in {hour, minute, second} or 1 in {hour, minute, second}:
+                time = None
+            return [year, year_system, season, month, day, time]
+        return nones
 
     def value_from_datadict(self, data, files, name) -> Optional[str]:
         """TODO: add docstring."""

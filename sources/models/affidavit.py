@@ -41,7 +41,4 @@ class Affidavit(DocumentSource):
             self.attributee_string,
             f'affidavit sworn {self.date_html} at {self.location.string} before {self.certifier}'
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

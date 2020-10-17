@@ -1,5 +1,7 @@
 """Model classes for books and sections/chapters (as sources)."""
 
+from typing import Optional
+
 from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.utils.html import format_html
@@ -74,65 +76,78 @@ class Book(TextualSource):
     volume_number = ExtraField(json_field_name='extra')
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the book's string representation."""
         return BeautifulSoup(self.__html__, features='lxml').get_text()
 
     @property
-    def __html__(self) -> str:
-        """Return the book's HTML representation."""
-        original_publication_date = (
-            self.original_edition.date if self.original_edition else self.original_publication_date
-        )
-        has_edition_year, has_printing_year = False, False
-        if original_publication_date and not self.edition_number:
-            has_edition_year = True
-        elif original_publication_date and self.printing_number and not self.edition_number:
-            has_printing_year = True
-        elif self.edition_year and int(self.edition_year) < self.date.year:
-            has_printing_year = True
-
-        attributee = self.attributee_string if self.attributee_string else ''
-        title_html = f'<i>{self.linked_title}</i>' if self.title else ''
-
-        components = [attributee, title_html]
-
-        # Add edition
+    def edition_string(self) -> Optional[str]:
+        """Returns a string representation of the book's edition, if it has one."""
         if self.edition_number:
             edition_string = f'{ordinal(self.edition_number)} edition'
             if self.edition_year:
                 edition_string = f'{edition_string} ({self.edition_year})'
-            components.append(edition_string)
-        elif self.edition_year or has_edition_year:
+        elif self.has_edition_year:
             edition_year = self.edition_year or self.date.year
             edition_string = f'{edition_year} edition'
             if self.original_publication_date:
                 edition_string = f'{edition_string} (orig. {self.original_publication_date.year})'
-            components.append(edition_string)
+        else:
+            return None
+        return edition_string
 
-        # Add print number
+    def get_original_publication_date(self):
+        """Returns the book's original publication date."""
+        return (
+            self.original_edition.date if self.original_edition
+            else self.original_publication_date
+        )
+
+    @property
+    def has_edition_year(self) -> bool:
+        """Returns True if an edition year can be determined for the book, else False."""
+        return bool(
+            self.edition_year or
+            (self.get_original_publication_date() and not self.edition_number)
+        )
+
+    @property
+    def has_printing(self) -> bool:
+        """Returns True if a printing (distinct from edition) can be determined for the book, else False."""
+        if self.get_original_publication_date() and self.printing_number and not self.edition_number:
+            return True
+        elif self.edition_year and int(self.edition_year) < self.date.year:
+            return True
+        return False
+
+    @property
+    def printing_string(self) -> Optional[str]:
+        """Returns a string representation of the book's printing, if it has one."""
+        has_printing_year = self.has_printing
         if self.printing_number and not has_printing_year:
-            components.append(f'{ordinal(self.printing_number)} printing')
+            return f'{ordinal(self.printing_number)} printing'
         elif has_printing_year:
             printing_year_string = f'{self.date.year} printing'
             if self.original_publication_date:
                 printing_year_string = f'{printing_year_string} (orig. {self.original_publication_date.year})'
-            components.append(printing_year_string)
+            return printing_year_string
+        return None
 
-        components += [
+    @property
+    def __html__(self) -> str:
+        """Return the book's HTML representation."""
+        components = [
+            self.attributee_string if self.attributee_string else '',
+            f'<i>{self.linked_title}</i>' if self.title else '',
+            self.edition_string,
+            self.printing_string,
             f'ed. {self.editors}' if self.editors else '',
             f'translated by {self.translator}' if self.translator else '',
             f'{self.publisher}' if self.publisher else '',
             f'vol. {self.volume_number}' if self.volume_number else ''
         ]
-
-        if self.date and not has_edition_year and not has_printing_year:
+        if self.date and not self.has_edition_year and not self.has_printing:
             components.append(f'{self.date.year}')
-
-        # Remove blank values
-        components = [component for component in components if component]
-
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)
 
     def html(self) -> SafeString:
         """TODO: add docstring."""

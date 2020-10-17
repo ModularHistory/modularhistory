@@ -11,7 +11,7 @@ from django.utils.html import format_html
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
 
-from images.manager import Manager as ImageManager
+from images.manager import ImageManager
 from images.models.media_model import MediaModel
 from modularhistory.fields.file_field import upload_to
 

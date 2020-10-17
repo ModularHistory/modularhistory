@@ -23,7 +23,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
 
 PROD_DB_ENV_VAR = 'USE_PROD_DB'
-
+SQUASHED_MIGRATIONS_DIRNAME = 'squashed_migrations'
+MAX_MIGRATION_COUNT = 3
 BASH_PLACEHOLDER = '{}'  # noqa: P103
 APPS_WITH_MIGRATIONS = (
     # 'account',  # affected by social_django
@@ -151,108 +152,64 @@ def squash_migrations(context, dry=True):
     _squash_migrations(context, dry)
 
 
-SQUASHED_MIGRATIONS_DIRNAME = 'squashed_migrations'
-
-
 def _squash_migrations(context, dry=True):
     """
     Squash migrations.
 
     See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
     """
-    max_migration_count = 3
-
-    # By default, only squash migrations in dev environment
-    prod_db_env_var_values = [('local', '')]
     try:
         del os.environ[PROD_DB_ENV_VAR]
     except KeyError:
         pass
 
-    # Create a db backup
-    if input('Create db backup? [Y/n] ') != 'n':
-        context.run('python manage.py dbbackup')
+    # By default, only squash migrations in dev environment
+    prod_db_env_var_values = [
+        ('local', '')
+    ] if dry else [
+        ('local', ''),
+        ('production', 'True')
+    ]
 
-    if not dry:
-        prod_db_env_var_values.append(('production', 'True'))
+    # Create a db backup
+    if dry and input('Create db backup? [Y/n] ') != 'n':
+        context.run('python manage.py dbbackup')
 
     # Make sure models fit the current db schema
     context.run('python manage.py makemigrations')
-    for environment, prod_db_env_var_value in prod_db_env_var_values:
+    for _environment, prod_db_env_var_value in prod_db_env_var_values:
         print()
         _set_prod_db_env_var(prod_db_env_var_value)
-        print(f'Making sure that models fit the current {environment} db schema...')
         context.run('python manage.py migrate')
-        print()
-        if input('Continue? [Y/n] ') == 'n':
-            return
         del os.environ[PROD_DB_ENV_VAR]
 
     # Show current migrations
-    print()
-    print('Migrations before squashing:')
+    print('\n Migrations before squashing:')
     context.run('python manage.py showmigrations')
-    print()
-    if input('Continue? [Y/n] ') == 'n':
-        return
 
     # Clear the migrations history for each app
-    with transaction.atomic():
-        for app in APPS_WITH_MIGRATIONS:
-            n_migrations = len(os.listdir(path=f'./{app}/migrations')) - 1
-            if n_migrations > max_migration_count:
-                # This is the Django way, but it's not ideal.
-                # last_migration_id = str(n_migrations).zfill(4)
-                # context.run(f'python manage.py squashmigrations {app} {last_migration_id} --no-input')
-
-                # Fake reverting all migrations.
-                for environment, prod_db_env_var_value in prod_db_env_var_values:
-                    print()
-                    _set_prod_db_env_var(prod_db_env_var_value)
-                    print(f'Clearing migration history for the {app} app in {environment} ...')
-                    context.run(f'python manage.py migrate {app} zero --fake')
-                    # context.run(f'python manage.py migrate --fake {app} zero')
-                    print()
-                    print('Migrations after fake reversion:')
-                    context.run('python manage.py showmigrations')
-                    print()
-                    del os.environ[PROD_DB_ENV_VAR]
-            else:
-                print(
-                    f'Skipping squashing migrations for {app}, '
-                    f'since there are only {n_migrations} migration files.'
-                )
-        print()
-
-    # Remove old migration files.
-    if input('Proceed to remove migration files? [Y/n] ') != 'n':
-        _remove_migrations(context)
+    _clear_migration_history(context, prod_db_env_var_values)
 
     # Regenerate migration files.
-    print()
-    print('Regenerating migrations...')
+    print('\n Regenerating migrations...')
     context.run('python manage.py makemigrations')
-    print()
-    if input('Continue? [Y/n] ') == 'n':
+    if input('\n Continue? [Y/n] ') == 'n':
         return
 
     # Fake the migrations.
     for environment, prod_db_env_var_value in prod_db_env_var_values:
         _set_prod_db_env_var(prod_db_env_var_value)
-        print(f'Running fake migrations for {environment} db...')
+        print(f'\n Running fake migrations for {environment} db...')
         context.run('python manage.py migrate --fake-initial')
         del os.environ[PROD_DB_ENV_VAR]
-        print()
 
     # Display the regenerated migrations.
-    print('Migrations after squashing:')
+    print('\n Migrations after squashing:')
     context.run('python manage.py showmigrations')
-    print()
 
     if dry:
-        print('Completed dry run of squashing migrations.')
-        print()
         input(
+            'Completed dry run of squashing migrations.\n'
             'Take a minute to test the app locally, then press any key '
             'to proceed to squash migrations in production environment.'
         )
@@ -260,16 +217,25 @@ def _squash_migrations(context, dry=True):
         _restore_squashed_migrations(context)
         if input('Squash migrations for real (in production db)? [Y/n] ') != 'n':
             _squash_migrations(context, dry=False)
-    else:
-        # Permanently delete the old migration files
-        if input('Delete all old migrations? [Y/n] ') != 'n':
-            command = (
-                f'find . -type d -name "*{SQUASHED_MIGRATIONS_DIRNAME}*" '
-                f'-exec rm -r {BASH_PLACEHOLDER} \;'  # noqa: W605
-            )
-            print(command)
-            context.run(command)
-            print()
+
+
+def _clear_migration_history(context, prod_db_env_var_values):
+    """."""
+    with transaction.atomic():
+        for app in APPS_WITH_MIGRATIONS:
+            n_migrations = len(os.listdir(path=f'./{app}/migrations')) - 1
+            if n_migrations > MAX_MIGRATION_COUNT:
+                # Fake reverting all migrations.
+                for environment, prod_db_env_var_value in prod_db_env_var_values:
+                    _set_prod_db_env_var(prod_db_env_var_value)
+                    print(f'\n Clearing migration history for the {app} app in {environment} ...')
+                    _revert_to_migration_zero(context, app)
+                    del os.environ[PROD_DB_ENV_VAR]
+            else:
+                print(f'Skipping {app} since there are only {n_migrations} migration files...')
+    # Remove old migration files.
+    if input('\n Proceed to remove migration files? [Y/n] ') != 'n':
+        _remove_migrations(context)
 
 
 def _remove_migrations(context, app=None, hard=False):
@@ -316,6 +282,15 @@ def _remove_migrations(context, app=None, hard=False):
         print(command)
         context.run(command)
         print(f'Removed migration files from {app}.')
+
+
+def _revert_to_migration_zero(context, app):
+    """Spoofs reverting migrations by running a fake migration to `zero`."""
+    context.run(f'python manage.py migrate {app} zero --fake')
+    print()
+    print('Migrations after fake reversion:')
+    context.run('python manage.py showmigrations')
+    print()
 
 
 def _restore_squashed_migrations(context):

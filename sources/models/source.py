@@ -205,7 +205,7 @@ class Source(TypedModel, DatedModel, SearchableModel):
         container_strings = []
         same_creator = True
         for c in containments:
-            container_html: str = c.container.html
+            container_html = f'{c.container.html}'
 
             if c.container.attributee_string != self.attributee_string:
                 same_creator = False
@@ -350,6 +350,14 @@ class Source(TypedModel, DatedModel, SearchableModel):
                         f'because that source is already contained by this source.'
                     )
 
+    @staticmethod
+    def components_to_html(components: List[str]):
+        """Combine a list of HTML components into an HTML string."""
+        # Remove blank values
+        components = [component for component in components if component]
+        # Join components; rearrange commas and double quotes
+        return ', '.join(components).replace('",', ',"')
+
     def get_date(self) -> Optional[HistoricDateTime]:
         """TODO: write docstring."""
         if self.date:
@@ -375,22 +383,6 @@ class Source(TypedModel, DatedModel, SearchableModel):
         Must be defined by models inheriting from Source.
         """
         raise NotImplementedError
-
-    @classmethod
-    def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
-        """Return the obj's HTML based on a placeholder in the admin."""
-        if not re.match(ADMIN_PLACEHOLDER_REGEX, match.group(0)):
-            raise ValueError(f'{match} does not match {ADMIN_PLACEHOLDER_REGEX}')
-
-        if use_preretrieved_html:
-            # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(3)
-            if preretrieved_html:
-                return preretrieved_html.strip()
-
-        key = match.group(1).strip()
-        source = cls.objects.get(pk=key)
-        return source.html
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
