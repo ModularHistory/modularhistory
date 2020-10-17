@@ -2,7 +2,7 @@ from django.contrib.admin import SimpleListFilter
 
 from admin.model_admin import admin_site, ModelAdmin
 from sources import models
-from sources.admin.sources_admin import SourcesInline
+from sources.admin.source_admin import SourcesInline
 
 
 class PdfFilter(SimpleListFilter):

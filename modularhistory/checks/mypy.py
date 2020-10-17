@@ -9,12 +9,12 @@ import configparser
 import fnmatch
 import json
 import os
+from glob import glob
 import re
-# from os import path
 import sys
 from collections import defaultdict
 from typing import *
-from typing import Pattern  # not include in *
+from typing import Pattern  # not included in * for some reason
 
 # from django.core.checks.messages import CheckMessage, DEBUG, INFO, WARNING, ERROR
 from django.conf import settings
@@ -71,8 +71,11 @@ class Options:
     warn: Optional[Set[str]] = None
 
     # paths:
-    include: List[Pattern] = None
-    exclude: List[Pattern] = None
+    include: Optional[List[Pattern]] = None
+    exclude: Optional[List[Pattern]] = None
+
+    # per-file ignores:
+    per_file_ignores: Optional[List[str]] = None
 
     # messages:
     error_filters: List[Pattern] = None
@@ -96,6 +99,7 @@ class Options:
         self.warn = set()
         self.include = []
         self.exclude = []
+        self.per_file_ignores = []
         self.error_filters = []
         self.warning_filters = []
         self.args = []
@@ -108,9 +112,16 @@ class Options:
         """TODO: write docstring."""
         return utils.match(self.include, path)
 
+    def error_is_ignored_in_file(self, filename: str, error_code: str):
+        """Return True if an error is specifically ignored for the given filename."""
+        for pattern, error_codes in self.per_file_ignores:
+            if filename in glob(pattern) and error_code in error_codes:
+                return True
+        return False
+
 
 @register()
-def mypy(app_configs: Optional[List], **kwargs) -> List:
+def mypy(app_configs: Optional[List] = None, **kwargs) -> List:
     """."""
     options = Options()
     module_options: List[Tuple[str, Options]] = []
@@ -182,7 +193,8 @@ def mypy(app_configs: Optional[List], **kwargs) -> List:
             error_is_ignored = any([
                 utils.match(options.error_filters, message),
                 options.ignore is ALL,
-                error_code in options.ignore
+                error_code in options.ignore,
+                options.error_is_ignored_in_file(filename=filename, error_code=error_code)
             ])
             # If error is to be ignored
             if error_is_ignored:
@@ -306,6 +318,16 @@ def _glob_list(s: MultiOptions) -> List[Pattern]:
     return [_glob_to_regex(x) for x in _parse_multi_options(s)]
 
 
+def _per_file_ignores_list(s: MultiOptions) -> List[Tuple[str, Set[str]]]:
+    per_file_ignores = []
+    entries = _parse_multi_options(s, split_token='\n')  # noqa: S106
+    for entry in entries:
+        pattern, codes = entry.split(':')
+        error_codes = {code.strip() for code in codes.split(',')}
+        per_file_ignores.append((pattern.strip(), error_codes))
+    return per_file_ignores
+
+
 def _regex_list(s: MultiOptions) -> List[Pattern]:
     """."""
     return [re.compile(x) for x in _parse_multi_options(s)]
@@ -329,6 +351,7 @@ config_types = {
     'args': _parse_multi_options,
     'include': _glob_list,
     'exclude': _glob_list,
+    'per_file_ignores': _per_file_ignores_list,
     'error_filters': _regex_list,
     'warning_filters': _regex_list,
 }
@@ -439,8 +462,8 @@ class ConfigFileOptionsParser(BaseOptionsParser):
                     )
                     updates = {k: v for k, v in updates.items() if k in PER_MODULE_OPTIONS}
                 globs = name[8:]
-                for glob in globs.split(','):
-                    yield updates, glob
+                for file_glob in globs.split(','):
+                    yield updates, file_glob
 
 
 class JsonOptionsParser(BaseOptionsParser):

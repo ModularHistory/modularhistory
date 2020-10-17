@@ -17,6 +17,8 @@ from django.core.management import call_command
 from django.db import transaction
 from invoke import task
 
+from modularhistory.checks import mypy
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
 
@@ -97,9 +99,10 @@ def lint(context, directory='.', *args):
     context.run(flake8_cmd)
 
     # Run MyPy
-    mypy_cmd = ' '.join(['mypy', directory, *args, '--show-error-codes'])
-    print(mypy_cmd)
-    context.run(mypy_cmd)
+    mypy()
+    # mypy_cmd = ' '.join(['mypy', directory, *args, '--show-error-codes'])
+    # print(mypy_cmd)
+    # context.run(mypy_cmd)
 
 
 @task
@@ -144,7 +147,11 @@ def setup(context, noninteractive=False):
 
 @task
 def squash_migrations(context, dry=True):
+    """Invokable version of _squash_migrations."""
     _squash_migrations(context, dry)
+
+
+SQUASHED_MIGRATIONS_DIRNAME = 'squashed_migrations'
 
 
 def _squash_migrations(context, dry=True):
@@ -257,8 +264,8 @@ def _squash_migrations(context, dry=True):
         # Permanently delete the old migration files
         if input('Delete all old migrations? [Y/n] ') != 'n':
             command = (
-                'find . -type d -name "*squashed_migrations*" '
-                '-exec rm -r {} \;'  # noqa: W605
+                f'find . -type d -name "*{SQUASHED_MIGRATIONS_DIRNAME}*" '
+                f'-exec rm -r {BASH_PLACEHOLDER} \;'  # noqa: W605
             )
             print(command)
             context.run(command)
@@ -272,7 +279,7 @@ def _remove_migrations(context, app=None, hard=False):
     for app in apps:
         # Remove the squashed_migrations directory
         migrations_path = f'./{app}/migrations'
-        squashed_migrations_path = f'./{app}/squashed_migrations'
+        squashed_migrations_path = f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}'
         if os.path.exists(squashed_migrations_path):
             print(f'Removing {squashed_migrations_path}...')
             context.run(f'rm -r {squashed_migrations_path}')
@@ -296,12 +303,12 @@ def _remove_migrations(context, app=None, hard=False):
             )
             command = (
                 f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
-                f'-exec mv {BASH_PLACEHOLDER} ./{app}/squashed_migrations/ \;'  # noqa: W605
+                f'-exec mv {BASH_PLACEHOLDER} ./{app}/{SQUASHED_MIGRATIONS_DIRNAME}/ \;'  # noqa: W605
             )
             print(command)
             context.run(command)
-            if not glob(f'./{app}/squashed_migrations/*.py'):
-                raise Exception('Could not move migration files to squashed_migrations dir.')
+            if not glob(f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}/*.py'):
+                raise Exception(f'Could not move migration files to {SQUASHED_MIGRATIONS_DIRNAME} dir.')
         command = (
             f'find ./{app} -path "migrations/*.pyc" '
             f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
@@ -314,7 +321,7 @@ def _remove_migrations(context, app=None, hard=False):
 def _restore_squashed_migrations(context):
     """Restore migrations with squashed_migrations."""
     for app in APPS_WITH_MIGRATIONS:
-        squashed_migrations_dir = f'./{app}/squashed_migrations'
+        squashed_migrations_dir = f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}'
         # TODO: only do this if there are files in the squashed_migrations dir
         if os.path.exists(squashed_migrations_dir) and os.listdir(path=squashed_migrations_dir):
             # Remove the replacement migrations
