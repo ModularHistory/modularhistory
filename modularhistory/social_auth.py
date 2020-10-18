@@ -41,8 +41,8 @@ def get_user_email(backend: Backend, response: Dict, **kwargs):
                     for item in response:
                         if item.get('primary', False) and item.get('verified', False):
                             email = item.get('email', None)
-                except Exception as e:
-                    print(f'Error processing response from {request_url}: {type(e)}: {e}')
+                except Exception as error:
+                    print(f'Error processing response from {request_url}: {type(error)}: {error}')
             if email:
                 details['email'] = email
                 return {'details': details}
@@ -55,12 +55,17 @@ def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwarg
         # Update the user's avatar
         if url:
             _update_user_avatar(user, url)
-    except Exception as e:
-        print(f'>>> {type(e)} in get_user_avatar: {e}')
+    except Exception as error:
+        print(f'>>> {type(error)} in get_user_avatar: {error}')
         raise
 
 
-def _get_avatar_url_from_backend(backend: Backend, response: Dict, user: User, **kwargs) -> Optional[str]:
+def _get_avatar_url_from_backend(
+    backend: Backend,
+    response: Dict,
+    user: User,
+    **kwargs
+) -> Optional[str]:
     """Attempts to retrieve a URL for the user's current avatar in a social auth backend."""
     url = None
     if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):

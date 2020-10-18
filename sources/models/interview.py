@@ -1,6 +1,6 @@
 """Model classes for interviews."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.spoken_source import SpokenSource

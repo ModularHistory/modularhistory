@@ -57,7 +57,7 @@ class MegaClient(Mega):
                 'g': 1,
                 'n': file_handle
             })
-        k = (
+        keys = (
             file_key[0] ^ file_key[4],
             file_key[1] ^ file_key[5],
             file_key[2] ^ file_key[6],
@@ -70,7 +70,7 @@ class MegaClient(Mega):
         file_url = file_data['g']
         file_size = file_data['s']
         attribs = base64_url_decode(file_data['at'])
-        attribs = decrypt_attr(attribs, k)
+        attribs = decrypt_attr(attribs, keys)
         # file_name = attribs['n']
         input_file = requests.get(file_url, stream=True).raw
         with tempfile.NamedTemporaryFile(
@@ -78,7 +78,7 @@ class MegaClient(Mega):
             prefix='megapy_',
             delete=False
         ) as temp_output_file:
-            k_str = a32_to_str(k)
+            k_str = a32_to_str(keys)
             counter = Counter.new(
                 ONE_TWENTY_EIGHT,
                 initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR
@@ -92,15 +92,15 @@ class MegaClient(Mega):
                 chunk = aes.decrypt(chunk)
                 temp_output_file.write(chunk)
                 encryptor = AES.new(k_str, AES.MODE_CBC, iv_str)
-                for i in range(0, len(chunk) - SIXTEEN, SIXTEEN):
-                    block = chunk[i:i + SIXTEEN]
+                for index in range(0, len(chunk) - SIXTEEN, SIXTEEN):
+                    block = chunk[index:index + SIXTEEN]
                     encryptor.encrypt(block)
                 # fix for files under 16 bytes failing
                 if file_size > SIXTEEN:
-                    i += SIXTEEN
+                    index += SIXTEEN
                 else:
-                    i = 0
-                block = chunk[i:i + SIXTEEN]
+                    index = 0
+                block = chunk[index:index + SIXTEEN]
                 if len(block) % SIXTEEN:
                     block += b'\0' * (SIXTEEN - (len(block) % SIXTEEN))
                 mac_str = mac_encryptor.encrypt(encryptor.encrypt(block))

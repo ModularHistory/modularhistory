@@ -1,7 +1,7 @@
 import re
 from typing import Optional, Union
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from django.core.exceptions import ValidationError
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
 from django.utils.safestring import SafeString

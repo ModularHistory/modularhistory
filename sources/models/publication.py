@@ -1,4 +1,4 @@
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from django.db import models
 from django.utils.safestring import SafeString
 from django.utils.html import format_html

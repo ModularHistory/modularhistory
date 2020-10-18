@@ -21,7 +21,7 @@ from modularhistory.models import (
     ModelWithRelatedQuotes,
     ModelWithSources
 )
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from quotes.manager import QuoteManager
 from quotes.models.quote_image import QuoteImage
 
@@ -174,8 +174,8 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         try:
             attributions = self.attributions.select_related('attributee')
             return [attribution.attributee for attribution in attributions]
-        except (AttributeError, ObjectDoesNotExist) as e:
-            print(f'>>> {type(e)}: {e}')
+        except (AttributeError, ObjectDoesNotExist) as error:
+            print(f'>>> {type(error)}: {error}')
             return None
 
     @property
@@ -265,15 +265,19 @@ def quote_sorter_key(quote: Quote):
     day_multiplier = 1000000
     month_multiplier = day_multiplier * level_multiplier
     year_multiplier = month_multiplier * level_multiplier
-    x = 0
+    sorter_int = 0
     if quote.date:
         date = quote.date
-        x += (year_multiplier * date.year) + (month_multiplier * date.month) + (day_multiplier * date.day)
+        sorter_int += (
+            (year_multiplier * date.year) +
+            (month_multiplier * date.month) +
+            (day_multiplier * date.day)
+        )
     if quote.citation:
         citation = quote.citation
         magic_number = 96  # TODO: remember what this is
         number = ord(str(citation)[0].lower()) - magic_number
-        x += number * 1000
+        sorter_int += number * 1000
         if citation.page_number:
-            x += citation.page_number
-    return x
+            sorter_int += citation.page_number
+    return sorter_int

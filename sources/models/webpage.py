@@ -1,6 +1,6 @@
 """Model classes for web pages."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.textual_source import TextualSource

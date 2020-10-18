@@ -44,10 +44,10 @@ def colored(text, color=None, attrs=None):
     return text
 
 
-def match(regex_list: List[Pattern], s: str) -> bool:
+def match(regex_list: List[Pattern], string: str) -> bool:
     """TODO: add docstring."""
     for regex in regex_list:
-        if regex.search(s):
+        if regex.search(string):
             return True
     return False
 

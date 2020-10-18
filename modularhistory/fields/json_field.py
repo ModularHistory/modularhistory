@@ -49,8 +49,8 @@ class JSONField(BaseJSONField):
         if self.schema and self.model.__module__ != '__fake__':
             try:
                 validate(value, self._schema_data)
-            except jsonschema_exceptions.ValidationError as e:
-                raise ValidationError(f'{e}')
+            except jsonschema_exceptions.ValidationError as error:
+                raise ValidationError(f'{error}')
 
     def validate(self, value, model_instance):
         """Override `validate` to also validate with JSON Schema."""

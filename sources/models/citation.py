@@ -4,7 +4,7 @@ import re
 from sys import stderr
 from typing import Any, Optional, TYPE_CHECKING
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist

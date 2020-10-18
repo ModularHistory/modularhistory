@@ -3,7 +3,7 @@ from typing import Optional
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 
 
 class HTML:

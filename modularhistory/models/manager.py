@@ -20,8 +20,8 @@ class Manager(ModelManager):
         """TODO: add docstring."""
         fields = self.model.natural_key_fields
         natural_key = {}
-        for n, field in enumerate(fields):
-            natural_key[field] = args[n]
+        for index, field in enumerate(fields):
+            natural_key[field] = args[index]
         return self.get(**natural_key)
 
     def get_closest_to_datetime(
@@ -94,8 +94,8 @@ class SearchableModelQuerySet(QuerySet):
                     vectors.append(SearchVector(searchable_field))
             vector: SearchVector = vectors[0]
             if len(vectors) > 1:
-                for v in vectors[1:]:
-                    vector += v
+                for additional_vector in vectors[1:]:
+                    vector += additional_vector
             annotations: Dict[str, Any] = {'search': vector}
             if rank:
                 annotations['rank'] = SearchRank(vector, search_query)

@@ -1,13 +1,11 @@
 from typing import Any
 
-from django import template
-from django.template import loader
+from django.template import Library, loader
 from django.template.context import RequestContext
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from entities.models import Entity
-# from django.apps import apps
 from images.models import Image
 from occurrences.models import Occurrence
 from places.models import Place
@@ -16,7 +14,7 @@ from search.templatetags.highlight import highlight
 from sources.models import Source
 from topics.models import Topic
 
-register = template.Library()
+register = Library()
 
 
 @register.simple_tag(takes_context=True)
@@ -48,7 +46,7 @@ def card(context: RequestContext, obj: Any) -> SafeString:
     template_directory_name = template_directory_name or f'{obj_name}s'
 
     greater_context = {**context.flatten(), **{'object': obj, obj_name: obj}}
-    t = loader.get_template(f'{template_directory_name}/_card.html')
-    response = t.render(greater_context)
+    template = loader.get_template(f'{template_directory_name}/_card.html')
+    response = template.render(greater_context)
     query = greater_context.get('query')
     return format_html(highlight(response, text=query)) if query else response

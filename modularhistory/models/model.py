@@ -71,7 +71,7 @@ class Model(DjangoModel):
         if unique_together:
             unique_together_is_valid = (
                 isinstance(unique_together, (list, tuple)) and
-                all(isinstance(v, str) for v in unique_together)
+                all(isinstance(field_name, str) for field_name in unique_together)
             )
             if not unique_together_is_valid:
                 raise ValueError('The `unique_together` value must be an iterable containing strings.')

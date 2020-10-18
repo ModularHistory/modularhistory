@@ -1,6 +1,6 @@
 """Model classes for spoken sources."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 
 from modularhistory.fields import ExtraField
 from places.models import Venue

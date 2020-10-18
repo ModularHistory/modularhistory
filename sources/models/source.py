@@ -3,7 +3,7 @@
 import re
 from typing import List, Optional, TYPE_CHECKING
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField, SET_NULL
@@ -204,10 +204,10 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         containments = self.source_containments.order_by('position')[:2]
         container_strings = []
         same_creator = True
-        for c in containments:
-            container_html = f'{c.container.html}'
+        for containment in containments:
+            container_html = f'{containment.container.html}'
 
-            if c.container.attributee_string != self.attributee_string:
+            if containment.container.attributee_string != self.attributee_string:
                 same_creator = False
 
             # Remove redundant creator string
@@ -219,14 +219,17 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                 container_html = container_html[len(f'{self.attributee_string}, '):]
 
             # Include the page number
-            if c.page_number:
+            if containment.page_number:
                 page_number_html = _get_page_number_html(
-                    c.source, c.source.file, c.page_number, c.end_page_number
+                    containment.source,
+                    containment.source.file,
+                    containment.page_number,
+                    containment.end_page_number
                 )
                 container_html = f'{container_html}, {page_number_html}'
 
             container_html = (
-                f'{c.phrase} in {container_html}' if c.phrase
+                f'{containment.phrase} in {container_html}' if containment.phrase
                 else f'in {container_html}'
             )
             container_strings.append(container_html)

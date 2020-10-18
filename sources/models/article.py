@@ -2,7 +2,7 @@
 
 from typing import List
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.piece import SourceWithPageNumbers

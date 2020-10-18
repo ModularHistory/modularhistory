@@ -1,6 +1,6 @@
 """Model classes for journals (as sources)."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 
 from sources.models.piece import SourceWithPageNumbers
 

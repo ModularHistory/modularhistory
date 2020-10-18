@@ -71,11 +71,11 @@ class HTMLField(MceHTMLField):
         for pattern, replacement in replacements:
             try:
                 raw_html = re.sub(pattern, replacement, raw_html).strip()
-            except Exception as e:
+            except Exception as error:
                 raise Exception(
                     f'Failed to replace `{pattern}` ({type(pattern)}) '
                     f'with `{replacement}` ({type(replacement)} '
-                    f'in {raw_html}\n({type(raw_html)})\n{e}'
+                    f'in {raw_html}\n({type(raw_html)})\n{error}'
                 )
 
         if model_instance.pk:
@@ -144,10 +144,10 @@ class HTMLField(MceHTMLField):
         if self.processor:
             try:
                 html = self.processor(html, self.processable_content_types)
-            except RecursionError as e:
-                print(f'Unable to process HTML; encountered recursion error: {e}', file=stderr)
-            except Exception as e:
-                print(f'Unable to process HTML; encountered error: {e}\n\n{html}', file=stderr)
+            except RecursionError as error:
+                print(f'Unable to process HTML; encountered recursion error: {error}', file=stderr)
+            except Exception as error:
+                print(f'Unable to process HTML; encountered error: {error}\n\n{html}', file=stderr)
         return HTML(value, processed_value=html)
 
     # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects

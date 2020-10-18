@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from django.core.exceptions import ValidationError
 from django.utils.html import format_html
 from django.utils.safestring import SafeString

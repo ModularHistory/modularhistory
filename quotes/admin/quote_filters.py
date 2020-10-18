@@ -127,12 +127,12 @@ class AttributeeCountFilter(SimpleListFilter):
         """TODO: add docstring."""
         queryset = queryset.annotate(attributee_count=Count('attributees'))
         try:
-            n = int(self.value())
+            attributee_count = int(self.value())
         except TypeError:  # `All`
             return queryset
-        if n == 4:
-            return queryset.exclude(attributee_count__lt=n)
-        return queryset.filter(attributee_count=n)
+        if attributee_count == 4:
+            return queryset.exclude(attributee_count__lt=attributee_count)
+        return queryset.filter(attributee_count=attributee_count)
 
 
 class HasMultipleCitationsFilter(SimpleListFilter):

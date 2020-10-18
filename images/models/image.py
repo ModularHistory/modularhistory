@@ -108,12 +108,12 @@ class Image(MediaModel):
                 'crop': True,
                 'detail': True,
             }).url
-        except KeyError as e:
+        except KeyError as error:
             # TODO: Send email to admins about the error. Figure out why this happens.
-            print(f'KeyError: {e}', file=stderr)
-        except OSError as e:
+            print(f'KeyError: {error}', file=stderr)
+        except OSError as error:
             # TODO: Send email to admins about the error. Figure out why this happens.
-            print(f'OSError: {e}', file=stderr)
+            print(f'OSError: {error}', file=stderr)
         return None
 
     @property
@@ -179,9 +179,9 @@ class Image(MediaModel):
         # Update key if necessary
         try:
             image = cls.objects.get(pk=key)
-        except ValueError as e:  # legacy key
+        except ValueError as error:  # legacy key
             image = cls.objects.get(key=key)
-            print(f'image {key} --> {image.pk}: {e}', file=stderr)
+            print(f'image {key} --> {image.pk}: {error}', file=stderr)
             # img_placeholder = img_placeholder.replace(key, str(image.pk))  # TODO
         image_html = render_to_string(
             'images/_card.html',

@@ -9,7 +9,7 @@ from django.utils.safestring import SafeString
 from images.models import Image
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import DatedModel, ModelWithImages, ModelWithRelatedQuotes, ModelWithSources
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from occurrences.manager import OccurrenceManager
 from occurrences.models.occurrence_image import OccurrenceImage
 from quotes.models import quote_sorter_key

@@ -8,7 +8,7 @@ import re
 import subprocess
 from typing import Dict, Optional, Union
 
-from modularhistory.linters import utils
+from modularhistory.utils import linting
 
 StringOrDict = Union[str, Dict[str, str]]
 
@@ -33,7 +33,7 @@ def flake8(**kwargs):
         code = parsed_line.group(2)
         message = parsed_line.group(3)
         explanation_url = get_violation_explanation_url(code)
-        print(f'{location}: {utils.colored(message, color="red")}  [{code}: {explanation_url}]')
+        print(f'{location}: {linting.colored(message, color="red")}  [{code}: {explanation_url}]')
     print()
 
 

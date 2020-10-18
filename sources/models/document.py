@@ -1,6 +1,6 @@
 """Model classes for documents (as sources)."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.safestring import SafeString

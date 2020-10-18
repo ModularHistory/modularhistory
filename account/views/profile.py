@@ -49,8 +49,8 @@ class SettingsView(LoginRequiredMixin, View):
                     backend['handle'] = get_user_handle_from_auth(auth)
                 except UserSocialAuth.DoesNotExist:
                     pass
-                except Exception as e:
-                    print(f'Error processing social auth integration: {type(e)}: {e}')
+                except Exception as error:
+                    print(f'Error processing social auth integration: {type(error)}: {error}')
                 backend['domain'] = f'{backend_name.lower()}.com'
 
             can_disconnect = (user.social_auth.count() > 1 or user.has_usable_password())

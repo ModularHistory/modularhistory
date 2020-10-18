@@ -43,13 +43,13 @@ APPS_WITH_MIGRATIONS = (
     'topics'
 )
 
-F = TypeVar('F', bound=Callable[..., Any])
+TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
 
 
-def task(f: F) -> F:
+def task(task_function: TaskFunction) -> TaskFunction:
     """Wraps invoke.task to enable type annotations."""
-    f.__annotations__ = {}
-    return invoke.task(f)
+    task_function.__annotations__ = {}
+    return invoke.task(task_function)
 
 
 @task

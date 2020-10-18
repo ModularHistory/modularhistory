@@ -8,7 +8,7 @@ from configparser import SectionProxy
 from glob import glob
 from typing import Any, Dict, Iterator, List, Optional, Pattern, Sequence, Set, Tuple, Union  # noqa: WPS235
 
-from modularhistory.linters import utils
+from modularhistory.utils import linting
 
 CONFIG_FILE = 'setup.cfg'
 
@@ -64,11 +64,11 @@ class LinterOptions:
 
     def is_excluded_path(self, path: str) -> bool:
         """TODO: write docstring."""
-        return utils.match(self.exclude, path)
+        return linting.match(self.exclude, path)
 
     def is_included_path(self, path: str) -> bool:
         """TODO: write docstring."""
-        return utils.match(self.include, path)
+        return linting.match(self.include, path)
 
     def error_is_ignored_in_file(self, filename: str, error_code: str):
         """Return True if an error is specifically ignored for the given filename."""
@@ -80,7 +80,7 @@ class LinterOptions:
     def get_message_level(self, message, error_code, filename) -> Optional[str]:
         """Returns a modified message level based on specified options."""
         error_is_ignored = any([
-            utils.match(self.error_filters, message),
+            linting.match(self.error_filters, message),
             self.ignore is ALL,
             error_code in self.ignore,
             self.error_is_ignored_in_file(filename=filename, error_code=error_code)
@@ -104,7 +104,6 @@ class LinterOptions:
 
 def _parse_multi_options(options: MultiOptions, split_token: str = ',') -> List[str]:  # noqa: S107
     """Split and strip and discard empties."""
-    parsed_options: Sequence[str] = []
     if isinstance(options, str):
         options = options.strip()
         # Split the options by the specified split token, or by newlines
@@ -114,38 +113,38 @@ def _parse_multi_options(options: MultiOptions, split_token: str = ',') -> List[
             parsed_options = options.split('\n')
     else:
         parsed_options = options
-    return [o.strip() for o in parsed_options if o.strip()]
+    return [option.strip() for option in parsed_options if option.strip()]
 
 
-def _glob_to_regex(s):
+def _glob_to_regex(file_glob):
     """."""
-    return re.compile(fnmatch.translate(s))
+    return re.compile(fnmatch.translate(file_glob))
 
 
-def _glob_list(s: MultiOptions) -> PathPatternList:
+def _glob_list(globs: MultiOptions) -> PathPatternList:
     """."""
-    return [_glob_to_regex(x) for x in _parse_multi_options(s)]
+    return [_glob_to_regex(file_glob) for file_glob in _parse_multi_options(globs)]
 
 
-def _per_file_ignores_list(s: MultiOptions) -> List[PerFileIgnore]:
-    per_file_ignores = []
-    entries = _parse_multi_options(s, split_token='\n')  # noqa: S106
+def _per_file_ignores_list(per_file_ignores: MultiOptions) -> List[PerFileIgnore]:
+    per_file_ignores_list = []
+    entries = _parse_multi_options(per_file_ignores, split_token='\n')  # noqa: S106
     for entry in entries:
         pattern, codes = entry.split(':')
         error_codes = {code.strip() for code in codes.split(',')}
-        per_file_ignores.append((pattern.strip(), error_codes))
-    return per_file_ignores
+        per_file_ignores_list.append((pattern.strip(), error_codes))
+    return per_file_ignores_list
 
 
-def _regex_list(s: MultiOptions) -> List[Pattern]:
+def _regex_list(patterns: MultiOptions) -> List[Pattern]:
     """."""
-    return [re.compile(x) for x in _parse_multi_options(s)]
+    return [re.compile(pattern) for pattern in _parse_multi_options(patterns)]
 
 
-def _error_set(s: MultiOptions) -> Optional[Set[str]]:
+def _error_code_set(error_code_set: MultiOptions) -> Optional[Set[str]]:
     """."""
     result = set()
-    for res in _parse_multi_options(s):
+    for res in _parse_multi_options(error_code_set):
         if res == '*':
             return None
         else:
@@ -154,9 +153,9 @@ def _error_set(s: MultiOptions) -> Optional[Set[str]]:
 
 
 option_types = {
-    'select': _error_set,
-    'ignore': _error_set,
-    'warn': _error_set,
+    'select': _error_code_set,
+    'ignore': _error_code_set,
+    'warn': _error_code_set,
     'args': _parse_multi_options,
     'include': _glob_list,
     'exclude': _glob_list,
@@ -180,15 +179,15 @@ class ConfigFileOptionsParser:
     def apply(self, options: LinterOptions, module_options: List[Tuple[str, LinterOptions]]) -> None:
         """TODO: add docstring."""
         options_cls = options.__class__
-        for key, updates in self.extract_updates(options):
+        for config_section_key, updates in self.extract_updates(options):
             if updates:
-                if key is None:
+                if config_section_key is None:
                     opt = options
                 else:
                     opt = options_cls()
-                    module_options.append((key, opt))
-                for k, v in updates.items():
-                    setattr(opt, k, v)
+                    module_options.append((config_section_key, opt))
+                for option_key, option_value in updates.items():
+                    setattr(opt, option_key, option_value)
 
     def _parse_option(self, key: str, value: str, template: LinterOptions, section: SectionProxy) -> Any:
         option_type: Any = option_types.get(key)
@@ -207,8 +206,8 @@ class ConfigFileOptionsParser:
             else:
                 print(f'Cannot determine what type {key} should have', file=sys.stderr)
                 return None
-        except (ValueError, argparse.ArgumentTypeError) as err:
-            print(f'{key}: {err}', file=sys.stderr)
+        except (ValueError, argparse.ArgumentTypeError) as error:
+            print(f'{key}: {error}', file=sys.stderr)
             return None
         return processed_value
 
@@ -228,8 +227,8 @@ class ConfigFileOptionsParser:
             raise EnvironmentError(f'No config file named {CONFIG_FILE} exists.')
         try:
             parser.read(config_file)
-        except configparser.Error as err:
-            print(f'{config_file}: {err}', file=sys.stderr)
+        except configparser.Error as error:
+            print(f'{config_file}: {error}', file=sys.stderr)
 
         script_name = self.script_name
         if script_name in parser:
@@ -248,7 +247,10 @@ class ConfigFileOptionsParser:
                         f'({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
                         file=sys.stderr
                     )
-                    updates = {k: v for k, v in updates.items() if k in PER_MODULE_OPTIONS}
+                    updates = {
+                        key: value for key, value in updates.items()
+                        if key in PER_MODULE_OPTIONS
+                    }
                 globs = name[8:]
                 for file_glob in globs.split(','):
                     yield file_glob, updates

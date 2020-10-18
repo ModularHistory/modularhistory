@@ -1,7 +1,6 @@
 from typing import Any
 
-from django import template
-from django.template import loader
+from django.template import Library, loader
 from django.template.context import RequestContext
 from django.utils.html import format_html
 
@@ -14,7 +13,7 @@ from search.templatetags.highlight import highlight
 from sources.models import Source
 from topics.models import Topic
 
-register = template.Library()
+register = Library()
 
 
 @register.simple_tag(takes_context=True)
@@ -46,7 +45,7 @@ def detail(context: RequestContext, obj: Any):
         obj_name: obj,
     }}
 
-    t = loader.get_template(f'{template_directory_name}/_detail.html')
-    response = t.render(greater_context)
+    template = loader.get_template(f'{template_directory_name}/_detail.html')
+    response = template.render(greater_context)
     query = greater_context.get('query')
     return format_html(highlight(response, text=query)) if query else response

@@ -105,7 +105,7 @@ SECURE_REFERRER_POLICY = 'same-origin'
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
     default='localhost, 127.0.0.1',
-    cast=lambda v: [s.strip() for s in v.split(',')]
+    cast=lambda value: [string.strip() for string in value.split(',')]
 )
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-internal-ips
@@ -699,8 +699,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='localhost')
 try:
     EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
-except Exception as e:
-    print(f'{e}', file=sys.stderr)
+except Exception as error:
+    print(f'{error}', file=sys.stderr)
     EMAIL_PORT = 587
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')

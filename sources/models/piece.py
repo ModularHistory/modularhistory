@@ -1,4 +1,4 @@
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 
 from sources.models.source_with_page_numbers import SourceWithPageNumbers
 

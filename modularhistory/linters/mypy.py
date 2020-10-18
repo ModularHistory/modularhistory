@@ -14,7 +14,7 @@ from typing import Pattern  # not included in * for some reason
 from django.conf import settings
 from mypy import api as mypy_client
 
-from modularhistory.linters import utils
+from modularhistory.utils import linting
 from modularhistory.linters.config import (
     CONFIG_FILE,
     ConfigFileOptionsParser as BaseConfigFileOptionsParser,
@@ -114,9 +114,9 @@ def process_mypy_output(output: str):
         options = _get_module_options(options, per_module_options, filename)
 
         error_code = None
-        m = ERROR_CODE.search(message)
-        if m:
-            error_code = m.group(1)
+        match = ERROR_CODE.search(message)
+        if match:
+            error_code = match.group(1)
             message = message.replace(f'[{error_code}]', '').rstrip()
 
         level, matched_error = _process_mypy_message(
@@ -200,11 +200,11 @@ def report(
 ):
     """Report an error to stdout."""
     display_attrs = ['dark'] if options.show_ignored and is_filtered else None
-    filename = utils.colored(filename, 'cyan', attrs=display_attrs)
-    line_number = utils.colored(f'{line_number}', attrs=display_attrs)
-    color = utils.COLORS[status]
-    status = utils.colored(f'{status}', color, attrs=display_attrs)
-    msg = utils.colored(msg, color, attrs=display_attrs)
+    filename = linting.colored(filename, 'cyan', attrs=display_attrs)
+    line_number = linting.colored(f'{line_number}', attrs=display_attrs)
+    color = linting.COLORS[status]
+    status = linting.colored(f'{status}', color, attrs=display_attrs)
+    msg = linting.colored(msg, color, attrs=display_attrs)
     print(
         f'{"IGNORED: " if options.show_ignored and is_filtered else ""}'
         f'{filename}:{line_number}: {msg}  [{error_key}: {ERROR_CODE_LIST_URL}]'

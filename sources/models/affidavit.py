@@ -1,6 +1,6 @@
 """Model classes for affidavits (as sources)."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.soup import soupify
 from django.core.exceptions import ValidationError
 
 from modularhistory.fields import ExtraField
