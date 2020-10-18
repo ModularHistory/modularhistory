@@ -158,7 +158,7 @@ def _get_mypy_options() -> Tuple[Options, PerModuleOptions]:
     """Returns an Options object to be used by mypy."""
     options = Options()
     module_options: List[Tuple[str, Options]] = []
-    ConfigFileOptionsParser().apply(options, module_options)
+    ConfigFileOptionsParser().apply(options, module_options)  # type: ignore
     if options.select and options.ignore:
         overlap = options.select.intersection(options.ignore)
         if overlap:

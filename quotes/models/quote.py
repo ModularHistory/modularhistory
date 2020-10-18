@@ -4,8 +4,7 @@ import re
 from typing import List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db import models
-from django.db.models import ForeignKey, ManyToManyField, Q, QuerySet
+from django.db.models import ManyToManyField, Q, QuerySet
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -17,7 +16,6 @@ from modularhistory.constants import OCCURRENCE_CT_ID
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
     DatedModel,
-    Model,
     ModelWithImages,
     ModelWithRelatedEntities,
     ModelWithRelatedQuotes,
@@ -25,6 +23,7 @@ from modularhistory.models import (
 )
 from modularhistory.utils import soupify
 from quotes.manager import QuoteManager
+from quotes.models.quote_image import QuoteImage
 
 # group 1: quote pk
 # group 2: ignore
@@ -99,7 +98,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         """See also the `attributee_string` property."""
         # TODO: make sure it's updated correctly
         attributee_html = self.computations.get('attributee_html')
-        if not attributee_html:
+        if attributee_html is None:
             attributees = self.ordered_attributees
             if attributees:
                 n_attributions = len(attributees)
@@ -119,13 +118,12 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
                 elif n_attributions > 3:
                     html = f'{html} et al.'
                 attributee_html = html
-
-                # TODO: update asynchronously
-                self.computations['attributee_html'] = attributee_html
-                self.save()
             else:
-                return None
-        return format_html(attributee_html)
+                attributee_html = ''
+            # TODO: update asynchronously
+            self.computations['attributee_html'] = attributee_html
+            self.save()
+        return format_html(attributee_html) if attributee_html else None
     # TODO: Order by `attributee_string` instead of `attributee`
     attributee_html.admin_order_field = 'attributee'
     attributee_html: SafeString = property(attributee_html)  # type: ignore
@@ -137,7 +135,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
         This method minimizes db query complexity.
         """
-        attributee_html = self.attributee_html
+        attributee_html: str = self.attributee_html  # type: ignore
         signals = (' and ', ', ', ' et al.')
         for signal in signals:
             if signal in attributee_html:
@@ -169,23 +167,6 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         ]
         html = '\n'.join([component for component in components if component])
         return format_html(html)
-
-    @property
-    def image(self) -> Optional['Image']:
-        """Returns an image associated with the quote, if one exists."""
-        image = self.primary_image
-        if not image:
-            try:
-                attributee = self.attributees.first()
-                if self.date:
-                    image = attributee.images.get_closest_to_datetime(self.date)
-                else:
-                    image = attributee.images.first()
-            except (ObjectDoesNotExist, AttributeError):
-                pass
-            if image is None and self.related_occurrences.exists():
-                image = self.related_occurrences.first().image
-        return image
 
     @property
     def ordered_attributees(self) -> Optional[List[Entity]]:
@@ -224,6 +205,20 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         """TODO: write docstring."""
         self.clean()
         super().save(*args, **kwargs)
+        if not self.images.exists():
+            image = None
+            try:
+                attributee = self.attributees.first()
+                if self.date:
+                    image = attributee.images.get_closest_to_datetime(self.date)
+                else:
+                    image = attributee.images.first()
+            except (ObjectDoesNotExist, AttributeError):
+                pass
+            if image is None and self.related_occurrences.exists():
+                image = self.related_occurrences.first().primary_image
+            if image:
+                QuoteImage.objects.create(quote=self, image=image)
 
     @classmethod
     def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
@@ -282,22 +277,3 @@ def quote_sorter_key(quote: Quote):
         if citation.page_number:
             x += citation.page_number
     return x
-
-
-class QuoteImage(Model):
-    """An association of an image and a quote."""
-
-    quote = ForeignKey(
-        'quotes.Quote',
-        related_name='occurrence_images',
-        on_delete=models.CASCADE
-    )
-    image = models.ForeignKey(
-        Image,
-        on_delete=models.PROTECT
-    )
-    position = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        help_text='Set to 0 if the image is positioned manually.'
-    )

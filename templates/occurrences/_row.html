@@ -7,9 +7,9 @@
         {% if occurrence.date %}{{ occurrence.date}}{% else %}{{occurrence.year }}{% endif %}
     </h4>
     <div class="card-text">
-        {% if occurrence.image %}
+        {% if occurrence.primary_image %}
             <div style="float:right; max-width:33%;">
-                {% card occurrence.image %}
+                {% card occurrence.primary_image %}
             </div>
         {% endif %}
         <div class="lead">

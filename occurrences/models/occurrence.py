@@ -11,6 +11,7 @@ from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import DatedModel, ModelWithImages, ModelWithRelatedQuotes, ModelWithSources
 from modularhistory.utils import soupify
 from occurrences.manager import OccurrenceManager
+from occurrences.models.occurrence_image import OccurrenceImage
 from quotes.models import quote_sorter_key
 
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
@@ -75,7 +76,7 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         'tags__topic__key',
         'tags__topic__aliases'
     ]
-    objects: OccurrenceManager = OccurrenceManager()
+    objects: OccurrenceManager = OccurrenceManager()  # type: ignore
 
     def __str__(self) -> str:
         """TODO: write docstring."""
@@ -106,19 +107,6 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
             return images
         return None
 
-    @property
-    def image(self) -> Optional[Image]:
-        """TODO: write docstring."""
-        if self.images.exists():
-            return self.images.first()
-        elif self.involved_entities.exists():
-            for entity in self.involved_entities.all():
-                if entity.images.exists():
-                    if self.date:
-                        return entity.images.get_closest_to_datetime(self.date)
-                    return entity.image
-        return None
-
     def full_clean(self, exclude=None, validate_unique=True):
         """TODO: add docstring."""
         super().full_clean(exclude, validate_unique)
@@ -146,3 +134,14 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         """TODO: add docstring."""
         self.full_clean()
         super().save(*args, **kwargs)
+        if not self.images.exists():
+            image = None
+            if self.involved_entities.exists():
+                for entity in self.involved_entities.all():
+                    if entity.images.exists():
+                        if self.date:
+                            image = entity.images.get_closest_to_datetime(self.date)
+                        else:
+                            image = entity.image
+            if image:
+                OccurrenceImage.objects.create(occurrence=self, image=image)

@@ -26,7 +26,7 @@ class OccurrenceManager(SearchableModelManager):
         ).filter(hidden=False).filter_by_date(
             start_year=start_year,
             end_year=end_year
-        )
+        ).prefetch_related('images')
         # Limit to specified entities
         if entity_ids:
             qs = qs.filter(

@@ -8,7 +8,7 @@
     {% block top %}
     {% endblock %}
     {% if not object|is_instance:'images.Image' %}
-        {% with image=object.image %}
+        {% with image=object.primary_image %}
             <div{% if image %} class="img-bg lazy-bg"
                  data-img="{{ image.src_url }}"
                  style="background-position: {{ image.bg_img_position }};
