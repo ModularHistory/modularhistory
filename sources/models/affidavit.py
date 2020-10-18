@@ -1,6 +1,6 @@
 """Model classes for affidavits (as sources)."""
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 from django.core.exceptions import ValidationError
 
 from modularhistory.fields import ExtraField
@@ -26,7 +26,7 @@ class Affidavit(DocumentSource):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     def clean(self):
         """TODO: add docstring."""

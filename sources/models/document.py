@@ -1,6 +1,6 @@
 """Model classes for documents (as sources)."""
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.safestring import SafeString
@@ -84,7 +84,7 @@ class Collection(Model):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def html(self) -> SafeString:
@@ -139,7 +139,7 @@ class Document(DocumentSource):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:

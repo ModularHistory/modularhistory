@@ -77,6 +77,8 @@ class SearchableModelAdmin(ModelAdmin):
 
     model: Type['SearchableModel']
 
+    readonly_fields = ['computations']
+
     def get_search_results(
         self, request: HttpRequest, queryset: QuerySet, search_term: str
     ) -> Tuple[QuerySet, bool]:

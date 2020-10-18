@@ -1,7 +1,7 @@
 import re
 from typing import Optional, Union
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 from django.core.exceptions import ValidationError
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
 from django.utils.safestring import SafeString
@@ -23,7 +23,7 @@ class PageRange(Model):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.html, features='lxml').get_text()
+        return soupify(self.html).get_text()
 
     @property
     def html(self) -> Optional[SafeString]:

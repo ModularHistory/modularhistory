@@ -2,7 +2,7 @@
 
 from typing import List
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.piece import SourceWithPageNumbers
@@ -40,7 +40,7 @@ class Article(SourceWithPageNumbers):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:

@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 from django.core.exceptions import ValidationError
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -77,7 +77,7 @@ class Book(TextualSource):
 
     def __str__(self) -> str:
         """Returns the book's string representation."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def edition_string(self) -> Optional[str]:
@@ -161,7 +161,7 @@ class SectionSource(TextualSource):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.html, features='lxml').get_text()
+        return soupify(self.html).get_text()  # type: ignore
 
     def html(self) -> SafeString:
         """TODO: add docstring."""
@@ -199,7 +199,7 @@ class SectionSource(TextualSource):
     @property
     def string(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.html, features='lxml').get_text()
+        return soupify(self.html).get_text()  # type: ignore
 
 
 class Section(SectionSource):

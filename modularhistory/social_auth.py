@@ -1,5 +1,5 @@
 from tempfile import NamedTemporaryFile
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 from urllib.request import urlopen
 
 import requests
@@ -50,31 +50,35 @@ def get_user_email(backend: Backend, response: Dict, **kwargs):
 
 def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwargs):
     """Retrieve and save the user's profile picture from the supplied auth backend."""
-    url = None
     try:
-        # Determine the profile image URL
-        if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
-            url = f'http://graph.facebook.com/{response["id"]}/picture?type=large&breaking_change=profile_picture'
-        elif backend.name == 'twitter' or isinstance(backend, TwitterOAuth):
-            url = response.get('profile_image_url', '').replace('_normal', '')
-        elif backend.name.startswith('google') or isinstance(backend, GoogleOAuth2):
-            if response.get('image') and response['image'].get('url'):
-                url = response['image'].get('url')
-        elif backend.name == 'github' or isinstance(backend, GithubOAuth2):
-            details = kwargs.get('details', {})
-            username = kwargs.get('username', details.get('username', user.email.split('@')[0]))
-            url = f'https://github.com/{username}.png'
-        elif response.get('picture'):
-            url = response['picture']
-        else:
-            print(f'Unable to determine profile image URL for unhandled auth backend: {backend.name}')
-
+        url = _get_avatar_url_from_backend(backend, response, user, **kwargs)
         # Update the user's avatar
         if url:
             _update_user_avatar(user, url)
     except Exception as e:
         print(f'>>> {type(e)} in get_user_avatar: {e}')
         raise
+
+
+def _get_avatar_url_from_backend(backend: Backend, response: Dict, user: User, **kwargs) -> Optional[str]:
+    """Attempts to retrieve a URL for the user's current avatar in a social auth backend."""
+    url = None
+    if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
+        url = f'http://graph.facebook.com/{response["id"]}/picture?type=large&breaking_change=profile_picture'
+    elif backend.name == 'twitter' or isinstance(backend, TwitterOAuth):
+        url = response.get('profile_image_url', '').replace('_normal', '')
+    elif backend.name.startswith('google') or isinstance(backend, GoogleOAuth2):
+        if response.get('image') and response['image'].get('url'):
+            url = response['image'].get('url')
+    elif backend.name == 'github' or isinstance(backend, GithubOAuth2):
+        details = kwargs.get('details', {})
+        username = kwargs.get('username', details.get('username', user.email.split('@')[0]))
+        url = f'https://github.com/{username}.png'
+    elif response.get('picture'):
+        url = response['picture']
+    else:
+        print(f'Unable to determine profile image URL for unhandled auth backend: {backend.name}')
+    return url
 
 
 def _update_user_avatar(user: User, url: str):

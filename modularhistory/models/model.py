@@ -110,6 +110,15 @@ class Model(DjangoModel):
             natural_key_values.append(value)
         return tuple(natural_key_values)
 
+    def preprocess_html(self, html: str):
+        """
+        Preprocess the value of an HTML field.
+
+        This method can be used to modify the value of an HTML field
+        before it is saved.  It is called when the HTML field is cleaned.
+        """
+        pass
+
     @classmethod
     def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
         """Returns a model instance's HTML based on a placeholder in the admin."""

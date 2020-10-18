@@ -17,7 +17,7 @@ from django.core.management import call_command
 from django.db import transaction
 from invoke import task
 
-from modularhistory.checks import mypy
+from modularhistory.linters import flake8, mypy
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
@@ -92,18 +92,15 @@ def commit(context):
 
 
 @task
-def lint(context, directory='.', *args):
+def lint(context, *args):
     """Run linters."""
     # Run Flake8
-    flake8_cmd = ' '.join(['flake8', directory, *args])
-    print(flake8_cmd)
-    context.run(flake8_cmd)
+    print('Running flake8...')
+    flake8()
 
     # Run MyPy
+    print('Running mypy...')
     mypy()
-    # mypy_cmd = ' '.join(['mypy', directory, *args, '--show-error-codes'])
-    # print(mypy_cmd)
-    # context.run(mypy_cmd)
 
 
 @task

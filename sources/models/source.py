@@ -3,7 +3,7 @@
 import re
 from typing import List, Optional, TYPE_CHECKING
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField, SET_NULL
@@ -13,7 +13,7 @@ from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
 from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
-from modularhistory.models import DatedModel, SearchableModel
+from modularhistory.models import DatedModel, SearchableModel, ModelWithRelatedEntities
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from sources.manager import SourceManager
 from sources.models.source_file import SourceFile
@@ -46,7 +46,7 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class Source(TypedModel, DatedModel, SearchableModel):
+class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     """A source for quotes or historical information."""
 
     db_string = models.CharField(
@@ -318,7 +318,7 @@ class Source(TypedModel, DatedModel, SearchableModel):
     @property
     def string(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.html, features='lxml').get_text()
+        return soupify(self.html).get_text()  # type: ignore
 
     @property
     def linked_title(self) -> Optional[SafeString]:

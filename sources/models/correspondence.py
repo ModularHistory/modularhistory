@@ -1,6 +1,6 @@
 """Model classes for correspondence (as sources)."""
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.document import DocumentSource
@@ -33,7 +33,7 @@ class Correspondence(DocumentSource):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     recipient = ExtraField(json_field_name='extra')
 

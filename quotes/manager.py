@@ -29,7 +29,7 @@ class QuoteManager(SearchableModelManager):
         ).filter(hidden=False).filter_by_date(
             start_year=start_year,
             end_year=end_year
-        )
+        ).prefetch_related('attributees')
         # Limit to specified entities
         if entity_ids:
             qs = qs.filter(

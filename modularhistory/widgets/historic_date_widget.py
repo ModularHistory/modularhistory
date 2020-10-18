@@ -2,7 +2,7 @@
 
 import re
 from datetime import date, datetime
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from django import forms
 from django.forms import MultiWidget
@@ -119,55 +119,65 @@ class HistoricDateWidget(MultiWidget):
         ]
         super().__init__(widgets, attrs)
 
+    def _parse_datetime_string(self, value: str) -> Tuple[int, ...]:
+        """TODO: move elsewhere?"""
+        year, month, day = value.split('-')
+        hour, minute, second, microsecond = ('0', '0', '0', '0')
+        if ' ' in day:
+            day, time = day.split(' ')
+            if ':' in time:
+                hour, minute, second = time.split(':')
+                if '.' in second:
+                    second, microsecond = second.split('.')
+        str_values = (year, month, day, hour, minute, second, microsecond)
+        return tuple(int(string) for string in str_values)
+
     def decompress(self, value: Union[datetime, date, str, Any]):
-        """TODO: add docstring."""
+        """
+        This method takes a single “compressed” value from the field and returns a list of “decompressed” values.
+        The input value can be assumed valid, but not necessarily non-empty.
+
+        https://docs.djangoproject.com/en/3.1/ref/forms/widgets/#django.forms.MultiWidget.decompress
+        """
         nones = (None, None, None, None, None, None)
-        year, year_system, season, month, day, time = nones
-        hour, minute, second, microsecond = None, None, None, None
-        if isinstance(value, (datetime, date, str)):
-            if isinstance(value, (datetime, date)):
+        hour, minute, second, microsecond = 0, 0, 0, 0
+        if not isinstance(value, HistoricDateTime):
+            if isinstance(value, str):
+                year, month, day, hour, minute, second, microsecond = self._parse_datetime_string(value)
+            elif isinstance(value, (datetime, date)):
                 year, month, day = value.year, value.month, value.day
-                season = get_season_from_month(month)
                 if isinstance(value, datetime):
                     hour, minute, second, microsecond = (
                         value.hour, value.minute, value.second, value.microsecond
                     )
-                    time = value.strftime('%H:%M:%S.%f')
-            elif isinstance(value, str):
-                year_str, month_str, day_str = value.split('-')
-                hour_str, minute_str, second_str, microsecond_str = ('0', '0', '0', '0')
-                if ' ' in day_str:
-                    day_str, time_str = day_str.split(' ')
-                    if ':' in time_str:
-                        hour_str, minute_str, second_str = time_str.split(':')
-                        if '.' in second_str:
-                            second_str, microsecond_str = second_str.split('.')
-                str_values = (year_str, month_str, day_str, hour_str, minute_str, second_str, microsecond_str)
-                year, month, day, hour, minute, second, microsecond = (int(string) for string in str_values)
-            if not isinstance(value, HistoricDateTime):
-                value = HistoricDateTime(
-                    year, month, day,
-                    hour or 0,
-                    minute or 0,
-                    second or 0,
-                    microsecond or 0
-                )
-            if value.use_ybp:
-                year, year_system = value.year_bp, YBP
-            elif value.is_bce:
-                year, year_system = value.year_bce, BCE
             else:
-                year_system = CE
-            if not value.day_is_known:
-                day = None
-                if not value.month_is_known:
-                    month = None
-                    if not value.season_is_known:
-                        season = None
-            if 0 in {hour, minute, second} or 1 in {hour, minute, second}:
-                time = None
-            return [year, year_system, season, month, day, time]
-        return nones
+                return nones
+            # Convert value to HistoricDateTime
+            value = HistoricDateTime(year, month, day, hour, minute, second, microsecond)
+        return self._decompress_historic_datetime(value)
+
+    @staticmethod
+    def _decompress_historic_datetime(value: HistoricDateTime) -> List:
+        year = value.year
+        season, month, day, time = None, None, None, None
+        hour, minute, second = value.hour, value.minute, value.second
+        if value.use_ybp:
+            year, year_system = value.year_bp, YBP
+        elif value.is_bce:
+            year, year_system = value.year_bce, BCE
+        else:
+            year_system = CE
+        if value.season_is_known:
+            season = get_season_from_month(value.month)
+            if value.month_is_known:
+                month = value.month
+                if value.day_is_known:
+                    day = value.day
+        if 0 in {hour, minute, second} or 1 in {hour, minute, second}:
+            time = None
+        else:
+            time = value.strftime('%H:%M:%S.%f')
+        return [year, year_system, season, month, day, time]
 
     def value_from_datadict(self, data, files, name) -> Optional[str]:
         """TODO: add docstring."""

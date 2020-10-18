@@ -4,7 +4,7 @@ import re
 from sys import stderr
 from typing import Any, Optional, TYPE_CHECKING
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -86,7 +86,7 @@ class Citation(Model):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.html, features='lxml').get_text()
+        return soupify(self.html).get_text()
 
     @property
     def html(self) -> SafeString:
@@ -104,7 +104,7 @@ class Citation(Model):
                 html = f'{html}, {page_string}'
         if self.pk and self.source.attributees.exists():
             if self.content_type_id == QUOTE_CT_ID:
-                quote: Quote = self.content_object
+                quote: Quote = self.content_object  # type: ignore
                 if quote.ordered_attributees != self.source.ordered_attributees:
                     initial_html = html
                     if quote.citations.filter(position__lt=self.position).exists():

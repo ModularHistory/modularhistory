@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -21,7 +21,7 @@ class QuoteRelation(Model):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.quote.bite.html, features='lxml').get_text()
+        return soupify(self.quote.bite.html).get_text()
 
     class Meta:
         unique_together = ['quote', 'content_type', 'object_id', 'position']

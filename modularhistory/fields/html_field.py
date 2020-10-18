@@ -11,7 +11,6 @@ from modularhistory.constants import MODEL_CLASS_PATHS
 from modularhistory.structures.html import HTML
 
 if TYPE_CHECKING:
-    from entities.models import Entity
     from modularhistory.models import Model
 
 # group 1: entity pk
@@ -52,13 +51,13 @@ class HTMLField(MceHTMLField):
     processable_content_types: Iterable[str] = ['quote', 'image', 'citation', 'source']
 
     def __init__(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Constructs an HTML field instance."""
         if 'processor' in kwargs and kwargs['processor'] != self.default_processor:
             self.processor = kwargs['processor']
         super().__init__(*args, **kwargs)
 
-    def clean(self, value, model_instance) -> HTML:
-        """TODO: add docstring."""
+    def clean(self, value, model_instance: 'Model') -> HTML:
+        """Returns a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=value, model_instance=model_instance)
         raw_html = html.raw_value
         replacements = (
@@ -78,27 +77,8 @@ class HTMLField(MceHTMLField):
                     f'in {raw_html}\n({type(raw_html)})\n{e}'
                 )
 
-        # Insert links for entity names.
-        has_entity_relations = hasattr(model_instance, 'attributees') or hasattr(model_instance, 'involved_entities')
-        if model_instance.pk and has_entity_relations:
-            entities = (
-                getattr(model_instance, 'attributees', None) or
-                getattr(model_instance, 'involved_entities', None)
-            )
-            if entities and entities.exists():
-                entities = entities.all()
-                for entity in entities:
-                    ent: 'Entity' = entity
-                    aliases = ent.aliases or []
-                    for name in set([ent.name] + aliases):
-                        opening_span_tag = f'<span class="entity-name" data-entity-id="{ent.pk}">'
-                        closing_span_tag = '</span>'
-                        raw_html = re.sub(
-                            # match instances not in quotations
-                            rf'(^|^<p>|[^>])({name})(?:(?!\w|[^\ ]\"))',
-                            rf'\g<1>{opening_span_tag}\g<2>{closing_span_tag}',
-                            raw_html
-                        )
+        if model_instance.pk:
+            raw_html = model_instance.preprocess_html(raw_html)
 
         # Update obj placeholders.
         # This (1) improves readability when editing and (2) reduces time to process search results.

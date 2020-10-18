@@ -99,7 +99,7 @@ class SearchableModelQuerySet(QuerySet):
             annotations: Dict[str, Any] = {'search': vector}
             if rank:
                 annotations['rank'] = SearchRank(vector, search_query)
-            qs = qs.annotate(**annotations).filter(search=search_query)
+            qs = qs.annotate(**annotations).filter(search=search_query)  # type: ignore
         return qs.order_by('id').distinct('id')
 
 

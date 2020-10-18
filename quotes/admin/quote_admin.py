@@ -96,7 +96,7 @@ class QuoteAdmin(SearchableModelAdmin):
     search_fields = models.Quote.searchable_fields
     ordering = ['date']
     # autocomplete_fields = []
-    readonly_fields = ['citation_html']
+    readonly_fields = SearchableModelAdmin.readonly_fields + ['citation_html']
     inlines = [
         AttributeesInline,
         CitationsInline,

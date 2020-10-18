@@ -3,19 +3,27 @@
 import re
 from typing import List, Optional
 
-from bs4 import BeautifulSoup
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db.models import ManyToManyField, Q, QuerySet
+from django.db import models
+from django.db.models import ForeignKey, ManyToManyField, Q, QuerySet
 from django.urls import reverse
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models import Entity
 from images.models import Image
 from modularhistory.constants import OCCURRENCE_CT_ID
 from modularhistory.fields import HTMLField, HistoricDateTimeField
-from modularhistory.models import DatedModel, ModelWithRelatedQuotes, ModelWithSources
+from modularhistory.models import (
+    DatedModel,
+    Model,
+    ModelWithImages,
+    ModelWithRelatedEntities,
+    ModelWithRelatedQuotes,
+    ModelWithSources
+)
+from modularhistory.utils import soupify
 from quotes.manager import QuoteManager
 
 # group 1: quote pk
@@ -27,7 +35,7 @@ ADMIN_PLACEHOLDER_REGEX = r'<<\ ?quote:\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?
 BITE_MAX_LENGTH: int = 400
 
 
-class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
+class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelatedEntities, ModelWithImages):
     """A quote."""
 
     text = HTMLField(verbose_name='Text')
@@ -59,6 +67,12 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
         related_name='related_quotes',
         blank=True
     )
+    images = ManyToManyField(
+        Image,
+        through='quotes.QuoteImage',
+        related_name='quotes',
+        blank=True
+    )
 
     class Meta:
         unique_together = ['date', 'bite']
@@ -81,9 +95,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
             string = f'{attributee_string}: {self.bite.text}'
         return string
 
-    # _attributee_html is defined as a method rather than a property
-    # so that its `admin_order_field` attribute can be modified
-    def _attributee_html(self) -> Optional[SafeString]:
+    def attributee_html(self) -> Optional[SafeString]:
         """See also the `attributee_string` property."""
         # TODO: make sure it's updated correctly
         attributee_html = self.computations.get('attributee_html')
@@ -115,15 +127,29 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
                 return None
         return format_html(attributee_html)
     # TODO: Order by `attributee_string` instead of `attributee`
-    _attributee_html.admin_order_field = 'attributee'
-    attributee_html = property(_attributee_html)
+    attributee_html.admin_order_field = 'attributee'
+    attributee_html: SafeString = property(attributee_html)  # type: ignore
+
+    @property
+    def has_multiple_attributees(self) -> bool:
+        """
+        Returns True if the quote has multiple attributees, else False.
+
+        This method minimizes db query complexity.
+        """
+        attributee_html = self.attributee_html
+        signals = (' and ', ', ', ' et al.')
+        for signal in signals:
+            if signal in attributee_html:
+                return True
+        return False
 
     @property
     def attributee_string(self) -> Optional[SafeString]:
         """See the `attributee_html` property."""
-        if not self.attributee_html:
-            return None
-        return BeautifulSoup(self.attributee_html, features='lxml').get_text()
+        if self.attributee_html:
+            return soupify(self.attributee_html).get_text()  # type: ignore
+        return None
 
     @property
     def html(self) -> SafeString:
@@ -147,10 +173,8 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
     @property
     def image(self) -> Optional['Image']:
         """Returns an image associated with the quote, if one exists."""
-        image, image_pk = None, self.computations.get('image')
-        try:
-            image = Image.objects.get(pk=image_pk)
-        except (ValueError, ObjectDoesNotExist):
+        image = self.primary_image
+        if not image:
             try:
                 attributee = self.attributees.first()
                 if self.date:
@@ -161,10 +185,6 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources):
                 pass
             if image is None and self.related_occurrences.exists():
                 image = self.related_occurrences.first().image
-            if image:
-                # TODO: update asynchronously
-                self.computations['image'] = image.pk
-                self.save()
         return image
 
     @property
@@ -262,3 +282,22 @@ def quote_sorter_key(quote: Quote):
         if citation.page_number:
             x += citation.page_number
     return x
+
+
+class QuoteImage(Model):
+    """An association of an image and a quote."""
+
+    quote = ForeignKey(
+        'quotes.Quote',
+        related_name='occurrence_images',
+        on_delete=models.CASCADE
+    )
+    image = models.ForeignKey(
+        Image,
+        on_delete=models.PROTECT
+    )
+    position = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text='Set to 0 if the image is positioned manually.'
+    )

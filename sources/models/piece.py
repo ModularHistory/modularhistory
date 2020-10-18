@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 
 from sources.models.source_with_page_numbers import SourceWithPageNumbers
 
@@ -14,7 +14,7 @@ class Piece(SourceWithPageNumbers):
 
     def __str__(self) -> str:
         """TODO: add docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:
