@@ -35,16 +35,17 @@ class User(AbstractUser):
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, auto_now=True)
     locked = models.BooleanField('Lock the account', default=False)
-    force_password_change = models.BooleanField('Prompt user to change password upon first login', default=False)
+    force_password_change = models.BooleanField(
+        'Prompt user to change password upon first login',
+        default=False
+    )
 
     # address = models.CharField(null=True, blank=True, max_length=100)
     # address2 = models.CharField(null=True, blank=True, max_length=40)
     # city = models.CharField(null=True, blank=True, max_length=20)
     # state = models.CharField(null=True, blank=True, max_length=2, choices=settings.STATES)
     # zip_code = models.CharField(null=True, blank=True, max_length=5)
-    # BIRTH_YEAR_CHOICES = [ str(i) for i in range(datetime.date.today().year-70, datetime.date.today().year-7) ]
     # date_of_birth = models.DateField(null=True, blank=True)
-    # email_subscription = models.NullBooleanField(default=None, choices=settings.EMAIL_SUBSCRIPTIONS)
 
     social_auth: 'QuerySet[UserSocialAuth]'
     objects: UserManager = UserManager()

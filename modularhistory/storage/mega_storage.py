@@ -79,7 +79,10 @@ class MegaClient(Mega):
             delete=False
         ) as temp_output_file:
             k_str = a32_to_str(k)
-            counter = Counter.new(ONE_TWENTY_EIGHT, initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR)
+            counter = Counter.new(
+                ONE_TWENTY_EIGHT,
+                initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR
+            )
             aes = AES.new(k_str, AES.MODE_CTR, counter=counter)
             mac_str = '\0' * SIXTEEN
             mac_encryptor = AES.new(k_str, AES.MODE_CBC, mac_str.encode('utf8'))
@@ -139,7 +142,8 @@ class MegaStorage(Storage):
         """
         Returns a datetime of the last accessed time of the file.
 
-        If USE_TZ is True, returns an aware datetime, otherwise returns a naive datetime in the local timezone.
+        If USE_TZ is True, returns an aware datetime;
+        otherwise returns a naive datetime in the local timezone.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_accessed_time
         """
@@ -208,10 +212,12 @@ class MegaStorage(Storage):
 
     def generate_filename(self, filename: str) -> str:
         """
-        Validates the filename by calling get_valid_name() and returns a filename to be passed to the save() method.
+        Validates the filename by calling get_valid_name().
+        Returns a filename to be passed to the save() method.
 
-        The filename argument may include a path as returned by FileField.upload_to. In that case,
-        the path won’t be passed to get_valid_name() but will be prepended back to the resulting name.
+        The filename argument may include a path as returned by FileField.upload_to.
+        In that case, the path won’t be passed to get_valid_name() but will be
+        prepended back to the resulting name.
 
         The default implementation uses os.path operations.
         Override this method if that’s not appropriate for your storage.
@@ -235,8 +241,9 @@ class MegaStorage(Storage):
         """
         Opens the file given by name.
 
-        Note that although the returned file is guaranteed to be a File object, it might actually be some subclass.
-        In the case of remote file storage this means that reading/writing could be quite slow, so be warned.
+        Although the returned file is guaranteed to be a File object,
+        it might actually be some subclass. In the case of remote file storage,
+        this means that reading/writing could be quite slow.  Be warned.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.open
         """

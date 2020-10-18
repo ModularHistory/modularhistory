@@ -14,7 +14,12 @@ from sources.admin.source_filters import (
     ImpreciseDateFilter,
     TypeFilter
 )
-from sources.admin.source_inlines import AttributeesInline, ContainedSourcesInline, ContainersInline, RelatedInline
+from sources.admin.source_inlines import (
+    AttributeesInline,
+    ContainedSourcesInline,
+    ContainersInline,
+    RelatedInline
+)
 from sources.models import Source
 
 

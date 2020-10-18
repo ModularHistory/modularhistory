@@ -10,6 +10,8 @@ from typing import Dict, Optional, Union
 
 from modularhistory.linters import utils
 
+StringOrDict = Union[str, Dict[str, str]]
+
 # Example:
 # ./history/fields/html_field.py:138:17: WPS442 Found outer scope names shadowing: Quote
 OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+\d+)\s+(.+)')
@@ -36,7 +38,7 @@ def flake8(**kwargs):
 
 
 VIOLATION_DEFAULT_URL = 'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
-VIOLATION_EXPLANATION_URLS: Dict[str, Union[str, Dict[str, str]]] = {
+VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
     'B': 'https://github.com/PyCQA/flake8-bugbear#list-of-warnings',  # Bugbear
     'C': {
         '4': 'https://github.com/adamchainz/flake8-comprehensions',  # Comprehensions
@@ -80,7 +82,7 @@ def get_violation_explanation_url(violation_code: str) -> str:
     if not match:
         return VIOLATION_DEFAULT_URL
     prefix, number = match.group(1), match.group(2)
-    url_match: Optional[Union[str, Dict[str, str]]]
+    url_match: Optional[StringOrDict]
     url_match = VIOLATION_EXPLANATION_URLS.get(violation_code)
     if isinstance(url_match, str):
         return url_match

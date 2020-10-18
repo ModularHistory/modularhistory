@@ -88,8 +88,14 @@ class Place(TypedModel, Model):
         # Don't append the location's location if it's a continent, a region, or an inferrable country
         if location:
             inferrable_countries = ['United States of America']
-            location_is_inferrable_country = isinstance(location, Country) and location.name in inferrable_countries
-            location_is_inferrable = location_is_inferrable_country or isinstance(location, (Region, Continent))
+            location_is_inferrable_country = (
+                isinstance(location, Country) and
+                location.name in inferrable_countries
+            )
+            location_is_inferrable = (
+                location_is_inferrable_country or
+                isinstance(location, (Region, Continent))
+            )
             if location_is_inferrable:
                 location = None
         components = [self.name, location.name if location else '']
@@ -103,7 +109,8 @@ class Venue(Place):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                check=models.Q(location__type__in=get_allowable_location_types(VENUE)), name='location_is_allowable'
+                check=models.Q(location__type__in=get_allowable_location_types(VENUE)),
+                name='location_is_allowable'
             ),
         ]
 

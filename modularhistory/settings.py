@@ -557,7 +557,9 @@ TINYMCE_DEFAULT_CONFIG = {
                     let content = editor.selection.getContent();
                     if (content.length) {
                         content = content.replace("<mark>", "").replace("</mark>", "");
-                        editor.selection.setContent("<mark>" + editor.selection.getContent() + '</mark>');
+                        editor.selection.setContent(
+                            "<mark>" + editor.selection.getContent() + '</mark>'
+                        );
                     }
                 }
             });
@@ -571,7 +573,9 @@ TINYMCE_DEFAULT_CONFIG = {
                         let opening_tag = '<span style="font-variant: small-caps">';
                         let closing_tag = '</span>';
                         content = content.replace(opening_tag, '').replace(closing_tag, '');
-                        editor.selection.setContent(opening_tag + editor.selection.getContent() + closing_tag);
+                        editor.selection.setContent(
+                            opening_tag + editor.selection.getContent() + closing_tag
+                        );
                     }
                 }
             });
@@ -583,7 +587,9 @@ TINYMCE_DEFAULT_CONFIG = {
                     let content = editor.selection.getContent();
                     if (content.length) {
                         content = content.replace("<mark>", "").replace("</mark>", "");
-                        editor.selection.setContent("<mark>" + editor.selection.getContent() + '</mark>');
+                        editor.selection.setContent(
+                            "<mark>" + editor.selection.getContent() + '</mark>'
+                        );
                     }
                 }
             });
@@ -597,7 +603,9 @@ TINYMCE_DEFAULT_CONFIG = {
                         let opening_tag = '<span style="font-variant: small-caps">';
                         let closing_tag = '</span>';
                         content = content.replace(opening_tag, '').replace(closing_tag, '');
-                        editor.selection.setContent(opening_tag + editor.selection.getContent() + closing_tag);
+                        editor.selection.setContent(
+                            opening_tag + editor.selection.getContent() + closing_tag
+                        );
                     }
                 }
             });
@@ -607,7 +615,9 @@ TINYMCE_DEFAULT_CONFIG = {
 TINYMCE_SPELLCHECKER = True
 
 # https://github.com/jonasundderwolf/django-image-cropping
-THUMBNAIL_PROCESSORS = ('image_cropping.thumbnail_processors.crop_corners',) + ThumbnailSettings.THUMBNAIL_PROCESSORS
+THUMBNAIL_PROCESSORS = (
+    'image_cropping.thumbnail_processors.crop_corners',
+) + ThumbnailSettings.THUMBNAIL_PROCESSORS
 
 # https://pypi.org/project/django-bootstrap-datepicker-plus/
 BOOTSTRAP4 = {'include_jquery': False}

@@ -104,9 +104,15 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
             categorizations = self.categorizations.all()
         return categorizations.order_by('date', 'category__weight').last()
 
-    def get_categorizations(self, date: Optional[HistoricDateTime] = None) -> 'QuerySet[Categorization]':
+    def get_categorizations(
+        self,
+        date: Optional[HistoricDateTime] = None
+    ) -> 'QuerySet[Categorization]':
         """Return a list of all applicable categorizations."""
-        categorizations = self.categorizations.exclude(date__gt=date) if date else self.categorizations.all()
+        categorizations = (
+            self.categorizations.exclude(date__gt=date) if date
+            else self.categorizations.all()
+        )
         return categorizations.select_related('category')
 
     def get_categorization_string(self, date: Optional[HistoricDateTime] = None) -> Optional[str]:
@@ -119,10 +125,17 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
             # Build the string
             categorization_words: List[str] = []
             for part_of_speech in ('noun', 'any', 'adj'):
-                pos_categorizations = categorizations.filter(category__part_of_speech=part_of_speech)
+                pos_categorizations = categorizations.filter(
+                    category__part_of_speech=part_of_speech
+                )
                 if pos_categorizations.exists():
-                    categorization_str = str(pos_categorizations.order_by('category__weight', 'date').last())
-                    words = [word for word in categorization_str.split(' ') if word not in categorization_words]
+                    categorization_str = str(
+                        pos_categorizations.order_by('category__weight', 'date').last()
+                    )
+                    words = [
+                        word for word in categorization_str.split(' ')
+                        if word not in categorization_words
+                    ]
                     categorization_words = words + categorization_words
             # Remove duplicate words
             categorization_words = list(dict.fromkeys(categorization_words))

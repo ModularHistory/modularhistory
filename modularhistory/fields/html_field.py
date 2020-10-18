@@ -73,7 +73,8 @@ class HTMLField(MceHTMLField):
                 raw_html = re.sub(pattern, replacement, raw_html).strip()
             except Exception as e:
                 raise Exception(
-                    f'Failed to replace `{pattern}` ({type(pattern)}) with `{replacement}` ({type(replacement)} '
+                    f'Failed to replace `{pattern}` ({type(pattern)}) '
+                    f'with `{replacement}` ({type(replacement)} '
                     f'in {raw_html}\n({type(raw_html)})\n{e}'
                 )
 

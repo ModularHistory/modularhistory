@@ -47,7 +47,8 @@ def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
         # Build a year stamp with max 6 digits
         scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
         decimal_num_str, exponent_str = scientific_notation.split('e+')
-        exponent, decimal_num = int(exponent_str), int(decimal_num_str.replace('.', ''))  # 10, 13800 for the Big Bang
+        exponent = int(exponent_str)
+        decimal_num = int(decimal_num_str.replace('.', ''))  # 10, 13800 for the Big Bang
         inv_exponent = exponent_inversion_basis - exponent
         inv_decimal_num = decimal_inversion_basis - int(decimal_num)
         second, microsecond = inv_exponent, inv_decimal_num
@@ -134,7 +135,7 @@ class HistoricDateWidget(MultiWidget):
 
     def decompress(self, value: Union[datetime, date, str, Any]):
         """
-        This method takes a single “compressed” value from the field and returns a list of “decompressed” values.
+        "Decompresses" a Python value into a list of values to populate the widget.
         The input value can be assumed valid, but not necessarily non-empty.
 
         https://docs.djangoproject.com/en/3.1/ref/forms/widgets/#django.forms.MultiWidget.decompress

@@ -84,8 +84,7 @@ class HistoricDateTimeField(DateTimeField):
             preprep_value = make_aware(preprep_value)
         return super().get_prep_value(preprep_value)
 
-    #
-    # # https://docs.djangoproject.com/en/3.0/howto/customg-model-fields/#converting-query-values-to-database-values
+    # https://docs.djangoproject.com/en/3.0/howto/customg-model-fields/#converting-query-values-to-database-values
     # def get_db_prep_value(self, value, connection, prepared=False):
     #     return self.get_prep_value(value)
     #

@@ -34,7 +34,15 @@ class TaskMixin:
         """TODO: add docstring."""
         return tasks.CloudTasksClient()
 
-    def send_task(self, url, queue_name=QUEUE_NAME, http_method='POST', payload=None, schedule_time=None, name=None):
+    def send_task(
+        self,
+        url: str,
+        queue_name=QUEUE_NAME,
+        http_method='POST',
+        payload=None,
+        schedule_time=None,
+        name=None
+    ):
         """Send task to be executed."""
         if not settings.IS_GCP:
             # TODO: Execute the task here instead of using Cloud Tasks

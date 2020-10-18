@@ -1,11 +1,9 @@
-from typing import List, TYPE_CHECKING, Tuple, Type, Union
+from typing import List, Type, Union
 
 from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db.models import JSONField
-from django.db.models.query import QuerySet
-from django.http.request import HttpRequest
 from django_celery_beat.admin import (
     CrontabSchedule,
     IntervalSchedule,
@@ -25,8 +23,7 @@ from modularhistory import environments, settings
 from modularhistory.fields import HistoricDateTimeField, SourceFileField
 from modularhistory.forms import HistoricDateWidget, SourceFileInput
 
-if TYPE_CHECKING:
-    from modularhistory.models import SearchableModel
+AdminListFilter = Union[str, Type[ListFilter]]
 
 FORM_FIELD_OVERRIDES = {
     HistoricDateTimeField: {'widget': HistoricDateWidget},
@@ -50,7 +47,7 @@ class ModelAdmin(NestedModelAdmin):
     formfield_overrides = FORM_FIELD_OVERRIDES
 
     list_display: List[str]
-    list_filter: List[Union[str, Type[ListFilter]]]
+    list_filter: List[AdminListFilter]
     ordering: List[str]
     readonly_fields: List[str]
     search_fields: List[str]
@@ -70,25 +67,6 @@ class ModelAdmin(NestedModelAdmin):
             'scripts/mce.js',
             'scripts/base.js'
         )
-
-
-class SearchableModelAdmin(ModelAdmin):
-    """Model admin for searchable models."""
-
-    model: Type['SearchableModel']
-
-    readonly_fields = ['computations']
-
-    def get_search_results(
-        self, request: HttpRequest, queryset: QuerySet, search_term: str
-    ) -> Tuple[QuerySet, bool]:
-        """Custom implementation for searching sources in the admin."""
-        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
-        if search_term:
-            print(f'Django admin search function returned queryset: {queryset}')
-            print(f'Falling back on sources.manager.search with query={search_term}...')
-            queryset = self.model.objects.search(search_term, suppress_unverified=False)
-        return queryset, use_distinct
 
 
 # IntervalSchedule.objects.get_or_create(

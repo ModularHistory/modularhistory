@@ -12,14 +12,12 @@ from modularhistory.linters import utils
 
 CONFIG_FILE = 'setup.cfg'
 
-MultiOptions = Union[Sequence[str], str]
-
-PatternList = List[Pattern]
-
-PathPatternList = List[Pattern]
-
+ConfigFileSection = Dict[str, object]
 ErrorCodeSet = Set[str]
-
+MultiOptions = Union[Sequence[str], str]
+OptionsUpdate = Tuple[Optional[str], ConfigFileSection]
+PathPatternList = List[Pattern]
+PatternList = List[Pattern]
 PerFileIgnore = Tuple[str, Set[str]]
 
 ALL = None
@@ -129,7 +127,7 @@ def _glob_list(s: MultiOptions) -> PathPatternList:
     return [_glob_to_regex(x) for x in _parse_multi_options(s)]
 
 
-def _per_file_ignores_list(s: MultiOptions) -> List[Tuple[str, Set[str]]]:
+def _per_file_ignores_list(s: MultiOptions) -> List[PerFileIgnore]:
     per_file_ignores = []
     entries = _parse_multi_options(s, split_token='\n')  # noqa: S106
     for entry in entries:
@@ -182,7 +180,7 @@ class ConfigFileOptionsParser:
     def apply(self, options: LinterOptions, module_options: List[Tuple[str, LinterOptions]]) -> None:
         """TODO: add docstring."""
         options_cls = options.__class__
-        for updates, key in self.extract_updates(options):
+        for key, updates in self.extract_updates(options):
             if updates:
                 if key is None:
                     opt = options
@@ -214,15 +212,15 @@ class ConfigFileOptionsParser:
             return None
         return processed_value
 
-    def _parse_section(self, template: LinterOptions, section: SectionProxy) -> Dict[str, object]:
-        results: Dict[str, object] = {}
+    def _parse_section(self, template: LinterOptions, section: SectionProxy) -> ConfigFileSection:
+        results: ConfigFileSection = {}
         for key, value in section.items():
             processed_value = self._parse_option(key, value, template, section)
             if processed_value:
                 results[key] = processed_value
         return results
 
-    def extract_updates(self, options: LinterOptions) -> Iterator[Tuple[Dict[str, object], Optional[str]]]:
+    def extract_updates(self, options: LinterOptions) -> Iterator[OptionsUpdate]:
         """TODO: add docstring."""
         config_file = os.path.expanduser(CONFIG_FILE)
         parser = configparser.RawConfigParser()
@@ -236,7 +234,7 @@ class ConfigFileOptionsParser:
         script_name = self.script_name
         if script_name in parser:
             section = parser[script_name]  # noqa: WPS529
-            yield self._parse_section(options, section), None
+            yield None, self._parse_section(options, section)
         else:
             print(f'No [{self.script_name}] section in config file', file=sys.stderr)
 
@@ -244,14 +242,13 @@ class ConfigFileOptionsParser:
             if name.startswith('mypyrun-'):
                 prefix = f'{CONFIG_FILE}: [{name}]'
                 updates = self._parse_section(options, section)
-
                 if set(updates).intersection(GLOBAL_ONLY_OPTIONS):
                     print(
-                        f'{prefix}: Per-module sections should only specify '
-                        f'per-module flags ({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
+                        f'{prefix}: Per-module sections should only specify per-module flags '
+                        f'({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
                         file=sys.stderr
                     )
                     updates = {k: v for k, v in updates.items() if k in PER_MODULE_OPTIONS}
                 globs = name[8:]
                 for file_glob in globs.split(','):
-                    yield updates, file_glob
+                    yield file_glob, updates

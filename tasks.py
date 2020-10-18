@@ -8,16 +8,19 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
-
 import os
 from glob import glob
+from typing import Any, Callable, TypeVar
 
 import django
 from django.core.management import call_command
 from django.db import transaction
-from invoke import task
 
 from modularhistory.linters import flake8, mypy
+from monkeypatch import fix_annotations
+
+if fix_annotations():
+    import invoke
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
@@ -39,6 +42,14 @@ APPS_WITH_MIGRATIONS = (
     'staticpages',
     'topics'
 )
+
+F = TypeVar('F', bound=Callable[..., Any])
+
+
+def task(f: F) -> F:
+    """Wraps invoke.task to enable type annotations."""
+    f.__annotations__ = {}
+    return invoke.task(f)
 
 
 @task
@@ -104,23 +115,40 @@ def lint(context, *args):
 
 
 @task
-def makemigrations(context):
+def makemigrations(context, noninteractive=False):
     """Safely create migrations."""
-    print('Doing a dry run first...')
-    context.run('python manage.py makemigrations --dry-run')
-    if input('^ Do these changes look OK? [Y/n]') != 'n':
+    _makemigrations(context, noninteractive=noninteractive)
+
+
+def _makemigrations(context, noninteractive=False):
+    interactive = not noninteractive
+    make_migrations = True
+    if interactive:
+        print('Doing a dry run first...')
+        context.run('python manage.py makemigrations --dry-run')
+        make_migrations = input('^ Do these changes look OK? [Y/n]') != 'n'
+    if make_migrations:
         context.run('python manage.py makemigrations')
 
 
 @task
-def migrate(context):
+def migrate(context, *args, noninteractive=False):
     """Safely run db migrations."""
-    if input('Create db backup? [Y/n] ') == 'n':
+    _migrate(context, *args, noninteractive=noninteractive)
+
+
+def _migrate(context, *args, environment='local', noninteractive=False):
+    interactive = not noninteractive
+    _set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
+    if interactive and input('Create db backup? [Y/n] ') != 'n':
         context.run('python manage.py dbbackup')
     print('Running migrations...')
     with transaction.atomic():
-        call_command('migrate')
-    if input('Did migrations run successfully? [Y/n] ') == 'n':
+        call_command('migrate', *args)
+    print()
+    context.run('python manage.py showmigrations')
+    print()
+    if interactive and input('Did migrations run successfully? [Y/n] ') == 'n':
         context.run('python manage.py dbrestore')
 
 
@@ -149,6 +177,12 @@ def squash_migrations(context, dry=True):
     _squash_migrations(context, dry)
 
 
+PROD_DB_ENV_VAR_VALUES = {
+    'local': '',
+    'production': 'True'
+}
+
+
 def _squash_migrations(context, dry=True):
     """
     Squash migrations.
@@ -161,9 +195,7 @@ def _squash_migrations(context, dry=True):
         pass
 
     # By default, only squash migrations in dev environment
-    prod_db_env_var_values = [
-        ('local', '')
-    ] if dry else [
+    prod_db_env_var_values = [('local', '')] if dry else [
         ('local', ''),
         ('production', 'True')
     ]
@@ -174,35 +206,22 @@ def _squash_migrations(context, dry=True):
 
     # Make sure models fit the current db schema
     context.run('python manage.py makemigrations')
-    for _environment, prod_db_env_var_value in prod_db_env_var_values:
-        print()
-        _set_prod_db_env_var(prod_db_env_var_value)
-        context.run('python manage.py migrate')
-        del os.environ[PROD_DB_ENV_VAR]
-
-    # Show current migrations
-    print('\n Migrations before squashing:')
-    context.run('python manage.py showmigrations')
-
-    # Clear the migrations history for each app
-    _clear_migration_history(context, prod_db_env_var_values)
+    for environment, _prod_db_env_var_value in prod_db_env_var_values:
+        _migrate(context, environment=environment, noninteractive=True)
+        # Clear the migrations history for each app
+        _clear_migration_history(context, environment=environment)
+    del os.environ[PROD_DB_ENV_VAR]
 
     # Regenerate migration files.
-    print('\n Regenerating migrations...')
-    context.run('python manage.py makemigrations')
+    _makemigrations(context, noninteractive=True)
     if input('\n Continue? [Y/n] ') == 'n':
         return
 
     # Fake the migrations.
-    for environment, prod_db_env_var_value in prod_db_env_var_values:
-        _set_prod_db_env_var(prod_db_env_var_value)
+    for environment, _prod_db_env_var_value in prod_db_env_var_values:
         print(f'\n Running fake migrations for {environment} db...')
-        context.run('python manage.py migrate --fake-initial')
-        del os.environ[PROD_DB_ENV_VAR]
-
-    # Display the regenerated migrations.
-    print('\n Migrations after squashing:')
-    context.run('python manage.py showmigrations')
+        _migrate(context, '--fake-initial', environment=environment, noninteractive=True)
+    del os.environ[PROD_DB_ENV_VAR]
 
     if dry:
         input(
@@ -216,18 +235,16 @@ def _squash_migrations(context, dry=True):
             _squash_migrations(context, dry=False)
 
 
-def _clear_migration_history(context, prod_db_env_var_values):
+def _clear_migration_history(context, environment='local'):
     """."""
     with transaction.atomic():
         for app in APPS_WITH_MIGRATIONS:
             n_migrations = len(os.listdir(path=f'./{app}/migrations')) - 1
             if n_migrations > MAX_MIGRATION_COUNT:
                 # Fake reverting all migrations.
-                for environment, prod_db_env_var_value in prod_db_env_var_values:
-                    _set_prod_db_env_var(prod_db_env_var_value)
-                    print(f'\n Clearing migration history for the {app} app in {environment} ...')
-                    _revert_to_migration_zero(context, app)
-                    del os.environ[PROD_DB_ENV_VAR]
+                _set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
+                print(f'\n Clearing migration history for the {app} app in {environment} ...')
+                _revert_to_migration_zero(context, app)
             else:
                 print(f'Skipping {app} since there are only {n_migrations} migration files...')
     # Remove old migration files.

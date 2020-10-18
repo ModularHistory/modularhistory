@@ -36,8 +36,16 @@ class TopicFactRelation(FactRelation):
 class OccurrenceFactRelation(FactRelation):
     """A relation of a fact to an occurrence."""
 
-    occurrence = ForeignKey('occurrences.Occurrence', related_name='occurrence_fact_relations', on_delete=CASCADE)
-    fact = ForeignKey('Fact', related_name='fact_occurrence_relations', on_delete=CASCADE)
+    occurrence = ForeignKey(
+        'occurrences.Occurrence',
+        related_name='occurrence_fact_relations',
+        on_delete=CASCADE
+    )
+    fact = ForeignKey(
+        'Fact',
+        related_name='fact_occurrence_relations',
+        on_delete=CASCADE
+    )
 
     class Meta:
         unique_together = ['fact', 'occurrence']

@@ -26,42 +26,46 @@ class LoginForm(AuthenticationForm):
             HTML('<p class="h4 mb-4">Sign in</p>'),
             Field('username', css_class='form-control mb-4', placeholder='Username or email address'),
             Field('password', css_class='form-control mb-4', placeholder='Password'),
-            HTML(f'''
-                <div class="d-flex justify-content-around">
-                    <div>
-                        <!-- Remember me -->
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember">
-                            <label class="custom-control-label" for="defaultLoginFormRemember">Remember me</label>
-                        </div>
-                    </div>
-                    <div>
-                        <!-- Forgot password -->
-                        <a href="{reverse('account:password_reset')}">Forgot password?</a>
-                    </div>
-                </div>
-            '''),
+            HTML(
+                '<div class="d-flex justify-content-around">'
+                '<div>'
+                '<!-- Remember me -->'
+                '<div class="custom-control custom-checkbox">'
+                '<input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember">'
+                '<label class="custom-control-label" for="defaultLoginFormRemember">Remember me</label>'
+                '</div>'
+                '</div>'
+                '<div>'
+                '<!-- Forgot password -->'
+                f'<a href="{reverse("account:password_reset")}">Forgot password?</a>'
+                '</div>'
+                '</div>'
+            ),
             Submit('submit', 'Sign in', css_class='btn btn-info btn-block my-4'),
             HTML(f'<p>Not a member? <a href="{reverse("account:register")}">Register</a></p>'),
             # self.SOCIAL_LOGIN_COMPONENT,
             HTML(f'''
                 <!-- Social login -->
                 <p>or sign in with:</p>
-                <a href='{reverse("social:begin", args=["facebook"])}' class="mx-2 btn-social btn-facebook"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                <a href='{reverse("social:begin", args=["facebook"])}'
+                   class="mx-2 btn-social btn-facebook" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href='{reverse("social:begin", args=["twitter"])}' class="mx-2 btn-social btn-twitter"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
+                <a href='{reverse("social:begin", args=["twitter"])}'
+                   class="mx-2 btn-social btn-twitter" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
                     <i class="fab fa-twitter"></i>
                 </a>
-                <a href='{reverse("social:begin", args=["github"])}' class="mx-2 btn-social btn-github"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-github']);">
+                <a href='{reverse("social:begin", args=["github"])}'
+                   class="mx-2 btn-social btn-github" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-github']);">
                     <i class="fab fa-github"></i>
                 </a>
                 <!--
-                <a href='{reverse("social:begin", args=["google-oauth2"])}' class="mx-2 btn-social btn-google"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                <a href='{reverse("social:begin", args=["google-oauth2"])}'
+                   class="mx-2 btn-social btn-google" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
                     <i class="fab fa-google"></i>
                 </a>
                 -->

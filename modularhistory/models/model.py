@@ -84,7 +84,9 @@ class Model(DjangoModel):
                     unique_fields.append(field.name)
             if unique_fields:
                 return unique_fields
-        raise NotImplementedError('Model must have Meta.unique_together and/or `natural_key_fields` method defined.')
+        raise NotImplementedError(
+            'Model must have Meta.unique_together and/or `natural_key_fields` method defined.'
+        )
 
     def get_admin_url(self):
         """TODO: add docstring."""
