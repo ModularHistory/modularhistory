@@ -45,17 +45,18 @@ node_modules/
 backups/
 
 # Testing / linting / coverage reports
-.coverage
-.coverage.*
 .cache
+.coverage_html/
 .hypothesis/
 .mypy_cache/
 .nox/
 .pytest_cache/
 .tox/
+htmlcov/
+.coverage
+.coverage.*
 *.cover
 coverage.xml
-htmlcov/
 nosetests.xml
 
 # Celery

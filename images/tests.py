@@ -5,7 +5,7 @@ from hypothesis.strategies import text
 
 @pytest.mark.django_db
 class TestNothing:
-    """TODO: add docstring."""
+    """Test the images app."""
 
     do_nothing: bool = True
 

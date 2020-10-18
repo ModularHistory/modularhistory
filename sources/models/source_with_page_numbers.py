@@ -27,7 +27,7 @@ class SourceWithPageNumbers(TextualSource):
 
     @property
     def file_page_number(self) -> Optional[int]:
-        """TODO: add docstring."""
+        """Returns the page number to use for opening the source's associated file."""
         file = self.file
         if file:
             if self.page_number:
@@ -37,8 +37,3 @@ class SourceWithPageNumbers(TextualSource):
                 if containment.page_number:
                     return containment.page_number + file.page_offset
         return None
-
-    @property
-    def __html__(self) -> str:
-        """TODO: add docstring."""
-        raise NotImplementedError

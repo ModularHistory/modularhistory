@@ -1,1 +1,1 @@
-from .occurrences import OccurrenceAdmin, OccurrenceChainAdmin
+from .occurrence_admin import OccurrenceAdmin, OccurrenceChainAdmin

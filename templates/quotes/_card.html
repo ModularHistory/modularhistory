@@ -28,7 +28,7 @@
             <footer class="blockquote-footer">
                 {% if quote.attributee_string %}
                     {{ quote.attributee_string }}
-                    {% if quote.attributees.all|length == 1 %}
+                    {% if not quote.has_multiple_attributees %}
                         {% with categorization=quote.attributees.first|get_categorization_string:quote.date %}
                             {% if categorization %}
                                 <span style="opacity: 0.5; margin-left: 0.5rem;">

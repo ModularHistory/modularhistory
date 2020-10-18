@@ -15,7 +15,7 @@ from modularhistory.models import Model
 
 
 class SourceFile(Model):
-    """TODO: add docstring."""
+    """A source file with page numbers."""
 
     file = SourceFileField(upload_to=upload_to('sources/'), null=True, blank=True, unique=True)
     name = models.CharField(max_length=100, null=True, blank=True, unique=True)
@@ -41,7 +41,7 @@ class SourceFile(Model):
         ordering = ['name']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the source file's string representation."""
         return f'{self.file_name} (page offset: {self.page_offset})'
 
     @property
@@ -51,14 +51,14 @@ class SourceFile(Model):
 
     @property
     def file_name(self) -> Optional[str]:
-        """TODO: add docstring."""
+        """Returns the filename of the actual file object."""
         if self.file:
             return self.file.name.replace('sources/', '')
         return None
 
     @property
     def link(self) -> Optional[SafeString]:
-        """TODO: add docstring."""
+        """Returns a link for viewing the source file."""
         return format_html(
             f'<a href="{self.url}" class="display-source" target="_blank">'
             f'<i class="fa fa-search"></i></a>'
@@ -66,7 +66,7 @@ class SourceFile(Model):
 
     @property
     def url(self) -> str:
-        """TODO: add docstring."""
+        """Returns the URL of the source file."""
         url = self.file.url
         if url.endswith('epub'):
             url = f'/sources/epub{url}'

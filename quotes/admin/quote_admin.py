@@ -5,11 +5,11 @@ from typing import Optional
 from django.db.models.query import QuerySet
 from django.urls import path
 
-from admin import ModelAdmin, TabularInline, admin_site
+from admin import SearchableModelAdmin, TabularInline, admin_site
 from entities.views import EntityCategorySearchView, EntitySearchView
 from modularhistory.models.taggable_model import TopicFilter
 from quotes import models
-from quotes.admin.filters import (
+from quotes.admin.quote_filters import (
     AttributeeCategoryFilter,
     AttributeeCountFilter,
     AttributeeFilter,
@@ -17,7 +17,7 @@ from quotes.admin.filters import (
     HasSourceFilter
 )
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
-from sources.admin.citations_admin import CitationsInline
+from sources.admin.citation_admin import CitationsInline
 from topics.admin import HasTagsFilter, RelatedTopicsInline
 from topics.views import TagSearchView
 
@@ -68,8 +68,8 @@ class BitesInline(TabularInline):
 #         return 1
 
 
-class QuoteAdmin(ModelAdmin):
-    """TODO: add docstring."""
+class QuoteAdmin(SearchableModelAdmin):
+    """Model admin for quotes."""
 
     model = models.Quote
 
@@ -96,7 +96,7 @@ class QuoteAdmin(ModelAdmin):
     search_fields = models.Quote.searchable_fields
     ordering = ['date']
     # autocomplete_fields = []
-    readonly_fields = ['citation_html']
+    readonly_fields = SearchableModelAdmin.readonly_fields + ['citation_html']
     inlines = [
         AttributeesInline,
         CitationsInline,

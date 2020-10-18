@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 from django.db import models
 from django.utils.safestring import SafeString
 from django.utils.html import format_html
@@ -28,7 +28,7 @@ class Publication(TypedModel, Model):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def html(self) -> SafeString:

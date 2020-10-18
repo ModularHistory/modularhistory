@@ -41,7 +41,7 @@ class SourceFileInput(MultiWidget):
         if not value:
             return [None, None, None, None, None]
         ct = ContentType.objects.get_for_model(value.instance)
-        return [value, value.name, value.name, ct.id, value.instance.id]
+        return [value, value.name, value.name, ct.pk, value.instance.pk]
 
     def value_from_datadict(self, data, files, name) -> Optional[str]:
         """TODO: add docstring."""

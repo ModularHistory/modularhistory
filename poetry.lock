@@ -2301,18 +2301,18 @@ testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xm
 
 [[package]]
 name = "pytest-django"
-version = "3.10.0"
+version = "4.0.0"
 description = "A Django plugin for pytest."
 category = "dev"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+python-versions = ">=3.5"
 
 [package.dependencies]
-pytest = ">=3.6"
+pytest = ">=5.4.0"
 
 [package.extras]
 docs = ["sphinx", "sphinx-rtd-theme"]
-testing = ["django", "django-configurations (>=2.0)", "six"]
+testing = ["django", "django-configurations (>=2.0)"]
 
 [[package]]
 name = "pytest-forked"
@@ -3210,7 +3210,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "28009ea1c0cabd4f3990e5ac7e1670374082c21a695dd2765b337cd34b6cbd50"
+content-hash = "fc392be52abbc9c563da417f1d411e0c2274672fd5c3dc1c2b1a5c321e8a0f9f"
 
 [metadata.files]
 alabaster = [
@@ -4312,8 +4312,8 @@ pytest = [
     {file = "pytest-6.1.1.tar.gz", hash = "sha256:8f593023c1a0f916110285b6efd7f99db07d59546e3d8c36fc60e2ab05d3be92"},
 ]
 pytest-django = [
-    {file = "pytest-django-3.10.0.tar.gz", hash = "sha256:4de6dbd077ed8606616958f77655fed0d5e3ee45159475671c7fa67596c6dba6"},
-    {file = "pytest_django-3.10.0-py2.py3-none-any.whl", hash = "sha256:c33e3d3da14d8409b125d825d4e74da17bb252191bf6fc3da6856e27a8b73ea4"},
+    {file = "pytest-django-4.0.0.tar.gz", hash = "sha256:5f964ccda1f551e00589ab0679a7c45c36c509a44b5bfb5ad07954e0ae3f4bed"},
+    {file = "pytest_django-4.0.0-py2.py3-none-any.whl", hash = "sha256:0e91003fdd41ac0322c1978682be2ca180bc564203dd53c698f99242bf513614"},
 ]
 pytest-forked = [
     {file = "pytest-forked-1.3.0.tar.gz", hash = "sha256:6aa9ac7e00ad1a539c41bec6d21011332de671e938c7637378ec9710204e37ca"},

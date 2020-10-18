@@ -1,6 +1,6 @@
 """Model classes for spoken sources."""
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 
 from sources.models.source import Source
 
@@ -22,7 +22,7 @@ class Documentary(VideoSource):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:
@@ -32,9 +32,4 @@ class Documentary(VideoSource):
             f'<em>{self.linked_title}</em>',
             self.date.string if self.date else ''
         ]
-
-        # Remove blank values
-        components = [component for component in components if component]
-
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

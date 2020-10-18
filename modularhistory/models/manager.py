@@ -1,13 +1,16 @@
 """Manager classes for ModularHistory's models."""
 
 from datetime import date, datetime
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
-# from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import Manager as ModelManager, QuerySet
 from typedmodels.models import TypedModelManager as BaseTypedModelManager
 
 from modularhistory.structures.historic_datetime import HistoricDateTime
+
+if TYPE_CHECKING:
+    from modularhistory.models import Model
 
 
 class Manager(ModelManager):
@@ -21,67 +24,11 @@ class Manager(ModelManager):
             natural_key[field] = args[n]
         return self.get(**natural_key)
 
-    def search(
-        self,
-        query: Optional[str] = None,
-        start_year: Optional[int] = None,
-        end_year: Optional[int] = None,
-        entity_ids: Optional[List[int]] = None,
-        topic_ids: Optional[List[int]] = None,
-        rank: bool = False,
-        suppress_unverified: bool = True,
-        db: str = 'default'
-    ) -> QuerySet:
-        """TODO: add docstring."""
-        qs = self._queryset_class(model=self.model, using=db, hints=self._hints)
-        if suppress_unverified:
-            qs = qs.filter(verified=True)
-        return qs
-
-        # qs = self._queryset_class(
-        #     model=self.model, using=db, hints=self._hints
-        # ).filter(hidden=False)
-        #
-        # searchable_fields = self.model.get_searchable_fields()
-        # if searchable_fields:
-        #     # q = Q()
-        #     # for attr in searchable_fields:
-        #     #     q |= Q(**{f'{attr}__search': query})
-        #     # qs = qs.filter(q).distinct()  # distinct() is often necessary with Q lookups
-        #
-        #     query = SearchQuery(query)
-        #     #  https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-PARSING-QUERIES
-        #     #  SearchQuery('red tomato', search_type='phrase')
-        #     #  SearchQuery('"tomato" & ("red" | "green")', search_type='raw')
-        #     #  SearchQuery('meat') & SearchQuery('cheese')  # AND
-        #     #  SearchQuery('meat') | SearchQuery('cheese')  # OR
-        #     #  ~SearchQuery('meat')  # NOT
-        #
-        #     # https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/#weighting-queries
-        #     vectors = []
-        #     for searchable_field in searchable_fields:
-        #         if isinstance(searchable_field, tuple) or isinstance(searchable_field, list):
-        #             field, weight = searchable_field
-        #             vectors.append(SearchVector(field, weight=weight))
-        #         else:
-        #             vectors.append(SearchVector(searchable_field))
-        #     vector = vectors[0]
-        #     if len(vectors) > 1:
-        #         for v in vectors[1:]:
-        #             vector += v
-        #     annotations = {'search': vector}
-        #     if rank:
-        #         annotations['rank'] = SearchRank(vector, query)
-        #     qs = qs.annotate(**annotations).filter(
-        #         search=query, hidden=False
-        #     ).order_by('id').distinct('id')
-        # return qs
-
     def get_closest_to_datetime(
         self,
         datetime_value: Union[date, datetime, HistoricDateTime],
         datetime_attr: str = 'date'
-    ):
+    ) -> 'Model':
         """TODO: add docstring."""
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()
@@ -111,13 +58,77 @@ class Manager(ModelManager):
     #     return result_list
 
 
+class SearchableModelQuerySet(QuerySet):
+    """A queryset for a searchable model."""
+
+    def filter_by_date(
+        self,
+        start_year: Optional[int] = None,
+        end_year: Optional[int] = None,
+    ) -> 'SearchableModelQuerySet':
+        """Returns a queryset filtered by start_year and/or end_year."""
+        qs = self
+        if start_year:
+            qs = qs.filter(date__year__gte=start_year)
+        if end_year:
+            qs = qs.filter(date__year__lte=end_year)
+        return qs
+
+    def search(
+        self,
+        query: Optional[str] = None,
+        rank: bool = False
+    ) -> 'SearchableModelQuerySet':
+        """Returns search results from occurrences."""
+        qs: 'SearchableModelQuerySet' = self
+        searchable_fields = qs.model.get_searchable_fields()
+        if query and searchable_fields:
+            search_query = SearchQuery(query)
+            # https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/#weighting-queries
+            vectors = []
+            for searchable_field in searchable_fields:
+                if isinstance(searchable_field, (list, tuple)):
+                    field, weight = searchable_field
+                    vectors.append(SearchVector(field, weight=weight))
+                else:
+                    vectors.append(SearchVector(searchable_field))
+            vector: SearchVector = vectors[0]
+            if len(vectors) > 1:
+                for v in vectors[1:]:
+                    vector += v
+            annotations: Dict[str, Any] = {'search': vector}
+            if rank:
+                annotations['rank'] = SearchRank(vector, search_query)
+            qs = qs.annotate(**annotations).filter(search=search_query)  # type: ignore
+        return qs.order_by('id').distinct('id')
+
+
+class SearchableModelManager(Manager):
+    """Manager for searchable models."""
+
+    def get_queryset(self) -> SearchableModelQuerySet:
+        """Overrides get_queryset to use SearchableModelQuerySet."""
+        return SearchableModelQuerySet(self.model, using=self._db)
+
+    def search(
+        self,
+        query: Optional[str] = None,
+        start_year: Optional[int] = None,
+        end_year: Optional[int] = None,
+        entity_ids: Optional[List[int]] = None,
+        topic_ids: Optional[List[int]] = None,
+        rank: bool = False,
+        suppress_unverified: bool = True,
+        db: str = 'default'
+    ) -> SearchableModelQuerySet:
+        """Returns a queryset of search results."""
+        qs = self.get_queryset()
+        if suppress_unverified:
+            qs = qs.filter(verified=True)
+        return qs.search(query=query, rank=rank)
+
+
 class TypedModelManager(BaseTypedModelManager, Manager):
     """Wrapper for TypedModelManager."""
 
     pass
-
-
-# class PolymorphicManager(BasePolymorphicManager, Manager):
-#     """Wrapper for PolymorphicManager."""
-#
-#     pass

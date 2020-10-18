@@ -10,19 +10,17 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import sys
-# from importlib.util import find_spec
 from typing import Dict, List, Optional
 
 import sentry_sdk
+from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
-# from mega import Mega
 from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from modularhistory import environments
-from modularhistory.config import config
 
 ENABLE_ASGI: bool = False
 

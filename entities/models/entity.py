@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Match, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
@@ -9,7 +9,13 @@ from django.utils.safestring import SafeString
 
 from images.models import Image
 from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
-from modularhistory.models import (ModelWithRelatedQuotes, TaggableModel, TypedModel)
+from modularhistory.models import (
+    ModelWithImages,
+    ModelWithRelatedEntities,
+    ModelWithRelatedQuotes,
+    TaggableModel,
+    TypedModel
+)
 from modularhistory.structures import HistoricDateTime
 
 if TYPE_CHECKING:
@@ -26,7 +32,7 @@ PARTS_OF_SPEECH = (
 )
 
 
-class Entity(TypedModel, TaggableModel, ModelWithRelatedQuotes):
+class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes, ModelWithRelatedEntities):
     """An entity."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
@@ -73,11 +79,6 @@ class Entity(TypedModel, TaggableModel, ModelWithRelatedQuotes):
         return f'{self.name}'
 
     @property
-    def image(self) -> Optional[Image]:
-        """TODO: add docstring."""
-        return self.images.first() if self.images.exists() else None
-
-    @property
     def has_quotes(self) -> bool:
         """TODO: add docstring."""
         return bool(len(self.quotes.all()))
@@ -110,38 +111,31 @@ class Entity(TypedModel, TaggableModel, ModelWithRelatedQuotes):
 
     def get_categorization_string(self, date: Optional[HistoricDateTime] = None) -> Optional[str]:
         """Intelligently build a categorization string, like `conservative LDS apostle`."""
-        categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
-        if not categorizations:
-            return None
-
-        # Build the string
-        categorization_words: List[str] = []
-        for part_of_speech in ('noun', 'any', 'adj'):
-            pos_categorizations = categorizations.filter(category__part_of_speech=part_of_speech)
-            if pos_categorizations.exists():
-                categorization_str = str(pos_categorizations.order_by('category__weight', 'date').last())
-                words = [word for word in categorization_str.split(' ') if word not in categorization_words]
-                categorization_words = words + categorization_words
-
-        # Remove duplicate words
-        categorization_words = list(dict.fromkeys(categorization_words))
-
-        return ' '.join(categorization_words)
+        categorization_string = self.computations.get('categorization_string')
+        if not categorization_string:
+            categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
+            if not categorizations:
+                return None
+            # Build the string
+            categorization_words: List[str] = []
+            for part_of_speech in ('noun', 'any', 'adj'):
+                pos_categorizations = categorizations.filter(category__part_of_speech=part_of_speech)
+                if pos_categorizations.exists():
+                    categorization_str = str(pos_categorizations.order_by('category__weight', 'date').last())
+                    words = [word for word in categorization_str.split(' ') if word not in categorization_words]
+                    categorization_words = words + categorization_words
+            # Remove duplicate words
+            categorization_words = list(dict.fromkeys(categorization_words))
+            categorization_string = ' '.join(categorization_words)
+            # TODO: update asynchronously
+            self.computations['categorization_string'] = categorization_string
+            self.save()
+        return categorization_string
 
     def save(self, *args, **kwargs):
         """TODO: add docstring."""
         self.clean()
         super().save(*args, **kwargs)
-
-    @classmethod
-    def get_object_html(cls, match: Match, use_preretrieved_html: bool) -> str:
-        """TODO: add docstring."""
-        raise NotImplementedError
-
-    @classmethod
-    def get_updated_placeholder(cls, match: Match) -> str:
-        """TODO: add docstring."""
-        raise NotImplementedError
 
 
 class Person(Entity):

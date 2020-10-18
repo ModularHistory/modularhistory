@@ -1,7 +1,7 @@
 from django.urls import path
 
-from search import views
+from search.views import SearchResultsView  # type: ignore
 
 urlpatterns = [
-    path('', views.SearchResultsView.as_view(), name='search_results'),
+    path('', SearchResultsView.as_view(), name='search_results'),
 ]

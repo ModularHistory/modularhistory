@@ -1,6 +1,6 @@
 """Model classes for spoken sources."""
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 
 from modularhistory.fields import ExtraField
 from places.models import Venue
@@ -21,7 +21,7 @@ class SpokenSource(Source):
 
     def __str__(self) -> str:
         """TODO: write docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:
@@ -51,10 +51,7 @@ class SpokenSource(Source):
             f'"{self.linked_title}"' if self.title else '',
             delivery_string
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)
 
     @property
     def type_label(self) -> str:

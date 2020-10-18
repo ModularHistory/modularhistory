@@ -1,6 +1,6 @@
 """Model classes for journals (as sources)."""
 
-from bs4 import BeautifulSoup
+from modularhistory.utils import soupify
 
 from sources.models.piece import SourceWithPageNumbers
 
@@ -18,7 +18,7 @@ class JournalEntry(SourceWithPageNumbers):
 
     def __str__(self) -> str:
         """TODO: add docstring."""
-        return BeautifulSoup(self.__html__, features='lxml').get_text()
+        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:
@@ -27,7 +27,4 @@ class JournalEntry(SourceWithPageNumbers):
             self.attributee_string,
             f'{"journal" if self.attributee_string else "Journal"} entry dated {self.date.string}'
         ]
-        # Remove blank values
-        components = [component for component in components if component]
-        # Join components; rearrange commas and double quotes
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

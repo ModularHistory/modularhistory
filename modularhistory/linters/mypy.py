@@ -1,0 +1,219 @@
+"""
+MyPy static typing check.
+
+See https://docs.djangoproject.com/en/3.1/topics/checks/.
+"""
+
+import os
+import re
+import sys
+from collections import defaultdict
+from typing import *
+from typing import Pattern  # not included in * for some reason
+
+from django.conf import settings
+from mypy import api as mypy_client
+
+from modularhistory.linters import utils
+from modularhistory.linters.config import (
+    CONFIG_FILE,
+    ConfigFileOptionsParser as BaseConfigFileOptionsParser,
+    LinterOptions,
+    PerFileIgnore
+)
+
+ERROR_CODE_LIST_URL: str = 'https://mypy.readthedocs.io/en/stable/error_code_list.html'
+
+MYPY_SCRIPT_NAME: str = 'mypyrun'
+
+os.environ['MYPY_DJANGO_CONFIG'] = f'./{CONFIG_FILE}'
+
+# Example:
+# history/checks.py:17: error: Need type annotation for 'errors'
+MYPY_OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+): (.+)')
+
+ALL = None
+
+# choose an exit that does not conflict with mypy's
+PARSING_FAIL = 100
+ERROR_CODE = re.compile(r'\[([a-z0-9\-_]+)\]$')
+
+REVEALED_TYPE = 'Revealed type is'
+
+
+class Options(LinterOptions):
+    """Options common to both the config file and the cli."""
+    # error codes:
+    select: Optional[Set[str]] = None
+    ignore: Optional[Set[str]] = None
+    warn: Optional[Set[str]] = None
+
+    # per-file ignores:
+    per_file_ignores: Optional[List[PerFileIgnore]] = None
+
+    # messages:
+    error_filters: List[Pattern] = None
+    warning_filters: List[Pattern] = None
+
+    # global-only options:
+    args: List[str] = None
+    color: bool = True
+    show_ignored: bool = False
+    daemon: bool = False
+
+    def __init__(self):
+        """TODO: write docstring."""
+        self.select = ALL
+        self.ignore = set()
+        self.warn = set()
+        self.include = []
+        self.exclude = []
+        self.per_file_ignores = []
+        self.error_filters = []
+        self.warning_filters = []
+        self.args = []
+
+
+PerModuleOptions = List[Tuple[str, Options]]
+
+
+def mypy(**kwargs):
+    """Runs mypy."""
+    mypy_args = [
+        settings.BASE_DIR,
+        '--show-error-codes'
+    ]
+    results = mypy_client.run(mypy_args)
+    output = results[0]
+    if output:
+        process_mypy_output(results[0])
+
+
+def process_mypy_output(output: str):
+    """Processes the output from mypy."""
+    options, per_module_options = _get_mypy_options()
+    matched_error = None  # used to know when to error a note related to an error
+    errors_by_type: DefaultDict[str, int] = defaultdict(int)
+    errors: DefaultDict[str, int] = defaultdict(int)
+    warnings: DefaultDict[str, int] = defaultdict(int)
+    filtered: DefaultDict[str, int] = defaultdict(int)
+
+    for line in output.rstrip().split('\n'):
+        parsed_line = _parse_output_line(line)
+        if not parsed_line:
+            print(line, end='')
+            continue
+        location, filename, line_number, level, message = parsed_line
+
+        # Exclude errors from specific files
+        if options.is_excluded_path(filename):
+            filtered[filename] += 1
+            continue
+
+        # Use module options if applicable
+        options = _get_module_options(options, per_module_options, filename)
+
+        error_code = None
+        m = ERROR_CODE.search(message)
+        if m:
+            error_code = m.group(1)
+            message = message.replace(f'[{error_code}]', '').rstrip()
+
+        level, matched_error = _process_mypy_message(
+            message, level, error_code, matched_error, filename, line_number, options
+        )
+        if level == 'error':
+            errors[filename] += 1
+            errors_by_type[error_code] += 1
+        elif level == 'warning':
+            warnings[filename] += 1
+        elif level is None:
+            filtered[filename] += 1
+        elif level == 'note':
+            pass
+    print()
+
+
+def _process_mypy_message(message, level, error_code, matched_error, filename, line_number, options):
+    if level == 'error':
+        # Change the level based on config
+        level = options.get_message_level(message, error_code, filename)
+        # Display the message
+        if level or options.show_ignored:
+            report(options, filename, line_number, level or 'error', message, not level, error_code)
+            matched_error = level, error_code
+        else:
+            matched_error = None
+    elif level == 'note':
+        if matched_error is not None:
+            is_filtered = not matched_error[0]
+            report(options, filename, line_number, level, message, is_filtered, matched_error[1])
+        elif message.startswith(REVEALED_TYPE):
+            is_filtered = False
+            report(options, filename, line_number, level, message, is_filtered)
+    return level, matched_error
+
+
+def _get_mypy_options() -> Tuple[Options, PerModuleOptions]:
+    """Returns an Options object to be used by mypy."""
+    options = Options()
+    module_options: List[Tuple[str, Options]] = []
+    ConfigFileOptionsParser().apply(options, module_options)
+    if options.select and options.ignore:
+        overlap = options.select.intersection(options.ignore)
+        if overlap:
+            print(
+                f'The same option must not be both selected and ignored: {", ".join(overlap)}',
+                file=sys.stderr
+            )
+            sys.exit(PARSING_FAIL)
+    return options, module_options
+
+
+def _get_module_options(options: Options, per_module_options: PerModuleOptions, filename: str) -> Options:
+    for _key, module_options in per_module_options:
+        if module_options.is_included_path(filename):
+            options = module_options
+    return options
+
+
+def _parse_output_line(line: str) -> Optional[Tuple[str, ...]]:
+    """Parses a line of output from mypy."""
+    parsed_line = MYPY_OUTPUT_PATTERN.match(line)
+    if not parsed_line:
+        return None
+    location = parsed_line.group(1)
+    level = parsed_line.group(2)
+    message = parsed_line.group(3)
+    filename, line_number = location.split(':')
+    return location, filename, line_number, level, message
+
+
+def report(
+    options: Options,
+    filename: str,
+    line_number: str,
+    status: str,
+    msg: str,
+    is_filtered: bool,
+    error_key: Optional[str] = None
+):
+    """Report an error to stdout."""
+    display_attrs = ['dark'] if options.show_ignored and is_filtered else None
+    filename = utils.colored(filename, 'cyan', attrs=display_attrs)
+    line_number = utils.colored(f'{line_number}', attrs=display_attrs)
+    color = utils.COLORS[status]
+    status = utils.colored(f'{status}', color, attrs=display_attrs)
+    msg = utils.colored(msg, color, attrs=display_attrs)
+    print(
+        f'{"IGNORED: " if options.show_ignored and is_filtered else ""}'
+        f'{filename}:{line_number}: {msg}  [{error_key}: {ERROR_CODE_LIST_URL}]'
+    )
+
+
+class ConfigFileOptionsParser(BaseConfigFileOptionsParser):
+    """Config file options parser for mypy."""
+
+    def __init__(self, script_name: str = MYPY_SCRIPT_NAME):
+        """Constructs the mypy options parser."""
+        super().__init__(script_name=script_name)

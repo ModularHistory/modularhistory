@@ -1,8 +1,9 @@
 from typing import Optional
 
-from bs4 import BeautifulSoup
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+
+from modularhistory.utils import soupify
 
 
 class HTML:
@@ -19,7 +20,7 @@ class HTML:
             processed_value = processed_value or raw_value
             self.raw_value = raw_value
             self.html = format_html(processed_value)
-            self.text = BeautifulSoup(self.raw_value, features='lxml').get_text()
+            self.text = soupify(self.raw_value).get_text()
         else:
             self.raw_value = ''
             self.html = format_html('')

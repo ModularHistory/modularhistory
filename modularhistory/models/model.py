@@ -1,12 +1,13 @@
 """Base model classes for ModularHistory."""
 
+import re
 from typing import Any, ClassVar, List, Match, Optional, Pattern, Tuple, Type
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from typedmodels.models import TypedModel as BaseTypedModel
 
 from modularhistory.models.manager import Manager
@@ -109,10 +110,30 @@ class Model(DjangoModel):
             natural_key_values.append(value)
         return tuple(natural_key_values)
 
+    def preprocess_html(self, html: str):
+        """
+        Preprocess the value of an HTML field.
+
+        This method can be used to modify the value of an HTML field
+        before it is saved.  It is called when the HTML field is cleaned.
+        """
+        pass
+
     @classmethod
-    def get_object_html(cls, match: Match, use_preretrieved_html: bool) -> str:
-        """Must be implemented in inheriting model classes."""
-        raise NotImplementedError
+    def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
+        """Returns a model instance's HTML based on a placeholder in the admin."""
+        if not cls.admin_placeholder_regex.match(match.group(0)):
+            raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
+
+        if use_preretrieved_html:
+            # Return the pre-retrieved HTML (already included in placeholder)
+            preretrieved_html = match.group(3)
+            if preretrieved_html:
+                return preretrieved_html.strip()
+
+        key = match.group(1).strip()
+        model_instance = cls.objects.get(pk=key)
+        return model_instance.html
 
     @classmethod
     def get_updated_placeholder(cls, match: Match) -> str:
