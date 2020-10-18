@@ -6,9 +6,9 @@
         {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date_string }}{% endif %}
     </h2>
     <div class="card-text">
-        {% if quote.image %}
+        {% if quote.primary_image %}
             <div class="img-container" style="max-width: 44%">
-                {% card quote.image %}
+                {% card quote.primary_image %}
             </div>
         {% endif %}
         {% if request.user.is_superuser %}

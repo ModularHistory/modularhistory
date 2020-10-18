@@ -23,16 +23,16 @@
                     {% card occurrence_image.image %}
                 </div>
             {% endfor %}
-        {% elif not occurrence.images.all|length %}
+        {% elif not occurrence.images.exists %}
             {% if occurrence.entity_images %}
                 {% for image in occurrence.entity_images %}
                     <div class="img-container" style="max-width: 44%">
                         {% card image %}
                     </div>
                 {% endfor %}
-            {% elif occurrence.image and not occurrence.images.all|length %}
+            {% elif occurrence.primary_image and not occurrence.images.all|length %}
                 <div class="img-container" style="max-width: 44%">
-                    {% card occurrence.image %}
+                    {% card occurrence.primary_image %}
                 </div>
             {% endif %}
         {% endif %}

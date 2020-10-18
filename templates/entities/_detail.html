@@ -24,10 +24,10 @@
             {% for quote in entity.quotes.all %}
                 <hr style="clear: both" />
                 <div class="m-2" data-key="{{ quote.key }}" data-href="{% block detail_url %}{% endblock %}">
-                    {% if quote.image %}
+                    {% if quote.primary_image %}
                         {% if quote.html|length > 1500 or entity.quotes.all|length == 1 %}
                             <div class="img-container">
-                                {% card quote.image %}
+                                {% card quote.primary_image %}
                             </div>
                         {% endif %}
                     {% endif %}

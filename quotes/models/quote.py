@@ -98,7 +98,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         """See also the `attributee_string` property."""
         # TODO: make sure it's updated correctly
         attributee_html = self.computations.get('attributee_html')
-        if not attributee_html:
+        if attributee_html is None:
             attributees = self.ordered_attributees
             if attributees:
                 n_attributions = len(attributees)
@@ -118,13 +118,12 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
                 elif n_attributions > 3:
                     html = f'{html} et al.'
                 attributee_html = html
-
-                # TODO: update asynchronously
-                self.computations['attributee_html'] = attributee_html
-                self.save()
             else:
-                return None
-        return format_html(attributee_html)
+                attributee_html = ''
+            # TODO: update asynchronously
+            self.computations['attributee_html'] = attributee_html
+            self.save()
+        return format_html(attributee_html) if attributee_html else None
     # TODO: Order by `attributee_string` instead of `attributee`
     attributee_html.admin_order_field = 'attributee'
     attributee_html: SafeString = property(attributee_html)  # type: ignore
