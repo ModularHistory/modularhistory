@@ -76,7 +76,7 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         'tags__topic__key',
         'tags__topic__aliases'
     ]
-    objects: OccurrenceManager = OccurrenceManager()
+    objects: OccurrenceManager = OccurrenceManager()  # type: ignore
 
     def __str__(self) -> str:
         """TODO: write docstring."""

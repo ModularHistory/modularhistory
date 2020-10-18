@@ -136,7 +136,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
         This method minimizes db query complexity.
         """
-        attributee_html = self.attributee_html
+        attributee_html: str = self.attributee_html  # type: ignore
         signals = (' and ', ', ', ' et al.')
         for signal in signals:
             if signal in attributee_html:
