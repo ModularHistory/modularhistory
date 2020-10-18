@@ -52,8 +52,12 @@ class Image(MediaModel):
         height_field='height', width_field='width',
         null=True
     )
+    image_type = models.CharField(
+        max_length=TYPE_NAME_MAX_LENGTH,
+        choices=IMAGE_TYPES,
+        default='image'
+    )
     links = JSONField(default=dict)
-    type = models.CharField(max_length=TYPE_NAME_MAX_LENGTH, choices=IMAGE_TYPES, default='image')
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
     # https://github.com/jonasundderwolf/django-image-cropping
@@ -122,10 +126,10 @@ class Image(MediaModel):
         if (not self.provider) or self.provider in self.caption.text:
             return None
         provision_phrase = 'provided'
-        if self.type == 'painting':
+        if self.image_type == 'painting':
             provision_phrase = None
         components = [
-            f'{self.type.title()}',
+            f'{self.image_type.title()}',
             provision_phrase,
             f'by {self.provider}'
         ]

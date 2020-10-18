@@ -237,7 +237,7 @@ class MegaStorage(Storage):
         # TODO
         raise NotImplementedError
 
-    def open(self, name: str, mode: str = 'rb') -> File:
+    def open(self, name: str, mode: str = 'rb') -> File:  # noqa: WPS125
         """
         Opens the file given by name.
 

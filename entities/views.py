@@ -5,8 +5,27 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 # from django.http import HttpRequest, JsonResponse
 from django.views import generic
+from rest_framework.generics import ListAPIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework import permissions
 
 from entities.models import Entity, Category  # , Person, Organization
+from entities.serializers import EntitySerializer
+
+
+class EntityViewSet(ModelViewSet):
+    """API endpoint for viewing and editing entities."""
+
+    queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
+    serializer_class = EntitySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class EntityListAPIView(ListAPIView):
+    """API view for listing entities."""
+
+    queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
+    serializer_class = EntitySerializer
 
 
 class AttributeeSearchView(AutocompleteJsonView):
