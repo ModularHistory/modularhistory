@@ -75,26 +75,26 @@ class YearInput(MultiWidget):
         ]
         super().__init__(widgets, attrs)
 
-    def decompress(self, value: Union[HistoricDateTime, int, str]):
+    def decompress(self, datetime_value: Union[HistoricDateTime, int, str]):
         """TODO: add docstring."""
         year, year_system = (None, None)
-        if isinstance(value, HistoricDateTime):
-            if value.use_ybp:
-                year, year_system = value.year_bp, YBP
-            elif value.is_bce:
-                year, year_system = value.year_bce, BCE
+        if isinstance(datetime_value, HistoricDateTime):
+            if datetime_value.use_ybp:
+                year, year_system = datetime_value.year_bp, YBP
+            elif datetime_value.is_bce:
+                year, year_system = datetime_value.year_bce, BCE
             else:
                 year_system = CE
-        elif value:
-            return [value, CE]
+        elif datetime_value:
+            return [datetime_value, CE]
         return [year, year_system]
 
-    def value_from_datadict(self, data, files, name) -> Optional[str]:
+    def value_from_datadict(self, datadict, files, name) -> Optional[str]:
         """TODO: write docstring."""
-        values = super().value_from_datadict(data, files, name)
-        if len(values) != 2:
-            raise ValueError(f'Wrong number of values to unpack: {len(values)}')
-        year, year_system = values
+        decompressed_values = super().value_from_datadict(datadict, files, name)
+        if len(decompressed_values) != 2:
+            raise ValueError(f'Wrong number of values: {len(decompressed_values)}')
+        year, year_system = decompressed_values
         if not year:
             return None
         year, second, microsecond = get_year(year, year_system)
@@ -120,9 +120,9 @@ class HistoricDateWidget(MultiWidget):
         ]
         super().__init__(widgets, attrs)
 
-    def _parse_datetime_string(self, value: str) -> Tuple[int, ...]:
+    def _parse_string(self, datetime_string: str) -> Tuple[int, ...]:
         """TODO: move elsewhere?"""
-        year, month, day = value.split('-')
+        year, month, day = datetime_string.split('-')
         hour, minute, second, microsecond = ('0', '0', '0', '0')
         if ' ' in day:
             day, time = day.split(' ')
@@ -133,7 +133,7 @@ class HistoricDateWidget(MultiWidget):
         str_values = (year, month, day, hour, minute, second, microsecond)
         return tuple(int(string) for string in str_values)
 
-    def decompress(self, value: Union[datetime, date, str, Any]):
+    def decompress(self, datetime_value: Union[date, str, Any]):
         """
         "Decompresses" a Python value into a list of values to populate the widget.
         The input value can be assumed valid, but not necessarily non-empty.
@@ -141,58 +141,65 @@ class HistoricDateWidget(MultiWidget):
         https://docs.djangoproject.com/en/3.1/ref/forms/widgets/#django.forms.MultiWidget.decompress
         """
         nones = (None, None, None, None, None, None)
-        hour, minute, second, microsecond = 0, 0, 0, 0
-        if not isinstance(value, HistoricDateTime):
-            if isinstance(value, str):
-                year, month, day, hour, minute, second, microsecond = self._parse_datetime_string(value)
-            elif isinstance(value, (datetime, date)):
-                year, month, day = value.year, value.month, value.day
-                if isinstance(value, datetime):
-                    hour, minute, second, microsecond = (
-                        value.hour, value.minute, value.second, value.microsecond
+        hour, minute, second, ms = 0, 0, 0, 0
+        if not isinstance(datetime_value, HistoricDateTime):
+            if isinstance(datetime_value, str):
+                year, month, day, hour, minute, second, ms = self._parse_string(datetime_value)
+            elif isinstance(datetime_value, (datetime, date)):
+                year, month, day = datetime_value.year, datetime_value.month, datetime_value.day
+                if isinstance(datetime_value, datetime):
+                    hour, minute, second, ms = (
+                        datetime_value.hour,
+                        datetime_value.minute,
+                        datetime_value.second,
+                        datetime_value.microsecond
                     )
             else:
                 return nones
             # Convert value to HistoricDateTime
-            value = HistoricDateTime(year, month, day, hour, minute, second, microsecond)
-        return self._decompress_historic_datetime(value)
+            datetime_value = HistoricDateTime(year, month, day, hour, minute, second, ms)
+        return self._decompress_historic_datetime(datetime_value)
 
     @staticmethod
-    def _decompress_historic_datetime(value: HistoricDateTime) -> List:
-        year = value.year
+    def _decompress_historic_datetime(historic_datetime: HistoricDateTime) -> List:
+        year = historic_datetime.year
         season, month, day, time = None, None, None, None
-        hour, minute, second = value.hour, value.minute, value.second
-        if value.use_ybp:
-            year, year_system = value.year_bp, YBP
-        elif value.is_bce:
-            year, year_system = value.year_bce, BCE
+        hour, minute, second = (
+            historic_datetime.hour,
+            historic_datetime.minute,
+            historic_datetime.second
+        )
+        if historic_datetime.use_ybp:
+            year, year_system = historic_datetime.year_bp, YBP
+        elif historic_datetime.is_bce:
+            year, year_system = historic_datetime.year_bce, BCE
         else:
             year_system = CE
-        if value.season_is_known:
-            season = get_season_from_month(value.month)
-            if value.month_is_known:
-                month = value.month
-                if value.day_is_known:
-                    day = value.day
+        if historic_datetime.season_is_known:
+            season = get_season_from_month(historic_datetime.month)
+            if historic_datetime.month_is_known:
+                month = historic_datetime.month
+                if historic_datetime.day_is_known:
+                    day = historic_datetime.day
         if 0 in {hour, minute, second} or 1 in {hour, minute, second}:
             time = None
         else:
-            time = value.strftime('%H:%M:%S.%f')
+            time = historic_datetime.strftime('%H:%M:%S.%f')
         return [year, year_system, season, month, day, time]
 
-    def value_from_datadict(self, data, files, name) -> Optional[str]:
+    def value_from_datadict(self, datadict, files, name) -> Optional[str]:
         """TODO: add docstring."""
-        values = list(super().value_from_datadict(data, files, name))
+        decompressed_values = list(super().value_from_datadict(datadict, files, name))
         full_n_values = 6
         min_n_values = 3
-        n_values = len(values)
+        n_values = len(decompressed_values)
         if n_values < min_n_values:
-            raise ValueError(f'Wrong number of values to unpack: {len(values)}')
+            raise ValueError(f'Wrong number of values: {len(decompressed_values)}')
         elif n_values < full_n_values:
             diff = full_n_values - n_values
             for _ in range(0, diff):
-                values.append(None)
-        year, year_system, season, month, day, time = values
+                decompressed_values.append(None)
+        year, year_system, season, month, day, time = decompressed_values
         if not year:
             return None
 

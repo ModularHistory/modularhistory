@@ -41,9 +41,9 @@ class ImageAdmin(ImageCroppingMixin, ModelAdmin):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, request, model_instance=None):
         """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
+        fields = super().get_fields(request, model_instance)
         for field_name in ('date_is_circa', 'date', 'type', 'image', 'hidden', 'verified'):
             if field_name in fields:
                 fields.remove(field_name)

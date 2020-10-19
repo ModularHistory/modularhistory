@@ -34,9 +34,9 @@ class SourceFileAdmin(ModelAdmin):
     inlines = [SourcesInline]
     list_filter = [PdfFilter]
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, request, model_instance=None):
         """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
+        fields = super().get_fields(request, model_instance)
         if fields and 'page_offset' in fields:
             fields.remove('page_offset')
             fields.append('page_offset')

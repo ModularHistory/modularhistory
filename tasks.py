@@ -16,7 +16,7 @@ import django
 from django.core.management import call_command
 from django.db import transaction
 
-from modularhistory.linters import flake8, mypy
+from modularhistory.linters import flake8 as lint_with_flake8, mypy as lint_with_mypy
 from monkeypatch import fix_annotations
 
 if fix_annotations():
@@ -103,15 +103,27 @@ def commit(context):
 
 
 @task
+def flake8(context, *args):
+    """Run flake8 linter."""
+    lint_with_flake8()
+
+
+@task
+def mypy(context, *args):
+    """Run mypy static type checker."""
+    lint_with_mypy()
+
+
+@task
 def lint(context, *args):
     """Run linters."""
     # Run Flake8
     print('Running flake8...')
-    flake8()
+    lint_with_flake8()
 
     # Run MyPy
     print('Running mypy...')
-    mypy()
+    lint_with_mypy()
 
 
 @task
@@ -350,9 +362,9 @@ def test(context):
     context.run('coverage combine')
 
 
-def _set_prod_db_env_var(value: str):
+def _set_prod_db_env_var(env_var_value: str):
     """Set the env var that specifies whether to use the production database."""
-    os.environ[PROD_DB_ENV_VAR] = value
+    os.environ[PROD_DB_ENV_VAR] = env_var_value
 
 
 # TODO

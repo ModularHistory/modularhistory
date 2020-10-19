@@ -19,9 +19,9 @@ class AttributeeFilter(AutocompleteFilter):
 
     _parameter_name = 'attributees__pk__exact'
 
-    def __init__(self, request, params, model, model_admin):
+    def __init__(self, request, query_params, model, model_admin):
         """TODO: add docstring."""
-        super().__init__(request, params, model, model_admin)
+        super().__init__(request, query_params, model, model_admin)
         rendered_widget: SafeString = self.rendered_widget  # type: ignore
         if self.value():
             attributee = Entity.objects.get(pk=self.value())
@@ -138,14 +138,14 @@ class HasFilePageOffsetFilter(SimpleListFilter):
         ids = []
         if self.value() == 'Yes':
             for source in sources_with_files:
-                file = source.file
-                if file.page_offset:
+                source_file = source.source_file
+                if source_file.page_offset:
                     ids.append(source.id)
             return sources_with_files.filter(id__in=ids)
         elif self.value() == 'No':
             for source in sources_with_files:
-                file = source.file
-                if not file.page_offset:
+                source_file = source.source_file
+                if not source_file.page_offset:
                     ids.append(source.id)
             return sources_with_files.filter(id__in=ids)
 

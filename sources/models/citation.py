@@ -169,7 +169,7 @@ class Citation(Model):
     @property
     def source_file_page_number(self) -> Optional[int]:
         """TODO: write docstring."""
-        file = self.source.file
+        file = self.source.source_file
         if file:
             if self.page_number:
                 return self.page_number + file.page_offset
@@ -228,7 +228,7 @@ class Citation(Model):
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
-        """Return an up-to-date placeholder for an obj included in an HTML field."""
+        """Return an up-to-date placeholder for a citation included in an HTML field."""
         placeholder = match.group(0)
         appendage = match.group(6)
         updated_appendage = f'<span style="display: none">{cls.get_object_html(match)}</span>'

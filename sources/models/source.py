@@ -140,7 +140,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     def admin_file_link(self) -> SafeString:
         """TODO: write docstring."""
         element = ''
-        if self.file:
+        if self.source_file:
             element = (
                 f'<a class="btn btn-small btn-default display-source"'
                 f' href="{self.file_url}" target="_blank">'
@@ -183,21 +183,21 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         return self.source_containments.order_by('position')[0]
 
     @property
-    def file(self) -> Optional[SourceFile]:
+    def source_file(self) -> Optional[SourceFile]:
         """TODO: write docstring."""
         if self.db_file:
             return self.db_file
         return self.container.db_file if self.container else None
 
-    @file.setter
-    def file(self, value):
+    @source_file.setter
+    def source_file(self, value):
         """TODO: write docstring."""
         self.db_file = value
 
     @property
     def file_url(self) -> Optional[str]:
         """TODO: write docstring."""
-        return self.file.url if self.file else None
+        return self.source_file.url if self.source_file else None
 
     def get_container_strings(self) -> Optional[List[str]]:
         """Return a list of strings representing the source's containers."""
@@ -222,7 +222,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
             if containment.page_number:
                 page_number_html = _get_page_number_html(
                     containment.source,
-                    containment.source.file,
+                    containment.source.source_file,
                     containment.page_number,
                     containment.end_page_number
                 )
@@ -241,9 +241,9 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         url = self.url
         if self.file_url:
             url = self.file_url
-            page_number = self.file.default_page_number
+            page_number = self.source_file.default_page_number
             if hasattr(self, 'page_number') and getattr(self, 'page_number', None):
-                page_number = self.page_number + self.file.page_offset
+                page_number = self.page_number + self.source_file.page_offset
             if page_number:
                 if 'page=' in url:
                     url = re.sub(r'page=\d+', f'page={page_number}', url)
@@ -267,10 +267,10 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
             html = f'{html}, {containers}'
         elif getattr(self, 'page_number', None):
             page_number_html = _get_page_number_html(
-                self, self.file, self.page_number, self.end_page_number
+                self, self.source_file, self.page_number, self.end_page_number
             )
             html = f'{html}, {page_number_html}'
-        if not self.file:
+        if not self.source_file:
             if self.url and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
         if getattr(self, 'information_url', None) and self.information_url:
@@ -389,7 +389,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
-        """Return an up-to-date placeholder for an obj included in an HTML field."""
+        """Return an up-to-date placeholder for a source included in an HTML field."""
         placeholder = match.group(0)
         appendage = match.group(2)
         updated_appendage = f': {cls.get_object_html(match)}'

@@ -62,9 +62,9 @@ class SourceAdmin(SearchableModelAdmin):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
     save_as_continue = True
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, request, model_instance=None):
         """TODO: add docstring."""
-        fields = list(super().get_fields(request, obj))
+        fields = list(super().get_fields(request, model_instance))
         if 'database_string' in fields:
             fields.remove('database_string')
             fields.insert(0, 'database_string')

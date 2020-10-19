@@ -20,9 +20,9 @@ class TextualSourceAdmin(SourceAdmin):
         AttributeeFilter
     ]
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, request, model_instance=None):
         """TODO: add docstring."""
-        fields: List = list(super().get_fields(request, obj))
+        fields: List = list(super().get_fields(request, model_instance))
         # Fields to display at the top, in order
         top_fields = (
             'db_string',

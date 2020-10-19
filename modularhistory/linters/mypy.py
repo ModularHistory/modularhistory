@@ -14,13 +14,15 @@ from typing import Pattern  # not included in * for some reason
 from django.conf import settings
 from mypy import api as mypy_client
 
-from modularhistory.utils import linting
 from modularhistory.linters.config import (
     CONFIG_FILE,
     ConfigFileOptionsParser as BaseConfigFileOptionsParser,
     LinterOptions,
-    PerFileIgnore
+    PARSING_FAIL,
+    PerFileIgnore,
+    PerModuleOptions
 )
+from modularhistory.utils import linting
 
 ERROR_CODE_LIST_URL: str = 'https://mypy.readthedocs.io/en/stable/error_code_list.html'
 
@@ -34,14 +36,12 @@ MYPY_OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+): (.+)')
 
 ALL = None
 
-# choose an exit that does not conflict with mypy's
-PARSING_FAIL = 100
 ERROR_CODE = re.compile(r'\[([a-z0-9\-_]+)\]$')
 
 REVEALED_TYPE = 'Revealed type is'
 
 
-class Options(LinterOptions):
+class MyPyOptions(LinterOptions):
     """Options common to both the config file and the cli."""
     # error codes:
     select: Optional[Set[str]] = None
@@ -62,19 +62,9 @@ class Options(LinterOptions):
     daemon: bool = False
 
     def __init__(self):
-        """TODO: write docstring."""
-        self.select = ALL
-        self.ignore = set()
-        self.warn = set()
-        self.include = []
-        self.exclude = []
-        self.per_file_ignores = []
-        self.error_filters = []
-        self.warning_filters = []
+        """Constructs MyPy options."""
+        super().__init__()
         self.args = []
-
-
-PerModuleOptions = List[Tuple[str, Options]]
 
 
 def mypy(**kwargs):
@@ -83,10 +73,9 @@ def mypy(**kwargs):
         settings.BASE_DIR,
         '--show-error-codes'
     ]
-    results = mypy_client.run(mypy_args)
-    output = results[0]
+    output = mypy_client.run(mypy_args)[0]
     if output:
-        process_mypy_output(results[0])
+        process_mypy_output(output)
 
 
 def process_mypy_output(output: str):
@@ -154,10 +143,10 @@ def _process_mypy_message(message, level, error_code, matched_error, filename, l
     return level, matched_error
 
 
-def _get_mypy_options() -> Tuple[Options, PerModuleOptions]:
+def _get_mypy_options() -> Tuple[MyPyOptions, PerModuleOptions]:
     """Returns an Options object to be used by mypy."""
-    options = Options()
-    module_options: List[Tuple[str, Options]] = []
+    options = MyPyOptions()
+    module_options: List[Tuple[str, MyPyOptions]] = []
     ConfigFileOptionsParser().apply(options, module_options)  # type: ignore
     if options.select and options.ignore:
         overlap = options.select.intersection(options.ignore)
@@ -170,7 +159,11 @@ def _get_mypy_options() -> Tuple[Options, PerModuleOptions]:
     return options, module_options
 
 
-def _get_module_options(options: Options, per_module_options: PerModuleOptions, filename: str) -> Options:
+def _get_module_options(
+    options: MyPyOptions,
+    per_module_options: PerModuleOptions,
+    filename: str
+) -> MyPyOptions:
     for _key, module_options in per_module_options:
         if module_options.is_included_path(filename):
             options = module_options
@@ -190,7 +183,7 @@ def _parse_output_line(line: str) -> Optional[Tuple[str, ...]]:
 
 
 def report(
-    options: Options,
+    options: MyPyOptions,
     filename: str,
     line_number: str,
     status: str,

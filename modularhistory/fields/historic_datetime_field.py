@@ -28,58 +28,58 @@ class HistoricDateTimeField(DateTimeField):
             **kwargs,
         })
 
-    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
+    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
     def from_db_value(
         self,
-        value: Optional[DateTime],
+        datetime_value: Optional[DateTime],
         expression,
         connection
     ) -> Optional[HistoricDateTime]:
         """TODO: add docstring."""
-        if value is None:
-            return value
+        if datetime_value is None:
+            return datetime_value
         return HistoricDateTime(
-            value.year,
-            value.month,
-            value.day,
-            value.hour,
-            value.minute,
-            value.second,
-            value.microsecond
+            datetime_value.year,
+            datetime_value.month,
+            datetime_value.day,
+            datetime_value.hour,
+            datetime_value.minute,
+            datetime_value.second,
+            datetime_value.microsecond
         )
 
-    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
-    def to_python(
-        self,
-        value: Optional[Union[HistoricDateTime, DateTime, str]]
-    ) -> Optional[HistoricDateTime]:
-        """TODO: add docstring."""
-        if not value:
+    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
+    def to_python(self, historic_datetime: Optional[Union[DateTime, str]]) -> Optional[HistoricDateTime]:
+        """
+        Converts the value into the correct Python object.
+        This method acts as the reverse of value_to_string(), and is also called in clean().
+        """
+        if not historic_datetime:
             return None
-        elif isinstance(value, HistoricDateTime):
-            return value
-        elif isinstance(value, datetime):
+        elif isinstance(historic_datetime, HistoricDateTime):
+            return historic_datetime
+        elif isinstance(historic_datetime, datetime):
             return HistoricDateTime(
-                value.year,
-                value.month,
-                value.day,
-                value.hour,
-                value.minute,
-                value.second,
-                value.microsecond
+                historic_datetime.year,
+                historic_datetime.month,
+                historic_datetime.day,
+                historic_datetime.hour,
+                historic_datetime.minute,
+                historic_datetime.second,
+                historic_datetime.microsecond
             )
-        elif isinstance(value, str):
+        elif isinstance(historic_datetime, str):
             raise TypeError
 
-    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
-    def get_prep_value(
-        self,
-        value: Optional[HistoricDateTime]
-    ) -> Optional[DateTime]:
-        """TODO: add docstring."""
-        if not value:
+    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-python-objects-to-query-values
+    def get_prep_value(self, historic_datetime: Optional[HistoricDateTime]) -> Optional[DateTime]:
+        """
+        Returns data in a format prepared for use a db query parameter.
+        `value` is the current value of the model’s attribute.
+        """
+        if not historic_datetime:
             return None
-        preprep_value: Union[HistoricDateTime, DateTime] = self.to_python(value)
+        preprep_value: Union[HistoricDateTime, DateTime] = self.to_python(historic_datetime)
         if preprep_value and settings.USE_TZ and is_naive(preprep_value):
             preprep_value = make_aware(preprep_value)
         return super().get_prep_value(preprep_value)

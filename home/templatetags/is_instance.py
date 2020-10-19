@@ -10,9 +10,9 @@ register = template.Library()
 
 
 @register.filter()
-def is_instance(obj, arg: str) -> bool:
+def is_instance(model_instance, arg: str) -> bool:
     """
-    Determine whether obj is an instance of the specified model class.
+    Determine whether model_instance is an instance of the specified model class.
 
     `arg` should be in the form 'module_name.ModelName'.
     """
@@ -23,4 +23,4 @@ def is_instance(obj, arg: str) -> bool:
         model_class = import_string(model_cls_path)
     else:
         model_class = apps.all_models.get(module_name).get(model_name)
-    return isinstance(obj, model_class)
+    return isinstance(model_instance, model_class)

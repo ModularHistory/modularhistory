@@ -14,10 +14,10 @@ class AttributeesInline(TabularInline):
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def get_extra(self, request, obj: Optional[Source] = None, **kwargs):
+    def get_extra(self, request, model_instance: Optional[Source] = None, **kwargs):
         """TODO: add docstring."""
-        if obj:
-            if obj.attributees.count():
+        if model_instance:
+            if model_instance.attributees.count():
                 return 0
         return 1
 

@@ -41,16 +41,16 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
         """TODO: add docstring."""
         return reverse('admin:entity_category_search')
 
-    def __init__(self, request, params, model, model_admin):
+    def __init__(self, request, query_params, model, model_admin):
         """TODO: add docstring."""
         try:
-            super().__init__(request, params, model, model_admin)
+            super().__init__(request, query_params, model, model_admin)
         except FieldDoesNotExist:
             if self.parameter_name is None:
                 self.parameter_name = self.field_name
                 if self.use_pk_exact:
                     self.parameter_name = f'{self.parameter_name}__{self.field_pk}__exact'
-            super(BaseAutocompleteFilter, self).__init__(request, params, model, model_admin)
+            super(BaseAutocompleteFilter, self).__init__(request, query_params, model, model_admin)
             if self.rel_model:
                 model = self.rel_model
             widget = AutocompleteSelect(
@@ -77,8 +77,12 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             )
         if self.value():
             print('There is a value!!!!')
-            obj = self.m2m_cls.objects.get(pk=self.value())
-            rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{obj}\g<2>', self.rendered_widget)
+            model_instance = self.m2m_cls.objects.get(pk=self.value())
+            rendered_widget = re.sub(
+                r'(selected>).+(</option>)',
+                rf'\g<1>{model_instance}\g<2>',
+                self.rendered_widget
+            )
             self.rendered_widget = format_html(rendered_widget)
 
     def get_queryset_for_field(self, model, name):

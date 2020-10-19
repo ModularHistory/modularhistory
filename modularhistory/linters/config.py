@@ -22,6 +22,9 @@ PerFileIgnore = Tuple[str, Set[str]]
 
 ALL = None
 
+# choose an exit that does not conflict with mypy's
+PARSING_FAIL = 100
+
 GLOBAL_ONLY_OPTIONS = [
     'color',
     'show_ignored',
@@ -57,6 +60,17 @@ class LinterOptions:
     # messages:
     error_filters: Optional[PatternList] = None
     warning_filters: Optional[PatternList] = None
+
+    def __init__(self):
+        """Constructs linter options."""
+        self.select = ALL
+        self.ignore = set()
+        self.warn = set()
+        self.include = []
+        self.exclude = []
+        self.per_file_ignores = []
+        self.error_filters = []
+        self.warning_filters = []
 
     def __str__(self):
         """TODO: write docstring."""
@@ -100,7 +114,8 @@ class LinterOptions:
         return None
 
 
-# Options Handling
+PerModuleOptions = List[Tuple[str, LinterOptions]]
+
 
 def _parse_multi_options(options: MultiOptions, split_token: str = ',') -> List[str]:  # noqa: S107
     """Split and strip and discard empties."""
@@ -141,15 +156,15 @@ def _regex_list(patterns: MultiOptions) -> List[Pattern]:
     return [re.compile(pattern) for pattern in _parse_multi_options(patterns)]
 
 
-def _error_code_set(error_code_set: MultiOptions) -> Optional[Set[str]]:
+def _error_code_set(error_codes: MultiOptions) -> Optional[Set[str]]:
     """."""
-    result = set()
-    for res in _parse_multi_options(error_code_set):
+    error_code_set = set()
+    for res in _parse_multi_options(error_codes):
         if res == '*':
             return None
         else:
-            result.add(res)
-    return result
+            error_code_set.add(res)
+    return error_code_set
 
 
 option_types = {
@@ -168,6 +183,8 @@ option_types = {
 class ConfigFileOptionsParser:
     """TODO: add docstring."""
 
+    report_unrecognized_options: bool = True
+
     def __init__(self, script_name: str):
         """
         Constructs the config file options parser.
@@ -176,7 +193,11 @@ class ConfigFileOptionsParser:
         """
         self.script_name = script_name
 
-    def apply(self, options: LinterOptions, module_options: List[Tuple[str, LinterOptions]]) -> None:
+    def apply(
+        self,
+        options: LinterOptions,
+        module_options: List[Tuple[str, LinterOptions]]
+    ) -> None:
         """TODO: add docstring."""
         options_cls = options.__class__
         for config_section_key, updates in self.extract_updates(options):
@@ -187,37 +208,49 @@ class ConfigFileOptionsParser:
                     opt = options_cls()
                     module_options.append((config_section_key, opt))
                 for option_key, option_value in updates.items():
-                    setattr(opt, option_key, option_value)
+                    setattr(opt, option_key.replace('-', '_'), option_value)
 
-    def _parse_option(self, key: str, value: str, template: LinterOptions, section: SectionProxy) -> Any:
-        option_type: Any = option_types.get(key)
+    def _parse_option(
+        self,
+        option_key: str,
+        option_value: str,
+        template: LinterOptions,
+        section: SectionProxy
+    ) -> Any:
+        template_key = option_key.replace('-', '_')
+        option_type: Any = option_types.get(template_key)
         processed_value: Any
         if not option_type:
-            dv = getattr(template, key, None)
+            dv = getattr(template, template_key, None)
             if dv is None:
-                print(f'Unrecognized option: {key} = {value}', file=sys.stderr)
+                if self.report_unrecognized_options:
+                    print(f'Unrecognized option: {option_key} = {option_value}', file=sys.stderr)
                 return None
             option_type = type(dv)
         try:
             if option_type is bool:
-                processed_value = section.getboolean(key)
+                processed_value = section.getboolean(template_key)
             elif callable(option_type):
-                processed_value = option_type(section.get(key))
+                processed_value = option_type(section.get(option_key))
             else:
-                print(f'Cannot determine what type {key} should have', file=sys.stderr)
+                print(f'Cannot determine what type {option_key} should have', file=sys.stderr)
                 return None
         except (ValueError, argparse.ArgumentTypeError) as error:
-            print(f'{key}: {error}', file=sys.stderr)
+            print(f'{option_key}: {error}', file=sys.stderr)
             return None
         return processed_value
 
-    def _parse_section(self, template: LinterOptions, section: SectionProxy) -> ConfigFileSection:
-        results: ConfigFileSection = {}
-        for key, value in section.items():
-            processed_value = self._parse_option(key, value, template, section)
+    def _parse_section(
+        self,
+        template: LinterOptions,
+        section: SectionProxy
+    ) -> ConfigFileSection:
+        parsed_section: ConfigFileSection = {}
+        for option_key, option_value in section.items():
+            processed_value = self._parse_option(option_key, option_value, template, section)
             if processed_value:
-                results[key] = processed_value
-        return results
+                parsed_section[option_key] = processed_value
+        return parsed_section
 
     def extract_updates(self, options: LinterOptions) -> Iterator[OptionsUpdate]:
         """TODO: add docstring."""
@@ -248,8 +281,8 @@ class ConfigFileOptionsParser:
                         file=sys.stderr
                     )
                     updates = {
-                        key: value for key, value in updates.items()
-                        if key in PER_MODULE_OPTIONS
+                        option_key: option_value for option_key, option_value in updates.items()
+                        if option_key in PER_MODULE_OPTIONS
                     }
                 globs = name[8:]
                 for file_glob in globs.split(','):

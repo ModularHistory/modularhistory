@@ -18,35 +18,35 @@ register = Library()
 
 
 @register.simple_tag(takes_context=True)
-def card(context: RequestContext, obj: Any) -> SafeString:
+def card(context: RequestContext, model_instance: Any) -> SafeString:
     """Returns the card HTML for a supported ModularHistory object."""
     obj_name: str
     template_directory_name: str = ''
 
     # TODO: refactor
-    if isinstance(obj, Occurrence):
+    if isinstance(model_instance, Occurrence):
         obj_name = 'occurrence'
-    elif isinstance(obj, Quote):
+    elif isinstance(model_instance, Quote):
         obj_name = 'quote'
-    elif isinstance(obj, Image):
+    elif isinstance(model_instance, Image):
         obj_name = 'image'
-    elif isinstance(obj, Source):
+    elif isinstance(model_instance, Source):
         obj_name = 'source'
-    elif isinstance(obj, Topic):
+    elif isinstance(model_instance, Topic):
         obj_name = 'topic'
-    elif isinstance(obj, Place):
+    elif isinstance(model_instance, Place):
         obj_name = 'place'
-    elif isinstance(obj, Entity):
+    elif isinstance(model_instance, Entity):
         obj_name = 'entity'
         template_directory_name = 'entities'
     else:
-        raise ValueError(f'{type(obj)}: {obj}')
+        raise ValueError(f'{type(model_instance)}: {model_instance}')
 
     # TODO
     template_directory_name = template_directory_name or f'{obj_name}s'
 
-    greater_context = {**context.flatten(), **{'object': obj, obj_name: obj}}
+    greater_context = {**context.flatten(), **{'object': model_instance, obj_name: model_instance}}
     template = loader.get_template(f'{template_directory_name}/_card.html')
     response = template.render(greater_context)
     query = greater_context.get('query')
-    return format_html(highlight(response, text=query)) if query else response
+    return format_html(highlight(response, text_to_highlight=query)) if query else response

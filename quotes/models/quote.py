@@ -245,7 +245,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
-        """Return an up-to-date placeholder for an obj included in an HTML field."""
+        """Return an up-to-date placeholder for a quote included in an HTML field."""
         placeholder = match.group(0)
         appendage = match.group(2)
         updated_appendage = f': {cls.get_object_html(match)}'

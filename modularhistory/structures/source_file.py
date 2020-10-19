@@ -34,10 +34,10 @@ class TextualSourceFile(FieldFile):
             print(f'{file_a} -> {file_b}')
         source_set = Source.objects.all()
         for source in source_set:
-            if source.file:
+            if source.source_file:
                 for file_a, file_b in to_edit:
-                    if source.file.name == file_a:
-                        print(source.file.name)
+                    if source.source_file.name == file_a:
+                        print(source.source_file.name)
                         remove(f'{settings.MEDIA_ROOT}/{file_a}')
-                        source.file.name = file_b
+                        source.source_file.name = file_b
                         source.save()

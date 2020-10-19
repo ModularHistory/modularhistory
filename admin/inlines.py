@@ -18,9 +18,9 @@ class StackedInline(NestedStackedInline):
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    def get_fields(self, request, obj=None) -> List[str]:
+    def get_fields(self, request, model_instance=None) -> List[str]:
         """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
+        fields = super().get_fields(request, model_instance)
         return reorder_fields(fields)
 
 
@@ -29,9 +29,9 @@ class TabularInline(NestedTabularInline):
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    def get_fields(self, request, obj=None) -> List[str]:
+    def get_fields(self, request, model_instance=None) -> List[str]:
         """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
+        fields = super().get_fields(request, model_instance)
         return reorder_fields(fields)
 
 

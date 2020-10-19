@@ -5,10 +5,10 @@ register = template.Library()
 
 
 @register.filter(is_safe=True)
-def highlight(value: str, text: str = ''):
+def highlight(text_body: str, text_to_highlight: str = ''):
     """TODO: add docstring."""
-    html = value
-    for word in text.split(' '):
+    html = text_body
+    for word in text_to_highlight.split(' '):
         html = html.replace(
             word,
             f'<span class="highlighted">{word}</span>'

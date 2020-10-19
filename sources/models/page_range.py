@@ -38,7 +38,7 @@ class PageRange(Model):
         def get_page_number_url(page_number, url=_url) -> Optional[str]:
             if not url:
                 return None
-            page_number += citation.source.file.page_offset
+            page_number += citation.source.source_file.page_offset
             if 'page=' in url:
                 url = re.sub(r'page=\d+', f'page={page_number}', url)
             else:

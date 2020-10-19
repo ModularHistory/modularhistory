@@ -11,9 +11,8 @@ register = template.Library()
 
 
 @register.filter(is_safe=True)
-def with_entity_links(value: str):
+def with_entity_links(html: str):
     """TODO: write docstring."""
-    html = value
     if re.search(ENTITY_NAME_REGEX, html):
         # from entities.models import Entity
         processed_entity_keys = []

@@ -1,6 +1,6 @@
 import re
 from sys import stderr
-from typing import Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
+from typing import Any, Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.utils.module_loading import import_string
@@ -56,9 +56,9 @@ class HTMLField(MceHTMLField):
             self.processor = kwargs['processor']
         super().__init__(*args, **kwargs)
 
-    def clean(self, value, model_instance: 'Model') -> HTML:
+    def clean(self, html_value, model_instance: 'Model') -> HTML:
         """Returns a cleaned, ready-to-save instance of HTML."""
-        html = super().clean(value=value, model_instance=model_instance)
+        html = super().clean(value=html_value, model_instance=model_instance)
         raw_html = html.raw_value
         replacements = (
             (r'<blockquote>', '<blockquote class="blockquote">'),
@@ -107,13 +107,13 @@ class HTMLField(MceHTMLField):
             kwargs['processor'] = self.processor
         return name, field_class, args, kwargs
 
-    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
-    def from_db_value(self, value: Optional[str], expression, connection) -> Optional[HTML]:
+    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
+    def from_db_value(self, html_value: Optional[str], expression, connection) -> Optional[HTML]:
         """TODO: add docstring."""
-        if value is None:
-            return value
-        if not value.startswith('<') and value.endswith('>'):
-            value = f'<p>{value}</p>'
+        if html_value is None:
+            return html_value
+        if not html_value.startswith('<') and html_value.endswith('>'):
+            html_value = f'<p>{html_value}</p>'
         replacements = (
             (r'074c54e4-ff1d-4952-9964-7d1e52cec4db', '6'),
             (r'354f9d11-74bb-4e2a-8e0d-5df877b4c461', '86'),
@@ -139,45 +139,45 @@ class HTMLField(MceHTMLField):
             (r'\}\}', '>>'),
         )
         for pattern, replacement in replacements:
-            value = re.sub(pattern, replacement, value)
-        html = value
+            html_value = re.sub(pattern, replacement, html_value)
+        processed_html = html_value
         if self.processor:
             try:
-                html = self.processor(html, self.processable_content_types)
+                processed_html = self.processor(html_value, self.processable_content_types)
             except RecursionError as error:
-                print(f'Unable to process HTML; encountered recursion error: {error}', file=stderr)
+                print(f'Unable to process HTML: {error}', file=stderr)
             except Exception as error:
-                print(f'Unable to process HTML; encountered error: {error}\n\n{html}', file=stderr)
-        return HTML(value, processed_value=html)
+                print(f'Unable to process HTML: {error}\n\n{html_value}', file=stderr)
+        return HTML(html_value, processed_value=processed_html)
 
-    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
-    def to_python(self, value: Optional[Union[HTML, str]]) -> Optional[HTML]:
+    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
+    def to_python(self, html_value: Optional[Union[HTML, str]]) -> Optional[HTML]:
         """TODO: add docstring."""
-        if isinstance(value, HTML):
-            return value
-        elif not value:
+        if isinstance(html_value, HTML):
+            return html_value
+        elif not html_value:
             return None
-        return HTML(value)
+        return HTML(html_value)
 
-    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-python-objects-to-query-values
-    def get_prep_value(self, value: Optional[Union[HTML, str]]) -> Optional[str]:
+    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-python-objects-to-query-values
+    def get_prep_value(self, html_value: Optional[Union[HTML, str]]) -> Optional[str]:
         """TODO: add docstring."""
-        if not value:
+        if not html_value:
             return None
-        elif isinstance(value, HTML):
-            return value.raw_value
-        return value
+        elif isinstance(html_value, HTML):
+            return html_value.raw_value
+        return html_value
 
-    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-query-values-to-database-values
-    def get_db_prep_value(self, value, connection, prepared=False):
+    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-query-values-to-database-values
+    def get_db_prep_value(self, html_value, connection, prepared=False):
         """TODO: add docstring."""
-        return self.get_prep_value(value)
+        return self.get_prep_value(html_value)
 
-    # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#id2
-    def value_to_string(self, obj) -> str:
+    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#id2
+    def value_to_string(self, html_object: Any) -> str:
         """TODO: add docstring."""
-        value = self.value_from_object(obj)
-        return self.get_prep_value(value) or ''
+        html_value = self.value_from_object(html_object)
+        return self.get_prep_value(html_value) or ''
 
 
 def _get_model_class(ct: ContentType) -> Type['Model']:

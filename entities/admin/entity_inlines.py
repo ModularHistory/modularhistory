@@ -13,7 +13,6 @@ class QuotesInline(TabularInline):
     show_change_link = True
     autocomplete_fields = ['quote']
 
-    # def get_fields(self, request, obj=None):
     def get_fields(self, *args, **kwargs):
         """TODO: add docstring."""
         fields = super().get_fields(*args, **kwargs)

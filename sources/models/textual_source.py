@@ -30,7 +30,7 @@ class TextualSource(Source):
     @property
     def file_page_number(self) -> Optional[int]:
         """TODO: write docstring."""
-        file = self.file
+        file = self.source_file
         if file:
             if self.containment and self.containment.page_number:
                 return self.containment.page_number + file.page_offset

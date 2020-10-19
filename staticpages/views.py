@@ -48,22 +48,22 @@ def staticpage(request, url):
 
 
 @csrf_protect
-def render_staticpage(request, flatpage):
-    """Internal interface to the flat page view."""
+def render_staticpage(request, static_page: StaticPage):
+    """Internal interface to the staticpage view."""
     # If registration is required for accessing this page, and the user isn't
     # logged in, redirect to the login page.
-    if flatpage.registration_required and not request.user.is_authenticated:
+    if static_page.registration_required and not request.user.is_authenticated:
         from django.contrib.auth.views import redirect_to_login
         return redirect_to_login(request.path)
-    if flatpage.template_name:
-        template = loader.select_template([flatpage.template_name, DEFAULT_TEMPLATE])
+    if static_page.template_name:
+        template = loader.select_template([static_page.template_name, DEFAULT_TEMPLATE])
     else:
         template = loader.get_template(DEFAULT_TEMPLATE)
 
     # To avoid having to always use the "|safe" filter in staticpage templates,
     # mark the title and content as already safe (since they are raw HTML
     # content in the first place).
-    flatpage.title = format_html(flatpage.title)
-    flatpage.content = format_html(flatpage.content)
+    static_page.title = format_html(static_page.title)
+    static_page.content = format_html(static_page.content)
 
-    return HttpResponse(template.render({'page': flatpage}, request))
+    return HttpResponse(template.render({'page': static_page}, request))

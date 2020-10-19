@@ -44,9 +44,9 @@ else:
 
 ADMINS = config(
     'ADMINS',
-    cast=lambda value: [
+    cast=lambda admins: [
         tuple(name_and_email.split(','))
-        for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
+        for name_and_email in admins.replace(', ', ',').replace('; ', ';').split(';')
     ]
 ) if config('ADMINS', default=None) else []
 
@@ -105,7 +105,7 @@ SECURE_REFERRER_POLICY = 'same-origin'
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
     default='localhost, 127.0.0.1',
-    cast=lambda value: [string.strip() for string in value.split(',')]
+    cast=lambda hosts: [string.strip() for string in hosts.split(',')]
 )
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-internal-ips

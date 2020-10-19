@@ -34,13 +34,17 @@ def get_user_email(backend: Backend, response: Dict, **kwargs):
             email = None
             if access_token:
                 request_url = 'https://api.github.com/user/emails'
-                params = {'state': 'open'}
-                headers = {'Authorization': f'token {access_token}'}
-                response = requests.get(request_url, headers=headers, params=params).json()
+                request_params = {'state': 'open'}
+                request_headers = {'Authorization': f'token {access_token}'}
+                response = requests.get(
+                    request_url,
+                    headers=request_headers,
+                    params=request_params
+                ).json()
                 try:
-                    for item in response:
-                        if item.get('primary', False) and item.get('verified', False):
-                            email = item.get('email', None)
+                    for email_item in response:
+                        if email_item.get('primary', False) and email_item.get('verified', False):
+                            email = email_item.get('email', None)
                 except Exception as error:
                     print(f'Error processing response from {request_url}: {type(error)}: {error}')
             if email:
