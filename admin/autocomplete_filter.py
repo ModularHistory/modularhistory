@@ -22,16 +22,20 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
     _parameter_name: str
     m2m_cls: Type[Model]
 
-    def __init__(self, request, params, model, model_admin):
+    def __init__(self, request, query_params, model, model_admin):
         """TODO: add docstring."""
-        super().__init__(request, params, model, model_admin)
+        super().__init__(request, query_params, model, model_admin)
         if self.value():
-            obj = self.m2m_cls.objects.get(pk=self.value())
-            rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{obj}\g<2>', self.rendered_widget)
+            model_instance = self.m2m_cls.objects.get(pk=self.value())
+            rendered_widget = re.sub(
+                r'(selected>).+(</option>)',
+                rf'\g<1>{model_instance}\g<2>',
+                self.rendered_widget
+            )
             self.rendered_widget = format_html(rendered_widget)
 
     def queryset(self, request, queryset):
-        """TODO: add docstring."""
+        """Returns the filtered queryset."""
         if self.value():
             return queryset.filter(**{self._parameter_name: self.value()})
         return queryset

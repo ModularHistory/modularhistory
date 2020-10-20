@@ -5,5 +5,5 @@ register = template.Library()
 
 @register.inclusion_tag('_modal.html')
 def modal():
-    """TODO: add docstring."""
+    """Loads modal HTML into a template."""
     return {}

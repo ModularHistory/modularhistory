@@ -30,9 +30,9 @@ class AttributeesInline(TabularInline):
 
     sortable_field_name = 'position'
 
-    def get_extra(self, request, obj: Optional[models.Quote] = None, **kwargs):
+    def get_extra(self, request, model_instance: Optional[models.Quote] = None, **kwargs):
         """TODO: add docstring."""
-        if obj and obj.attributees.count():
+        if model_instance and model_instance.attributees.count():
             return 0
         return 1
 
@@ -62,7 +62,7 @@ class BitesInline(TabularInline):
 #         )
 #         return qs.filter(content_type_id=ct.id)
 #
-#     def get_extra(self, request, obj=None, **kwargs):
+#     def get_extra(self, request, model_instance=None, **kwargs):
 #         if len(self.get_queryset(request)):
 #             return 0
 #         return 1
@@ -112,9 +112,9 @@ class QuoteAdmin(SearchableModelAdmin):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 
-    def get_fields(self, request, obj=None):
-        """TODO: add docstring."""
-        fields = list(super().get_fields(request, obj))
+    def get_fields(self, request, model_instance=None):
+        """Returns reordered fields to be displayed in the admin."""
+        fields = list(super().get_fields(request, model_instance))
         for field_name in ('date', 'date_is_circa'):
             if fields and field_name in fields:
                 fields.remove(field_name)

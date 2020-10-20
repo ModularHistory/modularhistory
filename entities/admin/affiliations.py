@@ -3,20 +3,20 @@ from entities import models
 
 
 class RoleAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for roles."""
 
     search_fields = ['name']
 
 
 class RolesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for roles."""
 
     model = models.Affiliation.roles.through
     autocomplete_fields = ['role']
     extra = 0
 
     def get_fields(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Returns reordered fields to be displayed in the admin."""
         fields = super().get_fields(*args, **kwargs)
         for field in ('start_date', 'end_date'):
             if field in fields:
@@ -26,7 +26,7 @@ class RolesInline(TabularInline):
 
 
 class AffiliationAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for affiliations."""
 
     list_display = ['entity', 'affiliated_entity', 'start_date', 'end_date']
     search_fields = list_display
@@ -36,14 +36,14 @@ class AffiliationAdmin(ModelAdmin):
 
 
 class AffiliationsInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for affiliations."""
 
     model = models.Affiliation
     fk_name = 'affiliated_entity'
-    extra = 1
+    autocomplete_fields = AffiliationAdmin.autocomplete_fields
+    inlines = AffiliationAdmin.inlines
     show_change_link = True
-    autocomplete_fields = ['affiliated_entity']
-    inlines = [RolesInline]
+    extra = 1
 
 
 admin_site.register(models.Affiliation, AffiliationAdmin)

@@ -4,44 +4,46 @@ from django.forms import ModelForm
 
 from entities.models import Entity, Group, Idea, Person, Organization
 
+TYPE = 'type'
+
 
 class EntityForm(ModelForm):
-    """TODO: add docstring."""
+    """Form for entity admin."""
 
     class Meta:
         model = Entity
         exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Constructs the form for entity admin."""
         super().__init__(*args, **kwargs)
-        self.initial['type'] = self.instance.type
+        self.initial[TYPE] = self.instance.type
 
 
 class OrganizationForm(ModelForm):
-    """TODO: add docstring."""
+    """Form for organization admin."""
 
     class Meta:
         model = Organization
         exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Constructs the form for organization admin."""
         super().__init__(*args, **kwargs)
-        self.initial['type'] = 'entities.organization'
+        self.initial[TYPE] = 'entities.organization'
 
 
 class PersonForm(ModelForm):
-    """TODO: add docstring."""
+    """Form for person admin."""
 
     class Meta:
         model = Person
         exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Constructs the form for person admin."""
         super().__init__(*args, **kwargs)
-        self.initial['type'] = 'entities.person'
+        self.initial[TYPE] = 'entities.person'
 
     # def clean_email(self):
     #     email = self.cleaned_data.get('email')
@@ -51,20 +53,20 @@ class PersonForm(ModelForm):
 
 
 class GroupForm(ModelForm):
-    """TODO: add docstring."""
+    """Form for group admin."""
 
     class Meta:
         model = Group
         exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Constructs the form for group admin."""
         super().__init__(*args, **kwargs)
-        self.initial['type'] = 'entities.group'
+        self.initial[TYPE] = 'entities.group'
 
 
 class IdeaForm(ModelForm):
-    """TODO: add docstring."""
+    """Form for idea admin."""
 
     class Meta:
         model = Idea

@@ -37,33 +37,33 @@ def staticpage(request, url):
     site = get_current_site(request)
     site_id = site.id if isinstance(site, Site) else 1
     try:
-        f = get_object_or_404(StaticPage, url=url, sites=site_id)
+        flatpage = get_object_or_404(StaticPage, url=url, sites=site_id)
     except Http404:
         if not url.endswith('/') and settings.APPEND_SLASH:
             url = f'{url}/'
-            f = get_object_or_404(StaticPage, url=url, sites=site_id)
+            flatpage = get_object_or_404(StaticPage, url=url, sites=site_id)
             return HttpResponsePermanentRedirect(f'{request.path}/')
         raise
-    return render_staticpage(request, f)
+    return render_staticpage(request, flatpage)
 
 
 @csrf_protect
-def render_staticpage(request, f):
-    """Internal interface to the flat page view."""
+def render_staticpage(request, static_page: StaticPage):
+    """Internal interface to the staticpage view."""
     # If registration is required for accessing this page, and the user isn't
     # logged in, redirect to the login page.
-    if f.registration_required and not request.user.is_authenticated:
+    if static_page.registration_required and not request.user.is_authenticated:
         from django.contrib.auth.views import redirect_to_login
         return redirect_to_login(request.path)
-    if f.template_name:
-        template = loader.select_template([f.template_name, DEFAULT_TEMPLATE])
+    if static_page.template_name:
+        template = loader.select_template([static_page.template_name, DEFAULT_TEMPLATE])
     else:
         template = loader.get_template(DEFAULT_TEMPLATE)
 
     # To avoid having to always use the "|safe" filter in staticpage templates,
     # mark the title and content as already safe (since they are raw HTML
     # content in the first place).
-    f.title = format_html(f.title)
-    f.content = format_html(f.content)
+    static_page.title = format_html(static_page.title)
+    static_page.content = format_html(static_page.content)  # noqa: WPS110
 
-    return HttpResponse(template.render({'page': f}, request))
+    return HttpResponse(template.render({'page': static_page}, request))

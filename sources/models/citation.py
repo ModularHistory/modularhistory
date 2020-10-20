@@ -2,19 +2,19 @@
 
 import re
 from sys import stderr
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, Optional, TYPE_CHECKING, Union
 
-from modularhistory.utils import soupify
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, SET_NULL
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
-from modularhistory.constants import QUOTE_CT_ID
+from modularhistory.constants import QUOTE_CT_ID, EMPTY_STRING
 from modularhistory.models import Model
+from modularhistory.utils.html import soupify, compose_link, components_to_html
 
 if TYPE_CHECKING:
     from quotes.models import Quote
@@ -40,7 +40,7 @@ SOURCE_TYPES = (
 )
 
 CITATION_PHRASE_OPTIONS = (
-    (None, ''),
+    (None, EMPTY_STRING),
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in'),
     ('partially reproduced in', 'partially reproduced in')
@@ -83,41 +83,43 @@ class Citation(Model):
         ordering = ['position', 'source']
 
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
+    page_string_regex = re.compile(PAGE_STRING_REGEX)
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the citation's string representation."""
         return soupify(self.html).get_text()
 
     @property
     def html(self) -> SafeString:
-        """TODO: write docstring."""
+        """Returns the citation's HTML representation."""
         html = f'{self.source.html}'
-        if self.page_number:
-            page_string = self.page_html or ''
+        if self.primary_page_number:
+            page_string = self.page_number_html or EMPTY_STRING
             # Replace the source's page string if it exists
-            page_str_regex = re.compile(PAGE_STRING_REGEX)
-            match = page_str_regex.match(html)
+            match = self.page_string_regex.match(html)
             if match:
-                _page_string = match.group(1)
-                html = html.replace(_page_string, page_string)
+                default_page_string = match.group(1)
+                html = html.replace(default_page_string, page_string)
             else:
                 html = f'{html}, {page_string}'
         if self.pk and self.source.attributees.exists():
             if self.content_type_id == QUOTE_CT_ID:
                 quote: Quote = self.content_object  # type: ignore
                 if quote.ordered_attributees != self.source.ordered_attributees:
-                    initial_html = html
+                    source_html = html
                     if quote.citations.filter(position__lt=self.position).exists():
                         prior_citations = quote.citations.filter(position__lt=self.position)
                         prior_citation = prior_citations.last()
                         if 'quoted in' not in str(prior_citation):
-                            html = f'quoted in {initial_html}'
+                            html = f'quoted in {source_html}'
                         else:
-                            html = f'also in {initial_html}'
+                            html = f'also in {source_html}'
                     else:
-                        html = f'{quote.attributee_string or "Unknown person"}'
-                        html = f'{html}, {quote.date_string}' if quote.date else ''
-                        html = f'{html}, quoted in {initial_html}'
+                        html = components_to_html([
+                            f'{quote.attributee_string or "Unidentified person"}',
+                            f'{quote.date_string}' if quote.date else EMPTY_STRING,
+                            f'quoted in {source_html}'
+                        ])
         # TODO: Remove search icon so citations can be joined together with semicolons
         # if self.source_file_url:
         #     html += (
@@ -142,44 +144,46 @@ class Citation(Model):
 
     @property
     def html_id(self) -> Optional[str]:
-        """TODO: write docstring."""
+        """Returns the citation's HTML id."""
         if self.pk:
             return f'citation-{self.pk}'
         return None
 
     @property
     def number(self):
-        """TODO: write docstring."""
+        """Returns the citation's 1-based index in its source's citation set."""
         return self.position + 1
 
     @property
-    def page_number(self) -> Optional[int]:
-        """TODO: write docstring."""
-        if not self.pages.exists():
+    def primary_page_number(self) -> Optional[int]:
+        """Returns the page number of the citation's primary page range."""
+        try:
+            return self.pages.first().page_number
+        except (ObjectDoesNotExist, AttributeError):
             return None
-        return self.pages.first().page_number
 
     @property
-    def page_html(self) -> Optional[str]:
-        """TODO: write docstring."""
-        page_strings = [pr.html for pr in self.pages.all()]
-        page_string = ', '.join(page_strings)
-        return format_html(page_string)
+    def page_number_html(self) -> Optional[str]:
+        """Returns the HTML representation of the citation's page numbers."""
+        page_number_strings = [page_range.html for page_range in self.pages.all()]
+        if page_number_strings:
+            return format_html(', '.join(page_number_strings))
+        return None
 
     @property
     def source_file_page_number(self) -> Optional[int]:
-        """TODO: write docstring."""
-        file = self.source.file
+        """Returns the page number of the citation's source file."""
+        file = self.source.source_file
         if file:
-            if self.page_number:
-                return self.page_number + file.page_offset
+            if self.primary_page_number:
+                return self.primary_page_number + file.page_offset
             elif hasattr(self.source, 'file_page_number'):
                 return self.source.file_page_number
         return None
 
     @property
     def source_file_url(self) -> Optional[str]:
-        """TODO: write docstring."""
+        """Returns the URL of the citation's source file."""
         file_url = self.source.file_url
         if file_url and self.source_file_page_number:
             if 'page=' in file_url:
@@ -188,9 +192,33 @@ class Citation(Model):
                 file_url = f'{file_url}#page={self.source_file_page_number}'
         return file_url
 
+    def get_page_number_url(self, page_number: Union[str, int]) -> Optional[str]:
+        """Returns a URL to a specific page of the citation's source file."""
+        page_number = int(page_number)
+        file_url = self.source.file_url or None
+        if not file_url:
+            return None
+        page_number += self.source.source_file.page_offset
+        if 'page=' in file_url:
+            page_number_url = re.sub(r'page=\d+', f'page={page_number}', file_url)
+        else:
+            page_number_url = f'{file_url}#page={page_number}'
+        return page_number_url
+
+    def get_page_number_link(
+        self,
+        page_number: Union[str, int],
+        url: Optional[str] = None
+    ) -> Optional[str]:
+        """Returns a page number link string based on page_number."""
+        url = url or self.get_page_number_url(page_number)
+        if not url:
+            return None
+        return compose_link(page_number, href=url, klass='display-source', target='_blank')
+
     @classmethod
     def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> Optional[str]:
-        """Return the obj's HTML based on a placeholder in the admin."""
+        """Return the object's HTML based on a placeholder in the admin."""
         if not re.match(ADMIN_PLACEHOLDER_REGEX, match.group(0)):
             raise ValueError(f'{match} does not match {ADMIN_PLACEHOLDER_REGEX}')
 
@@ -208,27 +236,29 @@ class Citation(Model):
             return None
         html_id = citation.html_id
         source_string = str(citation)
-        page_str = match.group(3)
+        page_string = match.group(3)
         quotation = match.group(5)
-        if page_str:
-            page_str = page_str.strip()
-            page_str_regex = re.compile(PAGE_STRING_REGEX)
-            page_str_match = page_str_regex.match(source_string)
+        if page_string:
+            page_string = page_string.strip()
+            page_str_match = cls.page_string_regex.match(source_string)
             if page_str_match:
-                _page_string = page_str_match.group(1)
-                source_string = source_string.replace(_page_string, page_str)
+                default_page_string = page_str_match.group(1)
+                source_string = source_string.replace(default_page_string, page_string)
             else:
-                source_string = f'{source_string}, {page_str}'
+                source_string = f'{source_string}, {page_string}'
         if quotation:
             source_string = f'{source_string}: {quotation}'
         source_string = source_string.replace('"', '&quot;').replace("'", '&#39;')
-        return (
-            f'<a href="#{html_id}" title="{source_string}"><sup>{citation.number}</sup></a>'
+        return compose_link(
+            f'<sup>{citation.number}</sup>',
+            href=f'#{html_id}',
+            klass='citation-link',
+            title=source_string
         )
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
-        """Return an up-to-date placeholder for an obj included in an HTML field."""
+        """Return an up-to-date placeholder for a citation included in an HTML field."""
         placeholder = match.group(0)
         appendage = match.group(6)
         updated_appendage = f'<span style="display: none">{cls.get_object_html(match)}</span>'

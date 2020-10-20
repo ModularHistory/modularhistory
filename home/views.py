@@ -7,7 +7,7 @@ from search.forms import SearchForm
 
 
 class HomePageView(TemplateView):
-    """TODO: add docstring."""
+    """Renders the homepage."""
 
     template_name = 'home/index.html'
 
@@ -20,7 +20,7 @@ class HomePageView(TemplateView):
     db: str = 'default'
 
     def get_context_data(self, **kwargs) -> Dict:
-        """TODO: add docstring."""
+        """Returns the context data used in rendering the homepage."""
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get('query')
         context['query'] = query

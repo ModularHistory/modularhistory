@@ -44,9 +44,9 @@ else:
 
 ADMINS = config(
     'ADMINS',
-    cast=lambda value: [
+    cast=lambda admins: [
         tuple(name_and_email.split(','))
-        for name_and_email in value.replace(', ', ',').replace('; ', ';').split(';')
+        for name_and_email in admins.replace(', ', ',').replace('; ', ';').split(';')
     ]
 ) if config('ADMINS', default=None) else []
 
@@ -105,7 +105,7 @@ SECURE_REFERRER_POLICY = 'same-origin'
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
     default='localhost, 127.0.0.1',
-    cast=lambda v: [s.strip() for s in v.split(',')]
+    cast=lambda hosts: [string.strip() for string in hosts.split(',')]
 )
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-internal-ips
@@ -263,10 +263,13 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 WSGI_APPLICATION = 'modularhistory.wsgi.application'
 
-NOSE_ARGS = [
-    '--with-coverage',
-    # '--cover-package=foo,bar',  # which apps to measure coverage for
-]
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -557,7 +560,9 @@ TINYMCE_DEFAULT_CONFIG = {
                     let content = editor.selection.getContent();
                     if (content.length) {
                         content = content.replace("<mark>", "").replace("</mark>", "");
-                        editor.selection.setContent("<mark>" + editor.selection.getContent() + '</mark>');
+                        editor.selection.setContent(
+                            "<mark>" + editor.selection.getContent() + '</mark>'
+                        );
                     }
                 }
             });
@@ -571,7 +576,9 @@ TINYMCE_DEFAULT_CONFIG = {
                         let opening_tag = '<span style="font-variant: small-caps">';
                         let closing_tag = '</span>';
                         content = content.replace(opening_tag, '').replace(closing_tag, '');
-                        editor.selection.setContent(opening_tag + editor.selection.getContent() + closing_tag);
+                        editor.selection.setContent(
+                            opening_tag + editor.selection.getContent() + closing_tag
+                        );
                     }
                 }
             });
@@ -583,7 +590,9 @@ TINYMCE_DEFAULT_CONFIG = {
                     let content = editor.selection.getContent();
                     if (content.length) {
                         content = content.replace("<mark>", "").replace("</mark>", "");
-                        editor.selection.setContent("<mark>" + editor.selection.getContent() + '</mark>');
+                        editor.selection.setContent(
+                            "<mark>" + editor.selection.getContent() + '</mark>'
+                        );
                     }
                 }
             });
@@ -597,7 +606,9 @@ TINYMCE_DEFAULT_CONFIG = {
                         let opening_tag = '<span style="font-variant: small-caps">';
                         let closing_tag = '</span>';
                         content = content.replace(opening_tag, '').replace(closing_tag, '');
-                        editor.selection.setContent(opening_tag + editor.selection.getContent() + closing_tag);
+                        editor.selection.setContent(
+                            opening_tag + editor.selection.getContent() + closing_tag
+                        );
                     }
                 }
             });
@@ -607,7 +618,9 @@ TINYMCE_DEFAULT_CONFIG = {
 TINYMCE_SPELLCHECKER = True
 
 # https://github.com/jonasundderwolf/django-image-cropping
-THUMBNAIL_PROCESSORS = ('image_cropping.thumbnail_processors.crop_corners',) + ThumbnailSettings.THUMBNAIL_PROCESSORS
+THUMBNAIL_PROCESSORS = (
+    'image_cropping.thumbnail_processors.crop_corners',
+) + ThumbnailSettings.THUMBNAIL_PROCESSORS
 
 # https://pypi.org/project/django-bootstrap-datepicker-plus/
 BOOTSTRAP4 = {'include_jquery': False}
@@ -689,8 +702,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='localhost')
 try:
     EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
-except Exception as e:
-    print(f'{e}', file=sys.stderr)
+except Exception as error:
+    print(f'{error}', file=sys.stderr)
     EMAIL_PORT = 587
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')

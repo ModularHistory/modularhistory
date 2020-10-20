@@ -3,7 +3,7 @@ from topics import models
 
 
 class TopicRelationsInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a topic's related topics."""
 
     model = models.Topic.related_topics.through
     fk_name = 'from_topic'
@@ -21,7 +21,7 @@ class TopicRelationsInline(TabularInline):
 
 
 class ParentTopicsInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a topic's parent topics."""
 
     model = models.Topic.parent_topics.through
     fk_name = 'child_topic'
@@ -32,7 +32,7 @@ class ParentTopicsInline(TabularInline):
 
 
 class ChildTopicsInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a topic's child topics."""
 
     model = models.Topic.parent_topics.through
     fk_name = 'parent_topic'
@@ -43,7 +43,7 @@ class ChildTopicsInline(TabularInline):
 
 
 class TopicAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for topics."""
 
     list_display = [
         'key',

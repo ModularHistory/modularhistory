@@ -17,7 +17,7 @@ class IndexView(generic.ListView):
 
 
 class DetailView(generic.DetailView):
-    """TODO: add docstring."""
+    """View depicting details of a specific image."""
 
     model = Image
     template_name = 'images/detail.html'
@@ -25,7 +25,7 @@ class DetailView(generic.DetailView):
 
 
 class DetailPartView(generic.DetailView):
-    """TODO: add docstring."""
+    """Partial view depicting details of a specific image."""
 
     model = Image
     template_name = 'images/_detail.html'

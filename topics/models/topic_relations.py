@@ -19,7 +19,10 @@ class TopicRelation(Model):
     content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
-    weight = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(MAX_WEIGHT)], default=DEFAULT_WEIGHT)
+    weight = models.PositiveSmallIntegerField(
+        choices=[(index, index) for index in range(MAX_WEIGHT)],
+        default=DEFAULT_WEIGHT
+    )
 
     class Meta:
         unique_together = ['topic', 'content_type', 'object_id']

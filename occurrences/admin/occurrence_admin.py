@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from admin.model_admin import ModelAdmin, SearchableModelAdmin, admin_site
+from admin import ModelAdmin, SearchableModelAdmin, admin_site
 from modularhistory.models.taggable_model import TopicFilter
 from occurrences import models
 from occurrences.admin.occurrence_filters import EntityFilter, HasDateFilter, HasQuotesFilter, LocationFilter
@@ -63,7 +63,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
 
 
 class OccurrenceChainAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for occurrence chains."""
 
     base_model = models.OccurrenceChain
     inlines = [OccurrencesInline]

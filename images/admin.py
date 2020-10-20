@@ -36,14 +36,14 @@ class ImageAdmin(ImageCroppingMixin, ModelAdmin):
     ]
     inlines = [EntitiesInline, OccurrencesInline]
     search_fields = Image.searchable_fields
-    readonly_fields = ['height', 'width']
+    readonly_fields = ['height', 'width', 'links', 'computations']
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 
-    def get_fields(self, request, obj=None):
-        """TODO: add docstring."""
-        fields = super().get_fields(request, obj)
+    def get_fields(self, request, model_instance=None):
+        """Returns reordered fields to be displayed in the admin."""
+        fields = super().get_fields(request, model_instance)
         for field_name in ('date_is_circa', 'date', 'type', 'image', 'hidden', 'verified'):
             if field_name in fields:
                 fields.remove(field_name)

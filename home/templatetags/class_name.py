@@ -4,6 +4,6 @@ register = template.Library()
 
 
 @register.filter()
-def class_name(value):
-    """TODO: add docstring."""
-    return value.__class__.__name__
+def class_name(instance) -> str:
+    """Returns the instance's class name."""
+    return instance.__class__.__name__

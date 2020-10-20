@@ -3,7 +3,7 @@ from massadmin.massadmin import mass_change_selected
 
 
 class AdminSite(BaseAdminSite):
-    """TODO: add docstring."""
+    """ModularHistory's admin site."""
 
     site_header = 'ModularHistory administration'
 

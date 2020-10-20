@@ -11,9 +11,8 @@ register = template.Library()
 
 
 @register.filter(is_safe=True)
-def with_entity_links(value: str):
+def with_entity_links(html: str):
     """TODO: write docstring."""
-    html = value
     if re.search(ENTITY_NAME_REGEX, html):
         # from entities.models import Entity
         processed_entity_keys = []
@@ -30,6 +29,6 @@ def with_entity_links(value: str):
                         f'target="_blank">{entity_name}</a>'
                     )
                     html = html.replace(match.group(0), entity_link, 1)
-                except Exception as e:
-                    print(f'{e}', file=stderr)
+                except Exception as error:
+                    print(f'{error}', file=stderr)
     return format_html(html)

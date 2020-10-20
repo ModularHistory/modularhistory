@@ -6,9 +6,10 @@ from modularhistory.forms import SimpleArrayField
 
 
 class ArrayField(PostgresArrayField):
-    """TODO: add docstring."""
+    """An array field."""
+
     def formfield(self, **kwargs) -> Field:
-        """TODO: add docstring."""
+        """Constructs the field to be used in forms."""
         return super(PostgresArrayField, self).formfield(**{
             'form_class': SimpleArrayField,
             'base_field': self.base_field.formfield(),

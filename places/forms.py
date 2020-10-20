@@ -8,7 +8,7 @@ from .models import Place, Continent, Country, Region, State, County, City, Venu
 class _PlaceForm(ModelForm):
     """TODO: add docstring."""
 
-    type: Optional[str] = None
+    type: Optional[str] = None  # noqa: WPS125
 
     def __init__(self, *args, **kwargs):
         """TODO: add docstring."""
@@ -27,7 +27,7 @@ class PlaceForm(_PlaceForm):
 class ContinentForm(_PlaceForm):
     """TODO: add docstring."""
 
-    type = 'places.continent'
+    type = 'places.continent'  # noqa: WPS125
 
     class Meta:
         model = Continent
@@ -37,7 +37,7 @@ class ContinentForm(_PlaceForm):
 class CountryForm(_PlaceForm):
     """TODO: add docstring."""
 
-    type = 'places.country'
+    type = 'places.country'  # noqa: WPS125
 
     class Meta:
         model = Country
@@ -47,7 +47,7 @@ class CountryForm(_PlaceForm):
 class RegionForm(ModelForm):
     """TODO: add docstring."""
 
-    type = 'places.region'
+    type = 'places.region'  # noqa: WPS125
 
     class Meta:
         model = Region
@@ -57,7 +57,7 @@ class RegionForm(ModelForm):
 class StateForm(ModelForm):
     """TODO: add docstring."""
 
-    type = 'places.state'
+    type = 'places.state'  # noqa: WPS125
 
     class Meta:
         model = State
@@ -67,7 +67,7 @@ class StateForm(ModelForm):
 class CountyForm(ModelForm):
     """TODO: add docstring."""
 
-    type = 'places.county'
+    type = 'places.county'  # noqa: WPS125
 
     class Meta:
         model = County
@@ -77,7 +77,7 @@ class CountyForm(ModelForm):
 class CityForm(ModelForm):
     """TODO: add docstring."""
 
-    type = 'places.city'
+    type = 'places.city'  # noqa: WPS125
 
     class Meta:
         model = City
@@ -87,7 +87,7 @@ class CityForm(ModelForm):
 class VenueForm(ModelForm):
     """TODO: add docstring."""
 
-    type = 'places.venue'
+    type = 'places.venue'  # noqa: WPS125
 
     class Meta:
         model = Venue

@@ -82,7 +82,7 @@ class SourceFile(Model):
         """TODO: add docstring."""
         if self.name and self.name != self.file_name:
             full_path = join(settings.MEDIA_ROOT, 'sources')
-            files = [f for f in listdir(full_path) if isfile(join(full_path, f))]
+            files = [file for file in listdir(full_path) if isfile(join(full_path, file))]
             if self.file_name in files:
                 rename(join(full_path, self.file_name), join(full_path, self.name))
                 self.file.name = f'sources/{self.name}'

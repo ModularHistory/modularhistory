@@ -1,10 +1,12 @@
 """Model classes for spoken sources."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.html import soupify
 
 from modularhistory.fields import ExtraField
 from places.models import Venue
 from sources.models.source import Source
+
+JSON_FIELD_NAME = 'extra'
 
 
 class SpokenSource(Source):
@@ -17,7 +19,7 @@ class SpokenSource(Source):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    audience = ExtraField(json_field_name='extra')
+    audience = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     def __str__(self) -> str:
         """TODO: write docstring."""

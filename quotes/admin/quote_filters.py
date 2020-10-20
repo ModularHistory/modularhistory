@@ -11,6 +11,7 @@ from django.utils.html import format_html
 
 from admin.autocomplete_filter import BaseAutocompleteFilter, ManyToManyAutocompleteFilter
 from entities.models import Category, Entity
+from modularhistory.constants import NO, YES
 
 
 class AttributeeFilter(ManyToManyAutocompleteFilter):
@@ -41,16 +42,16 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
         """TODO: add docstring."""
         return reverse('admin:entity_category_search')
 
-    def __init__(self, request, params, model, model_admin):
+    def __init__(self, request, query_params, model, model_admin):
         """TODO: add docstring."""
         try:
-            super().__init__(request, params, model, model_admin)
+            super().__init__(request, query_params, model, model_admin)
         except FieldDoesNotExist:
             if self.parameter_name is None:
                 self.parameter_name = self.field_name
                 if self.use_pk_exact:
                     self.parameter_name = f'{self.parameter_name}__{self.field_pk}__exact'
-            super(BaseAutocompleteFilter, self).__init__(request, params, model, model_admin)
+            super(BaseAutocompleteFilter, self).__init__(request, query_params, model, model_admin)
             if self.rel_model:
                 model = self.rel_model
             widget = AutocompleteSelect(
@@ -77,8 +78,12 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             )
         if self.value():
             print('There is a value!!!!')
-            obj = self.m2m_cls.objects.get(pk=self.value())
-            rendered_widget = re.sub(r'(selected>).+(</option>)', rf'\g<1>{obj}\g<2>', self.rendered_widget)
+            model_instance = self.m2m_cls.objects.get(pk=self.value())
+            rendered_widget = re.sub(
+                r'(selected>).+(</option>)',
+                rf'\g<1>{model_instance}\g<2>',
+                self.rendered_widget
+            )
             self.rendered_widget = format_html(rendered_widget)
 
     def get_queryset_for_field(self, model, name):
@@ -93,17 +98,14 @@ class HasSourceFilter(SimpleListFilter):
     parameter_name = 'has_source'
 
     def lookups(self, request, model_admin):
-        """TODO: add docstring."""
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
+        """Returns an iterable of tuples (value, verbose value)."""
+        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
-        """TODO: add docstring."""
-        if self.value() == 'Yes':
+        """Returns the filtered queryset."""
+        if self.value() == YES:
             return queryset.exclude(sources=None)
-        if self.value() == 'No':
+        if self.value() == NO:
             return queryset.filter(sources=None)
 
 
@@ -114,7 +116,7 @@ class AttributeeCountFilter(SimpleListFilter):
     parameter_name = 'attributee_count'
 
     def lookups(self, request, model_admin):
-        """TODO: add docstring."""
+        """Returns an iterable of tuples (value, verbose value)."""
         return (
             (0, '0'),
             (1, '1'),
@@ -124,15 +126,15 @@ class AttributeeCountFilter(SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        """TODO: add docstring."""
+        """Returns the filtered queryset."""
         queryset = queryset.annotate(attributee_count=Count('attributees'))
         try:
-            n = int(self.value())
+            attributee_count = int(self.value())
         except TypeError:  # `All`
             return queryset
-        if n == 4:
-            return queryset.exclude(attributee_count__lt=n)
-        return queryset.filter(attributee_count=n)
+        if attributee_count == 4:
+            return queryset.exclude(attributee_count__lt=attributee_count)
+        return queryset.filter(attributee_count=attributee_count)
 
 
 class HasMultipleCitationsFilter(SimpleListFilter):
@@ -142,16 +144,13 @@ class HasMultipleCitationsFilter(SimpleListFilter):
     parameter_name = 'has_multiple_citations'
 
     def lookups(self, request, model_admin):
-        """TODO: add docstring."""
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
+        """Returns an iterable of tuples (value, verbose value)."""
+        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
-        """TODO: add docstring."""
+        """Returns the filtered queryset."""
         queryset = queryset.annotate(citation_count=Count('citations'))
-        if self.value() == 'Yes':
+        if self.value() == YES:
             return queryset.exclude(citation_count__lt=2)
-        if self.value() == 'No':
+        if self.value() == NO:
             return queryset.filter(citation_count__gte=2)

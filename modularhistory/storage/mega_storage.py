@@ -57,7 +57,7 @@ class MegaClient(Mega):
                 'g': 1,
                 'n': file_handle
             })
-        k = (
+        keys = (
             file_key[0] ^ file_key[4],
             file_key[1] ^ file_key[5],
             file_key[2] ^ file_key[6],
@@ -70,7 +70,7 @@ class MegaClient(Mega):
         file_url = file_data['g']
         file_size = file_data['s']
         attribs = base64_url_decode(file_data['at'])
-        attribs = decrypt_attr(attribs, k)
+        attribs = decrypt_attr(attribs, keys)
         # file_name = attribs['n']
         input_file = requests.get(file_url, stream=True).raw
         with tempfile.NamedTemporaryFile(
@@ -78,8 +78,11 @@ class MegaClient(Mega):
             prefix='megapy_',
             delete=False
         ) as temp_output_file:
-            k_str = a32_to_str(k)
-            counter = Counter.new(ONE_TWENTY_EIGHT, initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR)
+            k_str = a32_to_str(keys)
+            counter = Counter.new(
+                ONE_TWENTY_EIGHT,
+                initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR
+            )
             aes = AES.new(k_str, AES.MODE_CTR, counter=counter)
             mac_str = '\0' * SIXTEEN
             mac_encryptor = AES.new(k_str, AES.MODE_CBC, mac_str.encode('utf8'))
@@ -89,15 +92,15 @@ class MegaClient(Mega):
                 chunk = aes.decrypt(chunk)
                 temp_output_file.write(chunk)
                 encryptor = AES.new(k_str, AES.MODE_CBC, iv_str)
-                for i in range(0, len(chunk) - SIXTEEN, SIXTEEN):
-                    block = chunk[i:i + SIXTEEN]
+                for index in range(0, len(chunk) - SIXTEEN, SIXTEEN):
+                    block = chunk[index:index + SIXTEEN]
                     encryptor.encrypt(block)
                 # fix for files under 16 bytes failing
                 if file_size > SIXTEEN:
-                    i += SIXTEEN
+                    index += SIXTEEN
                 else:
-                    i = 0
-                block = chunk[i:i + SIXTEEN]
+                    index = 0
+                block = chunk[index:index + SIXTEEN]
                 if len(block) % SIXTEEN:
                     block += b'\0' * (SIXTEEN - (len(block) % SIXTEEN))
                 mac_str = mac_encryptor.encrypt(encryptor.encrypt(block))
@@ -139,7 +142,8 @@ class MegaStorage(Storage):
         """
         Returns a datetime of the last accessed time of the file.
 
-        If USE_TZ is True, returns an aware datetime, otherwise returns a naive datetime in the local timezone.
+        If USE_TZ is True, returns an aware datetime;
+        otherwise returns a naive datetime in the local timezone.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_accessed_time
         """
@@ -208,10 +212,12 @@ class MegaStorage(Storage):
 
     def generate_filename(self, filename: str) -> str:
         """
-        Validates the filename by calling get_valid_name() and returns a filename to be passed to the save() method.
+        Validates the filename by calling get_valid_name().
+        Returns a filename to be passed to the save() method.
 
-        The filename argument may include a path as returned by FileField.upload_to. In that case,
-        the path won’t be passed to get_valid_name() but will be prepended back to the resulting name.
+        The filename argument may include a path as returned by FileField.upload_to.
+        In that case, the path won’t be passed to get_valid_name() but will be
+        prepended back to the resulting name.
 
         The default implementation uses os.path operations.
         Override this method if that’s not appropriate for your storage.
@@ -231,19 +237,25 @@ class MegaStorage(Storage):
         # TODO
         raise NotImplementedError
 
-    def open(self, name: str, mode: str = 'rb') -> File:
+    def open(self, name: str, mode: str = 'rb') -> File:  # noqa: WPS125
         """
         Opens the file given by name.
 
-        Note that although the returned file is guaranteed to be a File object, it might actually be some subclass.
-        In the case of remote file storage this means that reading/writing could be quite slow, so be warned.
+        Although the returned file is guaranteed to be a File object,
+        it might actually be some subclass. In the case of remote file storage,
+        this means that reading/writing could be quite slow.  Be warned.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.open
         """
         url = mega_client.get_url_from_name(name)
         return mega_client.get_temporary_file(url, mode=mode)
 
-    def save(self, name: Optional[str], content: IO[Any], max_length: Optional[int] = None) -> str:
+    def save(
+        self,
+        name: Optional[str],
+        content: IO[Any],  # noqa: WPS110
+        max_length: Optional[int] = None
+    ) -> str:
         """
         Saves a new file using the storage system, preferably with the name specified.
 

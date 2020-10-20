@@ -9,6 +9,7 @@ from django.http import HttpRequest
 from django_select2.forms import Select2MultipleWidget
 
 from entities.models import Entity
+from modularhistory.constants import EMPTY_STRING
 from modularhistory.forms import HistoricDateFormField
 from modularhistory.widgets.historic_date_widget import YearInput
 from search.models import CONTENT_TYPE_OPTIONS, ORDERING_OPTIONS
@@ -109,7 +110,7 @@ class SearchForm(forms.Form):
         layout = [
             HTML('<div class="flexbox-holy-albatross">'),
             Field('query', css_class='form-control'),
-            Field('ordering', css_class=''),
+            Field('ordering', css_class=EMPTY_STRING),
             HTML('</div>'),
             HTML(
                 '<div class="card card-default">'
@@ -124,12 +125,12 @@ class SearchForm(forms.Form):
                 '<div class="card-body flexbox-holy-albatross">'
             ) if collapse_refinements else HTML('<div class="flexbox-holy-albatross">'),
             # date range
-            Div('start_year', css_class=''),
-            Div('end_year', css_class=''),
-            Field('entities', css_class=''),
-            Field('topics', css_class=''),
-            Div('quality', css_class=''),
-            Div('content_types', css_class=''),
+            Div('start_year', css_class=EMPTY_STRING),
+            Div('end_year', css_class=EMPTY_STRING),
+            Field('entities', css_class=EMPTY_STRING),
+            Field('topics', css_class=EMPTY_STRING),
+            Div('quality', css_class=EMPTY_STRING),
+            Div('content_types', css_class=EMPTY_STRING),
             HTML(
                 '</div>'
                 '</div>'

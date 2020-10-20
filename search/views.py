@@ -24,30 +24,28 @@ from sources.models import Source
 from topics.models import Topic
 
 
-def date_sorter(x: Union[Model, DatedModel]):
+def date_sorter(model_instance: Union[Model, DatedModel]):
     """TODO: add docstring."""
-    get_date = getattr(x, 'get_date', None)
+    get_date = getattr(model_instance, 'get_date', None)
     if get_date is not None:
         date = get_date()
     else:
-        date = getattr(x, 'date', None)
+        date = getattr(model_instance, 'date', None)
     if not date:
         date = HistoricDateTime(1, 1, 1, 0, 0, 0)
-
     # Display precise dates before ranges, e.g., "1500" before "1500 – 2000"
-    if getattr(x, 'end_date', None):
+    if getattr(model_instance, 'end_date', None):
         microsecond = date.microsecond + 1
         date = date.replace(microsecond=microsecond)
-
     return date
 
 
-def rank_sorter(x: Union[Model]):
+def rank_sorter(model_instance: Model):
     """TODO: add docstring."""
-    rank = getattr(x, 'rank', None)
+    rank = getattr(model_instance, 'rank', None)
     if not rank:
         raise Exception('No rank')
-    print(f'>>> {rank}: {x}\n')
+    print(f'>>> {rank}: {model_instance}\n')
     return rank
 
 
@@ -138,7 +136,7 @@ class SearchResultsView(ListView):
         occurrence_result_ids = []
         if OCCURRENCE_CT_ID in ct_ids or not ct_ids:
             occurrence_results = Occurrence.objects.search(**search_kwargs)
-            occurrence_result_ids = [o.id for o in occurrence_results]
+            occurrence_result_ids = [occurrence.id for occurrence in occurrence_results]
         else:
             occurrence_results = Occurrence.objects.none()
 
@@ -152,7 +150,7 @@ class SearchResultsView(ListView):
                     Q(relations__content_type_id=OCCURRENCE_CT_ID) &
                     Q(relations__object_id__in=occurrence_result_ids)
                 )
-            quote_result_ids = [q.id for q in quote_results]
+            quote_result_ids = [quote.id for quote in quote_results]
         else:
             quote_results = Quote.objects.using(db).none()
 

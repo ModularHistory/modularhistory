@@ -10,12 +10,17 @@ from account.models import User
 
 LOGIN_PATH = '/login/'
 
+BACKEND_NAME = 'name'
+AUTH_KEY = 'auth'
+PROVIDER_KEY = 'provider'
+HANDLE_KEY = 'handle'
+
 
 class ProfileView(LoginRequiredMixin, View):
     """Profile view."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """TODO: add docstring."""
+        """Renders the profile view upon request."""
         if isinstance(request.user, User):
             user: User = request.user
             context = {
@@ -32,33 +37,50 @@ class SettingsView(LoginRequiredMixin, View):
     """Account settings view."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """TODO: add docstring."""
+        """Renders the settings view upon request."""
         if isinstance(request.user, User):
             user: User = request.user
             social_auth_backends = [
-                {'provider': 'google_oauth2', 'name': 'Google', 'auth': None, 'handle': None},
-                {'provider': 'facebook', 'name': 'Facebook', 'auth': None, 'handle': None},
-                {'provider': 'twitter', 'name': 'Twitter', 'auth': None, 'handle': None},
-                {'provider': 'github', 'name': 'GitHub', 'auth': None, 'handle': None},
+                {
+                    PROVIDER_KEY: 'google_oauth2',
+                    BACKEND_NAME: 'Google',
+                    AUTH_KEY: None,
+                    HANDLE_KEY: None
+                },
+                {
+                    PROVIDER_KEY: 'facebook',
+                    BACKEND_NAME: 'Facebook',
+                    AUTH_KEY: None,
+                    HANDLE_KEY: None
+                },
+                {
+                    PROVIDER_KEY: 'twitter',
+                    BACKEND_NAME: 'Twitter',
+                    AUTH_KEY: None,
+                    HANDLE_KEY: None
+                },
+                {
+                    PROVIDER_KEY: 'github',
+                    BACKEND_NAME: 'GitHub',
+                    AUTH_KEY: None,
+                    HANDLE_KEY: None
+                },
             ]
             for backend in social_auth_backends:
-                backend_name = backend['name']
+                backend_name = backend[BACKEND_NAME]
                 try:
-                    auth = user.social_auth.get(provider=backend['provider'])
-                    backend['auth'] = auth
-                    backend['handle'] = get_user_handle_from_auth(auth)
+                    auth = user.social_auth.get(provider=backend[PROVIDER_KEY])
+                    backend[AUTH_KEY] = auth
+                    backend[HANDLE_KEY] = get_user_handle_from_auth(auth)
                 except UserSocialAuth.DoesNotExist:
                     pass
-                except Exception as e:
-                    print(f'Error processing social auth integration: {type(e)}: {e}')
+                except Exception as error:
+                    print(f'Error processing social auth integration: {type(error)}: {error}')
                 backend['domain'] = f'{backend_name.lower()}.com'
 
             can_disconnect = (user.social_auth.count() > 1 or user.has_usable_password())
 
             context = {
-                'user': user,
-                'name': user.get_full_name(),
-                'email': user.email,
                 'profile_image': user.avatar or 'nobody_m.jpg',
                 'social_auth_backends': social_auth_backends,
                 'can_disconnect': can_disconnect,
@@ -68,7 +90,7 @@ class SettingsView(LoginRequiredMixin, View):
 
 
 def get_user_handle_from_auth(auth: Optional[UserSocialAuth]) -> Optional[str]:
-    """Given a social auth obj, return the user's social media handle/username."""
+    """Given a social auth object, return the user's social media handle/username."""
     provider = auth.provider
     if provider == 'twitter':
         return auth.extra_data['access_token']['screen_name']

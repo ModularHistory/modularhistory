@@ -9,8 +9,8 @@ register = template.Library()
 
 
 @register.filter()
-def get_detail_url(obj: Model) -> Optional[str]:
-    """TODO: add docstring."""
-    if obj:
-        return reverse(f'{obj._meta.app_label}:detail', args=[obj.id])
+def get_detail_url(model_instance: Model) -> Optional[str]:
+    """Returns the URL for the model instance's detail page."""
+    if model_instance:
+        return reverse(f'{model_instance.get_meta().app_label}:detail', args=[model_instance.id])
     return None

@@ -2,26 +2,32 @@
 
 from typing import Optional
 
-from modularhistory.utils import soupify
 from django.core.exceptions import ValidationError
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from humanize import ordinal
 
+from modularhistory.constants import EMPTY_STRING
 from modularhistory.fields import ExtraField
+from modularhistory.utils.html import soupify
 from sources.models.textual_source import TextualSource
+
+JSON_FIELD_NAME = 'extra'
+
+STRING = 'string'
+NUMBER = 'number'
 
 
 class Book(TextualSource):
     """A book (as a source)."""
 
     extra_fields = {
-        'translator': 'string',
-        'publisher': 'string',
-        'edition_number': 'number',
-        'edition_year': 'number',
-        'printing_number': 'number',
-        'volume_number': 'number'
+        'translator': STRING,
+        'publisher': STRING,
+        'edition_number': NUMBER,
+        'edition_year': NUMBER,
+        'printing_number': NUMBER,
+        'volume_number': NUMBER
     }
 
     # translator = jsonstore.CharField(
@@ -31,7 +37,7 @@ class Book(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    translator = ExtraField(json_field_name='extra')
+    translator = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # publisher = jsonstore.CharField(
     #     max_length=100,
@@ -40,7 +46,7 @@ class Book(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    publisher = ExtraField(json_field_name='extra')
+    publisher = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # edition_number = jsonstore.PositiveSmallIntegerField(
     #     null=True,
@@ -48,7 +54,7 @@ class Book(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    edition_number = ExtraField(json_field_name='extra')
+    edition_number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # edition_year = jsonstore.CharField(
     #     null=True,
@@ -57,7 +63,7 @@ class Book(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    edition_year = ExtraField(json_field_name='extra')
+    edition_year = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # printing_number = jsonstore.PositiveSmallIntegerField(
     #     null=True,
@@ -65,7 +71,7 @@ class Book(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    printing_number = ExtraField(json_field_name='extra')
+    printing_number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # volume_number = jsonstore.PositiveSmallIntegerField(
     #     null=True,
@@ -73,7 +79,7 @@ class Book(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    volume_number = ExtraField(json_field_name='extra')
+    volume_number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     def __str__(self) -> str:
         """Returns the book's string representation."""
@@ -136,14 +142,14 @@ class Book(TextualSource):
     def __html__(self) -> str:
         """Return the book's HTML representation."""
         components = [
-            self.attributee_string if self.attributee_string else '',
-            f'<i>{self.linked_title}</i>' if self.title else '',
+            self.attributee_string if self.attributee_string else EMPTY_STRING,
+            f'<i>{self.linked_title}</i>' if self.title else EMPTY_STRING,
             self.edition_string,
             self.printing_string,
-            f'ed. {self.editors}' if self.editors else '',
-            f'translated by {self.translator}' if self.translator else '',
-            f'{self.publisher}' if self.publisher else '',
-            f'vol. {self.volume_number}' if self.volume_number else ''
+            f'ed. {self.editors}' if self.editors else EMPTY_STRING,
+            f'translated by {self.translator}' if self.translator else EMPTY_STRING,
+            f'{self.publisher}' if self.publisher else EMPTY_STRING,
+            f'vol. {self.volume_number}' if self.volume_number else EMPTY_STRING
         ]
         if self.date and not self.has_edition_year and not self.has_printing:
             components.append(f'{self.date.year}')
@@ -184,7 +190,10 @@ class SectionSource(TextualSource):
             container_html = f'{self.container.html}'
             if self.attributee_string:
                 if self.attributee_string == self.container.attributee_string:
-                    container_html = container_html.replace(f'{self.attributee_string}, ', '')
+                    container_html = container_html.replace(
+                        f'{self.attributee_string}, ',
+                        EMPTY_STRING
+                    )
         if self.attributee_string:
             attributee_string = self.attributee_string
         elif self.container:

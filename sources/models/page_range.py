@@ -1,13 +1,12 @@
-import re
-from typing import Optional, Union
+from typing import Optional
 
-from modularhistory.utils import soupify
 from django.core.exceptions import ValidationError
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 from modularhistory.models import Model
+from modularhistory.utils.html import soupify
 
 
 class PageRange(Model):
@@ -31,37 +30,16 @@ class PageRange(Model):
         citation = self.citation
         if not self.page_number:
             return None
-        pn = self.page_number
-        end_pn = self.end_page_number or None
-        _url = citation.source.file_url or None
-
-        def get_page_number_url(page_number, url=_url) -> Optional[str]:
-            if not url:
-                return None
-            page_number += citation.source.file.page_offset
-            if 'page=' in url:
-                url = re.sub(r'page=\d+', f'page={page_number}', url)
-            else:
-                url = f'{url}#page={page_number}'
-            return url
-
-        def get_page_number_link(url: str, page_number: Union[str, int]) -> Optional[str]:
-            if not url:
-                return None
-            return (
-                f'<a href="{url}" target="_blank" '
-                f'class="display-source">{page_number}</a>'
-            )
-
-        pn_url = get_page_number_url(pn)
-        pn_html = get_page_number_link(pn_url, pn) or str(pn)
+        pn, end_pn = self.page_number, self.end_page_number or None
+        pn_url = citation.get_page_number_url(pn)
+        pn_html = citation.get_page_number_link(pn, pn_url) or str(pn)
         if end_pn:
-            end_pn_url = get_page_number_url(end_pn)
-            end_pn_html = get_page_number_link(end_pn_url, end_pn) or str(end_pn)
-            page_html = f'pp. {pn_html}–{end_pn_html}'
+            end_pn_url = citation.get_page_number_url(end_pn)
+            end_pn_html = citation.get_page_number_link(end_pn, end_pn_url) or str(end_pn)
+            pn_html = f'pp. {pn_html}–{end_pn_html}'
         else:
-            page_html = f'p. {pn_html}'
-        return format_html(page_html)
+            pn_html = f'p. {pn_html}'
+        return format_html(pn_html)
 
     def clean(self):
         """TODO: add docstring."""

@@ -14,19 +14,18 @@ from modularhistory.structures.source_file import TextualSourceFile
 
 
 def dedupe_files(path: str, new_file_name: Optional[str] = None):
-    """TODO: add docstring."""
+    """Removes duplicate files."""
     # TODO: implement file dedupe for cloud storage
     if not settings.IS_GCP:
         full_path = join(settings.MEDIA_ROOT, path)
         if new_file_name:
             # If uploading a new file, replace an older version if one exists.
-            # TODO: Ensure this doesn't result in replacements of unrelated files that happen to have the same name.
+            # TODO: Ensure this doesn't result in replacements of unrelated files.
             new_file_name, extension = os.path.splitext(new_file_name)
             file_names = []
-            for f in os.listdir(full_path):
-                if isfile(join(full_path, f)) and extension in f:
-                    file_name = f.replace(extension, '')
-                    file_names.append(file_name)
+            for file_name in os.listdir(full_path):
+                if isfile(join(full_path, file_name)) and extension in file_name:
+                    file_names.append(file_name.replace(extension, ''))
             to_remove = []
             for file_name in file_names:
                 if file_name == new_file_name:

@@ -1,11 +1,13 @@
 """Model classes for interviews."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.html import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.spoken_source import SpokenSource
 
 INTERVIEWERS_MAX_LENGTH: int = 200
+
+JSON_FIELD_NAME = 'extra'
 
 
 class Interview(SpokenSource):
@@ -18,7 +20,7 @@ class Interview(SpokenSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    interviewers = ExtraField(null=True, blank=True, json_field_name='extra')
+    interviewers = ExtraField(null=True, blank=True, json_field_name=JSON_FIELD_NAME)
 
     def __str__(self) -> str:
         """TODO: write docstring."""

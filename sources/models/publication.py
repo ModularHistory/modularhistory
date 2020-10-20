@@ -1,4 +1,4 @@
-from modularhistory.utils import soupify
+from modularhistory.utils.html import soupify
 from django.db import models
 from django.utils.safestring import SafeString
 from django.utils.html import format_html
@@ -44,16 +44,16 @@ class Publication(TypedModel, Model):
 class Journal(Publication):
     """A journal that publishes articles."""
 
-    pass
+    pass  # noqa: WPS604
 
 
 class Magazine(Publication):
     """A magazine that publishes articles."""
 
-    pass
+    pass  # noqa: WPS604
 
 
 class Newspaper(Publication):
     """A newspaper that publishes articles."""
 
-    pass
+    pass  # noqa: WPS604

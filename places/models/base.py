@@ -1,0 +1,77 @@
+from django.db import models
+
+from modularhistory.models import Model, TypedModel
+
+PREPOSITION_CHOICES = (
+    ('in', 'in'),
+    ('at', 'at')
+)
+
+
+class PlaceTypes:
+    """Constants for location types."""
+    venue = 'places.venue'
+    city = 'places.city'
+    county = 'places.county'
+    state = 'places.state'
+    country = 'places.country'
+    region = 'places.region'
+    continent = 'places.continent'
+
+
+NAME_MAX_LENGTH: int = 40
+
+
+class Place(TypedModel, Model):
+    """Where something has happened."""
+
+    name = models.CharField(
+        null=True,
+        blank=True,
+        max_length=NAME_MAX_LENGTH,
+        unique=True
+    )
+    location = models.ForeignKey(
+        'self',
+        related_name='places',
+        blank=True, null=True,
+        on_delete=models.PROTECT
+    )
+    preposition = models.CharField(
+        max_length=2,
+        choices=PREPOSITION_CHOICES,
+        default='in'
+    )
+
+    class Meta:
+        unique_together = ['name', 'location']
+
+    def __str__(self) -> str:
+        """TODO: write docstring."""
+        components = [
+            self.name,
+            f'{self.location if self.location else ""}'
+        ]
+        components = [component for component in components if component]
+        return ', '.join(components)
+
+    @property
+    def string(self) -> str:
+        """Presentable string to display in HTML."""
+        location = self.location
+        # TODO: This is hacky; maybe it can be improved.
+        # Don't append the location's location if it's a continent, region, or inferrable country
+        if location:
+            inferrable_countries = ['United States of America']
+            location_is_inferrable_country = (
+                location.type == PlaceTypes.country and
+                location.name in inferrable_countries
+            )
+            location_is_inferrable = (
+                location_is_inferrable_country or
+                location.type in {PlaceTypes.region, PlaceTypes.continent}
+            )
+            if location_is_inferrable:
+                location = None
+        components = [self.name, location.name if location else '']
+        return ', '.join([component for component in components if component])

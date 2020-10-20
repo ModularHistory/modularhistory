@@ -16,7 +16,7 @@ from modularhistory.models import (
     TaggableModel,
     TypedModel
 )
-from modularhistory.structures import HistoricDateTime
+from modularhistory.structures import HistoricDateTime as DateTime
 
 if TYPE_CHECKING:
     from entities.models import Categorization
@@ -75,26 +75,26 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
         ordering = ['name']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the string representation of the entity."""
         return f'{self.name}'
 
     @property
     def has_quotes(self) -> bool:
-        """TODO: add docstring."""
+        """Returns whether the entity has any attributed quotes."""
         return bool(len(self.quotes.all()))
 
     @property
     def truncated_description(self) -> SafeString:
-        """TODO: add docstring."""
+        """Returns the entity's description, truncated."""
         return format_html(truncatechars_html(self.description, TRUNCATED_DESCRIPTION_LENGTH))
 
     def clean(self):
-        """TODO: add docstring."""
+        """Prepares the entity to be saved."""
         super().clean()
         if not self.unabbreviated_name:
             self.unabbreviated_name = self.name
 
-    def get_categorization(self, date: HistoricDateTime) -> Optional['Categorization']:
+    def get_categorization(self, date: DateTime) -> Optional['Categorization']:
         """TODO: add docstring."""
         if not self.categories.exists():
             return None
@@ -104,12 +104,15 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
             categorizations = self.categorizations.all()
         return categorizations.order_by('date', 'category__weight').last()
 
-    def get_categorizations(self, date: Optional[HistoricDateTime] = None) -> 'QuerySet[Categorization]':
+    def get_categorizations(self, date: Optional[DateTime] = None) -> 'QuerySet[Categorization]':
         """Return a list of all applicable categorizations."""
-        categorizations = self.categorizations.exclude(date__gt=date) if date else self.categorizations.all()
+        categorizations = (
+            self.categorizations.exclude(date__gt=date) if date
+            else self.categorizations.all()
+        )
         return categorizations.select_related('category')
 
-    def get_categorization_string(self, date: Optional[HistoricDateTime] = None) -> Optional[str]:
+    def get_categorization_string(self, date: Optional[DateTime] = None) -> Optional[str]:
         """Intelligently build a categorization string, like `conservative LDS apostle`."""
         categorization_string = self.computations.get('categorization_string')
         if not categorization_string:
@@ -119,10 +122,17 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
             # Build the string
             categorization_words: List[str] = []
             for part_of_speech in ('noun', 'any', 'adj'):
-                pos_categorizations = categorizations.filter(category__part_of_speech=part_of_speech)
+                pos_categorizations = categorizations.filter(
+                    category__part_of_speech=part_of_speech
+                )
                 if pos_categorizations.exists():
-                    categorization_str = str(pos_categorizations.order_by('category__weight', 'date').last())
-                    words = [word for word in categorization_str.split(' ') if word not in categorization_words]
+                    categorization_str = str(
+                        pos_categorizations.order_by('category__weight', 'date').last()
+                    )
+                    words = [
+                        word for word in categorization_str.split(' ')
+                        if word not in categorization_words
+                    ]
                     categorization_words = words + categorization_words
             # Remove duplicate words
             categorization_words = list(dict.fromkeys(categorization_words))
@@ -153,7 +163,7 @@ class Deity(Entity):
 
 
 class Group(Entity):
-    """TODO: add docstring."""
+    """A group of people."""
 
     class Meta:
         verbose_name_plural = 'Groups'
@@ -173,5 +183,5 @@ class Organization(Entity):
 
     @property
     def founding_date(self) -> datetime:
-        """TODO: add docstring."""
+        """Returns the date the organization was founded."""
         return self.birth_date

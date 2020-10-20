@@ -1,18 +1,22 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field, HTML
+from crispy_forms.layout import Field, HTML, Layout, Submit
 # from forms.form import FormMixIn, CustomForm
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm as BaseUserCreationForm
 from django.forms import ValidationError
 from django.urls import reverse
 
 from account.models import User
+from account.admin import EMAIL_FIELD, USERNAME_FIELD, PASSWORD_FIELD
+from modularhistory.constants import SOCIAL_AUTH_URL_NAME
+
+DEFAULT_FIELD_CLASSES = 'form-control mb-4'
 
 
 class LoginForm(AuthenticationForm):
     """Crispy login form."""
 
     def __init__(self, request=None, *args, **kwargs):
-        """TODO: add docstring."""
+        """Constructs the login form."""
         super().__init__(request, *args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
@@ -24,15 +28,23 @@ class LoginForm(AuthenticationForm):
         # self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Sign in</p>'),
-            Field('username', css_class='form-control mb-4', placeholder='Username or email address'),
-            Field('password', css_class='form-control mb-4', placeholder='Password'),
+            Field(
+                USERNAME_FIELD,
+                css_class=DEFAULT_FIELD_CLASSES,
+                placeholder='Username or email address'
+            ),
+            Field(
+                PASSWORD_FIELD,
+                css_class=DEFAULT_FIELD_CLASSES,
+                placeholder='Password'
+            ),
             HTML(f'''
                 <div class="d-flex justify-content-around">
                     <div>
                         <!-- Remember me -->
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember">
-                            <label class="custom-control-label" for="defaultLoginFormRemember">Remember me</label>
+                            <input type="checkbox" id="defaultLoginFormRemember">
+                            <label for="defaultLoginFormRemember">Remember me</label>
                         </div>
                     </div>
                     <div>
@@ -47,21 +59,25 @@ class LoginForm(AuthenticationForm):
             HTML(f'''
                 <!-- Social login -->
                 <p>or sign in with:</p>
-                <a href='{reverse("social:begin", args=["facebook"])}' class="mx-2 btn-social btn-facebook"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["facebook"])}'
+                   class="mx-2 btn-social btn-facebook" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href='{reverse("social:begin", args=["twitter"])}' class="mx-2 btn-social btn-twitter"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
+                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["twitter"])}'
+                   class="mx-2 btn-social btn-twitter" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
                     <i class="fab fa-twitter"></i>
                 </a>
-                <a href='{reverse("social:begin", args=["github"])}' class="mx-2 btn-social btn-github"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-github']);">
+                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["github"])}'
+                   class="mx-2 btn-social btn-github" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-github']);">
                     <i class="fab fa-github"></i>
                 </a>
                 <!--
-                <a href='{reverse("social:begin", args=["google-oauth2"])}' class="mx-2 btn-social btn-google"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["google-oauth2"])}'
+                   class="mx-2 btn-social btn-google" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
                     <i class="fab fa-google"></i>
                 </a>
                 -->
@@ -70,12 +86,12 @@ class LoginForm(AuthenticationForm):
 
 
 class UserCreationForm(BaseUserCreationForm):
-    """TODO: add docstring."""
+    """Admin form for user creation."""
 
     class Meta:
         model = User
         exclude = ()
-        # fields = ['username', 'email']
+        # fields = [USERNAME_FIELD, EMAIL_FIELD]
 
 
 class RegistrationForm(UserCreationForm):
@@ -83,10 +99,10 @@ class RegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email']
+        fields = ['first_name', 'last_name', USERNAME_FIELD, EMAIL_FIELD]
 
     def __init__(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Constructs a registration form."""
         super().__init__(*args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
@@ -116,31 +132,35 @@ class RegistrationForm(UserCreationForm):
                 '</div>'
                 '</div>'
             ),
-            Field('email', css_class='form-control mb-4', placeholder='Email address'),
-            Field('username', css_class='form-control mb-4', placeholder='Username'),
-            Field('password1', css_class='form-control mb-4', placeholder='Password'),
-            Field('password2', css_class='form-control mb-4', placeholder='Confirm password'),
+            Field(EMAIL_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Email address'),
+            Field(USERNAME_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Username'),
+            Field('password1', css_class=DEFAULT_FIELD_CLASSES, placeholder='Password'),
+            Field('password2', css_class=DEFAULT_FIELD_CLASSES, placeholder='Confirm password'),
             Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
             HTML(f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'),
             # LoginForm.SOCIAL_LOGIN_COMPONENT,
             HTML(f'''
                 <!-- Social login -->
                 <p>or sign in with:</p>
-                <a href='{reverse("social:begin", args=["facebook"])}' class="mx-2 btn-social btn-facebook"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
+                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["facebook"])}'
+                   class="mx-2 btn-social btn-facebook" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href='{reverse("social:begin", args=["twitter"])}' class="mx-2 btn-social btn-twitter"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
+                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["twitter"])}'
+                   class="mx-2 btn-social btn-twitter" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
                     <i class="fab fa-twitter"></i>
                 </a>
-                <a href='{reverse("social:begin", args=["github"])}' class="mx-2 btn-social btn-github"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-github']);">
+                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["github"])}'
+                   class="mx-2 btn-social btn-github" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-github']);">
                     <i class="fab fa-github"></i>
                 </a>
                 <!--
-                <a href='{reverse("social:begin", args=["google-oauth2"])}' class="mx-2 btn-social btn-google"
-                   role="button" onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
+                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["google-oauth2"])}'
+                   class="mx-2 btn-social btn-google" role="button"
+                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
                     <i class="fab fa-google"></i>
                 </a>
                 -->
@@ -148,39 +168,37 @@ class RegistrationForm(UserCreationForm):
         )
 
     def clean_email(self):
-        """TODO: add docstring."""
-        email = self.cleaned_data.get('email')
-        if not self.cleaned_data.get('username'):
-            self.cleaned_data['username'] = email
+        """Cleans the email field value."""
+        email = self.cleaned_data.get(EMAIL_FIELD)
+        if not self.cleaned_data.get(USERNAME_FIELD):
+            self.cleaned_data[USERNAME_FIELD] = email
         if email and User.objects.filter(email=email).exists():
             raise ValidationError('An account with this email address has already been created.')
         return email
 
     def clean_username(self):
-        """TODO: add docstring."""
-        email = self.cleaned_data.get('email')
-        username = self.cleaned_data.get('username') if self.cleaned_data.get('username') else email
+        """Prepares the username field value to be saved."""
+        email = self.cleaned_data.get(EMAIL_FIELD)
+        username = self.cleaned_data.get(USERNAME_FIELD) or email
         if email:
             if User.objects.filter(email=email).count() > 0:
-                raise ValidationError('An account with this email address has already been created.')
+                raise ValidationError('An account with this email address already exists.')
         if username:
             if User.objects.filter(username=username).count() > 0:
                 raise ValidationError('An account with this username has already been created.')
         return username
 
     def clean_first_name(self):
-        """TODO: add docstring."""
+        """Prepares the first_name field value to be saved."""
         return self.cleaned_data.get('first_name').title()
 
     def clean_last_name(self):
-        """TODO: add docstring."""
+        """Prepares the last_name field value to be saved."""
         return self.cleaned_data.get('last_name').title()
 
     def clean(self):
-        """TODO: add docstring."""
+        """Prepares field values to be saved."""
         cleaned_data = super().clean()
-        # if cleaned_data.get('username') is None:
-        #     cleaned_data['username'] = cleaned_data.get('email')
         if cleaned_data.get('password1') != cleaned_data.get('password2'):
             raise ValidationError('Your passwords need to match. Please try again.')
         return cleaned_data

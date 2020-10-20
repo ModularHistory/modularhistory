@@ -1,6 +1,6 @@
 """Model classes for documents (as sources)."""
 
-from modularhistory.utils import soupify
+from modularhistory.utils.html import soupify
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.safestring import SafeString
@@ -15,6 +15,8 @@ LOCATION_INFO_MAX_LENGTH: int = 400
 DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
 URL_MAX_LENGTH: int = 100
 
+JSON_FIELD_NAME = 'extra'
+
 
 class DocumentSource(SourceWithPageNumbers):
     """A historical document (as a source)."""
@@ -26,7 +28,7 @@ class DocumentSource(SourceWithPageNumbers):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    collection_number = ExtraField(json_field_name='extra')
+    collection_number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # location_info = jsonstore.CharField(
     #     max_length=LOCATION_INFO_MAX_LENGTH,
@@ -36,7 +38,7 @@ class DocumentSource(SourceWithPageNumbers):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    location_info = ExtraField(json_field_name='extra')
+    location_info = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # descriptive_phrase = jsonstore.CharField(
     #     max_length=DESCRIPTIVE_PHRASE_MAX_LENGTH,
@@ -46,7 +48,7 @@ class DocumentSource(SourceWithPageNumbers):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    descriptive_phrase = ExtraField(json_field_name='extra')
+    descriptive_phrase = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # information_url = jsonstore.URLField(
     #     max_length=URL_MAX_LENGTH,
@@ -56,11 +58,11 @@ class DocumentSource(SourceWithPageNumbers):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    information_url = ExtraField(json_field_name='extra')
+    information_url = ExtraField(json_field_name=JSON_FIELD_NAME)
 
 
 class Collection(Model):
-    """TODO: add docstring."""
+    """A collection of documents."""
 
     name = models.CharField(
         max_length=NAME_MAX_LENGTH,
@@ -83,17 +85,17 @@ class Collection(Model):
         unique_together = ['name', 'repository']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the collection's string representation."""
         return soupify(self.__html__).get_text()
 
     @property
     def html(self) -> SafeString:
-        """TODO: write docstring."""
+        """Returns the collection's HTML representation."""
         return format_html(self.__html__)
 
     @property
     def __html__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the collection's HTML representation."""
         components = [
             f'{self.name}' if self.name else '',
             f'{self.repository}',
@@ -102,7 +104,7 @@ class Collection(Model):
 
 
 class Repository(Model):
-    """TODO: add docstring."""
+    """A repository of collections of documents."""
 
     name = models.CharField(
         max_length=NAME_MAX_LENGTH,
@@ -128,7 +130,7 @@ class Repository(Model):
         verbose_name_plural = 'Repositories'
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the repository's string representation."""
         location_string = self.location.string if self.location else None
         components = [self.name, self.owner, location_string]
         return ', '.join([component for component in components if component])
@@ -138,12 +140,12 @@ class Document(DocumentSource):
     """A historical document (as a source)."""
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the document's string representation."""
         return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the repository's HTML representation."""
         components = [
             self.attributee_string,
             self.linked_title if self.title else 'untitled document',

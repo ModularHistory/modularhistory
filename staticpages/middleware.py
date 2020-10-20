@@ -20,7 +20,7 @@ class StaticPageFallbackMiddleware(FlatpageFallbackMiddleware):
         # is a middleware, we can't assume the errors will be caught elsewhere.
         except Http404:
             return response
-        except Exception as e:
+        except Exception as error:
             if settings.DEBUG:
-                raise e
+                raise error
             return response

@@ -15,7 +15,7 @@ class TestSources:
     @pytest.mark.parametrize('source_type', ['sources.book', 'sources.article'])
     # @given(title=text())
     def test_source(self, source_type: str):
-        """TODO: add docstring."""
+        """Test creation of sources."""
         title = f'asdf {source_type}'
         source = Source(
             type=source_type,

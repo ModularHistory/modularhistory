@@ -6,7 +6,7 @@ from admin.model_admin import admin_site, ModelAdmin
 
 
 class IdeaAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for ideas."""
 
     model = models.Idea
     add_form = IdeaForm

@@ -20,7 +20,7 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 
 
 class Model(DjangoModel):
-    """TODO: add docstring."""
+    """Model with additional properties used in ModularHistory apps."""
 
     objects: Manager = Manager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
@@ -71,7 +71,7 @@ class Model(DjangoModel):
         if unique_together:
             unique_together_is_valid = (
                 isinstance(unique_together, (list, tuple)) and
-                all(isinstance(v, str) for v in unique_together)
+                all(isinstance(field_name, str) for field_name in unique_together)
             )
             if not unique_together_is_valid:
                 raise ValueError('The `unique_together` value must be an iterable containing strings.')
@@ -84,7 +84,9 @@ class Model(DjangoModel):
                     unique_fields.append(field.name)
             if unique_fields:
                 return unique_fields
-        raise NotImplementedError('Model must have Meta.unique_together and/or `natural_key_fields` method defined.')
+        raise NotImplementedError(
+            'Model must have Meta.unique_together and/or `natural_key_fields` method defined.'
+        )
 
     def get_admin_url(self):
         """TODO: add docstring."""

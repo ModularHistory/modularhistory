@@ -6,9 +6,16 @@ https://docs.djangoproject.com/en/3.1/topics/checks/
 
 import re
 import subprocess
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
-from modularhistory.linters import utils
+from modularhistory.linters.config import (
+    ConfigFileOptionsParser as BaseConfigFileOptionsParser,
+    LinterOptions,
+    PerModuleOptions
+)
+from modularhistory.utils import linting
+
+StringOrDict = Union[str, Dict[str, str]]
 
 # Example:
 # ./history/fields/html_field.py:138:17: WPS442 Found outer scope names shadowing: Quote
@@ -19,8 +26,14 @@ def flake8(**kwargs):
     """Runs flake8 linter."""
     print()
     proc = subprocess.Popen('flake8', stdout=subprocess.PIPE, shell=False)
-    _output, _err = proc.communicate()
-    output = _output.decode()
+    raw_output, _err = proc.communicate()
+    if raw_output:
+        process_flake8_output(raw_output.decode())
+
+
+def process_flake8_output(output: str):
+    """Processes/filters and displays output from flake8."""
+    options, per_module_options = _get_flake8_options()
     output_lines = output.rstrip().split('\n')
     for line in output_lines:
         parsed_line = OUTPUT_PATTERN.match(line)
@@ -30,13 +43,40 @@ def flake8(**kwargs):
         location = parsed_line.group(1)
         code = parsed_line.group(2)
         message = parsed_line.group(3)
-        explanation_url = get_violation_explanation_url(code)
-        print(f'{location}: {utils.colored(message, color="red")}  [{code}: {explanation_url}]')
+        _process_flake8_message(location, code, message, options)
     print()
 
 
+def _process_flake8_message(location, code, message, options):
+    try:
+        filename, line_number = location.split(':')
+    except ValueError:
+        filename, line_number = location.split(':')[:2]
+    if not options.error_is_ignored_in_file(filename, code):
+        explanation_url = get_violation_explanation_url(code)
+        print(f'{location}: {linting.colored(message, color="red")}  [{code}: {explanation_url}]')
+
+
+def _get_flake8_options() -> Tuple[LinterOptions, PerModuleOptions]:
+    """Returns an Options object to be used by mypy."""
+    options = LinterOptions()
+    module_options: List[Tuple[str, LinterOptions]] = []
+    ConfigFileFlake8OptionsParser().apply(options, module_options)  # type: ignore
+    return options, module_options
+
+
+class ConfigFileFlake8OptionsParser(BaseConfigFileOptionsParser):
+    """Config file options parser for mypy."""
+
+    report_unrecognized_options = False
+
+    def __init__(self, script_name: str = 'flake8'):
+        """Constructs the flake8 options parser."""
+        super().__init__(script_name=script_name)
+
+
 VIOLATION_DEFAULT_URL = 'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
-VIOLATION_EXPLANATION_URLS: Dict[str, Union[str, Dict[str, str]]] = {
+VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
     'B': 'https://github.com/PyCQA/flake8-bugbear#list-of-warnings',  # Bugbear
     'C': {
         '4': 'https://github.com/adamchainz/flake8-comprehensions',  # Comprehensions
@@ -80,7 +120,7 @@ def get_violation_explanation_url(violation_code: str) -> str:
     if not match:
         return VIOLATION_DEFAULT_URL
     prefix, number = match.group(1), match.group(2)
-    url_match: Optional[Union[str, Dict[str, str]]]
+    url_match: Optional[StringOrDict]
     url_match = VIOLATION_EXPLANATION_URLS.get(violation_code)
     if isinstance(url_match, str):
         return url_match
@@ -91,9 +131,9 @@ def get_violation_explanation_url(violation_code: str) -> str:
         hundredth_place = number[0]
         submatch = url_match.get(hundredth_place)
         if not submatch:
-            for key, value in url_match.items():
-                if hundredth_place in key.split(','):
-                    submatch = value
+            for url_key, url_value in url_match.items():
+                if hundredth_place in url_key.split(','):
+                    submatch = url_value
         if isinstance(submatch, str):
             return submatch
     return VIOLATION_DEFAULT_URL

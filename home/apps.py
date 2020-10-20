@@ -2,6 +2,6 @@ from django.apps import AppConfig
 
 
 class HomeConfig(AppConfig):
-    """TODO: add docstring."""
+    """Config for the home app."""
 
     name = 'home'

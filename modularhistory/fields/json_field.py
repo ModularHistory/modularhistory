@@ -43,28 +43,28 @@ class JSONField(BaseJSONField):
         # with open(p, 'r') as file:
         #     return json.loads(file.read())
 
-    def _validate_schema(self, value):
+    def _validate_schema(self, json_value):
         """Validate with JSON Schema."""
         # Disable JSON Schema validation when migrations are faked
         if self.schema and self.model.__module__ != '__fake__':
             try:
-                validate(value, self._schema_data)
-            except jsonschema_exceptions.ValidationError as e:
-                raise ValidationError(f'{e}')
+                validate(json_value, self._schema_data)
+            except jsonschema_exceptions.ValidationError as error:
+                raise ValidationError(f'{error}')
 
-    def validate(self, value, model_instance):
+    def validate(self, json_value, model_instance):
         """Override `validate` to also validate with JSON Schema."""
         # Do regular validation
-        super().validate(value, model_instance)
+        super().validate(json_value, model_instance)
         # Do JSON Schema validation
-        self._validate_schema(value)
+        self._validate_schema(json_value)
 
     def pre_save(self, model_instance, add):
         """Override `pre_save` to validate with JSON Schema."""
-        value = super().pre_save(model_instance, add)
-        if value and not self.null:
-            self._validate_schema(value)
-        return value
+        json_value = super().pre_save(model_instance, add)
+        if json_value and not self.null:
+            self._validate_schema(json_value)
+        return json_value
 
 
 class ExtraField:
@@ -87,16 +87,16 @@ class ExtraField:
             return self.from_json(json_value.get(self.name, None))
         return None
 
-    def __set__(self, instance: Model, value: Any):
+    def __set__(self, instance: Model, value_to_store: Any):
         """See https://docs.python.org/3/reference/datamodel.html#object.__set__."""
         json_value = self.get_json_field_value(instance)
 
         # Transform the value to valid JSON
-        value = self.to_json(value)
+        value_to_store = self.to_json(value_to_store)
 
         # Set the attribute
-        if value:
-            json_value[self.name] = value
+        if value_to_store:
+            json_value[self.name] = value_to_store
         elif self.null:
             # Remove the key from the JSON
             self.__delete__(instance)
@@ -122,19 +122,19 @@ class ExtraField:
             pass
 
     @staticmethod
-    def from_json(value) -> Any:
+    def from_json(stored_value) -> Any:
         """Transforms a JSON value to its intended Python value."""
-        return value
+        return stored_value
 
     @staticmethod
-    def to_json(value) -> Union[str, int, List, Dict]:
+    def to_json(value_to_store) -> Union[str, int, List, Dict]:
         """Transforms a value to a format suitable for storage in JSON."""
-        return value
+        return value_to_store
 
-    def get_json_field_value(self, instance: Model):
+    def get_json_field_value(self, model_instance: Model):
         """Retrieve the value of the JSON field."""
         # Retrieve the full JSON value
-        json_value = getattr(instance, self.json_field_name)
+        json_value = getattr(model_instance, self.json_field_name)
         # Make sure the JSON value is valid
         if json_value:
             if isinstance(json_value, dict):

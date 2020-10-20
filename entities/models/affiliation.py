@@ -12,7 +12,7 @@ MAX_NAME_LENGTH: int = 100
 
 
 class _Engagement(Model):
-    """TODO: add docstring."""
+    """An engagement with a beginning and, perhaps, an end."""
 
     start_date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
@@ -22,7 +22,8 @@ class _Engagement(Model):
 
 
 class Affiliation(_Engagement):
-    """TODO: add docstring."""
+    """An affiliation of entities."""
+
     entity = ForeignKey('entities.Entity', related_name='affiliations', on_delete=CASCADE)
     affiliated_entity = ForeignKey('entities.Entity', on_delete=CASCADE)
     roles = ManyToManyField(
@@ -41,19 +42,19 @@ class Affiliation(_Engagement):
 
 
 class Role(Model):
-    """TODO: add docstring."""
+    """A role fulfilled by an entity within an organization."""
 
     name = models.CharField(max_length=MAX_NAME_LENGTH, unique=True)
     description = HTMLField(null=True, blank=True)
     organization = ForeignKey('Entity', related_name='roles', on_delete=CASCADE)
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the role's string representation."""
         return self.name
 
 
 class RoleFulfillment(_Engagement):
-    """TODO: add docstring."""
+    """Fulfillment of a role by an entity."""
 
     affiliation = ForeignKey(Affiliation, related_name='role_fulfillments', on_delete=CASCADE)
     role = ForeignKey(Role, related_name='fulfillments', on_delete=CASCADE)

@@ -8,16 +8,19 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
-
 import os
 from glob import glob
+from typing import Any, Callable, TypeVar
 
 import django
 from django.core.management import call_command
 from django.db import transaction
-from invoke import task
 
-from modularhistory.linters import flake8, mypy
+from modularhistory.linters import flake8 as lint_with_flake8, mypy as lint_with_mypy
+from monkeypatch import fix_annotations
+
+if fix_annotations():
+    import invoke
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
@@ -26,6 +29,11 @@ PROD_DB_ENV_VAR = 'USE_PROD_DB'
 SQUASHED_MIGRATIONS_DIRNAME = 'squashed_migrations'
 MAX_MIGRATION_COUNT = 3
 BASH_PLACEHOLDER = '{}'  # noqa: P103
+NEGATIVE = 'n'
+AFFIRMATIVE = 'y'
+SPACE = ' '
+LOCAL = 'local'
+PRODUCTION = 'production'
 APPS_WITH_MIGRATIONS = (
     # 'account',  # affected by social_django
     'entities',
@@ -40,6 +48,14 @@ APPS_WITH_MIGRATIONS = (
     'topics'
 )
 
+TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
+
+
+def task(task_function: TaskFunction) -> TaskFunction:
+    """Wraps invoke.task to enable type annotations."""
+    task_function.__annotations__ = {}
+    return invoke.task(task_function)
+
 
 @task
 def commit(context):
@@ -50,14 +66,14 @@ def commit(context):
     print('Current branch: ')
     branch = context.run('git branch --show-current').stdout
     print()
-    if input('Continue? [Y/n] ') == 'n':
+    if input('Continue? [Y/n] ') == NEGATIVE:
         return
 
     # Stage files, if needed
     context.run('git status')
     print()
-    if input('Stage all changed files? [Y/n] ') == 'n':
-        while input('Do files need to be staged? [Y/n] ') != 'n':
+    if input('Stage all changed files? [Y/n] ') == NEGATIVE:
+        while input('Do files need to be staged? [Y/n] ') != NEGATIVE:
             files_to_stage = input('Enter filenames and/or patterns: ')
             context.run(f'git add {files_to_stage}')
             print()
@@ -76,12 +92,12 @@ def commit(context):
     print(f'\n{commit_msg}\n')
 
     # Commit the changes
-    if input('Is this commit message correct? [Y/n] ') != 'n':
+    if input('Is this commit message correct? [Y/n] ') != NEGATIVE:
         context.run(f'git commit -m "{commit_msg}"')
     print()
 
     # Push the changes, if desired
-    if input('Push changes to remote branch? [Y/n] ') == 'n':
+    if input('Push changes to remote branch? [Y/n] ') == NEGATIVE:
         print('To push your changes to the repository, use the following command:')
         print('git push')
     else:
@@ -92,42 +108,71 @@ def commit(context):
 
 
 @task
+def flake8(context, *args):
+    """Run flake8 linter."""
+    lint_with_flake8()
+
+
+@task
+def mypy(context, *args):
+    """Run mypy static type checker."""
+    lint_with_mypy()
+
+
+@task
 def lint(context, *args):
     """Run linters."""
     # Run Flake8
     print('Running flake8...')
-    flake8()
+    lint_with_flake8()
 
     # Run MyPy
     print('Running mypy...')
-    mypy()
+    lint_with_mypy()
 
 
 @task
-def makemigrations(context):
+def makemigrations(context, noninteractive=False):
     """Safely create migrations."""
-    print('Doing a dry run first...')
-    context.run('python manage.py makemigrations --dry-run')
-    if input('^ Do these changes look OK? [Y/n]') != 'n':
+    _makemigrations(context, noninteractive=noninteractive)
+
+
+def _makemigrations(context, noninteractive=False):
+    interactive = not noninteractive
+    make_migrations = True
+    if interactive:
+        print('Doing a dry run first...')
+        context.run('python manage.py makemigrations --dry-run')
+        make_migrations = input('^ Do these changes look OK? [Y/n]') != NEGATIVE
+    if make_migrations:
         context.run('python manage.py makemigrations')
 
 
 @task
-def migrate(context):
+def migrate(context, *args, noninteractive=False):
     """Safely run db migrations."""
-    if input('Create db backup? [Y/n] ') == 'n':
+    _migrate(context, *args, noninteractive=noninteractive)
+
+
+def _migrate(context, *args, environment=LOCAL, noninteractive=False):
+    interactive = not noninteractive
+    _set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
+    if interactive and input('Create db backup? [Y/n] ') != NEGATIVE:
         context.run('python manage.py dbbackup')
     print('Running migrations...')
     with transaction.atomic():
-        call_command('migrate')
-    if input('Did migrations run successfully? [Y/n] ') == 'n':
+        call_command('migrate', *args)
+    print()
+    context.run('python manage.py showmigrations')
+    print()
+    if interactive and input('Did migrations run successfully? [Y/n] ') == NEGATIVE:
         context.run('python manage.py dbrestore')
 
 
 @task
 def nox(context, *args):
     """Run linters and tests in multiple environments using nox."""
-    nox_cmd = ' '.join(['nox', *args])
+    nox_cmd = SPACE.join(['nox', *args])
     context.run(nox_cmd)
     context.run('rm -r modularhistory.egg-info')
 
@@ -138,7 +183,7 @@ def setup(context, noninteractive=False):
     args = ['./setup.sh']
     if noninteractive:
         args.append('--noninteractive')
-    command = ' '.join(args).strip()
+    command = SPACE.join(args).strip()
     context.run(command)
     context.run('rm -r modularhistory.egg-info')
 
@@ -147,6 +192,12 @@ def setup(context, noninteractive=False):
 def squash_migrations(context, dry=True):
     """Invokable version of _squash_migrations."""
     _squash_migrations(context, dry)
+
+
+PROD_DB_ENV_VAR_VALUES = {
+    LOCAL: '',
+    PRODUCTION: 'True'
+}
 
 
 def _squash_migrations(context, dry=True):
@@ -161,48 +212,33 @@ def _squash_migrations(context, dry=True):
         pass
 
     # By default, only squash migrations in dev environment
-    prod_db_env_var_values = [
-        ('local', '')
-    ] if dry else [
-        ('local', ''),
-        ('production', 'True')
+    prod_db_env_var_values = [(LOCAL, '')] if dry else [
+        (LOCAL, ''),
+        (PRODUCTION, 'True')
     ]
 
     # Create a db backup
-    if dry and input('Create db backup? [Y/n] ') != 'n':
+    if dry and input('Create db backup? [Y/n] ') != NEGATIVE:
         context.run('python manage.py dbbackup')
 
     # Make sure models fit the current db schema
     context.run('python manage.py makemigrations')
-    for _environment, prod_db_env_var_value in prod_db_env_var_values:
-        print()
-        _set_prod_db_env_var(prod_db_env_var_value)
-        context.run('python manage.py migrate')
-        del os.environ[PROD_DB_ENV_VAR]
-
-    # Show current migrations
-    print('\n Migrations before squashing:')
-    context.run('python manage.py showmigrations')
-
-    # Clear the migrations history for each app
-    _clear_migration_history(context, prod_db_env_var_values)
+    for environment, _prod_db_env_var_value in prod_db_env_var_values:
+        _migrate(context, environment=environment, noninteractive=True)
+        # Clear the migrations history for each app
+        _clear_migration_history(context, environment=environment)
+    del os.environ[PROD_DB_ENV_VAR]
 
     # Regenerate migration files.
-    print('\n Regenerating migrations...')
-    context.run('python manage.py makemigrations')
-    if input('\n Continue? [Y/n] ') == 'n':
+    _makemigrations(context, noninteractive=True)
+    if input('\n Continue? [Y/n] ') == NEGATIVE:
         return
 
     # Fake the migrations.
-    for environment, prod_db_env_var_value in prod_db_env_var_values:
-        _set_prod_db_env_var(prod_db_env_var_value)
+    for environment, _ in prod_db_env_var_values:
         print(f'\n Running fake migrations for {environment} db...')
-        context.run('python manage.py migrate --fake-initial')
-        del os.environ[PROD_DB_ENV_VAR]
-
-    # Display the regenerated migrations.
-    print('\n Migrations after squashing:')
-    context.run('python manage.py showmigrations')
+        _migrate(context, '--fake-initial', environment=environment, noninteractive=True)
+    del os.environ[PROD_DB_ENV_VAR]
 
     if dry:
         input(
@@ -212,26 +248,24 @@ def _squash_migrations(context, dry=True):
         )
         context.run('python manage.py dbrestore --database="default" --noinput')
         _restore_squashed_migrations(context)
-        if input('Squash migrations for real (in production db)? [Y/n] ') != 'n':
+        if input('Squash migrations for real (in production db)? [Y/n] ') != NEGATIVE:
             _squash_migrations(context, dry=False)
 
 
-def _clear_migration_history(context, prod_db_env_var_values):
+def _clear_migration_history(context, environment=LOCAL):
     """."""
     with transaction.atomic():
         for app in APPS_WITH_MIGRATIONS:
             n_migrations = len(os.listdir(path=f'./{app}/migrations')) - 1
             if n_migrations > MAX_MIGRATION_COUNT:
                 # Fake reverting all migrations.
-                for environment, prod_db_env_var_value in prod_db_env_var_values:
-                    _set_prod_db_env_var(prod_db_env_var_value)
-                    print(f'\n Clearing migration history for the {app} app in {environment} ...')
-                    _revert_to_migration_zero(context, app)
-                    del os.environ[PROD_DB_ENV_VAR]
+                _set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
+                print(f'\n Clearing migration history for the {app} app in {environment} ...')
+                _revert_to_migration_zero(context, app)
             else:
                 print(f'Skipping {app} since there are only {n_migrations} migration files...')
     # Remove old migration files.
-    if input('\n Proceed to remove migration files? [Y/n] ') != 'n':
+    if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
         _remove_migrations(context)
 
 
@@ -333,9 +367,9 @@ def test(context):
     context.run('coverage combine')
 
 
-def _set_prod_db_env_var(value: str):
+def _set_prod_db_env_var(env_var_value: str):
     """Set the env var that specifies whether to use the production database."""
-    os.environ[PROD_DB_ENV_VAR] = value
+    os.environ[PROD_DB_ENV_VAR] = env_var_value
 
 
 # TODO

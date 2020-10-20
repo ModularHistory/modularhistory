@@ -7,7 +7,7 @@ PROVIDER_MAX_LENGTH: int = 200
 
 
 class MediaModel(DatedModel, SearchableModel):
-    """TODO: add docstring."""
+    """Abstract base model for media models (e.g., images and videos)."""
 
     caption = HTMLField(null=True, blank=True)
     description = HTMLField(null=True, blank=True)

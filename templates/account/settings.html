@@ -50,8 +50,8 @@
                             {% if backend.handle %}
                                 as <a href="https://{{ backend.domain }}/{{ backend.handle }}" target="_blank">
                                     {{ backend.handle }}</a>
-                            {% elif user.email %}
-                                as {{ user.email }}
+                            {% elif request.user.email %}
+                                as {{ request.user.email }}
                             {% endif %}
                         </p>
                         {% if can_disconnect %}
