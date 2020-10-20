@@ -5,6 +5,8 @@ from sources.models.textual_source import TextualSource
 
 TYPE_MAX_LENGTH: int = 10
 
+JSON_FIELD_NAME = 'extra'
+
 
 class SourceWithPageNumbers(TextualSource):
     """Mixin model for sources with page numbers."""
@@ -15,7 +17,7 @@ class SourceWithPageNumbers(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    page_number = ExtraField(json_field_name='extra')
+    page_number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # end_page_number = jsonstore.fields.PositiveSmallIntegerField(
     #     null=True,
@@ -23,7 +25,7 @@ class SourceWithPageNumbers(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    end_page_number = ExtraField(json_field_name='extra')
+    end_page_number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     @property
     def file_page_number(self) -> Optional[int]:

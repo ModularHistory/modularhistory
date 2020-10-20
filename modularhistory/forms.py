@@ -11,10 +11,10 @@ from modularhistory.widgets.source_file_input import SourceFileInput
 
 
 class SimpleArrayField(BaseSimpleArrayField):
-    """TODO: add docstring."""
+    """Array field."""
 
     def widget_attrs(self, widget):
-        """TODO: add docstring."""
+        """Returns the attributes to apply to the field widget."""
         attrs = super().widget_attrs(widget)
         class_attr = 'vTextField'
         additional_classes = attrs.get('class')
@@ -25,12 +25,12 @@ class SimpleArrayField(BaseSimpleArrayField):
 
 
 class SourceFileFormField(FileField):
-    """TODO: add docstring."""
+    """Form field for source files."""
 
     widget = SourceFileInput
 
 
 class HistoricDateFormField(DateTimeField):
-    """TODO: add docstring."""
+    """Form field for historic datetimes (potentially BCE, with variable specificity."""
 
     widget = HistoricDateWidget

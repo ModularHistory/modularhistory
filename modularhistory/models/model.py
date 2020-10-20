@@ -20,7 +20,7 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 
 
 class Model(DjangoModel):
-    """TODO: add docstring."""
+    """Model with additional properties used in ModularHistory apps."""
 
     objects: Manager = Manager()
     searchable_fields: ClassVar[Optional[FieldList]] = None

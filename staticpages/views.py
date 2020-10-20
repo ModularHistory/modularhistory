@@ -64,6 +64,6 @@ def render_staticpage(request, static_page: StaticPage):
     # mark the title and content as already safe (since they are raw HTML
     # content in the first place).
     static_page.title = format_html(static_page.title)
-    static_page.content = format_html(static_page.content)
+    static_page.content = format_html(static_page.content)  # noqa: WPS110
 
     return HttpResponse(template.render({'page': static_page}, request))

@@ -9,6 +9,9 @@ from django.forms import MultiWidget
 from sigfig import round
 
 from modularhistory.structures.historic_datetime import (
+    BP_REFERENCE_YEAR,
+    DECIMAL_INVERSION_BASIS,
+    EXPONENT_INVERSION_BASIS,
     HistoricDateTime,
     SEASONS,
     get_month_from_season,
@@ -25,12 +28,16 @@ year_systems = (
     (YBP, 'YBP')
 )
 
-YBP_BASIS = 1950  # YBP is generally calculated based on the year 1950
-SIGNIFICANT_FIGURES = 4
-
 
 def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
-    """TODO: add docstring."""
+    """
+    Returns a decompressed year value (year, second, microsecond) ready for storage.
+
+    For years before common era, the year value is set to 1, and second and microsecond values are set.
+    The second and microsecond values are used to:
+        - correctly sort datetimes in the db and
+        - determine the actual year upon retrieval from the db.
+    """
     year = int(year)
     if year > HistoricDateTime.bce_threshold and year_system != YBP:
         # Safe to assume this should be YBP
@@ -40,17 +47,15 @@ def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
     if year_system not in {CE, BCE, YBP}:
         raise ValueError
     elif year_system in {BCE, YBP}:
-        exponent_inversion_basis = 30  # --> 20 for the Big Bang
-        decimal_inversion_basis = 100000  # --> 986200 for the Big Bang
-        year = year if year_system == BCE else year - YBP_BASIS
+        year = year if year_system == BCE else year - BP_REFERENCE_YEAR
         year = round(year, sigfigs=HistoricDateTime.significant_figures)
         # Build a year stamp with max 6 digits
         scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
         decimal_num_str, exponent_str = scientific_notation.split('e+')
         exponent = int(exponent_str)
         decimal_num = int(decimal_num_str.replace('.', ''))  # 10, 13800 for the Big Bang
-        inv_exponent = exponent_inversion_basis - exponent
-        inv_decimal_num = decimal_inversion_basis - int(decimal_num)
+        inv_exponent = EXPONENT_INVERSION_BASIS - exponent
+        inv_decimal_num = DECIMAL_INVERSION_BASIS - int(decimal_num)
         second, microsecond = inv_exponent, inv_decimal_num
         year = 1
         # TODO
@@ -62,12 +67,12 @@ def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
 
 
 class YearInput(MultiWidget):
-    """TODO: add docstring."""
+    """Widget for inputting year values."""
 
     template_name = 'forms/year_input.html'
 
     def __init__(self, attrs: Optional[Dict] = None):
-        """TODO: add docstring."""
+        """Constructs the year input widget."""
         attrs = attrs or {'class': 'form-control'}
         widgets = [
             forms.NumberInput(attrs={**attrs, **{'min': '1', 'class': 'form-control'}}),
@@ -76,7 +81,7 @@ class YearInput(MultiWidget):
         super().__init__(widgets, attrs)
 
     def decompress(self, datetime_value: Union[HistoricDateTime, int, str]):
-        """TODO: add docstring."""
+        """Decompresses a datetime value into year and year_system values."""
         year, year_system = (None, None)
         if isinstance(datetime_value, HistoricDateTime):
             if datetime_value.use_ybp:
@@ -90,7 +95,7 @@ class YearInput(MultiWidget):
         return [year, year_system]
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:
-        """TODO: write docstring."""
+        """Compresses the input value into a format that can be saved to the db."""
         decompressed_values = super().value_from_datadict(datadict, files, name)
         if len(decompressed_values) != 2:
             raise ValueError(f'Wrong number of values: {len(decompressed_values)}')
@@ -105,7 +110,7 @@ class YearInput(MultiWidget):
 
 
 class HistoricDateWidget(MultiWidget):
-    """TODO: add docstring."""
+    """Widget for dates that may be before common era and have variable specificity."""
 
     def __init__(self, attrs: Optional[Dict] = None):
         """TODO: add docstring."""
@@ -188,7 +193,7 @@ class HistoricDateWidget(MultiWidget):
         return [year, year_system, season, month, day, time]
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:
-        """TODO: add docstring."""
+        """Compresses the input value into a format that can be saved to the db."""
         decompressed_values = list(super().value_from_datadict(datadict, files, name))
         full_n_values = 6
         min_n_values = 3
@@ -197,8 +202,7 @@ class HistoricDateWidget(MultiWidget):
             raise ValueError(f'Wrong number of values: {len(decompressed_values)}')
         elif n_values < full_n_values:
             diff = full_n_values - n_values
-            for _ in range(0, diff):
-                decompressed_values.append(None)
+            decompressed_values.extend(None for _ in range(diff))
         year, year_system, season, month, day, time = decompressed_values
         if not year:
             return None

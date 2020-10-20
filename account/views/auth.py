@@ -9,7 +9,7 @@ from account.models import User
 
 
 class LoginView(auth_views.LoginView):
-    """TODO: add docstring."""
+    """Login view."""
 
     form_class = LoginForm
     template_name = 'account/login.html'
@@ -22,13 +22,13 @@ class RegisterView(View):
     """Account registration view."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """TODO: add docstring."""
+        """Renders the registration view when the page is requested."""
         form: RegistrationForm = RegistrationForm()
         context = {'form': form}
         return render(request, 'account/register.html', context)
 
     def post(self, request: HttpRequest) -> HttpResponse:
-        """TODO: add docstring."""
+        """Responds to registration form submission."""
         form: RegistrationForm = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()

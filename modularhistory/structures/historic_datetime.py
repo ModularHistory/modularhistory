@@ -1,3 +1,7 @@
+"""HistoricDateTime module."""
+
+# TODO: optimize memory by storing attributes in __init__
+
 from datetime import datetime
 from decimal import Decimal, getcontext
 from typing import Optional
@@ -15,23 +19,38 @@ SEASONS = (
     ('fall', 'Fall')
 )
 
+TEN_THOUSAND = 10000
+ONE_MILLION = 1000000
+
 SIGNIFICANT_FIGURES = 4
 
 APPROXIMATE_PRESENT_YEAR = 2000
 
-MILLIFICATION_FLOOR = 999999
+# https://en.wikipedia.org/wiki/Before_Present
+BP_REFERENCE_YEAR = 1950
 
 YBP_LOWER_LIMIT = 29999  # 30000 with rounding error protection
 
+BCE_THRESHOLD = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
+
 # Dates earlier than this are considered to be circa by default
-BCE_CIRCA_FLOOR = 9999
+BCE_CIRCA_FLOOR = TEN_THOUSAND
 
 # Dates earlier than this are considered to be prehistory
-BCE_PREHISTORY_FLOOR = 10000
+BCE_PREHISTORY_FLOOR = TEN_THOUSAND
+
+# Year values larger than this should be expressed in millions/billions
+MILLIFICATION_FLOOR = ONE_MILLION
+
+# Year values larger than this should be "prettified" with commas
+PRETTIFICATION_FLOOR = TEN_THOUSAND
+
+EXPONENT_INVERSION_BASIS = 30  # --> 20 for the Big Bang
+DECIMAL_INVERSION_BASIS = 100000  # --> 986200 for the Big Bang
 
 
 def get_season_from_month(month: int) -> str:
-    """TODO: add docstring."""
+    """Infers season from month."""
     if month in {1, 2, 3}:
         return SEASONS[1][0]
     elif month in {4, 5, 6}:
@@ -42,7 +61,7 @@ def get_season_from_month(month: int) -> str:
 
 
 def get_month_from_season(season: str) -> int:
-    """TODO: add docstring."""
+    """Infers approximate month from season."""
     if season == SEASONS[1][0]:
         return 1
     elif season == SEASONS[2][0]:
@@ -53,10 +72,10 @@ def get_month_from_season(season: str) -> int:
 
 
 class HistoricDateTime(datetime):
-    """TODO: add docstring."""
+    """Datetime capable of representing dates before CE."""
 
     ybp_lower_limit = YBP_LOWER_LIMIT
-    bce_threshold = ybp_lower_limit - 1950
+    bce_threshold = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
     significant_figures = SIGNIFICANT_FIGURES
 
     def __str__(self) -> str:
@@ -79,7 +98,7 @@ class HistoricDateTime(datetime):
     @property
     def is_circa(self) -> bool:
         """TODO: write docstring."""
-        return self.is_bce and self.year_bce > BCE_CIRCA_FLOOR
+        return self.is_bce and self.year_bce >= BCE_CIRCA_FLOOR
 
     @property
     def season_is_known(self) -> bool:
@@ -108,8 +127,10 @@ class HistoricDateTime(datetime):
             getcontext().prec = self.significant_figures
             inv_exponent = self.second
             inv_decimal_num = self.microsecond
-            exponent = -(inv_exponent - 30)
-            decimal_num = Decimal(('{:.4e}'.format(-(inv_decimal_num - 100000))).split('e+')[0])
+            exponent = -(inv_exponent - EXPONENT_INVERSION_BASIS)
+            decimal_num = Decimal(
+                ('{:.4e}'.format(-(inv_decimal_num - DECIMAL_INVERSION_BASIS))).split('e+')[0]
+            )
             multiplier = Decimal(10**exponent)
             bce = int(Decimal(decimal_num * multiplier))
             if bce > BCE_PREHISTORY_FLOOR:  # if prehistory
@@ -121,15 +142,14 @@ class HistoricDateTime(datetime):
     def year_bp(self) -> int:
         """The year expressed in YBP (years before present)."""
         # TODO: test cutting out the Decimal nonsense and just using sigfig
-        getcontext().prec = self.significant_figures
         current_year = datetime.now().year
         if self.is_bce:
-            _ybp = Decimal(self.year_bce + APPROXIMATE_PRESENT_YEAR)
+            ybp = self.year_bce + APPROXIMATE_PRESENT_YEAR
         else:
-            _ybp = Decimal(current_year - self.year)
-        ybp = int(sigfig.round(_ybp, sigfigs=self.significant_figures))
+            ybp = current_year - self.year
+        ybp = int(sigfig.round(ybp, sigfigs=self.significant_figures))
         # Correct rounding error if needed
-        if 10000 < ybp < 1000000:  # Should use BCE is smaller than this
+        if TEN_THOUSAND < ybp < ONE_MILLION:  # Should use BCE is smaller than this TODO
             scale = 500
             ybp = round(ybp / scale) * scale
         return int(ybp)
@@ -165,24 +185,26 @@ class HistoricDateTime(datetime):
 
     @property
     def year_string(self) -> str:
-        """TODO: write docstring."""
+        """Returns a string representation of the year."""
         if self.is_bce:
             if self.use_ybp:
                 # YBP dates
                 ybp, humanized_ybp = self.year_bp, None
-                if ybp > MILLIFICATION_FLOOR:
+                if ybp >= MILLIFICATION_FLOOR:
                     humanized_ybp = millify(ybp, precision=self.significant_figures)
-                elif ybp > 9999:
+                elif ybp >= PRETTIFICATION_FLOOR:
                     humanized_ybp = prettify(ybp)
                 else:
                     humanized_ybp = ybp
                 year_string = f'c. {humanized_ybp} YBP'
             else:
                 # BCE dates
-                if self.year_bce <= 9999:
-                    year_string = f'{self.year_bce}'
-                else:
+                if self.year_bce >= PRETTIFICATION_FLOOR and self.year_bce >= BCE_CIRCA_FLOOR:
                     year_string = f'c. {prettify(self.year_bce)}'
+                elif self.year_bce >= PRETTIFICATION_FLOOR:
+                    year_string = f'{prettify(self.year_bce)}'
+                else:
+                    year_string = f'{self.year_bce}'
                 year_string = f'{year_string} BCE'
         else:
             # CE dates

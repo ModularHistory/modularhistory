@@ -3,7 +3,7 @@ from django.urls import path
 from admin import SearchableModelAdmin, TabularInline, admin_site
 from entities.views import AttributeeSearchView
 from sources import models
-from sources.admin.source_filters import (
+from sources.admin.filters import (
     AttributeeFilter,
     HasContainerFilter,
     HasFileFilter,
@@ -63,7 +63,7 @@ class SourceAdmin(SearchableModelAdmin):
     save_as_continue = True
 
     def get_fields(self, request, model_instance=None):
-        """TODO: add docstring."""
+        """Returns reordered fields to be displayed in the admin."""
         fields = list(super().get_fields(request, model_instance))
         if 'database_string' in fields:
             fields.remove('database_string')

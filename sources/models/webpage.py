@@ -1,9 +1,11 @@
 """Model classes for web pages."""
 
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.textual_source import TextualSource
+
+JSON_FIELD_NAME = 'extra'
 
 
 class WebPage(TextualSource):
@@ -18,7 +20,7 @@ class WebPage(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    website_title = ExtraField(json_field_name='extra')
+    website_title = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # organization_name = jsonstore.CharField(
     #     max_length=100,
@@ -27,7 +29,7 @@ class WebPage(TextualSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    organization_name = ExtraField(json_field_name='extra')
+    organization_name = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     def __str__(self) -> str:
         """TODO: write docstring."""

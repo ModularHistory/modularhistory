@@ -1,6 +1,6 @@
 """Model classes for spoken sources."""
 
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 
 from sources.models.source import Source
 

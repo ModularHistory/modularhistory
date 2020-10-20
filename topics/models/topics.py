@@ -13,8 +13,8 @@ KEY_MAX_LENGTH: int = 25
 class TopicTopicRelation(Model):
     """A relationship between equivalent or closely related topics."""
 
-    from_topic = ForeignKey('Topic', related_name='topics_related_to', on_delete=CASCADE)
-    to_topic = ForeignKey('Topic', related_name='topics_related_from', on_delete=CASCADE)
+    from_topic = ForeignKey('topics.Topic', related_name='topics_related_to', on_delete=CASCADE)
+    to_topic = ForeignKey('topics.Topic', related_name='topics_related_from', on_delete=CASCADE)
     # relation_type = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
@@ -75,20 +75,20 @@ class Topic(ModelWithRelatedQuotes):
         ordering = ['key']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the topic's string representation."""
         return self.key
 
     @property
     def child_topics_string(self) -> str:
-        """TODO: write docstring."""
+        """Returns a list of the topic's child topics as a string."""
         return ', '.join([str(topic) for topic in self.child_topics.all()])
 
     @property
     def parent_topics_string(self) -> str:
-        """TODO: write docstring."""
+        """Returns a list of the topic's parent topics as a string."""
         return ', '.join([str(topic) for topic in self.parent_topics.all()])
 
     @property
     def tags_string(self) -> str:
-        """TODO: write docstring."""
+        """Returns a list of the topic's related topics as a string."""
         return ', '.join([str(topic) for topic in self.related_topics.all()])

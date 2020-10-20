@@ -36,3 +36,9 @@ OCCURRENCE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.occurrence)
 QUOTE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.quote)
 IMAGE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.image)
 SOURCE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.source)
+
+YES = 'Yes'
+NO = 'No'
+EMPTY_STRING = ''
+
+SOCIAL_AUTH_URL_NAME = 'social:begin'

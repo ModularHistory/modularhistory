@@ -14,7 +14,7 @@ from quotes.admin import RelatedQuotesInline
 
 
 class EntityAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for entities."""
 
     model = models.Entity
     list_display = [

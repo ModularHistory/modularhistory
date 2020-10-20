@@ -2,6 +2,6 @@ from django.apps import AppConfig
 
 
 class MarkupConfig(AppConfig):
-    """TODO: add docstring."""
+    """Config for the markup app."""
 
     name = 'markup'

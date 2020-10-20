@@ -28,14 +28,12 @@ class HistoricDateTimeField(DateTimeField):
             **kwargs,
         })
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
-    def from_db_value(
-        self,
-        datetime_value: Optional[DateTime],
-        expression,
-        connection
-    ) -> Optional[HistoricDateTime]:
-        """TODO: add docstring."""
+    def from_db_value(self, datetime_value: Optional[DateTime], expression, connection) -> Optional[HistoricDateTime]:
+        """
+        Converts a value as returned by the database to a Python object.
+        It is the reverse of get_prep_value().
+        https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
+        """
         if datetime_value is None:
             return datetime_value
         return HistoricDateTime(

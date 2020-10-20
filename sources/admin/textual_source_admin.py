@@ -3,7 +3,7 @@ from typing import List
 from admin import ModelAdmin, StackedInline, admin_site
 from sources import models
 from sources.admin.source_admin import SourceAdmin
-from sources.admin.source_filters import AttributeeFilter
+from sources.admin.filters import AttributeeFilter
 
 
 class TextualSourceAdmin(SourceAdmin):
@@ -21,7 +21,7 @@ class TextualSourceAdmin(SourceAdmin):
     ]
 
     def get_fields(self, request, model_instance=None):
-        """TODO: add docstring."""
+        """Returns reordered fields to be displayed in the admin."""
         fields: List = list(super().get_fields(request, model_instance))
         # Fields to display at the top, in order
         top_fields = (
@@ -53,7 +53,7 @@ class TextualSourceAdmin(SourceAdmin):
 
 
 class PublicationAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for publications"""
 
     list_display = ['__str__', 'description']
     search_fields = ['name']
@@ -83,7 +83,7 @@ class ArticlesInline(StackedInline):
 
 
 class CollectionAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for document collections."""
 
     search_fields = ['name', 'repository__name', 'repository__location__name']
     autocomplete_fields = ['repository']
@@ -96,7 +96,7 @@ class DocumentAdmin(TextualSourceAdmin):
 
 
 class RepositoryAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for document repositories."""
 
     search_fields = ['name', 'location__name']
     autocomplete_fields = ['location']

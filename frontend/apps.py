@@ -2,6 +2,6 @@ from django.apps import AppConfig
 
 
 class FrontendConfig(AppConfig):
-    """TODO: add docstring."""
+    """Config for the frontend app."""
 
     name = 'frontend'

@@ -1,6 +1,6 @@
 """Model classes for correspondence (as sources)."""
 
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.document import DocumentSource
@@ -10,6 +10,7 @@ LOCATION_INFO_MAX_LENGTH: int = 400
 DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
 URL_MAX_LENGTH: int = 100
 
+JSON_FIELD_NAME = 'extra'
 
 CORRESPONDENCE_TYPES = (
     ('email', 'email'),
@@ -35,7 +36,7 @@ class Correspondence(DocumentSource):
         """TODO: write docstring."""
         return soupify(self.__html__).get_text()
 
-    recipient = ExtraField(json_field_name='extra')
+    recipient = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     @property
     def __html__(self) -> str:

@@ -11,7 +11,7 @@ class LocationInline(TabularInline):
 
 
 class LocationAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for locations."""
 
     list_display = ['name', 'location']
     list_filter = ['location']

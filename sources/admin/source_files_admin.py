@@ -3,6 +3,9 @@ from django.contrib.admin import SimpleListFilter
 from admin.model_admin import admin_site, ModelAdmin
 from sources import models
 from sources.admin.source_admin import SourcesInline
+from modularhistory.constants import YES, NO
+
+PAGE_OFFSET_FIELD = 'page_offset'
 
 
 class PdfFilter(SimpleListFilter):
@@ -12,34 +15,31 @@ class PdfFilter(SimpleListFilter):
     parameter_name = 'is_pdf'
 
     def lookups(self, request, model_admin):
-        """TODO: add docstring."""
-        return (
-            ('Yes', 'Yes'),
-            ('No', 'No'),
-        )
+        """Returns an iterable of tuples (value, verbose value)."""
+        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
-        """TODO: add docstring."""
-        if self.value() == 'Yes':
+        """Returns the filtered queryset."""
+        if self.value() == YES:
             return queryset.filter(name__icontains='pdf')
-        if self.value() == 'No':
+        if self.value() == NO:
             return queryset.exclude(name__icontains='pdf')
 
 
 class SourceFileAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for source files."""
 
-    list_display = ['__str__', 'name', 'page_offset', 'link']
+    list_display = ['__str__', 'name', PAGE_OFFSET_FIELD, 'link']
     search_fields = ['file', 'name']
     inlines = [SourcesInline]
     list_filter = [PdfFilter]
 
     def get_fields(self, request, model_instance=None):
-        """TODO: add docstring."""
+        """Returns reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
-        if fields and 'page_offset' in fields:
-            fields.remove('page_offset')
-            fields.append('page_offset')
+        if fields and PAGE_OFFSET_FIELD in fields:
+            fields.remove(PAGE_OFFSET_FIELD)
+            fields.append(PAGE_OFFSET_FIELD)
         return fields
 
 

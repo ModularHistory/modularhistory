@@ -3,7 +3,7 @@ from topics import models
 
 
 class FactEntitiesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a fact's related entities."""
 
     model = models.Fact.related_entities.through
     extra = 1
@@ -15,14 +15,14 @@ class FactEntitiesInline(TabularInline):
 
 
 class OccurrencesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a fact's related occurences."""
 
     model = models.Fact.related_occurrences.through
     extra = 1
 
 
 class SupportedFactsInline(StackedInline):
-    """TODO: add docstring."""
+    """Inline admin for a fact's supported facts."""
 
     model = models.FactSupport
     fk_name = 'supported_fact'
@@ -30,7 +30,7 @@ class SupportedFactsInline(StackedInline):
 
 
 class SupportiveFactsInline(StackedInline):
-    """TODO: add docstring."""
+    """Inline admin for a fact's supportive facts."""
 
     model = models.FactSupport
     fk_name = 'supportive_fact'
@@ -38,7 +38,7 @@ class SupportiveFactsInline(StackedInline):
 
 
 class FactAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for facts."""
 
     list_display = ['text']
     list_filter = ['related_entities', 'related_occurrences']

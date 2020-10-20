@@ -29,6 +29,11 @@ PROD_DB_ENV_VAR = 'USE_PROD_DB'
 SQUASHED_MIGRATIONS_DIRNAME = 'squashed_migrations'
 MAX_MIGRATION_COUNT = 3
 BASH_PLACEHOLDER = '{}'  # noqa: P103
+NEGATIVE = 'n'
+AFFIRMATIVE = 'y'
+SPACE = ' '
+LOCAL = 'local'
+PRODUCTION = 'production'
 APPS_WITH_MIGRATIONS = (
     # 'account',  # affected by social_django
     'entities',
@@ -61,14 +66,14 @@ def commit(context):
     print('Current branch: ')
     branch = context.run('git branch --show-current').stdout
     print()
-    if input('Continue? [Y/n] ') == 'n':
+    if input('Continue? [Y/n] ') == NEGATIVE:
         return
 
     # Stage files, if needed
     context.run('git status')
     print()
-    if input('Stage all changed files? [Y/n] ') == 'n':
-        while input('Do files need to be staged? [Y/n] ') != 'n':
+    if input('Stage all changed files? [Y/n] ') == NEGATIVE:
+        while input('Do files need to be staged? [Y/n] ') != NEGATIVE:
             files_to_stage = input('Enter filenames and/or patterns: ')
             context.run(f'git add {files_to_stage}')
             print()
@@ -87,12 +92,12 @@ def commit(context):
     print(f'\n{commit_msg}\n')
 
     # Commit the changes
-    if input('Is this commit message correct? [Y/n] ') != 'n':
+    if input('Is this commit message correct? [Y/n] ') != NEGATIVE:
         context.run(f'git commit -m "{commit_msg}"')
     print()
 
     # Push the changes, if desired
-    if input('Push changes to remote branch? [Y/n] ') == 'n':
+    if input('Push changes to remote branch? [Y/n] ') == NEGATIVE:
         print('To push your changes to the repository, use the following command:')
         print('git push')
     else:
@@ -138,7 +143,7 @@ def _makemigrations(context, noninteractive=False):
     if interactive:
         print('Doing a dry run first...')
         context.run('python manage.py makemigrations --dry-run')
-        make_migrations = input('^ Do these changes look OK? [Y/n]') != 'n'
+        make_migrations = input('^ Do these changes look OK? [Y/n]') != NEGATIVE
     if make_migrations:
         context.run('python manage.py makemigrations')
 
@@ -149,10 +154,10 @@ def migrate(context, *args, noninteractive=False):
     _migrate(context, *args, noninteractive=noninteractive)
 
 
-def _migrate(context, *args, environment='local', noninteractive=False):
+def _migrate(context, *args, environment=LOCAL, noninteractive=False):
     interactive = not noninteractive
     _set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
-    if interactive and input('Create db backup? [Y/n] ') != 'n':
+    if interactive and input('Create db backup? [Y/n] ') != NEGATIVE:
         context.run('python manage.py dbbackup')
     print('Running migrations...')
     with transaction.atomic():
@@ -160,14 +165,14 @@ def _migrate(context, *args, environment='local', noninteractive=False):
     print()
     context.run('python manage.py showmigrations')
     print()
-    if interactive and input('Did migrations run successfully? [Y/n] ') == 'n':
+    if interactive and input('Did migrations run successfully? [Y/n] ') == NEGATIVE:
         context.run('python manage.py dbrestore')
 
 
 @task
 def nox(context, *args):
     """Run linters and tests in multiple environments using nox."""
-    nox_cmd = ' '.join(['nox', *args])
+    nox_cmd = SPACE.join(['nox', *args])
     context.run(nox_cmd)
     context.run('rm -r modularhistory.egg-info')
 
@@ -178,7 +183,7 @@ def setup(context, noninteractive=False):
     args = ['./setup.sh']
     if noninteractive:
         args.append('--noninteractive')
-    command = ' '.join(args).strip()
+    command = SPACE.join(args).strip()
     context.run(command)
     context.run('rm -r modularhistory.egg-info')
 
@@ -190,8 +195,8 @@ def squash_migrations(context, dry=True):
 
 
 PROD_DB_ENV_VAR_VALUES = {
-    'local': '',
-    'production': 'True'
+    LOCAL: '',
+    PRODUCTION: 'True'
 }
 
 
@@ -207,13 +212,13 @@ def _squash_migrations(context, dry=True):
         pass
 
     # By default, only squash migrations in dev environment
-    prod_db_env_var_values = [('local', '')] if dry else [
-        ('local', ''),
-        ('production', 'True')
+    prod_db_env_var_values = [(LOCAL, '')] if dry else [
+        (LOCAL, ''),
+        (PRODUCTION, 'True')
     ]
 
     # Create a db backup
-    if dry and input('Create db backup? [Y/n] ') != 'n':
+    if dry and input('Create db backup? [Y/n] ') != NEGATIVE:
         context.run('python manage.py dbbackup')
 
     # Make sure models fit the current db schema
@@ -226,11 +231,11 @@ def _squash_migrations(context, dry=True):
 
     # Regenerate migration files.
     _makemigrations(context, noninteractive=True)
-    if input('\n Continue? [Y/n] ') == 'n':
+    if input('\n Continue? [Y/n] ') == NEGATIVE:
         return
 
     # Fake the migrations.
-    for environment, _prod_db_env_var_value in prod_db_env_var_values:
+    for environment, _ in prod_db_env_var_values:
         print(f'\n Running fake migrations for {environment} db...')
         _migrate(context, '--fake-initial', environment=environment, noninteractive=True)
     del os.environ[PROD_DB_ENV_VAR]
@@ -243,11 +248,11 @@ def _squash_migrations(context, dry=True):
         )
         context.run('python manage.py dbrestore --database="default" --noinput')
         _restore_squashed_migrations(context)
-        if input('Squash migrations for real (in production db)? [Y/n] ') != 'n':
+        if input('Squash migrations for real (in production db)? [Y/n] ') != NEGATIVE:
             _squash_migrations(context, dry=False)
 
 
-def _clear_migration_history(context, environment='local'):
+def _clear_migration_history(context, environment=LOCAL):
     """."""
     with transaction.atomic():
         for app in APPS_WITH_MIGRATIONS:
@@ -260,7 +265,7 @@ def _clear_migration_history(context, environment='local'):
             else:
                 print(f'Skipping {app} since there are only {n_migrations} migration files...')
     # Remove old migration files.
-    if input('\n Proceed to remove migration files? [Y/n] ') != 'n':
+    if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
         _remove_migrations(context)
 
 

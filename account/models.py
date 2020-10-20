@@ -13,16 +13,16 @@ AVATAR_HEIGHT: int = AVATAR_WIDTH
 
 
 class UserManager(BaseUserManager):
-    """TODO: add docstring."""
+    """Manager for users."""
 
     @classmethod
     def locked(cls) -> 'QuerySet[User]':
-        """TODO: add docstring."""
+        """Returns a queryset of users with locked accounts."""
         return User.objects.filter(locked=True)
 
 
 class User(AbstractUser):
-    """TODO: add docstring."""
+    """A user of ModularHistory."""
 
     email = models.EmailField('email address', unique=True)
     avatar = ProcessedImageField(

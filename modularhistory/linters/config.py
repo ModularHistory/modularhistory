@@ -127,7 +127,7 @@ def _parse_multi_options(options: MultiOptions, split_token: str = ',') -> List[
         else:
             parsed_options = options.split('\n')
     else:
-        parsed_options = options
+        parsed_options = options  # type: ignore
     return [option.strip() for option in parsed_options if option.strip()]
 
 
@@ -181,7 +181,7 @@ option_types = {
 
 
 class ConfigFileOptionsParser:
-    """TODO: add docstring."""
+    """Parser for options specified in the config file."""
 
     report_unrecognized_options: bool = True
 

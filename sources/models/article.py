@@ -2,10 +2,13 @@
 
 from typing import List
 
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 
 from modularhistory.fields import ExtraField
 from sources.models.piece import SourceWithPageNumbers
+from modularhistory.constants import EMPTY_STRING
+
+JSON_FIELD_NAME = 'extra'
 
 
 class Article(SourceWithPageNumbers):
@@ -26,7 +29,7 @@ class Article(SourceWithPageNumbers):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    number = ExtraField(json_field_name='extra')
+    number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     # volume = jsonstore.PositiveSmallIntegerField(
     #     null=True,
@@ -34,7 +37,7 @@ class Article(SourceWithPageNumbers):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    volume = ExtraField(json_field_name='extra')
+    volume = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     searchable_fields = ['db_string', 'publication__name']
 
@@ -51,14 +54,14 @@ class Article(SourceWithPageNumbers):
             ... TODO
         """
         attributee_html = self.attributee_string
-        title = self.linked_title.replace('"', "'") if self.title else ''
-        publication_html = self.publication.html if self.publication else ''  # TODO: make required
-        volume = f'vol. {self.volume}' if self.volume else ''
-        number = f'no. {self.number}' if self.number else ''
-        date = self.date.string if self.date else ''
+        title = self.linked_title.replace('"', "'") if self.title else EMPTY_STRING
+        publication_html = self.publication.html if self.publication else EMPTY_STRING  # TODO: make required
+        volume = f'vol. {self.volume}' if self.volume else EMPTY_STRING
+        number = f'no. {self.number}' if self.number else EMPTY_STRING
+        date = self.date.string if self.date else EMPTY_STRING
         components: List[str] = [
             attributee_html,
-            f'"{title}"' if title else '',
+            f'"{title}"' if title else EMPTY_STRING,
             publication_html,
             volume,
             number,

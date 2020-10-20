@@ -1,4 +1,4 @@
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models

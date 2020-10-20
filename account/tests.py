@@ -14,5 +14,5 @@ class TestNothing:
     @given(string=text())
     @example(string='Not doing anything')
     def test_nothing(self, string: str):
-        """TODO: add docstring."""
+        """Do nothing."""
         assert self.do_nothing

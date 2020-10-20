@@ -63,7 +63,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
 
 
 class OccurrenceChainAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for occurrence chains."""
 
     base_model = models.OccurrenceChain
     inlines = [OccurrencesInline]

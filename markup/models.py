@@ -9,7 +9,7 @@ from modularhistory.models import Model
 
 
 class Highlight(Model):
-    """TODO: add docstring."""
+    """Highlighted content."""
 
     agent = models.ForeignKey(User, related_name='highlights', on_delete=models.CASCADE)
     start = models.PositiveIntegerField()
@@ -23,7 +23,7 @@ class Highlight(Model):
 
 
 class Comment(Model):
-    """TODO: add docstring."""
+    """A comment regarding some content."""
 
     author = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
     text = models.TextField(blank=False)

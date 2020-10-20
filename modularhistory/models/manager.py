@@ -17,7 +17,7 @@ class Manager(ModelManager):
     """Base manager for ModularHistory's models."""
 
     def get_by_natural_key(self, *args):
-        """TODO: add docstring."""
+        """Retrieves a model instance by its natural key."""
         fields = self.model.natural_key_fields
         natural_key = {}
         for index, field in enumerate(fields):
@@ -29,7 +29,7 @@ class Manager(ModelManager):
         datetime_value: Union[date, datetime, HistoricDateTime],
         datetime_attr: str = 'date'
     ) -> 'Model':
-        """TODO: add docstring."""
+        """Returns the model instance closest to the specified datetime_value."""
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()
         lesser = qs.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()
@@ -131,4 +131,4 @@ class SearchableModelManager(Manager):
 class TypedModelManager(BaseTypedModelManager, Manager):
     """Wrapper for TypedModelManager."""
 
-    pass
+    pass  # noqa: WPS604

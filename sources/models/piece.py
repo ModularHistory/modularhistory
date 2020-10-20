@@ -1,4 +1,4 @@
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 
 from sources.models.source_with_page_numbers import SourceWithPageNumbers
 
@@ -30,4 +30,4 @@ class Piece(SourceWithPageNumbers):
 class Essay(Piece):
     """An essay (as a source)."""
 
-    pass
+    pass  # noqa: WPS604

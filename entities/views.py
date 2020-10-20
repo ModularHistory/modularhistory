@@ -32,7 +32,7 @@ class AttributeeSearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
 
     def get_queryset(self) -> 'QuerySet[Entity]':
-        """TODO: add docstring."""
+        """Returns the filtered queryset."""
         queryset = Entity.objects.all()
         term = self.term
         if term:
@@ -48,7 +48,7 @@ class EntitySearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
 
     def get_queryset(self):
-        """TODO: add docstring."""
+        """Returns the filtered queryset."""
         queryset = Entity.objects.all()
         term = self.term
         if term:
@@ -63,7 +63,7 @@ class EntityCategorySearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
 
     def get_queryset(self):
-        """TODO: add docstring."""
+        """Returns the filtered queryset."""
         queryset = Category.objects.all()
         term = self.term
         if term:
@@ -75,7 +75,7 @@ class EntityCategorySearchView(AutocompleteJsonView):
 
 
 class IndexView(generic.ListView):
-    """TODO: add docstring."""
+    """View depicting all entities."""
 
     model = Entity
     template_name = 'entities/index.html'
@@ -88,19 +88,19 @@ class IndexView(generic.ListView):
 
 
 class BaseDetailView(generic.detail.DetailView):
-    """TODO: add docstring."""
+    """Base class for entity detail views."""
 
     model = Entity
     context_object_name = 'entity'
 
 
 class DetailView(BaseDetailView):
-    """TODO: add docstring."""
+    """View depicting details of a specific entity."""
 
     template_name = 'entities/detail.html'
 
 
 class DetailPartView(BaseDetailView):
-    """TODO: add docstring."""
+    """Partial view depicting details of a specific entity."""
 
     template_name = 'entities/_detail.html'

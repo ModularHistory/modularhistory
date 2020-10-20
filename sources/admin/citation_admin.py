@@ -17,13 +17,13 @@ class ContentTypeFilter(SimpleListFilter):
     parameter_name = 'content_type'
 
     def lookups(self, request, model_admin):
-        """TODO: add docstring."""
+        """Returns an iterable of tuples (value, verbose value)."""
         content_type_ids = models.Citation.objects.all().values('content_type').distinct()
         content_types = ContentType.objects.filter(id__in=content_type_ids)
         return [(f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types]
 
     def queryset(self, request, queryset):
-        """TODO: add docstring."""
+        """Returns the filtered queryset."""
         content_type = self.value()
         if not content_type:
             return queryset
@@ -35,14 +35,14 @@ class ContentTypeFilter(SimpleListFilter):
 
 
 class CitationAdmin(ModelAdmin):
-    """TODO: add docstring."""
+    """Admin for citations."""
     list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
     search_fields = ['source__db_string']
     list_filter = [ContentTypeFilter]
 
 
 class PagesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a citation's page numbers/ranges."""
 
     model = models.PageRange
     verbose_name = 'page range'
@@ -56,7 +56,7 @@ class PagesInline(TabularInline):
 
 
 class CitationsInline(GenericTabularInline):
-    """TODO: add docstring."""
+    """Inline admin for citations."""
 
     model = models.Citation
     autocomplete_fields = ['source']

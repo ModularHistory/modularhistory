@@ -5,6 +5,8 @@ from django.db.models import ForeignKey, SET_NULL
 from modularhistory.fields import ExtraField, HistoricDateTimeField
 from sources.models.source import Source
 
+JSON_FIELD_NAME = 'extra'
+
 
 class TextualSource(Source):
     """Mixin model for textual sources."""
@@ -25,7 +27,7 @@ class TextualSource(Source):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    editors = ExtraField(json_field_name='extra')
+    editors = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     @property
     def file_page_number(self) -> Optional[int]:

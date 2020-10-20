@@ -20,7 +20,6 @@ from modularhistory.linters.config import (
     LinterOptions,
     PARSING_FAIL,
     PerFileIgnore,
-    PerModuleOptions
 )
 from modularhistory.utils import linting
 
@@ -65,6 +64,9 @@ class MyPyOptions(LinterOptions):
         """Constructs MyPy options."""
         super().__init__()
         self.args = []
+
+
+PerModuleOptions = List[Tuple[str, MyPyOptions]]
 
 
 def mypy(**kwargs):
@@ -146,7 +148,7 @@ def _process_mypy_message(message, level, error_code, matched_error, filename, l
 def _get_mypy_options() -> Tuple[MyPyOptions, PerModuleOptions]:
     """Returns an Options object to be used by mypy."""
     options = MyPyOptions()
-    module_options: List[Tuple[str, MyPyOptions]] = []
+    module_options: PerModuleOptions = []
     ConfigFileOptionsParser().apply(options, module_options)  # type: ignore
     if options.select and options.ignore:
         overlap = options.select.intersection(options.ignore)

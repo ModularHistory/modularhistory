@@ -6,7 +6,7 @@ from topics.models import EntityFactRelation
 
 
 class QuotesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for quotes."""
 
     model = Quote.attributees.through
     extra = 0
@@ -14,7 +14,7 @@ class QuotesInline(TabularInline):
     autocomplete_fields = ['quote']
 
     def get_fields(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Returns reordered fields to be displayed in the admin."""
         fields = super().get_fields(*args, **kwargs)
         for field in ('date_is_circa', 'date'):
             if field in fields:
@@ -24,7 +24,7 @@ class QuotesInline(TabularInline):
 
 
 class ImagesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for images."""
 
     model = models.Entity.images.through
     extra = 1
@@ -32,7 +32,7 @@ class ImagesInline(TabularInline):
 
 
 class OccurrencesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for occurrences."""
 
     model = OccurrenceEntityInvolvement
     extra = 1
@@ -40,7 +40,7 @@ class OccurrencesInline(TabularInline):
 
 
 class FactsInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for facts."""
 
     model = EntityFactRelation
     extra = 1
@@ -48,7 +48,7 @@ class FactsInline(TabularInline):
 
 
 class CategorizationsInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for categorizations."""
 
     model = models.Categorization
     extra = 1

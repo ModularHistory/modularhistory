@@ -1,6 +1,6 @@
 """Model classes for affidavits (as sources)."""
 
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 from django.core.exceptions import ValidationError
 
 from modularhistory.fields import ExtraField
@@ -10,6 +10,8 @@ NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400
 DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
 URL_MAX_LENGTH: int = 100
+
+JSON_FIELD_NAME = 'extra'
 
 
 class Affidavit(DocumentSource):
@@ -22,7 +24,7 @@ class Affidavit(DocumentSource):
     #     json_field_name=JSON_FIELD_NAME
     # )
 
-    certifier = ExtraField(json_field_name='extra')
+    certifier = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     def __str__(self) -> str:
         """TODO: write docstring."""

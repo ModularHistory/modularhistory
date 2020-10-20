@@ -8,11 +8,11 @@ from modularhistory import settings
 
 
 class TextualSourceFile(FieldFile):
-    """TODO: add docstring."""
+    """A source file for a textual source."""
 
     @staticmethod
     def dedupe():
-        """TODO: add docstring."""
+        """Removes duplicated source files."""
         from sources.models import Source
         path = join(settings.MEDIA_ROOT, 'sources')
         files1 = [

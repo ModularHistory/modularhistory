@@ -3,18 +3,18 @@ from typing import Optional
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 
 
 class HTML:
-    """TODO: add docstring."""
+    """HTML with a raw value, optional processed value, and text."""
 
     raw_value: str
     html: SafeString
     text: str
 
     def __init__(self, raw_value: Optional[str], processed_value: Optional[str] = None):
-        """TODO: add docstring."""
+        """Constructs an HTML object."""
         if raw_value:
             raw_value = raw_value.strip()
             processed_value = processed_value or raw_value
@@ -39,9 +39,9 @@ class HTML:
 
     # for BeautifulSoup
     def __len__(self):
-        """TODO: add docstring."""
+        """Returns the number of characters in the HTML."""
         return len(self.raw_value)
 
     def __bool__(self):
-        """TODO: add docstring."""
+        """Returns whether the HTML has a non-empty value."""
         return bool(self.raw_value)

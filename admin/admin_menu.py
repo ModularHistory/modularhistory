@@ -21,7 +21,7 @@ class AdminMenu(Menu):
         # js = ('js/mymenu.js',)
 
     def __init__(self, **kwargs):
-        """TODO: add docstring."""
+        """Constructs the admin menu."""
         super().__init__(**kwargs)
         self.children += [
             items.MenuItem(_('Dashboard'), reverse('admin:index')),

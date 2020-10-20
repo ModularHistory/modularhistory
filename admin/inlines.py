@@ -19,7 +19,7 @@ class StackedInline(NestedStackedInline):
     formfield_overrides = FORM_FIELD_OVERRIDES
 
     def get_fields(self, request, model_instance=None) -> List[str]:
-        """TODO: add docstring."""
+        """Returns reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
         return reorder_fields(fields)
 
@@ -30,7 +30,7 @@ class TabularInline(NestedTabularInline):
     formfield_overrides = FORM_FIELD_OVERRIDES
 
     def get_fields(self, request, model_instance=None) -> List[str]:
-        """TODO: add docstring."""
+        """Returns reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
         return reorder_fields(fields)
 

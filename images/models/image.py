@@ -137,7 +137,7 @@ class Image(MediaModel):
 
     @property
     def src_url(self) -> str:
-        """TODO: add docstring."""
+        """Returns the URL to be used for the `src` attribute in HTML."""
         return self.cropped_image_url or self.image.url
 
     @property
@@ -156,7 +156,7 @@ class Image(MediaModel):
         return 'center 10%' if self.height > (self.width * multiplier) else 'center'
 
     def clean(self):
-        """TODO: add docstring."""
+        """Prepares the image to be saved."""
         super().clean()
         if not self.caption:
             raise ValidationError('Image needs a caption.')

@@ -35,7 +35,7 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
             self.rendered_widget = format_html(rendered_widget)
 
     def queryset(self, request, queryset):
-        """TODO: add docstring."""
+        """Returns the filtered queryset."""
         if self.value():
             return queryset.filter(**{self._parameter_name: self.value()})
         return queryset

@@ -7,7 +7,7 @@ from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
 
-from modularhistory.constants import MODEL_CLASS_PATHS
+from modularhistory.constants import EMPTY_STRING, MODEL_CLASS_PATHS
 from modularhistory.structures.html import HTML
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ OBJECT_REGEX = re.compile(r'<< ?(\w+):(?!>>)[\s\S]+? ?>>')
 
 
 def process(_, html: str, processable_content_types: Iterable[str]) -> str:
-    """TODO: add docstring."""
+    """Processes an HTML field value to replace model instance placeholders with HTML representations."""
     for match in OBJECT_REGEX.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(1)
@@ -64,9 +64,9 @@ class HTMLField(MceHTMLField):
             (r'<blockquote>', '<blockquote class="blockquote">'),
             (r'<table>', '<table class="table">'),
             # Remove empty divs
-            (r'\n?<div[^>]+?>&nbsp;<\/div>', ''),
-            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
-            (r'<p>&nbsp;<\/p>', '')
+            (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
+            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
+            (r'<p>&nbsp;<\/p>', EMPTY_STRING)
         )
         for pattern, replacement in replacements:
             try:
@@ -100,16 +100,22 @@ class HTMLField(MceHTMLField):
         return html
 
     def deconstruct(self):
-        """TODO: add docstring."""
+        """
+        Returns a 4-tuple with enough information to recreate the field.
+        https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.deconstruct
+        """
         field_class = 'modularhistory.fields.HTMLField'
         name, path, args, kwargs = super().deconstruct()
         if self.processor != self.default_processor:
             kwargs['processor'] = self.processor
         return name, field_class, args, kwargs
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
     def from_db_value(self, html_value: Optional[str], expression, connection) -> Optional[HTML]:
-        """TODO: add docstring."""
+        """
+        Converts a value as returned by the database to a Python object.
+        It is the reverse of get_prep_value().
+        https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
+        """
         if html_value is None:
             return html_value
         if not html_value.startswith('<') and html_value.endswith('>'):
@@ -132,9 +138,9 @@ class HTMLField(MceHTMLField):
             (r'5610f0f6-8bba-4647-9642-e0a623c266d9', '261'),
             (r'e93eda83-560d-4a8a-8eac-8c28798b52ff', '262'),
             (r'ed35a437-15a0-4c03-9661-903db39fe216', '91'),
-            (r'\n?<div[^>]+?>&nbsp;<\/div>', ''),
-            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
-            (r'<p>&nbsp;<\/p>', ''),
+            (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
+            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
+            (r'<p>&nbsp;<\/p>', EMPTY_STRING),
             (r'\{\{', '<<'),
             (r'\}\}', '>>'),
         )
@@ -177,7 +183,7 @@ class HTMLField(MceHTMLField):
     def value_to_string(self, html_object: Any) -> str:
         """TODO: add docstring."""
         html_value = self.value_from_object(html_object)
-        return self.get_prep_value(html_value) or ''
+        return self.get_prep_value(html_value) or EMPTY_STRING
 
 
 def _get_model_class(ct: ContentType) -> Type['Model']:

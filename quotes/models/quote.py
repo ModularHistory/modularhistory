@@ -21,7 +21,7 @@ from modularhistory.models import (
     ModelWithRelatedQuotes,
     ModelWithSources
 )
-from modularhistory.utils.soup import soupify
+from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
 from quotes.models.quote_image import QuoteImage
 
@@ -278,6 +278,6 @@ def quote_sorter_key(quote: Quote):
         magic_number = 96  # TODO: remember what this is
         number = ord(str(citation)[0].lower()) - magic_number
         sorter_int += number * 1000
-        if citation.page_number:
-            sorter_int += citation.page_number
+        if citation.primary_page_number:
+            sorter_int += citation.primary_page_number
     return sorter_int

@@ -250,7 +250,12 @@ class MegaStorage(Storage):
         url = mega_client.get_url_from_name(name)
         return mega_client.get_temporary_file(url, mode=mode)
 
-    def save(self, name: Optional[str], content: IO[Any], max_length: Optional[int] = None) -> str:
+    def save(
+        self,
+        name: Optional[str],
+        content: IO[Any],  # noqa: WPS110
+        max_length: Optional[int] = None
+    ) -> str:
         """
         Saves a new file using the storage system, preferably with the name specified.
 
