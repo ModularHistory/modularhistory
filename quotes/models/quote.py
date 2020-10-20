@@ -51,7 +51,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         blank=True,
         help_text='Content to be displayed after the quote'
     )
-    date = HistoricDateTimeField(null=True, blank=True)
+    date = HistoricDateTimeField(null=True)
     attributees = ManyToManyField(
         Entity,
         through='quotes.QuoteAttribution',

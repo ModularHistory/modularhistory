@@ -6,7 +6,7 @@ from sources.models import Source
 
 
 class HasContainerFilter(SimpleListFilter):
-    """Filter for whether the source has a container."""
+    """Filters sources by whether they have a container."""
 
     title = 'has container'
     parameter_name = 'has_container'
@@ -24,7 +24,7 @@ class HasContainerFilter(SimpleListFilter):
 
 
 class HasFileFilter(SimpleListFilter):
-    """Filter for whether the source has a source file."""
+    """Filters sources by whether they have a source file."""
 
     title = 'has file'
     parameter_name = 'has_file'
@@ -42,7 +42,7 @@ class HasFileFilter(SimpleListFilter):
 
 
 class HasPageNumber(SimpleListFilter):
-    """Filter for whether the source has a page number."""
+    """Filters sources by whether they have a page number."""
 
     title = 'has page number'
     parameter_name = 'has_page_number'
@@ -71,7 +71,7 @@ class HasPageNumber(SimpleListFilter):
 
 
 class HasFilePageOffsetFilter(SimpleListFilter):
-    """Filter for whether the source has a source file with a page offset."""
+    """Filters sources by whether they have a source file with a page offset."""
 
     title = 'has file page offset'
     parameter_name = 'has_file_page_offset'
@@ -99,7 +99,8 @@ class HasFilePageOffsetFilter(SimpleListFilter):
 
 
 class ImpreciseDateFilter(SimpleListFilter):
-    """TODO: add docstring."""
+    """Filters sources by whether their dates are imprecise."""
+
     title = 'date is imprecise'
     parameter_name = 'date_is_imprecise'
 
@@ -118,14 +119,14 @@ class ImpreciseDateFilter(SimpleListFilter):
 
 
 class TypeFilter(SimpleListFilter):
-    """TODO: add docstring."""
+    """Filters sources by type."""
 
     title = 'type'
     parameter_name = 'type'
 
     def lookups(self, request, model_admin):
         """Returns an iterable of tuples (value, verbose value)."""
-        return Source._meta.get_field('type').choices
+        return Source.get_meta().get_field('type').choices
 
     def queryset(self, request, queryset):
         """Returns the queryset filtered by type."""

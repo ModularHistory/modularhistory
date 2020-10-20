@@ -57,7 +57,7 @@ class Image(MediaModel):
         choices=IMAGE_TYPES,
         default='image'
     )
-    links = JSONField(default=dict)
+    links = JSONField(default=dict, blank=True)
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
     # https://github.com/jonasundderwolf/django-image-cropping
@@ -160,6 +160,8 @@ class Image(MediaModel):
         super().clean()
         if not self.caption:
             raise ValidationError('Image needs a caption.')
+        if self.caption and Image.objects.filter(image=self.image, caption=self.caption).exists():
+            raise ValidationError(f'{self.image} with caption=`{self.caption}` already exists.')
         # # TODO
         # if mega and not len(self.links):
         #     pass

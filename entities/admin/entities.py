@@ -30,8 +30,6 @@ class EntityAdmin(ModelAdmin):
         HasImageFilter,
         CategoriesFilter
     ]
-    search_fields = ['name', 'aliases']
-    ordering = ['name', 'birth_date']
     # list_editable = []
     inlines = [
         ImagesInline,
@@ -42,6 +40,9 @@ class EntityAdmin(ModelAdmin):
         QuotesInline,
         RelatedQuotesInline
     ]
+    ordering = ['name', 'birth_date']
+    readonly_fields = ['computations']
+    search_fields = ['name', 'aliases']
 
 
 class PersonAdmin(EntityAdmin):

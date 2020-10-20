@@ -35,8 +35,8 @@ def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
 
     For years before common era, the year value is set to 1, and second and microsecond values are set.
     The second and microsecond values are used to:
-        - correctly sort datetimes in the db and
-        - determine the actual year upon retrieval from the db.
+    - correctly sort datetimes in the db and
+    - determine the actual year upon retrieval from the db.
     """
     year = int(year)
     if year > HistoricDateTime.bce_threshold and year_system != YBP:

@@ -14,17 +14,20 @@ from sources.models.textual_source import TextualSource
 
 JSON_FIELD_NAME = 'extra'
 
+STRING = 'string'
+NUMBER = 'number'
+
 
 class Book(TextualSource):
     """A book (as a source)."""
 
     extra_fields = {
-        'translator': 'string',
-        'publisher': 'string',
-        'edition_number': 'number',
-        'edition_year': 'number',
-        'printing_number': 'number',
-        'volume_number': 'number'
+        'translator': STRING,
+        'publisher': STRING,
+        'edition_number': NUMBER,
+        'edition_year': NUMBER,
+        'printing_number': NUMBER,
+        'volume_number': NUMBER
     }
 
     # translator = jsonstore.CharField(

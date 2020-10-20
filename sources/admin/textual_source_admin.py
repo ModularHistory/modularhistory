@@ -60,7 +60,7 @@ class PublicationAdmin(ModelAdmin):
 
 
 class ArticleAdmin(TextualSourceAdmin):
-    """TODO: add docstring."""
+    """Admin for articles."""
 
     list_display = ['pk', 'html', 'publication', 'description', 'date_string']
     autocomplete_fields = TextualSourceAdmin.autocomplete_fields + ['publication']
@@ -68,7 +68,7 @@ class ArticleAdmin(TextualSourceAdmin):
 
 
 class BookAdmin(TextualSourceAdmin):
-    """TODO: add docstring."""
+    """Admin for books."""
 
     list_display = TextualSourceAdmin.list_display
     autocomplete_fields = TextualSourceAdmin.autocomplete_fields + ['original_edition']
@@ -76,7 +76,7 @@ class BookAdmin(TextualSourceAdmin):
 
 
 class ArticlesInline(StackedInline):
-    """TODO: add docstring."""
+    """Inline admin for articles."""
 
     model = models.Article
     extra = 1
@@ -90,7 +90,7 @@ class CollectionAdmin(ModelAdmin):
 
 
 class DocumentAdmin(TextualSourceAdmin):
-    """TODO: add docstring."""
+    """Admin for documents."""
 
     autocomplete_fields = ['collection', 'db_file']
 
