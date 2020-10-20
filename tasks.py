@@ -206,11 +206,7 @@ def _squash_migrations(context, dry=True):
 
     See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
     """
-    try:
-        del os.environ[PROD_DB_ENV_VAR]
-    except KeyError:
-        pass
-
+    _escape_prod_db()
     # By default, only squash migrations in dev environment
     prod_db_env_var_values = [(LOCAL, '')] if dry else [
         (LOCAL, ''),
@@ -227,7 +223,7 @@ def _squash_migrations(context, dry=True):
         _migrate(context, environment=environment, noninteractive=True)
         # Clear the migrations history for each app
         _clear_migration_history(context, environment=environment)
-    del os.environ[PROD_DB_ENV_VAR]
+    _escape_prod_db()
 
     # Regenerate migration files.
     _makemigrations(context, noninteractive=True)
@@ -238,7 +234,7 @@ def _squash_migrations(context, dry=True):
     for environment, _ in prod_db_env_var_values:
         print(f'\n Running fake migrations for {environment} db...')
         _migrate(context, '--fake-initial', environment=environment, noninteractive=True)
-    del os.environ[PROD_DB_ENV_VAR]
+    _escape_prod_db()
 
     if dry:
         input(
@@ -363,13 +359,22 @@ def test(context):
         '--maxfail=2',
         # '--hypothesis-show-statistics',
     ]
+    _escape_prod_db()
     context.run(f'coverage run -m pytest {" ".join(pytest_args)}')
     context.run('coverage combine')
 
 
 def _set_prod_db_env_var(env_var_value: str):
-    """Set the env var that specifies whether to use the production database."""
+    """Sets the env var that specifies whether to use the production database."""
     os.environ[PROD_DB_ENV_VAR] = env_var_value
+
+
+def _escape_prod_db():
+    """Removes the env var that specifies whether to use the production database."""
+    try:
+        del os.environ[PROD_DB_ENV_VAR]
+    except KeyError:
+        pass
 
 
 # TODO

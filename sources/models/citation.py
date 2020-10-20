@@ -184,18 +184,23 @@ class Citation(Model):
     @property
     def source_file_url(self) -> Optional[str]:
         """Returns the URL of the citation's source file."""
-        file_url = self.source.file_url
-        if file_url and self.source_file_page_number:
-            if 'page=' in file_url:
-                file_url = re.sub(r'page=\d+', f'page={self.source_file_page_number}', file_url)
-            else:
-                file_url = f'{file_url}#page={self.source_file_page_number}'
+        file_url = None
+        if self.source.source_file:
+            file_url = self.source.source_file.url
+            if file_url and self.source_file_page_number:
+                if 'page=' in file_url:
+                    file_url = re.sub(r'page=\d+', f'page={self.source_file_page_number}', file_url)
+                else:
+                    file_url = f'{file_url}#page={self.source_file_page_number}'
         return file_url
 
     def get_page_number_url(self, page_number: Union[str, int]) -> Optional[str]:
         """Returns a URL to a specific page of the citation's source file."""
         page_number = int(page_number)
-        file_url = self.source.file_url or None
+        try:
+            file_url = self.source.source_file.url or None
+        except AttributeError:
+            return None
         if not file_url:
             return None
         page_number += self.source.source_file.page_offset

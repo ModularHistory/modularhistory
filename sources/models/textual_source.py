@@ -40,9 +40,9 @@ class TextualSource(Source):
         return None
 
     @property
-    def file_url(self) -> Optional[str]:
+    def source_file_url(self) -> Optional[str]:
         """TODO: write docstring."""
-        file_url = super().file_url
+        file_url = super().source_file_url
         if file_url and self.file_page_number:
             file_url = f'{file_url}#page={self.file_page_number}'
         return file_url

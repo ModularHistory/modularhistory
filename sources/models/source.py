@@ -70,7 +70,12 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         related_name='attributed_sources',
         blank=True  # Some sources may not have attributees.
     )
-    url = models.URLField(max_length=MAX_URL_LENGTH, null=True, blank=True)
+    url = models.URLField(
+        max_length=MAX_URL_LENGTH,
+        null=True,
+        blank=True,
+        help_text='URL where the source can be accessed online'
+    )
     description = HTMLField(null=True, blank=True)
     date = HistoricDateTimeField(null=True, blank=True)
     publication_date = HistoricDateTimeField(null=True, blank=True)
@@ -139,14 +144,18 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     class Meta:
         ordering = ['creators', '-date']
 
+    def __init__(self, *args, **kwargs):
+        """Constructs a source."""
+        super().__init__(*args, **kwargs)
+
     @property
-    def admin_file_link(self) -> SafeString:
+    def admin_source_link(self) -> SafeString:
         """Returns a file link to display in the admin."""
         element = EMPTY_STRING
         if self.source_file:
             element = compose_link(
                 '<i class="fa fa-search"></i>',
-                href=self.file_url,
+                href=self.href,
                 klass='btn btn-small btn-default display-source',
                 target=NEW_TAB
             )
@@ -183,8 +192,8 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     def containment(self) -> Optional['SourceContainment']:
         """Returns the source's primary containment."""
         try:
-            return self.source_containments.select_related('container').order_by('position')[0]
-        except (ObjectDoesNotExist, AttributeError, IndexError):
+            return self.source_containments.first()
+        except (ObjectDoesNotExist, AttributeError):
             return None
 
     @property
@@ -192,6 +201,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         """Returns the source's file, if it has one."""
         if self.db_file:
             return self.db_file
+        # TODO: save container file as source file?
         return self.container.db_file if self.container else None
 
     @source_file.setter
@@ -199,9 +209,8 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         """Setter for source_file."""
         self.db_file = value
 
-    # TODO: remove?
     @property
-    def file_url(self) -> Optional[str]:
+    def source_file_url(self) -> Optional[str]:
         """Returns the source file's URL, if it has one."""
         return self.source_file.url if self.source_file else None
 
@@ -213,10 +222,11 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         for containment in containments:
             container_html = f'{containment.container.html}'
 
+            # Determine whether the container has the same attributee
             if containment.container.attributee_string != self.attributee_string:
                 same_creator = False
 
-            # Remove redundant creator string
+            # Remove redundant creator string if necessary
             creator_string_is_duplicated = all([
                 same_creator,
                 self.attributee_string,
@@ -233,7 +243,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                     containment.end_page_number
                 )
                 container_html = f'{container_html}, {page_number_html}'
-
             container_html = (
                 f'{containment.phrase} in {container_html}' if containment.phrase
                 else f'in {container_html}'
@@ -241,19 +250,31 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
             container_strings.append(container_html)
         return container_strings
 
-    # TODO: remove?
     @property
     def href(self) -> Optional[str]:
-        """Returns the href of the source's file."""
-        url = self.url
-        if self.file_url:
-            url = self.file_url
+        """
+        Returns the href to use when providing a link to the source.
+
+        If the source has a file, the URL of the file is returned;
+        otherwise, the source's `url` field value is returned.
+        """
+        href = self.computations.get('href')
+        if href:
+            return href
+        if self.source_file_url:
+            url = self.source_file_url
             page_number = self.source_file.default_page_number
             if hasattr(self, 'page_number') and getattr(self, 'page_number', None):
                 page_number = self.page_number + self.source_file.page_offset
             if page_number:
                 url = _set_page_number(url, page_number)
-        return url
+        else:
+            url = self.url
+        href = url
+        if href:
+            self.computations['href'] = href
+            self.save()
+        return href
 
     def html(self) -> SafeString:
         """
@@ -262,10 +283,12 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         This method is accessible as a property.
         """
         # TODO: html methods should be split into different classes and/or mixins.
+        html = self.computations.get('html')
+        if html:
+            return format_html(html)
         html = self.__html__
-
-        if self.source_containments.exists():
-            container_strings = self.get_container_strings()
+        container_strings = self.get_container_strings()
+        if container_strings:
             containers = ', and '.join(container_strings)
             html = f'{html}, {containers}'
         elif getattr(self, 'page_number', None):
@@ -282,7 +305,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                 f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
             )
         # Fix placement of commas after double-quoted titles
-        return format_html(fix_comma_positions(html))
+        html = format_html(fix_comma_positions(html))
 
         # TODO: Remove search icon; insert link intelligently
         # if self.file_url:
@@ -301,6 +324,11 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         #         f'<i class="fas fa-search"></i>'
         #         f'</a>'
         #     )
+
+        # TODO: update asynchronously
+        self.computations['html'] = html
+        self.save()
+        return html
     html.admin_order_field = 'db_string'
     html: SafeString = property(html)  # type: ignore
 
@@ -405,7 +433,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
 def _get_page_number_url(source: Source, file: SourceFile, page_number: int) -> Optional[str]:
     """TODO: write docstring."""
-    url = source.file_url or None
+    url = source.source_file_url or None
     if not url:
         return None
     page_number += file.page_offset
