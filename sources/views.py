@@ -9,7 +9,7 @@ from sources.models import Source
 
 
 class IndexView(generic.ListView):
-    """TODO: add docstring."""
+    """Displays all sources."""
 
     model = Source
     template_name = 'sources/index.html'
@@ -21,7 +21,7 @@ class IndexView(generic.ListView):
 
 
 class BaseDetailView(generic.DetailView):
-    """TODO: add docstring."""
+    """Abstract base view for source detail views."""
 
     model = Source
     context_object_name = 'source'
@@ -36,19 +36,19 @@ class BaseDetailView(generic.DetailView):
 
 
 class DetailView(BaseDetailView):
-    """TODO: add docstring."""
+    """Displays details for a specific source."""
 
     template_name = 'sources/detail.html'
 
 
 class DetailPartView(BaseDetailView):
-    """TODO: add docstring."""
+    """Displays details for a specific source."""
 
     template_name = 'sources/_detail.html'
 
 
 class EPubView(TemplateView):
-    """TODO: add docstring."""
+    """Renders an epub."""
 
     template_name = 'sources/_epub_viewer.html'
 

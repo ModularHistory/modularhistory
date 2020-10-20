@@ -4,8 +4,8 @@
 
 <div class="card-text">
     {{ source }}
-    {% if source.file_url %}
-        <a href="{{ source.file_url }}" class="display-source"
+    {% if source.source_file %}
+        <a href="{{ source.source_file.url }}" class="display-source"
            data-toggle="modal" data-target="#modal">
             <i class="fas fa-search"></i>
         </a>

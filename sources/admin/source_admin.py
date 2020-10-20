@@ -18,19 +18,18 @@ from sources.admin.source_inlines import (
     ContainersInline,
     RelatedInline
 )
-from sources.models import Source
 
 
 class SourceAdmin(SearchableModelAdmin):
     """Admin for sources."""
 
-    model = Source
+    model = models.Source
     list_display = [
         'pk',
         'html',
         'date_string',
         'location',
-        'admin_file_link',
+        'admin_source_link',
         'type'
     ]
     list_filter = [
@@ -45,7 +44,7 @@ class SourceAdmin(SearchableModelAdmin):
         TypeFilter
     ]
     readonly_fields = SearchableModelAdmin.readonly_fields + ['db_string']
-    search_fields = Source.searchable_fields
+    search_fields = models.Source.searchable_fields
     ordering = ['date', 'db_string']
     inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
     autocomplete_fields = ['db_file', 'location']
@@ -54,13 +53,31 @@ class SourceAdmin(SearchableModelAdmin):
     date_hierarchy = 'date'
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
-    list_per_page = 20
+    list_per_page = 10
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
     save_as = True
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
     save_as_continue = True
+
+    def get_queryset(self, request):
+        """
+        Return the queryset of quotes to be displayed in the admin.
+
+        https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
+        """
+        qs = models.Source.objects.all().select_related(
+            'db_file',
+            'location',
+            'publication',
+            'collection',
+            'collection__repository'
+        )
+        ordering = self.get_ordering(request)
+        if ordering and ordering != models.Source.get_meta().ordering:
+            qs = qs.order_by(*ordering)
+        return qs
 
     def get_fields(self, request, model_instance=None):
         """Returns reordered fields to be displayed in the admin."""
@@ -93,11 +110,11 @@ class SpeechAdmin(SourceAdmin):
 class SourcesInline(TabularInline):
     """TODO: add docstring."""
 
-    model = Source
+    model = models.Source
     extra = 0
     fields = ['verified', 'hidden', 'date_is_circa', 'creators', 'url', 'date', 'publication_date']
 
 
-admin_site.register(Source, SourceAdmin)
+admin_site.register(models.Source, SourceAdmin)
 admin_site.register(models.Speech, SpeechAdmin)
 admin_site.register(models.Interview, SpeechAdmin)

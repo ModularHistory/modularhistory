@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from django.urls import reverse
 from django.utils.html import format_html
@@ -20,8 +21,9 @@ class AttributeeFilter(AutocompleteFilter):
         """TODO: add docstring."""
         super().__init__(request, query_params, model, model_admin)
         rendered_widget: SafeString = self.rendered_widget  # type: ignore
-        if self.value():
-            attributee = Entity.objects.get(pk=self.value())
+        entity_pk: Optional[int] = self.value()
+        if entity_pk:
+            attributee: Entity = Entity.objects.get(pk=entity_pk)
             rendered_widget = format_html(
                 re.sub(
                     r'(selected>).+(</option>)',

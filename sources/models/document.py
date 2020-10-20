@@ -7,7 +7,7 @@ from django.utils.safestring import SafeString
 from django.utils.html import format_html
 
 from modularhistory.fields import ExtraField
-from modularhistory.models import Model
+from modularhistory.models import ModelWithComputations
 from sources.models.piece import SourceWithPageNumbers
 
 NAME_MAX_LENGTH: int = 100
@@ -61,7 +61,7 @@ class DocumentSource(SourceWithPageNumbers):
     information_url = ExtraField(json_field_name=JSON_FIELD_NAME)
 
 
-class Collection(Model):
+class Collection(ModelWithComputations):
     """A collection of documents."""
 
     name = models.CharField(
@@ -91,7 +91,12 @@ class Collection(Model):
     @property
     def html(self) -> SafeString:
         """Returns the collection's HTML representation."""
-        return format_html(self.__html__)
+        html = self.computations.get('html')
+        if not html:
+            html = self.__html__
+            self.computations['html'] = html
+            self.save()
+        return format_html(html)
 
     @property
     def __html__(self) -> str:
@@ -103,7 +108,7 @@ class Collection(Model):
         return DocumentSource.components_to_html(components)
 
 
-class Repository(Model):
+class Repository(ModelWithComputations):
     """A repository of collections of documents."""
 
     name = models.CharField(
@@ -130,7 +135,22 @@ class Repository(Model):
         verbose_name_plural = 'Repositories'
 
     def __str__(self) -> str:
-        """Returns the repository's string representation."""
+        """Returns the collection's string representation."""
+        return soupify(self.html).get_text()
+
+    @property
+    def html(self) -> SafeString:
+        """Returns the collection's HTML representation."""
+        html = self.computations.get('html')
+        if not html:
+            html = self.__html__
+            self.computations['html'] = html
+            self.save()
+        return format_html(html)
+
+    @property
+    def __html__(self) -> str:
+        """Returns the repository's HTML representation."""
         location_string = self.location.string if self.location else None
         components = [self.name, self.owner, location_string]
         return ', '.join([component for component in components if component])

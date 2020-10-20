@@ -1,6 +1,6 @@
 from django.db import models
 
-from modularhistory.models import Model, TypedModel
+from modularhistory.models import ModelWithComputations, TypedModel
 
 PREPOSITION_CHOICES = (
     ('in', 'in'),
@@ -22,7 +22,7 @@ class PlaceTypes:
 NAME_MAX_LENGTH: int = 40
 
 
-class Place(TypedModel, Model):
+class Place(TypedModel, ModelWithComputations):
     """Where something has happened."""
 
     name = models.CharField(
@@ -47,17 +47,15 @@ class Place(TypedModel, Model):
         unique_together = ['name', 'location']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
-        components = [
-            self.name,
-            f'{self.location if self.location else ""}'
-        ]
-        components = [component for component in components if component]
-        return ', '.join(components)
+        """Returns the location's string representation."""
+        return self.string
 
     @property
     def string(self) -> str:
         """Presentable string to display in HTML."""
+        string = self.computations.get('string')
+        if string:
+            return string
         location = self.location
         # TODO: This is hacky; maybe it can be improved.
         # Don't append the location's location if it's a continent, region, or inferrable country
@@ -74,4 +72,8 @@ class Place(TypedModel, Model):
             if location_is_inferrable:
                 location = None
         components = [self.name, location.name if location else '']
-        return ', '.join([component for component in components if component])
+        string = ', '.join([component for component in components if component])
+        self.computations['string'] = string
+        self.save()
+        return string
+

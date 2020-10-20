@@ -1,2 +1,2 @@
 from .base import Place
-from .models import Continent, Country, Region, State, County, City, Venue
+from .typed_places import Continent, Country, Region, State, County, City, Venue
