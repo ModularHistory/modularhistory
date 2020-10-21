@@ -28,7 +28,12 @@ class HistoricDateTimeField(DateTimeField):
             **kwargs,
         })
 
-    def from_db_value(self, datetime_value: Optional[DateTime], expression, connection) -> Optional[HistoricDateTime]:
+    def from_db_value(
+        self,
+        datetime_value: Optional[DateTime],
+        expression,
+        connection
+    ) -> Optional[HistoricDateTime]:
         """
         Converts a value as returned by the database to a Python object.
         It is the reverse of get_prep_value().

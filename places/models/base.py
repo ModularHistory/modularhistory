@@ -1,6 +1,6 @@
 from django.db import models
 
-from modularhistory.models import ModelWithComputations, TypedModel
+from modularhistory.models import ModelWithComputations, TypedModel, retrieve_or_compute
 
 PREPOSITION_CHOICES = (
     ('in', 'in'),
@@ -50,12 +50,10 @@ class Place(TypedModel, ModelWithComputations):
         """Returns the location's string representation."""
         return self.string
 
-    @property
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='string')
     def string(self) -> str:
         """Presentable string to display in HTML."""
-        string = self.computations.get('string')
-        if string:
-            return string
         location = self.location
         # TODO: This is hacky; maybe it can be improved.
         # Don't append the location's location if it's a continent, region, or inferrable country
@@ -72,8 +70,4 @@ class Place(TypedModel, ModelWithComputations):
             if location_is_inferrable:
                 location = None
         components = [self.name, location.name if location else '']
-        string = ', '.join([component for component in components if component])
-        self.computations['string'] = string
-        self.save()
-        return string
-
+        return ', '.join([component for component in components if component])

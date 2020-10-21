@@ -25,21 +25,21 @@ class SourceAdmin(SearchableModelAdmin):
 
     model = models.Source
     list_display = [
-        'pk',
+        model.FieldNames.pk,
         'html',
         'date_string',
-        'location',
+        model.FieldNames.location,
         'admin_source_link',
         'type'
     ]
     list_filter = [
-        'verified',
+        model.FieldNames.verified,
         HasContainerFilter,
         HasFileFilter,
         HasFilePageOffsetFilter,
         HasPageNumber,
         ImpreciseDateFilter,
-        'hidden',
+        model.FieldNames.hidden,
         AttributeeFilter,
         TypeFilter
     ]
@@ -68,11 +68,8 @@ class SourceAdmin(SearchableModelAdmin):
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
         qs = models.Source.objects.all().select_related(
-            'db_file',
-            'location',
-            'publication',
-            'collection',
-            'collection__repository'
+            models.Source.FieldNames.db_file,
+            models.Source.FieldNames.location,
         )
         ordering = self.get_ordering(request)
         if ordering and ordering != models.Source.get_meta().ordering:
@@ -82,9 +79,13 @@ class SourceAdmin(SearchableModelAdmin):
     def get_fields(self, request, model_instance=None):
         """Returns reordered fields to be displayed in the admin."""
         fields = list(super().get_fields(request, model_instance))
-        if 'database_string' in fields:
-            fields.remove('database_string')
-            fields.insert(0, 'database_string')
+        fields_to_move = (
+            models.Source.FieldNames.db_string,
+        )
+        for field in fields_to_move:
+            if field in fields:
+                fields.remove(field)
+                fields.insert(0, field)
         return fields
 
     def get_urls(self):
@@ -103,8 +104,16 @@ class SourceAdmin(SearchableModelAdmin):
 class SpeechAdmin(SourceAdmin):
     """TODO: add docstring."""
 
-    list_display = ['string', 'location', 'date_string']
-    search_fields = ['db_string', 'location__name']
+    model = models.Speech
+    list_display = [
+        'string',
+        model.FieldNames.location,
+        'date_string'
+    ]
+    search_fields = [
+        model.FieldNames.db_string,
+        'location__name'
+    ]
 
 
 class SourcesInline(TabularInline):
@@ -112,7 +121,15 @@ class SourcesInline(TabularInline):
 
     model = models.Source
     extra = 0
-    fields = ['verified', 'hidden', 'date_is_circa', 'creators', 'url', 'date', 'publication_date']
+    fields = [
+        'verified',
+        'hidden',
+        'date_is_circa',
+        'creators',
+        model.FieldNames.url,
+        'date',
+        'publication_date'
+    ]
 
 
 admin_site.register(models.Source, SourceAdmin)

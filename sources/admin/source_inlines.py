@@ -6,7 +6,7 @@ from sources.models import Source
 
 
 class AttributeesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a source's attributees."""
 
     model = Source.attributees.through
     autocomplete_fields = ['attributee']
@@ -23,7 +23,7 @@ class AttributeesInline(TabularInline):
 
 
 class ContainersInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a source's containers."""
 
     verbose_name = 'container'
     verbose_name_plural = 'containers'
@@ -34,7 +34,7 @@ class ContainersInline(TabularInline):
 
 
 class ContainedSourcesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a source's contained sources."""
 
     verbose_name = 'contained source'
     verbose_name_plural = 'contained sources'
@@ -45,7 +45,7 @@ class ContainedSourcesInline(TabularInline):
 
 
 class RelatedInline(GenericTabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a source's related objects."""
 
     model = models.Citation
     extra = 0

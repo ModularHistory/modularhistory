@@ -9,7 +9,7 @@ from search.forms import SearchForm
 
 
 class ListView(generic.list.ListView):
-    """TODO: add docstring."""
+    """View that listing all occurrences."""
 
     model = Occurrence
     template_name = 'occurrences/index.html'
@@ -35,7 +35,7 @@ class ListView(generic.list.ListView):
 
 
 class BaseDetailView(generic.detail.DetailView):
-    """TODO: add docstring."""
+    """Abstract view that displays details of a specific occurrence."""
 
     model = Occurrence
     context_object_name = 'occurrence'
@@ -43,20 +43,20 @@ class BaseDetailView(generic.detail.DetailView):
     object: Occurrence
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """TODO: add docstring."""
+        """Returns the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         occurrence = self.object
         return {**context, **occurrence.get_context()}
 
 
 class DetailView(BaseDetailView):
-    """TODO: add docstring."""
+    """View that displays details of a specific occurrence."""
 
     template_name = 'occurrences/detail.html'
 
 
 class DetailPartialView(BaseDetailView):
-    """TODO: add docstring."""
+    """Partial view that displays details of a specific occurrence."""
 
     template_name = 'occurrences/_detail.html'
 

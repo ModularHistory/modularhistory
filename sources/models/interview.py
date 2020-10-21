@@ -1,7 +1,5 @@
 """Model classes for interviews."""
 
-from modularhistory.utils.html import soupify
-
 from modularhistory.fields import ExtraField
 from sources.models.spoken_source import SpokenSource
 
@@ -21,10 +19,6 @@ class Interview(SpokenSource):
     # )
 
     interviewers = ExtraField(null=True, blank=True, json_field_name=JSON_FIELD_NAME)
-
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:

@@ -1,7 +1,5 @@
 """Model classes for web pages."""
 
-from modularhistory.utils.html import soupify
-
 from modularhistory.fields import ExtraField
 from sources.models.textual_source import TextualSource
 
@@ -30,10 +28,6 @@ class WebPage(TextualSource):
     # )
 
     organization_name = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:

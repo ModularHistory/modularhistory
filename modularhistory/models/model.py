@@ -3,6 +3,7 @@
 import re
 from typing import Any, ClassVar, List, Match, Optional, Pattern, Tuple, Type
 
+from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
@@ -21,6 +22,9 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 
 class Model(DjangoModel):
     """Model with additional properties used in ModularHistory apps."""
+
+    class FieldNames(Constant):
+        pk = 'pk'
 
     objects: Manager = Manager()
     searchable_fields: ClassVar[Optional[FieldList]] = None

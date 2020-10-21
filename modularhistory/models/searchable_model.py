@@ -26,6 +26,10 @@ class SearchableModel(TaggableModel):
     )
     key = UUIDField(primary_key=False, default=uuid.uuid4, editable=False, unique=True)
 
+    class FieldNames(TaggableModel.FieldNames):
+        verified = 'verified'
+        hidden = 'hidden'
+
     objects: 'SearchableModelManager'
 
     class Meta:

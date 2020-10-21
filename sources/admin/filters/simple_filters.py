@@ -1,19 +1,16 @@
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
 
-from modularhistory.constants import NO, YES, EMPTY_STRING
+from admin.list_filters import BooleanListFilter
+from modularhistory.constants import EMPTY_STRING, NO, YES
 from sources.models import Source
 
 
-class HasContainerFilter(SimpleListFilter):
+class HasContainerFilter(BooleanListFilter):
     """Filters sources by whether they have a container."""
 
     title = 'has container'
     parameter_name = 'has_container'
-
-    def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
-        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
         """Returns the queryset filtered by whether containers exist."""
@@ -23,15 +20,11 @@ class HasContainerFilter(SimpleListFilter):
             return queryset.filter(containers=None)
 
 
-class HasFileFilter(SimpleListFilter):
+class HasFileFilter(BooleanListFilter):
     """Filters sources by whether they have a source file."""
 
     title = 'has file'
     parameter_name = 'has_file'
-
-    def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
-        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
         """Returns the queryset filtered by whether source files exist."""
@@ -41,15 +34,11 @@ class HasFileFilter(SimpleListFilter):
             return queryset.filter(Q(db_file__isnull=True) | Q(db_file__file=EMPTY_STRING))
 
 
-class HasPageNumber(SimpleListFilter):
+class HasPageNumber(BooleanListFilter):
     """Filters sources by whether they have a page number."""
 
     title = 'has page number'
     parameter_name = 'has_page_number'
-
-    def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
-        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
         """Returns the queryset filtered by whether page numbers are specified."""
@@ -70,15 +59,11 @@ class HasPageNumber(SimpleListFilter):
         return queryset.filter(id__in=ids)
 
 
-class HasFilePageOffsetFilter(SimpleListFilter):
+class HasFilePageOffsetFilter(BooleanListFilter):
     """Filters sources by whether they have a source file with a page offset."""
 
     title = 'has file page offset'
     parameter_name = 'has_file_page_offset'
-
-    def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
-        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
         """Returns the queryset filtered by whether page offsets are specified."""
@@ -98,18 +83,11 @@ class HasFilePageOffsetFilter(SimpleListFilter):
             return sources.filter(id__in=ids)
 
 
-class ImpreciseDateFilter(SimpleListFilter):
+class ImpreciseDateFilter(BooleanListFilter):
     """Filters sources by whether their dates are imprecise."""
 
     title = 'date is imprecise'
     parameter_name = 'date_is_imprecise'
-
-    def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
-        return (
-            (YES, YES),
-            # (NO, NO),
-        )
 
     def queryset(self, request, queryset):
         """Returns the queryset filtered by whether dates are imprecise."""

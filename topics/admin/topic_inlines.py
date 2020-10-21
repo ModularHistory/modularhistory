@@ -1,4 +1,4 @@
-from admin import ModelAdmin, TabularInline, admin_site
+from admin import TabularInline
 from topics import models
 
 
@@ -40,29 +40,3 @@ class ChildTopicsInline(TabularInline):
     extra = 1
     verbose_name_plural = 'child topics'
     verbose_name = 'child topic'
-
-
-class TopicAdmin(ModelAdmin):
-    """Admin for topics."""
-
-    list_display = [
-        'key',
-        'detail_link',
-        'description',
-        'parent_topics_string',
-        'child_topics_string',
-        'tags_string'
-    ]
-    list_filter = ['related_topics']
-    search_fields = ['key', 'aliases', 'description']
-    ordering = ['key']
-
-    inlines = [
-        ParentTopicsInline,
-        ChildTopicsInline,
-        TopicRelationsInline,
-        # RelatedOccurrencesInline,
-    ]
-
-
-admin_site.register(models.Topic, TopicAdmin)

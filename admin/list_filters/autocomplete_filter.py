@@ -4,8 +4,10 @@ import re
 from typing import Type
 
 from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter
-from django.utils.safestring import SafeString
+from django.db.models import QuerySet
+from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 from modularhistory.models import Model
 
@@ -34,7 +36,18 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
             )
             self.rendered_widget = format_html(rendered_widget)
 
-    def queryset(self, request, queryset):
+    @property
+    def key(self) -> str:
+        """Returns an identifier for the filter."""
+        # Use `title` since `parameter_name` might have an unwanted plural form
+        # if the field is m2m.
+        return self.title.replace(' ', '_')
+
+    def get_autocomplete_url(self, request, model_admin) -> str:
+        """Returns the URL used by the autocomplete filter."""
+        return reverse(f'admin:{self.key}_search')
+
+    def queryset(self, request, queryset) -> 'QuerySet[Model]':
         """Returns the filtered queryset."""
         if self.value():
             return queryset.filter(**{self._parameter_name: self.value()})

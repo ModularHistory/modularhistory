@@ -9,6 +9,7 @@ from humanize import ordinal
 
 from modularhistory.constants import EMPTY_STRING
 from modularhistory.fields import ExtraField
+from modularhistory.models import retrieve_or_compute
 from modularhistory.utils.html import soupify
 from sources.models.textual_source import TextualSource
 
@@ -81,10 +82,6 @@ class Book(TextualSource):
 
     volume_number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
-    def __str__(self) -> str:
-        """Returns the book's string representation."""
-        return soupify(self.__html__).get_text()
-
     @property
     def edition_string(self) -> Optional[str]:
         """Returns a string representation of the book's edition, if it has one."""
@@ -155,9 +152,11 @@ class Book(TextualSource):
             components.append(f'{self.date.year}')
         return self.components_to_html(components)
 
+    @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """TODO: add docstring."""
-        return format_html(self.__html__)
+        """Returns the book's HTML representation."""
+        html = self.__html__
+        return format_html(html)
     html.admin_order_field = 'db_string'
     html: SafeString = property(html)  # type: ignore
 
@@ -165,12 +164,9 @@ class Book(TextualSource):
 class SectionSource(TextualSource):
     """A section (e.g., chapter) of a textual source (e.g., book)."""
 
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return soupify(self.html).get_text()  # type: ignore
-
+    @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """TODO: add docstring."""
+        """Returns the section/chapter's HTML representation."""
         return format_html(self.__html__)
     html.admin_order_field = 'db_string'
     html: SafeString = property(html)  # type: ignore
@@ -207,7 +203,7 @@ class SectionSource(TextualSource):
 
     @property
     def string(self) -> str:
-        """TODO: write docstring."""
+        """Returns the book's string representation."""
         return soupify(self.html).get_text()  # type: ignore
 
 

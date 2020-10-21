@@ -114,14 +114,16 @@ class HistoricDateWidget(MultiWidget):
 
     def __init__(self, attrs: Optional[Dict] = None):
         """TODO: add docstring."""
-        attrs = {**attrs, **{'style': 'margin-right: 1rem'}} if attrs else {'style': 'margin-right: 1rem'}
+        default_attrs = {'style': 'margin-right: 1rem'}
+        attrs = {**attrs, **default_attrs} if attrs else default_attrs
+        placeholder_attr = 'placeholder'
         widgets = [
-            forms.TextInput(attrs={**attrs, **{'placeholder': 'Year'}}),
+            forms.TextInput(attrs={**attrs, **{placeholder_attr: 'Year'}}),
             forms.Select(attrs=attrs, choices=year_systems),
             forms.Select(attrs=attrs, choices=SEASONS),
-            forms.TextInput(attrs={**attrs, **{'placeholder': 'Month'}}),
-            forms.TextInput(attrs={**attrs, **{'placeholder': 'Day'}}),
-            forms.TimeInput(attrs={**attrs, **{'placeholder': 'Time', 'class': 'vTimeField hidden'}}),
+            forms.TextInput(attrs={**attrs, **{placeholder_attr: 'Month'}}),
+            forms.TextInput(attrs={**attrs, **{placeholder_attr: 'Day'}}),
+            forms.TimeInput(attrs={**attrs, **{placeholder_attr: 'Time', 'class': 'vTimeField hidden'}}),
         ]
         super().__init__(widgets, attrs)
 

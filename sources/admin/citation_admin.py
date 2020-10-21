@@ -2,6 +2,7 @@ from typing import Optional, TYPE_CHECKING
 
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import QuerySet
 
 from admin import GenericTabularInline, ModelAdmin, TabularInline, admin_site
 from sources import models
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class ContentTypeFilter(SimpleListFilter):
-    """TODO: add docstring."""
+    """Filters citations by the content type of their related model instances."""
 
     title = 'content type'
     parameter_name = 'content_type'
@@ -36,9 +37,37 @@ class ContentTypeFilter(SimpleListFilter):
 
 class CitationAdmin(ModelAdmin):
     """Admin for citations."""
-    list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
+
+    model = models.Citation
+
+    list_display = [
+        'pk',
+        'html',
+        'position',
+        'content_object',
+        'content_type'
+    ]
     search_fields = ['source__db_string']
     list_filter = [ContentTypeFilter]
+    list_per_page = 10
+
+    def get_queryset(self, request) -> 'QuerySet[models.Citation]':
+        """
+        Return the queryset of citations to be displayed in the admin.
+
+        https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
+        """
+        qs = models.Citation.objects.all().select_related(
+            'source',
+            'source__db_file'
+        ).prefetch_related(
+            'content_object',
+            'pages'
+        )
+        ordering = self.get_ordering(request)
+        if ordering and ordering != models.Citation.get_meta().ordering:
+            qs = qs.order_by(*ordering)
+        return qs
 
 
 class PagesInline(TabularInline):
@@ -49,7 +78,7 @@ class PagesInline(TabularInline):
     verbose_name_plural = 'pages'
 
     def get_extra(self, request, model_instance: Optional[models.Citation] = None, **kwargs):
-        """TODO: add docstring."""
+        """Returns the number of extra/blank rows to include."""
         if model_instance and model_instance.pages.count():
             return 0
         return 1
@@ -70,7 +99,7 @@ class CitationsInline(GenericTabularInline):
     sortable_field_name = 'position'
 
     def get_extra(self, request, model_instance: Optional['ModelWithSources'] = None, **kwargs):
-        """TODO: add docstring."""
+        """Returns the number of extra/blank rows to include."""
         if model_instance and model_instance.citations.count():
             return 0
         return 1

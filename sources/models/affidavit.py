@@ -1,6 +1,5 @@
 """Model classes for affidavits (as sources)."""
 
-from modularhistory.utils.html import soupify
 from django.core.exceptions import ValidationError
 
 from modularhistory.fields import ExtraField
@@ -25,10 +24,6 @@ class Affidavit(DocumentSource):
     # )
 
     certifier = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return soupify(self.__html__).get_text()
 
     def clean(self):
         """TODO: add docstring."""

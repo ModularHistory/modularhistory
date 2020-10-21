@@ -1,4 +1,4 @@
-from admin_auto_filters.filters import AutocompleteFilter
+from admin.list_filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count, Q
 

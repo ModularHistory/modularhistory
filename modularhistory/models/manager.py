@@ -122,7 +122,9 @@ class SearchableModelManager(Manager):
         db: str = 'default'
     ) -> SearchableModelQuerySet:
         """Returns a queryset of search results."""
-        qs = self.get_queryset()
+        qs = self.get_queryset().prefetch_related(
+            'tags__topic'
+        )
         if suppress_unverified:
             qs = qs.filter(verified=True)
         return qs.search(query=query, rank=rank)
