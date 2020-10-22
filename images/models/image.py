@@ -49,13 +49,12 @@ class Image(MediaModel):
 
     image = models.ImageField(
         upload_to=upload_to('images/'),
-        height_field='height', width_field='width',
-        null=True
+        height_field='height',
+        width_field='width',
+        null=True,
     )
     image_type = models.CharField(
-        max_length=TYPE_NAME_MAX_LENGTH,
-        choices=IMAGE_TYPES,
-        default='image'
+        max_length=TYPE_NAME_MAX_LENGTH, choices=IMAGE_TYPES, default='image'
     )
     links = JSONField(default=dict, blank=True)
     width = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -65,7 +64,7 @@ class Image(MediaModel):
         'image',
         free_crop=True,
         allow_fullsize=True,
-        help_text='Not yet fully implemented.'
+        help_text='Not yet fully implemented.',
     )
 
     class Meta:
@@ -88,7 +87,9 @@ class Image(MediaModel):
         width = height * self.aspect_ratio
         if width > max_width:
             width, height = max_width, int(max_width / self.aspect_ratio)
-        return format_html(f'<img src="{self.image.url}" width="{width}px" height="{height}px" />')
+        return format_html(
+            f'<img src="{self.image.url}" width="{width}px" height="{height}px" />'
+        )
 
     @property
     def aspect_ratio(self) -> float:
@@ -106,12 +107,18 @@ class Image(MediaModel):
         if not self.cropping:
             return None
         try:
-            return get_thumbnailer(self.image).get_thumbnail({
-                'size': (self.width, self.height),
-                'box': self.cropping,
-                'crop': True,
-                'detail': True,
-            }).url
+            return (
+                get_thumbnailer(self.image)
+                .get_thumbnail(
+                    {
+                        'size': (self.width, self.height),
+                        'box': self.cropping,
+                        'crop': True,
+                        'detail': True,
+                    }
+                )
+                .url
+            )
         except KeyError as error:
             # TODO: Send email to admins about the error. Figure out why this happens.
             print(f'KeyError: {error}', file=stderr)
@@ -131,7 +138,7 @@ class Image(MediaModel):
         components = [
             f'{self.image_type.title()}',
             provision_phrase,
-            f'by {self.provider}'
+            f'by {self.provider}',
         ]
         return ' '.join([component for component in components if component])
 
@@ -160,8 +167,13 @@ class Image(MediaModel):
         super().clean()
         if not self.caption:
             raise ValidationError('Image needs a caption.')
-        if self.caption and Image.objects.filter(image=self.image, caption=self.caption).exists():
-            raise ValidationError(f'{self.image} with caption=`{self.caption}` already exists.')
+        if (
+            self.caption
+            and Image.objects.filter(image=self.image, caption=self.caption).exists()
+        ):
+            raise ValidationError(
+                f'{self.image} with caption=`{self.caption}` already exists.'
+            )
         # # TODO
         # if mega and not len(self.links):
         #     pass
@@ -170,7 +182,9 @@ class Image(MediaModel):
         #     # input('continue?')
 
     @classmethod
-    def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
+    def get_object_html(
+        cls, match: re.Match, use_preretrieved_html: bool = False
+    ) -> str:
         """Return the obj's HTML based on a placeholder in the admin."""
         if not re.match(ADMIN_PLACEHOLDER_REGEX, match.group(0)):
             raise ValueError(f'{match} does not match {ADMIN_PLACEHOLDER_REGEX}')
@@ -190,8 +204,7 @@ class Image(MediaModel):
             print(f'image {key} --> {image.pk}: {error}', file=stderr)
             # img_placeholder = img_placeholder.replace(key, str(image.pk))  # TODO
         image_html = render_to_string(
-            'images/_card.html',
-            context={'image': image, 'obj': image}
+            'images/_card.html', context={'image': image, 'obj': image}
         )
         if image.width < FLOAT_UPPER_WIDTH_LIMIT:
             image_html = f'<div class="float-right pull-right">{image_html}</div>'

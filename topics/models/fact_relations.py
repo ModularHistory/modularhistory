@@ -15,8 +15,13 @@ class FactRelation(Model):
 
 class EntityFactRelation(FactRelation):
     """Relation of a fact to an entity."""
-    entity = ForeignKey('entities.Entity', related_name='entity_fact_relations', on_delete=CASCADE)
-    fact = ForeignKey('topics.Fact', related_name='fact_entity_relations', on_delete=CASCADE)
+
+    entity = ForeignKey(
+        'entities.Entity', related_name='entity_fact_relations', on_delete=CASCADE
+    )
+    fact = ForeignKey(
+        'topics.Fact', related_name='fact_entity_relations', on_delete=CASCADE
+    )
 
     class Meta:
         unique_together = ['fact', 'entity']
@@ -25,15 +30,9 @@ class EntityFactRelation(FactRelation):
 class TopicFactRelation(FactRelation):
     """A relation of a fact to a topic."""
 
-    topic = ForeignKey(
-        Topic,
-        related_name='topic_fact_relations',
-        on_delete=CASCADE
-    )
+    topic = ForeignKey(Topic, related_name='topic_fact_relations', on_delete=CASCADE)
     fact = ForeignKey(
-        'topics.Fact',
-        related_name='fact_topic_relations',
-        on_delete=CASCADE
+        'topics.Fact', related_name='fact_topic_relations', on_delete=CASCADE
     )
 
     class Meta:
@@ -46,12 +45,10 @@ class OccurrenceFactRelation(FactRelation):
     occurrence = ForeignKey(
         'occurrences.Occurrence',
         related_name='occurrence_fact_relations',
-        on_delete=CASCADE
+        on_delete=CASCADE,
     )
     fact = ForeignKey(
-        'topics.Fact',
-        related_name='fact_occurrence_relations',
-        on_delete=CASCADE
+        'topics.Fact', related_name='fact_occurrence_relations', on_delete=CASCADE
     )
 
     class Meta:

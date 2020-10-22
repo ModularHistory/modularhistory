@@ -45,25 +45,25 @@ class SettingsView(LoginRequiredMixin, View):
                     PROVIDER_KEY: 'google_oauth2',
                     BACKEND_NAME: 'Google',
                     AUTH_KEY: None,
-                    HANDLE_KEY: None
+                    HANDLE_KEY: None,
                 },
                 {
                     PROVIDER_KEY: 'facebook',
                     BACKEND_NAME: 'Facebook',
                     AUTH_KEY: None,
-                    HANDLE_KEY: None
+                    HANDLE_KEY: None,
                 },
                 {
                     PROVIDER_KEY: 'twitter',
                     BACKEND_NAME: 'Twitter',
                     AUTH_KEY: None,
-                    HANDLE_KEY: None
+                    HANDLE_KEY: None,
                 },
                 {
                     PROVIDER_KEY: 'github',
                     BACKEND_NAME: 'GitHub',
                     AUTH_KEY: None,
-                    HANDLE_KEY: None
+                    HANDLE_KEY: None,
                 },
             ]
             for backend in social_auth_backends:
@@ -75,10 +75,12 @@ class SettingsView(LoginRequiredMixin, View):
                 except UserSocialAuth.DoesNotExist:
                     pass
                 except Exception as error:
-                    print(f'Error processing social auth integration: {type(error)}: {error}')
+                    print(
+                        f'Error processing social auth integration: {type(error)}: {error}'
+                    )
                 backend['domain'] = f'{backend_name.lower()}.com'
 
-            can_disconnect = (user.social_auth.count() > 1 or user.has_usable_password())
+            can_disconnect = user.social_auth.count() > 1 or user.has_usable_password()
 
             context = {
                 'profile_image': user.avatar or 'nobody_m.jpg',

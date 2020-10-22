@@ -8,7 +8,12 @@ from django.utils.safestring import SafeString
 
 from images.models import Image
 from modularhistory.fields import HTMLField, HistoricDateTimeField
-from modularhistory.models import DatedModel, ModelWithImages, ModelWithRelatedQuotes, ModelWithSources
+from modularhistory.models import (
+    DatedModel,
+    ModelWithImages,
+    ModelWithRelatedQuotes,
+    ModelWithSources,
+)
 from modularhistory.utils.html import soupify
 from occurrences.manager import OccurrenceManager
 from occurrences.models.occurrence_image import OccurrenceImage
@@ -22,45 +27,37 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
 
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
-    summary = HTMLField(
-        verbose_name='Summary',
-        null=True,
-        blank=True
-    )
-    description = HTMLField(
-        verbose_name='Description',
-        null=True,
-        blank=True
-    )
+    summary = HTMLField(verbose_name='Summary', null=True, blank=True)
+    description = HTMLField(verbose_name='Description', null=True, blank=True)
     postscript = HTMLField(
         verbose_name='Postscript',
         null=True,
         blank=True,
-        help_text='Content to be displayed below all related data'
+        help_text='Content to be displayed below all related data',
     )
     locations = ManyToManyField(
         'places.Place',
         through='occurrences.OccurrenceLocation',
         related_name='occurrences',
-        blank=True
+        blank=True,
     )
     images = ManyToManyField(
         Image,
         through='occurrences.OccurrenceImage',
         related_name='occurrences',
-        blank=True
+        blank=True,
     )
     occurrence_images: Any
     involved_entities = ManyToManyField(
         'entities.Entity',
         through='occurrences.OccurrenceEntityInvolvement',
         related_name='involved_occurrences',
-        blank=True
+        blank=True,
     )
     chains = ManyToManyField(
         'occurrences.OccurrenceChain',
         through='occurrences.OccurrenceChainInclusion',
-        related_name='occurrences'
+        related_name='occurrences',
     )
 
     class Meta:
@@ -74,7 +71,7 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         'involved_entities__name',
         'involved_entities__aliases',
         'tags__topic__key',
-        'tags__topic__aliases'
+        'tags__topic__aliases',
     ]
     objects: OccurrenceManager = OccurrenceManager()  # type: ignore
 
@@ -117,7 +114,8 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         """TODO: add docstring."""
         quotes = (
             [quote_relation.quote for quote_relation in self.quote_relations.all()]
-            if self.quote_relations.exists() else []
+            if self.quote_relations.exists()
+            else []
         )
         return {
             'occurrence': self,
@@ -125,9 +123,10 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
             # 'unpositioned_images' is a little misleading;
             # these are positioned by their `position` attribute rather than manually positioned.
             'unpositioned_images': [
-                image for image in self.occurrence_images.all()
+                image
+                for image in self.occurrence_images.all()
                 if not image.is_positioned
-            ]
+            ],
         }
 
     def save(self, *args, **kwargs):

@@ -22,7 +22,7 @@ NAME
 SYNOPSIS
     setup.sh [-h|--help]
     setup.sh
-    setup.sh [--noninteractive]
+    setup.sh [--noninteractive] [--no-installation]
 
 OPTIONS
   -h, --help
@@ -30,6 +30,9 @@ OPTIONS
 
   --noninteractive
       Option that makes the script run without user input
+
+  --skip-dependencies
+      Option that makes the script skip installing dependencies with Poetry/Pip
 
   --
       Specify end of options; useful if the first non option
@@ -76,6 +79,9 @@ while getopts "$optspec" optchar; do
       ;;
     noninteractive)
       noninteractive=true
+      ;;
+    skip-dependencies)
+      skip_dependencies=true
       ;;
     -) break ;;
     *) fatal "Unknown option '--${OPTARG}'" "See '${0} --help' for usage" ;;
@@ -270,9 +276,6 @@ if [[ "$interactive" == true ]]; then
   fi
 fi
 
-# Update Pip
-pip install --upgrade pip &>/dev/null
-
 # Install Poetry
 poetry --version &>/dev/null || {
   echo "Installing Poetry..."
@@ -281,6 +284,9 @@ poetry --version &>/dev/null || {
   source "$HOME/.poetry/env"
   poetry --version &>/dev/null || {
     echo "Unable to use Poetry's custom installer; falling back on pip..."
+    # Update Pip
+    pip install --upgrade pip &>/dev/null
+    # Install Poetry with Pip
     pip install -U poetry
   }
   poetry_version=$(poetry --version)
@@ -296,12 +302,14 @@ echo "Using $(poetry --version)..."
 # this is essential to avoid errors in GitHub builds.
 poetry config virtualenvs.create false
 
-# Install dependencies with Poetry
-echo "Installing dependencies..."
-poetry install --no-root || {
-  error "Failed to install dependencies with Poetry."
-  exit 1
-}
+if [[ ! "$skip_dependencies" == true ]]; then
+  # Install dependencies with Poetry
+  echo "Installing dependencies..."
+  poetry install --no-root || {
+    error "Failed to install dependencies with Poetry."
+    exit 1
+  }
+fi
 
 # TODO: remove lock command after https://github.com/python-poetry/poetry/issues/3023 is fixed
 poetry lock
@@ -310,11 +318,13 @@ poetry lock
 echo "Exporting requirements.txt..."
 rm requirements.txt &>/dev/null
 poetry export --without-hashes -f requirements.txt > requirements.txt
-# Install requirements from requirements.txt (only to ensure requirements.txt is valid)
-pip install -r requirements.txt || {
-  error "Unable to install requirements from requirements.txt."
-  exit 1
-}
+if [[ ! "$skip_dependencies" == true ]]; then
+  # Install requirements from requirements.txt (only to ensure requirements.txt is valid)
+  pip install -r requirements.txt || {
+    error "Unable to install requirements from requirements.txt."
+    exit 1
+  }
+fi
 
 # Grant the db user access to create databases (so that tests can be run, etc.)
 db_user=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["USER"])')

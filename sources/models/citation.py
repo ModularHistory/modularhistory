@@ -33,17 +33,13 @@ ADMIN_PLACEHOLDER_REGEX = (
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 
-SOURCE_TYPES = (
-    ('P', 'Primary'),
-    ('S', 'Secondary'),
-    ('T', 'Tertiary')
-)
+SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
 
 CITATION_PHRASE_OPTIONS = (
     (None, EMPTY_STRING),
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in'),
-    ('partially reproduced in', 'partially reproduced in')
+    ('partially reproduced in', 'partially reproduced in'),
 )
 CITATION_PHRASE_MAX_LENGTH: int = 25
 
@@ -56,26 +52,20 @@ class Citation(ModelWithComputations):
         choices=CITATION_PHRASE_OPTIONS,
         default=None,
         null=True,
-        blank=True
+        blank=True,
     )
     source = ForeignKey(
-        'sources.Source',
-        related_name='citations',
-        on_delete=SET_NULL,
-        null=True
+        'sources.Source', related_name='citations', on_delete=SET_NULL, null=True
     )
     content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(
-        ct_field='content_type',
-        fk_field='object_id'
-    )
+    content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     pages: Any
     position = PositiveSmallIntegerField(
         null=True,
         blank=True,  # TODO: add cleaning logic
-        help_text='Determines the order of references.'
+        help_text='Determines the order of references.',
     )
 
     class Meta:
@@ -109,18 +99,22 @@ class Citation(ModelWithComputations):
                 if quote.ordered_attributees != self.source.ordered_attributees:
                     source_html = html
                     if quote.citations.filter(position__lt=self.position).exists():
-                        prior_citations = quote.citations.filter(position__lt=self.position)
+                        prior_citations = quote.citations.filter(
+                            position__lt=self.position
+                        )
                         prior_citation = prior_citations.last()
                         if 'quoted in' not in str(prior_citation):
                             html = f'quoted in {source_html}'
                         else:
                             html = f'also in {source_html}'
                     else:
-                        html = components_to_html([
-                            f'{quote.attributee_string or "Unidentified person"}',
-                            f'{quote.date_string}' if quote.date else EMPTY_STRING,
-                            f'quoted in {source_html}'
-                        ])
+                        html = components_to_html(
+                            [
+                                f'{quote.attributee_string or "Unidentified person"}',
+                                f'{quote.date_string}' if quote.date else EMPTY_STRING,
+                                f'quoted in {source_html}',
+                            ]
+                        )
         # TODO: Remove search icon so citations can be joined together with semicolons
         # if self.source_file_url:
         #     html += (
@@ -191,7 +185,9 @@ class Citation(ModelWithComputations):
             file_url = self.source.source_file.url
             if file_url and self.source_file_page_number:
                 if 'page=' in file_url:
-                    file_url = re.sub(r'page=\d+', f'page={self.source_file_page_number}', file_url)
+                    file_url = re.sub(
+                        r'page=\d+', f'page={self.source_file_page_number}', file_url
+                    )
                 else:
                     file_url = f'{file_url}#page={self.source_file_page_number}'
         return file_url
@@ -213,18 +209,20 @@ class Citation(ModelWithComputations):
         return page_number_url
 
     def get_page_number_link(
-        self,
-        page_number: Union[str, int],
-        url: Optional[str] = None
+        self, page_number: Union[str, int], url: Optional[str] = None
     ) -> Optional[str]:
         """Returns a page number link string based on page_number."""
         url = url or self.get_page_number_url(page_number)
         if not url:
             return None
-        return compose_link(page_number, href=url, klass='display-source', target='_blank')
+        return compose_link(
+            page_number, href=url, klass='display-source', target='_blank'
+        )
 
     @classmethod
-    def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> Optional[str]:
+    def get_object_html(
+        cls, match: re.Match, use_preretrieved_html: bool = False
+    ) -> Optional[str]:
         """Return the object's HTML based on a placeholder in the admin."""
         if not re.match(ADMIN_PLACEHOLDER_REGEX, match.group(0)):
             raise ValueError(f'{match} does not match {ADMIN_PLACEHOLDER_REGEX}')
@@ -260,7 +258,7 @@ class Citation(ModelWithComputations):
             f'<sup>{citation.number}</sup>',
             href=f'#{html_id}',
             klass='citation-link',
-            title=source_string
+            title=source_string,
         )
 
     @classmethod
@@ -268,7 +266,9 @@ class Citation(ModelWithComputations):
         """Return an up-to-date placeholder for a citation included in an HTML field."""
         placeholder = match.group(0)
         appendage = match.group(6)
-        updated_appendage = f'<span style="display: none">{cls.get_object_html(match)}</span>'
+        updated_appendage = (
+            f'<span style="display: none">{cls.get_object_html(match)}</span>'
+        )
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:

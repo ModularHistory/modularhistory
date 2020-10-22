@@ -41,7 +41,7 @@ def retrieve_or_compute(
     _func=None,
     *,
     attribute_name: Optional[str] = None,
-    caster: Optional[Callable] = None
+    caster: Optional[Callable] = None,
 ):
     """
     `retrieve_or_compute` can be used as a decorator on methods/properties of
@@ -75,6 +75,7 @@ def retrieve_or_compute(
     For a primer on Python decorators, see:
     https://realpython.com/primer-on-python-decorators/
     """
+
     def wrap(model_property):
         @wraps(model_property)
         def wrapped_property(model_instance: ModelWithComputations, *args, **kwargs):
@@ -95,7 +96,9 @@ def retrieve_or_compute(
                 f'on its `{model_property.__name__}` attribute but is not subclassed'
                 f'from ModelWithComputations.'
             )
+
         return wrapped_property
+
     if _func is None:
         return wrap
     return wrap(_func)

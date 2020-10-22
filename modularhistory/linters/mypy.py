@@ -42,6 +42,7 @@ REVEALED_TYPE = 'Revealed type is'
 
 class MyPyOptions(LinterOptions):
     """Options common to both the config file and the cli."""
+
     # error codes:
     select: Optional[Set[str]] = None
     ignore: Optional[Set[str]] = None
@@ -71,10 +72,7 @@ PerModuleOptions = List[Tuple[str, MyPyOptions]]
 
 def mypy(**kwargs):
     """Runs mypy."""
-    mypy_args = [
-        settings.BASE_DIR,
-        '--show-error-codes'
-    ]
+    mypy_args = [settings.BASE_DIR, '--show-error-codes']
     output = mypy_client.run(mypy_args)[0]
     if output:
         process_mypy_output(output)
@@ -125,20 +123,38 @@ def process_mypy_output(output: str):
     print()
 
 
-def _process_mypy_message(message, level, error_code, matched_error, filename, line_number, options):
+def _process_mypy_message(
+    message, level, error_code, matched_error, filename, line_number, options
+):
     if level == 'error':
         # Change the level based on config
         level = options.get_message_level(message, error_code, filename)
         # Display the message
         if level or options.show_ignored:
-            report(options, filename, line_number, level or 'error', message, not level, error_code)
+            report(
+                options,
+                filename,
+                line_number,
+                level or 'error',
+                message,
+                not level,
+                error_code,
+            )
             matched_error = level, error_code
         else:
             matched_error = None
     elif level == 'note':
         if matched_error is not None:
             is_filtered = not matched_error[0]
-            report(options, filename, line_number, level, message, is_filtered, matched_error[1])
+            report(
+                options,
+                filename,
+                line_number,
+                level,
+                message,
+                is_filtered,
+                matched_error[1],
+            )
         elif message.startswith(REVEALED_TYPE):
             is_filtered = False
             report(options, filename, line_number, level, message, is_filtered)
@@ -155,16 +171,14 @@ def _get_mypy_options() -> Tuple[MyPyOptions, PerModuleOptions]:
         if overlap:
             print(
                 f'The same option must not be both selected and ignored: {", ".join(overlap)}',
-                file=sys.stderr
+                file=sys.stderr,
             )
             sys.exit(PARSING_FAIL)
     return options, module_options
 
 
 def _get_module_options(
-    options: MyPyOptions,
-    per_module_options: PerModuleOptions,
-    filename: str
+    options: MyPyOptions, per_module_options: PerModuleOptions, filename: str
 ) -> MyPyOptions:
     for _key, module_options in per_module_options:
         if module_options.is_included_path(filename):
@@ -191,7 +205,7 @@ def report(
     status: str,
     msg: str,
     is_filtered: bool,
-    error_key: Optional[str] = None
+    error_key: Optional[str] = None,
 ):
     """Report an error to stdout."""
     display_attrs = ['dark'] if options.show_ignored and is_filtered else None

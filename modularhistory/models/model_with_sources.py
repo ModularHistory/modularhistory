@@ -48,6 +48,8 @@ class ModelWithSources(SearchableModel):
     def citation_html(self) -> Optional[SafeString]:
         """Returns the quote's citation HTML, if a citation exists."""
         if self.citations.exists():  # TODO: use try-except instead of making this query
-            citation_html = '; '.join([citation.html for citation in self.citations.all()])
+            citation_html = '; '.join(
+                [citation.html for citation in self.citations.all()]
+            )
             return format_html(citation_html)
         return None

@@ -12,7 +12,9 @@ class QuoteAttribution(Model):
     """TODO: add docstring."""
 
     quote = ForeignKey('quotes.Quote', related_name='attributions', on_delete=CASCADE)
-    attributee = ForeignKey(Entity, related_name='quote_attributions', on_delete=CASCADE)
+    attributee = ForeignKey(
+        Entity, related_name='quote_attributions', on_delete=CASCADE
+    )
     position = models.PositiveSmallIntegerField(default=0, blank=True)
 
     class Meta:

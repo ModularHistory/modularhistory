@@ -31,4 +31,6 @@ class Video(MediaModel):
             if not self.duration:
                 self.duration = video.duration
         except Exception as error:  # TODO: Enable saving other kinds of videos
-            raise Exception(f'Error: {error} \n Note: Non-YouTube videos are not yet supported.')
+            raise Exception(
+                f'Error: {error} \n Note: Non-YouTube videos are not yet supported.'
+            )

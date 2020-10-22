@@ -17,24 +17,28 @@ from modularhistory.models import Model
 class SourceFile(Model):
     """A source file with page numbers."""
 
-    file = SourceFileField(upload_to=upload_to('sources/'), null=True, blank=True, unique=True)
+    file = SourceFileField(
+        upload_to=upload_to('sources/'), null=True, blank=True, unique=True
+    )
     name = models.CharField(max_length=100, null=True, blank=True, unique=True)
     page_offset = models.SmallIntegerField(
-        default=0, blank=True,
+        default=0,
+        blank=True,
         help_text=(
             'The difference between the page numbers displayed on the pages '
             'and the actual page numbers of the electronic file (a positive '
             'number if the electronic page number is greater than the textual'
             'page number; a negative number if the textual page number is '
             'greater than the electronic page number).'
-        )
+        ),
     )
     first_page_number = models.SmallIntegerField(
-        default=1, blank=True,
+        default=1,
+        blank=True,
         help_text=(
             'The page number that is visibly displayed on the page '
             'on which the relevant text begins (usually 1).'
-        )
+        ),
     )
 
     class Meta:
@@ -82,7 +86,9 @@ class SourceFile(Model):
         """TODO: add docstring."""
         if self.name and self.name != self.file_name:
             full_path = join(settings.MEDIA_ROOT, 'sources')
-            files = [file for file in listdir(full_path) if isfile(join(full_path, file))]
+            files = [
+                file for file in listdir(full_path) if isfile(join(full_path, file))
+            ]
             if self.file_name in files:
                 rename(join(full_path, self.file_name), join(full_path, self.name))
                 self.file.name = f'sources/{self.name}'

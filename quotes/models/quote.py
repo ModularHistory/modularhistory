@@ -14,8 +14,14 @@ from entities.models import Entity
 from images.models import Image
 from modularhistory.constants import OCCURRENCE_CT_ID
 from modularhistory.fields import HTMLField, HistoricDateTimeField
-from modularhistory.models import DatedModel, ModelWithImages, ModelWithRelatedEntities, ModelWithRelatedQuotes, \
-    ModelWithSources, retrieve_or_compute
+from modularhistory.models import (
+    DatedModel,
+    ModelWithImages,
+    ModelWithRelatedEntities,
+    ModelWithRelatedQuotes,
+    ModelWithSources,
+    retrieve_or_compute,
+)
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
 from quotes.models.quote_image import QuoteImage
@@ -29,7 +35,13 @@ ADMIN_PLACEHOLDER_REGEX = r'<<\ ?quote:\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?
 BITE_MAX_LENGTH: int = 400
 
 
-class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelatedEntities, ModelWithImages):
+class Quote(
+    DatedModel,
+    ModelWithRelatedQuotes,
+    ModelWithSources,
+    ModelWithRelatedEntities,
+    ModelWithImages,
+):
     """A quote."""
 
     text = HTMLField(verbose_name='Text')
@@ -38,20 +50,17 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         verbose_name='Pretext',
         null=True,
         blank=True,
-        help_text='Content to be displayed before the quote'
+        help_text='Content to be displayed before the quote',
     )
     context = HTMLField(
         verbose_name='Context',
         null=True,
         blank=True,
-        help_text='Content to be displayed after the quote'
+        help_text='Content to be displayed after the quote',
     )
     date = HistoricDateTimeField(null=True)
     attributees = ManyToManyField(
-        Entity,
-        through='quotes.QuoteAttribution',
-        related_name='quotes',
-        blank=True
+        Entity, through='quotes.QuoteAttribution', related_name='quotes', blank=True
     )
     related = GenericManyToManyField(
         'occurrences.Occurrence',
@@ -59,13 +68,10 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         'quotes.Quote',
         through='quotes.QuoteRelation',
         related_name='related_quotes',
-        blank=True
+        blank=True,
     )
     images = ManyToManyField(
-        Image,
-        through='quotes.QuoteImage',
-        related_name='quotes',
-        blank=True
+        Image, through='quotes.QuoteImage', related_name='quotes', blank=True
     )
 
     class Meta:
@@ -73,8 +79,13 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         ordering = ['date']
 
     searchable_fields = [
-        'text', 'context', 'attributees__name', 'date__year',
-        'sources__full_string', 'tags__topic__key', 'tags__topic__aliases'
+        'text',
+        'context',
+        'attributees__name',
+        'date__year',
+        'sources__full_string',
+        'tags__topic__key',
+        'tags__topic__aliases',
     ]
     objects: QuoteManager = QuoteManager()  # type: ignore
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
@@ -114,6 +125,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         else:
             attributee_html = ''
         return format_html(attributee_html) if attributee_html else None
+
     # TODO: Order by `attributee_string` instead of `attributee`
     attributee_html.admin_order_field = 'attributee'
     attributee_html: SafeString = property(attributee_html)  # type: ignore
@@ -151,9 +163,13 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
             f'</blockquote>'
         )
         components = [
-            f'<div class="quote-context">{self.pretext.html}</div>' if self.pretext else '',
+            f'<div class="quote-context">{self.pretext.html}</div>'
+            if self.pretext
+            else '',
             blockquote,
-            f'<div class="quote-context">{self.context.html}</div>' if self.context else ''
+            f'<div class="quote-context">{self.context.html}</div>'
+            if self.context
+            else '',
         ]
         html = '\n'.join([component for component in components if component])
         return format_html(html)
@@ -177,6 +193,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         """Returns a queryset of the quote's related occurrences."""
         # TODO: refactor
         from occurrences.models import Occurrence
+
         occurrence_ids = self.relations.filter(
             Q(content_type_id=OCCURRENCE_CT_ID)
         ).values_list('id', flat=True)
@@ -215,7 +232,9 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
                 QuoteImage.objects.create(quote=self, image=image)
 
     @classmethod
-    def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
+    def get_object_html(
+        cls, match: re.Match, use_preretrieved_html: bool = False
+    ) -> str:
         """Return the obj's HTML based on a placeholder in the admin."""
         if not re.match(ADMIN_PLACEHOLDER_REGEX, match.group(0)):
             raise ValueError(f'{match} does not match {ADMIN_PLACEHOLDER_REGEX}')
@@ -263,9 +282,9 @@ def quote_sorter_key(quote: Quote):
     if quote.date:
         date = quote.date
         sorter_int += (
-            (year_multiplier * date.year) +
-            (month_multiplier * date.month) +
-            (day_multiplier * date.day)
+            (year_multiplier * date.year)
+            + (month_multiplier * date.month)
+            + (day_multiplier * date.day)
         )
     if quote.citation:
         citation = quote.citation

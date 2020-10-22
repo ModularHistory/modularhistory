@@ -9,26 +9,14 @@ from sources.admin.filters import AttributeeFilter
 class TextualSourceAdmin(SourceAdmin):
     """Admin for textual sources."""
 
-    list_display = [
-        'pk',
-        'html',
-        'detail_link',
-        'date_string'
-    ]
-    list_filter = [
-        'verified',
-        AttributeeFilter
-    ]
+    list_display = ['pk', 'html', 'detail_link', 'date_string']
+    list_filter = ['verified', AttributeeFilter]
 
     def get_fields(self, request, model_instance=None):
         """Returns reordered fields to be displayed in the admin."""
         fields: List = list(super().get_fields(request, model_instance))
         # Fields to display at the top, in order
-        top_fields = (
-            'full_string',
-            'creators',
-            'title'
-        )
+        top_fields = ('full_string', 'creators', 'title')
         # Fields to display at the bottom, in order
         bottom_fields = (
             'volume',
@@ -37,7 +25,7 @@ class TextualSourceAdmin(SourceAdmin):
             'end_page_number',
             'container',
             'description',
-            'citations'
+            'citations',
         )
         index: int = 0
         for field_name in top_fields:
@@ -116,7 +104,7 @@ child_models = (
     models.Piece,
     models.Documentary,
     models.WebPage,
-    models.Affidavit
+    models.Affidavit,
 )
 
 for child in child_models:

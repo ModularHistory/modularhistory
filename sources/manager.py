@@ -5,7 +5,7 @@ from django.db.models import Q
 from modularhistory.models.manager import (
     SearchableModelManager,
     SearchableModelQuerySet,
-    TypedModelManager
+    TypedModelManager,
 )
 
 
@@ -21,19 +21,16 @@ class SourceManager(TypedModelManager, SearchableModelManager):
         topic_ids: Optional[List[int]] = None,
         rank: bool = False,
         suppress_unverified: bool = True,
-        db: str = 'default'
+        db: str = 'default',
     ) -> SearchableModelQuerySet:
         """Returns search results from sources."""
-        qs = super().search(
-            db=db,
-            suppress_unverified=suppress_unverified
-        ).filter(hidden=False).filter_by_date(
-            start_year=start_year,
-            end_year=end_year
+        qs = (
+            super()
+            .search(db=db, suppress_unverified=suppress_unverified)
+            .filter(hidden=False)
+            .filter_by_date(start_year=start_year, end_year=end_year)
         )
         # Limit to specified entities
         if entity_ids:
-            qs = qs.filter(
-                Q(attributees__id__in=entity_ids)
-            )
+            qs = qs.filter(Q(attributees__id__in=entity_ids))
         return qs

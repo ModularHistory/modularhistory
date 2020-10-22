@@ -18,7 +18,7 @@ from mega.mega import (
     base64_url_decode,
     decrypt_attr,
     get_chunks,
-    str_to_a32
+    str_to_a32,
 )
 
 SIXTEEN = 16
@@ -46,22 +46,14 @@ class MegaClient(Mega):
         file_key = path[1]
         if is_public:
             file_key = base64_to_a32(file_key)
-            file_data = self._api_request({
-                'a': 'g',
-                'g': 1,
-                'p': file_handle
-            })
+            file_data = self._api_request({'a': 'g', 'g': 1, 'p': file_handle})
         else:
-            file_data = self._api_request({
-                'a': 'g',
-                'g': 1,
-                'n': file_handle
-            })
+            file_data = self._api_request({'a': 'g', 'g': 1, 'n': file_handle})
         keys = (
             file_key[0] ^ file_key[4],
             file_key[1] ^ file_key[5],
             file_key[2] ^ file_key[6],
-            file_key[3] ^ file_key[7]
+            file_key[3] ^ file_key[7],
         )
         iv = file_key[4:6] + (0, 0)
         meta_mac = file_key[6:8]
@@ -74,14 +66,12 @@ class MegaClient(Mega):
         # file_name = attribs['n']
         input_file = requests.get(file_url, stream=True).raw
         with tempfile.NamedTemporaryFile(
-            mode=mode,
-            prefix='megapy_',
-            delete=False
+            mode=mode, prefix='megapy_', delete=False
         ) as temp_output_file:
             k_str = a32_to_str(keys)
             counter = Counter.new(
                 ONE_TWENTY_EIGHT,
-                initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR
+                initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR,
             )
             aes = AES.new(k_str, AES.MODE_CTR, counter=counter)
             mac_str = '\0' * SIXTEEN
@@ -93,14 +83,14 @@ class MegaClient(Mega):
                 temp_output_file.write(chunk)
                 encryptor = AES.new(k_str, AES.MODE_CBC, iv_str)
                 for index in range(0, len(chunk) - SIXTEEN, SIXTEEN):
-                    block = chunk[index:index + SIXTEEN]
+                    block = chunk[index : index + SIXTEEN]
                     encryptor.encrypt(block)
                 # fix for files under 16 bytes failing
                 if file_size > SIXTEEN:
                     index += SIXTEEN
                 else:
                     index = 0
-                block = chunk[index:index + SIXTEEN]
+                block = chunk[index : index + SIXTEEN]
                 if len(block) % SIXTEEN:
                     block += b'\0' * (SIXTEEN - (len(block) % SIXTEEN))
                 mac_str = mac_encryptor.encrypt(encryptor.encrypt(block))
@@ -175,7 +165,9 @@ class MegaStorage(Storage):
         # exceed the max_length.
         while self.exists(name) or (max_length and len(name) > max_length):
             # file_ext includes the dot.
-            name = os.path.join(dir_name, self.get_alternative_name(file_root, file_ext))
+            name = os.path.join(
+                dir_name, self.get_alternative_name(file_root, file_ext)
+            )
             if max_length is None:
                 continue
             # Truncate file_root if max_length exceeded.
@@ -189,7 +181,9 @@ class MegaStorage(Storage):
                         'Please make sure that the corresponding file field '
                         'allows sufficient "max_length".' % name
                     )
-                name = os.path.join(dir_name, self.get_alternative_name(file_root, file_ext))
+                name = os.path.join(
+                    dir_name, self.get_alternative_name(file_root, file_ext)
+                )
         return name
 
     def get_created_time(self, name: str) -> datetime:
@@ -254,7 +248,7 @@ class MegaStorage(Storage):
         self,
         name: Optional[str],
         content: IO[Any],  # noqa: WPS110
-        max_length: Optional[int] = None
+        max_length: Optional[int] = None,
     ) -> str:
         """
         Saves a new file using the storage system, preferably with the name specified.
@@ -272,15 +266,11 @@ class MegaStorage(Storage):
         """
         # TODO: improve implementation to agree with docstring
         with tempfile.NamedTemporaryFile(
-            mode='w+b',
-            prefix='megapy_',
-            delete=False
+            mode='w+b', prefix='megapy_', delete=False
         ) as temp_file:
             # write content
             upload_response = mega_client.upload(
-                temp_file.name,
-                dest=None,  # TODO
-                dest_filename=name
+                temp_file.name, dest=None, dest_filename=name  # TODO
             )
         return upload_response
 

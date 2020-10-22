@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='url',
-            field=models.URLField(blank=True, help_text='URL where the source can be accessed online', max_length=100, null=True),
+            field=models.URLField(
+                blank=True,
+                help_text='URL where the source can be accessed online',
+                max_length=100,
+                null=True,
+            ),
         ),
     ]

@@ -37,7 +37,10 @@ urlpatterns = [
     path('chat/', include('chat.urls')),
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
-    path('occurrences/', include(('occurrences.urls', 'occurrences'), namespace='occurrences')),
+    path(
+        'occurrences/',
+        include(('occurrences.urls', 'occurrences'), namespace='occurrences'),
+    ),
     path('entities/', include(('entities.urls', 'entities'), namespace='entities')),
     path('images/', include(('images.urls', 'images'), namespace='images')),
     path('places/', include(('places.urls', 'places'), namespace='places')),
@@ -62,6 +65,5 @@ if settings.ENVIRONMENT == environments.DEV:
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns = [
-        path('__debug__', include(debug_toolbar.urls))
-    ] + urlpatterns
+
+    urlpatterns = [path('__debug__', include(debug_toolbar.urls))] + urlpatterns

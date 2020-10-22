@@ -68,18 +68,12 @@ class Collection(ModelWithComputations):
         max_length=NAME_MAX_LENGTH,
         help_text='e.g., "Adam S. Bennion papers"',
         null=True,
-        blank=True
+        blank=True,
     )
     repository = ForeignKey(
-        'sources.Repository',
-        on_delete=CASCADE,
-        help_text='the collecting institution'
+        'sources.Repository', on_delete=CASCADE, help_text='the collecting institution'
     )
-    url = models.URLField(
-        max_length=URL_MAX_LENGTH,
-        null=True,
-        blank=True
-    )
+    url = models.URLField(max_length=URL_MAX_LENGTH, null=True, blank=True)
 
     class Meta:
         unique_together = ['name', 'repository']
@@ -112,20 +106,20 @@ class Repository(ModelWithComputations):
         max_length=NAME_MAX_LENGTH,
         null=True,
         blank=True,
-        help_text='e.g., "L. Tom Perry Special Collections"'
+        help_text='e.g., "L. Tom Perry Special Collections"',
     )
     owner = models.CharField(
         max_length=NAME_MAX_LENGTH,
         null=True,
         blank=True,
-        help_text='e.g., "Harold B. Lee Library, Brigham Young University"'
+        help_text='e.g., "Harold B. Lee Library, Brigham Young University"',
     )
     location = ForeignKey(
         'places.Place',
         on_delete=models.SET_NULL,
         related_name='repositories',
         null=True,
-        blank=True
+        blank=True,
     )
 
     class Meta:
@@ -161,6 +155,6 @@ class Document(DocumentSource):
             self.linked_title if self.title else 'untitled document',
             self.date.string if self.date else 'date unknown',
             self.descriptive_phrase,
-            f'archived in {self.collection}' if self.collection else ''
+            f'archived in {self.collection}' if self.collection else '',
         ]
         return self.components_to_html(components)

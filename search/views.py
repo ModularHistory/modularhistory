@@ -9,11 +9,18 @@ from django.views.generic import ListView
 
 from entities.models import Entity
 from images.models import Image
-from modularhistory.constants import IMAGE_CT_ID, OCCURRENCE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
+from modularhistory.constants import (
+    IMAGE_CT_ID,
+    OCCURRENCE_CT_ID,
+    QUOTE_CT_ID,
+    SOURCE_CT_ID,
+)
+
 # from django.core.paginator import Paginator
 from modularhistory.models import DatedModel, Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from occurrences.models import Occurrence
+
 # from places.models import Place
 from quotes.models import Quote
 from search.forms import SearchForm
@@ -126,7 +133,7 @@ class SearchResultsView(ListView):
             'suppress_unverified': suppress_unverified,
             'db': db,
             'entity_ids': entity_ids,
-            'topic_ids': topic_ids
+            'topic_ids': topic_ids,
         }
 
         # Occurrences
@@ -144,8 +151,8 @@ class SearchResultsView(ListView):
             if occurrence_results:
                 # TODO: refactor
                 quote_results = quote_results.exclude(
-                    Q(relations__content_type_id=OCCURRENCE_CT_ID) &
-                    Q(relations__object_id__in=occurrence_result_ids)
+                    Q(relations__content_type_id=OCCURRENCE_CT_ID)
+                    & Q(relations__object_id__in=occurrence_result_ids)
                 )
             quote_result_ids = [quote.id for quote in quote_results]
         else:
@@ -156,11 +163,13 @@ class SearchResultsView(ListView):
             image_results = Image.objects.search(**search_kwargs).filter(entities=None)  # type: ignore
             if occurrence_results:
                 image_results = image_results.exclude(
-                    Q(occurrences__in=occurrence_results) |
-                    Q(entities__involved_occurrences__in=occurrence_results)
+                    Q(occurrences__in=occurrence_results)
+                    | Q(entities__involved_occurrences__in=occurrence_results)
                 )
             if quote_results:
-                image_results = image_results.exclude(entities__quotes__in=quote_results)
+                image_results = image_results.exclude(
+                    entities__quotes__in=quote_results
+                )
         else:
             image_results = Image.objects.using(db).none()
 
@@ -181,12 +190,17 @@ class SearchResultsView(ListView):
 
         entity_subquery = Subquery(
             Entity.objects.filter(
-                Q(involved_occurrences__in=occurrence_results) |
-                Q(quotes__in=quote_results) |
-                Q(attributed_sources__in=source_results)
-            ).order_by('id').distinct('id').values('pk')
+                Q(involved_occurrences__in=occurrence_results)
+                | Q(quotes__in=quote_results)
+                | Q(attributed_sources__in=source_results)
+            )
+            .order_by('id')
+            .distinct('id')
+            .values('pk')
         )
-        self.entities = Entity.objects.using(db).filter(pk__in=entity_subquery).order_by('name')
+        self.entities = (
+            Entity.objects.using(db).filter(pk__in=entity_subquery).order_by('name')
+        )
 
         # # occurrence topic relations
         # for topic_id in TopicRelation.objects.filter(
@@ -202,16 +216,21 @@ class SearchResultsView(ListView):
         #     print(topic_id)
         #     topics_ids.append(topic_id)
 
-        self.topics = Topic.objects.using(db).filter(
-            Q(
-                topic_relations__content_type_id=QUOTE_CT_ID,
-                topic_relations__object_id__in=quote_result_ids
-            ) |
-            Q(
-                topic_relations__content_type_id=OCCURRENCE_CT_ID,
-                topic_relations__object_id__in=occurrence_result_ids
+        self.topics = (
+            Topic.objects.using(db)
+            .filter(
+                Q(
+                    topic_relations__content_type_id=QUOTE_CT_ID,
+                    topic_relations__object_id__in=quote_result_ids,
+                )
+                | Q(
+                    topic_relations__content_type_id=OCCURRENCE_CT_ID,
+                    topic_relations__object_id__in=occurrence_result_ids,
+                )
             )
-        ).order_by('key').distinct()
+            .order_by('key')
+            .distinct()
+        )
 
         # self.places = Place.objects.filter(
         #     Q(occurrences__in=occurrence_results)
@@ -220,10 +239,7 @@ class SearchResultsView(ListView):
 
         # Combine querysets
         queryset_chain = chain(
-            occurrence_results,
-            quote_results,
-            image_results,
-            source_results
+            occurrence_results, quote_results, image_results, source_results
         )
 
         # Order the results

@@ -15,11 +15,20 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='citation',
             name='computations',
-            field=modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True),
+            field=modularhistory.fields.json_field.JSONField(
+                blank=True, default=dict, null=True
+            ),
         ),
         migrations.AlterField(
             model_name='source',
             name='db_file',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='sources', to='sources.sourcefile', verbose_name='file'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='sources',
+                to='sources.sourcefile',
+                verbose_name='file',
+            ),
         ),
     ]

@@ -14,31 +14,24 @@ CONTENT_TYPE_OPTIONS: List[Tuple[int, str]] = [
     (CONTENT_TYPE_IDS['occurrence'], 'Occurrences'),
     (CONTENT_TYPE_IDS['quote'], 'Quotes'),
     (CONTENT_TYPE_IDS['image'], 'Images'),
-    (CONTENT_TYPE_IDS['source'], 'Sources')
+    (CONTENT_TYPE_IDS['source'], 'Sources'),
 ]
 
-ORDERING_OPTIONS = (
-    ('date', 'Date'),
-    ('relevance', 'Relevance')
-)
+ORDERING_OPTIONS = (('date', 'Date'), ('relevance', 'Relevance'))
 
 
 class UserSearch(Model):
     """An instance of a search by a user."""
 
     user = ForeignKey(
-        User,
-        related_name='searches',
-        null=True,
-        blank=True,
-        on_delete=SET_NULL
+        User, related_name='searches', null=True, blank=True, on_delete=SET_NULL
     )
     search = ForeignKey(
         'search.Search',
         related_name='user_searches',
         null=False,
         blank=False,
-        on_delete=CASCADE
+        on_delete=CASCADE,
     )
     datetime = models.DateTimeField(auto_now_add=True)
 

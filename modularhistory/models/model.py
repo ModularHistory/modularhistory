@@ -73,12 +73,13 @@ class Model(DjangoModel):
         """Returns the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
-            unique_together_is_valid = (
-                isinstance(unique_together, (list, tuple)) and
-                all(isinstance(field_name, str) for field_name in unique_together)
-            )
+            unique_together_is_valid = isinstance(
+                unique_together, (list, tuple)
+            ) and all(isinstance(field_name, str) for field_name in unique_together)
             if not unique_together_is_valid:
-                raise ValueError('The `unique_together` value must be an iterable containing strings.')
+                raise ValueError(
+                    'The `unique_together` value must be an iterable containing strings.'
+                )
             return list(unique_together)
         else:
             fields = self._meta.get_fields()
@@ -96,7 +97,7 @@ class Model(DjangoModel):
         """Returns the URL of the model instance's admin page."""
         return reverse(
             f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
-            args=[self.id]
+            args=[self.id],
         )
 
     def get_detail_link(self) -> SafeString:
@@ -126,7 +127,9 @@ class Model(DjangoModel):
         pass
 
     @classmethod
-    def get_object_html(cls, match: re.Match, use_preretrieved_html: bool = False) -> str:
+    def get_object_html(
+        cls, match: re.Match, use_preretrieved_html: bool = False
+    ) -> str:
         """Returns a model instance's HTML based on a placeholder in the admin."""
         if not cls.admin_placeholder_regex.match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')

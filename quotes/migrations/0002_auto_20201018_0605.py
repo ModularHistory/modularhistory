@@ -15,10 +15,37 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='QuoteImage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('position', models.PositiveSmallIntegerField(blank=True, help_text='Set to 0 if the image is positioned manually.', null=True)),
-                ('image', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='images.image')),
-                ('quote', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='occurrence_images', to='quotes.quote')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'position',
+                    models.PositiveSmallIntegerField(
+                        blank=True,
+                        help_text='Set to 0 if the image is positioned manually.',
+                        null=True,
+                    ),
+                ),
+                (
+                    'image',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to='images.image'
+                    ),
+                ),
+                (
+                    'quote',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='occurrence_images',
+                        to='quotes.quote',
+                    ),
+                ),
             ],
             options={
                 'abstract': False,
@@ -27,6 +54,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='quote',
             name='images',
-            field=models.ManyToManyField(blank=True, related_name='quotes', through='quotes.QuoteImage', to='images.Image'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='quotes',
+                through='quotes.QuoteImage',
+                to='images.Image',
+            ),
         ),
     ]

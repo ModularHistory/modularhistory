@@ -45,8 +45,13 @@ def card(context: RequestContext, model_instance: Any) -> SafeString:
     # TODO
     template_directory_name = template_directory_name or f'{obj_name}s'
 
-    greater_context = {**context.flatten(), **{'object': model_instance, obj_name: model_instance}}
+    greater_context = {
+        **context.flatten(),
+        **{'object': model_instance, obj_name: model_instance},
+    }
     template = loader.get_template(f'{template_directory_name}/_card.html')
     response = template.render(greater_context)
     query = greater_context.get('query')
-    return format_html(highlight(response, text_to_highlight=query)) if query else response
+    return (
+        format_html(highlight(response, text_to_highlight=query)) if query else response
+    )

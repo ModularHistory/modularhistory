@@ -12,7 +12,7 @@ from quotes.admin.quote_filters import (
     AttributeeCountFilter,
     AttributeeFilter,
     HasMultipleCitationsFilter,
-    HasSourceFilter
+    HasSourceFilter,
 )
 from quotes.admin.quote_inlines import AttributeesInline, BitesInline
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
@@ -34,7 +34,7 @@ class QuoteAdmin(SearchableModelAdmin):
         'attributee_html',
         'date_string',
         'citation_html',
-        'tags_string'
+        'tags_string',
     ]
     list_filter = [
         'verified',
@@ -56,7 +56,7 @@ class QuoteAdmin(SearchableModelAdmin):
         # OccurrencesInline,
         RelatedQuotesInline,
         RelatedTopicsInline,
-        BitesInline
+        BitesInline,
     ]
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
@@ -80,10 +80,7 @@ class QuoteAdmin(SearchableModelAdmin):
 
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
-        qs = models.Quote.objects.prefetch_related(
-            'attributees',
-            'tags__topic'
-        )
+        qs = models.Quote.objects.prefetch_related('attributees', 'tags__topic')
         ordering = self.get_ordering(request)
         if ordering and ordering != models.Quote.get_meta().ordering:
             qs = qs.order_by(*ordering)
@@ -96,18 +93,20 @@ class QuoteAdmin(SearchableModelAdmin):
             path(
                 'tag_search/',
                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
-                name='tag_search'
+                name='tag_search',
             ),
             path(
                 'entity_search/',
                 self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
-                name='entity_search'
+                name='entity_search',
             ),
             path(
                 'entity_category_search/',
-                self.admin_site.admin_view(EntityCategorySearchView.as_view(model_admin=self)),
-                name='entity_category_search'
-            )
+                self.admin_site.admin_view(
+                    EntityCategorySearchView.as_view(model_admin=self)
+                ),
+                name='entity_category_search',
+            ),
         ]
         return custom_urls + urls
 

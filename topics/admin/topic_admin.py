@@ -3,7 +3,11 @@ from django.urls import path
 from admin import ModelAdmin, admin_site
 from admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from topics import models
-from topics.admin.topic_inlines import ChildTopicsInline, ParentTopicsInline, TopicRelationsInline
+from topics.admin.topic_inlines import (
+    ChildTopicsInline,
+    ParentTopicsInline,
+    TopicRelationsInline,
+)
 from topics.views import TagSearchView
 
 
@@ -26,7 +30,7 @@ class TopicAdmin(ModelAdmin):
         'description',
         'parent_topics_string',
         'child_topics_string',
-        'tags_string'
+        'tags_string',
     ]
     list_filter = [RelatedTopicFilter]
     list_per_page = 20
@@ -48,7 +52,7 @@ class TopicAdmin(ModelAdmin):
             path(
                 'related_topic_search/',
                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
-                name='related_topic_search'
+                name='related_topic_search',
             ),
         ]
         return custom_urls + urls

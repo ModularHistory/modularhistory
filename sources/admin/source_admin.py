@@ -10,13 +10,13 @@ from sources.admin.filters import (
     HasFilePageOffsetFilter,
     HasPageNumber,
     ImpreciseDateFilter,
-    TypeFilter
+    TypeFilter,
 )
 from sources.admin.source_inlines import (
     AttributeesInline,
     ContainedSourcesInline,
     ContainersInline,
-    RelatedInline
+    RelatedInline,
 )
 
 
@@ -30,7 +30,7 @@ class SourceAdmin(SearchableModelAdmin):
         'date_string',
         model.FieldNames.location,
         'admin_source_link',
-        'type'
+        'type',
     ]
     list_filter = [
         model.FieldNames.verified,
@@ -41,7 +41,7 @@ class SourceAdmin(SearchableModelAdmin):
         ImpreciseDateFilter,
         model.FieldNames.hidden,
         AttributeeFilter,
-        TypeFilter
+        TypeFilter,
     ]
     readonly_fields = SearchableModelAdmin.readonly_fields + ['full_string']
     search_fields = models.Source.searchable_fields
@@ -50,12 +50,9 @@ class SourceAdmin(SearchableModelAdmin):
         AttributeesInline,
         ContainersInline,
         ContainedSourcesInline,
-        RelatedInline
+        RelatedInline,
     ]
-    autocomplete_fields = [
-        model.FieldNames.file,
-        model.FieldNames.location
-    ]
+    autocomplete_fields = [model.FieldNames.file, model.FieldNames.location]
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
     date_hierarchy = 'date'
@@ -87,9 +84,7 @@ class SourceAdmin(SearchableModelAdmin):
     def get_fields(self, request, model_instance=None):
         """Returns reordered fields to be displayed in the admin."""
         fields = list(super().get_fields(request, model_instance))
-        fields_to_move = (
-            models.Source.FieldNames.string,
-        )
+        fields_to_move = (models.Source.FieldNames.string,)
         for field in fields_to_move:
             if field in fields:
                 fields.remove(field)
@@ -102,8 +97,10 @@ class SourceAdmin(SearchableModelAdmin):
         additional_urls = [
             path(
                 'attributee_search/',
-                self.admin_site.admin_view(AttributeeSearchView.as_view(model_admin=self)),
-                name='attributee_search'
+                self.admin_site.admin_view(
+                    AttributeeSearchView.as_view(model_admin=self)
+                ),
+                name='attributee_search',
             ),
         ]
         return additional_urls + urls
@@ -113,15 +110,8 @@ class SpeechAdmin(SourceAdmin):
     """TODO: add docstring."""
 
     model = models.Speech
-    list_display = [
-        'string',
-        model.FieldNames.location,
-        'date_string'
-    ]
-    search_fields = [
-        model.FieldNames.string,
-        'location__name'
-    ]
+    list_display = ['string', model.FieldNames.location, 'date_string']
+    search_fields = [model.FieldNames.string, 'location__name']
 
 
 class SourcesInline(TabularInline):
@@ -136,7 +126,7 @@ class SourcesInline(TabularInline):
         'creators',
         model.FieldNames.url,
         'date',
-        'publication_date'
+        'publication_date',
     ]
 
 

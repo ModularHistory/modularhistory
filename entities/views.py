@@ -3,6 +3,7 @@
 from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models import Q
 from django.db.models.query import QuerySet
+
 # from django.http import HttpRequest, JsonResponse
 from django.views import generic
 from rest_framework.generics import ListAPIView
@@ -37,9 +38,9 @@ class AttributeeSearchView(AutocompleteJsonView):
         term = self.term
         if term:
             queryset = queryset.filter(
-                Q(name__icontains=term) |
-                Q(unabbreviated_name__icontains=term) |
-                Q(aliases__icontains=term)
+                Q(name__icontains=term)
+                | Q(unabbreviated_name__icontains=term)
+                | Q(aliases__icontains=term)
             )
         return queryset
 
@@ -53,8 +54,7 @@ class EntitySearchView(AutocompleteJsonView):
         term = self.term
         if term:
             queryset = queryset.filter(
-                Q(name__icontains=term) |
-                Q(aliases__icontains=term)
+                Q(name__icontains=term) | Q(aliases__icontains=term)
             )
         return queryset
 
@@ -68,8 +68,7 @@ class EntityCategorySearchView(AutocompleteJsonView):
         term = self.term
         if term:
             queryset = queryset.filter(
-                Q(name__icontains=term) |
-                Q(aliases__icontains=term)
+                Q(name__icontains=term) | Q(aliases__icontains=term)
             )
         return queryset
 

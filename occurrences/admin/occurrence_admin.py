@@ -5,12 +5,17 @@ from django.urls import path
 from admin import ModelAdmin, SearchableModelAdmin, admin_site
 from modularhistory.models.taggable_model import TopicFilter
 from occurrences import models
-from occurrences.admin.occurrence_filters import EntityFilter, HasDateFilter, HasQuotesFilter, LocationFilter
+from occurrences.admin.occurrence_filters import (
+    EntityFilter,
+    HasDateFilter,
+    HasQuotesFilter,
+    LocationFilter,
+)
 from occurrences.admin.occurrence_inlines import (
     ImagesInline,
     InvolvedEntitiesInline,
     LocationsInline,
-    OccurrencesInline
+    OccurrencesInline,
 )
 from quotes.admin import RelatedQuotesInline
 from sources.admin import CitationsInline
@@ -28,7 +33,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
         LocationsInline,
         ImagesInline,
         CitationsInline,
-        RelatedTopicsInline
+        RelatedTopicsInline,
     ]
     list_display = [
         'pk',
@@ -43,7 +48,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
         HasQuotesFilter,
         EntityFilter,
         TopicFilter,
-        LocationFilter
+        LocationFilter,
     ]
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields
@@ -56,7 +61,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
             path(
                 'tag_search/',
                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
-                name='tag_search'
+                name='tag_search',
             ),
         ]
         return custom_urls + urls

@@ -26,6 +26,7 @@ class DatedModel(Model):
         if hasattr(self, 'end_date') and self.end_date:
             date_string = f'{date_string} – {self.end_date.string}'
         return date_string
+
     _date_string.admin_order_field = 'date'
     date_string = property(_date_string)
 
@@ -41,7 +42,11 @@ class DatedModel(Model):
             date_html = date_html.replace('c. c. ', 'c. ')
         if hasattr(self, 'end_date') and self.end_date:
             date_html = f'{date_html} – {self.end_date.html}'
-        if self.date.year < 1000 and not self.date.is_bce and not date_html.endswith(' CE'):
+        if (
+            self.date.year < 1000
+            and not self.date.is_bce
+            and not date_html.endswith(' CE')
+        ):
             date_html = f'{date_html} CE'
         return format_html(date_html)
 

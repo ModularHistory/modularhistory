@@ -10,7 +10,9 @@ from staticpages.models import StaticPage
 class StaticPageForm(FlatpageForm):
     """TODO: add docstring."""
 
-    content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))  # noqa: WPS110
+    content = forms.CharField(
+        widget=TinyMCE(attrs={'cols': 80, 'rows': 30})
+    )  # noqa: WPS110
 
     class Meta:
         model = StaticPage
@@ -26,14 +28,17 @@ class StaticPageAdmin(FlatPageAdmin):
     form = StaticPageForm
     fieldsets = (
         (None, {'fields': ('url', 'title', 'content', 'sites')}),
-        (('Advanced options',), {
-            'classes': ('collapse', ),
-            'fields': (
-                'enable_comments',
-                'registration_required',
-                'template_name',
-            ),
-        }),
+        (
+            ('Advanced options',),
+            {
+                'classes': ('collapse',),
+                'fields': (
+                    'enable_comments',
+                    'registration_required',
+                    'template_name',
+                ),
+            },
+        ),
     )
 
 

@@ -4,9 +4,7 @@ from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
 
 from modularhistory.fields import HTMLField
-from modularhistory.models import (
-    Model
-)
+from modularhistory.models import Model
 
 NAME_MAX_LENGTH: int = 100
 
@@ -23,7 +21,9 @@ class Idea(Model):
 class EntityIdea(Model):
     """TODO: add docstring."""
 
-    entity = ForeignKey('entities.Entity', on_delete=CASCADE, related_name='entity_ideas')
+    entity = ForeignKey(
+        'entities.Entity', on_delete=CASCADE, related_name='entity_ideas'
+    )
     idea = ForeignKey(Idea, on_delete=CASCADE, related_name='entity_ideas')
 
     class Meta:

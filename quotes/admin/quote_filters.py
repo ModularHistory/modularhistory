@@ -11,7 +11,7 @@ from django.utils.html import format_html
 
 from admin.list_filters.autocomplete_filter import (
     BaseAutocompleteFilter,
-    ManyToManyAutocompleteFilter
+    ManyToManyAutocompleteFilter,
 )
 from entities.models import Category, Entity
 from modularhistory.constants import NO, YES
@@ -53,14 +53,18 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             if self.parameter_name is None:
                 self.parameter_name = self.field_name
                 if self.use_pk_exact:
-                    self.parameter_name = f'{self.parameter_name}__{self.field_pk}__exact'
-            super(BaseAutocompleteFilter, self).__init__(request, query_params, model, model_admin)
+                    self.parameter_name = (
+                        f'{self.parameter_name}__{self.field_pk}__exact'
+                    )
+            super(BaseAutocompleteFilter, self).__init__(
+                request, query_params, model, model_admin
+            )
             if self.rel_model:
                 model = self.rel_model
             widget = AutocompleteSelect(
                 self._rel,
                 model_admin.admin_site,
-                custom_url=self.get_autocomplete_url(request, model_admin)
+                custom_url=self.get_autocomplete_url(request, model_admin),
             )
             form_field = self.get_form_field()
             field = form_field(
@@ -77,7 +81,7 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             self.rendered_widget = field.widget.render(
                 name=self.parameter_name,
                 value=self.used_parameters.get(self.parameter_name, ''),
-                attrs=attrs
+                attrs=attrs,
             )
         if self.value():
             print('There is a value!!!!')
@@ -85,7 +89,7 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             rendered_widget = re.sub(
                 r'(selected>).+(</option>)',
                 rf'\g<1>{model_instance}\g<2>',
-                self.rendered_widget
+                self.rendered_widget,
             )
             self.rendered_widget = format_html(rendered_widget)
 

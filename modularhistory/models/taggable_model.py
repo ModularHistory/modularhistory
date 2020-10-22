@@ -56,10 +56,12 @@ class TaggableModel(ModelWithComputations):
         """TODO: write docstring."""
         if self.tag_keys:
             return format_html(
-                ' '.join([
-                    f'<li class="topic-tag"><a>{tag_key}</a></li>'
-                    for tag_key in self.tag_keys
-                ])
+                ' '.join(
+                    [
+                        f'<li class="topic-tag"><a>{tag_key}</a></li>'
+                        for tag_key in self.tag_keys
+                    ]
+                )
             )
         return None
 

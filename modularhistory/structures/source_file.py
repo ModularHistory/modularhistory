@@ -14,22 +14,28 @@ class TextualSourceFile(FieldFile):
     def dedupe():
         """Removes duplicated source files."""
         from sources.models import Source
+
         path = join(settings.MEDIA_ROOT, 'sources')
         files1 = [
-            filename.replace('.pdf', '') for filename in listdir(path)
+            filename.replace('.pdf', '')
+            for filename in listdir(path)
             if isfile(join(path, filename))
         ]
         files2 = deepcopy(files1)
         to_edit = []
         for filename2 in files2:
             for filename1 in files1:
-                should_be_edited = all([
-                    filename2 in filename1,
-                    filename2 != filename1,
-                    filename2.startswith(filename1[:3])
-                ])
+                should_be_edited = all(
+                    [
+                        filename2 in filename1,
+                        filename2 != filename1,
+                        filename2.startswith(filename1[:3]),
+                    ]
+                )
                 if should_be_edited:
-                    to_edit.append((f'sources/{filename1}.pdf', f'sources/{filename2}.pdf'))
+                    to_edit.append(
+                        (f'sources/{filename1}.pdf', f'sources/{filename2}.pdf')
+                    )
         for file_a, file_b in to_edit:
             print(f'{file_a} -> {file_b}')
         source_set = Source.objects.all()

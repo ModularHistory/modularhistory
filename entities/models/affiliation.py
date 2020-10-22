@@ -4,9 +4,7 @@ from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, CASCADE
 
 from modularhistory.fields import HistoricDateTimeField, HTMLField
-from modularhistory.models import (
-    Model
-)
+from modularhistory.models import Model
 
 MAX_NAME_LENGTH: int = 100
 
@@ -24,13 +22,12 @@ class _Engagement(Model):
 class Affiliation(_Engagement):
     """An affiliation of entities."""
 
-    entity = ForeignKey('entities.Entity', related_name='affiliations', on_delete=CASCADE)
+    entity = ForeignKey(
+        'entities.Entity', related_name='affiliations', on_delete=CASCADE
+    )
     affiliated_entity = ForeignKey('entities.Entity', on_delete=CASCADE)
     roles = ManyToManyField(
-        'Role',
-        related_name='affiliations',
-        through='RoleFulfillment',
-        blank=True
+        'Role', related_name='affiliations', through='RoleFulfillment', blank=True
     )
 
     class Meta:
@@ -56,7 +53,9 @@ class Role(Model):
 class RoleFulfillment(_Engagement):
     """Fulfillment of a role by an entity."""
 
-    affiliation = ForeignKey(Affiliation, related_name='role_fulfillments', on_delete=CASCADE)
+    affiliation = ForeignKey(
+        Affiliation, related_name='role_fulfillments', on_delete=CASCADE
+    )
     role = ForeignKey(Role, related_name='fulfillments', on_delete=CASCADE)
 
     class Meta:

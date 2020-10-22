@@ -17,10 +17,7 @@ class TestSources:
     def test_source(self, source_type: str):
         """Test creation of sources."""
         title = f'asdf {source_type}'
-        source = Source(
-            type=source_type,
-            title=title
-        )
+        source = Source(type=source_type, title=title)
         source.recast(source_type)
         source.save()
         print(source)

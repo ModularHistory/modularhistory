@@ -43,7 +43,13 @@ class SourceFileInput(MultiWidget):
         if not source_file:
             return [None, None, None, None, None]
         ct = ContentType.objects.get_for_model(source_file.instance)
-        return [source_file, source_file.name, source_file.name, ct.pk, source_file.instance.pk]
+        return [
+            source_file,
+            source_file.name,
+            source_file.name,
+            ct.pk,
+            source_file.instance.pk,
+        ]
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:
         """Compresses values from the widget into a format that can be saved."""
@@ -55,7 +61,9 @@ class SourceFileInput(MultiWidget):
             ct_id, instance_id = int(ct_id), int(instance_id)
             model_class = ContentType.objects.get_for_id(ct_id).model_class()
             instance = model_class.objects.get(id=instance_id)
-            if getattr(instance, 'db_file', None):  # TODO: make this more resilient to change
+            if getattr(
+                instance, 'db_file', None
+            ):  # TODO: make this more resilient to change
                 source_file = instance.file
                 file_name = source_file.name
                 if filepath and filepath != file_name:

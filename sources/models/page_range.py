@@ -35,7 +35,9 @@ class PageRange(Model):
         pn_html = citation.get_page_number_link(pn, pn_url) or str(pn)
         if end_pn:
             end_pn_url = citation.get_page_number_url(end_pn)
-            end_pn_html = citation.get_page_number_link(end_pn, end_pn_url) or str(end_pn)
+            end_pn_html = citation.get_page_number_link(end_pn, end_pn_url) or str(
+                end_pn
+            )
             pn_html = f'pp. {pn_html}–{end_pn_html}'
         else:
             pn_html = f'p. {pn_html}'
@@ -44,4 +46,6 @@ class PageRange(Model):
     def clean(self):
         """TODO: add docstring."""
         if self.end_page_number and self.end_page_number < self.page_number:
-            raise ValidationError('The end page number must be greater than the start page number.')
+            raise ValidationError(
+                'The end page number must be greater than the start page number.'
+            )

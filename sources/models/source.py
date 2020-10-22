@@ -16,7 +16,7 @@ from modularhistory.models import (
     DatedModel,
     ModelWithRelatedEntities,
     SearchableModel,
-    retrieve_or_compute
+    retrieve_or_compute,
 )
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from modularhistory.utils.html import NEW_TAB, components_to_html, compose_link, soupify
@@ -41,16 +41,12 @@ MAX_TITLE_LENGTH: int = 250
 
 COMPONENT_DELIMITER = ', '
 
-SOURCE_TYPES = (
-    ('P', 'Primary'),
-    ('S', 'Secondary'),
-    ('T', 'Tertiary')
-)
+SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
 
 CITATION_PHRASE_OPTIONS = (
     (None, EMPTY_STRING),
     ('quoted in', 'quoted in'),
-    ('cited in', 'cited in')
+    ('cited in', 'cited in'),
 )
 
 
@@ -62,33 +58,26 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         max_length=MAX_DB_STRING_LENGTH,
         null=False,
         blank=True,
-        unique=True
+        unique=True,
     )
-    title = models.CharField(
-        max_length=MAX_TITLE_LENGTH,
-        null=True,
-        blank=True
-    )
+    title = models.CharField(max_length=MAX_TITLE_LENGTH, null=True, blank=True)
     attributees = models.ManyToManyField(
         'entities.Entity',
         through='SourceAttribution',
         related_name='attributed_sources',
-        blank=True  # Some sources may not have attributees.
+        blank=True,  # Some sources may not have attributees.
     )
     url = models.URLField(
         max_length=MAX_URL_LENGTH,
         null=True,
         blank=True,
-        help_text='URL where the source can be accessed online'
+        help_text='URL where the source can be accessed online',
     )
     description = HTMLField(null=True, blank=True)
     date = HistoricDateTimeField(null=True, blank=True)
     publication_date = HistoricDateTimeField(null=True, blank=True)
     location = models.ForeignKey(
-        'places.Place',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL
+        'places.Place', null=True, blank=True, on_delete=models.SET_NULL
     )
     db_file = models.ForeignKey(
         SourceFile,
@@ -96,12 +85,10 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        verbose_name='file'
+        verbose_name='file',
     )
     creators = models.CharField(
-        max_length=MAX_CREATOR_STRING_LENGTH,
-        null=True,
-        blank=True
+        max_length=MAX_CREATOR_STRING_LENGTH, null=True, blank=True
     )
 
     containers = models.ManyToManyField(
@@ -110,14 +97,14 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         through_fields=('source', 'container'),
         # related_name='contained_sources',
         symmetrical=False,
-        blank=True
+        blank=True,
     )
     related = GenericManyToManyField(
         'quotes.Quote',
         'occurrences.Occurrence',
         through='sources.Citation',
         related_name='sources',
-        blank=True
+        blank=True,
     )
 
     # TODO: forbid access by non-document sources
@@ -127,15 +114,12 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         related_name='documents',
         null=True,
         blank=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
     )
 
     # TODO: forbid access by non-document sources
     publication = models.ForeignKey(
-        'sources.Publication',
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE
+        'sources.Publication', null=True, blank=True, on_delete=models.CASCADE
     )
 
     extra = JSONField(null=True, blank=True, default=dict)
@@ -168,7 +152,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                 '<i class="fa fa-search"></i>',
                 href=self.href,
                 klass='btn btn-small btn-default display-source',
-                target=NEW_TAB
+                target=NEW_TAB,
             )
         return format_html(element)
 
@@ -239,12 +223,17 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                 same_creator = False
 
             # Remove redundant creator string if necessary
-            creator_string_is_duplicated = all([
-                same_creator,
-                self.attributee_string,
-            ]) and self.attributee_string in container_html
+            creator_string_is_duplicated = (
+                all(
+                    [
+                        same_creator,
+                        self.attributee_string,
+                    ]
+                )
+                and self.attributee_string in container_html
+            )
             if creator_string_is_duplicated:
-                container_html = container_html[len(f'{self.attributee_string}, '):]
+                container_html = container_html[len(f'{self.attributee_string}, ') :]
 
             # Include the page number
             if containment.page_number:
@@ -252,11 +241,12 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                     containment.source,
                     containment.source.source_file,
                     containment.page_number,
-                    containment.end_page_number
+                    containment.end_page_number,
                 )
                 container_html = f'{container_html}, {page_number_html}'
             container_html = (
-                f'{containment.phrase} in {container_html}' if containment.phrase
+                f'{containment.phrase} in {container_html}'
+                if containment.phrase
                 else f'in {container_html}'
             )
             container_strings.append(container_html)
@@ -329,6 +319,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         #         f'</a>'
         #     )
         return format_html(fix_comma_positions(html))
+
     html.admin_order_field = FieldNames.string
     html: SafeString = property(html)  # type: ignore
 
@@ -358,19 +349,27 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         """Returns the source's title as a link."""
         if not self.title:
             return None
-        html = compose_link(
-            self.title,
-            href=self.href,
-            klass='source-title display-source',
-            target=NEW_TAB
-        ) if self.href else self.title
+        html = (
+            compose_link(
+                self.title,
+                href=self.href,
+                klass='source-title display-source',
+                target=NEW_TAB,
+            )
+            if self.href
+            else self.title
+        )
         return format_html(html)
 
     def clean(self):
         """Prepares the source to be saved."""
         super().clean()
         if self.pk:  # If this source is not being newly created
-            if Source.objects.exclude(pk=self.pk).filter(full_string=self.full_string).exists():
+            if (
+                Source.objects.exclude(pk=self.pk)
+                .filter(full_string=self.full_string)
+                .exists()
+            ):
                 raise ValidationError(
                     f'Unable to save this source because it duplicates an existing source '
                     f'or has an identical string: {self.full_string}'
@@ -425,7 +424,9 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         return updated_placeholder
 
 
-def _get_page_number_url(source: Source, file: SourceFile, page_number: int) -> Optional[str]:
+def _get_page_number_url(
+    source: Source, file: SourceFile, page_number: int
+) -> Optional[str]:
     """TODO: write docstring."""
     url = source.source_file_url or None
     if not url:
@@ -445,14 +446,19 @@ def _get_page_number_html(
     source: Source,
     file: SourceFile,
     page_number: int,
-    end_page_number: Optional[int] = None
+    end_page_number: Optional[int] = None,
 ) -> str:
     """TODO: write docstring."""
     pn_url = _get_page_number_url(source=source, file=file, page_number=page_number)
     pn = _get_page_number_link(url=pn_url, page_number=page_number) or page_number
     if end_page_number:
-        end_pn_url = _get_page_number_url(source=source, file=file, page_number=end_page_number)
-        end_pn = _get_page_number_link(url=end_pn_url, page_number=end_page_number) or end_page_number
+        end_pn_url = _get_page_number_url(
+            source=source, file=file, page_number=end_page_number
+        )
+        end_pn = (
+            _get_page_number_link(url=end_pn_url, page_number=end_page_number)
+            or end_page_number
+        )
         return f'pp. {pn}–{end_pn}'
     return f'p. {pn}'
 

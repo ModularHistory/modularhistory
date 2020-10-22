@@ -14,11 +14,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='collection',
             name='computations',
-            field=modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True),
+            field=modularhistory.fields.json_field.JSONField(
+                blank=True, default=dict, null=True
+            ),
         ),
         migrations.AddField(
             model_name='repository',
             name='computations',
-            field=modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True),
+            field=modularhistory.fields.json_field.JSONField(
+                blank=True, default=dict, null=True
+            ),
         ),
     ]

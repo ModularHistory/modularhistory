@@ -38,6 +38,6 @@ class WebPage(TextualSource):
             f'<i>{self.website_title}</i>',
             self.organization_name,
             self.date.string if self.date else '',
-            f'retrieved from <a target="_blank" href="{self.url}">{self.url}</a>'
+            f'retrieved from <a target="_blank" href="{self.url}">{self.url}</a>',
         ]
         return self.components_to_html(components)

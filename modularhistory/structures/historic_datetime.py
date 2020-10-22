@@ -16,7 +16,7 @@ SEASONS = (
     ('winter', 'Winter'),
     ('spring', 'Spring'),
     ('summer', 'Summer'),
-    ('fall', 'Fall')
+    ('fall', 'Fall'),
 )
 
 TEN_THOUSAND = 10000
@@ -85,7 +85,9 @@ class HistoricDateTime(datetime):
     @property
     def html(self) -> SafeString:
         """Returns the datetime's HTML representation."""
-        return format_html(f'<span style="display: inline-block; white-space: nowrap;">{self.string}</span>')
+        return format_html(
+            f'<span style="display: inline-block; white-space: nowrap;">{self.string}</span>'
+        )
 
     @property
     def is_bce(self) -> bool:
@@ -132,9 +134,11 @@ class HistoricDateTime(datetime):
             inv_decimal_num = self.microsecond
             exponent = -(inv_exponent - EXPONENT_INVERSION_BASIS)
             decimal_num = Decimal(
-                ('{:.4e}'.format(-(inv_decimal_num - DECIMAL_INVERSION_BASIS))).split('e+')[0]
+                ('{:.4e}'.format(-(inv_decimal_num - DECIMAL_INVERSION_BASIS))).split(
+                    'e+'
+                )[0]
             )
-            multiplier = Decimal(10**exponent)
+            multiplier = Decimal(10 ** exponent)
             bce = int(Decimal(decimal_num * multiplier))
             if bce > BCE_PREHISTORY_FLOOR:  # if prehistory
                 bce = round(bce / 100) * 100
@@ -201,7 +205,10 @@ class HistoricDateTime(datetime):
                 year_string = f'c. {humanized_ybp} YBP'
             else:
                 # BCE dates
-                if self.year_bce >= PRETTIFICATION_FLOOR and self.year_bce >= BCE_CIRCA_FLOOR:
+                if (
+                    self.year_bce >= PRETTIFICATION_FLOOR
+                    and self.year_bce >= BCE_CIRCA_FLOOR
+                ):
                     year_string = f'c. {prettify(self.year_bce)}'
                 elif self.year_bce >= PRETTIFICATION_FLOOR:
                     year_string = f'{prettify(self.year_bce)}'
