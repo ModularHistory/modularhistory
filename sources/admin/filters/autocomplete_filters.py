@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from admin.autocomplete_filter import AutocompleteFilter
+from admin.list_filters import AutocompleteFilter
 from entities.models import Entity
 
 

@@ -3,7 +3,7 @@
 from .model import Model, BaseTypedModel as TypedModel
 from .dated_model import DatedModel
 from .manager import Manager, SearchableModelManager, TypedModelManager
-from .model_with_computations import ModelWithComputations
+from .model_with_computations import ModelWithComputations, retrieve_or_compute
 from .model_with_images import ModelWithImages
 from .model_with_related_entities import ModelWithRelatedEntities
 from .model_with_related_quotes import ModelWithRelatedQuotes

@@ -1,7 +1,5 @@
 """Model classes for spoken sources."""
 
-from modularhistory.utils.html import soupify
-
 from sources.models.source import Source
 
 
@@ -19,10 +17,6 @@ class Documentary(VideoSource):
 
     class Meta:
         verbose_name_plural = 'Documentaries'
-
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:

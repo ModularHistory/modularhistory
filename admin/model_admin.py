@@ -1,9 +1,11 @@
-from typing import List, Type, Union
+from typing import List, Optional, Tuple, Type, Union
 
+from aenum import Constant
 from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db.models import JSONField
+from django.http import HttpRequest
 from django_celery_beat.admin import (
     CrontabSchedule,
     IntervalSchedule,
@@ -15,13 +17,12 @@ from django_celery_results.admin import TaskResult, TaskResultAdmin
 from django_json_widget.widgets import JSONEditorWidget
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
-from social_django.admin import AssociationOption, NonceOption, UserSocialAuthOption
-from social_django.models import Association, Nonce, UserSocialAuth
 
 from admin.admin_site import admin_site
 from modularhistory import environments, settings
 from modularhistory.fields import HistoricDateTimeField, SourceFileField
 from modularhistory.forms import HistoricDateWidget, SourceFileInput
+from modularhistory.models import Model
 
 AdminListFilter = Union[str, Type[ListFilter]]
 
@@ -67,6 +68,20 @@ class ModelAdmin(NestedModelAdmin):
             'scripts/mce.js',
             'scripts/base.js'
         )
+
+    def get_readonly_fields(
+        self,
+        request: HttpRequest,
+        model_instance: Optional[Model] = None
+    ) -> Union[List[str], Tuple]:
+        """Add additional readonly fields."""
+        default_readonly_fields = ('computations',)
+        readonly_fields = super().get_readonly_fields(request, model_instance)
+        if model_instance:
+            for additional_readonly_field in default_readonly_fields:
+                if hasattr(model_instance, additional_readonly_field):
+                    readonly_fields.append(additional_readonly_field)
+        return list(set(readonly_fields))
 
 
 # IntervalSchedule.objects.get_or_create(
@@ -121,14 +136,30 @@ class ModelAdmin(NestedModelAdmin):
 #     form = CustomPeriodicTaskForm
 
 
+class ContentTypeFields(Constant):
+    """Field names of the ContentType model."""
+
+    pk = 'pk'
+    app_label = 'app_label'
+    model = 'model'
+
+
 class ContentTypeAdmin(ModelAdmin):
     """Admin for content types."""
 
     model = ContentType
-    list_display = ['app_label', 'model', 'pk']
-    list_filter = ['app_label']
-    readonly_fields = ['pk', 'app_label', 'model']
-    ordering = ['app_label']
+    list_display = [
+        ContentTypeFields.app_label,
+        ContentTypeFields.model,
+        ContentTypeFields.pk
+    ]
+    list_filter = [ContentTypeFields.app_label]
+    readonly_fields = [
+        ContentTypeFields.app_label,
+        ContentTypeFields.model,
+        ContentTypeFields.pk
+    ]
+    ordering = [ContentTypeFields.app_label]
 
 
 admin_site.register(ContentType, ContentTypeAdmin)
@@ -153,10 +184,6 @@ admin_site.register(IntervalSchedule)
 admin_site.register(CrontabSchedule)
 
 admin_site.register(TaskResult, TaskResultAdmin)
-
-admin_site.register(UserSocialAuth, UserSocialAuthOption)
-admin_site.register(Nonce, NonceOption)
-admin_site.register(Association, AssociationOption)
 
 # admin_site.register(PeriodicTask, CustomPeriodicTaskAdmin)
 # admin_site.register(IntervalSchedule)

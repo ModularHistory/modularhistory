@@ -1,6 +1,3 @@
-# type: ignore
-# TODO: stop ignoring types when mypy bug is fixed
-
 """Views for the search app."""
 
 # from django.shortcuts import render
@@ -11,11 +8,11 @@ from django.db.models import Q, QuerySet, Subquery
 from django.views.generic import ListView
 
 from entities.models import Entity
+from images.models import Image
 from modularhistory.constants import IMAGE_CT_ID, OCCURRENCE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
 # from django.core.paginator import Paginator
 from modularhistory.models import DatedModel, Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
-from images.models import Image
 from occurrences.models import Occurrence
 # from places.models import Place
 from quotes.models import Quote
@@ -24,8 +21,8 @@ from sources.models import Source
 from topics.models import Topic
 
 
-def date_sorter(model_instance: Union[Model, DatedModel]):
-    """TODO: add docstring."""
+def date_sorter(model_instance: Union[Model, DatedModel]) -> HistoricDateTime:
+    """Returns the value used to sort the model instance by date."""
     get_date = getattr(model_instance, 'get_date', None)
     if get_date is not None:
         date = get_date()
@@ -41,7 +38,7 @@ def date_sorter(model_instance: Union[Model, DatedModel]):
 
 
 def rank_sorter(model_instance: Model):
-    """TODO: add docstring."""
+    """Returns the value used to sort the model instance by rank/relevance."""
     rank = getattr(model_instance, 'rank', None)
     if not rank:
         raise Exception('No rank')
@@ -52,7 +49,7 @@ def rank_sorter(model_instance: Model):
 # TODO: https://docs.djangoproject.com/en/3.0/topics/db/search/
 # TODO: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/search/
 class SearchResultsView(ListView):
-    """TODO: add docstring."""
+    """View that displays search results."""
 
     template_name = 'search/search_results.html'
     results_count = 0
@@ -67,7 +64,7 @@ class SearchResultsView(ListView):
     db: str = 'default'
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """TODO: add docstring."""
+        """Returns the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         context['count'] = self.results_count or 0
         query = self.request.GET.get('query')
@@ -94,8 +91,8 @@ class SearchResultsView(ListView):
         # context['object_list'] = self.get_object_list()
         return context
 
-    def get_object_list(self) -> Union[QuerySet, List]:
-        """TODO: add docstring."""
+    def get_object_list(self) -> Union['QuerySet[Model]', List[Model]]:
+        """Returns the list of search result objects."""
         request = self.request
         query = request.GET.get('query', None)
 
@@ -116,10 +113,10 @@ class SearchResultsView(ListView):
         end_year = request.GET.get('end_year_0', None)
 
         entities = request.GET.getlist('entities', None)
-        entity_ids = [int(entity) for entity in entities] if entities else None
+        entity_ids = [int(entity_id) for entity_id in entities] if entities else None
 
         topics = request.GET.getlist('topics', None)
-        topic_ids = [int(topic) for topic in topics] if topics else None
+        topic_ids = [int(topic_id) for topic_id in topics] if topics else None
 
         search_kwargs = {
             'query': query,
@@ -135,7 +132,7 @@ class SearchResultsView(ListView):
         # Occurrences
         occurrence_result_ids = []
         if OCCURRENCE_CT_ID in ct_ids or not ct_ids:
-            occurrence_results = Occurrence.objects.search(**search_kwargs)
+            occurrence_results = Occurrence.objects.search(**search_kwargs)  # type: ignore
             occurrence_result_ids = [occurrence.id for occurrence in occurrence_results]
         else:
             occurrence_results = Occurrence.objects.none()
@@ -143,7 +140,7 @@ class SearchResultsView(ListView):
         # Quotes
         quote_result_ids = []
         if QUOTE_CT_ID in ct_ids or not ct_ids:
-            quote_results = Quote.objects.search(**search_kwargs)
+            quote_results = Quote.objects.search(**search_kwargs)  # type: ignore
             if occurrence_results:
                 # TODO: refactor
                 quote_results = quote_results.exclude(
@@ -156,7 +153,7 @@ class SearchResultsView(ListView):
 
         # Images
         if IMAGE_CT_ID in ct_ids or not ct_ids:
-            image_results = Image.objects.search(**search_kwargs).filter(entities=None)
+            image_results = Image.objects.search(**search_kwargs).filter(entities=None)  # type: ignore
             if occurrence_results:
                 image_results = image_results.exclude(
                     Q(occurrences__in=occurrence_results) |
@@ -169,7 +166,7 @@ class SearchResultsView(ListView):
 
         # Sources
         if SOURCE_CT_ID in ct_ids or not ct_ids:
-            source_results = Source.objects.search(**search_kwargs)
+            source_results = Source.objects.search(**search_kwargs)  # type: ignore
             # TODO: This was broken by conversion to generic relations with quotes & occurrences
             # source_results = source_results.exclude(
             #     Q(occurrences__in=occurrence_results) |

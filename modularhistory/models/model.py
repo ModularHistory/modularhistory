@@ -3,6 +3,7 @@
 import re
 from typing import Any, ClassVar, List, Match, Optional, Pattern, Tuple, Type
 
+from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
@@ -22,6 +23,9 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 class Model(DjangoModel):
     """Model with additional properties used in ModularHistory apps."""
 
+    class FieldNames(Constant):
+        pk = 'pk'
+
     objects: Manager = Manager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
 
@@ -32,7 +36,7 @@ class Model(DjangoModel):
 
     @classmethod
     def get_searchable_fields(cls) -> FieldList:
-        """TODO: add docstring."""
+        """Returns a list of fields that can be used to search for instances of the model."""
         return cls.searchable_fields or []
 
     @classmethod
@@ -46,27 +50,27 @@ class Model(DjangoModel):
 
     @property
     def admin_url(self) -> str:
-        """TODO: add docstring."""
+        """Returns the model instance's admin URL."""
         return self.get_admin_url()
 
     @property
     def ctype(self) -> ContentType:
-        """TODO: add docstring."""
+        """Returns the model instance's ContentType."""
         return ContentType.objects.get_for_model(self)
 
     @property
     def detail_link(self) -> SafeString:
-        """TODO: add docstring."""
+        """Returns a link to the model instance's detail page."""
         return self.get_detail_link()
 
     @property
     def detail_url(self) -> str:
-        """TODO: add docstring."""
+        """Returns the URL of the model instance's detail page."""
         return reverse(f'{self._meta.app_label}:detail', args=[self.id])
 
     @property
     def natural_key_fields(self) -> Optional[List]:
-        """TODO: add docstring."""
+        """Returns the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
             unique_together_is_valid = (
@@ -89,21 +93,21 @@ class Model(DjangoModel):
         )
 
     def get_admin_url(self):
-        """TODO: add docstring."""
+        """Returns the URL of the model instance's admin page."""
         return reverse(
             f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
             args=[self.id]
         )
 
     def get_detail_link(self) -> SafeString:
-        """TODO: add docstring."""
+        """Returns a link to the model instance's detail page."""
         return format_html(
             f'<a href="{self.detail_url}" target="_blank">'
             f'<i class="fas fa-info-circle"></i></a>'
         )
 
     def natural_key(self) -> Tuple[Any, ...]:
-        """TODO: add docstring."""
+        """Returns a tuple of values comprising the model instance's natural key."""
         natural_key_values = []
         for field in self.natural_key_fields:
             value = getattr(self, field, None)
@@ -114,10 +118,10 @@ class Model(DjangoModel):
 
     def preprocess_html(self, html: str):
         """
-        Preprocess the value of an HTML field.
+        Preprocess the value of an HTML field belonging to the model instance.
 
         This method can be used to modify the value of an HTML field
-        before it is saved.  It is called when the HTML field is cleaned.
+        before it is saved.  It is called when HTML fields are cleaned.
         """
         pass
 

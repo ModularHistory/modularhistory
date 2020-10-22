@@ -1,6 +1,6 @@
 from django.contrib.admin import SimpleListFilter
 
-from admin.autocomplete_filter import AutocompleteFilter
+from admin.list_filters import AutocompleteFilter
 from modularhistory.constants import YES, NO
 
 

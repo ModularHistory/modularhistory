@@ -1,7 +1,5 @@
 """Model classes for journals (as sources)."""
 
-from modularhistory.utils.html import soupify
-
 from sources.models.piece import SourceWithPageNumbers
 
 NAME_MAX_LENGTH: int = 100
@@ -15,10 +13,6 @@ class JournalEntry(SourceWithPageNumbers):
 
     class Meta:
         verbose_name_plural = 'Journal entries'
-
-    def __str__(self) -> str:
-        """TODO: add docstring."""
-        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:

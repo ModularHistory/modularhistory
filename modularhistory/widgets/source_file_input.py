@@ -14,18 +14,18 @@ Choice = Tuple[Optional[str], str]
 
 
 class ClearableFileInput(BaseClearableFileInput):
-    """TODO: add docstring."""
+    """Clearable file input widget."""
 
     template_name = 'forms/clearable_file_input.html'
 
 
 class SourceFileInput(MultiWidget):
-    """TODO: add docstring."""
+    """Widget for inputting or selecting a source file."""
 
     template_name = 'forms/source_file_input.html'
 
     def __init__(self, attrs: Optional[Dict] = None):
-        """TODO: add docstring."""
+        """Constructs the widget."""
         file_choices: List[Choice] = [(None, '-----')]
         for file_name in os.listdir(os.path.join(settings.MEDIA_ROOT, 'sources')):
             file_choices.append((f'sources/{file_name}', file_name))
@@ -39,14 +39,14 @@ class SourceFileInput(MultiWidget):
         super().__init__(widgets, attrs)
 
     def decompress(self, source_file: Optional[TextualSourceFile]):
-        """TODO: add docstring."""
+        """Decompresses a source file object into the values used in the widget."""
         if not source_file:
             return [None, None, None, None, None]
         ct = ContentType.objects.get_for_model(source_file.instance)
         return [source_file, source_file.name, source_file.name, ct.pk, source_file.instance.pk]
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:
-        """TODO: add docstring."""
+        """Compresses values from the widget into a format that can be saved."""
         decompressed_values = super().value_from_datadict(datadict, files, name)
         if len(decompressed_values) != 5:
             raise ValueError
@@ -55,11 +55,11 @@ class SourceFileInput(MultiWidget):
             ct_id, instance_id = int(ct_id), int(instance_id)
             model_class = ContentType.objects.get_for_id(ct_id).model_class()
             instance = model_class.objects.get(id=instance_id)
-            if getattr(instance, 'db_file', None):
-                source_file = instance.db_file
+            if getattr(instance, 'db_file', None):  # TODO: make this more resilient to change
+                source_file = instance.file
                 file_name = source_file.name
                 if filepath and filepath != file_name:
-                    instance.db_file.name = filepath
+                    instance.file.name = filepath
                     instance.save()
         TextualSourceFile.dedupe()
         return source_file

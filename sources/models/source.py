@@ -12,7 +12,12 @@ from typedmodels.models import TypedModel
 
 from modularhistory.constants import EMPTY_STRING
 from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
-from modularhistory.models import DatedModel, ModelWithRelatedEntities, SearchableModel
+from modularhistory.models import (
+    DatedModel,
+    ModelWithRelatedEntities,
+    SearchableModel,
+    retrieve_or_compute
+)
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from modularhistory.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from modularhistory.utils.string import fix_comma_positions
@@ -52,7 +57,7 @@ CITATION_PHRASE_OPTIONS = (
 class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     """A source for quotes or historical information."""
 
-    db_string = models.CharField(
+    full_string = models.CharField(
         verbose_name='database string',
         max_length=MAX_DB_STRING_LENGTH,
         null=False,
@@ -81,14 +86,13 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     publication_date = HistoricDateTimeField(null=True, blank=True)
     location = models.ForeignKey(
         'places.Place',
-        # related_name='publications',
         null=True,
         blank=True,
         on_delete=models.SET_NULL
     )
     db_file = models.ForeignKey(
         SourceFile,
-        # related_name='sources',
+        related_name='sources',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -136,17 +140,24 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     extra = JSONField(null=True, blank=True, default=dict)
 
-    objects: SourceManager = SourceManager()
-    searchable_fields = ['db_string', 'description']
+    class FieldNames(SearchableModel.FieldNames):
+        file = 'db_file'
+        string = 'full_string'
+        description = 'description'
+        location = 'location'
+        title = 'title'
+        url = 'url'
 
+    searchable_fields = [FieldNames.string, FieldNames.description]
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
+    objects: SourceManager = SourceManager()
 
     class Meta:
         ordering = ['creators', '-date']
 
-    def __init__(self, *args, **kwargs):
-        """Constructs a source."""
-        super().__init__(*args, **kwargs)
+    def __str__(self):
+        """Returns the source's string representation."""
+        return soupify(self.html).get_text()  # type: ignore
 
     @property
     def admin_source_link(self) -> SafeString:
@@ -184,9 +195,10 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     @property
     def container(self) -> Optional['Source']:
         """Returns the source's primary container, if it has one."""
-        if not self.containment:
+        try:
+            return self.containment.container
+        except (ObjectDoesNotExist, AttributeError):
             return None
-        return self.containment.container
 
     @property
     def containment(self) -> Optional['SourceContainment']:
@@ -250,7 +262,8 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
             container_strings.append(container_html)
         return container_strings
 
-    @property
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='href')
     def href(self) -> Optional[str]:
         """
         Returns the href to use when providing a link to the source.
@@ -258,9 +271,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         If the source has a file, the URL of the file is returned;
         otherwise, the source's `url` field value is returned.
         """
-        href = self.computations.get('href')
-        if href:
-            return href
         if self.source_file_url:
             url = self.source_file_url
             page_number = self.source_file.default_page_number
@@ -270,12 +280,9 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                 url = _set_page_number(url, page_number)
         else:
             url = self.url
-        href = url
-        if href:
-            self.computations['href'] = href
-            self.save()
-        return href
+        return url
 
+    @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """
         Return the HTML representation of the source, including its containers.
@@ -304,9 +311,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                 f'{html}, information available at '
                 f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
             )
-        # Fix placement of commas after double-quoted titles
-        html = format_html(fix_comma_positions(html))
-
         # TODO: Remove search icon; insert link intelligently
         # if self.file_url:
         #     html += (
@@ -324,12 +328,8 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         #         f'<i class="fas fa-search"></i>'
         #         f'</a>'
         #     )
-
-        # TODO: update asynchronously
-        self.computations['html'] = html
-        self.save()
-        return html
-    html.admin_order_field = 'db_string'
+        return format_html(fix_comma_positions(html))
+    html.admin_order_field = FieldNames.string
     html: SafeString = property(html)  # type: ignore
 
     @property
@@ -369,13 +369,11 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     def clean(self):
         """Prepares the source to be saved."""
         super().clean()
-        if not self.db_string:
-            raise ValidationError('Cannot generate string representation.')
         if self.pk:  # If this source is not being newly created
-            if Source.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
+            if Source.objects.exclude(pk=self.pk).filter(db_string=self.full_string).exists():
                 raise ValidationError(
                     f'Unable to save this source because it duplicates an existing source '
-                    f'or has an identical string: {self.db_string}'
+                    f'or has an identical string: {self.full_string}'
                 )
             for container in self.containers.all():
                 if self in container.containers.all():
@@ -399,10 +397,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     def save(self, *args, **kwargs):
         """Saves the source."""
-        # TODO: avoid saving twice somehow
-        self.db_string = self.string
-        self.clean()
-        super().save(*args, **kwargs)
         self.clean()
         super().save(*args, **kwargs)
 

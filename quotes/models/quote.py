@@ -14,13 +14,8 @@ from entities.models import Entity
 from images.models import Image
 from modularhistory.constants import OCCURRENCE_CT_ID
 from modularhistory.fields import HTMLField, HistoricDateTimeField
-from modularhistory.models import (
-    DatedModel,
-    ModelWithImages,
-    ModelWithRelatedEntities,
-    ModelWithRelatedQuotes,
-    ModelWithSources
-)
+from modularhistory.models import DatedModel, ModelWithImages, ModelWithRelatedEntities, ModelWithRelatedQuotes, \
+    ModelWithSources, retrieve_or_compute
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
 from quotes.models.quote_image import QuoteImage
@@ -79,7 +74,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
     searchable_fields = [
         'text', 'context', 'attributees__name', 'date__year',
-        'sources__db_string', 'tags__topic__key', 'tags__topic__aliases'
+        'sources__full_string', 'tags__topic__key', 'tags__topic__aliases'
     ]
     objects: QuoteManager = QuoteManager()  # type: ignore
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
@@ -94,35 +89,30 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
             string = f'{attributee_string}: {self.bite.text}'
         return string
 
+    @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
     def attributee_html(self) -> Optional[SafeString]:
         """See also the `attributee_string` property."""
-        # TODO: make sure it's updated correctly
-        attributee_html = self.computations.get('attributee_html')
-        if attributee_html is None:
-            attributees = self.ordered_attributees
-            if attributees:
-                n_attributions = len(attributees)
-                first_attributee = attributees[0]
+        attributees = self.ordered_attributees
+        if attributees:
+            n_attributions = len(attributees)
+            first_attributee = attributees[0]
 
-                def _html(attributee) -> str:
-                    return (
-                        f'<a href="{reverse("entities:detail", args=[attributee.id])}" '
-                        f'target="_blank">{attributee}</a>'
-                    )
+            def _html(attributee) -> str:
+                return (
+                    f'<a href="{reverse("entities:detail", args=[attributee.id])}" '
+                    f'target="_blank">{attributee}</a>'
+                )
 
-                html = _html(first_attributee)
-                if n_attributions == 2:
-                    html = f'{html} and {_html(attributees[1])}'
-                elif n_attributions == 3:
-                    html = f'{html}, {_html(attributees[1])}, and {_html(attributees[2])}'
-                elif n_attributions > 3:
-                    html = f'{html} et al.'
-                attributee_html = html
-            else:
-                attributee_html = ''
-            # TODO: update asynchronously
-            self.computations['attributee_html'] = attributee_html
-            self.save()
+            html = _html(first_attributee)
+            if n_attributions == 2:
+                html = f'{html} and {_html(attributees[1])}'
+            elif n_attributions == 3:
+                html = f'{html}, {_html(attributees[1])}, and {_html(attributees[2])}'
+            elif n_attributions > 3:
+                html = f'{html} et al.'
+            attributee_html = html
+        else:
+            attributee_html = ''
         return format_html(attributee_html) if attributee_html else None
     # TODO: Order by `attributee_string` instead of `attributee`
     attributee_html.admin_order_field = 'attributee'

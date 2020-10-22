@@ -12,9 +12,9 @@ from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, SET
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.constants import QUOTE_CT_ID, EMPTY_STRING
-from modularhistory.models import Model
-from modularhistory.utils.html import soupify, compose_link, components_to_html
+from modularhistory.constants import EMPTY_STRING, QUOTE_CT_ID
+from modularhistory.models import ModelWithComputations, retrieve_or_compute
+from modularhistory.utils.html import components_to_html, compose_link, soupify
 
 if TYPE_CHECKING:
     from quotes.models import Quote
@@ -48,7 +48,7 @@ CITATION_PHRASE_OPTIONS = (
 CITATION_PHRASE_MAX_LENGTH: int = 25
 
 
-class Citation(Model):
+class Citation(ModelWithComputations):
     """A reference to a source (from any other model)."""
 
     citation_phrase = models.CharField(
@@ -89,7 +89,8 @@ class Citation(Model):
         """Returns the citation's string representation."""
         return soupify(self.html).get_text()
 
-    @property
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Returns the citation's HTML representation."""
         html = f'{self.source.html}'
@@ -140,7 +141,8 @@ class Citation(Model):
         #         f'<i class="fas fa-search"></i>'
         #         f'</a>'
         #     )
-        return format_html(f'<span class="citation">{html}</span>')
+        html = f'<span class="citation">{html}</span>'
+        return format_html(html)
 
     @property
     def html_id(self) -> Optional[str]:

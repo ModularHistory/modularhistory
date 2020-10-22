@@ -1,13 +1,13 @@
 """Model classes for documents (as sources)."""
 
-from modularhistory.utils.html import soupify
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 from modularhistory.fields import ExtraField
-from modularhistory.models import ModelWithComputations
+from modularhistory.models import ModelWithComputations, retrieve_or_compute
+from modularhistory.utils.html import soupify
 from sources.models.piece import SourceWithPageNumbers
 
 NAME_MAX_LENGTH: int = 100
@@ -86,16 +86,13 @@ class Collection(ModelWithComputations):
 
     def __str__(self) -> str:
         """Returns the collection's string representation."""
-        return soupify(self.__html__).get_text()
+        return soupify(self.html).get_text()
 
-    @property
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Returns the collection's HTML representation."""
-        html = self.computations.get('html')
-        if not html:
-            html = self.__html__
-            self.computations['html'] = html
-            self.save()
+        html = self.__html__
         return format_html(html)
 
     @property
@@ -135,17 +132,14 @@ class Repository(ModelWithComputations):
         verbose_name_plural = 'Repositories'
 
     def __str__(self) -> str:
-        """Returns the collection's string representation."""
+        """Returns the repository's string representation."""
         return soupify(self.html).get_text()
 
-    @property
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Returns the collection's HTML representation."""
-        html = self.computations.get('html')
-        if not html:
-            html = self.__html__
-            self.computations['html'] = html
-            self.save()
+        html = self.__html__
         return format_html(html)
 
     @property
@@ -158,10 +152,6 @@ class Repository(ModelWithComputations):
 
 class Document(DocumentSource):
     """A historical document (as a source)."""
-
-    def __str__(self) -> str:
-        """Returns the document's string representation."""
-        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:

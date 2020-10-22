@@ -1,8 +1,11 @@
 """Constants usable throughout the ModularHistory application."""
 
+from aenum import Constant
 
-class ModelNameSet:
+
+class ModelNameSet(Constant):
     """Model name constants (to avoid magic strings)."""
+
     citation = 'citation'
     entity = 'entity'
     image = 'image'
@@ -40,5 +43,10 @@ SOURCE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.source)
 YES = 'Yes'
 NO = 'No'
 EMPTY_STRING = ''
+SPACE = ' '
+COLON = ':'
+PERIOD = '.'
+
+PDF_URL_PAGE_KEY = 'page'
 
 SOCIAL_AUTH_URL_NAME = 'social:begin'

@@ -3,9 +3,10 @@
 from typing import Any, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
+from modularhistory.models import retrieve_or_compute
 from modularhistory.models.searchable_model import SearchableModel
 
 if TYPE_CHECKING:
@@ -42,16 +43,11 @@ class ModelWithSources(SearchableModel):
         except IndexError:
             return None
 
-    @property
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='citation_html', caster=format_html)
     def citation_html(self) -> Optional[SafeString]:
         """Returns the quote's citation HTML, if a citation exists."""
-        citation_html = self.computations.get('citation_html')
-        if not citation_html:
-            if self.citations.exists():
-                citation_html = '; '.join([citation.html for citation in self.citations.all()])
-                # TODO: update asynchronously
-                self.computations['citation_html'] = citation_html
-                self.save()
-            else:
-                return None
-        return format_html(citation_html)
+        if self.citations.exists():  # TODO: use try-except instead of making this query
+            citation_html = '; '.join([citation.html for citation in self.citations.all()])
+            return format_html(citation_html)
+        return None

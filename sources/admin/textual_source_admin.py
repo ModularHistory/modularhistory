@@ -25,7 +25,7 @@ class TextualSourceAdmin(SourceAdmin):
         fields: List = list(super().get_fields(request, model_instance))
         # Fields to display at the top, in order
         top_fields = (
-            'db_string',
+            'full_string',
             'creators',
             'title'
         )
@@ -104,15 +104,12 @@ class RepositoryAdmin(ModelAdmin):
 
 admin_site.register(models.Article, ArticleAdmin)
 admin_site.register(models.Book, BookAdmin)
-
-admin_site.register(models.Publication, PublicationAdmin)
-
-admin_site.register(models.Document, DocumentAdmin)
-admin_site.register(models.Letter, DocumentAdmin)
 admin_site.register(models.Collection, CollectionAdmin)
-admin_site.register(models.Repository, RepositoryAdmin)
-
+admin_site.register(models.Document, DocumentAdmin)
 admin_site.register(models.JournalEntry, TextualSourceAdmin)
+admin_site.register(models.Letter, DocumentAdmin)
+admin_site.register(models.Publication, PublicationAdmin)
+admin_site.register(models.Repository, RepositoryAdmin)
 
 child_models = (
     models.Chapter,

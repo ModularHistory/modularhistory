@@ -1,11 +1,9 @@
 """Admin for the quotes app."""
 
-from typing import Optional
-
 from django.db.models.query import QuerySet
 from django.urls import path
 
-from admin import SearchableModelAdmin, TabularInline, admin_site
+from admin import SearchableModelAdmin, admin_site
 from entities.views import EntityCategorySearchView, EntitySearchView
 from modularhistory.models.taggable_model import TopicFilter
 from quotes import models
@@ -16,56 +14,11 @@ from quotes.admin.quote_filters import (
     HasMultipleCitationsFilter,
     HasSourceFilter
 )
+from quotes.admin.quote_inlines import AttributeesInline, BitesInline
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
 from sources.admin.citation_admin import CitationsInline
 from topics.admin import HasTagsFilter, RelatedTopicsInline
 from topics.views import TagSearchView
-
-
-class AttributeesInline(TabularInline):
-    """TODO: add docstring."""
-
-    model = models.QuoteAttribution
-    autocomplete_fields = ['attributee']
-
-    sortable_field_name = 'position'
-
-    def get_extra(self, request, model_instance: Optional[models.Quote] = None, **kwargs):
-        """TODO: add docstring."""
-        if model_instance and model_instance.attributees.count():
-            return 0
-        return 1
-
-
-class BitesInline(TabularInline):
-    """TODO: add docstring."""
-
-    model = models.QuoteBite
-    extra = 0
-
-
-# TODO: try to get this reverse relationship working
-# class OccurrencesInline(GenericTabularInline):
-#     model = models.QuoteRelation
-#     # readonly_fields = ['']
-#     # autocomplete_fields = ['occurrence']
-#     verbose_name = 'occurrence'
-#     verbose_name_plural = 'occurrences'
-#
-#     def get_queryset(self, request):
-#         # qs: QuerySet = super().get_queryset(request)
-#         pk = re.search(r'/(\d+)/', request.path).group(1)
-#         ct = ContentType.objects.get_for_model(Occurrence)
-#         qs: QuerySet = models.QuoteRelation.objects.filter(
-#             quote_id=pk,
-#             content_type_id=ct.id
-#         )
-#         return qs.filter(content_type_id=ct.id)
-#
-#     def get_extra(self, request, model_instance=None, **kwargs):
-#         if len(self.get_queryset(request)):
-#             return 0
-#         return 1
 
 
 class QuoteAdmin(SearchableModelAdmin):
@@ -128,10 +81,8 @@ class QuoteAdmin(SearchableModelAdmin):
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
         qs = models.Quote.objects.prefetch_related(
-            'attributees',  # 2353 -> 2261 queries
-            'tags',  # 2261 -> 2184 queries
-            # 'citations__source',  # 5840
-            # 'citations',  # 5851
+            'attributees',
+            'tags__topic'
         )
         ordering = self.get_ordering(request)
         if ordering and ordering != models.Quote.get_meta().ordering:

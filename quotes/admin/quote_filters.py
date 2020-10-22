@@ -9,7 +9,10 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
-from admin.autocomplete_filter import BaseAutocompleteFilter, ManyToManyAutocompleteFilter
+from admin.list_filters.autocomplete_filter import (
+    BaseAutocompleteFilter,
+    ManyToManyAutocompleteFilter
+)
 from entities.models import Category, Entity
 from modularhistory.constants import NO, YES
 

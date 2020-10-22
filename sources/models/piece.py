@@ -1,5 +1,3 @@
-from modularhistory.utils.html import soupify
-
 from sources.models.source_with_page_numbers import SourceWithPageNumbers
 
 TYPE_MAX_LENGTH: int = 10
@@ -11,10 +9,6 @@ PIECE_TYPES = (
 
 class Piece(SourceWithPageNumbers):
     """A piece (e.g., essay)."""
-
-    def __str__(self) -> str:
-        """TODO: add docstring."""
-        return soupify(self.__html__).get_text()
 
     @property
     def __html__(self) -> str:
