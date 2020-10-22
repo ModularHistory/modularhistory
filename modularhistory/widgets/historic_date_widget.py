@@ -17,6 +17,7 @@ from modularhistory.structures.historic_datetime import (
     get_month_from_season,
     get_season_from_month
 )
+from modularhistory.constants import SPACE, COLON, PERIOD
 
 CE = 'CE'
 BCE = 'BCE'
@@ -53,7 +54,7 @@ def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
         scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
         decimal_num_str, exponent_str = scientific_notation.split('e+')
         exponent = int(exponent_str)
-        decimal_num = int(decimal_num_str.replace('.', ''))  # 10, 13800 for the Big Bang
+        decimal_num = int(decimal_num_str.replace(PERIOD, ''))  # 10, 13800 for the Big Bang
         inv_exponent = EXPONENT_INVERSION_BASIS - exponent
         inv_decimal_num = DECIMAL_INVERSION_BASIS - int(decimal_num)
         second, microsecond = inv_exponent, inv_decimal_num
@@ -130,13 +131,13 @@ class HistoricDateWidget(MultiWidget):
     def _parse_string(self, datetime_string: str) -> Tuple[int, ...]:
         """TODO: move elsewhere?"""
         year, month, day = datetime_string.split('-')
-        hour, minute, second, microsecond = ('0', '0', '0', '0')
-        if ' ' in day:
-            day, time = day.split(' ')
-            if ':' in time:
-                hour, minute, second = time.split(':')
-                if '.' in second:
-                    second, microsecond = second.split('.')
+        hour = minute = second = microsecond = '0'
+        if SPACE in day:
+            day, time = day.split(SPACE)
+            if COLON in time:
+                hour, minute, second = time.split(COLON)
+                if PERIOD in second:
+                    second, microsecond = second.split(PERIOD)
         str_values = (year, month, day, hour, minute, second, microsecond)
         return tuple(int(string) for string in str_values)
 
@@ -148,7 +149,7 @@ class HistoricDateWidget(MultiWidget):
         https://docs.djangoproject.com/en/3.1/ref/forms/widgets/#django.forms.MultiWidget.decompress
         """
         nones = (None, None, None, None, None, None)
-        hour, minute, second, ms = 0, 0, 0, 0
+        hour = minute = second = ms = 0
         if not isinstance(datetime_value, HistoricDateTime):
             if isinstance(datetime_value, str):
                 year, month, day, hour, minute, second, ms = self._parse_string(datetime_value)

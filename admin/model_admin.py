@@ -17,8 +17,6 @@ from django_celery_results.admin import TaskResult, TaskResultAdmin
 from django_json_widget.widgets import JSONEditorWidget
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
-from social_django.admin import AssociationOption, NonceOption, UserSocialAuthOption
-from social_django.models import Association, Nonce, UserSocialAuth
 
 from admin.admin_site import admin_site
 from modularhistory import environments, settings
@@ -186,10 +184,6 @@ admin_site.register(IntervalSchedule)
 admin_site.register(CrontabSchedule)
 
 admin_site.register(TaskResult, TaskResultAdmin)
-
-admin_site.register(UserSocialAuth, UserSocialAuthOption)
-admin_site.register(Nonce, NonceOption)
-admin_site.register(Association, AssociationOption)
 
 # admin_site.register(PeriodicTask, CustomPeriodicTaskAdmin)
 # admin_site.register(IntervalSchedule)

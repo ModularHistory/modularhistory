@@ -1,20 +1,28 @@
 from admin import ModelAdmin, TabularInline, admin_site
+from admin.list_filters import AutocompleteFilter
 from places import models
 from places.forms import PlaceForm
 
 
 class LocationInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for a location's parent location."""
 
     model = models.Place
     autocomplete_fields = ['location']
+
+
+class LocationFilter(AutocompleteFilter):
+    """List filter for filtering locations by parent location."""
+
+    title = 'location'
+    field_name = 'location'
 
 
 class LocationAdmin(ModelAdmin):
     """Admin for locations."""
 
     list_display = ['name', 'location']
-    list_filter = ['location']
+    list_filter = [LocationFilter]
     search_fields = ['name']
     ordering = ['name', 'location__name']
     form = PlaceForm

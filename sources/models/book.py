@@ -157,7 +157,7 @@ class Book(TextualSource):
         """Returns the book's HTML representation."""
         html = self.__html__
         return format_html(html)
-    html.admin_order_field = 'db_string'
+    html.admin_order_field = 'full_string'
     html: SafeString = property(html)  # type: ignore
 
 
@@ -168,7 +168,7 @@ class SectionSource(TextualSource):
     def html(self) -> SafeString:
         """Returns the section/chapter's HTML representation."""
         return format_html(self.__html__)
-    html.admin_order_field = 'db_string'
+    html.admin_order_field = 'full_string'
     html: SafeString = property(html)  # type: ignore
 
     def full_clean(self, exclude=None, validate_unique=True):

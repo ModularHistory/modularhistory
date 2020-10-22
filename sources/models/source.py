@@ -57,7 +57,7 @@ CITATION_PHRASE_OPTIONS = (
 class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     """A source for quotes or historical information."""
 
-    db_string = models.CharField(
+    full_string = models.CharField(
         verbose_name='database string',
         max_length=MAX_DB_STRING_LENGTH,
         null=False,
@@ -141,14 +141,14 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     extra = JSONField(null=True, blank=True, default=dict)
 
     class FieldNames(SearchableModel.FieldNames):
-        db_file = 'db_file'
-        db_string = 'db_string'
+        file = 'db_file'
+        string = 'full_string'
         description = 'description'
         location = 'location'
         title = 'title'
         url = 'url'
 
-    searchable_fields = [FieldNames.db_string, FieldNames.description]
+    searchable_fields = [FieldNames.string, FieldNames.description]
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
     objects: SourceManager = SourceManager()
 
@@ -329,7 +329,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         #         f'</a>'
         #     )
         return format_html(fix_comma_positions(html))
-    html.admin_order_field = 'db_string'
+    html.admin_order_field = FieldNames.string
     html: SafeString = property(html)  # type: ignore
 
     @property
@@ -370,10 +370,10 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         """Prepares the source to be saved."""
         super().clean()
         if self.pk:  # If this source is not being newly created
-            if Source.objects.exclude(pk=self.pk).filter(db_string=self.db_string).exists():
+            if Source.objects.exclude(pk=self.pk).filter(db_string=self.full_string).exists():
                 raise ValidationError(
                     f'Unable to save this source because it duplicates an existing source '
-                    f'or has an identical string: {self.db_string}'
+                    f'or has an identical string: {self.full_string}'
                 )
             for container in self.containers.all():
                 if self in container.containers.all():

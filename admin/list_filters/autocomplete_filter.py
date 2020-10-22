@@ -13,13 +13,17 @@ from modularhistory.models import Model
 
 
 class AutocompleteFilter(BaseAutocompleteFilter):
-    """TODO: add docstring."""
+    """
+    Wraps admin_auto_filters.filters.AutocompleteFilter.
+
+    https://github.com/farhan0581/django-admin-autocomplete-filter
+    """
 
     rendered_widget: SafeString
 
 
 class ManyToManyAutocompleteFilter(AutocompleteFilter):
-    """Autocomplete filter for many2many fields."""
+    """Autocomplete filter to be used with many-to-many relationships."""
 
     _parameter_name: str
     m2m_cls: Type[Model]

@@ -3,7 +3,8 @@ from typing import List
 from django import forms
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, Permission
-from social_django.models import UserSocialAuth
+from social_django.admin import AssociationOption, NonceOption, UserSocialAuthOption
+from social_django.models import Association, Nonce, UserSocialAuth
 
 from account.models import User
 # from account.forms import UserCreationForm #  UserChangeForm
@@ -254,3 +255,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin_site.register(User, UserAdmin)
+
+admin_site.register(UserSocialAuth, UserSocialAuthOption)
+admin_site.register(Nonce, NonceOption)
+admin_site.register(Association, AssociationOption)

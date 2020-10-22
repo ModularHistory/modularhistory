@@ -25,7 +25,7 @@ class TextualSourceAdmin(SourceAdmin):
         fields: List = list(super().get_fields(request, model_instance))
         # Fields to display at the top, in order
         top_fields = (
-            'db_string',
+            'full_string',
             'creators',
             'title'
         )

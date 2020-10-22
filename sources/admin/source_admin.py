@@ -43,11 +43,19 @@ class SourceAdmin(SearchableModelAdmin):
         AttributeeFilter,
         TypeFilter
     ]
-    readonly_fields = SearchableModelAdmin.readonly_fields + ['db_string']
+    readonly_fields = SearchableModelAdmin.readonly_fields + ['full_string']
     search_fields = models.Source.searchable_fields
-    ordering = ['date', 'db_string']
-    inlines = [AttributeesInline, ContainersInline, ContainedSourcesInline, RelatedInline]
-    autocomplete_fields = ['db_file', 'location']
+    ordering = ['date', model.FieldNames.string]
+    inlines = [
+        AttributeesInline,
+        ContainersInline,
+        ContainedSourcesInline,
+        RelatedInline
+    ]
+    autocomplete_fields = [
+        model.FieldNames.file,
+        model.FieldNames.location
+    ]
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
     date_hierarchy = 'date'
@@ -68,7 +76,7 @@ class SourceAdmin(SearchableModelAdmin):
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
         qs = models.Source.objects.all().select_related(
-            models.Source.FieldNames.db_file,
+            models.Source.FieldNames.file,
             models.Source.FieldNames.location,
         )
         ordering = self.get_ordering(request)
@@ -80,7 +88,7 @@ class SourceAdmin(SearchableModelAdmin):
         """Returns reordered fields to be displayed in the admin."""
         fields = list(super().get_fields(request, model_instance))
         fields_to_move = (
-            models.Source.FieldNames.db_string,
+            models.Source.FieldNames.string,
         )
         for field in fields_to_move:
             if field in fields:
@@ -111,7 +119,7 @@ class SpeechAdmin(SourceAdmin):
         'date_string'
     ]
     search_fields = [
-        model.FieldNames.db_string,
+        model.FieldNames.string,
         'location__name'
     ]
 

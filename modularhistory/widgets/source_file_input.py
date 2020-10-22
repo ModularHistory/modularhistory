@@ -55,11 +55,11 @@ class SourceFileInput(MultiWidget):
             ct_id, instance_id = int(ct_id), int(instance_id)
             model_class = ContentType.objects.get_for_id(ct_id).model_class()
             instance = model_class.objects.get(id=instance_id)
-            if getattr(instance, 'db_file', None):
-                source_file = instance.db_file
+            if getattr(instance, 'db_file', None):  # TODO: make this more resilient to change
+                source_file = instance.file
                 file_name = source_file.name
                 if filepath and filepath != file_name:
-                    instance.db_file.name = filepath
+                    instance.file.name = filepath
                     instance.save()
         TextualSourceFile.dedupe()
         return source_file

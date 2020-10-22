@@ -74,7 +74,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
     searchable_fields = [
         'text', 'context', 'attributees__name', 'date__year',
-        'sources__db_string', 'tags__topic__key', 'tags__topic__aliases'
+        'sources__full_string', 'tags__topic__key', 'tags__topic__aliases'
     ]
     objects: QuoteManager = QuoteManager()  # type: ignore
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)

@@ -59,16 +59,18 @@ def retrieve_or_compute(
     string to SafeString).
 
     Examples:
-        @property
-        @retrieve_or_compute(attribute_name='html', caster=format_html)
-        def html(self):
-            html = self.related_object.html + '...'
-            return html
+    ``
+    @property
+    @retrieve_or_compute(attribute_name='html', caster=format_html)
+    def html(self):
+        html = self.related_object.html + '...'
+        return html
 
-        @retrieve_or_compute(attribute_name='categorization_string')
-        def get_categorization_string(self, date: Optional[DateTime] = None):
-            categorization_string = ...
-            return categorization_string
+    @retrieve_or_compute(attribute_name='categorization_string')
+    def get_categorization_string(self, date: Optional[DateTime] = None):
+        categorization_string = ...
+        return categorization_string
+    ``
 
     For a primer on Python decorators, see:
     https://realpython.com/primer-on-python-decorators/
@@ -77,14 +79,14 @@ def retrieve_or_compute(
         @wraps(model_property)
         def wrapped_property(model_instance: ModelWithComputations, *args, **kwargs):
             if isinstance(model_instance, ModelWithComputations):
-                _attribute_name = attribute_name or model_property.__name__
-                property_value = model_instance.computations.get(_attribute_name)
+                property_name = attribute_name or model_property.__name__
+                property_value = model_instance.computations.get(property_name)
                 if property_value is not None:
                     if caster and callable(caster):
                         property_value = caster(property_value)
                 else:
                     property_value = model_property(model_instance, *args, **kwargs)
-                    model_instance.computations[_attribute_name] = property_value
+                    model_instance.computations[property_name] = property_value
                     # Specify `wipe_computations=False` to properly update the JSON value
                     model_instance.save(wipe_computations=False)
                 return property_value

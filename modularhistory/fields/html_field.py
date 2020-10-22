@@ -52,8 +52,9 @@ class HTMLField(MceHTMLField):
 
     def __init__(self, *args, **kwargs):
         """Constructs an HTML field instance."""
-        if 'processor' in kwargs and kwargs['processor'] != self.default_processor:
-            self.processor = kwargs['processor']
+        processor = kwargs.pop('processor', None)
+        if processor and processor != self.default_processor:
+            self.processor = processor
         super().__init__(*args, **kwargs)
 
     def clean(self, html_value, model_instance: 'Model') -> HTML:

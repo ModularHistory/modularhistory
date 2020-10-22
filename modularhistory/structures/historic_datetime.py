@@ -79,12 +79,12 @@ class HistoricDateTime(datetime):
     significant_figures = SIGNIFICANT_FIGURES
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the datetime's string representation."""
         return self.string
 
     @property
     def html(self) -> SafeString:
-        """TODO: write docstring."""
+        """Returns the datetime's HTML representation."""
         return format_html(f'<span style="display: inline-block; white-space: nowrap;">{self.string}</span>')
 
     @property
@@ -97,27 +97,30 @@ class HistoricDateTime(datetime):
 
     @property
     def is_circa(self) -> bool:
-        """TODO: write docstring."""
+        """
+        Returns True if the datetime is circa, i.e., approximate.
+        Circa dates should be displayed with a `c. ` preface.
+        """
         return self.is_bce and self.year_bce >= BCE_CIRCA_FLOOR
 
     @property
     def season_is_known(self) -> bool:
-        """TODO: write docstring."""
+        """Returns True if the datetime precision is high enough for its season to be displayed."""
         return self.hour != 1
 
     @property
     def month_is_known(self) -> bool:
-        """TODO: write docstring."""
+        """Returns True if the datetime precision is high enough for its month to be displayed."""
         return self.minute != 1
 
     @property
     def day_is_known(self) -> bool:
-        """TODO: write docstring."""
+        """Returns True if the datetime precision is high enough for its day to be displayed."""
         return not self.second
 
     @property
     def use_ybp(self) -> bool:
-        """TODO: write docstring."""
+        """Returns True if the datetime should be displayed using the YBP system."""
         return self.is_bce and self.year_bce > self.bce_threshold
 
     @property
@@ -156,15 +159,14 @@ class HistoricDateTime(datetime):
 
     @property
     def season(self) -> Optional[str]:
-        """TODO: write docstring."""
+        """Returns the season of the datetime, if the season is known."""
         return str(get_season_from_month(self.month)) if self.season_is_known else None
 
     @property
     def second(self) -> int:
         """
-        This value IS NOT USED to reflect the actual second at which something happened.
-
-        It is set to:
+        This value is not used to reflect the actual second at which something happened.
+        Instead, it is set to:
           * 1 if the date's day is unknown, or
           * A value 1–9 representing the inverse of the 10-based exponent used to calculate a year BCE;
             see the year_bce property
@@ -173,7 +175,7 @@ class HistoricDateTime(datetime):
 
     @property
     def string(self) -> SafeString:
-        """TODO: write docstring."""
+        """Returns the datetime's string representation."""
         year_string = self.year_string
         if self.day_is_known:
             year_string = f'{self.strftime("%-d %b")} {year_string}'
@@ -185,7 +187,7 @@ class HistoricDateTime(datetime):
 
     @property
     def year_string(self) -> str:
-        """Returns a string representation of the year."""
+        """Returns a string representation of the datetime's year."""
         if self.is_bce:
             if self.use_ybp:
                 # YBP dates

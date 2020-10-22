@@ -37,7 +37,7 @@ class Article(SourceWithPageNumbers):
 
     volume = ExtraField(json_field_name=JSON_FIELD_NAME)
 
-    searchable_fields = ['db_string', 'publication__name']
+    searchable_fields = ['full_string', 'publication__name']
 
     @property
     def __html__(self) -> str:

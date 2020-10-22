@@ -47,7 +47,7 @@ class CitationAdmin(ModelAdmin):
         'content_object',
         'content_type'
     ]
-    search_fields = ['source__db_string']
+    search_fields = ['source__full_string']
     list_filter = [ContentTypeFilter]
     list_per_page = 10
 
@@ -59,7 +59,7 @@ class CitationAdmin(ModelAdmin):
         """
         qs = models.Citation.objects.all().select_related(
             'source',
-            'source__db_file'
+            f'source__{models.Source.FieldNames.file}'
         ).prefetch_related(
             'content_object',
             'pages'
