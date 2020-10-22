@@ -22,7 +22,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 from modularhistory import environments
 
-ENABLE_ASGI: bool = False
+ENABLE_ASGI: bool = True
 
 # Google Cloud settings
 GC_PROJECT: Optional[str] = config('GC_PROJECT', default=None)

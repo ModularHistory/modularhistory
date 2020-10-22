@@ -80,7 +80,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Returns the quote's string representation, for debugging and internal use."""
         attributee_string = self.attributee_string or '<Unknown>'
         date_string = self.date.string if self.date else ''
         if date_string:
@@ -91,7 +91,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
     @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
     def attributee_html(self) -> Optional[SafeString]:
-        """See also the `attributee_string` property."""
+        """Returns the HTML representing the quote's attributees."""
         attributees = self.ordered_attributees
         if attributees:
             n_attributions = len(attributees)
@@ -141,7 +141,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
     @property
     def html(self) -> SafeString:
-        """TODO: write docstring."""
+        """Returns the quote's HTML representation."""
         blockquote = (
             f'<blockquote class="blockquote">'
             f'{self.text.html}'
@@ -160,7 +160,11 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
     @property
     def ordered_attributees(self) -> Optional[List[Entity]]:
-        """TODO: write docstring."""
+        """
+        Returns an ordered list of the quote's attributees.
+
+        WARNING: This queries the database.
+        """
         try:
             attributions = self.attributions.select_related('attributee')
             return [attribution.attributee for attribution in attributions]
@@ -170,7 +174,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
 
     @property
     def related_occurrences(self) -> QuerySet:
-        """TODO: write docstring."""
+        """Returns a queryset of the quote's related occurrences."""
         # TODO: refactor
         from occurrences.models import Occurrence
         occurrence_ids = self.relations.filter(
@@ -179,7 +183,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
         return Occurrence.objects.filter(id__in=occurrence_ids)
 
     def clean(self):
-        """TODO: write docstring."""
+        """Prepares the quote to be saved to the database."""
         super().clean()
         no_text = not self.text
         min_text_length = 15
@@ -192,7 +196,7 @@ class Quote(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithRelat
             self.bite = text  # type: ignore  # TODO: remove type ignore
 
     def save(self, *args, **kwargs):
-        """TODO: write docstring."""
+        """Saves the quote to the database."""
         self.clean()
         super().save(*args, **kwargs)
         if not self.images.exists():
