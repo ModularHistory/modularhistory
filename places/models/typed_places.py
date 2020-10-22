@@ -12,7 +12,7 @@ LOCATION_PRECEDENCE = [
     PlaceTypes.state,
     PlaceTypes.country,
     PlaceTypes.region,
-    PlaceTypes.continent
+    PlaceTypes.continent,
 ]
 
 
@@ -37,8 +37,10 @@ class Venue(Place):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                check=models.Q(location__type__in=get_allowable_location_types(PlaceTypes.venue)),
-                name='location_is_allowable'
+                check=models.Q(
+                    location__type__in=get_allowable_location_types(PlaceTypes.venue)
+                ),
+                name='location_is_allowable',
             ),
         ]
 

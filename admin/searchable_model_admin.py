@@ -20,7 +20,9 @@ class SearchableModelAdmin(ModelAdmin):
         self, request: HttpRequest, queryset: QuerySet, search_term: str
     ) -> Tuple[QuerySet, bool]:
         """Custom implementation for searching sources in the admin."""
-        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        queryset, use_distinct = super().get_search_results(
+            request, queryset, search_term
+        )
         if search_term:
             print(f'Django admin search function returned queryset: {queryset}')
             print(f'Falling back on sources.manager.search with query={search_term}...')

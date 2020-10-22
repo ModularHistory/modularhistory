@@ -16,7 +16,7 @@ class TextualSource(Source):
         related_name='subsequent_editions',
         blank=True,
         null=True,
-        on_delete=SET_NULL
+        on_delete=SET_NULL,
     )
     original_publication_date = HistoricDateTimeField(null=True, blank=True)
 

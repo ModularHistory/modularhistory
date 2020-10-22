@@ -35,7 +35,7 @@ class HomePageView(TemplateView):
             topics=self.topics,
             # places=self.places
             # initial=data
-            collapse_refinements=True
+            collapse_refinements=True,
         )
         context['search_form'] = search_form
         return context

@@ -19,7 +19,9 @@ class ContentTypeFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         """Returns an iterable of tuples (value, verbose value)."""
-        content_type_ids = models.Citation.objects.all().values('content_type').distinct()
+        content_type_ids = (
+            models.Citation.objects.all().values('content_type').distinct()
+        )
         content_types = ContentType.objects.filter(id__in=content_type_ids)
         return [(f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types]
 
@@ -40,13 +42,7 @@ class CitationAdmin(ModelAdmin):
 
     model = models.Citation
 
-    list_display = [
-        'pk',
-        'html',
-        'position',
-        'content_object',
-        'content_type'
-    ]
+    list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
     search_fields = ['source__full_string']
     list_filter = [ContentTypeFilter]
     list_per_page = 10
@@ -57,12 +53,10 @@ class CitationAdmin(ModelAdmin):
 
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
-        qs = models.Citation.objects.all().select_related(
-            'source',
-            f'source__{models.Source.FieldNames.file}'
-        ).prefetch_related(
-            'content_object',
-            'pages'
+        qs = (
+            models.Citation.objects.all()
+            .select_related('source', f'source__{models.Source.FieldNames.file}')
+            .prefetch_related('content_object', 'pages')
         )
         ordering = self.get_ordering(request)
         if ordering and ordering != models.Citation.get_meta().ordering:
@@ -77,7 +71,9 @@ class PagesInline(TabularInline):
     verbose_name = 'page range'
     verbose_name_plural = 'pages'
 
-    def get_extra(self, request, model_instance: Optional[models.Citation] = None, **kwargs):
+    def get_extra(
+        self, request, model_instance: Optional[models.Citation] = None, **kwargs
+    ):
         """Returns the number of extra/blank rows to include."""
         if model_instance and model_instance.pages.count():
             return 0
@@ -98,7 +94,9 @@ class CitationsInline(GenericTabularInline):
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def get_extra(self, request, model_instance: Optional['ModelWithSources'] = None, **kwargs):
+    def get_extra(
+        self, request, model_instance: Optional['ModelWithSources'] = None, **kwargs
+    ):
         """Returns the number of extra/blank rows to include."""
         if model_instance and model_instance.citations.count():
             return 0

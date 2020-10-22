@@ -18,10 +18,12 @@ def soupify(html_string: str) -> BeautifulSoup:
 
 def compose_link(text, href, klass: Optional[str] = None, **html_attributes) -> str:
     """Builds a link from the supplied text, href, klass, and html_attributes."""
-    attributes = ' '.join([
-        f'{attr_name}="{attr_value}"'
-        for attr_name, attr_value in html_attributes.items()
-    ])
+    attributes = ' '.join(
+        [
+            f'{attr_name}="{attr_value}"'
+            for attr_name, attr_value in html_attributes.items()
+        ]
+    )
     if klass:
         attributes = f'class="{klass}" {attributes}'
     return f'<a href="{href}" {attributes}>{text}</a>'

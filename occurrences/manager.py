@@ -2,7 +2,10 @@ from typing import List, Optional
 
 from django.db.models import Q
 
-from modularhistory.models.manager import SearchableModelManager, SearchableModelQuerySet
+from modularhistory.models.manager import (
+    SearchableModelManager,
+    SearchableModelQuerySet,
+)
 
 
 class OccurrenceManager(SearchableModelManager):
@@ -20,22 +23,20 @@ class OccurrenceManager(SearchableModelManager):
         db: str = 'default',
     ) -> SearchableModelQuerySet:
         """Returns search results from occurrences."""
-        qs = super().search(
-            db=db,
-            suppress_unverified=suppress_unverified
-        ).filter(hidden=False).filter_by_date(
-            start_year=start_year,
-            end_year=end_year
-        ).prefetch_related('images')
+        qs = (
+            super()
+            .search(db=db, suppress_unverified=suppress_unverified)
+            .filter(hidden=False)
+            .filter_by_date(start_year=start_year, end_year=end_year)
+            .prefetch_related('images')
+        )
         # Limit to specified entities
         if entity_ids:
-            qs = qs.filter(
-                Q(involved_entities__id__in=entity_ids)
-            )
+            qs = qs.filter(Q(involved_entities__id__in=entity_ids))
         # Limit to specified topics
         if topic_ids:
             qs = qs.filter(
-                Q(tags__topic__id__in=topic_ids) |
-                Q(tags__topic__related_topics__id__in=topic_ids)
+                Q(tags__topic__id__in=topic_ids)
+                | Q(tags__topic__related_topics__id__in=topic_ids)
             )
         return qs

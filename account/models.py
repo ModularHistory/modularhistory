@@ -26,18 +26,18 @@ class User(AbstractUser):
 
     email = models.EmailField('email address', unique=True)
     avatar = ProcessedImageField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         upload_to=upload_to('account/avatars'),
         processors=[ResizeToFill(AVATAR_WIDTH, AVATAR_HEIGHT)],
         format='JPEG',
-        options={'quality': AVATAR_QUALITY}
+        options={'quality': AVATAR_QUALITY},
     )
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, auto_now=True)
     locked = models.BooleanField('Lock the account', default=False)
     force_password_change = models.BooleanField(
-        'Prompt user to change password upon first login',
-        default=False
+        'Prompt user to change password upon first login', default=False
     )
 
     # address = models.CharField(null=True, blank=True, max_length=100)

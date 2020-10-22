@@ -31,10 +31,15 @@ def process(_, html: str, processable_content_types: Iterable[str]) -> str:
             model_cls: Type[Model] = import_string(model_cls_str)
             # TODO
             object_match = model_cls.admin_placeholder_regex.match(placeholder)
-            object_html = model_cls.get_object_html(object_match, use_preretrieved_html=True)
+            object_html = model_cls.get_object_html(
+                object_match, use_preretrieved_html=True
+            )
             html = html.replace(placeholder, object_html)
         else:
-            print(f'Unable to retrieve model class string for `{object_type}`', file=stderr)
+            print(
+                f'Unable to retrieve model class string for `{object_type}`',
+                file=stderr,
+            )
     return html
 
 
@@ -67,7 +72,7 @@ class HTMLField(MceHTMLField):
             # Remove empty divs
             (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
-            (r'<p>&nbsp;<\/p>', EMPTY_STRING)
+            (r'<p>&nbsp;<\/p>', EMPTY_STRING),
         )
         for pattern, replacement in replacements:
             try:
@@ -111,7 +116,9 @@ class HTMLField(MceHTMLField):
             kwargs['processor'] = self.processor
         return name, field_class, args, kwargs
 
-    def from_db_value(self, html_value: Optional[str], expression, connection) -> Optional[HTML]:
+    def from_db_value(
+        self, html_value: Optional[str], expression, connection
+    ) -> Optional[HTML]:
         """
         Converts a value as returned by the database to a Python object.
         It is the reverse of get_prep_value().
@@ -150,7 +157,9 @@ class HTMLField(MceHTMLField):
         processed_html = html_value
         if self.processor:
             try:
-                processed_html = self.processor(html_value, self.processable_content_types)
+                processed_html = self.processor(
+                    html_value, self.processable_content_types
+                )
             except RecursionError as error:
                 print(f'Unable to process HTML: {error}', file=stderr)
             except Exception as error:
@@ -192,6 +201,7 @@ def _get_model_class(ct: ContentType) -> Type['Model']:
     if model_class is None:
         raise ValueError(f'Could not retrieve model class for {ct}.')
     from modularhistory.models import Model
+
     if not issubclass(model_class, Model):
         raise ValueError(f'{model_class} is not subclassed from custom model class.')
     return model_class

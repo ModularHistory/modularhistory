@@ -14,6 +14,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='place',
             name='computations',
-            field=modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True),
+            field=modularhistory.fields.json_field.JSONField(
+                blank=True, default=dict, null=True
+            ),
         ),
     ]

@@ -50,7 +50,7 @@ class FactAdmin(ModelAdmin):
         # FactTopicsInline,
         OccurrencesInline,
         SupportedFactsInline,
-        SupportiveFactsInline
+        SupportiveFactsInline,
     ]
 
 

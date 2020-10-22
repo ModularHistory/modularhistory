@@ -1,7 +1,11 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, HTML, Layout, Submit
+
 # from forms.form import FormMixIn, CustomForm
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm as BaseUserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    UserCreationForm as BaseUserCreationForm,
+)
 from django.forms import ValidationError
 from django.urls import reverse
 
@@ -31,14 +35,13 @@ class LoginForm(AuthenticationForm):
             Field(
                 USERNAME_FIELD,
                 css_class=DEFAULT_FIELD_CLASSES,
-                placeholder='Username or email address'
+                placeholder='Username or email address',
             ),
             Field(
-                PASSWORD_FIELD,
-                css_class=DEFAULT_FIELD_CLASSES,
-                placeholder='Password'
+                PASSWORD_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Password'
             ),
-            HTML(f'''
+            HTML(
+                f'''
                 <div class="d-flex justify-content-around">
                     <div>
                         <!-- Remember me -->
@@ -52,11 +55,15 @@ class LoginForm(AuthenticationForm):
                         <a href="{reverse('account:password_reset')}">Forgot password?</a>
                     </div>
                 </div>
-            '''),
+            '''
+            ),
             Submit('submit', 'Sign in', css_class='btn btn-info btn-block my-4'),
-            HTML(f'<p>Not a member? <a href="{reverse("account:register")}">Register</a></p>'),
+            HTML(
+                f'<p>Not a member? <a href="{reverse("account:register")}">Register</a></p>'
+            ),
             # self.SOCIAL_LOGIN_COMPONENT,
-            HTML(f'''
+            HTML(
+                f'''
                 <!-- Social login -->
                 <p>or sign in with:</p>
                 <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["facebook"])}'
@@ -81,7 +88,8 @@ class LoginForm(AuthenticationForm):
                     <i class="fab fa-google"></i>
                 </a>
                 -->
-            ''')
+            '''
+            ),
         )
 
 
@@ -113,33 +121,35 @@ class RegistrationForm(UserCreationForm):
         self.helper.label_class = 'hidden'
         # self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
+            HTML('<p class="h4 mb-4">Register account</p>'),
             HTML(
-                '<p class="h4 mb-4">Register account</p>'
-            ),
-            HTML(
-                '<div class="form-row mb-4">'
-                '<div class="col">'
-                '<!-- First name -->'
+                '<div class="form-row mb-4">' '<div class="col">' '<!-- First name -->'
             ),
             Field('first_name', placeholder='First name'),
-            HTML(
-                '</div>'
-                '<div class="col">'
-                '<!-- Last name -->'
-            ),
+            HTML('</div>' '<div class="col">' '<!-- Last name -->'),
             Field('last_name', placeholder='Last name'),
-            HTML(
-                '</div>'
-                '</div>'
+            HTML('</div>' '</div>'),
+            Field(
+                EMAIL_FIELD,
+                css_class=DEFAULT_FIELD_CLASSES,
+                placeholder='Email address',
             ),
-            Field(EMAIL_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Email address'),
-            Field(USERNAME_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Username'),
+            Field(
+                USERNAME_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Username'
+            ),
             Field('password1', css_class=DEFAULT_FIELD_CLASSES, placeholder='Password'),
-            Field('password2', css_class=DEFAULT_FIELD_CLASSES, placeholder='Confirm password'),
+            Field(
+                'password2',
+                css_class=DEFAULT_FIELD_CLASSES,
+                placeholder='Confirm password',
+            ),
             Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
-            HTML(f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'),
+            HTML(
+                f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'
+            ),
             # LoginForm.SOCIAL_LOGIN_COMPONENT,
-            HTML(f'''
+            HTML(
+                f'''
                 <!-- Social login -->
                 <p>or sign in with:</p>
                 <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["facebook"])}'
@@ -164,7 +174,8 @@ class RegistrationForm(UserCreationForm):
                     <i class="fab fa-google"></i>
                 </a>
                 -->
-            ''')
+            '''
+            ),
         )
 
     def clean_email(self):
@@ -173,7 +184,9 @@ class RegistrationForm(UserCreationForm):
         if not self.cleaned_data.get(USERNAME_FIELD):
             self.cleaned_data[USERNAME_FIELD] = email
         if email and User.objects.filter(email=email).exists():
-            raise ValidationError('An account with this email address has already been created.')
+            raise ValidationError(
+                'An account with this email address has already been created.'
+            )
         return email
 
     def clean_username(self):
@@ -182,10 +195,14 @@ class RegistrationForm(UserCreationForm):
         username = self.cleaned_data.get(USERNAME_FIELD) or email
         if email:
             if User.objects.filter(email=email).count() > 0:
-                raise ValidationError('An account with this email address already exists.')
+                raise ValidationError(
+                    'An account with this email address already exists.'
+                )
         if username:
             if User.objects.filter(username=username).count() > 0:
-                raise ValidationError('An account with this username has already been created.')
+                raise ValidationError(
+                    'An account with this username has already been created.'
+                )
         return username
 
     def clean_first_name(self):

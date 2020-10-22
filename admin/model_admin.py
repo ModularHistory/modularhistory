@@ -11,7 +11,7 @@ from django_celery_beat.admin import (
     IntervalSchedule,
     PeriodicTask,
     PeriodicTaskAdmin,
-    SolarSchedule
+    SolarSchedule,
 )
 from django_celery_results.admin import TaskResult, TaskResultAdmin
 from django_json_widget.widgets import JSONEditorWidget
@@ -29,7 +29,7 @@ AdminListFilter = Union[str, Type[ListFilter]]
 FORM_FIELD_OVERRIDES = {
     HistoricDateTimeField: {'widget': HistoricDateWidget},
     SourceFileField: {'widget': SourceFileInput},
-    JSONField: {'widget': JSONEditorWidget}
+    JSONField: {'widget': JSONEditorWidget},
 }
 
 if settings.ENVIRONMENT == environments.DEV:
@@ -58,7 +58,9 @@ class ModelAdmin(NestedModelAdmin):
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                BASE_CSS, MCE_CSS, ADMIN_CSS,
+                BASE_CSS,
+                MCE_CSS,
+                ADMIN_CSS,
             )
         }
         js = (
@@ -66,13 +68,11 @@ class ModelAdmin(NestedModelAdmin):
             '//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',  # Bootstrap
             '//cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js',  # EPub.JS
             'scripts/mce.js',
-            'scripts/base.js'
+            'scripts/base.js',
         )
 
     def get_readonly_fields(
-        self,
-        request: HttpRequest,
-        model_instance: Optional[Model] = None
+        self, request: HttpRequest, model_instance: Optional[Model] = None
     ) -> Union[List[str], Tuple]:
         """Add additional readonly fields."""
         default_readonly_fields = ('computations',)
@@ -151,13 +151,13 @@ class ContentTypeAdmin(ModelAdmin):
     list_display = [
         ContentTypeFields.app_label,
         ContentTypeFields.model,
-        ContentTypeFields.pk
+        ContentTypeFields.pk,
     ]
     list_filter = [ContentTypeFields.app_label]
     readonly_fields = [
         ContentTypeFields.app_label,
         ContentTypeFields.model,
-        ContentTypeFields.pk
+        ContentTypeFields.pk,
     ]
     ordering = [ContentTypeFields.app_label]
 

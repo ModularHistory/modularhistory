@@ -9,8 +9,5 @@ def highlight(text_body: str, text_to_highlight: str = ''):
     """TODO: add docstring."""
     html = text_body
     for word in text_to_highlight.split(' '):
-        html = html.replace(
-            word,
-            f'<span class="highlighted">{word}</span>'
-        )
+        html = html.replace(word, f'<span class="highlighted">{word}</span>')
     return format_html(html)

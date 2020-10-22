@@ -2,9 +2,7 @@ from sources.models.source_with_page_numbers import SourceWithPageNumbers
 
 TYPE_MAX_LENGTH: int = 10
 
-PIECE_TYPES = (
-    ('essay', 'Essay'),
-)
+PIECE_TYPES = (('essay', 'Essay'),)
 
 
 class Piece(SourceWithPageNumbers):
@@ -16,7 +14,7 @@ class Piece(SourceWithPageNumbers):
         components = [
             self.attributee_string,
             f'"{self.linked_title}"',
-            self.date.string if self.date else ''
+            self.date.string if self.date else '',
         ]
         return self.components_to_html(components)
 

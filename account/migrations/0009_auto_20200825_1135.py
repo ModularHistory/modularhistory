@@ -16,6 +16,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='avatar',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, null=True, upload_to=functools.partial(modularhistory.fields.file_field._generate_upload_path, *(), **{'path': 'account/avatars'})),
+            field=imagekit.models.fields.ProcessedImageField(
+                blank=True,
+                null=True,
+                upload_to=functools.partial(
+                    modularhistory.fields.file_field._generate_upload_path,
+                    *(),
+                    **{'path': 'account/avatars'}
+                ),
+            ),
         ),
     ]

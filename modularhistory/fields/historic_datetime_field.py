@@ -23,16 +23,15 @@ class HistoricDateTimeField(DateTimeField):
 
     def formfield(self, **kwargs) -> Field:
         """TODO: add docstring."""
-        return super(DateTimeField, self).formfield(**{
-            'form_class': HistoricDateFormField,
-            **kwargs,
-        })
+        return super(DateTimeField, self).formfield(
+            **{
+                'form_class': HistoricDateFormField,
+                **kwargs,
+            }
+        )
 
     def from_db_value(
-        self,
-        datetime_value: Optional[DateTime],
-        expression,
-        connection
+        self, datetime_value: Optional[DateTime], expression, connection
     ) -> Optional[HistoricDateTime]:
         """
         Converts a value as returned by the database to a Python object.
@@ -48,11 +47,13 @@ class HistoricDateTimeField(DateTimeField):
             datetime_value.hour,
             datetime_value.minute,
             datetime_value.second,
-            datetime_value.microsecond
+            datetime_value.microsecond,
         )
 
     # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
-    def to_python(self, historic_datetime: Optional[Union[DateTime, str]]) -> Optional[HistoricDateTime]:
+    def to_python(
+        self, historic_datetime: Optional[Union[DateTime, str]]
+    ) -> Optional[HistoricDateTime]:
         """
         Converts the value into the correct Python object.
         This method acts as the reverse of value_to_string(), and is also called in clean().
@@ -69,20 +70,24 @@ class HistoricDateTimeField(DateTimeField):
                 historic_datetime.hour,
                 historic_datetime.minute,
                 historic_datetime.second,
-                historic_datetime.microsecond
+                historic_datetime.microsecond,
             )
         elif isinstance(historic_datetime, str):
             raise TypeError
 
     # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-python-objects-to-query-values
-    def get_prep_value(self, historic_datetime: Optional[HistoricDateTime]) -> Optional[DateTime]:
+    def get_prep_value(
+        self, historic_datetime: Optional[HistoricDateTime]
+    ) -> Optional[DateTime]:
         """
         Returns data in a format prepared for use a db query parameter.
         `value` is the current value of the model’s attribute.
         """
         if not historic_datetime:
             return None
-        preprep_value: Union[HistoricDateTime, DateTime] = self.to_python(historic_datetime)
+        preprep_value: Union[HistoricDateTime, DateTime] = self.to_python(
+            historic_datetime
+        )
         if preprep_value and settings.USE_TZ and is_naive(preprep_value):
             preprep_value = make_aware(preprep_value)
         return super().get_prep_value(preprep_value)

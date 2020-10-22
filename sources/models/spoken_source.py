@@ -32,8 +32,12 @@ class SpokenSource(Source):
                 if audience:
                     delivery_string = f'{delivery_string} to {audience}'
                 if location:
-                    preposition = location.preposition if isinstance(location, Venue) else 'in'
-                    delivery_string = f'{delivery_string} {preposition} {location.string}'
+                    preposition = (
+                        location.preposition if isinstance(location, Venue) else 'in'
+                    )
+                    delivery_string = (
+                        f'{delivery_string} {preposition} {location.string}'
+                    )
                 if date:
                     delivery_string = f'{delivery_string}, {self.date_string}'
             elif date:
@@ -45,7 +49,7 @@ class SpokenSource(Source):
         components = [
             self.attributee_string,
             f'"{self.linked_title}"' if self.title else '',
-            delivery_string
+            delivery_string,
         ]
         return self.components_to_html(components)
 

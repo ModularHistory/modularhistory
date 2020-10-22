@@ -2,14 +2,12 @@ from django.db import models
 
 from modularhistory.models import ModelWithComputations, TypedModel, retrieve_or_compute
 
-PREPOSITION_CHOICES = (
-    ('in', 'in'),
-    ('at', 'at')
-)
+PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
 
 
 class PlaceTypes:
     """Constants for location types."""
+
     venue = 'places.venue'
     city = 'places.city'
     county = 'places.county'
@@ -26,21 +24,13 @@ class Place(TypedModel, ModelWithComputations):
     """Where something has happened."""
 
     name = models.CharField(
-        null=True,
-        blank=True,
-        max_length=NAME_MAX_LENGTH,
-        unique=True
+        null=True, blank=True, max_length=NAME_MAX_LENGTH, unique=True
     )
     location = models.ForeignKey(
-        'self',
-        related_name='places',
-        blank=True, null=True,
-        on_delete=models.PROTECT
+        'self', related_name='places', blank=True, null=True, on_delete=models.PROTECT
     )
     preposition = models.CharField(
-        max_length=2,
-        choices=PREPOSITION_CHOICES,
-        default='in'
+        max_length=2, choices=PREPOSITION_CHOICES, default='in'
     )
 
     class Meta:
@@ -60,12 +50,12 @@ class Place(TypedModel, ModelWithComputations):
         if location:
             inferrable_countries = ['United States of America']
             location_is_inferrable_country = (
-                location.type == PlaceTypes.country and
-                location.name in inferrable_countries
+                location.type == PlaceTypes.country
+                and location.name in inferrable_countries
             )
             location_is_inferrable = (
-                location_is_inferrable_country or
-                location.type in {PlaceTypes.region, PlaceTypes.continent}
+                location_is_inferrable_country
+                or location.type in {PlaceTypes.region, PlaceTypes.continent}
             )
             if location_is_inferrable:
                 location = None

@@ -15,7 +15,7 @@ from modularhistory.structures.historic_datetime import (
     HistoricDateTime,
     SEASONS,
     get_month_from_season,
-    get_season_from_month
+    get_season_from_month,
 )
 from modularhistory.constants import SPACE, COLON, PERIOD
 
@@ -23,11 +23,7 @@ CE = 'CE'
 BCE = 'BCE'
 YBP = 'YBP'
 
-year_systems = (
-    (CE, 'CE'),
-    (BCE, 'BCE'),
-    (YBP, 'YBP')
-)
+year_systems = ((CE, 'CE'), (BCE, 'BCE'), (YBP, 'YBP'))
 
 
 def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
@@ -51,10 +47,14 @@ def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
         year = year if year_system == BCE else year - BP_REFERENCE_YEAR
         year = round(year, sigfigs=HistoricDateTime.significant_figures)
         # Build a year stamp with max 6 digits
-        scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
+        scientific_notation: str = '{:.4e}'.format(
+            year
+        )  # '1.3800e+10' for the Big Bang
         decimal_num_str, exponent_str = scientific_notation.split('e+')
         exponent = int(exponent_str)
-        decimal_num = int(decimal_num_str.replace(PERIOD, ''))  # 10, 13800 for the Big Bang
+        decimal_num = int(
+            decimal_num_str.replace(PERIOD, '')
+        )  # 10, 13800 for the Big Bang
         inv_exponent = EXPONENT_INVERSION_BASIS - exponent
         inv_decimal_num = DECIMAL_INVERSION_BASIS - int(decimal_num)
         second, microsecond = inv_exponent, inv_decimal_num
@@ -124,7 +124,12 @@ class HistoricDateWidget(MultiWidget):
             forms.Select(attrs=attrs, choices=SEASONS),
             forms.TextInput(attrs={**attrs, **{placeholder_attr: 'Month'}}),
             forms.TextInput(attrs={**attrs, **{placeholder_attr: 'Day'}}),
-            forms.TimeInput(attrs={**attrs, **{placeholder_attr: 'Time', 'class': 'vTimeField hidden'}}),
+            forms.TimeInput(
+                attrs={
+                    **attrs,
+                    **{placeholder_attr: 'Time', 'class': 'vTimeField hidden'},
+                }
+            ),
         ]
         super().__init__(widgets, attrs)
 
@@ -152,20 +157,28 @@ class HistoricDateWidget(MultiWidget):
         hour = minute = second = ms = 0
         if not isinstance(datetime_value, HistoricDateTime):
             if isinstance(datetime_value, str):
-                year, month, day, hour, minute, second, ms = self._parse_string(datetime_value)
+                year, month, day, hour, minute, second, ms = self._parse_string(
+                    datetime_value
+                )
             elif isinstance(datetime_value, (datetime, date)):
-                year, month, day = datetime_value.year, datetime_value.month, datetime_value.day
+                year, month, day = (
+                    datetime_value.year,
+                    datetime_value.month,
+                    datetime_value.day,
+                )
                 if isinstance(datetime_value, datetime):
                     hour, minute, second, ms = (
                         datetime_value.hour,
                         datetime_value.minute,
                         datetime_value.second,
-                        datetime_value.microsecond
+                        datetime_value.microsecond,
                     )
             else:
                 return nones
             # Convert value to HistoricDateTime
-            datetime_value = HistoricDateTime(year, month, day, hour, minute, second, ms)
+            datetime_value = HistoricDateTime(
+                year, month, day, hour, minute, second, ms
+            )
         return self._decompress_historic_datetime(datetime_value)
 
     @staticmethod
@@ -175,7 +188,7 @@ class HistoricDateWidget(MultiWidget):
         hour, minute, second = (
             historic_datetime.hour,
             historic_datetime.minute,
-            historic_datetime.second
+            historic_datetime.second,
         )
         if historic_datetime.use_ybp:
             year, year_system = historic_datetime.year_bp, YBP
@@ -231,7 +244,9 @@ class HistoricDateWidget(MultiWidget):
         year, month, day, hour, minute, second, microsecond = (
             int(arg) for arg in (year, month, day, hour, minute, second, microsecond)
         )
-        dt = HistoricDateTime(year, month, day, hour, minute, second, microsecond=microsecond)
+        dt = HistoricDateTime(
+            year, month, day, hour, minute, second, microsecond=microsecond
+        )
 
         # Get date-parsable string for db
         dt_string = dt.strftime('%Y-%m-%d %H:%M:%S.%f')

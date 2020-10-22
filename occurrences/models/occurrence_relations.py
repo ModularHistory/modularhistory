@@ -20,9 +20,7 @@ class OccurrenceLocation(Model):
 
     occurrence = models.ForeignKey('occurrences.Occurrence', on_delete=CASCADE)
     location = models.ForeignKey(
-        'places.Place',
-        related_name='location_occurrences',
-        on_delete=CASCADE
+        'places.Place', related_name='location_occurrences', on_delete=CASCADE
     )
     importance = models.IntegerField(choices=IMPORTANCE_OPTIONS, default=1)
 
@@ -36,14 +34,14 @@ class OccurrenceQuoteRelation(Model):
     occurrence = models.ForeignKey(
         'occurrences.Occurrence',
         related_name='occurrence_quote_relations',
-        on_delete=CASCADE
+        on_delete=CASCADE,
     )
     quote = models.ForeignKey(
-        'quotes.Quote',
-        related_name='quote_occurrence_relations',
-        on_delete=CASCADE
+        'quotes.Quote', related_name='quote_occurrence_relations', on_delete=CASCADE
     )
-    position = models.PositiveSmallIntegerField(null=True, blank=True)  # TODO: add cleaning logic
+    position = models.PositiveSmallIntegerField(
+        null=True, blank=True
+    )  # TODO: add cleaning logic
 
     class Meta:
         unique_together = ['occurrence', 'quote']
@@ -64,9 +62,7 @@ class OccurrenceEntityInvolvement(Model):
 
     occurrence = models.ForeignKey('occurrences.Occurrence', on_delete=CASCADE)
     entity = models.ForeignKey(
-        'entities.Entity',
-        related_name='occurrence_involvements',
-        on_delete=CASCADE
+        'entities.Entity', related_name='occurrence_involvements', on_delete=CASCADE
     )
     importance = models.PositiveSmallIntegerField(choices=IMPORTANCE_OPTIONS, default=1)
 

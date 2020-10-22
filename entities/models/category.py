@@ -23,17 +23,13 @@ class Category(Model):
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     part_of_speech = models.CharField(
-        max_length=9, choices=PARTS_OF_SPEECH,
-        default='adj'
+        max_length=9, choices=PARTS_OF_SPEECH, default='adj'
     )
     aliases = ArrayField(
-        models.CharField(max_length=NAME_MAX_LENGTH),
-        null=True, blank=True
+        models.CharField(max_length=NAME_MAX_LENGTH), null=True, blank=True
     )
     parent = ForeignKey(
-        'self', related_name='children',
-        null=True, blank=True,
-        on_delete=CASCADE
+        'self', related_name='children', null=True, blank=True, on_delete=CASCADE
     )
     weight = models.PositiveSmallIntegerField(default=1, blank=True)
 
@@ -50,15 +46,14 @@ class Categorization(Model):
     """TODO: add docstring."""
 
     entity = ForeignKey(
-        'entities.Entity',
-        related_name='categorizations',
-        on_delete=CASCADE
+        'entities.Entity', related_name='categorizations', on_delete=CASCADE
     )
     category = ForeignKey(
         Category,
         related_name='categorizations',
         on_delete=CASCADE,
-        null=True, blank=True
+        null=True,
+        blank=True,
     )
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)

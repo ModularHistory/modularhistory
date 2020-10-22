@@ -1,7 +1,5 @@
 from entities import models
-from entities.forms import (
-    IdeaForm
-)
+from entities.forms import IdeaForm
 from admin.model_admin import admin_site, ModelAdmin
 
 

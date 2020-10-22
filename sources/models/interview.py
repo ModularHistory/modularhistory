@@ -25,6 +25,6 @@ class Interview(SpokenSource):
         """TODO: write docstring."""
         components = [
             f'{self.attributee_string} to {self.interviewers or "interviewer"}',
-            self.date.string if self.date else ''
+            self.date.string if self.date else '',
         ]
         return self.components_to_html(components)

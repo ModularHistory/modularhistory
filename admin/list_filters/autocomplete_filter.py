@@ -36,7 +36,7 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
             rendered_widget = re.sub(
                 r'(selected>).+(</option>)',
                 rf'\g<1>{model_instance}\g<2>',
-                self.rendered_widget
+                self.rendered_widget,
             )
             self.rendered_widget = format_html(rendered_widget)
 

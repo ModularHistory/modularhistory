@@ -11,11 +11,7 @@ class MediaModel(DatedModel, SearchableModel):
 
     caption = HTMLField(null=True, blank=True)
     description = HTMLField(null=True, blank=True)
-    provider = models.CharField(
-        max_length=PROVIDER_MAX_LENGTH,
-        null=True,
-        blank=True
-    )
+    provider = models.CharField(max_length=PROVIDER_MAX_LENGTH, null=True, blank=True)
 
     class Meta:
         abstract = True

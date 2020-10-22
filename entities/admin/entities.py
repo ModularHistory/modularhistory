@@ -1,12 +1,16 @@
 from entities import models
-from entities.admin.admin_filters import CategoriesFilter, HasImageFilter, HasQuotesFilter
+from entities.admin.admin_filters import (
+    CategoriesFilter,
+    HasImageFilter,
+    HasQuotesFilter,
+)
 from entities.admin.affiliations import AffiliationsInline
 from entities.admin.entity_inlines import (
     CategorizationsInline,
     QuotesInline,
     ImagesInline,
     OccurrencesInline,
-    FactsInline
+    FactsInline,
 )
 from entities.forms import PersonForm, GroupForm, OrganizationForm
 from admin.model_admin import admin_site, ModelAdmin
@@ -23,13 +27,9 @@ class EntityAdmin(ModelAdmin):
         'birth_date',
         'death_date',
         'aliases',
-        'id'
+        'id',
     ]
-    list_filter = [
-        HasQuotesFilter,
-        HasImageFilter,
-        CategoriesFilter
-    ]
+    list_filter = [HasQuotesFilter, HasImageFilter, CategoriesFilter]
     # list_editable = []
     inlines = [
         ImagesInline,
@@ -38,7 +38,7 @@ class EntityAdmin(ModelAdmin):
         AffiliationsInline,
         OccurrencesInline,
         QuotesInline,
-        RelatedQuotesInline
+        RelatedQuotesInline,
     ]
     ordering = ['name', 'birth_date']
     readonly_fields = ['computations']

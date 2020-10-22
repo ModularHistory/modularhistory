@@ -8,18 +8,57 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Place',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('places.venue', 'venue'), ('places.city', 'city'), ('places.county', 'county'), ('places.state', 'state'), ('places.region', 'region'), ('places.country', 'country'), ('places.continent', 'continent')], db_index=True, max_length=255)),
-                ('name', models.CharField(blank=True, max_length=40, null=True, unique=True)),
-                ('preposition', models.CharField(choices=[('in', 'in'), ('at', 'at')], default='in', max_length=2)),
-                ('location', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='places', to='places.place')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'type',
+                    models.CharField(
+                        choices=[
+                            ('places.venue', 'venue'),
+                            ('places.city', 'city'),
+                            ('places.county', 'county'),
+                            ('places.state', 'state'),
+                            ('places.region', 'region'),
+                            ('places.country', 'country'),
+                            ('places.continent', 'continent'),
+                        ],
+                        db_index=True,
+                        max_length=255,
+                    ),
+                ),
+                (
+                    'name',
+                    models.CharField(blank=True, max_length=40, null=True, unique=True),
+                ),
+                (
+                    'preposition',
+                    models.CharField(
+                        choices=[('in', 'in'), ('at', 'at')], default='in', max_length=2
+                    ),
+                ),
+                (
+                    'location',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='places',
+                        to='places.place',
+                    ),
+                ),
             ],
             options={
                 'unique_together': {('name', 'location')},
@@ -27,8 +66,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='City',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Cities',
                 'proxy': True,
@@ -39,8 +77,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Continent',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Continents',
                 'proxy': True,
@@ -51,8 +88,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Country',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Countries',
                 'proxy': True,
@@ -63,8 +99,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='County',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Counties',
                 'proxy': True,
@@ -75,8 +110,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Region',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Regions',
                 'proxy': True,
@@ -87,8 +121,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='State',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'States',
                 'proxy': True,
@@ -99,11 +132,24 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Venue',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
-                'constraints': [models.CheckConstraint(check=models.Q(location__type__in=['places.continent', 'places.region', 'places.country', 'places.state', 'places.county', 'places.city']), name='location_is_allowable')],
+                'constraints': [
+                    models.CheckConstraint(
+                        check=models.Q(
+                            location__type__in=[
+                                'places.continent',
+                                'places.region',
+                                'places.country',
+                                'places.state',
+                                'places.county',
+                                'places.city',
+                            ]
+                        ),
+                        name='location_is_allowable',
+                    )
+                ],
                 'indexes': [],
             },
             bases=('places.place',),

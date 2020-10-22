@@ -8,7 +8,7 @@ from topics.models.fact_relations import (
     EntityFactRelation,
     FactRelation,
     OccurrenceFactRelation,
-    TopicFactRelation
+    TopicFactRelation,
 )
 
 
@@ -16,14 +16,10 @@ class FactSupport(FactRelation):
     """TODO: add docstring."""
 
     supported_fact = ForeignKey(
-        'topics.Fact',
-        on_delete=CASCADE,
-        related_name='supported_fact_supports'
+        'topics.Fact', on_delete=CASCADE, related_name='supported_fact_supports'
     )
     supportive_fact = ForeignKey(
-        'topics.Fact',
-        on_delete=CASCADE,
-        related_name='supportive_fact_supports'
+        'topics.Fact', on_delete=CASCADE, related_name='supportive_fact_supports'
     )
 
     class Meta:
@@ -35,25 +31,16 @@ class Fact(Model):
 
     text = HTMLField(unique=True)
     supportive_facts = ManyToManyField(
-        'self',
-        through=FactSupport,
-        related_name='supported_facts',
-        symmetrical=False
+        'self', through=FactSupport, related_name='supported_facts', symmetrical=False
     )
     related_entities = ManyToManyField(
-        'entities.Entity',
-        through=EntityFactRelation,
-        related_name='facts'
+        'entities.Entity', through=EntityFactRelation, related_name='facts'
     )
     related_topics = ManyToManyField(
-        'topics.Topic',
-        through=TopicFactRelation,
-        related_name='facts'
+        'topics.Topic', through=TopicFactRelation, related_name='facts'
     )
     related_occurrences = ManyToManyField(
-        'occurrences.Occurrence',
-        through=OccurrenceFactRelation,
-        related_name='facts'
+        'occurrences.Occurrence', through=OccurrenceFactRelation, related_name='facts'
     )
 
     searchable_fields = ['text']

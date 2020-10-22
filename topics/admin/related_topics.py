@@ -20,7 +20,9 @@ class RelatedTopicsInline(GenericTabularInline):
     model = TopicRelation
     autocomplete_fields = ['topic']
 
-    def get_extra(self, request, model_instance: Optional['TaggableModel'] = None, **kwargs) -> int:
+    def get_extra(
+        self, request, model_instance: Optional['TaggableModel'] = None, **kwargs
+    ) -> int:
         """Return the number of extra (blank) input rows to display."""
         if model_instance and model_instance.tags.count():
             return 0

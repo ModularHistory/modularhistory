@@ -4,7 +4,7 @@ from .fact_relations import (
     EntityFactRelation,
     FactRelation,
     OccurrenceFactRelation,
-    TopicFactRelation
+    TopicFactRelation,
 )
 from .facts import Fact, FactSupport
 from .topic_relations import TopicRelation

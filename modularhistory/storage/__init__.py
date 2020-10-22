@@ -1,6 +1,6 @@
 from .google_storage import (
     GoogleCloudArtifactsStorage,
     GoogleCloudMediaFileStorage,
-    GoogleCloudStaticFileStorage
+    GoogleCloudStaticFileStorage,
 )
 from .mega_storage import MegaStorage

@@ -22,7 +22,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 from modularhistory import environments
 
-ENABLE_ASGI: bool = True
+ENABLE_ASGI: bool = False
 
 # Google Cloud settings
 GC_PROJECT: Optional[str] = config('GC_PROJECT', default=None)
@@ -42,13 +42,19 @@ elif os.environ.get('GITHUB_WORKFLOW'):
 else:
     ENVIRONMENT = environments.DEV
 
-ADMINS = config(
-    'ADMINS',
-    cast=lambda admins: [
-        tuple(name_and_email.split(','))
-        for name_and_email in admins.replace(', ', ',').replace('; ', ';').split(';')
-    ]
-) if config('ADMINS', default=None) else []
+ADMINS = (
+    config(
+        'ADMINS',
+        cast=lambda admins: [
+            tuple(name_and_email.split(','))
+            for name_and_email in admins.replace(', ', ',')
+            .replace('; ', ';')
+            .split(';')
+        ],
+    )
+    if config('ADMINS', default=None)
+    else []
+)
 
 # Initialize the Sentry SDK for error reporting.
 if ENVIRONMENT != environments.DEV:
@@ -64,7 +70,7 @@ if ENVIRONMENT != environments.DEV:
         integrations=integrations,
         release='modularhistory@version',  # TODO: use git hash for version
         # Associate users to errors (using django.contrib.auth) by sending PII data
-        send_default_pii=True
+        send_default_pii=True,
     )
 
 if ENVIRONMENT == environments.DEV:
@@ -79,7 +85,9 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
-DEBUG = ENVIRONMENT == environments.DEV  # DEBUG must be False in production (for security)
+DEBUG = (
+    ENVIRONMENT == environments.DEV
+)  # DEBUG must be False in production (for security)
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
 SECRET_KEY = config('SECRET_KEY')
@@ -105,7 +113,7 @@ SECURE_REFERRER_POLICY = 'same-origin'
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
     default='localhost, 127.0.0.1',
-    cast=lambda hosts: [string.strip() for string in hosts.split(',')]
+    cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-internal-ips
@@ -191,38 +199,28 @@ if ENVIRONMENT == environments.DEV:
 MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
-
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.UpdateCacheMiddleware',
-
     # Set the site attribute on every request obj, so request.site returns the current site:
     # 'django.contrib.sites.middleware.CurrentSiteMiddleware',
-
     # https://docs.djangoproject.com/en/3.1/topics/http/sessions/
     'django.contrib.sessions.middleware.SessionMiddleware',
-
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
     'django.middleware.common.CommonMiddleware',
-
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.FetchFromCacheMiddleware',
-
     'django.middleware.csrf.CsrfViewMiddleware',
-
     # # https://github.com/yandex/django_replicated
     # 'django_replicated.middleware.ReplicationMiddleware',  # breaks user sessions
-
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-
     # Staticpage middleware, based on Django's Flatpage middleware:
     # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
-    'staticpages.middleware.StaticPageFallbackMiddleware'
+    'staticpages.middleware.StaticPageFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'modularhistory.urls'
@@ -244,12 +242,15 @@ TEMPLATES = [
             ],
             # https://docs.djangoproject.com/en/3.0/ref/templates/api/#loader-types
             'loaders': [
-                ('django.template.loaders.cached.Loader', [
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                    # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
-                    'admin_tools.template_loaders.Loader',
-                ]),
+                (
+                    'django.template.loaders.cached.Loader',
+                    [
+                        'django.template.loaders.filesystem.Loader',
+                        'django.template.loaders.app_directories.Loader',
+                        # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
+                        'admin_tools.template_loaders.Loader',
+                    ],
+                ),
             ],
             'libraries': {
                 # https://stackoverflow.com/questions/41376480/django-template-exceptions-templatesyntaxerror-static-is-not-a-registered-tag
@@ -266,9 +267,7 @@ WSGI_APPLICATION = 'modularhistory.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
 }
 
 # Database
@@ -328,7 +327,7 @@ else:
             'PASSWORD': config('DB_PASSWORD'),
             'HOST': config('DB_HOST', default='localhost'),
             'ENGINE': 'django.db.backends.postgresql',
-        }
+        },
     }
 
 # TODO: Fix this so it doesn't break user sessions
@@ -347,9 +346,7 @@ else:
 
 # https://django-dbbackup.readthedocs.io/en/master/
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {
-    'location': os.path.join(BASE_DIR, '.backups/')
-}
+DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '.backups/')}
 
 AUTH_USER_MODEL = 'account.User'
 LOGIN_URL = 'account/login'
@@ -378,40 +375,29 @@ SOCIAL_AUTH_PIPELINE = (
     # already part of the auth response from the provider, but sometimes this
     # could hit a provider API.
     'social_core.pipeline.social_auth.social_details',
-
     # Get the social UID from whatever service we're authing thru. The UID is
     # the unique identifier of the given user in the provider.
     'social_core.pipeline.social_auth.social_uid',
-
     # Verify that the current auth process is valid within the current project.
     # This is where emails and domains whitelists are applied (if defined).
     'social_core.pipeline.social_auth.auth_allowed',
-
     # Check if the current social-account is already associated in the site.
     'social_core.pipeline.social_auth.social_user',
-
     # Get the user's email address, if it wasn't automatically obtained
     'modularhistory.social_auth.get_user_email',
-
     # Make up a username for this person. Append a random string at the end if there's any collision.
     'social_core.pipeline.user.get_username',
-
     # Associate the current social details with another user account with a similar email address.
     'social_core.pipeline.social_auth.associate_by_email',  # Note: Default settings would disable this.
-
     # Create a user account if we haven't found one yet.
     'social_core.pipeline.user.create_user',
-
     # Create the record that associates the social account with the user.
     'social_core.pipeline.social_auth.associate_user',
-
     # Populate the extra_data field in the social record with the values
     # specified by settings (and the default ones like access_token, etc).
     'social_core.pipeline.social_auth.load_extra_data',
-
     # Update the user record with any changed info from the auth service.
     'social_core.pipeline.user.user_details',
-
     # Get the user's profile picture
     'modularhistory.social_auth.get_user_avatar',
 )
@@ -498,13 +484,21 @@ SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/3.0/topics/files/
-MEDIA_URL = f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/' if IS_PROD else '/media/'
+MEDIA_URL = (
+    f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/'
+    if IS_PROD
+    else '/media/'
+)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if IS_PROD:
     DEFAULT_FILE_STORAGE = 'modularhistory.storage.GoogleCloudMediaFileStorage'
     GS_BUCKET_NAME = GS_MEDIA_BUCKET_NAME
 
-ARTIFACTS_URL = f'https://storage.googleapis.com/{GS_ARTIFACTS_BUCKET_NAME}/' if IS_PROD else '/artifacts/'
+ARTIFACTS_URL = (
+    f'https://storage.googleapis.com/{GS_ARTIFACTS_BUCKET_NAME}/'
+    if IS_PROD
+    else '/artifacts/'
+)
 ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
 if IS_PROD:
     ARTIFACTS_STORAGE = 'modularhistory.storage.GoogleCloudArtifactsStorage'
@@ -550,7 +544,8 @@ TINYMCE_DEFAULT_CONFIG = {
     'menubar': True,
     'statusbar': True,
     'branding': False,
-    'setup': ('''
+    'setup': (
+        '''
         function (editor) {
             editor.addMenuItem('highlight', {
                 text: 'Highlight text',
@@ -613,7 +608,8 @@ TINYMCE_DEFAULT_CONFIG = {
                 }
             });
         }
-    ''')
+    '''
+    ),
 }
 TINYMCE_SPELLCHECKER = True
 
@@ -650,7 +646,7 @@ MENU_ITEMS = [
     ['Quotes', 'quotes'],
     # ['Sources', 'sources'],
     # ['Topics', 'topics'],
-    ['About', 'about']
+    ['About', 'about'],
 ]
 
 ENABLE_PATREON = True

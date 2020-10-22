@@ -21,14 +21,10 @@ class OccurrenceChainInclusion(Model):
     """TODO: add docstring."""
 
     chain = ForeignKey(
-        OccurrenceChain,
-        on_delete=CASCADE,
-        related_name='occurrence_inclusions'
+        OccurrenceChain, on_delete=CASCADE, related_name='occurrence_inclusions'
     )
     occurrence = ForeignKey(
-        'occurrences.Occurrence',
-        on_delete=CASCADE,
-        related_name='chain_inclusions'
+        'occurrences.Occurrence', on_delete=CASCADE, related_name='chain_inclusions'
     )
 
     class Meta:

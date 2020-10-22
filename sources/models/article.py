@@ -49,7 +49,9 @@ class Article(SourceWithPageNumbers):
         """
         attributee_html = self.attributee_string
         title = self.linked_title.replace('"', "'") if self.title else EMPTY_STRING
-        publication_html = self.publication.html if self.publication else EMPTY_STRING  # TODO: make required
+        publication_html = (
+            self.publication.html if self.publication else EMPTY_STRING
+        )  # TODO: make required
         volume = f'vol. {self.volume}' if self.volume else EMPTY_STRING
         number = f'no. {self.number}' if self.number else EMPTY_STRING
         date = self.date.string if self.date else EMPTY_STRING
@@ -59,6 +61,6 @@ class Article(SourceWithPageNumbers):
             publication_html,
             volume,
             number,
-            date
+            date,
         ]
         return self.components_to_html(components)

@@ -14,7 +14,9 @@ class AttributeesInline(TabularInline):
 
     sortable_field_name = 'position'
 
-    def get_extra(self, request, model_instance: Optional[models.Quote] = None, **kwargs):
+    def get_extra(
+        self, request, model_instance: Optional[models.Quote] = None, **kwargs
+    ):
         """TODO: add docstring."""
         if model_instance and model_instance.attributees.count():
             return 0

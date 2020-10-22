@@ -54,6 +54,7 @@ def render_staticpage(request, static_page: StaticPage):
     # logged in, redirect to the login page.
     if static_page.registration_required and not request.user.is_authenticated:
         from django.contrib.auth.views import redirect_to_login
+
         return redirect_to_login(request.path)
     if static_page.template_name:
         template = loader.select_template([static_page.template_name, DEFAULT_TEMPLATE])

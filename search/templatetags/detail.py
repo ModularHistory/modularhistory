@@ -5,6 +5,7 @@ from django.template.context import RequestContext
 from django.utils.html import format_html
 
 from entities.models import Entity
+
 # from django.apps import apps
 from images.models import Image
 from occurrences.models import Occurrence
@@ -41,11 +42,16 @@ def detail(context: RequestContext, model_instance: Any):
     # TODO
     template_directory_name = template_directory_name or f'{obj_name}s'
 
-    greater_context = {**context.flatten(), **{
-        obj_name: model_instance,
-    }}
+    greater_context = {
+        **context.flatten(),
+        **{
+            obj_name: model_instance,
+        },
+    }
 
     template = loader.get_template(f'{template_directory_name}/_detail.html')
     response = template.render(greater_context)
     query = greater_context.get('query')
-    return format_html(highlight(response, text_to_highlight=query)) if query else response
+    return (
+        format_html(highlight(response, text_to_highlight=query)) if query else response
+    )

@@ -15,7 +15,7 @@ CONTAINMENT_PHRASES = (
     ('quoted', 'quoted'),
     ('recorded', 'recorded'),
     ('reproduced', 'reproduced'),
-    ('transcribed', 'transcribed')
+    ('transcribed', 'transcribed'),
 )
 
 
@@ -26,22 +26,24 @@ class SourceContainment(Model):
         'sources.Source',
         on_delete=CASCADE,
         related_name='source_containments',
-        null=True
+        null=True,
     )
     container = ForeignKey(
         'sources.Source',
         on_delete=CASCADE,
         related_name='container_containments',
-        null=True
+        null=True,
     )
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)
     end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    position = models.PositiveSmallIntegerField(null=True, blank=True)  # TODO: add cleaning logic
+    position = models.PositiveSmallIntegerField(
+        null=True, blank=True
+    )  # TODO: add cleaning logic
     phrase = models.CharField(
         max_length=PHRASE_MAX_LENGTH,
         choices=CONTAINMENT_PHRASES,
         default='',
-        blank=True
+        blank=True,
     )
 
     class Meta:

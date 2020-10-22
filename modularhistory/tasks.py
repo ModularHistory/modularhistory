@@ -41,19 +41,18 @@ class TaskMixin:
         http_method='POST',
         payload=None,
         schedule_time=None,
-        name=None
+        name=None,
     ):
         """Send task to be executed."""
         if not settings.IS_GCP:
             # TODO: Execute the task here instead of using Cloud Tasks
             return
-        parent = self._cloud_task_client.queue_path(settings.GC_PROJECT, settings.GC_REGION, queue_name)
+        parent = self._cloud_task_client.queue_path(
+            settings.GC_PROJECT, settings.GC_REGION, queue_name
+        )
 
         task: Dict[str, Any] = {
-            'app_engine_http_request': {
-                'http_method': http_method,
-                'relative_uri': url
-            }
+            'app_engine_http_request': {'http_method': http_method, 'relative_uri': url}
         }
 
         if name:

@@ -15,8 +15,9 @@ class QuoteRelation(Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
     position = PositiveSmallIntegerField(
-        null=True, blank=True,  # TODO: add cleaning logic
-        help_text='Determines the order of quotes.'
+        null=True,
+        blank=True,  # TODO: add cleaning logic
+        help_text='Determines the order of quotes.',
     )
 
     def __str__(self) -> str:

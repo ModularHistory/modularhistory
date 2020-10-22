@@ -8,5 +8,5 @@ from .textual_source_admin import (
     DocumentAdmin,
     PublicationAdmin,
     RepositoryAdmin,
-    TextualSourceAdmin
+    TextualSourceAdmin,
 )

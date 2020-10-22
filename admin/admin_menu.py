@@ -23,7 +23,7 @@ APPS_TO_INCLUDE = (
     'topics',
     'places',
     'staticpages',
-    'account'
+    'account',
 )
 
 
@@ -39,6 +39,7 @@ class AdminMenu(Menu):
 
     class Media:
         """Static files to be included with the menu."""
+
         css = ()  # css = {'all': ('css/menu.css',)}
         js = ()  # js = ('js/menu.js',)
 
@@ -50,7 +51,9 @@ class AdminMenu(Menu):
             children = []
             for model_cls in models:
                 model_name = model_cls.__name__
-                children.append(items.MenuItem(model_name, f'/admin/{app}/{model_name.lower()}/'))
+                children.append(
+                    items.MenuItem(model_name, f'/admin/{app}/{model_name.lower()}/')
+                )
             menu_items.append(items.MenuItem(app, children=children))
         return menu_items
 
@@ -62,11 +65,7 @@ class AdminMenu(Menu):
             items.Bookmarks(),
             items.AppList(
                 title='Applications',
-                exclude=[
-                    'django.contrib.*',
-                    'social_django.*',
-                    'django_celery_*'
-                ]
+                exclude=['django.contrib.*', 'social_django.*', 'django_celery_*'],
             ),
         ] + self._menu_items
 

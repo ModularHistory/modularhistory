@@ -11,18 +11,11 @@ class OccurrenceImage(Model):
     """TODO: add docstring."""
 
     occurrence = models.ForeignKey(
-        'occurrences.Occurrence',
-        related_name='occurrence_images',
-        on_delete=CASCADE
+        'occurrences.Occurrence', related_name='occurrence_images', on_delete=CASCADE
     )
-    image = models.ForeignKey(
-        'images.Image',
-        on_delete=models.PROTECT
-    )
+    image = models.ForeignKey('images.Image', on_delete=models.PROTECT)
     position = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        help_text='Set to 0 if the image is positioned manually.'
+        null=True, blank=True, help_text='Set to 0 if the image is positioned manually.'
     )
 
     class Meta:

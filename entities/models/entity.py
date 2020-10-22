@@ -15,7 +15,7 @@ from modularhistory.models import (
     ModelWithRelatedQuotes,
     TaggableModel,
     TypedModel,
-    retrieve_or_compute
+    retrieve_or_compute,
 )
 from modularhistory.structures import HistoricDateTime as DateTime
 
@@ -33,20 +33,21 @@ PARTS_OF_SPEECH = (
 )
 
 
-class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes, ModelWithRelatedEntities):
+class Entity(
+    TypedModel,
+    TaggableModel,
+    ModelWithImages,
+    ModelWithRelatedQuotes,
+    ModelWithRelatedEntities,
+):
     """An entity."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     unabbreviated_name = models.CharField(
-        max_length=NAME_MAX_LENGTH,
-        unique=True,
-        null=True,
-        blank=True
+        max_length=NAME_MAX_LENGTH, unique=True, null=True, blank=True
     )
     aliases = ArrayField(
-        models.CharField(max_length=NAME_MAX_LENGTH),
-        null=True,
-        blank=True
+        models.CharField(max_length=NAME_MAX_LENGTH), null=True, blank=True
     )
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
@@ -55,18 +56,13 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
         'entities.Category',
         through='entities.Categorization',
         related_name='entities',
-        blank=True
+        blank=True,
     )
     images = ManyToManyField(
-        Image,
-        through='entities.EntityImage',
-        related_name='entities',
-        blank=True
+        Image, through='entities.EntityImage', related_name='entities', blank=True
     )
     affiliated_entities = ManyToManyField(
-        'self',
-        through='entities.Affiliation',
-        blank=True
+        'self', through='entities.Affiliation', blank=True
     )
 
     searchable_fields = ['name', 'aliases', 'description']
@@ -87,7 +83,9 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
     @property
     def truncated_description(self) -> SafeString:
         """Returns the entity's description, truncated."""
-        return format_html(truncatechars_html(self.description, TRUNCATED_DESCRIPTION_LENGTH))
+        return format_html(
+            truncatechars_html(self.description, TRUNCATED_DESCRIPTION_LENGTH)
+        )
 
     def clean(self):
         """Prepares the entity to be saved."""
@@ -100,21 +98,28 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
         if not self.categories.exists():
             return None
         categorizations = self.categorizations.all()
-        categorizations = categorizations.exclude(date__gt=date) if date else categorizations
+        categorizations = (
+            categorizations.exclude(date__gt=date) if date else categorizations
+        )
         if not len(categorizations):
             categorizations = self.categorizations.all()
         return categorizations.order_by('date', 'category__weight').last()
 
-    def get_categorizations(self, date: Optional[DateTime] = None) -> 'QuerySet[Categorization]':
+    def get_categorizations(
+        self, date: Optional[DateTime] = None
+    ) -> 'QuerySet[Categorization]':
         """Return a list of all applicable categorizations."""
         categorizations = (
-            self.categorizations.exclude(date__gt=date) if date
+            self.categorizations.exclude(date__gt=date)
+            if date
             else self.categorizations.all()
         )
         return categorizations.select_related('category')
 
     @retrieve_or_compute(attribute_name='categorization_string')
-    def get_categorization_string(self, date: Optional[DateTime] = None) -> Optional[str]:
+    def get_categorization_string(
+        self, date: Optional[DateTime] = None
+    ) -> Optional[str]:
         """Intelligently build a categorization string, like `conservative LDS apostle`."""
         categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
         if not categorizations:
@@ -130,7 +135,8 @@ class Entity(TypedModel, TaggableModel, ModelWithImages, ModelWithRelatedQuotes,
                     pos_categorizations.order_by('category__weight', 'date').last()
                 )
                 words = [
-                    word for word in categorization_str.split(' ')
+                    word
+                    for word in categorization_str.split(' ')
                     if word not in categorization_words
                 ]
                 categorization_words = words + categorization_words
@@ -167,11 +173,13 @@ class Group(Entity):
 
 class Organization(Entity):
     """An organization."""
+
     parent_organization = ForeignKey(
         'self',
         related_name='child_organizations',
-        null=True, blank=True,
-        on_delete=SET_NULL
+        null=True,
+        blank=True,
+        on_delete=SET_NULL,
     )
 
     class Meta:

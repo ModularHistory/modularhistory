@@ -65,7 +65,9 @@ class SourceFileField(FileField):
 
     def formfield(self, **kwargs) -> Field:
         """TODO: add docstring."""
-        return super(FileField, self).formfield(**{
-            'form_class': SourceFileFormField,
-            **kwargs,
-        })
+        return super(FileField, self).formfield(
+            **{
+                'form_class': SourceFileFormField,
+                **kwargs,
+            }
+        )

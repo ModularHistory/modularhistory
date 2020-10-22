@@ -37,16 +37,18 @@ def get_user_email(backend: Backend, response: Dict, **kwargs):
                 request_params = {'state': 'open'}
                 request_headers = {'Authorization': f'token {access_token}'}
                 response = requests.get(
-                    request_url,
-                    headers=request_headers,
-                    params=request_params
+                    request_url, headers=request_headers, params=request_params
                 ).json()
                 try:
                     for email_item in response:
-                        if email_item.get('primary', False) and email_item.get('verified', False):
+                        if email_item.get('primary', False) and email_item.get(
+                            'verified', False
+                        ):
                             email = email_item.get('email', None)
                 except Exception as error:
-                    print(f'Error processing response from {request_url}: {type(error)}: {error}')
+                    print(
+                        f'Error processing response from {request_url}: {type(error)}: {error}'
+                    )
             if email:
                 details['email'] = email
                 return {'details': details}
@@ -65,10 +67,7 @@ def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwarg
 
 
 def _get_avatar_url_from_backend(
-    backend: Backend,
-    response: Dict,
-    user: User,
-    **kwargs
+    backend: Backend, response: Dict, user: User, **kwargs
 ) -> Optional[str]:
     """Attempts to retrieve a URL for the user's current avatar in a social auth backend."""
     url = None
@@ -81,12 +80,16 @@ def _get_avatar_url_from_backend(
             url = response['image'].get('url')
     elif backend.name == 'github' or isinstance(backend, GithubOAuth2):
         details = kwargs.get('details', {})
-        username = kwargs.get('username', details.get('username', user.email.split('@')[0]))
+        username = kwargs.get(
+            'username', details.get('username', user.email.split('@')[0])
+        )
         url = f'https://github.com/{username}.png'
     elif response.get('picture'):
         url = response['picture']
     else:
-        print(f'Unable to determine profile image URL for unhandled auth backend: {backend.name}')
+        print(
+            f'Unable to determine profile image URL for unhandled auth backend: {backend.name}'
+        )
     return url
 
 

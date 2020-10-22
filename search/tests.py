@@ -1,5 +1,6 @@
 import pytest
 from django.urls import reverse
+
 # from hypothesis import given, example
 # from hypothesis.strategies import text
 from django_webtest import WebTest

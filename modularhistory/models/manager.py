@@ -27,12 +27,14 @@ class Manager(ModelManager):
     def get_closest_to_datetime(
         self,
         datetime_value: Union[date, datetime, HistoricDateTime],
-        datetime_attr: str = 'date'
+        datetime_attr: str = 'date',
     ) -> 'Model':
         """Returns the model instance closest to the specified datetime_value."""
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()
-        lesser = qs.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()
+        lesser = (
+            qs.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()
+        )
         if not greater and not lesser:  # TODO
             return qs.first()
         elif greater and lesser:
@@ -75,9 +77,7 @@ class SearchableModelQuerySet(QuerySet):
         return qs
 
     def search(
-        self,
-        query: Optional[str] = None,
-        rank: bool = False
+        self, query: Optional[str] = None, rank: bool = False
     ) -> 'SearchableModelQuerySet':
         """Returns search results from occurrences."""
         qs: 'SearchableModelQuerySet' = self
@@ -119,12 +119,10 @@ class SearchableModelManager(Manager):
         topic_ids: Optional[List[int]] = None,
         rank: bool = False,
         suppress_unverified: bool = True,
-        db: str = 'default'
+        db: str = 'default',
     ) -> SearchableModelQuerySet:
         """Returns a queryset of search results."""
-        qs = self.get_queryset().prefetch_related(
-            'tags__topic'
-        )
+        qs = self.get_queryset().prefetch_related('tags__topic')
         if suppress_unverified:
             qs = qs.filter(verified=True)
         return qs.search(query=query, rank=rank)

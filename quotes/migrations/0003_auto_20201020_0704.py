@@ -14,6 +14,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quote',
             name='date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(null=True),
+            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                null=True
+            ),
         ),
     ]

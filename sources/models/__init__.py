@@ -15,7 +15,15 @@ from .source import Source
 from .source_attribution import SourceAttribution
 from .source_containment import SourceContainment
 from .source_file import SourceFile
-from .spoken_source import Address, Discourse, Lecture, Sermon, Speech, Statement, SpokenSource
+from .spoken_source import (
+    Address,
+    Discourse,
+    Lecture,
+    Sermon,
+    Speech,
+    Statement,
+    SpokenSource,
+)
 from .textual_source import TextualSource
 from .video_source import Documentary, VideoSource
 from .webpage import WebPage

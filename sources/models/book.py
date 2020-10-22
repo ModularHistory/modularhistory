@@ -28,7 +28,7 @@ class Book(TextualSource):
         'edition_number': NUMBER,
         'edition_year': NUMBER,
         'printing_number': NUMBER,
-        'volume_number': NUMBER
+        'volume_number': NUMBER,
     }
 
     # translator = jsonstore.CharField(
@@ -93,7 +93,9 @@ class Book(TextualSource):
             edition_year = self.edition_year or self.date.year
             edition_string = f'{edition_year} edition'
             if self.original_publication_date:
-                edition_string = f'{edition_string} (orig. {self.original_publication_date.year})'
+                edition_string = (
+                    f'{edition_string} (orig. {self.original_publication_date.year})'
+                )
         else:
             return None
         return edition_string
@@ -101,7 +103,8 @@ class Book(TextualSource):
     def get_original_publication_date(self):
         """Returns the book's original publication date."""
         return (
-            self.original_edition.date if self.original_edition
+            self.original_edition.date
+            if self.original_edition
             else self.original_publication_date
         )
 
@@ -109,14 +112,18 @@ class Book(TextualSource):
     def has_edition_year(self) -> bool:
         """Returns True if an edition year can be determined for the book, else False."""
         return bool(
-            self.edition_year or
-            (self.get_original_publication_date() and not self.edition_number)
+            self.edition_year
+            or (self.get_original_publication_date() and not self.edition_number)
         )
 
     @property
     def has_printing(self) -> bool:
         """Returns True if a printing (distinct from edition) can be determined for the book, else False."""
-        if self.get_original_publication_date() and self.printing_number and not self.edition_number:
+        if (
+            self.get_original_publication_date()
+            and self.printing_number
+            and not self.edition_number
+        ):
             return True
         elif self.edition_year and int(self.edition_year) < self.date.year:
             return True
@@ -146,7 +153,7 @@ class Book(TextualSource):
             f'ed. {self.editors}' if self.editors else EMPTY_STRING,
             f'translated by {self.translator}' if self.translator else EMPTY_STRING,
             f'{self.publisher}' if self.publisher else EMPTY_STRING,
-            f'vol. {self.volume_number}' if self.volume_number else EMPTY_STRING
+            f'vol. {self.volume_number}' if self.volume_number else EMPTY_STRING,
         ]
         if self.date and not self.has_edition_year and not self.has_printing:
             components.append(f'{self.date.year}')
@@ -157,6 +164,7 @@ class Book(TextualSource):
         """Returns the book's HTML representation."""
         html = self.__html__
         return format_html(html)
+
     html.admin_order_field = 'full_string'
     html: SafeString = property(html)  # type: ignore
 
@@ -168,6 +176,7 @@ class SectionSource(TextualSource):
     def html(self) -> SafeString:
         """Returns the section/chapter's HTML representation."""
         return format_html(self.__html__)
+
     html.admin_order_field = 'full_string'
     html: SafeString = property(html)  # type: ignore
 
@@ -187,8 +196,7 @@ class SectionSource(TextualSource):
             if self.attributee_string:
                 if self.attributee_string == self.container.attributee_string:
                     container_html = container_html.replace(
-                        f'{self.attributee_string}, ',
-                        EMPTY_STRING
+                        f'{self.attributee_string}, ', EMPTY_STRING
                     )
         if self.attributee_string:
             attributee_string = self.attributee_string
@@ -196,7 +204,9 @@ class SectionSource(TextualSource):
             attributee_string = self.container.attributee_string
         else:
             attributee_string = None
-        components = [item for item in (attributee_string, f'"{self.linked_title}"') if item]
+        components = [
+            item for item in (attributee_string, f'"{self.linked_title}"') if item
+        ]
         if container_html:
             components.append(f'in {container_html}')
         return ', '.join(components).replace('",', ',"')

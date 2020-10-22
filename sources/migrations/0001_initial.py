@@ -25,11 +25,46 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Citation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('citation_phrase', models.CharField(blank=True, choices=[(None, ''), ('quoted in', 'quoted in'), ('cited in', 'cited in'), ('partially reproduced in', 'partially reproduced in')], default=None, max_length=25, null=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'citation_phrase',
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            (None, ''),
+                            ('quoted in', 'quoted in'),
+                            ('cited in', 'cited in'),
+                            ('partially reproduced in', 'partially reproduced in'),
+                        ],
+                        default=None,
+                        max_length=25,
+                        null=True,
+                    ),
+                ),
                 ('object_id', models.PositiveIntegerField()),
-                ('position', models.PositiveSmallIntegerField(blank=True, help_text='Determines the order of references.', null=True)),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
+                (
+                    'position',
+                    models.PositiveSmallIntegerField(
+                        blank=True,
+                        help_text='Determines the order of references.',
+                        null=True,
+                    ),
+                ),
+                (
+                    'content_type',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='contenttypes.contenttype',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['position', 'source'],
@@ -38,17 +73,57 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Collection',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, help_text='e.g., "Adam S. Bennion papers"', max_length=100, null=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'name',
+                    models.CharField(
+                        blank=True,
+                        help_text='e.g., "Adam S. Bennion papers"',
+                        max_length=100,
+                        null=True,
+                    ),
+                ),
                 ('url', models.URLField(blank=True, max_length=100, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='Publication',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('sources.journal', 'journal'), ('sources.magazine', 'magazine'), ('sources.newspaper', 'newspaper')], db_index=True, max_length=255)),
-                ('name', models.CharField(blank=True, max_length=100, null=True, unique=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'type',
+                    models.CharField(
+                        choices=[
+                            ('sources.journal', 'journal'),
+                            ('sources.magazine', 'magazine'),
+                            ('sources.newspaper', 'newspaper'),
+                        ],
+                        db_index=True,
+                        max_length=255,
+                    ),
+                ),
+                (
+                    'name',
+                    models.CharField(
+                        blank=True, max_length=100, null=True, unique=True
+                    ),
+                ),
                 ('aliases', models.CharField(blank=True, max_length=100, null=True)),
                 ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
             ],
@@ -59,22 +134,112 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Source',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('sources.textualsource', 'textual source'), ('sources.sourcewithpagenumbers', 'source with page numbers'), ('sources.piece', 'piece'), ('sources.essay', 'essay'), ('sources.documentsource', 'document source'), ('sources.document', 'document'), ('sources.affidavit', 'affidavit'), ('sources.article', 'article'), ('sources.book', 'book'), ('sources.sectionsource', 'section source'), ('sources.section', 'section'), ('sources.chapter', 'chapter'), ('sources.correspondence', 'correspondence'), ('sources.email', 'email'), ('sources.letter', 'letter'), ('sources.memorandum', 'memorandum'), ('sources.spokensource', 'spoken source'), ('sources.speech', 'speech'), ('sources.address', 'address'), ('sources.discourse', 'discourse'), ('sources.lecture', 'lecture'), ('sources.sermon', 'sermon'), ('sources.statement', 'statement'), ('sources.interview', 'interview'), ('sources.journalentry', 'journal entry'), ('sources.videosource', 'video source'), ('sources.documentary', 'documentary'), ('sources.webpage', 'web page')], db_index=True, max_length=255)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'type',
+                    models.CharField(
+                        choices=[
+                            ('sources.textualsource', 'textual source'),
+                            (
+                                'sources.sourcewithpagenumbers',
+                                'source with page numbers',
+                            ),
+                            ('sources.piece', 'piece'),
+                            ('sources.essay', 'essay'),
+                            ('sources.documentsource', 'document source'),
+                            ('sources.document', 'document'),
+                            ('sources.affidavit', 'affidavit'),
+                            ('sources.article', 'article'),
+                            ('sources.book', 'book'),
+                            ('sources.sectionsource', 'section source'),
+                            ('sources.section', 'section'),
+                            ('sources.chapter', 'chapter'),
+                            ('sources.correspondence', 'correspondence'),
+                            ('sources.email', 'email'),
+                            ('sources.letter', 'letter'),
+                            ('sources.memorandum', 'memorandum'),
+                            ('sources.spokensource', 'spoken source'),
+                            ('sources.speech', 'speech'),
+                            ('sources.address', 'address'),
+                            ('sources.discourse', 'discourse'),
+                            ('sources.lecture', 'lecture'),
+                            ('sources.sermon', 'sermon'),
+                            ('sources.statement', 'statement'),
+                            ('sources.interview', 'interview'),
+                            ('sources.journalentry', 'journal entry'),
+                            ('sources.videosource', 'video source'),
+                            ('sources.documentary', 'documentary'),
+                            ('sources.webpage', 'web page'),
+                        ],
+                        db_index=True,
+                        max_length=255,
+                    ),
+                ),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
-                ('computations', modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True)),
+                (
+                    'computations',
+                    modularhistory.fields.json_field.JSONField(
+                        blank=True, default=dict, null=True
+                    ),
+                ),
                 ('verified', models.BooleanField(blank=True, default=False)),
-                ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
-                ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('db_string', models.CharField(blank=True, max_length=500, unique=True, verbose_name='database string')),
+                (
+                    'hidden',
+                    models.BooleanField(
+                        blank=True,
+                        default=False,
+                        help_text="Don't let this item appear in search results.",
+                    ),
+                ),
+                (
+                    'key',
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    'db_string',
+                    models.CharField(
+                        blank=True,
+                        max_length=500,
+                        unique=True,
+                        verbose_name='database string',
+                    ),
+                ),
                 ('title', models.CharField(blank=True, max_length=250, null=True)),
                 ('url', models.URLField(blank=True, max_length=100, null=True)),
                 ('description', modularhistory.fields.HTMLField(blank=True, null=True)),
-                ('date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('publication_date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                (
+                    'date',
+                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    'publication_date',
+                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                        blank=True, null=True
+                    ),
+                ),
                 ('creators', models.CharField(blank=True, max_length=100, null=True)),
-                ('extra', modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True)),
-                ('original_publication_date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
+                (
+                    'extra',
+                    modularhistory.fields.json_field.JSONField(
+                        blank=True, default=dict, null=True
+                    ),
+                ),
+                (
+                    'original_publication_date',
+                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                        blank=True, null=True
+                    ),
+                ),
             ],
             options={
                 'ordering': ['creators', '-date'],
@@ -83,11 +248,50 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SourceFile',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', modularhistory.fields.file_field.SourceFileField(blank=True, null=True, unique=True, upload_to=functools.partial(modularhistory.fields.file_field._generate_upload_path, *(), **{'path': 'sources/'}))),
-                ('name', models.CharField(blank=True, max_length=100, null=True, unique=True)),
-                ('page_offset', models.SmallIntegerField(blank=True, default=0, help_text='The difference between the page numbers displayed on the pages and the actual page numbers of the electronic file (a positive number if the electronic page number is greater than the textualpage number; a negative number if the textual page number is greater than the electronic page number).')),
-                ('first_page_number', models.SmallIntegerField(blank=True, default=1, help_text='The page number that is visibly displayed on the page on which the relevant text begins (usually 1).')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'file',
+                    modularhistory.fields.file_field.SourceFileField(
+                        blank=True,
+                        null=True,
+                        unique=True,
+                        upload_to=functools.partial(
+                            modularhistory.fields.file_field._generate_upload_path,
+                            *(),
+                            **{'path': 'sources/'}
+                        ),
+                    ),
+                ),
+                (
+                    'name',
+                    models.CharField(
+                        blank=True, max_length=100, null=True, unique=True
+                    ),
+                ),
+                (
+                    'page_offset',
+                    models.SmallIntegerField(
+                        blank=True,
+                        default=0,
+                        help_text='The difference between the page numbers displayed on the pages and the actual page numbers of the electronic file (a positive number if the electronic page number is greater than the textualpage number; a negative number if the textual page number is greater than the electronic page number).',
+                    ),
+                ),
+                (
+                    'first_page_number',
+                    models.SmallIntegerField(
+                        blank=True,
+                        default=1,
+                        help_text='The page number that is visibly displayed on the page on which the relevant text begins (usually 1).',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['name'],
@@ -96,13 +300,60 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SourceContainment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('page_number', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('end_page_number', models.PositiveSmallIntegerField(blank=True, null=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'page_number',
+                    models.PositiveSmallIntegerField(blank=True, null=True),
+                ),
+                (
+                    'end_page_number',
+                    models.PositiveSmallIntegerField(blank=True, null=True),
+                ),
                 ('position', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('phrase', models.CharField(blank=True, choices=[('', '-----'), ('archived', 'archived'), ('cited', 'cited'), ('copy', 'copy'), ('quoted', 'quoted'), ('recorded', 'recorded'), ('reproduced', 'reproduced'), ('transcribed', 'transcribed')], default='', max_length=12)),
-                ('container', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='container_containments', to='sources.source')),
-                ('source', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='source_containments', to='sources.source')),
+                (
+                    'phrase',
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ('', '-----'),
+                            ('archived', 'archived'),
+                            ('cited', 'cited'),
+                            ('copy', 'copy'),
+                            ('quoted', 'quoted'),
+                            ('recorded', 'recorded'),
+                            ('reproduced', 'reproduced'),
+                            ('transcribed', 'transcribed'),
+                        ],
+                        default='',
+                        max_length=12,
+                    ),
+                ),
+                (
+                    'container',
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='container_containments',
+                        to='sources.source',
+                    ),
+                ),
+                (
+                    'source',
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='source_containments',
+                        to='sources.source',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['position', 'source'],
@@ -111,10 +362,33 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SourceAttribution',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('position', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('attributee', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='source_attributions', to='entities.entity')),
-                ('source', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='attributions', to='sources.source')),
+                (
+                    'attributee',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='source_attributions',
+                        to='entities.entity',
+                    ),
+                ),
+                (
+                    'source',
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='attributions',
+                        to='sources.source',
+                    ),
+                ),
             ],
             options={
                 'abstract': False,
@@ -123,50 +397,130 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='source',
             name='attributees',
-            field=models.ManyToManyField(blank=True, related_name='attributed_sources', through='sources.SourceAttribution', to='entities.Entity'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='attributed_sources',
+                through='sources.SourceAttribution',
+                to='entities.Entity',
+            ),
         ),
         migrations.AddField(
             model_name='source',
             name='collection',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='documents', to='sources.collection'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='documents',
+                to='sources.collection',
+            ),
         ),
         migrations.AddField(
             model_name='source',
             name='containers',
-            field=models.ManyToManyField(blank=True, through='sources.SourceContainment', to='sources.Source'),
+            field=models.ManyToManyField(
+                blank=True, through='sources.SourceContainment', to='sources.Source'
+            ),
         ),
         migrations.AddField(
             model_name='source',
             name='db_file',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='sources.sourcefile', verbose_name='file'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to='sources.sourcefile',
+                verbose_name='file',
+            ),
         ),
         migrations.AddField(
             model_name='source',
             name='location',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='places.place'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to='places.place',
+            ),
         ),
         migrations.AddField(
             model_name='source',
             name='original_edition',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='subsequent_editions', to='sources.source'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='subsequent_editions',
+                to='sources.source',
+            ),
         ),
         migrations.AddField(
             model_name='source',
             name='publication',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sources.publication'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sources.publication',
+            ),
         ),
         migrations.AddField(
             model_name='source',
             name='related',
-            field=gm2m.fields.GM2MField('quotes.Quote', 'occurrences.Occurrence', blank=True, related_name='sources', through='sources.Citation', through_fields=['source', 'content_object', 'content_type', 'object_id']),
+            field=gm2m.fields.GM2MField(
+                'quotes.Quote',
+                'occurrences.Occurrence',
+                blank=True,
+                related_name='sources',
+                through='sources.Citation',
+                through_fields=[
+                    'source',
+                    'content_object',
+                    'content_type',
+                    'object_id',
+                ],
+            ),
         ),
         migrations.CreateModel(
             name='Repository',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, help_text='e.g., "L. Tom Perry Special Collections"', max_length=100, null=True)),
-                ('owner', models.CharField(blank=True, help_text='e.g., "Harold B. Lee Library, Brigham Young University"', max_length=100, null=True)),
-                ('location', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='repositories', to='places.place')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'name',
+                    models.CharField(
+                        blank=True,
+                        help_text='e.g., "L. Tom Perry Special Collections"',
+                        max_length=100,
+                        null=True,
+                    ),
+                ),
+                (
+                    'owner',
+                    models.CharField(
+                        blank=True,
+                        help_text='e.g., "Harold B. Lee Library, Brigham Young University"',
+                        max_length=100,
+                        null=True,
+                    ),
+                ),
+                (
+                    'location',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='repositories',
+                        to='places.place',
+                    ),
+                ),
             ],
             options={
                 'verbose_name_plural': 'Repositories',
@@ -175,17 +529,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='collection',
             name='repository',
-            field=models.ForeignKey(help_text='the collecting institution', on_delete=django.db.models.deletion.CASCADE, to='sources.repository'),
+            field=models.ForeignKey(
+                help_text='the collecting institution',
+                on_delete=django.db.models.deletion.CASCADE,
+                to='sources.repository',
+            ),
         ),
         migrations.AddField(
             model_name='citation',
             name='source',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='citations', to='sources.source'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='citations',
+                to='sources.source',
+            ),
         ),
         migrations.CreateModel(
             name='Journal',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -195,8 +557,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Magazine',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -206,8 +567,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Newspaper',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -217,8 +577,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='SpokenSource',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -228,8 +587,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='TextualSource',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -239,8 +597,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='VideoSource',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -251,10 +608,28 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PageRange',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('page_number', models.PositiveSmallIntegerField()),
-                ('end_page_number', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('citation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pages', to='sources.citation')),
+                (
+                    'end_page_number',
+                    models.PositiveSmallIntegerField(blank=True, null=True),
+                ),
+                (
+                    'citation',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='pages',
+                        to='sources.citation',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['page_number'],
@@ -271,8 +646,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Address',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Addresses',
                 'proxy': True,
@@ -283,8 +657,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Book',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -294,8 +667,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Discourse',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Discourses',
                 'proxy': True,
@@ -306,8 +678,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Documentary',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Documentaries',
                 'proxy': True,
@@ -318,8 +689,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Interview',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -329,8 +699,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Lecture',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Lectures',
                 'proxy': True,
@@ -341,8 +710,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='SectionSource',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -352,8 +720,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Sermon',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Sermons',
                 'proxy': True,
@@ -364,8 +731,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='SourceWithPageNumbers',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -375,8 +741,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Speech',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Speeches',
                 'proxy': True,
@@ -387,8 +752,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Statement',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Statements',
                 'proxy': True,
@@ -399,8 +763,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='WebPage',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -410,8 +773,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Article',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -421,8 +783,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Chapter',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -432,8 +793,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='DocumentSource',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -443,8 +803,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='JournalEntry',
-            fields=[
-            ],
+            fields=[],
             options={
                 'verbose_name_plural': 'Journal entries',
                 'proxy': True,
@@ -455,8 +814,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Piece',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -466,8 +824,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Section',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -477,8 +834,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Affidavit',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -488,8 +844,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Correspondence',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -499,8 +854,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Document',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -510,8 +864,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Essay',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -521,8 +874,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Email',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -532,8 +884,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Letter',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -543,8 +894,7 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='Memorandum',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],

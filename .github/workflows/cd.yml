@@ -68,10 +68,6 @@ jobs:
     - name: Set up ModularHistory
       if: ${{ success() }}
       run: ./setup.sh --noninteractive
-    # Run tests
-    - name: Run tests
-      if: ${{ success() }}
-      run: invoke test
     # Bump version and push tag
     - name: Bump version and push tag
       id: version

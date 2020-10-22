@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from modularhistory.linters.config import (
     ConfigFileOptionsParser as BaseConfigFileOptionsParser,
     LinterOptions,
-    PerModuleOptions
+    PerModuleOptions,
 )
 from modularhistory.utils import linting
 
@@ -54,7 +54,9 @@ def _process_flake8_message(location, code, message, options):
         filename, line_number = location.split(':')[:2]
     if not options.error_is_ignored_in_file(filename, code):
         explanation_url = get_violation_explanation_url(code)
-        print(f'{location}: {linting.colored(message, color="red")}  [{code}: {explanation_url}]')
+        print(
+            f'{location}: {linting.colored(message, color="red")}  [{code}: {explanation_url}]'
+        )
 
 
 def _get_flake8_options() -> Tuple[LinterOptions, PerModuleOptions]:
@@ -75,14 +77,16 @@ class ConfigFileFlake8OptionsParser(BaseConfigFileOptionsParser):
         super().__init__(script_name=script_name)
 
 
-VIOLATION_DEFAULT_URL = 'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
+VIOLATION_DEFAULT_URL = (
+    'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
+)
 VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
     'B': 'https://github.com/PyCQA/flake8-bugbear#list-of-warnings',  # Bugbear
     'BLK': 'https://github.com/peterjc/flake8-black',  # Black
     'C': {
         '4': 'https://github.com/adamchainz/flake8-comprehensions',  # Comprehensions
         '8': 'https://pypi.org/project/flake8-commas/',  # Commas
-        '9': 'http://flake8.pycqa.org/en/latest/user/error-codes.html'  # McCabe
+        '9': 'http://flake8.pycqa.org/en/latest/user/error-codes.html',  # McCabe
     },
     'D': 'https://www.pydocstyle.org/en/latest/error_codes.html',  # Docstrings
     'DAR': 'https://github.com/terrencepreilly/darglint#error-codes',  # Darglint
@@ -113,8 +117,8 @@ VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
         '4': f'{VIOLATION_DEFAULT_URL}/best_practices.html#best-practices',
         '5': f'{VIOLATION_DEFAULT_URL}/refactoring.html#refactoring',
         '6': f'{VIOLATION_DEFAULT_URL}/oop.html#oop',
-        '7,8,9': VIOLATION_DEFAULT_URL
-    }
+        '7,8,9': VIOLATION_DEFAULT_URL,
+    },
 }
 
 

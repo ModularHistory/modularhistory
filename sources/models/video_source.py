@@ -24,6 +24,6 @@ class Documentary(VideoSource):
         components = [
             self.attributee_string,
             f'<em>{self.linked_title}</em>',
-            self.date.string if self.date else ''
+            self.date.string if self.date else '',
         ]
         return self.components_to_html(components)

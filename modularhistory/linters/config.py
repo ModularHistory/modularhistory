@@ -6,7 +6,18 @@ import re
 import sys
 from configparser import SectionProxy
 from glob import glob
-from typing import Any, Dict, Iterator, List, Optional, Pattern, Sequence, Set, Tuple, Union  # noqa: WPS235
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    Pattern,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+)  # noqa: WPS235
 
 from modularhistory.utils import linting
 
@@ -93,12 +104,14 @@ class LinterOptions:
 
     def get_message_level(self, message, error_code, filename) -> Optional[str]:
         """Returns a modified message level based on specified options."""
-        error_is_ignored = any([
-            linting.match(self.error_filters, message),
-            self.ignore is ALL,
-            error_code in self.ignore,
-            self.error_is_ignored_in_file(filename=filename, error_code=error_code)
-        ])
+        error_is_ignored = any(
+            [
+                linting.match(self.error_filters, message),
+                self.ignore is ALL,
+                error_code in self.ignore,
+                self.error_is_ignored_in_file(filename=filename, error_code=error_code),
+            ]
+        )
         # If error is to be ignored
         if error_is_ignored:
             return None
@@ -117,7 +130,9 @@ class LinterOptions:
 PerModuleOptions = List[Tuple[str, LinterOptions]]
 
 
-def _parse_multi_options(options: MultiOptions, split_token: str = ',') -> List[str]:  # noqa: S107
+def _parse_multi_options(
+    options: MultiOptions, split_token: str = ','
+) -> List[str]:  # noqa: S107
     """Split and strip and discard empties."""
     if isinstance(options, str):
         options = options.strip()
@@ -194,9 +209,7 @@ class ConfigFileOptionsParser:
         self.script_name = script_name
 
     def apply(
-        self,
-        options: LinterOptions,
-        module_options: List[Tuple[str, LinterOptions]]
+        self, options: LinterOptions, module_options: List[Tuple[str, LinterOptions]]
     ) -> None:
         """TODO: add docstring."""
         options_cls = options.__class__
@@ -215,7 +228,7 @@ class ConfigFileOptionsParser:
         option_key: str,
         option_value: str,
         template: LinterOptions,
-        section: SectionProxy
+        section: SectionProxy,
     ) -> Any:
         template_key = option_key.replace('-', '_')
         option_type: Any = option_types.get(template_key)
@@ -224,7 +237,10 @@ class ConfigFileOptionsParser:
             dv = getattr(template, template_key, None)
             if dv is None:
                 if self.report_unrecognized_options:
-                    print(f'Unrecognized option: {option_key} = {option_value}', file=sys.stderr)
+                    print(
+                        f'Unrecognized option: {option_key} = {option_value}',
+                        file=sys.stderr,
+                    )
                 return None
             option_type = type(dv)
         try:
@@ -233,7 +249,10 @@ class ConfigFileOptionsParser:
             elif callable(option_type):
                 processed_value = option_type(section.get(option_key))
             else:
-                print(f'Cannot determine what type {option_key} should have', file=sys.stderr)
+                print(
+                    f'Cannot determine what type {option_key} should have',
+                    file=sys.stderr,
+                )
                 return None
         except (ValueError, argparse.ArgumentTypeError) as error:
             print(f'{option_key}: {error}', file=sys.stderr)
@@ -241,13 +260,13 @@ class ConfigFileOptionsParser:
         return processed_value
 
     def _parse_section(
-        self,
-        template: LinterOptions,
-        section: SectionProxy
+        self, template: LinterOptions, section: SectionProxy
     ) -> ConfigFileSection:
         parsed_section: ConfigFileSection = {}
         for option_key, option_value in section.items():
-            processed_value = self._parse_option(option_key, option_value, template, section)
+            processed_value = self._parse_option(
+                option_key, option_value, template, section
+            )
             if processed_value:
                 parsed_section[option_key] = processed_value
         return parsed_section
@@ -278,10 +297,11 @@ class ConfigFileOptionsParser:
                     print(
                         f'{prefix}: Per-module sections should only specify per-module flags '
                         f'({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
-                        file=sys.stderr
+                        file=sys.stderr,
                     )
                     updates = {
-                        option_key: option_value for option_key, option_value in updates.items()
+                        option_key: option_value
+                        for option_key, option_value in updates.items()
                         if option_key in PER_MODULE_OPTIONS
                     }
                 globs = name[8:]

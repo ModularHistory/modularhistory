@@ -3,7 +3,7 @@ runtime: python37
 # https://cloud.google.com/appengine/docs/standard#instance_classes
 instance_class: F2
 
-entrypoint: daphne -p 8080 modularhistory.asgi:application
+#entrypoint: daphne -p 8080 modularhistory.asgi:application
 
 error_handlers:
   - error_code: over_quota

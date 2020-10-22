@@ -4,7 +4,7 @@ from nested_admin.nested import (
     NestedGenericStackedInline,
     NestedGenericTabularInline,
     NestedStackedInline,
-    NestedTabularInline
+    NestedTabularInline,
 )
 
 from admin.model_admin import FORM_FIELD_OVERRIDES
@@ -37,12 +37,7 @@ class TabularInline(NestedTabularInline):
 
 def reorder_fields(fields) -> List[str]:
     """TODO: add docstring."""
-    ordered_fields = (
-        'page_number',
-        'end_page_number',
-        'notes',
-        'position'
-    )
+    ordered_fields = ('page_number', 'end_page_number', 'notes', 'position')
     for field_name in ordered_fields:
         if field_name in fields:
             fields.remove(field_name)

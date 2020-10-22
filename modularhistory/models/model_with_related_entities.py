@@ -10,11 +10,7 @@ from modularhistory.models.model import Model
 if TYPE_CHECKING:
     from entities.models import Entity
 
-ATTRIBUTE_NAMES = (
-    'attributees',
-    'involved_entities',
-    'affiliated_entities'
-)
+ATTRIBUTE_NAMES = ('attributees', 'involved_entities', 'affiliated_entities')
 
 
 class ModelWithRelatedEntities(Model):
@@ -47,12 +43,14 @@ class ModelWithRelatedEntities(Model):
                 ent: 'Entity' = entity
                 aliases = ent.aliases or []
                 for name in set([ent.name] + aliases):
-                    opening_span_tag = f'<span class="entity-name" data-entity-id="{ent.pk}">'
+                    opening_span_tag = (
+                        f'<span class="entity-name" data-entity-id="{ent.pk}">'
+                    )
                     closing_span_tag = '</span>'
                     html = re.sub(
                         # match instances not in quotations
                         rf'(^|^<p>|[^>])({name})(?:(?!\w|[^\ ]\"))',
                         rf'\g<1>{opening_span_tag}\g<2>{closing_span_tag}',
-                        html
+                        html,
                     )
         return html

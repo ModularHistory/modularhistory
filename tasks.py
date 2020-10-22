@@ -58,6 +58,18 @@ def task(task_function: TaskFunction) -> TaskFunction:
 
 
 @task
+def blacken(context):
+    """Safely run `black` code formatter against all Python files."""
+    for filename in glob('[!.]**/**.py') + glob('[!.]**/**/**.py'):
+        print(f'Checking {filename}...')
+        diff_output = context.run(f'black {filename} --diff', pty=True).stdout
+        print(diff_output)
+        if 'file would be left unchanged' not in diff_output:
+            if input('Overwrite file? [Y/n] ') != NEGATIVE:
+                context.run(f'black {filename}')
+
+
+@task
 def commit(context):
     """Commit and (optionally) push code changes."""
     # Check that the branch is correct
