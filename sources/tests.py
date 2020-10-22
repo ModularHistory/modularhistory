@@ -25,3 +25,5 @@ class TestSources:
         source.save()
         print(source)
         assert len(f'{source}')
+
+    # TODO: Test that all kinds of sources are included in search results
