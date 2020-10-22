@@ -78,6 +78,7 @@ class ConfigFileFlake8OptionsParser(BaseConfigFileOptionsParser):
 VIOLATION_DEFAULT_URL = 'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
 VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
     'B': 'https://github.com/PyCQA/flake8-bugbear#list-of-warnings',  # Bugbear
+    'BLK': 'https://github.com/peterjc/flake8-black',  # Black
     'C': {
         '4': 'https://github.com/adamchainz/flake8-comprehensions',  # Comprehensions
         '8': 'https://pypi.org/project/flake8-commas/',  # Commas
@@ -85,14 +86,17 @@ VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
     },
     'D': 'https://www.pydocstyle.org/en/latest/error_codes.html',  # Docstrings
     'DAR': 'https://github.com/terrencepreilly/darglint#error-codes',  # Darglint
+    'DJ': 'https://github.com/rocioar/flake8-django',  # Flake8-Django
     'E800': 'https://github.com/sobolevn/flake8-eradicate',  # Eradicate
     'E': 'http://pycodestyle.pycqa.org/en/latest/intro.html#error-codes',  # Pycodestyle
+    'EXE': 'https://github.com/xuhdev/flake8-executable',  # flake8-executable
     'W': 'http://pycodestyle.pycqa.org/en/latest/intro.html#error-codes',  # Pycodestyle
     'F': 'http://flake8.pycqa.org/en/latest/user/error-codes.html',  # Flake8
+    'H': 'https://github.com/mschwager/cohesion',  # Cohesion
     'I': 'https://github.com/gforcada/flake8-isort',  # Isort
-    'N800': 'https://github.com/sobolevn/flake8-broken-line',  # Broken line
+    'N400': 'https://github.com/sobolevn/flake8-broken-line',  # Broken line
     'N': {
-        '8': 'https://github.com/PyCQA/pep8-naming'  # Pep8 naming
+        '8': 'https://github.com/PyCQA/pep8-naming',  # Pep8 naming
     },
     'P': {
         '1,2,3': 'https://github.com/xZise/flake8-string-format#error-codes',  # Flake8 string format

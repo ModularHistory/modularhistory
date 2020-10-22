@@ -370,7 +370,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         """Prepares the source to be saved."""
         super().clean()
         if self.pk:  # If this source is not being newly created
-            if Source.objects.exclude(pk=self.pk).filter(db_string=self.full_string).exists():
+            if Source.objects.exclude(pk=self.pk).filter(full_string=self.full_string).exists():
                 raise ValidationError(
                     f'Unable to save this source because it duplicates an existing source '
                     f'or has an identical string: {self.full_string}'
