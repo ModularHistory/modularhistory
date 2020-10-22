@@ -124,7 +124,7 @@ class Model(DjangoModel):
         This method can be used to modify the value of an HTML field
         before it is saved.  It is called when HTML fields are cleaned.
         """
-        pass
+        return html
 
     @classmethod
     def get_object_html(

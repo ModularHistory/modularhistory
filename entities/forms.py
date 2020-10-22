@@ -45,12 +45,6 @@ class PersonForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.initial[TYPE] = 'entities.person'
 
-    # def clean_email(self):
-    #     email = self.cleaned_data.get('email')
-    #     if User.objects.filter(email=email).count() > 0:
-    #         raise forms.ValidationError('An account with this email address has already been created.')
-    #     return email
-
 
 class GroupForm(ModelForm):
     """Form for group admin."""

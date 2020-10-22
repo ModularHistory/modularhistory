@@ -55,7 +55,7 @@ class LoginForm(AuthenticationForm):
                         <a href="{reverse('account:password_reset')}">Forgot password?</a>
                     </div>
                 </div>
-            '''
+                '''
             ),
             Submit('submit', 'Sign in', css_class='btn btn-info btn-block my-4'),
             HTML(
@@ -88,7 +88,7 @@ class LoginForm(AuthenticationForm):
                     <i class="fab fa-google"></i>
                 </a>
                 -->
-            '''
+                '''
             ),
         )
 
@@ -174,7 +174,7 @@ class RegistrationForm(UserCreationForm):
                     <i class="fab fa-google"></i>
                 </a>
                 -->
-            '''
+                '''
             ),
         )
 

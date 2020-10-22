@@ -160,7 +160,9 @@ class SearchResultsView(ListView):
 
         # Images
         if IMAGE_CT_ID in ct_ids or not ct_ids:
-            image_results = Image.objects.search(**search_kwargs).filter(entities=None)  # type: ignore
+            image_results = Image.objects.search(
+                **search_kwargs   # type: ignore
+            ).filter(entities=None)
             if occurrence_results:
                 image_results = image_results.exclude(
                     Q(occurrences__in=occurrence_results)

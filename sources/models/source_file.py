@@ -76,12 +76,6 @@ class SourceFile(Model):
             url = f'/sources/epub{url}'
         return url
 
-    def full_clean(self, exclude=None, validate_unique=True):
-        """TODO: add docstring."""
-        super().full_clean(exclude=exclude, validate_unique=validate_unique)
-        if not self.file:
-            raise ValidationError('No file.')
-
     def save(self, *args, **kwargs):
         """TODO: add docstring."""
         if self.name and self.name != self.file_name:
@@ -102,3 +96,9 @@ class SourceFile(Model):
         if not self.name:
             self.name = self.file_name
             super().save()
+
+    def full_clean(self, exclude=None, validate_unique=True):
+        """TODO: add docstring."""
+        super().full_clean(exclude=exclude, validate_unique=validate_unique)
+        if not self.file:
+            raise ValidationError('No file.')

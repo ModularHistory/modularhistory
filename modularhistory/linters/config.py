@@ -17,8 +17,9 @@ from typing import (
     Set,
     Tuple,
     Union,
-)  # noqa: WPS235
+)
 
+from modularhistory.constants import COMMA
 from modularhistory.utils import linting
 
 CONFIG_FILE = 'setup.cfg'
@@ -131,7 +132,7 @@ PerModuleOptions = List[Tuple[str, LinterOptions]]
 
 
 def _parse_multi_options(
-    options: MultiOptions, split_token: str = ','
+    options: MultiOptions, split_token: str = COMMA
 ) -> List[str]:  # noqa: S107
     """Split and strip and discard empties."""
     if isinstance(options, str):
@@ -161,7 +162,7 @@ def _per_file_ignores_list(per_file_ignores: MultiOptions) -> List[PerFileIgnore
     entries = _parse_multi_options(per_file_ignores, split_token='\n')  # noqa: S106
     for entry in entries:
         pattern, codes = entry.split(':')
-        error_codes = {code.strip() for code in codes.split(',')}
+        error_codes = {code.strip() for code in codes.split(COMMA)}
         per_file_ignores_list.append((pattern.strip(), error_codes))
     return per_file_ignores_list
 
@@ -305,5 +306,5 @@ class ConfigFileOptionsParser:
                         if option_key in PER_MODULE_OPTIONS
                     }
                 globs = name[8:]
-                for file_glob in globs.split(','):
+                for file_glob in globs.split(COMMA):
                     yield file_glob, updates

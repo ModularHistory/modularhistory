@@ -42,11 +42,12 @@ class DatedModel(Model):
             date_html = date_html.replace('c. c. ', 'c. ')
         if hasattr(self, 'end_date') and self.end_date:
             date_html = f'{date_html} – {self.end_date.html}'
-        if (
+        use_ce = (
             self.date.year < 1000
             and not self.date.is_bce
             and not date_html.endswith(' CE')
-        ):
+        )
+        if use_ce:
             date_html = f'{date_html} CE'
         return format_html(date_html)
 

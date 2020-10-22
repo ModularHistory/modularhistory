@@ -385,10 +385,12 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_user',
     # Get the user's email address, if it wasn't automatically obtained
     'modularhistory.social_auth.get_user_email',
-    # Make up a username for this person. Append a random string at the end if there's any collision.
+    # Make up a username for this person.
+    # Append a random string at the end if there's any collision.
     'social_core.pipeline.user.get_username',
-    # Associate the current social details with another user account with a similar email address.
-    'social_core.pipeline.social_auth.associate_by_email',  # Note: Default settings would disable this.
+    # Associate the current details with a user account having a similar email address.
+    # Note: Default settings would disable this.
+    'social_core.pipeline.social_auth.associate_by_email',
     # Create a user account if we haven't found one yet.
     'social_core.pipeline.user.create_user',
     # Create the record that associates the social account with the user.

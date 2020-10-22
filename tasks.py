@@ -9,8 +9,8 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 import os
-from glob import glob
-from typing import Any, Callable, TypeVar
+from glob import glob, iglob
+from typing import Any, Callable, Optional, TypeVar
 
 import django
 from django.core.management import call_command
@@ -60,7 +60,7 @@ def task(task_function: TaskFunction) -> TaskFunction:
 @task
 def blacken(context):
     """Safely run `black` code formatter against all Python files."""
-    for filename in glob('[!.]**/**.py') + glob('[!.]**/**/**.py'):
+    for filename in iglob('[!.]**/*.py', recursive=True):
         print(f'Checking {filename}...')
         diff_output = context.run(f'black {filename} --diff', pty=True).stdout
         print(diff_output)
@@ -144,12 +144,12 @@ def lint(context, *args):
 
 
 @task
-def makemigrations(context, noninteractive=False):
+def makemigrations(context, noninteractive: bool = False):
     """Safely create migrations."""
     _makemigrations(context, noninteractive=noninteractive)
 
 
-def _makemigrations(context, noninteractive=False):
+def _makemigrations(context, noninteractive: bool = False):
     interactive = not noninteractive
     make_migrations = True
     if interactive:
@@ -161,12 +161,12 @@ def _makemigrations(context, noninteractive=False):
 
 
 @task
-def migrate(context, *args, noninteractive=False):
+def migrate(context, *args, noninteractive: bool = False):
     """Safely run db migrations."""
     _migrate(context, *args, noninteractive=noninteractive)
 
 
-def _migrate(context, *args, environment=LOCAL, noninteractive=False):
+def _migrate(context, *args, environment=LOCAL, noninteractive: bool = False):
     interactive = not noninteractive
     _set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
     if interactive and input('Create db backup? [Y/n] ') != NEGATIVE:
@@ -190,7 +190,7 @@ def nox(context, *args):
 
 
 @task
-def setup(context, noninteractive=False):
+def setup(context, noninteractive: bool = False):
     """Install all dependencies; set up the ModularHistory application."""
     args = ['./setup.sh']
     if noninteractive:
@@ -201,7 +201,7 @@ def setup(context, noninteractive=False):
 
 
 @task
-def squash_migrations(context, dry=True):
+def squash_migrations(context, dry: bool = True):
     """Invokable version of _squash_migrations."""
     _squash_migrations(context, dry)
 
@@ -212,7 +212,7 @@ PROD_DB_ENV_VAR_VALUES = {
 }
 
 
-def _squash_migrations(context, dry=True):
+def _squash_migrations(context, dry: bool = True):
     """
     Squash migrations.
 
@@ -260,7 +260,7 @@ def _squash_migrations(context, dry=True):
             _squash_migrations(context, dry=False)
 
 
-def _clear_migration_history(context, environment=LOCAL):
+def _clear_migration_history(context, environment: str = LOCAL):
     """."""
     with transaction.atomic():
         for app in APPS_WITH_MIGRATIONS:
@@ -277,53 +277,59 @@ def _clear_migration_history(context, environment=LOCAL):
         _remove_migrations(context)
 
 
-def _remove_migrations(context, app=None, hard=False):
+def _remove_migrations(context, app: Optional[str] = None, hard: bool = False):
     """Remove migration files."""
     apps = [app] if app else APPS_WITH_MIGRATIONS
     print(f'Removing migrations from {apps}...')
     for app in apps:
-        # Remove the squashed_migrations directory
-        migrations_path = f'./{app}/migrations'
-        squashed_migrations_path = f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}'
-        if os.path.exists(squashed_migrations_path):
-            print(f'Removing {squashed_migrations_path}...')
-            context.run(f'rm -r {squashed_migrations_path}')
-            print(f'Removed {squashed_migrations_path}')
-        # Clear migration files from the migrations directory
-        if hard:
-            # Delete the migration files
-            command = (
-                f'find {migrations_path} -type f -name "*.py" -not -name "__init__.py" '
-                f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
-            )
-            print(command)
-            context.run(command)
-        else:
-            context.run(f'mkdir {squashed_migrations_path}')
-            # Move the migration files to the squashed_migrations directory
-            print('Files to remove:')
-            context.run(
-                f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
-                f'-exec echo "{BASH_PLACEHOLDER}" \;'  # noqa: W605
-            )
-            command = (
-                f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
-                f'-exec mv {BASH_PLACEHOLDER} ./{app}/{SQUASHED_MIGRATIONS_DIRNAME}/ \;'  # noqa: W605
-            )
-            print(command)
-            context.run(command)
-            if not glob(f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}/*.py'):
-                raise Exception(f'Could not move migration files to {SQUASHED_MIGRATIONS_DIRNAME} dir.')
+        _remove_migrations_from_app(context, app, hard=hard)
+
+
+def _remove_migrations_from_app(context, app: str, hard: bool = False):
+    # Remove the squashed_migrations directory
+    migrations_path = f'./{app}/migrations'
+    squashed_migrations_path = f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}'
+    if os.path.exists(squashed_migrations_path):
+        print(f'Removing {squashed_migrations_path}...')
+        context.run(f'rm -r {squashed_migrations_path}')
+        print(f'Removed {squashed_migrations_path}')
+    # Clear migration files from the migrations directory
+    if hard:
+        # Delete the migration files
         command = (
-            f'find ./{app} -path "migrations/*.pyc" '
+            f'find {migrations_path} -type f -name "*.py" -not -name "__init__.py" '
             f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
         )
         print(command)
         context.run(command)
-        print(f'Removed migration files from {app}.')
+    else:
+        context.run(f'mkdir {squashed_migrations_path}')
+        # Move the migration files to the squashed_migrations directory
+        print('Files to remove:')
+        context.run(
+            f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
+            f'-exec echo "{BASH_PLACEHOLDER}" \;'  # noqa: W605
+        )
+        command = (
+            f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
+            f'-exec mv {BASH_PLACEHOLDER} ./{app}/{SQUASHED_MIGRATIONS_DIRNAME}/ \;'  # noqa: W605
+        )
+        print(command)
+        context.run(command)
+        if not glob(f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}/*.py'):
+            raise Exception(
+                f'Could not move migration files to {SQUASHED_MIGRATIONS_DIRNAME} dir.'
+            )
+    command = (
+        f'find ./{app} -path "migrations/*.pyc" '
+        f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
+    )
+    print(command)
+    context.run(command)
+    print(f'Removed migration files from {app}.')
 
 
-def _revert_to_migration_zero(context, app):
+def _revert_to_migration_zero(context, app: str):
     """Spoofs reverting migrations by running a fake migration to `zero`."""
     context.run(f'python manage.py migrate {app} zero --fake')
     print()

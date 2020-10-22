@@ -28,8 +28,10 @@ class HasFileFilter(BooleanListFilter):
 
     def queryset(self, request, queryset):
         """Returns the queryset filtered by whether source files exist."""
+        filters = {f'{Source.FieldNames.file}__isnull': False}
+        exclusions = {f'{Source.FieldNames.file}__file': EMPTY_STRING}
         if self.value() == YES:
-            return queryset.filter(db_file__isnull=False).exclude(db_file__file=EMPTY_STRING)
+            return queryset.filter(**filters).exclude(**exclusions)
         if self.value() == NO:
             return queryset.filter(Q(db_file__isnull=True) | Q(db_file__file=EMPTY_STRING))
 

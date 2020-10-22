@@ -27,6 +27,9 @@ class OccurrenceLocation(Model):
     class Meta:
         unique_together = ['occurrence', 'location']
 
+    def __str__(self):
+        return f'{self.location} : {self.occurrence}'
+
 
 class OccurrenceQuoteRelation(Model):
     """An involvement of an entity in an occurrence."""

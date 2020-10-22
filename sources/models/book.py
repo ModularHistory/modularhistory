@@ -118,12 +118,13 @@ class Book(TextualSource):
 
     @property
     def has_printing(self) -> bool:
-        """Returns True if a printing (distinct from edition) can be determined for the book, else False."""
-        if (
+        """Return True if a printing (distinct from edition) can be determined."""
+        has_printing = (
             self.get_original_publication_date()
             and self.printing_number
             and not self.edition_number
-        ):
+        )
+        if has_printing:
             return True
         elif self.edition_year and int(self.edition_year) < self.date.year:
             return True
@@ -131,14 +132,17 @@ class Book(TextualSource):
 
     @property
     def printing_string(self) -> Optional[str]:
-        """Returns a string representation of the book's printing, if it has one."""
+        """Return a string representation of the book's printing, if it has one."""
         has_printing_year = self.has_printing
         if self.printing_number and not has_printing_year:
             return f'{ordinal(self.printing_number)} printing'
         elif has_printing_year:
             printing_year_string = f'{self.date.year} printing'
             if self.original_publication_date:
-                printing_year_string = f'{printing_year_string} (orig. {self.original_publication_date.year})'
+                printing_year_string = (
+                    f'{printing_year_string} '
+                    f'(orig. {self.original_publication_date.year})'
+                )
             return printing_year_string
         return None
 

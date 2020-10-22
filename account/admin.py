@@ -197,7 +197,7 @@ class UserChangeForm(forms.ModelForm):
 
 
 class SocialAuthInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for social auth instances."""
 
     model = UserSocialAuth
     extra = 0
@@ -205,14 +205,13 @@ class SocialAuthInline(TabularInline):
 
 
 class UserAdmin(BaseUserAdmin):
-    """TODO: add docstring."""
+    """Admin for users of ModularHistory."""
 
-    # The forms to add and change user instances
+    # Forms to use for adding and changing user instances
     form = UserChangeForm
     add_form = UserCreationForm
 
-    # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin that reference specific fields on auth.User.
+    # Fields to be used in displaying the User model
     list_display = [
         FIRST_NAME_FIELD,
         LAST_NAME_FIELD,

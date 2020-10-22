@@ -101,7 +101,7 @@ class HistoricDateTime(datetime):
     def is_circa(self) -> bool:
         """
         Returns True if the datetime is circa, i.e., approximate.
-        Circa dates should be displayed with a `c. ` preface.
+        Circa dates should be displayed with a "c." preface.
         """
         return self.is_bce and self.year_bce >= BCE_CIRCA_FLOOR
 
@@ -172,8 +172,8 @@ class HistoricDateTime(datetime):
         This value is not used to reflect the actual second at which something happened.
         Instead, it is set to:
           * 1 if the date's day is unknown, or
-          * A value 1–9 representing the inverse of the 10-based exponent used to calculate a year BCE;
-            see the year_bce property
+          * A value 1–9 representing the inverse of the 10-based exponent used to
+            calculate a year BCE; see the year_bce property
         """
         return super().second
 
@@ -205,10 +205,11 @@ class HistoricDateTime(datetime):
                 year_string = f'c. {humanized_ybp} YBP'
             else:
                 # BCE dates
-                if (
+                prettify_circa_year = (
                     self.year_bce >= PRETTIFICATION_FLOOR
                     and self.year_bce >= BCE_CIRCA_FLOOR
-                ):
+                )
+                if prettify_circa_year:
                     year_string = f'c. {prettify(self.year_bce)}'
                 elif self.year_bce >= PRETTIFICATION_FLOOR:
                     year_string = f'{prettify(self.year_bce)}'

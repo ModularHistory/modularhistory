@@ -152,7 +152,8 @@ class MegaStorage(Storage):
         """
         Returns a filename (based on the name parameter) that is available on Mega.
 
-        If a file with name already exists, get_alternative_name() is called to obtain an alternative name.
+        If a file with name already exists, get_alternative_name() is called
+        to obtain an alternative name.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_available_name
         """
