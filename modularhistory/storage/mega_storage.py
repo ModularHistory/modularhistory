@@ -26,6 +26,10 @@ THIRTY_TWO = 32
 SIXTY_FOUR = 64
 ONE_TWENTY_EIGHT = 128
 
+a, g, n, p, s = 'a', 'g', 'n', 'p', 's'  # noqa: WPS111
+file_url_key = g
+file_size_key = s
+
 
 class MegaClient(Mega):
     """Wrapper for Mega."""
@@ -38,15 +42,11 @@ class MegaClient(Mega):
         """Get a file's public URL from its name."""
         return self.get_link(self.find(name))
 
-    def get_temporary_file(self, url: str, mode: str = 'w+b'):
-        """Download a file by its public URL."""
-        a, g, n, p, s = 'a', 'g', 'n', 'p', 's'  # noqa: WPS111
-        file_url_key = g
-        file_size_key = s
+    def get_file_stream(self, url: str) -> Tuple[Any, ...]:
+        """Return a file stream and other values needed by get_temporary_file."""
         is_public = True
         path = self._parse_url(url).split('!')
-        file_handle = path[0]
-        file_key = path[1]
+        file_handle, file_key = path[0], path[1]
         if is_public:
             file_key = base64_to_a32(file_key)
             file_data = self._api_request({a: g, g: 1, p: file_handle})
@@ -67,6 +67,11 @@ class MegaClient(Mega):
         # attribs = decrypt_attr(base64_url_decode(file_data['at']), keys)
         # file_name = attribs[n]
         input_file = requests.get(file_url, stream=True).raw
+        return input_file, keys, iv, file_size, meta_mac
+
+    def get_temporary_file(self, url: str, mode: str = 'w+b'):
+        """Download a file by its public URL."""
+        input_file, keys, iv, file_size, meta_mac = self.get_file_stream(url)
         with tempfile.NamedTemporaryFile(
             mode=mode, prefix='megapy_', delete=False
         ) as temp_output_file:
