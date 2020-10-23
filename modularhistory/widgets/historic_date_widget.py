@@ -136,7 +136,7 @@ class HistoricDateWidget(MultiWidget):
         super().__init__(widgets, attrs)
 
     def _parse_string(self, datetime_string: str) -> Tuple[int, ...]:
-        """TODO: move elsewhere?"""
+        """TODO: move elsewhere, perhaps."""
         year, month, day = datetime_string.split('-')
         hour = minute = second = microsecond = '0'
         if SPACE in day:
@@ -151,6 +151,7 @@ class HistoricDateWidget(MultiWidget):
     def decompress(self, datetime_value: Union[date, str, Any]):
         """
         "Decompresses" a Python value into a list of values to populate the widget.
+
         The input value can be assumed valid, but not necessarily non-empty.
 
         https://docs.djangoproject.com/en/3.1/ref/forms/widgets/#django.forms.MultiWidget.decompress

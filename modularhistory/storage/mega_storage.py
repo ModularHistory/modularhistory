@@ -123,8 +123,7 @@ class MegaStorage(Storage):
 
     def exists(self, name: str) -> bool:
         """
-        Return True if a file referenced by the given name already exists in the storage system,
-        or False if the name is available for a new file.
+        Return whether a file with the given name already exists in the storage system.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.exists
         """
@@ -144,11 +143,12 @@ class MegaStorage(Storage):
 
     def get_alternative_name(self, file_root, file_ext):
         """
-        Return an alternative filename, by adding an underscore and a random 7
-        character alphanumeric string (before the file extension, if one
-        exists) to the filename.
+        Return an alternative filename with additional characters.
+
+        Current implementation adds an underscore and a random 7-character
+        alphanumeric string (before the file extension) to the filename.
         """
-        return '%s_%s%s' % (file_root, get_random_string(7), file_ext)
+        return f'{file_root}_{get_random_string(7)}{file_ext}'
 
     def get_available_name(self, name: str, max_length: Optional[int] = 100) -> str:
         """
@@ -210,7 +210,8 @@ class MegaStorage(Storage):
     def generate_filename(self, filename: str) -> str:
         """
         Validate the filename by calling get_valid_name().
-        Returns a filename to be passed to the save() method.
+
+        This method returns a filename to be passed to the save() method.
 
         The filename argument may include a path as returned by FileField.upload_to.
         In that case, the path won’t be passed to get_valid_name() but will be

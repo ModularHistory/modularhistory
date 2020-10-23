@@ -101,6 +101,7 @@ class HistoricDateTime(datetime):
     def is_circa(self) -> bool:
         """
         Return True if the datetime is circa, i.e., approximate.
+
         Circa dates should be displayed with a "c." preface.
         """
         return self.is_bce and self.year_bce >= BCE_CIRCA_FLOOR
@@ -170,6 +171,7 @@ class HistoricDateTime(datetime):
     def second(self) -> int:
         """
         Return the datetime's "second" value.
+
         NOTE: This value is not used to reflect the actual second.  Instead, it is:
           * 1 if the date's day is unknown, or
           * A value 1–9 representing the inverse of the 10-based exponent used to

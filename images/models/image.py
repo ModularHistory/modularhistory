@@ -149,11 +149,10 @@ class Image(MediaModel):
     @property
     def bg_img_position(self) -> str:
         """
-        CSS `background-position` value (e.g., "center" or "top center")
-        to use when displaying the image as the background of a div.
+        Return the CSS `background-position` value (e.g., "center" or "top center").
 
+        This value is used when displaying the image as the background of a div.
         Reference: https://www.w3schools.com/cssref/pr_background-position.asp
-
         This is used to position the background images of the SERP cards.
         """
         # If the image is tall and narrow, it's like to be of a person or figurine;

@@ -1,5 +1,7 @@
 """
-Celery is incompatible with Google Cloud.  : /
+Celery is incompatible with Google Cloud.
+
+: /
 
 TODO:
 https://eshlox.net/2020/05/08/google-app-engine-cloud-tasks-and-django-rest-framework-permissions

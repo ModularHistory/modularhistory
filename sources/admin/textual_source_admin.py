@@ -41,7 +41,7 @@ class TextualSourceAdmin(SourceAdmin):
 
 
 class PublicationAdmin(ModelAdmin):
-    """Admin for publications"""
+    """Admin for publications."""
 
     list_display = ['__str__', 'description']
     search_fields = ['name']

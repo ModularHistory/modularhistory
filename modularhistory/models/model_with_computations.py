@@ -45,15 +45,18 @@ def retrieve_or_compute(
     caster: Optional[Callable] = None,
 ):
     """
-    `retrieve_or_compute` can be used as a decorator on methods/properties of
-    ModelWithComputations. The decorator causes the attribute value to be retrieved from the
-    JSON field if it is present; otherwise, the value is calculated (through the method/property
-    logic) and stored to the JSON field (so that it can subsequently be retrieved without
-    recalculation). The point is to reduce expensive computation and db queries.
+    Cause a property of ModelWithComputations to only be computed if necessary.
 
-    The optional decorator param `attribute_name` specifies the attribute name to search for
-    in the JSON value. If it is not specified, the JSON value will be queried for a key with
-    the same name as the decorated property name.
+    If a previously computed value can be retrieved, return that value; otherwise,
+    compute the property value and save it in the `computations` JSON field (so
+    that it can subsequently be retrieved without recalculation).
+
+    `retrieve_or_compute` can be used as a decorator on methods/properties of
+    ModelWithComputations. The point is to reduce expensive computation and db queries.
+
+    The optional decorator param `attribute_name` specifies the attribute name to
+    search for in the JSON value. If it is not specified, the JSON value will be
+    queried for a key with the same name as the decorated property/method name.
 
     The optional decorator param `caster` specifies a callable to use to cast a value
     retrieved from JSON to the intended Python type (e.g., `format_html` to cast a

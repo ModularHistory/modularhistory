@@ -73,17 +73,18 @@ def _get_avatar_url_from_backend(
 ) -> Optional[str]:
     """Attempt to retrieve a URL for the user's avatar in a social auth backend."""
     url = None
-    if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
+    name = backend.name
+    if name == 'facebook' or isinstance(backend, FacebookOAuth2):  # noqa: WPS223
         url = (
             f'http://graph.facebook.com/{response["id"]}/picture'
             '?type=large&breaking_change=profile_picture'
         )
-    elif backend.name == 'twitter' or isinstance(backend, TwitterOAuth):
+    elif name == 'twitter' or isinstance(backend, TwitterOAuth):
         url = response.get('profile_image_url', '').replace('_normal', '')
-    elif backend.name.startswith('google') or isinstance(backend, GoogleOAuth2):
+    elif name.startswith('google') or isinstance(backend, GoogleOAuth2):
         if response.get('image') and response['image'].get('url'):
             url = response['image'].get('url')
-    elif backend.name == 'github' or isinstance(backend, GithubOAuth2):
+    elif name == 'github' or isinstance(backend, GithubOAuth2):
         details = kwargs.get('details', {})
         username = kwargs.get(
             'username', details.get('username', user.email.split('@')[0])
@@ -93,7 +94,7 @@ def _get_avatar_url_from_backend(
         url = response['picture']
     else:
         print(
-            f'Unable to determine profile image URL for unhandled auth backend: {backend.name}'
+            f'Unable to determine profile image URL for unhandled auth backend: {name}'
         )
     return url
 

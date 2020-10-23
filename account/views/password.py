@@ -26,6 +26,7 @@ class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
 class PasswordResetView(auth_views.PasswordResetView):
     """
     Allow a user to reset their password by generating a one-time-use link.
+
     Sends the link to the user’s registered email address.
 
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetView
@@ -39,6 +40,7 @@ class PasswordResetView(auth_views.PasswordResetView):
 class PasswordResetDoneView(auth_views.PasswordResetDoneView):
     """
     The page shown after a user has been emailed a link to reset their password.
+
     This view is called by default if PasswordResetView does not explicitly set success_url.
 
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetDoneView

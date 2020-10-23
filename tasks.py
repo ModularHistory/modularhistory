@@ -1,13 +1,17 @@
 """
-These "tasks" or commands can be invoked from the console with an `invoke ` preface.  For example:
+These "tasks" or commands can be invoked from the console via the "invoke" command.
+
+For example:
 ``
 invoke lint
 invoke test
 ``
+
 Note: Invoke must first be installed by running setup.sh or `poetry install`.
 
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
+
 import os
 from os.path import join
 from glob import glob, iglob
@@ -214,6 +218,7 @@ PROD_DB_ENV_VAR_VALUES = {LOCAL: '', PRODUCTION: 'True'}
 def _squash_migrations(context, dry: bool = True):
     """
     Squash migrations.
+
     See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
     """
     _escape_prod_db()

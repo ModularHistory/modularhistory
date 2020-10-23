@@ -24,6 +24,7 @@ OBJECT_REGEX = re.compile(r'<< ?(\w+):(?!>>)[\s\S]+? ?>>')
 def process(_, html: str, processable_content_types: Iterable[str]) -> str:
     """
     Return the processed version of an HTML field value.
+
     This involves replacing model instance placeholders with their HTML.
     """
     for match in OBJECT_REGEX.finditer(html):
@@ -111,6 +112,7 @@ class HTMLField(MceHTMLField):
     def deconstruct(self):
         """
         Return a 4-tuple with enough information to recreate the field.
+
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.deconstruct
         """
         field_class = 'modularhistory.fields.HTMLField'
@@ -124,7 +126,8 @@ class HTMLField(MceHTMLField):
     ) -> Optional[HTML]:
         """
         Convert a value as returned by the database to a Python object.
-        It is the reverse of get_prep_value().
+
+        This method is the reverse of get_prep_value().
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if html_value is None:

@@ -110,6 +110,7 @@ wcwidth = "==0.2.5"
 youtube-dl = "^2020.7.28"
 channels = "^2.4.0"
 aenum = "^2.2.4"
+inflect = "^4.1.0"
 
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"
