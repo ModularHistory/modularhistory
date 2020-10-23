@@ -1,7 +1,7 @@
 from django.urls import path
 
 from admin import SearchableModelAdmin, TabularInline, admin_site
-from entities.views import AttributeeSearchView
+from entities.views import EntitySearchView
 from sources import models
 from sources.admin.filters import (
     AttributeeFilter,
@@ -82,7 +82,7 @@ class SourceAdmin(SearchableModelAdmin):
         return qs
 
     def get_fields(self, request, model_instance=None):
-        """Returns reordered fields to be displayed in the admin."""
+        """Return reordered fields to be displayed in the admin."""
         fields = list(super().get_fields(request, model_instance))
         fields_to_move = (models.Source.FieldNames.string,)
         for field in fields_to_move:
@@ -96,11 +96,9 @@ class SourceAdmin(SearchableModelAdmin):
         urls = super().get_urls()
         additional_urls = [
             path(
-                'attributee_search/',
-                self.admin_site.admin_view(
-                    AttributeeSearchView.as_view(model_admin=self)
-                ),
-                name='attributee_search',
+                'entity_search/',
+                self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
+                name='entity_search',
             ),
         ]
         return additional_urls + urls

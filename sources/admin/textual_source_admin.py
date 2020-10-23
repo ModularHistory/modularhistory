@@ -13,7 +13,7 @@ class TextualSourceAdmin(SourceAdmin):
     list_filter = ['verified', AttributeeFilter]
 
     def get_fields(self, request, model_instance=None):
-        """Returns reordered fields to be displayed in the admin."""
+        """Return reordered fields to be displayed in the admin."""
         fields: List = list(super().get_fields(request, model_instance))
         # Fields to display at the top, in order
         top_fields = ('full_string', 'creators', 'title')

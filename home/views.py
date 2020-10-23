@@ -20,7 +20,7 @@ class HomePageView(TemplateView):
     db: str = 'default'
 
     def get_context_data(self, **kwargs) -> Dict:
-        """Returns the context data used in rendering the homepage."""
+        """Return the context data used in rendering the homepage."""
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get('query')
         context['query'] = query

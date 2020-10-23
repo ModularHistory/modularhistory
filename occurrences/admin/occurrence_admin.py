@@ -1,6 +1,5 @@
 """Admin classes for occurrences."""
 
-from django.urls import path
 
 from admin import ModelAdmin, SearchableModelAdmin, admin_site
 from modularhistory.models.taggable_model import TopicFilter
@@ -17,10 +16,9 @@ from occurrences.admin.occurrence_inlines import (
     LocationsInline,
     OccurrencesInline,
 )
-from quotes.admin import RelatedQuotesInline
+from quotes.admin.related_quotes_inline import RelatedQuotesInline
 from sources.admin import CitationsInline
 from topics.admin import RelatedTopicsInline
-from topics.views import TagSearchView
 
 
 class OccurrenceAdmin(SearchableModelAdmin):
@@ -53,18 +51,6 @@ class OccurrenceAdmin(SearchableModelAdmin):
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields
     search_fields = models.Occurrence.searchable_fields
-
-    def get_urls(self):
-        """TODO: add docstring."""
-        urls = super().get_urls()
-        custom_urls = [
-            path(
-                'tag_search/',
-                self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
-                name='tag_search',
-            ),
-        ]
-        return custom_urls + urls
 
 
 class OccurrenceChainAdmin(ModelAdmin):

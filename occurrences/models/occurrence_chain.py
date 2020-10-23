@@ -16,6 +16,10 @@ class OccurrenceChain(Model):
     description = HTMLField(max_length=DESCRIPTION_MAX_LENGTH, null=True, unique=True)
     parent_chain = ForeignKey('self', on_delete=CASCADE, related_name='sub_chains')
 
+    def __str__(self):
+        """Return the string representation of the occurrence chain."""
+        return f'{self.description}'
+
 
 class OccurrenceChainInclusion(Model):
     """TODO: add docstring."""
@@ -29,3 +33,7 @@ class OccurrenceChainInclusion(Model):
 
     class Meta:
         unique_together: List[str] = ['chain', 'occurrence']
+
+    def __str__(self):
+        """Return the string representation of the occurrence chain inclusion."""
+        return f'{self.chain} : {self.occurrence}'

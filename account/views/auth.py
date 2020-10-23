@@ -22,13 +22,13 @@ class RegisterView(View):
     """Account registration view."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """Renders the registration view when the page is requested."""
+        """Render the registration view when the page is requested."""
         form: RegistrationForm = RegistrationForm()
         context = {'form': form}
         return render(request, 'account/register.html', context)
 
     def post(self, request: HttpRequest) -> HttpResponse:
-        """Responds to registration form submission."""
+        """Respond to registration form submission."""
         form: RegistrationForm = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()

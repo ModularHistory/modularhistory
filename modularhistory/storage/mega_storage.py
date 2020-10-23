@@ -15,8 +15,8 @@ from mega.mega import (
     RequestError,
     a32_to_str,
     base64_to_a32,
-    base64_url_decode,
-    decrypt_attr,
+    # base64_url_decode,
+    # decrypt_attr,
     get_chunks,
     str_to_a32,
 )
@@ -40,15 +40,18 @@ class MegaClient(Mega):
 
     def get_temporary_file(self, url: str, mode: str = 'w+b'):
         """Download a file by its public URL."""
+        a, g, n, p, s = 'a', 'g', 'n', 'p', 's'  # noqa: WPS111
+        file_url_key = g
+        file_size_key = s
         is_public = True
         path = self._parse_url(url).split('!')
         file_handle = path[0]
         file_key = path[1]
         if is_public:
             file_key = base64_to_a32(file_key)
-            file_data = self._api_request({'a': 'g', 'g': 1, 'p': file_handle})
+            file_data = self._api_request({a: g, g: 1, p: file_handle})
         else:
-            file_data = self._api_request({'a': 'g', 'g': 1, 'n': file_handle})
+            file_data = self._api_request({a: g, g: 1, n: file_handle})
         keys = (
             file_key[0] ^ file_key[4],
             file_key[1] ^ file_key[5],
@@ -57,13 +60,12 @@ class MegaClient(Mega):
         )
         iv = file_key[4:6] + (0, 0)
         meta_mac = file_key[6:8]
-        if 'g' not in file_data:
-            raise RequestError('File not accessible anymore')
-        file_url = file_data['g']
-        file_size = file_data['s']
-        attribs = base64_url_decode(file_data['at'])
-        attribs = decrypt_attr(attribs, keys)
-        # file_name = attribs['n']
+        file_url = file_data.get(file_url_key, None)
+        if not file_url:
+            raise RequestError('File is not accessible anymore')
+        file_size = file_data[file_size_key]
+        # attribs = decrypt_attr(base64_url_decode(file_data['at']), keys)
+        # file_name = attribs[n]
         input_file = requests.get(file_url, stream=True).raw
         with tempfile.NamedTemporaryFile(
             mode=mode, prefix='megapy_', delete=False
@@ -113,7 +115,7 @@ class MegaStorage(Storage):
 
     def delete(self, name: str):
         """
-        Deletes the file referenced by name.
+        Delete the file referenced by name.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.delete
         """
@@ -121,7 +123,7 @@ class MegaStorage(Storage):
 
     def exists(self, name: str) -> bool:
         """
-        Returns True if a file referenced by the given name already exists in the storage system,
+        Return True if a file referenced by the given name already exists in the storage system,
         or False if the name is available for a new file.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.exists
@@ -130,7 +132,7 @@ class MegaStorage(Storage):
 
     def get_accessed_time(self, name: str) -> datetime:
         """
-        Returns a datetime of the last accessed time of the file.
+        Return a datetime of the last accessed time of the file.
 
         If USE_TZ is True, returns an aware datetime;
         otherwise returns a naive datetime in the local timezone.
@@ -150,7 +152,7 @@ class MegaStorage(Storage):
 
     def get_available_name(self, name: str, max_length: Optional[int] = 100) -> str:
         """
-        Returns a filename (based on the name parameter) that is available on Mega.
+        Return a filename (based on the name parameter) that is available on Mega.
 
         If a file with name already exists, get_alternative_name() is called
         to obtain an alternative name.
@@ -189,7 +191,7 @@ class MegaStorage(Storage):
 
     def get_created_time(self, name: str) -> datetime:
         """
-        Returns the datetime of the file's creation.
+        Return the datetime of the file's creation.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_created_time
         """
@@ -198,7 +200,7 @@ class MegaStorage(Storage):
 
     def get_modified_time(self, name: str) -> datetime:
         """
-        Returns the datetime of the file's last modification.
+        Return the datetime of the file's last modification.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_modified_time
         """
@@ -207,7 +209,7 @@ class MegaStorage(Storage):
 
     def generate_filename(self, filename: str) -> str:
         """
-        Validates the filename by calling get_valid_name().
+        Validate the filename by calling get_valid_name().
         Returns a filename to be passed to the save() method.
 
         The filename argument may include a path as returned by FileField.upload_to.
@@ -225,7 +227,7 @@ class MegaStorage(Storage):
 
     def listdir(self, path: str) -> Tuple[List[str], List[str]]:
         """
-        Lists the contents of the specified path.
+        List the contents of the specified path.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.listdir
         """
@@ -234,7 +236,7 @@ class MegaStorage(Storage):
 
     def open(self, name: str, mode: str = 'rb') -> File:  # noqa: WPS125
         """
-        Opens the file given by name.
+        Open the file given by name.
 
         Although the returned file is guaranteed to be a File object,
         it might actually be some subclass. In the case of remote file storage,
@@ -252,7 +254,7 @@ class MegaStorage(Storage):
         max_length: Optional[int] = None,
     ) -> str:
         """
-        Saves a new file using the storage system, preferably with the name specified.
+        Save a new file using the storage system, preferably with the name specified.
 
         If there already exists a file with this name name,
         the storage system may modify the filename as necessary to get a unique name.
@@ -277,7 +279,7 @@ class MegaStorage(Storage):
 
     def size(self, name: str) -> int:
         """
-        Returns the total size, in bytes, of the file referenced by name.
+        Return the total size, in bytes, of the file referenced by name.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.size
         """
@@ -286,7 +288,7 @@ class MegaStorage(Storage):
 
     def url(self, name: Optional[str]) -> str:
         """
-        Returns the URL where the contents of the file referenced by name can be accessed.
+        Return the URL where the contents of the file referenced by name can be accessed.
 
         https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.url
         """

@@ -14,6 +14,6 @@ from modularhistory.linters.flake8 import flake8 as _flake8
 
 @register()
 def flake8(app_configs: Optional[List], **kwargs) -> List:
-    """Runs flake8 linter."""
+    """Run flake8 linter."""
     _flake8(**kwargs)
     return []

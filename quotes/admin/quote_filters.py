@@ -18,21 +18,19 @@ from modularhistory.constants import NO, YES
 
 
 class AttributeeFilter(ManyToManyAutocompleteFilter):
-    """TODO: add docstring."""
+    """Autocomplete filter for a quote's attributees."""
 
     title = 'attributee'
     field_name = 'attributees'
-
-    _parameter_name = 'attributees__pk__exact'
     m2m_cls = Entity
 
     def get_autocomplete_url(self, request, model_admin):
-        """TODO: add docstring."""
-        return reverse('admin:attributee_search')
+        """Return the URL of the autocomplete view."""
+        return reverse('admin:entity_search')
 
 
 class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
-    """TODO: add docstring."""
+    """Autocomplete filter for a quote's attributee's categorization."""
 
     title = 'attributee categories'
     field_name = 'attributee_categories'
@@ -41,12 +39,8 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
     _rel = Entity.categories.through.get_meta().get_field('category').remote_field
     m2m_cls = Category
 
-    def get_autocomplete_url(self, request, model_admin):
-        """TODO: add docstring."""
-        return reverse('admin:entity_category_search')
-
     def __init__(self, request, query_params, model, model_admin):
-        """TODO: add docstring."""
+        """Return the URL associated with the autocomplete view."""
         try:
             super().__init__(request, query_params, model, model_admin)
         except FieldDoesNotExist:
@@ -93,6 +87,10 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             )
             self.rendered_widget = format_html(rendered_widget)
 
+    def get_autocomplete_url(self, request, model_admin):
+        """Return the URL associated with the autocomplete view."""
+        return reverse('admin:entity_category_search')
+
     def get_queryset_for_field(self, model, name):
         """Override."""
         return self.m2m_cls.objects.all()
@@ -105,11 +103,11 @@ class HasSourceFilter(SimpleListFilter):
     parameter_name = 'has_source'
 
     def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
+        """Return an iterable of tuples (value, verbose value)."""
         return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         if self.value() == YES:
             return queryset.exclude(sources=None)
         if self.value() == NO:
@@ -123,7 +121,7 @@ class AttributeeCountFilter(SimpleListFilter):
     parameter_name = 'attributee_count'
 
     def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
+        """Return an iterable of tuples (value, verbose value)."""
         return (
             (0, '0'),
             (1, '1'),
@@ -133,7 +131,7 @@ class AttributeeCountFilter(SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         queryset = queryset.annotate(attributee_count=Count('attributees'))
         try:
             attributee_count = int(self.value())
@@ -151,11 +149,11 @@ class HasMultipleCitationsFilter(SimpleListFilter):
     parameter_name = 'has_multiple_citations'
 
     def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
+        """Return an iterable of tuples (value, verbose value)."""
         return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         queryset = queryset.annotate(citation_count=Count('citations'))
         if self.value() == YES:
             return queryset.exclude(citation_count__lt=2)

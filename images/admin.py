@@ -42,7 +42,7 @@ class ImageAdmin(ImageCroppingMixin, ModelAdmin):
     list_per_page = 10
 
     def get_fields(self, request, model_instance=None):
-        """Returns reordered fields to be displayed in the admin."""
+        """Return reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
         ordered_field_names = (
             'date_is_circa',

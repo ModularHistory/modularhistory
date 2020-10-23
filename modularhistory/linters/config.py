@@ -19,7 +19,7 @@ from typing import (
     Union,
 )
 
-from modularhistory.constants import COMMA
+from modularhistory.constants import COMMA, NEW_LINE
 from modularhistory.utils import linting
 
 CONFIG_FILE = 'setup.cfg'
@@ -57,24 +57,24 @@ PER_MODULE_OPTIONS = [
 class LinterOptions:
     """Options for linters."""
 
-    # error codes:
+    # errors/warnings
     select: Optional[ErrorCodeSet] = None
     ignore: Optional[ErrorCodeSet] = None
     warn: Optional[ErrorCodeSet] = None
 
-    # paths:
+    # paths
     include: Optional[PathPatternList] = None
     exclude: Optional[PathPatternList] = None
 
-    # per-file ignores:
+    # per-file ignores
     per_file_ignores: Optional[List[PerFileIgnore]] = None
 
-    # messages:
+    # messages
     error_filters: Optional[PatternList] = None
     warning_filters: Optional[PatternList] = None
 
     def __init__(self):
-        """Constructs linter options."""
+        """Construct linter options."""
         self.select = ALL
         self.ignore = set()
         self.warn = set()
@@ -96,6 +96,17 @@ class LinterOptions:
         """TODO: write docstring."""
         return linting.match(self.include, path)
 
+    def error_is_ignored(self, filename: str, message: str, error_code: str) -> bool:
+        """Return whether the error should be ignored."""
+        return any(
+            [
+                linting.match(self.error_filters, message),
+                self.ignore is ALL,
+                error_code in self.ignore,
+                self.error_is_ignored_in_file(filename=filename, error_code=error_code),
+            ]
+        )
+
     def error_is_ignored_in_file(self, filename: str, error_code: str):
         """Return True if an error is specifically ignored for the given filename."""
         for pattern, error_codes in self.per_file_ignores:
@@ -104,17 +115,8 @@ class LinterOptions:
         return False
 
     def get_message_level(self, message, error_code, filename) -> Optional[str]:
-        """Returns a modified message level based on specified options."""
-        error_is_ignored = any(
-            [
-                linting.match(self.error_filters, message),
-                self.ignore is ALL,
-                error_code in self.ignore,
-                self.error_is_ignored_in_file(filename=filename, error_code=error_code),
-            ]
-        )
-        # If error is to be ignored
-        if error_is_ignored:
+        """Return a modified message level based on specified options."""
+        if self.error_is_ignored(filename, message, error_code):
             return None
         # If we have specified something to check for
         elif self.select and error_code in self.select:
@@ -141,7 +143,7 @@ def _parse_multi_options(
         if split_token in options:
             parsed_options = options.split(split_token)
         else:
-            parsed_options = options.split('\n')
+            parsed_options = options.split(NEW_LINE)
     else:
         parsed_options = options  # type: ignore
     return [option.strip() for option in parsed_options if option.strip()]
@@ -159,7 +161,7 @@ def _glob_list(globs: MultiOptions) -> PathPatternList:
 
 def _per_file_ignores_list(per_file_ignores: MultiOptions) -> List[PerFileIgnore]:
     per_file_ignores_list = []
-    entries = _parse_multi_options(per_file_ignores, split_token='\n')  # noqa: S106
+    entries = _parse_multi_options(per_file_ignores, split_token=NEW_LINE)
     for entry in entries:
         pattern, codes = entry.split(':')
         error_codes = {code.strip() for code in codes.split(COMMA)}
@@ -169,7 +171,10 @@ def _per_file_ignores_list(per_file_ignores: MultiOptions) -> List[PerFileIgnore
 
 def _regex_list(patterns: MultiOptions) -> List[Pattern]:
     """."""
-    return [re.compile(pattern) for pattern in _parse_multi_options(patterns)]
+    return [
+        re.compile(pattern)
+        for pattern in _parse_multi_options(patterns, split_token=NEW_LINE)
+    ]
 
 
 def _error_code_set(error_codes: MultiOptions) -> Optional[Set[str]]:
@@ -203,7 +208,7 @@ class ConfigFileOptionsParser:
 
     def __init__(self, script_name: str):
         """
-        Constructs the config file options parser.
+        Construct the config file options parser.
 
         Sets script_name, which is used to determine which section of the config file to read.
         """

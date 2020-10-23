@@ -14,7 +14,7 @@ class AdminSite(BaseAdminSite):
     site_header = 'ModularHistory administration'
 
     def get_registry(self) -> Dict[Type['Model'], 'ModelAdmin']:
-        """Returns a dict of Model -> ModelAdmin."""
+        """Return a dict of Model -> ModelAdmin."""
         return self._registry
 
 

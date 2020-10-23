@@ -79,19 +79,19 @@ class Collection(ModelWithComputations):
         unique_together = ['name', 'repository']
 
     def __str__(self) -> str:
-        """Returns the collection's string representation."""
+        """Return the collection's string representation."""
         return soupify(self.html).get_text()
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """Returns the collection's HTML representation."""
+        """Return the collection's HTML representation."""
         html = self.__html__
         return format_html(html)
 
     @property
     def __html__(self) -> str:
-        """Returns the collection's HTML representation."""
+        """Return the collection's HTML representation."""
         components = [
             f'{self.name}' if self.name else '',
             f'{self.repository}',
@@ -126,19 +126,19 @@ class Repository(ModelWithComputations):
         verbose_name_plural = 'Repositories'
 
     def __str__(self) -> str:
-        """Returns the repository's string representation."""
+        """Return the repository's string representation."""
         return soupify(self.html).get_text()
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """Returns the collection's HTML representation."""
+        """Return the collection's HTML representation."""
         html = self.__html__
         return format_html(html)
 
     @property
     def __html__(self) -> str:
-        """Returns the repository's HTML representation."""
+        """Return the repository's HTML representation."""
         location_string = self.location.string if self.location else None
         components = [self.name, self.owner, location_string]
         return ', '.join([component for component in components if component])
@@ -149,7 +149,7 @@ class Document(DocumentSource):
 
     @property
     def __html__(self) -> str:
-        """Returns the repository's HTML representation."""
+        """Return the repository's HTML representation."""
         components = [
             self.attributee_string,
             self.linked_title if self.title else 'untitled document',

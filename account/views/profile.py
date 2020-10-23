@@ -20,7 +20,7 @@ class ProfileView(LoginRequiredMixin, View):
     """Profile view."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """Renders the profile view upon request."""
+        """Render the profile view upon request."""
         if isinstance(request.user, User):
             user: User = request.user
             context = {
@@ -37,7 +37,7 @@ class SettingsView(LoginRequiredMixin, View):
     """Account settings view."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """Renders the settings view upon request."""
+        """Render the settings view upon request."""
         if isinstance(request.user, User):
             user: User = request.user
             social_auth_backends = [

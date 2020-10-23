@@ -123,12 +123,12 @@ class ExtraField:
 
     @staticmethod
     def from_json(stored_value) -> Any:
-        """Transforms a JSON value to its intended Python value."""
+        """Transform a JSON value to its intended Python value."""
         return stored_value
 
     @staticmethod
     def to_json(value_to_store) -> Union[str, int, List, Dict]:
-        """Transforms a value to a format suitable for storage in JSON."""
+        """Transform a value to a format suitable for storage in JSON."""
         return value_to_store
 
     def get_json_field_value(self, model_instance: Model):
@@ -141,7 +141,7 @@ class ExtraField:
                 pass  # Expected
             else:
                 raise ValueError(
-                    f'Expected `json_value` to be dict type but got {type(json_value)}: {json_value}'
+                    f'Received invalid `json_value` of {type(json_value)}: {json_value}'
                 )
         else:
             json_value = {}

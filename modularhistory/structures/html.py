@@ -14,7 +14,7 @@ class HTML:
     text: str
 
     def __init__(self, raw_value: Optional[str], processed_value: Optional[str] = None):
-        """Constructs an HTML object."""
+        """Construct an HTML object."""
         if raw_value:
             raw_value = raw_value.strip()
             processed_value = processed_value or raw_value
@@ -39,9 +39,9 @@ class HTML:
 
     # for BeautifulSoup
     def __len__(self):
-        """Returns the number of characters in the HTML."""
+        """Return the number of characters in the HTML."""
         return len(self.raw_value)
 
     def __bool__(self):
-        """Returns whether the HTML has a non-empty value."""
+        """Return whether the HTML has a non-empty value."""
         return bool(self.raw_value)

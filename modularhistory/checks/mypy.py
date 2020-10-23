@@ -14,6 +14,6 @@ from modularhistory.linters.mypy import mypy as _mypy
 
 @register()
 def mypy(app_configs: Optional[List] = None, **kwargs) -> List:
-    """Runs mypy as a check before executing management commands."""
+    """Run mypy as a check before executing management commands."""
     _mypy(**kwargs)
     return []

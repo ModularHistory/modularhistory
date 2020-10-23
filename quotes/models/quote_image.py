@@ -16,3 +16,7 @@ class QuoteImage(Model):
     position = models.PositiveSmallIntegerField(
         null=True, blank=True, help_text='Set to 0 if the image is positioned manually.'
     )
+
+    def __str__(self):
+        """Return the string representation of the quote–image association."""
+        return f'{self.image} : {self.quote}'

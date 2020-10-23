@@ -28,7 +28,7 @@ year_systems = ((CE, 'CE'), (BCE, 'BCE'), (YBP, 'YBP'))
 
 def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
     """
-    Returns a decompressed year value (year, second, microsecond) ready for storage.
+    Return a decompressed year value (year, second, microsecond) ready for storage.
 
     For years before common era,
     - the year value is set to 1, and
@@ -75,7 +75,7 @@ class YearInput(MultiWidget):
     template_name = 'forms/year_input.html'
 
     def __init__(self, attrs: Optional[Dict] = None):
-        """Constructs the year input widget."""
+        """Construct the year input widget."""
         attrs = attrs or {'class': 'form-control'}
         widgets = [
             forms.NumberInput(attrs={**attrs, **{'min': '1', 'class': 'form-control'}}),
@@ -84,7 +84,7 @@ class YearInput(MultiWidget):
         super().__init__(widgets, attrs)
 
     def decompress(self, datetime_value: Union[HistoricDateTime, int, str]):
-        """Decompresses a datetime value into year and year_system values."""
+        """Decompress a datetime value into year and year_system values."""
         year, year_system = (None, None)
         if isinstance(datetime_value, HistoricDateTime):
             if datetime_value.use_ybp:
@@ -98,7 +98,7 @@ class YearInput(MultiWidget):
         return [year, year_system]
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:
-        """Compresses the input value into a format that can be saved to the db."""
+        """Compress the input value into a format that can be saved to the db."""
         decompressed_values = super().value_from_datadict(datadict, files, name)
         if len(decompressed_values) != 2:
             raise ValueError(f'Wrong number of values: {len(decompressed_values)}')
@@ -211,7 +211,7 @@ class HistoricDateWidget(MultiWidget):
         return [year, year_system, season, month, day, time]
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:
-        """Compresses the input value into a format that can be saved to the db."""
+        """Compress the input value into a format that can be saved to the db."""
         decompressed_values = list(super().value_from_datadict(datadict, files, name))
         full_n_values = 6
         min_n_values = 3

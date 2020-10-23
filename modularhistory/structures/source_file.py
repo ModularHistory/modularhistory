@@ -12,7 +12,7 @@ class TextualSourceFile(FieldFile):
 
     @staticmethod
     def dedupe():
-        """Removes duplicated source files."""
+        """Remove duplicated source files."""
         from sources.models import Source
 
         path = join(settings.MEDIA_ROOT, 'sources')

@@ -9,5 +9,5 @@ class BooleanListFilter(SimpleListFilter):
     """Filters based on a boolean (yes or no) field/property."""
 
     def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value) containing filter input options."""
+        """Return an iterable of tuples (value, verbose value) containing filter input options."""
         return (YES, YES), (NO, NO)

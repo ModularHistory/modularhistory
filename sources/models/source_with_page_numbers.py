@@ -29,7 +29,7 @@ class SourceWithPageNumbers(TextualSource):
 
     @property
     def file_page_number(self) -> Optional[int]:
-        """Returns the page number to use for opening the source's associated file."""
+        """Return the page number to use for opening the source's associated file."""
         file = self.source_file
         if file and self.page_number:
             return self.page_number + file.page_offset

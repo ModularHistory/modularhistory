@@ -19,7 +19,7 @@ register = Library()
 
 @register.simple_tag(takes_context=True)
 def card(context: RequestContext, model_instance: Any) -> SafeString:
-    """Returns the card HTML for a supported ModularHistory object."""
+    """Return the card HTML for a supported ModularHistory object."""
     obj_name: str
     template_directory_name: str = ''
 

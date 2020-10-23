@@ -22,7 +22,7 @@ class OccurrenceManager(SearchableModelManager):
         suppress_unverified: bool = True,
         db: str = 'default',
     ) -> SearchableModelQuerySet:
-        """Returns search results from occurrences."""
+        """Return search results from occurrences."""
         qs = (
             super()
             .search(db=db, suppress_unverified=suppress_unverified)

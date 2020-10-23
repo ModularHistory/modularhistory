@@ -100,7 +100,7 @@ class ModelAdmin(NestedModelAdmin):
 # # address = settings.SERVER_LOCATION
 # # api_key = settings.GOOGLE_MAPS_API_KEY
 # response = requests.get(
-#     'https://maps.googleapis.com/maps/api/geocode/json?address={0}&key={1}'.format(address, api_key)
+#     f'https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}'
 # ).json()
 # # if response['status'] == 'OK':
 # #     latitude = response['results'][0]['geometry']['location']['lat']

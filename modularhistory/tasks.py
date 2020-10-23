@@ -134,13 +134,17 @@ else:  # If not running in Google Cloud
             # password = config('REMOTE_BACKUP_SERVER_PASSWORD', default=None)
             # ssh_client = SSHClient()
             # ssh_client.load_system_host_keys()
-            # # ssh_client.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
+            # # ssh_client.load_host_keys(os.path.expanduser(
+            # #     os.path.join("~", ".ssh", "known_hosts"))
+            # # )
             # if server:
             #     print(f'Connecting to remote backup location: {server}')
             #     ssh_client.connect(server, username=username, password=password)
             #     # ssh_client.connect(server, username='username', password='password')
             #     with SCPClient(ssh_client.get_transport()) as scp_client:
-            #         scp_client.put(backup_file, f'~/history/history/backups/{backup_file}')
+            #         scp_client.put(
+            #             backup_file, f'~/history/history/backups/{backup_file}'
+            #         )
             #         # scp_client.get('test2.txt')
             #     print(f'Completed remote db backup.')
 

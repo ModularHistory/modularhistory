@@ -25,6 +25,11 @@ class QuoteAttribution(Model):
         """TODO: write docstring."""
         return str(self.attributee)
 
+    def save(self, *args, **kwargs):
+        """TODO: write docstring."""
+        self.clean()
+        super().save(*args, **kwargs)
+
     def clean(self):
         """TODO: write docstring."""
         super().clean()
@@ -34,8 +39,3 @@ class QuoteAttribution(Model):
             )
             if duplications.exists():
                 raise ValidationError('Attribution position should be unique.')
-
-    def save(self, *args, **kwargs):
-        """TODO: write docstring."""
-        self.clean()
-        super().save(*args, **kwargs)

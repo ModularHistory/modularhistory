@@ -43,10 +43,12 @@ SOURCE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.source)
 YES = 'Yes'
 NO = 'No'
 EMPTY_STRING = ''
+SLASH = '/'
 SPACE = ' '
 COLON = ':'
 COMMA = ','
 PERIOD = '.'
+NEW_LINE = '\n'
 
 PDF_URL_PAGE_KEY = 'page'
 

@@ -39,7 +39,7 @@ class BaseDetailView(generic.detail.DetailView):
     object: Occurrence
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """Returns the context data used to render the view."""
+        """Return the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         occurrence = self.object
         return {**context, **occurrence.get_context()}

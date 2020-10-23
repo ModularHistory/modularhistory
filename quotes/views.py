@@ -22,7 +22,7 @@ class ListView(generic.list.ListView):
         return Quote.objects.filter(verified=True).prefetch_related(
             'attributees',
             # 'attributees__categories',
-            'images'
+            'images',
         )
 
     def get_context_data(self, *args, **kwargs) -> Dict:

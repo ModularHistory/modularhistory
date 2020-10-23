@@ -62,7 +62,7 @@ class MyPyOptions(LinterOptions):
     daemon: bool = False
 
     def __init__(self):
-        """Constructs MyPy options."""
+        """Construct MyPy options."""
         super().__init__()
         self.args = []
 
@@ -71,7 +71,7 @@ PerModuleOptions = List[Tuple[str, MyPyOptions]]
 
 
 def mypy(**kwargs):
-    """Runs mypy."""
+    """Run mypy."""
     mypy_args = [settings.BASE_DIR, '--show-error-codes']
     output = mypy_client.run(mypy_args)[0]
     if output:
@@ -79,7 +79,7 @@ def mypy(**kwargs):
 
 
 def process_mypy_output(output: str):
-    """Processes the output from mypy."""
+    """Process the output from mypy."""
     options, per_module_options = _get_mypy_options()
     matched_error = None  # used to know when to error a note related to an error
     errors_by_type: DefaultDict[str, int] = defaultdict(int)
@@ -162,7 +162,7 @@ def _process_mypy_message(
 
 
 def _get_mypy_options() -> Tuple[MyPyOptions, PerModuleOptions]:
-    """Returns an Options object to be used by mypy."""
+    """Return an Options object to be used by mypy."""
     options = MyPyOptions()
     module_options: PerModuleOptions = []
     ConfigFileOptionsParser().apply(options, module_options)  # type: ignore
@@ -187,7 +187,7 @@ def _get_module_options(
 
 
 def _parse_output_line(line: str) -> Optional[Tuple[str, ...]]:
-    """Parses a line of output from mypy."""
+    """Parse a line of output from mypy."""
     parsed_line = MYPY_OUTPUT_PATTERN.match(line)
     if not parsed_line:
         return None
@@ -224,5 +224,5 @@ class ConfigFileOptionsParser(BaseConfigFileOptionsParser):
     """Config file options parser for mypy."""
 
     def __init__(self, script_name: str = MYPY_SCRIPT_NAME):
-        """Constructs the mypy options parser."""
+        """Construct the mypy options parser."""
         super().__init__(script_name=script_name)

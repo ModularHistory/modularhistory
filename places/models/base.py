@@ -36,8 +36,12 @@ class Place(TypedModel, ModelWithComputations):
     class Meta:
         unique_together = ['name', 'location']
 
+    class FieldNames(ModelWithComputations.FieldNames):
+        name = 'name'
+        location = 'location'
+
     def __str__(self) -> str:
-        """Returns the location's string representation."""
+        """Return the location's string representation."""
         return self.string
 
     @property  # type: ignore

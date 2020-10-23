@@ -25,7 +25,7 @@ class SourceFileInput(MultiWidget):
     template_name = 'forms/source_file_input.html'
 
     def __init__(self, attrs: Optional[Dict] = None):
-        """Constructs the widget."""
+        """Construct the widget."""
         file_choices: List[Choice] = [(None, '-----')]
         for file_name in os.listdir(os.path.join(settings.MEDIA_ROOT, 'sources')):
             file_choices.append((f'sources/{file_name}', file_name))
@@ -39,7 +39,7 @@ class SourceFileInput(MultiWidget):
         super().__init__(widgets, attrs)
 
     def decompress(self, source_file: Optional[TextualSourceFile]):
-        """Decompresses a source file object into the values used in the widget."""
+        """Decompress a source file object into the values used in the widget."""
         if not source_file:
             return [None, None, None, None, None]
         ct = ContentType.objects.get_for_model(source_file.instance)
@@ -52,7 +52,7 @@ class SourceFileInput(MultiWidget):
         ]
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:
-        """Compresses values from the widget into a format that can be saved."""
+        """Compress values from the widget into a format that can be saved."""
         decompressed_values = super().value_from_datadict(datadict, files, name)
         if len(decompressed_values) != 5:
             raise ValueError
@@ -61,9 +61,8 @@ class SourceFileInput(MultiWidget):
             ct_id, instance_id = int(ct_id), int(instance_id)
             model_class = ContentType.objects.get_for_id(ct_id).model_class()
             instance = model_class.objects.get(id=instance_id)
-            if getattr(
-                instance, 'db_file', None
-            ):  # TODO: make this more resilient to change
+            # TODO: make this more resilient to change
+            if getattr(instance, 'db_file', None):
                 source_file = instance.file
                 file_name = source_file.name
                 if filepath and filepath != file_name:

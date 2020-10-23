@@ -27,17 +27,17 @@ class Publication(TypedModel, Model):
     searchable_fields = ['name', 'aliases']
 
     def __str__(self) -> str:
-        """Returns the publication's string representation."""
+        """Return the publication's string representation."""
         return soupify(self.html).get_text()
 
     @property
     def html(self) -> SafeString:
-        """Returns the publication's HTML representation."""
+        """Return the publication's HTML representation."""
         return format_html(self.__html__)
 
     @property
     def __html__(self) -> str:
-        """Returns the publication's HTML representation."""
+        """Return the publication's HTML representation."""
         return f'<i>{self.name}</i>'
 
 

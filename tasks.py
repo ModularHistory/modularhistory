@@ -9,6 +9,7 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 import os
+from os.path import join
 from glob import glob, iglob
 from typing import Any, Callable, Optional, TypeVar
 
@@ -26,6 +27,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
 
 PROD_DB_ENV_VAR = 'USE_PROD_DB'
+MIGRATIONS_DIRNAME = 'migrations'
 SQUASHED_MIGRATIONS_DIRNAME = 'squashed_migrations'
 MAX_MIGRATION_COUNT = 3
 BASH_PLACEHOLDER = '{}'  # noqa: P103
@@ -45,14 +47,14 @@ APPS_WITH_MIGRATIONS = (
     'search',
     'sources',
     'staticpages',
-    'topics'
+    'topics',
 )
 
 TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
 
 
 def task(task_function: TaskFunction) -> TaskFunction:
-    """Wraps invoke.task to enable type annotations."""
+    """Wrap invoke.task to enable type annotations."""
     task_function.__annotations__ = {}
     return invoke.task(task_function)
 
@@ -192,7 +194,7 @@ def nox(context, *args):
 @task
 def setup(context, noninteractive: bool = False):
     """Install all dependencies; set up the ModularHistory application."""
-    args = ['./setup.sh']
+    args = [_relativize('setup.sh')]
     if noninteractive:
         args.append('--noninteractive')
     command = SPACE.join(args).strip()
@@ -202,28 +204,23 @@ def setup(context, noninteractive: bool = False):
 
 @task
 def squash_migrations(context, dry: bool = True):
-    """Invokable version of _squash_migrations."""
+    """Squash migrations."""
     _squash_migrations(context, dry)
 
 
-PROD_DB_ENV_VAR_VALUES = {
-    LOCAL: '',
-    PRODUCTION: 'True'
-}
+PROD_DB_ENV_VAR_VALUES = {LOCAL: '', PRODUCTION: 'True'}
 
 
 def _squash_migrations(context, dry: bool = True):
     """
     Squash migrations.
-
     See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
     """
     _escape_prod_db()
     # By default, only squash migrations in dev environment
-    prod_db_env_var_values = [(LOCAL, '')] if dry else [
-        (LOCAL, ''),
-        (PRODUCTION, 'True')
-    ]
+    prod_db_env_var_values = (
+        [(LOCAL, '')] if dry else [(LOCAL, ''), (PRODUCTION, 'True')]
+    )
 
     # Create a db backup
     if dry and input('Create db backup? [Y/n] ') != NEGATIVE:
@@ -245,7 +242,9 @@ def _squash_migrations(context, dry: bool = True):
     # Fake the migrations.
     for environment, _ in prod_db_env_var_values:
         print(f'\n Running fake migrations for {environment} db...')
-        _migrate(context, '--fake-initial', environment=environment, noninteractive=True)
+        _migrate(
+            context, '--fake-initial', environment=environment, noninteractive=True
+        )
     _escape_prod_db()
 
     if dry:
@@ -264,14 +263,20 @@ def _clear_migration_history(context, environment: str = LOCAL):
     """."""
     with transaction.atomic():
         for app in APPS_WITH_MIGRATIONS:
-            n_migrations = len(os.listdir(path=f'./{app}/migrations')) - 1
+            n_migrations = (
+                len(os.listdir(path=_relativize(join(app, MIGRATIONS_DIRNAME)))) - 1
+            )
             if n_migrations > MAX_MIGRATION_COUNT:
                 # Fake reverting all migrations.
                 _set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
-                print(f'\n Clearing migration history for the {app} app in {environment} ...')
+                print(
+                    f'\n Clearing migration history for the {app} app in {environment} ...'
+                )
                 _revert_to_migration_zero(context, app)
             else:
-                print(f'Skipping {app} since there are only {n_migrations} migration files...')
+                print(
+                    f'Skipping {app} since there are only {n_migrations} migration files...'
+                )
     # Remove old migration files.
     if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
         _remove_migrations(context)
@@ -287,8 +292,8 @@ def _remove_migrations(context, app: Optional[str] = None, hard: bool = False):
 
 def _remove_migrations_from_app(context, app: str, hard: bool = False):
     # Remove the squashed_migrations directory
-    migrations_path = f'./{app}/migrations'
-    squashed_migrations_path = f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}'
+    migrations_path = _relativize(join(app, MIGRATIONS_DIRNAME))
+    squashed_migrations_path = _relativize(join(app, SQUASHED_MIGRATIONS_DIRNAME))
     if os.path.exists(squashed_migrations_path):
         print(f'Removing {squashed_migrations_path}...')
         context.run(f'rm -r {squashed_migrations_path}')
@@ -310,18 +315,19 @@ def _remove_migrations_from_app(context, app: str, hard: bool = False):
             f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
             f'-exec echo "{BASH_PLACEHOLDER}" \;'  # noqa: W605
         )
+        squashed_migrations_dir = _relativize(join(app, SQUASHED_MIGRATIONS_DIRNAME))
         command = (
             f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
-            f'-exec mv {BASH_PLACEHOLDER} ./{app}/{SQUASHED_MIGRATIONS_DIRNAME}/ \;'  # noqa: W605
+            f'-exec mv {BASH_PLACEHOLDER} {squashed_migrations_dir}/ \;'  # noqa: W605
         )
         print(command)
         context.run(command)
-        if not glob(f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}/*.py'):
+        if not glob(_relativize(f'{join(app, SQUASHED_MIGRATIONS_DIRNAME)}/*.py')):
             raise Exception(
                 f'Could not move migration files to {SQUASHED_MIGRATIONS_DIRNAME} dir.'
             )
     command = (
-        f'find ./{app} -path "migrations/*.pyc" '
+        f'find {_relativize(app)} -path "migrations/*.pyc" '
         f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
     )
     print(command)
@@ -330,7 +336,7 @@ def _remove_migrations_from_app(context, app: str, hard: bool = False):
 
 
 def _revert_to_migration_zero(context, app: str):
-    """Spoofs reverting migrations by running a fake migration to `zero`."""
+    """Spoofreverting migrations by running a fake migration to `zero`."""
     context.run(f'python manage.py migrate {app} zero --fake')
     print()
     print('Migrations after fake reversion:')
@@ -341,18 +347,24 @@ def _revert_to_migration_zero(context, app: str):
 def _restore_squashed_migrations(context):
     """Restore migrations with squashed_migrations."""
     for app in APPS_WITH_MIGRATIONS:
-        squashed_migrations_dir = f'./{app}/{SQUASHED_MIGRATIONS_DIRNAME}'
+        squashed_migrations_dir = _relativize(join(app, SQUASHED_MIGRATIONS_DIRNAME))
         # TODO: only do this if there are files in the squashed_migrations dir
-        if os.path.exists(squashed_migrations_dir) and os.listdir(path=squashed_migrations_dir):
+        squashed_migrations_exist = os.path.exists(
+            squashed_migrations_dir
+        ) and os.listdir(path=squashed_migrations_dir)
+        if squashed_migrations_exist:
             # Remove the replacement migrations
+            migration_files_path = _relativize(f'{app}/migrations/*.py')
             context.run(
-                f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
+                f'find . -type f -path "{migration_files_path}" '
+                f'-not -name "__init__.py" '
                 f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
             )
             # Restore the squashed migrations
+            migrations_dir = _relativize(f'{join(app, MIGRATIONS_DIRNAME)}')
             context.run(
                 f'find {squashed_migrations_dir} -type f -name "*.py" '
-                f'-exec mv {BASH_PLACEHOLDER} ./{app}/migrations/ \;'  # noqa: W605
+                f'-exec mv {BASH_PLACEHOLDER} {migrations_dir}/ \;'  # noqa: W605
             )
             # Remove the squashed_migrations directory
             if os.path.exists(squashed_migrations_dir):
@@ -383,12 +395,12 @@ def test(context):
 
 
 def _set_prod_db_env_var(env_var_value: str):
-    """Sets the env var that specifies whether to use the production database."""
+    """Setthe env var that specifies whether to use the production database."""
     os.environ[PROD_DB_ENV_VAR] = env_var_value
 
 
 def _escape_prod_db():
-    """Removes the env var that specifies whether to use the production database."""
+    """Removethe env var that specifies whether to use the production database."""
     try:
         del os.environ[PROD_DB_ENV_VAR]
     except KeyError:
@@ -410,3 +422,7 @@ def _escape_prod_db():
 #         f'&& mv {temp_env_file} {env_file} && gcloud app deploy {app_file}'
 #     )
 #     context.run(f'mv {perm_env_file} {env_file}')
+
+
+def _relativize(relative_path: str):
+    return join('.', relative_path)

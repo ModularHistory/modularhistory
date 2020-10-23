@@ -140,12 +140,12 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         ordering = ['creators', '-date']
 
     def __str__(self):
-        """Returns the source's string representation."""
+        """Return the source's string representation."""
         return soupify(self.html).get_text()  # type: ignore
 
     @property
     def admin_source_link(self) -> SafeString:
-        """Returns a file link to display in the admin."""
+        """Return a file link to display in the admin."""
         element = EMPTY_STRING
         if self.source_file:
             element = compose_link(
@@ -158,7 +158,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     @property
     def attributee_string(self) -> Optional[str]:
-        """Returns a string representing the source's attributees."""
+        """Return a string representing the source's attributees."""
         if self.creators:
             return self.creators
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
@@ -178,7 +178,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     @property
     def container(self) -> Optional['Source']:
-        """Returns the source's primary container, if it has one."""
+        """Return the source's primary container, if it has one."""
         try:
             return self.containment.container
         except (ObjectDoesNotExist, AttributeError):
@@ -186,7 +186,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     @property
     def containment(self) -> Optional['SourceContainment']:
-        """Returns the source's primary containment."""
+        """Return the source's primary containment."""
         try:
             return self.source_containments.first()
         except (ObjectDoesNotExist, AttributeError):
@@ -194,7 +194,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     @property
     def source_file(self) -> Optional[SourceFile]:
-        """Returns the source's file, if it has one."""
+        """Return the source's file, if it has one."""
         if self.db_file:
             return self.db_file
         # TODO: save container file as source file?
@@ -207,7 +207,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     @property
     def source_file_url(self) -> Optional[str]:
-        """Returns the source file's URL, if it has one."""
+        """Return the source file's URL, if it has one."""
         return self.source_file.url if self.source_file else None
 
     def get_container_strings(self) -> Optional[List[str]]:
@@ -256,7 +256,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     @retrieve_or_compute(attribute_name='href')
     def href(self) -> Optional[str]:
         """
-        Returns the href to use when providing a link to the source.
+        Return the href to use when providing a link to the source.
 
         If the source has a file, the URL of the file is returned;
         otherwise, the source's `url` field value is returned.
@@ -325,14 +325,14 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     @property
     def link(self) -> Optional[SafeString]:
-        """Returns an HTML link element containing the source URL, if one exists."""
+        """Return an HTML link element containing the source URL, if one exists."""
         if self.url:
             return format_html(f'<a target="_blank" href="{self.url}">{self.url}</a>')
         return None
 
     @property
     def ordered_attributees(self) -> Optional[List['Entity']]:
-        """Returns an ordered list of the source's attributees."""
+        """Return an ordered list of the source's attributees."""
         try:
             attributions = self.attributions.select_related('attributee')
             return [attribution.attributee for attribution in attributions]
@@ -341,12 +341,12 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
 
     @property
     def string(self) -> str:
-        """Returns the source's string representation, including its containers."""
+        """Return the source's string representation, including its containers."""
         return soupify(self.html).get_text()  # type: ignore
 
     @property
     def linked_title(self) -> Optional[SafeString]:
-        """Returns the source's title as a link."""
+        """Return the source's title as a link."""
         if not self.title:
             return None
         html = (
@@ -362,7 +362,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         return format_html(html)
 
     def clean(self):
-        """Prepares the source to be saved."""
+        """Prepare the source to be saved."""
         super().clean()
         if self.pk:  # If this source is not being newly created
             is_duplicate = (
@@ -396,7 +396,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         return None
 
     def save(self, *args, **kwargs):
-        """Saves the source."""
+        """Savethe source."""
         self.clean()
         super().save(*args, **kwargs)
 
@@ -408,21 +408,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         Must be defined by models inheriting from Source.
         """
         raise NotImplementedError
-
-    @classmethod
-    def get_updated_placeholder(cls, match: re.Match) -> str:
-        """Return an up-to-date placeholder for a source included in an HTML field."""
-        placeholder = match.group(0)
-        appendage = match.group(2)
-        updated_appendage = f': {cls.get_object_html(match)}'
-        if appendage:
-            updated_placeholder = placeholder.replace(appendage, updated_appendage)
-        else:
-            updated_placeholder = (
-                f'{placeholder.replace(" >>", "").replace(">>", "")}'
-                f'{updated_appendage} >>'
-            )
-        return updated_placeholder
 
 
 def _get_page_number_url(

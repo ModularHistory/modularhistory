@@ -37,7 +37,7 @@ class ModelWithSources(SearchableModel):
 
     @property
     def citation(self) -> Optional['Citation']:
-        """Returns the quote's primary citation, if a citation exists."""
+        """Return the quote's primary citation, if a citation exists."""
         try:
             return self.citations.order_by('position')[0]
         except IndexError:
@@ -46,7 +46,7 @@ class ModelWithSources(SearchableModel):
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='citation_html', caster=format_html)
     def citation_html(self) -> Optional[SafeString]:
-        """Returns the quote's citation HTML, if a citation exists."""
+        """Return the quote's citation HTML, if a citation exists."""
         if self.citations.exists():  # TODO: use try-except instead of making this query
             citation_html = '; '.join(
                 [citation.html for citation in self.citations.all()]

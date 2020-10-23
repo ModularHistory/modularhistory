@@ -59,14 +59,14 @@ class HTMLField(MceHTMLField):
     processable_content_types: Iterable[str] = ['quote', 'image', 'citation', 'source']
 
     def __init__(self, *args, **kwargs):
-        """Constructs an HTML field instance."""
+        """Construct an HTML field instance."""
         processor = kwargs.pop('processor', None)
         if processor and processor != self.default_processor:
             self.processor = processor
         super().__init__(*args, **kwargs)
 
     def clean(self, html_value, model_instance: 'Model') -> HTML:
-        """Returns a cleaned, ready-to-save instance of HTML."""
+        """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
         raw_html = html.raw_value
         replacements = (
@@ -110,7 +110,7 @@ class HTMLField(MceHTMLField):
 
     def deconstruct(self):
         """
-        Returns a 4-tuple with enough information to recreate the field.
+        Return a 4-tuple with enough information to recreate the field.
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.deconstruct
         """
         field_class = 'modularhistory.fields.HTMLField'
@@ -123,7 +123,7 @@ class HTMLField(MceHTMLField):
         self, html_value: Optional[str], expression, connection
     ) -> Optional[HTML]:
         """
-        Converts a value as returned by the database to a Python object.
+        Convert a value as returned by the database to a Python object.
         It is the reverse of get_prep_value().
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
         """

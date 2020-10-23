@@ -95,7 +95,7 @@ class UserCreationForm(forms.ModelForm):
         ]
 
     def clean_email(self):
-        """Cleans the email field value."""
+        """Clean the email field value."""
         email = self.cleaned_data.get(EMAIL_FIELD)
         if User.objects.filter(email=email).count() > 0:
             raise forms.ValidationError(
@@ -104,7 +104,7 @@ class UserCreationForm(forms.ModelForm):
         return email
 
     def clean_username(self):
-        """Cleans the username field value."""
+        """Clean the username field value."""
         username = self.cleaned_data.get(USERNAME_FIELD) or self.cleaned_data.get(
             EMAIL_FIELD
         )
@@ -115,7 +115,7 @@ class UserCreationForm(forms.ModelForm):
         return username
 
     def clean(self):
-        """Prepares the input values to be saved."""
+        """Prepare the input values to be saved."""
         # Check that the two password entries match
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')

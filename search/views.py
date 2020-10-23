@@ -15,21 +15,19 @@ from modularhistory.constants import (
     QUOTE_CT_ID,
     SOURCE_CT_ID,
 )
-
-# from django.core.paginator import Paginator
 from modularhistory.models import DatedModel, Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from occurrences.models import Occurrence
-
-# from places.models import Place
 from quotes.models import Quote
 from search.forms import SearchForm
 from sources.models import Source
 from topics.models import Topic
 
+QUERY_KEY = 'query'
+
 
 def date_sorter(model_instance: Union[Model, DatedModel]) -> HistoricDateTime:
-    """Returns the value used to sort the model instance by date."""
+    """Return the value used to sort the model instance by date."""
     get_date = getattr(model_instance, 'get_date', None)
     if get_date is not None:
         date = get_date()
@@ -45,7 +43,7 @@ def date_sorter(model_instance: Union[Model, DatedModel]) -> HistoricDateTime:
 
 
 def rank_sorter(model_instance: Model):
-    """Returns the value used to sort the model instance by rank/relevance."""
+    """Return the value used to sort the model instance by rank/relevance."""
     rank = getattr(model_instance, 'rank', None)
     if not rank:
         raise Exception('No rank')
@@ -71,11 +69,11 @@ class SearchResultsView(ListView):
     db: str = 'default'
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """Returns the context data used to render the view."""
+        """Return the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         context['count'] = self.results_count or 0
-        query = self.request.GET.get('query')
-        context['query'] = query
+        query = self.request.GET.get(QUERY_KEY)
+        context[QUERY_KEY] = query
 
         # Initial data
         # data = {
@@ -99,9 +97,9 @@ class SearchResultsView(ListView):
         return context
 
     def get_object_list(self) -> Union['QuerySet[Model]', List[Model]]:
-        """Returns the list of search result objects."""
+        """Return the list of search result objects."""
         request = self.request
-        query = request.GET.get('query', None)
+        query = request.GET.get(QUERY_KEY, None)
 
         db = self.db
 
@@ -126,7 +124,7 @@ class SearchResultsView(ListView):
         topic_ids = [int(topic_id) for topic_id in topics] if topics else None
 
         search_kwargs = {
-            'query': query,
+            QUERY_KEY: query,
             'start_year': start_year,
             'end_year': end_year,
             'rank': sort_by_relevance,
@@ -161,7 +159,7 @@ class SearchResultsView(ListView):
         # Images
         if IMAGE_CT_ID in ct_ids or not ct_ids:
             image_results = Image.objects.search(
-                **search_kwargs   # type: ignore
+                **search_kwargs  # type: ignore
             ).filter(entities=None)
             if occurrence_results:
                 image_results = image_results.exclude(
@@ -254,9 +252,9 @@ class SearchResultsView(ListView):
 
     def get_queryset(self) -> QuerySet:
         """
-        Required because SearchResultsView inherits from the generic Django ListView.
+        Return the queryset/list of model instances.
 
-        Returns an empty queryset.
+        Required because SearchResultsView inherits from the generic Django ListView.
 
         SearchResultsView uses `get_object_list` instead of `get_queryset` to set
         the context variable containing the list of search results.

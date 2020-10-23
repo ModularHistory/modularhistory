@@ -35,6 +35,10 @@ class UserSearch(Model):
     )
     datetime = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        """Return a string representation of the user–search instance."""
+        return f'{self.user}, {self.datetime}, `{self.search}`'
+
 
 class Search(Model):
     """A search."""
@@ -53,5 +57,5 @@ class Search(Model):
         verbose_name_plural = 'Searches'
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return a string representation of the search."""
         return str(self.query)

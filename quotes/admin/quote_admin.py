@@ -66,7 +66,7 @@ class QuoteAdmin(SearchableModelAdmin):
     list_per_page = 10
 
     def get_fields(self, request, model_instance=None):
-        """Returns reordered fields to be displayed in the admin."""
+        """Return reordered fields to be displayed in the admin."""
         fields = list(super().get_fields(request, model_instance))
         for field_name in ('date', 'date_is_circa'):
             if fields and field_name in fields:

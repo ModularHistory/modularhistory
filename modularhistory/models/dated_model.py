@@ -7,6 +7,9 @@ from django.utils.html import format_html
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.models import Model
 from modularhistory.structures import HistoricDateTime
+from modularhistory.utils.html import soupify
+
+CIRCA_PREFIX = 'c. '
 
 
 class DatedModel(Model):
@@ -18,53 +21,52 @@ class DatedModel(Model):
     class Meta:
         abstract = True
 
-    def _date_string(self) -> str:
-        """TODO: add docstring."""
-        date_string = self.date.string if self.date else ''
-        if date_string and self.date_is_circa and not date_string.startswith('c. '):
-            date_string = f'c. {date_string}'
-        if hasattr(self, 'end_date') and self.end_date:
-            date_string = f'{date_string} – {self.end_date.string}'
-        return date_string
+    def date_string(self) -> str:
+        """Return the string representation of the model instance's date."""
+        return soupify(self.date_html).get_text()
 
-    _date_string.admin_order_field = 'date'
-    date_string = property(_date_string)
+    date_string.admin_order_field = 'date'
+    date_string = property(date_string)  # type: ignore
 
     @property
     def date_html(self) -> Optional[SafeString]:
-        """TODO: add docstring."""
+        """Return the HTML representation of the model instance's date."""
         date = self.get_date()
-        if not date:
-            return None
-        date_html = f'{date.html}'
-        if date_html and self.date_is_circa and not date_html.startswith('c. '):
-            date_html = f'c. {date_html}'
-            date_html = date_html.replace('c. c. ', 'c. ')
-        if hasattr(self, 'end_date') and self.end_date:
-            date_html = f'{date_html} – {self.end_date.html}'
-        use_ce = (
-            self.date.year < 1000
-            and not self.date.is_bce
-            and not date_html.endswith(' CE')
-        )
-        if use_ce:
-            date_html = f'{date_html} CE'
-        return format_html(date_html)
+        if date:
+            date_html = f'{date.html}'
+            date_html_requires_circa_prefix = (
+                date_html
+                and self.date_is_circa
+                and not date_html.startswith(CIRCA_PREFIX)
+            )
+            if date_html_requires_circa_prefix:
+                date_html = f'{CIRCA_PREFIX}{date_html}'
+            if hasattr(self, 'end_date') and self.end_date:
+                date_html = f'{date_html} – {self.end_date.html}'
+            use_ce = (
+                self.date.year < 1000
+                and not self.date.is_bce
+                and not date_html.endswith(' CE')
+            )
+            if use_ce:
+                date_html = f'{date_html} CE'
+            return format_html(date_html)
+        return None
 
     @property
     def year_html(self) -> Optional[SafeString]:
-        """TODO: add docstring."""
+        """Return the HTML representation of the model instance's date's year."""
         if not self.date:
             return None
         year_html = self.date.year_string
         if self.date_is_circa and not self.date.month_is_known:
-            year_html = f'c. {year_html}'
-            year_html = year_html.replace('c. c. ', 'c. ')
+            year_html = f'{CIRCA_PREFIX}{year_html}'
+            year_html = year_html.replace(f'{CIRCA_PREFIX}{CIRCA_PREFIX}', CIRCA_PREFIX)
         return format_html(year_html)
 
     def get_date(self) -> Optional[HistoricDateTime]:
         """
-        Determine and return the obj's date.
+        Determine and return the model instance's date.
 
         Override this to retrieve date values through other means,
         e.g., by inspecting related objects.

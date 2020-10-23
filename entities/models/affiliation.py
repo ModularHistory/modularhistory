@@ -46,7 +46,7 @@ class Role(Model):
     organization = ForeignKey('Entity', related_name='roles', on_delete=CASCADE)
 
     def __str__(self) -> str:
-        """Returns the role's string representation."""
+        """Return the role's string representation."""
         return self.name
 
 

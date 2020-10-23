@@ -17,7 +17,7 @@ class UserManager(BaseUserManager):
 
     @classmethod
     def locked(cls) -> 'QuerySet[User]':
-        """Returns a queryset of users with locked accounts."""
+        """Return a queryset of users with locked accounts."""
         return User.objects.filter(locked=True)
 
 
@@ -56,15 +56,15 @@ class User(AbstractUser):
 
     @property
     def social_auths(self) -> 'QuerySet[UserSocialAuth]':
-        """Wrapper for the reverse attribute of the UserSocialAuth–User relation."""
+        """Wrap the reverse attribute of the UserSocialAuth–User relation."""
         return self.social_auth
 
     def lock(self):
-        """TODO: write docstring."""
+        """Lock the user account."""
         self.locked = True
         self.save()
 
     def unlock(self):
-        """TODO: write docstring."""
+        """Unlock the user account."""
         self.locked = False
         self.save()

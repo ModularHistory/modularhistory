@@ -20,7 +20,7 @@ class LoginForm(AuthenticationForm):
     """Crispy login form."""
 
     def __init__(self, request=None, *args, **kwargs):
-        """Constructs the login form."""
+        """Construct the login form."""
         super().__init__(request, *args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
@@ -110,7 +110,7 @@ class RegistrationForm(UserCreationForm):
         fields = ['first_name', 'last_name', USERNAME_FIELD, EMAIL_FIELD]
 
     def __init__(self, *args, **kwargs):
-        """Constructs a registration form."""
+        """Construct a registration form."""
         super().__init__(*args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
@@ -179,7 +179,7 @@ class RegistrationForm(UserCreationForm):
         )
 
     def clean_email(self):
-        """Cleans the email field value."""
+        """Clean the email field value."""
         email = self.cleaned_data.get(EMAIL_FIELD)
         if not self.cleaned_data.get(USERNAME_FIELD):
             self.cleaned_data[USERNAME_FIELD] = email
@@ -190,7 +190,7 @@ class RegistrationForm(UserCreationForm):
         return email
 
     def clean_username(self):
-        """Prepares the username field value to be saved."""
+        """Prepare the username field value to be saved."""
         email = self.cleaned_data.get(EMAIL_FIELD)
         username = self.cleaned_data.get(USERNAME_FIELD) or email
         if email:
@@ -206,15 +206,15 @@ class RegistrationForm(UserCreationForm):
         return username
 
     def clean_first_name(self):
-        """Prepares the first_name field value to be saved."""
+        """Prepare the first_name field value to be saved."""
         return self.cleaned_data.get('first_name').title()
 
     def clean_last_name(self):
-        """Prepares the last_name field value to be saved."""
+        """Prepare the last_name field value to be saved."""
         return self.cleaned_data.get('last_name').title()
 
     def clean(self):
-        """Prepares field values to be saved."""
+        """Prepare field values to be saved."""
         cleaned_data = super().clean()
         if cleaned_data.get('password1') != cleaned_data.get('password2'):
             raise ValidationError('Your passwords need to match. Please try again.')

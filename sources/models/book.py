@@ -84,7 +84,7 @@ class Book(TextualSource):
 
     @property
     def edition_string(self) -> Optional[str]:
-        """Returns a string representation of the book's edition, if it has one."""
+        """Return a string representation of the book's edition, if it has one."""
         if self.edition_number:
             edition_string = f'{ordinal(self.edition_number)} edition'
             if self.edition_year:
@@ -101,7 +101,7 @@ class Book(TextualSource):
         return edition_string
 
     def get_original_publication_date(self):
-        """Returns the book's original publication date."""
+        """Return the book's original publication date."""
         return (
             self.original_edition.date
             if self.original_edition
@@ -110,7 +110,7 @@ class Book(TextualSource):
 
     @property
     def has_edition_year(self) -> bool:
-        """Returns True if an edition year can be determined for the book, else False."""
+        """Return True if an edition year can be determined for the book, else False."""
         return bool(
             self.edition_year
             or (self.get_original_publication_date() and not self.edition_number)
@@ -165,7 +165,7 @@ class Book(TextualSource):
 
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """Returns the book's HTML representation."""
+        """Return the book's HTML representation."""
         html = self.__html__
         return format_html(html)
 
@@ -178,7 +178,7 @@ class SectionSource(TextualSource):
 
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """Returns the section/chapter's HTML representation."""
+        """Return the section/chapter's HTML representation."""
         return format_html(self.__html__)
 
     html.admin_order_field = 'full_string'
@@ -217,7 +217,7 @@ class SectionSource(TextualSource):
 
     @property
     def string(self) -> str:
-        """Returns the book's string representation."""
+        """Return the book's string representation."""
         return soupify(self.html).get_text()  # type: ignore
 
 

@@ -9,7 +9,7 @@ NEW_TAB = '_blank'
 
 def soupify(html_string: str) -> BeautifulSoup:
     """
-    Wrapper for the BeautifulSoup constructor.
+    Wrap for the BeautifulSoup constructor.
 
     Specifies `lxml` as the parser.
     """
@@ -17,7 +17,7 @@ def soupify(html_string: str) -> BeautifulSoup:
 
 
 def compose_link(text, href, klass: Optional[str] = None, **html_attributes) -> str:
-    """Builds a link from the supplied text, href, klass, and html_attributes."""
+    """Build a link from the supplied text, href, klass, and html_attributes."""
     attributes = ' '.join(
         [
             f'{attr_name}="{attr_value}"'

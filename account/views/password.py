@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 
 class PasswordChangeView(auth_views.PasswordChangeView):
     """
-    Allows a user to change their password.
+    Allow a user to change their password.
 
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordChangeView
     """
@@ -25,7 +25,7 @@ class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
 
 class PasswordResetView(auth_views.PasswordResetView):
     """
-    Allows a user to reset their password by generating a one-time-use link.
+    Allow a user to reset their password by generating a one-time-use link.
     Sends the link to the user’s registered email address.
 
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetView
@@ -49,7 +49,7 @@ class PasswordResetDoneView(auth_views.PasswordResetDoneView):
 
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     """
-    Presents a form for entering a new password.
+    Present a form for entering a new password.
 
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetConfirmView
     """
@@ -59,7 +59,7 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
 
 class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     """
-    Presents a view which informs the user that the password has been successfully changed.
+    Present a view which informs the user that the password has been successfully changed.
 
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetCompleteView
     """

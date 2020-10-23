@@ -23,7 +23,7 @@ class SourceManager(TypedModelManager, SearchableModelManager):
         suppress_unverified: bool = True,
         db: str = 'default',
     ) -> SearchableModelQuerySet:
-        """Returns search results from sources."""
+        """Return search results from sources."""
         qs = (
             super()
             .search(db=db, suppress_unverified=suppress_unverified)

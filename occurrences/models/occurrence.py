@@ -79,6 +79,22 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         """TODO: write docstring."""
         return self.summary.text or '...'
 
+    def save(self, *args, **kwargs):
+        """TODO: add docstring."""
+        self.full_clean()
+        super().save(*args, **kwargs)
+        if not self.images.exists():
+            image = None
+            if self.involved_entities.exists():
+                for entity in self.involved_entities.all():
+                    if entity.images.exists():
+                        if self.date:
+                            image = entity.images.get_closest_to_datetime(self.date)
+                        else:
+                            image = entity.image
+            if image:
+                OccurrenceImage.objects.create(occurrence=self, image=image)
+
     @property
     def truncated_description(self) -> Optional[SafeString]:
         """TODO: write docstring."""
@@ -128,19 +144,3 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
                 if not image.is_positioned
             ],
         }
-
-    def save(self, *args, **kwargs):
-        """TODO: add docstring."""
-        self.full_clean()
-        super().save(*args, **kwargs)
-        if not self.images.exists():
-            image = None
-            if self.involved_entities.exists():
-                for entity in self.involved_entities.all():
-                    if entity.images.exists():
-                        if self.date:
-                            image = entity.images.get_closest_to_datetime(self.date)
-                        else:
-                            image = entity.image
-            if image:
-                OccurrenceImage.objects.create(occurrence=self, image=image)

@@ -45,39 +45,11 @@ class SourceFile(Model):
         ordering = ['name']
 
     def __str__(self) -> str:
-        """Returns the source file's string representation."""
+        """Return the source file's string representation."""
         return f'{self.file_name} (page offset: {self.page_offset})'
 
-    @property
-    def default_page_number(self):
-        """Page number to be opened by default for the source file."""
-        return self.first_page_number + self.page_offset
-
-    @property
-    def file_name(self) -> Optional[str]:
-        """Returns the filename of the actual file object."""
-        if self.file:
-            return self.file.name.replace('sources/', '')
-        return None
-
-    @property
-    def link(self) -> Optional[SafeString]:
-        """Returns a link for viewing the source file."""
-        return format_html(
-            f'<a href="{self.url}" class="display-source" target="_blank">'
-            f'<i class="fa fa-search"></i></a>'
-        )
-
-    @property
-    def url(self) -> str:
-        """Returns the URL of the source file."""
-        url = self.file.url
-        if url.endswith('epub'):
-            url = f'/sources/epub{url}'
-        return url
-
     def save(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Save the source file to the database."""
         if self.name and self.name != self.file_name:
             full_path = join(settings.MEDIA_ROOT, 'sources')
             files = [
@@ -97,8 +69,36 @@ class SourceFile(Model):
             self.name = self.file_name
             super().save()
 
+    @property
+    def default_page_number(self):
+        """Page number to be opened by default for the source file."""
+        return self.first_page_number + self.page_offset
+
+    @property
+    def file_name(self) -> Optional[str]:
+        """Return the filename of the actual file object."""
+        if self.file:
+            return self.file.name.replace('sources/', '')
+        return None
+
     def full_clean(self, exclude=None, validate_unique=True):
         """TODO: add docstring."""
         super().full_clean(exclude=exclude, validate_unique=validate_unique)
         if not self.file:
             raise ValidationError('No file.')
+
+    @property
+    def link(self) -> Optional[SafeString]:
+        """Return a link for viewing the source file."""
+        return format_html(
+            f'<a href="{self.url}" class="display-source" target="_blank">'
+            f'<i class="fa fa-search"></i></a>'
+        )
+
+    @property
+    def url(self) -> str:
+        """Return the URL of the source file."""
+        url = self.file.url
+        if url.endswith('epub'):
+            url = f'/sources/epub{url}'
+        return url

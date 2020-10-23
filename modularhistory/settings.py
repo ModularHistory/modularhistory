@@ -144,7 +144,7 @@ INSTALLED_APPS = [
     'django.forms',
     # 'django.contrib.gis',  # https://docs.djangoproject.com/en/3.0/ref/contrib/gis/
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
-    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
+    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
@@ -170,7 +170,7 @@ INSTALLED_APPS = [
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'rest_framework',  # https://github.com/encode/django-rest-framework
     'sass_processor',  # https://github.com/jrief/django-sass-processor
-    'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
+    'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'account.apps.AccountConfig',

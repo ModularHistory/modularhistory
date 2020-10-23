@@ -58,7 +58,7 @@ class AdminMenu(Menu):
         return menu_items
 
     def __init__(self, **kwargs):
-        """Constructs the admin menu."""
+        """Construct the admin menu."""
         super().__init__(**kwargs)
         self.children += [
             items.MenuItem(_('Dashboard'), reverse('admin:index')),

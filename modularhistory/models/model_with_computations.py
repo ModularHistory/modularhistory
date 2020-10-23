@@ -25,7 +25,7 @@ class ModelWithComputations(Model):
 
     def save(self, *args, **kwargs) -> None:
         """
-        Saves the model instance to the database.
+        Save the model instance to the database.
 
         By default, this method wipes the instance's computations. This way,
         when the instance is updated and saved from the admin (or via a script),

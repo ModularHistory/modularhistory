@@ -23,7 +23,7 @@ OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+\d+)\s+(.+)')
 
 
 def flake8(**kwargs):
-    """Runs flake8 linter."""
+    """Run flake8 linter."""
     print()
     proc = subprocess.Popen('flake8', stdout=subprocess.PIPE, shell=False)
     raw_output, _err = proc.communicate()
@@ -32,7 +32,7 @@ def flake8(**kwargs):
 
 
 def process_flake8_output(output: str):
-    """Processes/filters and displays output from flake8."""
+    """Process/filters and displays output from flake8."""
     options, per_module_options = _get_flake8_options()
     output_lines = output.rstrip().split('\n')
     for line in output_lines:
@@ -52,7 +52,7 @@ def _process_flake8_message(location, code, message, options):
         filename, line_number = location.split(':')
     except ValueError:
         filename, line_number = location.split(':')[:2]
-    if not options.error_is_ignored_in_file(filename, code):
+    if not options.error_is_ignored(filename, message, code):
         explanation_url = get_violation_explanation_url(code)
         print(
             f'{location}: {linting.colored(message, color="red")}  [{code}: {explanation_url}]'
@@ -60,7 +60,7 @@ def _process_flake8_message(location, code, message, options):
 
 
 def _get_flake8_options() -> Tuple[LinterOptions, PerModuleOptions]:
-    """Returns an Options object to be used by mypy."""
+    """Return an Options object to be used by mypy."""
     options = LinterOptions()
     module_options: List[Tuple[str, LinterOptions]] = []
     ConfigFileFlake8OptionsParser().apply(options, module_options)  # type: ignore
@@ -73,7 +73,7 @@ class ConfigFileFlake8OptionsParser(BaseConfigFileOptionsParser):
     report_unrecognized_options = False
 
     def __init__(self, script_name: str = 'flake8'):
-        """Constructs the flake8 options parser."""
+        """Construct the flake8 options parser."""
         super().__init__(script_name=script_name)
 
 

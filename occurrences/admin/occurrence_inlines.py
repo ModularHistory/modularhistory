@@ -3,7 +3,7 @@ from occurrences import models
 
 
 class LocationsInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for an occurrence's locations."""
 
     model = models.Occurrence.locations.through
     extra = 1
@@ -11,7 +11,7 @@ class LocationsInline(TabularInline):
 
 
 class ImagesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for an occurrence's images."""
 
     model = models.Occurrence.images.through
     extra = 0
@@ -20,7 +20,7 @@ class ImagesInline(TabularInline):
 
 
 class InvolvedEntitiesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for an occurrence's involved entities."""
 
     model = models.Occurrence.involved_entities.through
     extra = 1
@@ -28,7 +28,7 @@ class InvolvedEntitiesInline(TabularInline):
 
 
 class OccurrencesInline(TabularInline):
-    """TODO: add docstring."""
+    """Inline admin for an occurrence chain's occurrences."""  # right?
 
     model = models.Occurrence.chains.through
     autocomplete_fields = ['occurrence']

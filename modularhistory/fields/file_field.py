@@ -14,7 +14,7 @@ from modularhistory.structures.source_file import TextualSourceFile
 
 
 def dedupe_files(path: str, new_file_name: Optional[str] = None):
-    """Removes duplicate files."""
+    """Removduplicate files."""
     # TODO: implement file dedupe for cloud storage
     if not settings.IS_GCP:
         full_path = join(settings.MEDIA_ROOT, path)

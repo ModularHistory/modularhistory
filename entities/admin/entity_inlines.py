@@ -14,7 +14,7 @@ class QuotesInline(TabularInline):
     autocomplete_fields = ['quote']
 
     def get_fields(self, *args, **kwargs):
-        """Returns reordered fields to be displayed in the admin."""
+        """Return reordered fields to be displayed in the admin."""
         fields = super().get_fields(*args, **kwargs)
         for field in ('date_is_circa', 'date'):
             if field in fields:

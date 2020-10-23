@@ -41,13 +41,15 @@ def get_user_email(backend: Backend, response: Dict, **kwargs):
                 ).json()
                 try:
                     for email_item in response:
-                        if email_item.get('primary', False) and email_item.get(
-                            'verified', False
-                        ):
+                        email_item_is_usable = email_item.get(
+                            'primary', False
+                        ) and email_item.get('verified', False)
+                        if email_item_is_usable:
                             email = email_item.get('email', None)
                 except Exception as error:
                     print(
-                        f'Error processing response from {request_url}: {type(error)}: {error}'
+                        f'Error processing response from {request_url}: '
+                        f'{type(error)}: {error}'
                     )
             if email:
                 details['email'] = email
@@ -69,10 +71,13 @@ def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwarg
 def _get_avatar_url_from_backend(
     backend: Backend, response: Dict, user: User, **kwargs
 ) -> Optional[str]:
-    """Attempts to retrieve a URL for the user's current avatar in a social auth backend."""
+    """Attempt to retrieve a URL for the user's avatar in a social auth backend."""
     url = None
     if backend.name == 'facebook' or isinstance(backend, FacebookOAuth2):
-        url = f'http://graph.facebook.com/{response["id"]}/picture?type=large&breaking_change=profile_picture'
+        url = (
+            f'http://graph.facebook.com/{response["id"]}/picture'
+            '?type=large&breaking_change=profile_picture'
+        )
     elif backend.name == 'twitter' or isinstance(backend, TwitterOAuth):
         url = response.get('profile_image_url', '').replace('_normal', '')
     elif backend.name.startswith('google') or isinstance(backend, GoogleOAuth2):

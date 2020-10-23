@@ -45,7 +45,7 @@ def colored(text, color=None, attrs=None):
 
 
 def match(regex_list: List[Pattern], string: str) -> bool:
-    """TODO: add docstring."""
+    """Return whether the string matches any of the patterns in the regex list."""
     for regex in regex_list:
         if regex.search(string):
             return True

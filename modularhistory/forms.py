@@ -14,7 +14,7 @@ class SimpleArrayField(BaseSimpleArrayField):
     """Array field."""
 
     def widget_attrs(self, widget):
-        """Returns the attributes to apply to the field widget."""
+        """Return the attributes to apply to the field widget."""
         attrs = super().widget_attrs(widget)
         class_attr = 'vTextField'
         additional_classes = attrs.get('class')

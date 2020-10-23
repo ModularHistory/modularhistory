@@ -7,7 +7,7 @@ import invoke
 
 def fix_annotations():
     """
-    Fixes Pyinvoke to accept annotations.
+    Fix Pyinvoke to accept annotations.
 
     Based on: https://github.com/pyinvoke/invoke/pull/606
     """
