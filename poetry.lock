@@ -3306,7 +3306,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "c099d0d1389f88e4c2fab7871122ceda71d229f81e12eedec1c383d73406fc4e"
+content-hash = "61c986b15b9eb6462d25f4b292e00f91282c69b513d0f1d86c041dd853b693a8"
 
 [metadata.files]
 aenum = [

@@ -125,7 +125,7 @@ hypothesis = {extras = ["django"], version = "^5.37"}
 nitpick = "^0.23.0"
 nox = "^2020.8.22"
 pytest = "^6.1"
-pytest-django = ">4.0"
+pytest-django = "^4"
 pytest-randomly = "^3.4"
 pytest-xdist = "^2.1.0"
 safety = "^1.9"
