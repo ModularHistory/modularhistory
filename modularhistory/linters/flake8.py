@@ -92,9 +92,9 @@ VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
     'DAR': 'https://github.com/terrencepreilly/darglint#error-codes',  # Darglint
     'DJ': 'https://github.com/rocioar/flake8-django',  # Flake8-Django
     'E800': 'https://github.com/sobolevn/flake8-eradicate',  # Eradicate
-    'E': 'http://pycodestyle.pycqa.org/en/latest/intro.html#error-codes',  # Pycodestyle
-    'EXE': 'https://github.com/xuhdev/flake8-executable',  # flake8-executable
-    'W': 'http://pycodestyle.pycqa.org/en/latest/intro.html#error-codes',  # Pycodestyle
+    'E': 'http://pycodestyle.pycqa.org/en/latest/intro.html#error-codes',
+    'EXE': 'https://github.com/xuhdev/flake8-executable',
+    'W': 'http://pycodestyle.pycqa.org/en/latest/intro.html#error-codes',
     'F': 'http://flake8.pycqa.org/en/latest/user/error-codes.html',  # Flake8
     'H': 'https://github.com/mschwager/cohesion',  # Cohesion
     'I': 'https://github.com/gforcada/flake8-isort',  # Isort
@@ -103,12 +103,12 @@ VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
         '8': 'https://github.com/PyCQA/pep8-naming',  # Pep8 naming
     },
     'P': {
-        '1,2,3': 'https://github.com/xZise/flake8-string-format#error-codes',  # Flake8 string format
+        '1,2,3': 'https://github.com/xZise/flake8-string-format#error-codes',
     },
     'Q': 'https://github.com/zheller/flake8-quotes',  # Quotes
     'RST': 'https://github.com/peterjc/flake8-rst-docstrings',  # RST docstrings
     'S': 'https://github.com/tylerwince/flake8-bandit',  # Bandit
-    'T100': 'https://github.com/JBKahn/flake8-debugger/blob/master/flake8_debugger.py',  # Debugger
+    'T100': 'https://github.com/JBKahn/flake8-debugger/blob/master/flake8_debugger.py',
     'WPS': {
         '0': f'{VIOLATION_DEFAULT_URL}/system.html#system',
         '1': f'{VIOLATION_DEFAULT_URL}/naming.html#naming',

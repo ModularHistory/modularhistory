@@ -1,9 +1,10 @@
 """Base classes for models that appear in ModularHistory search results."""
 
+from functools import wraps
+from typing import Callable, Optional
+
 from modularhistory.fields import JSONField
 from modularhistory.models.model import Model
-from typing import Callable, Optional
-from functools import wraps
 
 
 class ModelWithComputations(Model):

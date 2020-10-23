@@ -74,9 +74,9 @@ class SettingsView(LoginRequiredMixin, View):
                     backend[HANDLE_KEY] = get_user_handle_from_auth(auth)
                 except UserSocialAuth.DoesNotExist:
                     pass
-                except Exception as error:
+                except Exception as err:
                     print(
-                        f'Error processing social auth integration: {type(error)}: {error}'
+                        f'Error processing social auth integration: {type(err)}: {err}'
                     )
                 backend['domain'] = f'{backend_name.lower()}.com'
 

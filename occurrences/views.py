@@ -18,7 +18,7 @@ class ListView(generic.list.ListView):
 
     def get_queryset(self) -> QuerySet:
         """Return the queryset."""
-        return Occurrence.objects.filter(verified=True)
+        return Occurrence.objects.filter(verified=True).prefetch_related('images')
 
     def get_context_data(self, *args, **kwargs) -> Dict:
         """TODO: write docstring."""

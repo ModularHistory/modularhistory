@@ -11,6 +11,7 @@ def fix_annotations():
 
     Based on: https://github.com/pyinvoke/invoke/pull/606
     """
+
     def patched_inspect_getargspec(func):
         spec = getfullargspec(func)
         return ArgSpec(*spec[:4])

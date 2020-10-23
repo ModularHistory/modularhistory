@@ -5,5 +5,5 @@ from .simple_filters import (
     HasFilePageOffsetFilter,
     HasPageNumber,
     ImpreciseDateFilter,
-    TypeFilter
+    TypeFilter,
 )

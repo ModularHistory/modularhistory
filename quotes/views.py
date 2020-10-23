@@ -10,7 +10,7 @@ from search.forms import SearchForm
 
 
 class ListView(generic.list.ListView):
-    """TODO: add docstring."""
+    """View that lists all quotes.."""
 
     model = Quote
     template_name = 'quotes/index.html'
@@ -18,11 +18,15 @@ class ListView(generic.list.ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        """TODO: add docstring."""
-        return Quote.objects.filter(verified=True)
+        """Return the queryset of quotes."""
+        return Quote.objects.filter(verified=True).prefetch_related(
+            'attributees',
+            # 'attributees__categories',
+            'images'
+        )
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """TODO: add docstring."""
+        """Return the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
@@ -32,19 +36,19 @@ class ListView(generic.list.ListView):
 
 
 class BaseDetailView(generic.detail.DetailView):
-    """TODO: add docstring."""
+    """Abstract view showing details of a specific quote."""
 
     model = Quote
     context_object_name = 'quote'
 
 
 class DetailView(BaseDetailView):
-    """TODO: add docstring."""
+    """View showing details of a specific quote."""
 
     template_name = 'quotes/detail.html'
 
 
 class DetailPartView(BaseDetailView):
-    """TODO: add docstring."""
+    """Partial view showing details of a specific quote."""
 
     template_name = 'quotes/_detail.html'

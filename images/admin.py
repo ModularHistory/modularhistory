@@ -44,14 +44,15 @@ class ImageAdmin(ImageCroppingMixin, ModelAdmin):
     def get_fields(self, request, model_instance=None):
         """Returns reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
-        for field_name in (
+        ordered_field_names = (
             'date_is_circa',
             'date',
             'type',
             'image',
             'hidden',
             'verified',
-        ):
+        )
+        for field_name in ordered_field_names:
             if field_name in fields:
                 fields.remove(field_name)
                 fields.insert(0, field_name)

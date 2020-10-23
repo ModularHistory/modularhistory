@@ -21,6 +21,10 @@ class Highlight(Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    def __str__(self):
+        """Return the comment's string representation."""
+        return f'{self.agent}, {self.updated_at}: {self.start}–{self.end}'
+
 
 class Comment(Model):
     """A comment regarding some content."""
@@ -33,3 +37,7 @@ class Comment(Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        """Return the comment's string representation."""
+        return f'{self.author}, {self.created_at}: {self.text}'

@@ -45,6 +45,7 @@ NO = 'No'
 EMPTY_STRING = ''
 SPACE = ' '
 COLON = ':'
+COMMA = ','
 PERIOD = '.'
 
 PDF_URL_PAGE_KEY = 'page'

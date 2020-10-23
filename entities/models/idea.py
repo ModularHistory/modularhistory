@@ -17,14 +17,22 @@ class Idea(Model):
     promoters = ManyToManyField('entities.Entity', related_name='ideas', blank=True)
     # related_ideas = ManyToManyField('self', )
 
+    def __str__(self):
+        """Return the idea's string representation."""
+        return self.name
+
 
 class EntityIdea(Model):
-    """TODO: add docstring."""
+    """An association or attribution of an idea to an entity."""
 
     entity = ForeignKey(
         'entities.Entity', on_delete=CASCADE, related_name='entity_ideas'
     )
-    idea = ForeignKey(Idea, on_delete=CASCADE, related_name='entity_ideas')
+    idea = ForeignKey('entities.Idea', on_delete=CASCADE, related_name='entity_ideas')
 
     class Meta:
         unique_together = ['entity', 'idea']
+
+    def __str__(self):
+        """Return the string representation of the entity–idea association."""
+        return f'{self.entity} : {self.idea}'

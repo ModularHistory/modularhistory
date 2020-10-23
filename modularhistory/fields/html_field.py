@@ -22,7 +22,10 @@ OBJECT_REGEX = re.compile(r'<< ?(\w+):(?!>>)[\s\S]+? ?>>')
 
 
 def process(_, html: str, processable_content_types: Iterable[str]) -> str:
-    """Processes an HTML field value to replace model instance placeholders with HTML representations."""
+    """
+    Return the processed version of an HTML field value.
+    This involves replacing model instance placeholders with their HTML.
+    """
     for match in OBJECT_REGEX.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(1)
@@ -166,32 +169,32 @@ class HTMLField(MceHTMLField):
                 print(f'Unable to process HTML: {error}\n\n{html_value}', file=stderr)
         return HTML(html_value, processed_value=processed_html)
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
+    # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
     def to_python(self, html_value: Optional[Union[HTML, str]]) -> Optional[HTML]:
-        """TODO: add docstring."""
+        """Convert the value into the correct Python object."""
         if isinstance(html_value, HTML):
             return html_value
         elif not html_value:
             return None
         return HTML(html_value)
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-python-objects-to-query-values
+    # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_prep_value
     def get_prep_value(self, html_value: Optional[Union[HTML, str]]) -> Optional[str]:
-        """TODO: add docstring."""
+        """Return data in a format prepared for use as a parameter in a db query."""
         if not html_value:
             return None
         elif isinstance(html_value, HTML):
             return html_value.raw_value
         return html_value
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-query-values-to-database-values
+    # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_db_prep_value
     def get_db_prep_value(self, html_value, connection, prepared=False):
-        """TODO: add docstring."""
+        """Convert the value to a backend-specific value."""
         return self.get_prep_value(html_value)
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#id2
+    # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.value_to_string
     def value_to_string(self, html_object: Any) -> str:
-        """TODO: add docstring."""
+        """Convert the object to a string."""
         html_value = self.value_from_object(html_object)
         return self.get_prep_value(html_value) or EMPTY_STRING
 
