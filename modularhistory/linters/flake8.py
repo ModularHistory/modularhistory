@@ -5,7 +5,7 @@ https://docs.djangoproject.com/en/3.1/topics/checks/
 """
 
 import re
-import subprocess
+import subprocess  # noqa: S404
 from typing import Dict, List, Optional, Tuple, Union
 
 from modularhistory.linters.config import (
@@ -24,11 +24,9 @@ OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+\d+)\s+(.+)')
 
 def flake8(**kwargs):
     """Run flake8 linter."""
-    print()
-    proc = subprocess.Popen('flake8', stdout=subprocess.PIPE, shell=False)
-    raw_output, _err = proc.communicate()
-    if raw_output:
-        process_flake8_output(raw_output.decode())
+    output = subprocess.run(['flake8'], capture_output=True).stdout  # noqa: S603, S607
+    if output:
+        process_flake8_output(output.decode())
 
 
 def process_flake8_output(output: str):

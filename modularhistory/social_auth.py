@@ -1,3 +1,4 @@
+import logging
 from tempfile import NamedTemporaryFile
 from typing import Dict, Optional, Union
 from urllib.request import urlopen
@@ -47,7 +48,7 @@ def get_user_email(backend: Backend, response: Dict, **kwargs):
                         if email_item_is_usable:
                             email = email_item.get('email', None)
                 except Exception as error:
-                    print(
+                    logging.error(
                         f'Error processing response from {request_url}: '
                         f'{type(error)}: {error}'
                     )
@@ -64,7 +65,7 @@ def get_user_avatar(backend: Backend, response: Dict, user: User, *args, **kwarg
         if url:
             _update_user_avatar(user, url)
     except Exception as error:
-        print(f'>>> {type(error)} in get_user_avatar: {error}')
+        logging.error(f'>>> {type(error)} in get_user_avatar: {error}')
         raise
 
 
@@ -93,7 +94,7 @@ def _get_avatar_url_from_backend(
     elif response.get('picture'):
         url = response['picture']
     else:
-        print(
+        logging.error(
             f'Unable to determine profile image URL for unhandled auth backend: {name}'
         )
     return url
@@ -102,10 +103,10 @@ def _get_avatar_url_from_backend(
 def _update_user_avatar(user: User, url: str):
     """Update the user's avatar with the image located at the given URL."""
     if user.avatar:
-        print(f'{user} already has an avatar: {user.avatar}')
+        logging.info(f'{user} already has an avatar: {user.avatar}')
         # TODO: check if image has been updated
     else:
-        print(f'{user} has no profile image.')
+        logging.info(f'{user} has no profile image.')
         img_temp = NamedTemporaryFile(delete=True)
         # TODO: Use requests instead of urllib?
         img_temp.write(urlopen(url).read())  # noqa: S310

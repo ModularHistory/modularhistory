@@ -38,32 +38,6 @@ class HasFileFilter(BooleanListFilter):
             return queryset.filter(Q(**file_is_null) | Q(**file_is_empty))
 
 
-class HasPageNumber(BooleanListFilter):
-    """Filters sources by whether they have a page number."""
-
-    title = 'has page number'
-    parameter_name = 'has_page_number'
-
-    def queryset(self, request, queryset):
-        """Return the queryset filtered by whether page numbers are specified."""
-        filters = {f'{Source.FieldNames.file}__isnull': False}
-        exclusions = {f'{Source.FieldNames.file}__file': EMPTY_STRING}
-        queryset = queryset.filter(**filters).exclude(**exclusions)
-        ids = []
-        for source in queryset:
-            if hasattr(source, 'page_number'):
-                has_page_number = bool(source.page_number)
-                if self.value() == YES:
-                    include_object = has_page_number
-                elif self.value() == NO:
-                    include_object = not has_page_number
-                else:
-                    include_object = True
-                if include_object:
-                    ids.append(source.id)
-        return queryset.filter(id__in=ids)
-
-
 class HasFilePageOffsetFilter(BooleanListFilter):
     """Filters sources by whether they have a source file with a page offset."""
 
@@ -76,18 +50,12 @@ class HasFilePageOffsetFilter(BooleanListFilter):
             db_file__file=EMPTY_STRING
         )
         ids = []
-        if self.value() == YES:
-            for source in sources:
-                source_file = source.source_file
-                if source_file.page_offset:
-                    ids.append(source.id)
-            return sources.filter(id__in=ids)
-        elif self.value() == NO:
-            for source in sources:
-                source_file = source.source_file
-                if not source_file.page_offset:
-                    ids.append(source.id)
-            return sources.filter(id__in=ids)
+        include_if_has_page_offset = self.value() == YES
+        for source in sources:
+            source_file = source.source_file
+            if bool(source_file.page_offset) == include_if_has_page_offset:
+                ids.append(source.id)
+        return sources.filter(id__in=ids)
 
 
 class ImpreciseDateFilter(BooleanListFilter):

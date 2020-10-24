@@ -1,5 +1,6 @@
 """ModularHistory's SourceFileField class."""
 
+import logging
 import os
 from functools import partial
 from os.path import isfile, join
@@ -14,7 +15,7 @@ from modularhistory.structures.source_file import TextualSourceFile
 
 
 def dedupe_files(path: str, new_file_name: Optional[str] = None):
-    """Removduplicate files."""
+    """Remove duplicate files."""
     # TODO: implement file dedupe for cloud storage
     if not settings.IS_GCP:
         full_path = join(settings.MEDIA_ROOT, path)
@@ -27,22 +28,23 @@ def dedupe_files(path: str, new_file_name: Optional[str] = None):
                 if isfile(join(full_path, file_name)) and extension in file_name:
                     file_names.append(file_name.replace(extension, ''))
             to_remove = []
-            for file_name in file_names:
-                if file_name == new_file_name:
-                    full_file_name = f'{file_name}{extension}'
+            for extant_file_name in file_names:
+                if extant_file_name == new_file_name:
+                    full_file_name = f'{extant_file_name}{extension}'
                     file_path = join(path, full_file_name)
                     to_remove.append(file_path)
             for file_path in to_remove:
-                print(f'Removing old version of {file_path} ...')
+                logging.info(f'Removing old version of {file_path} ...')
                 os.remove(join(settings.MEDIA_ROOT, file_path))
         else:
             raise NotImplementedError
 
 
 def _generate_upload_path(instance: Model, filename: str, path: str) -> str:
-    """TODO: add docstring."""
     if settings.DEBUG:
-        print(f'Generating upload path for {filename} (associated with {instance})...')
+        logging.info(
+            f'Generating upload path for {filename} (associated with {instance})...'
+        )
     filename = filename.replace(' ', '_')
     dedupe_files(path, new_file_name=filename)
     return join(path, filename)

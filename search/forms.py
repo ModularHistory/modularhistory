@@ -33,8 +33,6 @@ class SearchForm(forms.Form):
         excluded_content_types: List[int] = None,
         entities: Optional[QuerySet] = None,
         topics: Optional[QuerySet] = None,
-        # places: Optional[QuerySet] = None,
-        db: str = 'default',
         collapse_refinements: bool = False,
         *args,
         **kwargs,
@@ -87,12 +85,12 @@ class SearchForm(forms.Form):
         )
 
         self.fields['entities'] = forms.ModelMultipleChoiceField(
-            queryset=(entities or Entity.objects.using(db).all()),
+            queryset=(entities or Entity.objects.all()),
             widget=Select2MultipleWidget,
             required=False,
         )
         self.fields['topics'] = forms.ModelMultipleChoiceField(
-            queryset=(topics or Topic.objects.using(db).all()),
+            queryset=(topics or Topic.objects.all()),
             widget=Select2MultipleWidget,
             required=False,
         )

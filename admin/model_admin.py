@@ -79,7 +79,7 @@ class ModelAdmin(NestedModelAdmin):
         readonly_fields = super().get_readonly_fields(request, model_instance)
         if model_instance:
             for additional_readonly_field in default_readonly_fields:
-                if hasattr(model_instance, additional_readonly_field):
+                if hasattr(model_instance, additional_readonly_field):  # noqa: WPS421
                     readonly_fields.append(additional_readonly_field)
         return list(set(readonly_fields))
 

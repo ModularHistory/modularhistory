@@ -1,8 +1,7 @@
+import logging
 import re
-from sys import stderr
 from typing import Any, Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 
-from django.contrib.contenttypes.models import ContentType
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
@@ -40,10 +39,7 @@ def process(_, html: str, processable_content_types: Iterable[str]) -> str:
             )
             html = html.replace(placeholder, object_html)
         else:
-            print(
-                f'Unable to retrieve model class string for `{object_type}`',
-                file=stderr,
-            )
+            logging.error(f'Unable to retrieve model class string for `{object_type}`')
     return html
 
 
@@ -167,9 +163,9 @@ class HTMLField(MceHTMLField):
                     html_value, self.processable_content_types
                 )
             except RecursionError as error:
-                print(f'Unable to process HTML: {error}', file=stderr)
+                logging.error(f'Unable to process HTML: {error}')
             except Exception as error:
-                print(f'Unable to process HTML: {error}\n\n{html_value}', file=stderr)
+                logging.error(f'Unable to process HTML: {error}\n\n{html_value}')
         return HTML(html_value, processed_value=processed_html)
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
@@ -202,17 +198,6 @@ class HTMLField(MceHTMLField):
         return self.get_prep_value(html_value) or EMPTY_STRING
 
 
-def _get_model_class(ct: ContentType) -> Type['Model']:
-    model_class = ct.model_class()
-    if model_class is None:
-        raise ValueError(f'Could not retrieve model class for {ct}.')
-    from modularhistory.models import Model
-
-    if not issubclass(model_class, Model):
-        raise ValueError(f'{model_class} is not subclassed from custom model class.')
-    return model_class
-
-
 # def get_image_html(image: Union['Image', Match]):
 #     """TODO: add docstring."""
 #     if hasattr(image, 'group'):
@@ -222,7 +207,7 @@ def _get_model_class(ct: ContentType) -> Type['Model']:
 #         try:
 #             image = Image.objects.get(pk=key)
 #         except ValueError as e:  # legacy key
-#             print(f'{e}')
+#             logging.error(f'{e}')
 #             image = Image.objects.get(key=key)
 #     image_html = render_to_string(
 #         'images/_card.html',

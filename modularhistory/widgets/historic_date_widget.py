@@ -40,7 +40,6 @@ def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
     year = int(year)
     if year > HistoricDateTime.bce_threshold and year_system != YBP:
         # Safe to assume this should be YBP
-        print(f'Using YBP year system instead of {year_system} ...')
         year_system = YBP
     microsecond, second = 0, 0
     if year_system not in {CE, BCE, YBP}:
@@ -213,51 +212,50 @@ class HistoricDateWidget(MultiWidget):
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:
         """Compress the input value into a format that can be saved to the db."""
-        decompressed_values = list(super().value_from_datadict(datadict, files, name))
-        full_n_values = 6
-        min_n_values = 3
+        full_n_values, min_n_values = 6, 3
+        decompressed_values = [
+            _ or 0 for _ in super().value_from_datadict(datadict, files, name)
+        ]
         n_values = len(decompressed_values)
         if n_values < min_n_values:
             raise ValueError(f'Wrong number of values: {len(decompressed_values)}')
         elif n_values < full_n_values:
-            diff = full_n_values - n_values
-            decompressed_values.extend(None for _ in range(diff))
+            decompressed_values.extend(None for _ in range(full_n_values - n_values))
         year, year_system, season, month, day, time = decompressed_values
         if not year:
             return None
-
-        # Figure out year
-        year, second, microsecond = get_year(year, year_system)
-
-        # Replace None with 0 where necessary
-        month, day = month or 0, day or 0
-
-        # Figure out date precision
-        hour, minute = 0, 0
-        if not season and not month:
-            hour, minute, second = 1, 1, second or 1
-        elif season and not month:
-            month = get_month_from_season(season)
-            hour, minute, second = 0, 1, second or 1
-        elif month and not day:
-            hour, minute, second = 0, 0, second or 1
-        month, day = (month or '1'), (day or '1')
-
-        # Build datetime obj
-        year, month, day, hour, minute, second, microsecond = (
-            int(arg) for arg in (year, month, day, hour, minute, second, microsecond)
-        )
-        dt = HistoricDateTime(
-            year, month, day, hour, minute, second, microsecond=microsecond
-        )
-
+        dt = _datetime_from_datadict_values(year, year_system, season, month, day)
         # Get date-parsable string for db
         dt_string = dt.strftime('%Y-%m-%d %H:%M:%S.%f')
         # Ensure the year is 4 digits; add leading zeros if necessary
         incomplete_year_pattern = re.compile(r'^(\d{1,3})(-.+)')
         if incomplete_year_pattern.match(dt_string):
-            match = incomplete_year_pattern.match(dt_string)
-            year_string = match.group(1)
+            year_string = incomplete_year_pattern.match(dt_string).group(1)
             year_string = f'{year_string:0>4}'
             dt_string = incomplete_year_pattern.sub(rf'{year_string}\g<2>', dt_string)
         return dt_string
+
+
+def _datetime_from_datadict_values(year, year_system, season, month, day):
+    # Figure out year
+    year, second, microsecond = get_year(year, year_system)
+    # Figure out date precision
+    hour, minute = 0, 0
+    if not season and not month:
+        hour, minute, second = 1, 1, second or 1
+    elif season and not month:
+        month = get_month_from_season(season)
+        hour, minute, second = 0, 1, second or 1
+    elif month and not day:
+        hour, minute, second = 0, 0, second or 1
+    month, day = (month or 1), (day or 1)
+    # Return datetime object
+    return HistoricDateTime(
+        int(year),
+        int(month),
+        int(day),
+        int(hour),
+        int(minute),
+        int(second),
+        microsecond=int(microsecond),
+    )

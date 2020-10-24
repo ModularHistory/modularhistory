@@ -1,7 +1,8 @@
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import views as auth_views
+import logging
+
+from django.contrib.auth import authenticate, login, views as auth_views
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.views.generic import View
 
 from account.forms import LoginForm, RegistrationForm
@@ -39,7 +40,7 @@ class RegisterView(View):
                 login(request, user)
                 return redirect('/')
             else:
-                print(f'Unexpected authentication result: {type(user)}: {user}')
+                logging.error(f'Unexpected authentication result: {type(user)}: {user}')
         return render(request, 'account/register.html', {'form': form})
 
 

@@ -1,4 +1,3 @@
-# from sys import stderr
 from django.contrib.postgres.fields import ArrayField as PostgresArrayField
 from django.forms import Field
 

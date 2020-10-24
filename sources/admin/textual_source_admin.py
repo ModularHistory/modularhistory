@@ -28,15 +28,15 @@ class TextualSourceAdmin(SourceAdmin):
             'citations',
         )
         index: int = 0
-        for field_name in top_fields:
-            if field_name in fields:
-                fields.remove(field_name)
-                fields.insert(index, field_name)
+        for top_field in top_fields:
+            if top_field in fields:
+                fields.remove(top_field)
+                fields.insert(index, top_field)
                 index += 1
-        for field_name in bottom_fields:
-            if field_name in fields:
-                fields.remove(field_name)
-                fields.append(field_name)
+        for bottom_field in bottom_fields:
+            if bottom_field in fields:
+                fields.remove(bottom_field)
+                fields.append(bottom_field)
         return fields
 
 

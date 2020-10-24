@@ -80,49 +80,42 @@ def commit(context):
     """Commit and (optionally) push code changes."""
     # Check that the branch is correct
     context.run('git branch')
-    print()
-    print('Current branch: ')
+    print('\nCurrent branch: ')
     branch = context.run('git branch --show-current').stdout
-    print()
-    if input('Continue? [Y/n] ') == NEGATIVE:
+    if input('\nContinue? [Y/n] ') == NEGATIVE:
         return
 
     # Stage files, if needed
     context.run('git status')
-    print()
-    if input('Stage all changed files? [Y/n] ') == NEGATIVE:
+    if input('\nStage all changed files? [Y/n] ') == NEGATIVE:
         while input('Do files need to be staged? [Y/n] ') != NEGATIVE:
             files_to_stage = input('Enter filenames and/or patterns: ')
             context.run(f'git add {files_to_stage}')
-            print()
-            context.run('git status')
+            context.run('echo "" && git status')
     else:
         context.run('git add .')
 
-    # Set the commit message
-    commit_msg = None
-    request_commit_msg = True
-    while request_commit_msg:
-        print()
-        commit_msg = input('Enter a commit message (without double quotes): ')
-        if commit_msg and '"' not in commit_msg:
-            request_commit_msg = False
-    print(f'\n{commit_msg}\n')
-
     # Commit the changes
+    commit_msg = None
+    while commit_msg is None:
+        commit_msg_input = input('\nEnter a commit message (without double quotes): ')
+        if commit_msg_input and '"' not in commit_msg_input:
+            commit_msg = commit_msg_input
+            break
+    print(f'\n{commit_msg}\n')
     if input('Is this commit message correct? [Y/n] ') != NEGATIVE:
         context.run(f'git commit -m "{commit_msg}"')
-    print()
 
     # Push the changes, if desired
-    if input('Push changes to remote branch? [Y/n] ') == NEGATIVE:
-        print('To push your changes to the repository, use the following command:')
-        print('git push')
+    if input('\nPush changes to remote branch? [Y/n] ') == NEGATIVE:
+        print(
+            'To push your changes to the repository, use the following command: \n'
+            'git push'
+        )
     else:
         context.run('git push')
-        print()
         diff_link = f'https://github.com/ModularHistory/modularhistory/compare/{branch}'
-        print(f'Create pull request / view diff: {diff_link}')
+        print(f'\nCreate pull request / view diff: {diff_link}')
 
 
 @task
@@ -245,10 +238,13 @@ def _squash_migrations(context, dry: bool = True):
         return
 
     # Fake the migrations.
-    for environment, _ in prod_db_env_var_values:
-        print(f'\n Running fake migrations for {environment} db...')
+    for environment, _ in prod_db_env_var_values:  # noqa: WPS441
+        print(f'\n Running fake migrations for {environment} db...')  # noqa: WPS441
         _migrate(
-            context, '--fake-initial', environment=environment, noninteractive=True
+            context,
+            '--fake-initial',
+            environment=environment,  # noqa: WPS441
+            noninteractive=True,
         )
     _escape_prod_db()
 

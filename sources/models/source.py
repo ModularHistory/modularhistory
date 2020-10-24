@@ -264,7 +264,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         if self.source_file_url:
             url = self.source_file_url
             page_number = self.source_file.default_page_number
-            if hasattr(self, 'page_number') and getattr(self, 'page_number', None):
+            if getattr(self, 'page_number', None):
                 page_number = self.page_number + self.source_file.page_offset
             if page_number:
                 url = _set_page_number(url, page_number)

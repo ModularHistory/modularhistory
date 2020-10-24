@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 from os import listdir, remove
 from os.path import isfile, join
@@ -36,14 +37,13 @@ class TextualSourceFile(FieldFile):
                     to_edit.append(
                         (f'sources/{filename1}.pdf', f'sources/{filename2}.pdf')
                     )
-        for file_a, file_b in to_edit:
-            print(f'{file_a} -> {file_b}')
         source_set = Source.objects.all()
         for source in source_set:
             if source.source_file:
                 for file_a, file_b in to_edit:
+                    logging.info(f'{file_a} -> {file_b}')
                     if source.source_file.name == file_a:
-                        print(source.source_file.name)
+                        logging.info(source.source_file.name)
                         remove(f'{settings.MEDIA_ROOT}/{file_a}')
                         source.source_file.name = file_b
                         source.save()

@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -75,7 +76,7 @@ class SettingsView(LoginRequiredMixin, View):
                 except UserSocialAuth.DoesNotExist:
                     pass
                 except Exception as err:
-                    print(
+                    logging.error(
                         f'Error processing social auth integration: {type(err)}: {err}'
                     )
                 backend['domain'] = f'{backend_name.lower()}.com'

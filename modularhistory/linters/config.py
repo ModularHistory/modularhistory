@@ -109,8 +109,10 @@ class LinterOptions:
 
     def error_is_ignored_in_file(self, filename: str, error_code: str):
         """Return True if an error is specifically ignored for the given filename."""
+        filename = filename.lstrip('./')
         for pattern, error_codes in self.per_file_ignores:
-            if filename in glob(pattern) and error_code in error_codes:
+            matched_files = glob(pattern, recursive=True)
+            if filename in matched_files and error_code in error_codes:
                 return True
         return False
 

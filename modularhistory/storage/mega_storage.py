@@ -42,7 +42,30 @@ class MegaClient(Mega):
         """Get a file's public URL from its name."""
         return self.get_link(self.find(name))
 
-    def get_file_stream(self, url: str) -> Tuple[Any, ...]:
+    def get_temporary_file(self, url: str, mode: str = 'w+b'):
+        """Download a file by its public URL."""
+        file_stream, key, iv, counter, file_size, meta_mac = self._get_file_stream(url)
+        aes = AES.new(key, AES.MODE_CTR, counter=counter)
+        mac_str = '\0' * SIXTEEN
+        mac_encryptor = AES.new(key, AES.MODE_CBC, mac_str.encode('utf8'))
+        with tempfile.NamedTemporaryFile(
+            mode=mode, prefix='megapy_', delete=False
+        ) as temp_output_file:
+            encryptor = AES.new(key, AES.MODE_CBC, iv)
+            for _chunk_start, chunk_size in get_chunks(file_size):
+                chunk = aes.decrypt(file_stream.read(chunk_size))
+                temp_output_file.write(chunk)
+                mac_str = _encrypt_chunk(chunk, encryptor, mac_encryptor, file_size)
+                # st_size = os.stat(temp_output_file.name).st_size
+                # print(f'{st_size} of {file_size} downloaded')
+            file_mac = str_to_a32(mac_str)
+            # check mac integrity
+            new_meta_mac = (file_mac[0] ^ file_mac[1], file_mac[2] ^ file_mac[3])
+            if new_meta_mac != meta_mac:
+                raise ValueError('Mismatched mac')
+            return temp_output_file
+
+    def _get_file_stream(self, url: str) -> Tuple[Any, ...]:
         """Return a file stream and other values needed by get_temporary_file."""
         is_public = True
         path = self._parse_url(url).split('!')
@@ -67,49 +90,28 @@ class MegaClient(Mega):
         # attribs = decrypt_attr(base64_url_decode(file_data['at']), keys)
         # file_name = attribs[n]
         input_file = requests.get(file_url, stream=True).raw
-        return input_file, keys, iv, file_size, meta_mac
+        key_string = a32_to_str(keys)
+        iv_string = a32_to_str([iv[0], iv[1], iv[0], iv[1]])
+        counter = Counter.new(
+            ONE_TWENTY_EIGHT,
+            initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR,
+        )
+        return input_file, key_string, iv_string, counter, file_size, meta_mac
 
-    def get_temporary_file(self, url: str, mode: str = 'w+b'):
-        """Download a file by its public URL."""
-        input_file, keys, iv, file_size, meta_mac = self.get_file_stream(url)
-        with tempfile.NamedTemporaryFile(
-            mode=mode, prefix='megapy_', delete=False
-        ) as temp_output_file:
-            k_str = a32_to_str(keys)
-            counter = Counter.new(
-                ONE_TWENTY_EIGHT,
-                initial_value=((iv[0] << THIRTY_TWO) + iv[1]) << SIXTY_FOUR,
-            )
-            aes = AES.new(k_str, AES.MODE_CTR, counter=counter)
-            mac_str = '\0' * SIXTEEN
-            mac_encryptor = AES.new(k_str, AES.MODE_CBC, mac_str.encode('utf8'))
-            iv_str = a32_to_str([iv[0], iv[1], iv[0], iv[1]])
-            for _chunk_start, chunk_size in get_chunks(file_size):
-                chunk = input_file.read(chunk_size)
-                chunk = aes.decrypt(chunk)
-                temp_output_file.write(chunk)
-                encryptor = AES.new(k_str, AES.MODE_CBC, iv_str)
-                for index in range(0, len(chunk) - SIXTEEN, SIXTEEN):
-                    block = chunk[index : index + SIXTEEN]
-                    encryptor.encrypt(block)
-                # fix for files under 16 bytes failing
-                if file_size > SIXTEEN:
-                    index += SIXTEEN
-                else:
-                    index = 0
-                block = chunk[index : index + SIXTEEN]
-                if len(block) % SIXTEEN:
-                    block += b'\0' * (SIXTEEN - (len(block) % SIXTEEN))
-                mac_str = mac_encryptor.encrypt(encryptor.encrypt(block))
-                file_info = os.stat(temp_output_file.name)
-                print(f'{file_info.st_size} of {file_size} downloaded')
-            file_mac = str_to_a32(mac_str)
-            # check mac integrity
-            new_meta_mac = (file_mac[0] ^ file_mac[1], file_mac[2] ^ file_mac[3])
-            if new_meta_mac != meta_mac:
-                raise ValueError('Mismatched mac')
-            print(file_info)
-            return temp_output_file
+
+def _encrypt_chunk(chunk, encryptor, mac_encryptor, file_size):
+    for index in range(0, len(chunk) - SIXTEEN, SIXTEEN):
+        block = chunk[index : index + SIXTEEN]
+        encryptor.encrypt(block)
+    # fix for files under 16 bytes failing
+    if file_size > SIXTEEN:
+        index += SIXTEEN
+    else:
+        index = 0
+    block = chunk[index : index + SIXTEEN]
+    if len(block) % SIXTEEN:
+        block += b'\0' * (SIXTEEN - (len(block) % SIXTEEN))
+    return mac_encryptor.encrypt(encryptor.encrypt(block))
 
 
 mega_client = MegaClient().login(settings.MEGA_USERNAME, settings.MEGA_PASSWORD)

@@ -1,13 +1,13 @@
+import logging
 import re
-from sys import stderr
 from typing import Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import JSONField
 from django.template.loader import render_to_string
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
 
@@ -120,10 +120,10 @@ class Image(MediaModel):
                 return get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
             except KeyError as error:
                 # TODO: Send email to admins about the error. Figure out why.
-                print(f'KeyError: {error}', file=stderr)
+                logging.error(f'KeyError: {error}')
             except OSError as error:
                 # TODO: Send email to admins about the error. Figure out why.
-                print(f'OSError: {error}', file=stderr)
+                logging.error(f'OSError: {error}')
         return None
 
     @property
@@ -196,7 +196,7 @@ class Image(MediaModel):
             # Update key if necessary
             key = match.group(2).strip()
             image = cls.objects.get(key=key)
-            print(f'{key} --> {image.pk}: {error}', file=stderr)
+            logging.error(f'{key} --> {image.pk}: {error}')
             # img_placeholder = img_placeholder.replace(key, str(image.pk))  # TODO
         image_html = render_to_string(
             'images/_card.html', context={IMAGE_KEY: image, 'obj': image}

@@ -1,7 +1,7 @@
 """Model class for citations."""
 
+import logging
 import re
-from sys import stderr
 from typing import Any, Optional, TYPE_CHECKING, Union
 
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -14,8 +14,8 @@ from django.utils.safestring import SafeString
 
 from modularhistory.constants import EMPTY_STRING, QUOTE_CT_ID
 from modularhistory.models import ModelWithComputations, retrieve_or_compute
-from modularhistory.utils.html import components_to_html, compose_link, soupify
 from modularhistory.utils import pdf
+from modularhistory.utils.html import components_to_html, compose_link, soupify
 
 if TYPE_CHECKING:
     from quotes.models import Quote
@@ -175,7 +175,7 @@ class Citation(ModelWithComputations):
         if file:
             if self.primary_page_number:
                 return self.primary_page_number + file.page_offset
-            elif hasattr(self.source, 'file_page_number'):
+            elif getattr(self.source, 'file_page_number', None):
                 return self.source.file_page_number
         return None
 
@@ -241,7 +241,7 @@ class Citation(ModelWithComputations):
         try:
             citation = cls.objects.get(pk=key)
         except ObjectDoesNotExist:
-            print(f'Unable to retrieve citation: {key}', file=stderr)
+            logging.error(f'Unable to retrieve citation: {key}')
             return None
         html_id = citation.html_id
         source_string = str(citation)

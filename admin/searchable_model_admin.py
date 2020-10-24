@@ -26,8 +26,6 @@ class SearchableModelAdmin(ModelAdmin):
             request, queryset, search_term
         )
         if search_term:
-            print(f'Django admin search function returned queryset: {queryset}')
-            print(f'Falling back on sources.manager.search with query={search_term}...')
             queryset = self.model.objects.search(search_term, suppress_unverified=False)
         return queryset, use_distinct
 

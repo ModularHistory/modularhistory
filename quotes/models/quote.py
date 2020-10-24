@@ -1,5 +1,6 @@
 """Model classes for the quotes app."""
 
+import logging
 import re
 from typing import List, Optional
 
@@ -201,7 +202,7 @@ class Quote(
             attributions = self.attributions.select_related('attributee')
             return [attribution.attributee for attribution in attributions]
         except (AttributeError, ObjectDoesNotExist) as error:
-            print(f'>>> {type(error)}: {error}')
+            logging.error(f'>>> {type(error)}: {error}')
             return None
 
     @property

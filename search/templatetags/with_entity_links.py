@@ -1,5 +1,5 @@
+import logging
 import re
-from sys import stderr
 
 from django import template
 from django.urls import reverse
@@ -30,5 +30,5 @@ def with_entity_links(html: str):
                     )
                     html = html.replace(match.group(0), entity_link, 1)
                 except Exception as error:
-                    print(f'{error}', file=stderr)
+                    logging.error(f'{error}')
     return format_html(html)

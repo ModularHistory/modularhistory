@@ -78,7 +78,6 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
                 attrs=attrs,
             )
         if self.value():
-            print('There is a value!!!!')
             model_instance = self.m2m_cls.objects.get(pk=self.value())
             rendered_widget = re.sub(
                 r'(selected>).+(</option>)',

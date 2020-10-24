@@ -41,7 +41,7 @@ class DatedModel(Model):
             )
             if date_html_requires_circa_prefix:
                 date_html = f'{CIRCA_PREFIX}{date_html}'
-            if hasattr(self, 'end_date') and self.end_date:
+            if getattr(self, 'end_date', None):
                 date_html = f'{date_html} – {self.end_date.html}'
             use_ce = (
                 self.date.year < 1000

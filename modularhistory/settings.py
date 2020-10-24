@@ -8,6 +8,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import logging
 import os
 import sys
 from typing import Dict, List, Optional
@@ -701,7 +702,7 @@ EMAIL_HOST = config('EMAIL_HOST', default='localhost')
 try:
     EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 except Exception as error:
-    print(f'{error}', file=sys.stderr)
+    logging.error(f'{error}')
     EMAIL_PORT = 587
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')

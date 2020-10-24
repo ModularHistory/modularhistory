@@ -13,8 +13,6 @@ class RelatedQuotesInline(GenericTabularInline):
     model = models.QuoteRelation
     autocomplete_fields: List[str] = ['quote']
     readonly_fields: List[str] = ['quote_pk']
-    # verbose_name = 'citation'
-    # verbose_name_plural = 'citations'
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'

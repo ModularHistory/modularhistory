@@ -8,7 +8,6 @@ from sources.admin.filters import (
     HasContainerFilter,
     HasFileFilter,
     HasFilePageOffsetFilter,
-    HasPageNumber,
     ImpreciseDateFilter,
     TypeFilter,
 )
@@ -37,7 +36,6 @@ class SourceAdmin(SearchableModelAdmin):
         HasContainerFilter,
         HasFileFilter,
         HasFilePageOffsetFilter,
-        HasPageNumber,
         ImpreciseDateFilter,
         model.FieldNames.hidden,
         AttributeeFilter,
