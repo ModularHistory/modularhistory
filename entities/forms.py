@@ -2,7 +2,7 @@ from typing import List
 
 from django.forms import ModelForm
 
-from entities.models import Entity, Group, Idea, Person, Organization
+from entities.models import Entity, Group, Idea, Organization, Person
 
 TYPE = 'type'
 

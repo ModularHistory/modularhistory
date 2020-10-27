@@ -43,6 +43,18 @@ class AdminMenu(Menu):
         css = ()  # css = {'all': ('css/menu.css',)}
         js = ()  # js = ('js/menu.js',)
 
+    def __init__(self, **kwargs):
+        """Construct the admin menu."""
+        super().__init__(**kwargs)
+        self.children += [
+            items.MenuItem(_('Dashboard'), reverse('admin:index')),
+            items.Bookmarks(),
+            items.AppList(
+                title='Applications',
+                exclude=['django.contrib.*', 'social_django.*', 'django_celery_*'],
+            ),
+        ] + self._menu_items
+
     @property
     def _menu_items(self):
         menu_items = []
@@ -56,18 +68,6 @@ class AdminMenu(Menu):
                 )
             menu_items.append(items.MenuItem(app, children=children))
         return menu_items
-
-    def __init__(self, **kwargs):
-        """Construct the admin menu."""
-        super().__init__(**kwargs)
-        self.children += [
-            items.MenuItem(_('Dashboard'), reverse('admin:index')),
-            items.Bookmarks(),
-            items.AppList(
-                title='Applications',
-                exclude=['django.contrib.*', 'social_django.*', 'django_celery_*'],
-            ),
-        ] + self._menu_items
 
     # def init_with_context(self, context):
     #     """Use this method if you need to access the request context."""

@@ -49,8 +49,7 @@ class HTMLField(MceHTMLField):
     raw_value: str
     html: SafeString
     text: str
-    default_processor: Callable = process
-    processor: Optional[Callable] = default_processor
+    processor: Optional[Callable]
 
     # Types of processable objects included in HTML
     processable_content_types: Iterable[str] = ['quote', 'image', 'citation', 'source']
@@ -58,8 +57,7 @@ class HTMLField(MceHTMLField):
     def __init__(self, *args, **kwargs):
         """Construct an HTML field instance."""
         processor = kwargs.pop('processor', None)
-        if processor and processor != self.default_processor:
-            self.processor = processor
+        self.processor = processor or process
         super().__init__(*args, **kwargs)
 
     def clean(self, html_value, model_instance: 'Model') -> HTML:

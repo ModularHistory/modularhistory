@@ -80,8 +80,8 @@ def retrieve_or_compute(
     https://realpython.com/primer-on-python-decorators/
     """
 
-    def wrap(model_property):
-        @wraps(model_property)
+    def wrap(model_property):  # noqa: WPS430
+        @wraps(model_property)  # noqa: WPS430
         def wrapped_property(model_instance: ModelWithComputations, *args, **kwargs):
             if isinstance(model_instance, ModelWithComputations):
                 property_name = attribute_name or model_property.__name__

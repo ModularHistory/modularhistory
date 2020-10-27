@@ -30,6 +30,20 @@ class JSONField(BaseJSONField):
         # Call the base JSONField's __init__
         super().__init__(*args, **kwargs)
 
+    def validate(self, json_value, model_instance):
+        """Override `validate` to also validate with JSON Schema."""
+        # Do regular validation
+        super().validate(json_value, model_instance)
+        # Do JSON Schema validation
+        self._validate_schema(json_value)
+
+    def pre_save(self, model_instance, add):
+        """Override `pre_save` to validate with JSON Schema."""
+        json_value = super().pre_save(model_instance, add)
+        if json_value and not self.null:
+            self._validate_schema(json_value)
+        return json_value
+
     @property
     def _schema_data(self) -> Optional[Dict]:
         """Return the field's JSON schema as a Python object."""
@@ -51,20 +65,6 @@ class JSONField(BaseJSONField):
                 validate(json_value, self._schema_data)
             except jsonschema_exceptions.ValidationError as error:
                 raise ValidationError(f'{error}')
-
-    def validate(self, json_value, model_instance):
-        """Override `validate` to also validate with JSON Schema."""
-        # Do regular validation
-        super().validate(json_value, model_instance)
-        # Do JSON Schema validation
-        self._validate_schema(json_value)
-
-    def pre_save(self, model_instance, add):
-        """Override `pre_save` to validate with JSON Schema."""
-        json_value = super().pre_save(model_instance, add)
-        if json_value and not self.null:
-            self._validate_schema(json_value)
-        return json_value
 
 
 class ExtraField:

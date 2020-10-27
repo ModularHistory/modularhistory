@@ -134,19 +134,6 @@ class HistoricDateWidget(MultiWidget):
         ]
         super().__init__(widgets, attrs)
 
-    def _parse_string(self, datetime_string: str) -> Tuple[int, ...]:
-        """TODO: move elsewhere, perhaps."""
-        year, month, day = datetime_string.split('-')
-        hour = minute = second = microsecond = '0'
-        if SPACE in day:
-            day, time = day.split(SPACE)
-            if COLON in time:
-                hour, minute, second = time.split(COLON)
-                if PERIOD in second:
-                    second, microsecond = second.split(PERIOD)
-        str_values = (year, month, day, hour, minute, second, microsecond)
-        return tuple(int(string) for string in str_values)
-
     def decompress(self, datetime_value: Union[date, str, Any]):
         """
         "Decompresses" a Python value into a list of values to populate the widget.
@@ -183,6 +170,31 @@ class HistoricDateWidget(MultiWidget):
             )
         return self._decompress_historic_datetime(datetime_value)
 
+    def value_from_datadict(self, datadict, files, name) -> Optional[str]:
+        """Compress the input value into a format that can be saved to the db."""
+        full_n_values, min_n_values = 6, 3
+        decompressed_values = [
+            _ or 0 for _ in super().value_from_datadict(datadict, files, name)
+        ]
+        n_values = len(decompressed_values)
+        if n_values < min_n_values:
+            raise ValueError(f'Wrong number of values: {len(decompressed_values)}')
+        elif n_values < full_n_values:
+            decompressed_values.extend(None for _ in range(full_n_values - n_values))
+        year, year_system, season, month, day, time = decompressed_values
+        if not year:
+            return None
+        dt = _datetime_from_datadict_values(year, year_system, season, month, day)
+        # Get date-parsable string for db
+        dt_string = dt.strftime('%Y-%m-%d %H:%M:%S.%f')
+        # Ensure the year is 4 digits; add leading zeros if necessary
+        incomplete_year_pattern = re.compile(r'^(\d{1,3})(-.+)')
+        if incomplete_year_pattern.match(dt_string):
+            year_string = incomplete_year_pattern.match(dt_string).group(1)
+            year_string = f'{year_string:0>4}'
+            dt_string = incomplete_year_pattern.sub(rf'{year_string}\g<2>', dt_string)
+        return dt_string
+
     @staticmethod
     def _decompress_historic_datetime(historic_datetime: HistoricDateTime) -> List:
         year = historic_datetime.year
@@ -210,30 +222,18 @@ class HistoricDateWidget(MultiWidget):
             time = historic_datetime.strftime('%H:%M:%S.%f')
         return [year, year_system, season, month, day, time]
 
-    def value_from_datadict(self, datadict, files, name) -> Optional[str]:
-        """Compress the input value into a format that can be saved to the db."""
-        full_n_values, min_n_values = 6, 3
-        decompressed_values = [
-            _ or 0 for _ in super().value_from_datadict(datadict, files, name)
-        ]
-        n_values = len(decompressed_values)
-        if n_values < min_n_values:
-            raise ValueError(f'Wrong number of values: {len(decompressed_values)}')
-        elif n_values < full_n_values:
-            decompressed_values.extend(None for _ in range(full_n_values - n_values))
-        year, year_system, season, month, day, time = decompressed_values
-        if not year:
-            return None
-        dt = _datetime_from_datadict_values(year, year_system, season, month, day)
-        # Get date-parsable string for db
-        dt_string = dt.strftime('%Y-%m-%d %H:%M:%S.%f')
-        # Ensure the year is 4 digits; add leading zeros if necessary
-        incomplete_year_pattern = re.compile(r'^(\d{1,3})(-.+)')
-        if incomplete_year_pattern.match(dt_string):
-            year_string = incomplete_year_pattern.match(dt_string).group(1)
-            year_string = f'{year_string:0>4}'
-            dt_string = incomplete_year_pattern.sub(rf'{year_string}\g<2>', dt_string)
-        return dt_string
+    def _parse_string(self, datetime_string: str) -> Tuple[int, ...]:
+        """TODO: move elsewhere, perhaps."""
+        year, month, day = datetime_string.split('-')
+        hour = minute = second = microsecond = '0'
+        if SPACE in day:
+            day, time = day.split(SPACE)
+            if COLON in time:
+                hour, minute, second = time.split(COLON)
+                if PERIOD in second:
+                    second, microsecond = second.split(PERIOD)
+        str_values = (year, month, day, hour, minute, second, microsecond)
+        return tuple(int(string) for string in str_values)
 
 
 def _datetime_from_datadict_values(year, year_system, season, month, day):

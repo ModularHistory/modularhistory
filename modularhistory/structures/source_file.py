@@ -1,49 +1,32 @@
 import logging
-from copy import deepcopy
-from os import listdir, remove
-from os.path import isfile, join
+from os import remove
+from os.path import join
 
 from django.db.models.fields.files import FieldFile
 
 from modularhistory import settings
+from modularhistory.utils import files
 
 
 class TextualSourceFile(FieldFile):
     """A source file for a textual source."""
 
+    # TODO
     @staticmethod
     def dedupe():
         """Remove duplicated source files."""
+        path = join(settings.MEDIA_ROOT, 'sources')
+        duplicated_files = files.get_duplicated_files(path)
         from sources.models import Source
 
-        path = join(settings.MEDIA_ROOT, 'sources')
-        files1 = [
-            filename.replace('.pdf', '')
-            for filename in listdir(path)
-            if isfile(join(path, filename))
-        ]
-        files2 = deepcopy(files1)
-        to_edit = []
-        for filename2 in files2:
-            for filename1 in files1:
-                should_be_edited = all(
-                    [
-                        filename2 in filename1,
-                        filename2 != filename1,
-                        filename2.startswith(filename1[:3]),
-                    ]
-                )
-                if should_be_edited:
-                    to_edit.append(
-                        (f'sources/{filename1}.pdf', f'sources/{filename2}.pdf')
-                    )
         source_set = Source.objects.all()
         for source in source_set:
             if source.source_file:
-                for file_a, file_b in to_edit:
-                    logging.info(f'{file_a} -> {file_b}')
-                    if source.source_file.name == file_a:
-                        logging.info(source.source_file.name)
-                        remove(f'{settings.MEDIA_ROOT}/{file_a}')
-                        source.source_file.name = file_b
-                        source.save()
+                for duplicated_file, duplicate_files in duplicated_files.items():
+                    for filename in duplicate_files:
+                        logging.info(f'{filename} -> {duplicated_file}')
+                        if source.source_file.name == filename:
+                            logging.info(source.source_file.name)
+                            remove(join(settings.MEDIA_ROOT, filename))
+                            source.source_file.name = duplicated_file
+                            source.save()

@@ -32,11 +32,6 @@ QUEUE_NAME = settings.GC_QUEUE
 class TaskMixin:
     """TODO: add docstring."""
 
-    @property
-    def _cloud_task_client(self):
-        """TODO: add docstring."""
-        return tasks.CloudTasksClient()
-
     def send_task(
         self,
         url: str,
@@ -84,6 +79,11 @@ class TaskMixin:
 
         response = self._cloud_task_client.create_task(parent, task)
         print(f'Created task: {response.name}')
+
+    @property
+    def _cloud_task_client(self):
+        """TODO: add docstring."""
+        return tasks.CloudTasksClient()
 
 
 def _debug(self) -> None:

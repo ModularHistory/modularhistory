@@ -1,6 +1,6 @@
 from django.views import generic
 
-from .models import Image
+from images.models import Image
 
 
 class IndexView(generic.ListView):

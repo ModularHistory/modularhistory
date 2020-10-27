@@ -81,6 +81,7 @@ class Citation(ModelWithComputations):
         """Return the citation's string representation."""
         return soupify(self.html).get_text()
 
+    # TODO: refactor
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:

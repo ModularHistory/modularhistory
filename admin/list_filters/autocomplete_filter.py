@@ -56,12 +56,12 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
         """Return the URL used by the autocomplete filter."""
         return reverse(f'admin:{self.key}_search')
 
-    @property
-    def _parameter_name(self) -> str:
-        return f'{self.field_name}__pk__exact'
-
     def queryset(self, request, queryset) -> 'QuerySet[Model]':
         """Return the filtered queryset."""
         if self.value():
             return queryset.filter(**{self._parameter_name: self.value()})
         return queryset
+
+    @property
+    def _parameter_name(self) -> str:
+        return f'{self.field_name}__pk__exact'

@@ -66,7 +66,7 @@ class Model(DjangoModel):
     @property
     def detail_url(self) -> str:
         """Return the URL of the model instance's detail page."""
-        return reverse(f'{self._meta.app_label}:detail', args=[self.id])
+        return reverse(f'{self.get_meta().app_label}:detail', args=[self.id])
 
     @property
     def natural_key_fields(self) -> Optional[List]:
@@ -100,12 +100,10 @@ class Model(DjangoModel):
             args=[self.id],
         )
 
-    def get_detail_link(self) -> SafeString:
+    def get_detail_link(self, content: Optional[str] = None) -> SafeString:
         """Return a link to the model instance's detail page."""
-        return format_html(
-            f'<a href="{self.detail_url}" target="_blank">'
-            f'<i class="fas fa-info-circle"></i></a>'
-        )
+        content = content or '<i class="fas fa-info-circle"></i>'
+        return format_html(f'<a href="{self.detail_url}" target="_blank">{content}</a>')
 
     def natural_key(self) -> Tuple[Any, ...]:
         """Return a tuple of values comprising the model instance's natural key."""

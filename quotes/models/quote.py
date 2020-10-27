@@ -6,7 +6,6 @@ from typing import List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField, Q, QuerySet
-from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
@@ -123,22 +122,27 @@ class Quote(
         attributees = self.ordered_attributees
         if attributees:
             n_attributions = len(attributees)
-            first_attributee = attributees[0]
-
-            def _html(attributee) -> str:
-                return (
-                    f'<a href="{reverse("entities:detail", args=[attributee.id])}" '
-                    f'target="_blank">{attributee}</a>'
+            primary_attributee = attributees[0]
+            primary_attributee_html = primary_attributee.get_detail_link(
+                primary_attributee.name
+            )
+            if n_attributions == 1:
+                attributee_html = f'{primary_attributee_html}'
+            else:
+                secondary_attributee_html = (
+                    f'{attributees[1].get_detail_link(attributees[1].name)}'
                 )
-
-            html = _html(first_attributee)
-            if n_attributions == 2:
-                html = f'{html} and {_html(attributees[1])}'
-            elif n_attributions == 3:
-                html = f'{html}, {_html(attributees[1])}, and {_html(attributees[2])}'
-            elif n_attributions > 3:
-                html = f'{html} et al.'
-            attributee_html = html
+                if n_attributions == 2:
+                    attributee_html = (
+                        f'{primary_attributee_html} and {secondary_attributee_html}'
+                    )
+                elif n_attributions == 3:
+                    attributee_html = (
+                        f'{primary_attributee_html}, {secondary_attributee_html}, and'
+                        f'{attributees[2].get_detail_link(attributees[2].name)}'
+                    )
+                else:
+                    attributee_html = f'{primary_attributee_html} et al.'
         else:
             attributee_html = EMPTY_STRING
         return format_html(attributee_html) if attributee_html else None

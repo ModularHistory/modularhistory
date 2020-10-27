@@ -57,16 +57,26 @@ class SearchResultsView(ListView):
     """View that displays search results."""
 
     template_name = 'search/search_results.html'
-    results_count = 0
     paginate_by = 10
 
-    excluded_content_types: Optional[List[int]] = None
-    sort_by_relevance: bool = False
-    suppress_unverified: bool = True
-    entities: Optional[QuerySet] = None
-    topics: Optional[QuerySet] = None
-    places: Optional[QuerySet] = None
-    db: str = 'default'
+    excluded_content_types: Optional[List[int]]
+    sort_by_relevance: bool
+    suppress_unverified: bool
+    entities: Optional[QuerySet]
+    topics: Optional[QuerySet]
+    places: Optional[QuerySet]
+    results_count: int
+
+    def __init__(self):
+        """Construct the search results view."""
+        super().__init__()
+        self.excluded_content_types = None
+        self.sort_by_relevance = False
+        self.suppress_unverified = True
+        self.entities = None
+        self.topics = None
+        self.places = None
+        self.results_count = 0
 
     def get_context_data(self, *args, **kwargs) -> Dict:
         """Return the context data used to render the view."""

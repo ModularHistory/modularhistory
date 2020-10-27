@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from django.forms import ModelForm
 
-from .models import Place, Continent, Country, Region, State, County, City, Venue
+from places.models import City, Continent, Country, County, Place, Region, State, Venue
 
 
 class _PlaceForm(ModelForm):

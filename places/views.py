@@ -1,6 +1,6 @@
 from django.views import generic
 
-from .models import Place
+from places.models import Place
 
 
 class IndexView(generic.list.ListView):

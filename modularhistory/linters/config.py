@@ -58,20 +58,20 @@ class LinterOptions:
     """Options for linters."""
 
     # errors/warnings
-    select: Optional[ErrorCodeSet] = None
-    ignore: Optional[ErrorCodeSet] = None
-    warn: Optional[ErrorCodeSet] = None
+    select: Optional[ErrorCodeSet]
+    ignore: Optional[ErrorCodeSet]
+    warn: Optional[ErrorCodeSet]
 
     # paths
-    include: Optional[PathPatternList] = None
-    exclude: Optional[PathPatternList] = None
+    include: Optional[PathPatternList]
+    exclude: Optional[PathPatternList]
 
     # per-file ignores
-    per_file_ignores: Optional[List[PerFileIgnore]] = None
+    per_file_ignores: Optional[List[PerFileIgnore]]
 
     # messages
-    error_filters: Optional[PatternList] = None
-    warning_filters: Optional[PatternList] = None
+    error_filters: Optional[PatternList]
+    warning_filters: Optional[PatternList]
 
     def __init__(self):
         """Construct linter options."""
@@ -231,6 +231,43 @@ class ConfigFileOptionsParser:
                 for option_key, option_value in updates.items():
                     setattr(opt, option_key.replace('-', '_'), option_value)
 
+    def extract_updates(self, options: LinterOptions) -> Iterator[OptionsUpdate]:
+        """TODO: add docstring."""
+        config_file = os.path.expanduser(CONFIG_FILE)
+        parser = configparser.RawConfigParser()
+        if not os.path.exists(config_file):
+            raise EnvironmentError(f'No config file named {CONFIG_FILE} exists.')
+        try:
+            parser.read(config_file)
+        except configparser.Error as error:
+            print(f'{config_file}: {error}', file=sys.stderr)
+
+        script_name = self.script_name
+        if script_name in parser:
+            section = parser[script_name]  # noqa: WPS529
+            yield None, self._parse_section(options, section)
+        else:
+            print(f'No [{self.script_name}] section in config file', file=sys.stderr)
+
+        for name, section in parser.items():
+            if name.startswith('mypyrun-'):
+                prefix = f'{CONFIG_FILE}: [{name}]'
+                updates = self._parse_section(options, section)
+                if set(updates).intersection(GLOBAL_ONLY_OPTIONS):
+                    print(
+                        f'{prefix}: Per-module sections should only specify per-module flags '
+                        f'({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
+                        file=sys.stderr,
+                    )
+                    updates = {
+                        option_key: option_value
+                        for option_key, option_value in updates.items()
+                        if option_key in PER_MODULE_OPTIONS
+                    }
+                globs = name[8:]
+                for file_glob in globs.split(COMMA):
+                    yield file_glob, updates
+
     def _parse_option(
         self,
         option_key: str,
@@ -278,40 +315,3 @@ class ConfigFileOptionsParser:
             if processed_value:
                 parsed_section[option_key] = processed_value
         return parsed_section
-
-    def extract_updates(self, options: LinterOptions) -> Iterator[OptionsUpdate]:
-        """TODO: add docstring."""
-        config_file = os.path.expanduser(CONFIG_FILE)
-        parser = configparser.RawConfigParser()
-        if not os.path.exists(config_file):
-            raise EnvironmentError(f'No config file named {CONFIG_FILE} exists.')
-        try:
-            parser.read(config_file)
-        except configparser.Error as error:
-            print(f'{config_file}: {error}', file=sys.stderr)
-
-        script_name = self.script_name
-        if script_name in parser:
-            section = parser[script_name]  # noqa: WPS529
-            yield None, self._parse_section(options, section)
-        else:
-            print(f'No [{self.script_name}] section in config file', file=sys.stderr)
-
-        for name, section in parser.items():
-            if name.startswith('mypyrun-'):
-                prefix = f'{CONFIG_FILE}: [{name}]'
-                updates = self._parse_section(options, section)
-                if set(updates).intersection(GLOBAL_ONLY_OPTIONS):
-                    print(
-                        f'{prefix}: Per-module sections should only specify per-module flags '
-                        f'({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
-                        file=sys.stderr,
-                    )
-                    updates = {
-                        option_key: option_value
-                        for option_key, option_value in updates.items()
-                        if option_key in PER_MODULE_OPTIONS
-                    }
-                globs = name[8:]
-                for file_glob in globs.split(COMMA):
-                    yield file_glob, updates

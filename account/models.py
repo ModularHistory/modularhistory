@@ -1,11 +1,20 @@
+import logging
+from tempfile import NamedTemporaryFile
+from typing import Union
+from urllib.request import urlopen
+
 from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
+from django.core.files import File
 from django.db import models
 from django.db.models import QuerySet
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from social_core.backends.oauth import BaseOAuth1, BaseOAuth2
 from social_django.models import UserSocialAuth
 
 from modularhistory.fields.file_field import upload_to
+
+AuthBackend = Union[BaseOAuth1, BaseOAuth2]
 
 AVATAR_QUALITY: int = 70
 AVATAR_WIDTH: int = 200
@@ -68,3 +77,16 @@ class User(AbstractUser):
         """Unlock the user account."""
         self.locked = False
         self.save()
+
+    def update_avatar(self, url):
+        """Update the user's avatar with the image located at the given URL."""
+        if self.avatar:
+            logging.info(f'{self} already has an avatar: {self.avatar}')
+            # TODO: check if image has been updated
+        else:
+            logging.info(f'{self} has no profile image.')
+            img_temp = NamedTemporaryFile(delete=True)
+            # TODO: Use requests instead of urllib?
+            img_temp.write(urlopen(url).read())  # noqa: S310
+            img_temp.flush()
+            self.avatar.save(f'{self.pk}', File(img_temp))

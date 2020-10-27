@@ -25,19 +25,6 @@ class TaggableModel(ModelWithComputations):
     class Meta:
         abstract = True
 
-    @property
-    def _related_topics(self) -> List['Topic']:
-        """
-        Return a list of topics related to the model instance.
-
-        WARNING: This executes a db query for each model instance that accesses it.
-        """
-        try:
-            tags = self.tags.select_related('topic')
-            return [tag.topic for tag in tags]
-        except (AttributeError, ObjectDoesNotExist):
-            return []
-
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='tag_keys')
     def tag_keys(self) -> Optional[List[str]]:
@@ -64,6 +51,19 @@ class TaggableModel(ModelWithComputations):
                 )
             )
         return None
+
+    @property
+    def _related_topics(self) -> List['Topic']:
+        """
+        Return a list of topics related to the model instance.
+
+        WARNING: This executes a db query for each model instance that accesses it.
+        """
+        try:
+            tags = self.tags.select_related('topic')
+            return [tag.topic for tag in tags]
+        except (AttributeError, ObjectDoesNotExist):
+            return []
 
 
 class TopicFilter(ManyToManyAutocompleteFilter):
