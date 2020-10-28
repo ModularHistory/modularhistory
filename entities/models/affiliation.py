@@ -34,7 +34,7 @@ class Affiliation(_Engagement):
         unique_together = ['entity', 'affiliated_entity', 'start_date']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the affiliation."""
         return f'{self.entity} — {self.affiliated_entity}'
 
 

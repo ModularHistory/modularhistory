@@ -75,6 +75,11 @@ class Entity(
         """Return the string representation of the entity."""
         return f'{self.name}'
 
+    def save(self, *args, **kwargs):
+        """Save the entity to the database."""
+        self.clean()
+        super().save(*args, **kwargs)
+
     @property
     def has_quotes(self) -> bool:
         """Return whether the entity has any attributed quotes."""
@@ -143,11 +148,6 @@ class Entity(
         # Remove duplicate words
         categorization_words = list(dict.fromkeys(categorization_words))
         return ' '.join(categorization_words)
-
-    def save(self, *args, **kwargs):
-        """TODO: add docstring."""
-        self.clean()
-        super().save(*args, **kwargs)
 
 
 class Person(Entity):

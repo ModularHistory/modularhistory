@@ -123,12 +123,12 @@ class UserCreationForm(forms.ModelForm):
         return password2
 
     def save(self, commit=True):
-        """TODO: add docstring."""
+        """Process the user creation from; save the user to the database."""
         # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
-        user.username = self.cleaned_data.get(USERNAME_FIELD) or self.cleaned_data.get(
-            EMAIL_FIELD
-        )
+        username = self.cleaned_data.get(USERNAME_FIELD)
+        email = self.cleaned_data.get(EMAIL_FIELD)
+        user.username = username or email
         user.set_password(self.cleaned_data['password1'])
         if commit:
             user.save()

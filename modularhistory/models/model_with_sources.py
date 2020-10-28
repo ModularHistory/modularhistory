@@ -5,7 +5,7 @@ from typing import Any, Optional, TYPE_CHECKING
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-
+from django.core.exceptions import ObjectDoesNotExist
 from modularhistory.models import retrieve_or_compute
 from modularhistory.models.searchable_model import SearchableModel
 
@@ -47,9 +47,10 @@ class ModelWithSources(SearchableModel):
     @retrieve_or_compute(attribute_name='citation_html', caster=format_html)
     def citation_html(self) -> Optional[SafeString]:
         """Return the quote's citation HTML, if a citation exists."""
-        if self.citations.exists():  # TODO: use try-except instead of making this query
+        try:
             citation_html = '; '.join(
                 [citation.html for citation in self.citations.all()]
             )
-            return format_html(citation_html)
-        return None
+        except (ObjectDoesNotExist, AttributeError, ValueError):
+            return None
+        return format_html(citation_html) if citation_html else None

@@ -2,6 +2,6 @@ from django.apps import AppConfig
 
 
 class SourcesConfig(AppConfig):
-    """TODO: add docstring."""
+    """Config for the sources app."""
 
     name = 'sources'

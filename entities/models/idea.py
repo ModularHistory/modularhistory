@@ -10,7 +10,7 @@ NAME_MAX_LENGTH: int = 100
 
 
 class Idea(Model):
-    """TODO: add docstring."""
+    """An idea."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     description = HTMLField(null=True, blank=True)

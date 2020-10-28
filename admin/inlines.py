@@ -14,7 +14,7 @@ GenericStackedInline = NestedGenericStackedInline
 
 
 class StackedInline(NestedStackedInline):
-    """TODO: add docstring."""
+    """Inline admin with fields stacked vertically."""
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
@@ -25,7 +25,7 @@ class StackedInline(NestedStackedInline):
 
 
 class TabularInline(NestedTabularInline):
-    """TODO: add docstring."""
+    """Inline admin with fields laid out horizontally."""
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
@@ -36,7 +36,7 @@ class TabularInline(NestedTabularInline):
 
 
 def reorder_fields(fields) -> List[str]:
-    """TODO: add docstring."""
+    """Return a reordered list of fields to display in the admin."""
     ordered_fields = ('page_number', 'end_page_number', 'notes', 'position')
     for field_name in ordered_fields:
         if field_name in fields:

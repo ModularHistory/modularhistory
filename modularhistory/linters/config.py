@@ -85,19 +85,19 @@ class LinterOptions:
         self.warning_filters = []
 
     def __str__(self):
-        """TODO: write docstring."""
+        """Return a string representation of the linter options."""
         return f'{self.__dict__}'
 
     def is_excluded_path(self, path: str) -> bool:
-        """TODO: write docstring."""
+        """Return whether the path is to be excluded from linting."""
         return linting.match(self.exclude, path)
 
     def is_included_path(self, path: str) -> bool:
-        """TODO: write docstring."""
+        """Return whether the path is to be included in linting."""
         return linting.match(self.include, path)
 
     def error_is_ignored(self, filename: str, message: str, error_code: str) -> bool:
-        """Return whether the error should be ignored."""
+        """Return whether the error should be ignored, based on the filename, message, and error code."""
         return any(
             [
                 linting.match(self.error_filters, message),
