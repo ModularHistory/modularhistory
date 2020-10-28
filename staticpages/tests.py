@@ -1,7 +1,7 @@
 """Tests for the staticpages app."""
 
 import pytest
-from hypothesis import given, example
+from hypothesis import example, given
 from hypothesis.strategies import text
 
 

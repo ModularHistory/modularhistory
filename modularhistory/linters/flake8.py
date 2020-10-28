@@ -10,16 +10,18 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from modularhistory.linters.config import (
     ConfigFileOptionsParser as BaseConfigFileOptionsParser,
-    LinterOptions,
-    PerModuleOptions,
 )
+from modularhistory.linters.config import LinterOptions, PerModuleOptions
 from modularhistory.utils import linting
+from modularhistory.utils.commands import autoformat
 
 StringOrDict = Union[str, Dict[str, str]]
 
 # Example:
 # ./history/fields/html_field.py:138:17: WPS442 Found outer scope names shadowing: Quote
 OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+\d+)\s+(.+)')
+
+AUTOFORMAT_TRIGGERS = {'BLK100', 'Q000'}
 
 
 def flake8(**kwargs):
@@ -33,6 +35,8 @@ def process_flake8_output(output: str):
     """Process/filters and displays output from flake8."""
     options, per_module_options = _get_flake8_options()
     output_lines = output.rstrip().split('\n')
+
+    files_to_autoformat = set()
     for line in output_lines:
         parsed_line = OUTPUT_PATTERN.match(line)
         if not parsed_line:
@@ -41,19 +45,25 @@ def process_flake8_output(output: str):
         location = parsed_line.group(1)
         code = parsed_line.group(2)
         message = parsed_line.group(3)
-        _process_flake8_message(location, code, message, options)
+        try:
+            filename, _line_number = location.split(':')
+        except ValueError:
+            filename, _line_number = location.split(':')[:2]
+        _process_flake8_message(location, filename, code, message, options)
+        if code in AUTOFORMAT_TRIGGERS:
+            files_to_autoformat.add(filename)
     print()
+    if len(files_to_autoformat) and input('Autoformat files? [Y/n] ') != 'n':
+        autoformat(files=files_to_autoformat)
+        flake8()
 
 
-def _process_flake8_message(location, code, message, options):
-    try:
-        filename, line_number = location.split(':')
-    except ValueError:
-        filename, line_number = location.split(':')[:2]
+def _process_flake8_message(location, filename, code, message, options):
     if not options.error_is_ignored(filename, message, code):
         explanation_url = get_violation_explanation_url(code)
         print(
-            f'{location}: {linting.colored(message, color="red")}  [{code}: {explanation_url}]'
+            f'{location}: {linting.colored(message, color="red")} '
+            f' [{code}: {explanation_url}]'
         )
 
 
@@ -103,9 +113,11 @@ VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
     'P': {
         '1,2,3': 'https://github.com/xZise/flake8-string-format#error-codes',
     },
+    'PT': 'https://github.com/m-burst/flake8-pytest-style/blob/master/docs/rules/{code}.md'.format,
     'Q': 'https://github.com/zheller/flake8-quotes',  # Quotes
     'RST': 'https://github.com/peterjc/flake8-rst-docstrings',  # RST docstrings
     'S': 'https://github.com/tylerwince/flake8-bandit',  # Bandit
+    'SC': 'https://github.com/MichaelAquilina/flake8-spellcheck',
     'T100': 'https://github.com/JBKahn/flake8-debugger/blob/master/flake8_debugger.py',
     'WPS': {
         '0': f'{VIOLATION_DEFAULT_URL}/system.html#system',
@@ -120,26 +132,29 @@ VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
 }
 
 
-def get_violation_explanation_url(violation_code: str) -> str:
+def get_violation_explanation_url(violation_code: str) -> str:  # noqa: C901
     """Return the violation explanation URL for the given violation code."""
-    match = re.match(r'(\D+)(\d+)', violation_code)
-    if not match:
-        return VIOLATION_DEFAULT_URL
-    prefix, number = match.group(1), match.group(2)
-    url_match: Optional[StringOrDict]
-    url_match = VIOLATION_EXPLANATION_URLS.get(violation_code)
-    if isinstance(url_match, str):
-        return url_match
-    url_match = VIOLATION_EXPLANATION_URLS.get(prefix)
-    if url_match:
+    match, url = re.match(r'(\D+)(\d+)', violation_code), None
+    if match:
+        prefix, number = match.group(1), match.group(2)
+        url_match: Optional[StringOrDict] = VIOLATION_EXPLANATION_URLS.get(
+            violation_code
+        )
+        if url_match is None:
+            url_match = VIOLATION_EXPLANATION_URLS.get(prefix)
         if isinstance(url_match, str):
             return url_match
-        hundredth_place = number[0]
-        submatch = url_match.get(hundredth_place)
-        if not submatch:
-            for url_key, url_value in url_match.items():
-                if hundredth_place in url_key.split(','):
-                    submatch = url_value
-        if isinstance(submatch, str):
-            return submatch
-    return VIOLATION_DEFAULT_URL
+        elif isinstance(url_match, dict):
+            hundredth_place = number[0]
+            submatch = url_match.get(hundredth_place)
+            if not submatch:
+                for url_key, url_value in url_match.items():
+                    if hundredth_place in url_key.split(','):
+                        submatch = url_value
+            if isinstance(submatch, str):
+                return submatch
+        if callable(url_match):
+            url = url_match(code=violation_code)
+        else:
+            url = url_match
+    return url or VIOLATION_DEFAULT_URL

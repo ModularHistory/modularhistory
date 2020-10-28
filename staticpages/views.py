@@ -16,7 +16,7 @@ DEFAULT_TEMPLATE = 'staticpages/default.html'
 # when a 404 is raised, which often means CsrfViewMiddleware.process_view
 # has not been called even if CsrfViewMiddleware is installed. So we need
 # to use @csrf_protect, in case the template needs {% csrf_token %}.
-# However, we can't just wrap this view; if no matching staticpage exists,
+# However, we can't just wrap this view; if no matching static page exists,
 # or a redirect is required for authentication, the 404 needs to be returned
 # without any CSRF checks. Therefore, we only
 # CSRF protect the internal implementation.
@@ -62,7 +62,7 @@ def render_staticpage(request, static_page: StaticPage):
     else:
         template = loader.get_template(DEFAULT_TEMPLATE)
 
-    # To avoid having to always use the "|safe" filter in staticpage templates,
+    # To avoid having to always use the "|safe" filter in static page templates,
     # mark the title and content as already safe (since they are raw HTML
     # content in the first place).
     static_page.title = format_html(static_page.title)

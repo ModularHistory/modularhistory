@@ -1,16 +1,13 @@
+import magic
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, HTML, Layout, Submit
-
-# from forms.form import FormMixIn, CustomForm
-from django.contrib.auth.forms import (
-    AuthenticationForm,
-    UserCreationForm as BaseUserCreationForm,
-)
-from django.forms import ValidationError
+from crispy_forms.layout import HTML, Field, Layout, Submit
+from django import forms
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.urls import reverse
-
+import logging
+from account.admin import EMAIL_FIELD, PASSWORD_FIELD, USERNAME_FIELD
 from account.models import User
-from account.admin import EMAIL_FIELD, USERNAME_FIELD, PASSWORD_FIELD
 from modularhistory.constants import SOCIAL_AUTH_URL_NAME
 
 DEFAULT_FIELD_CLASSES = 'form-control mb-4'
@@ -24,12 +21,12 @@ class LoginForm(AuthenticationForm):
         super().__init__(request, *args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
+        self.helper.field_class = ''
         self.helper.form_id = 'loginForm'
         self.helper.form_class = 'text-center border border-light p-5'
         self.helper.form_method = 'post'
         self.helper.form_action = '/account/login'
         self.helper.label_class = 'hidden'
-        # self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Sign in</p>'),
             Field(
@@ -147,7 +144,6 @@ class RegistrationForm(UserCreationForm):
             HTML(
                 f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'
             ),
-            # LoginForm.SOCIAL_LOGIN_COMPONENT,
             HTML(
                 f'''
                 <!-- Social login -->
@@ -184,7 +180,7 @@ class RegistrationForm(UserCreationForm):
         if not self.cleaned_data.get(USERNAME_FIELD):
             self.cleaned_data[USERNAME_FIELD] = email
         if email and User.objects.filter(email=email).exists():
-            raise ValidationError(
+            raise forms.ValidationError(
                 'An account with this email address has already been created.'
             )
         return email
@@ -195,12 +191,12 @@ class RegistrationForm(UserCreationForm):
         username = self.cleaned_data.get(USERNAME_FIELD) or email
         if email:
             if User.objects.filter(email=email).count() > 0:
-                raise ValidationError(
+                raise forms.ValidationError(
                     'An account with this email address already exists.'
                 )
         if username:
             if User.objects.filter(username=username).count() > 0:
-                raise ValidationError(
+                raise forms.ValidationError(
                     'An account with this username has already been created.'
                 )
         return username
@@ -217,27 +213,31 @@ class RegistrationForm(UserCreationForm):
         """Prepare field values to be saved."""
         cleaned_data = super().clean()
         if cleaned_data.get('password1') != cleaned_data.get('password2'):
-            raise ValidationError('Your passwords need to match. Please try again.')
+            raise forms.ValidationError(
+                'Your passwords need to match. Please try again.'
+            )
         return cleaned_data
 
 
-# class PictureForm(FormMixIn, forms.Form):
-#     form_id = 'pictureform'
-#     action = '/account/profile.picture/'
-#     method = 'POST'
-#     submit = 'Upload'
-#     classes = [ 'formlib-form form-horizontal' ]
-#     field_classes = [ '' ]
-#     is_ajax = True
-#
-#     picture = forms.ImageField(label='Profile picture', required=False)
-#
-#     def clean_picture(self):
-#         picture = self.cleaned_data.get("picture", False)
-#         picture.file.seek(0)
-#         mime = magic.from_buffer(picture.file.getvalue(), mime=True)
-#         print(">>> The mime type is %s." % mime)
-#         if mime not in ("image/png", "image/jpeg", "image/jpg"):
-#             raise forms.ValidationError("The file type must be JPG or PNG.")
-#         return picture
-#
+class PictureForm(forms.Form):
+    """Form for submitting or updating a profile picture."""
+
+    form_id = 'pictureform'
+    action = '/account/profile.picture/'
+    method = 'POST'
+    submit = 'Upload'
+    classes = ['formlib-form form-horizontal']
+    field_classes = ['']
+    is_ajax = True
+
+    picture = forms.ImageField(label='Profile picture', required=False)
+
+    def clean_picture(self):
+        """Prepare the picture to be saved."""
+        picture = self.cleaned_data.get('picture', False)
+        picture.file.seek(0)
+        mime = magic.from_buffer(picture.file.getvalue(), mime=True)
+        logging.info(f'>>> The mime type is {mime}.')
+        if mime not in ('image/png', 'image/jpeg', 'image/jpg'):
+            raise forms.ValidationError('The file type must be JPG or PNG.')
+        return picture

@@ -40,3 +40,8 @@ def get_duplicated_files(path) -> DuplicatedFiles:
                 # )
     raise NotImplementedError
     return duplicated_files
+
+
+def relativize(path: str):
+    """Convert the path to a relative path."""
+    return join('.', path)

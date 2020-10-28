@@ -197,7 +197,7 @@ class Image(MediaModel):
             key = match.group(2).strip()
             image = cls.objects.get(key=key)
             logging.error(f'{key} --> {image.pk}: {error}')
-            # img_placeholder = img_placeholder.replace(key, str(image.pk))  # TODO
+            # image_placeholder = image_placeholder.replace(key, str(image.pk))  # TODO
         image_html = render_to_string(
             'images/_card.html', context={IMAGE_KEY: image, 'obj': image}
         )

@@ -278,12 +278,6 @@ class UserAdmin(BaseUserAdmin):
 
     inlines = [SocialAuthInline]
 
-    # actions = ['some_action']
-    #
-    # def some_action(self, request, queryset):
-    #     #do something...
-    # some_action.short_description = "blabla"
-
 
 admin_site.register(User, UserAdmin)
 

@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from django.db import models
-from django.db.models import CASCADE, ForeignKey, SET_NULL
+from django.db.models import CASCADE, SET_NULL, ForeignKey
 
 from account.models import User
 from modularhistory.constants import CONTENT_TYPE_IDS

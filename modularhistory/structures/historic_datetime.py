@@ -94,7 +94,7 @@ class HistoricDateTime(datetime):
         """Whether the date is before common era (BCE)."""
         # Python can only create date objects with year >= 1.
         # All historic dates BCE are set with a year value of 1 in the db.
-        # The year BCE is calculated from the obj's second and microsecond values.
+        # The year BCE is calculated from the object's second and microsecond values.
         return bool(self.year <= 1 and self.microsecond)
 
     @property
@@ -149,7 +149,6 @@ class HistoricDateTime(datetime):
     @property
     def year_bp(self) -> int:
         """Return the year in YBP (years before present)."""
-        # TODO: test cutting out the Decimal nonsense and just using sigfig
         current_year = datetime.now().year
         if self.is_bce:
             ybp = self.year_bce + APPROXIMATE_PRESENT_YEAR
@@ -157,7 +156,7 @@ class HistoricDateTime(datetime):
             ybp = current_year - self.year
         ybp = int(sigfig.round(ybp, sigfigs=self.significant_figures))
         # Correct rounding error if needed
-        if TEN_THOUSAND < ybp < ONE_MILLION:  # Should use BCE is smaller than this TODO
+        if TEN_THOUSAND < ybp < ONE_MILLION:  # TODO: use BCE if smaller than this
             scale = 500
             ybp = round(ybp / scale) * scale
         return int(ybp)

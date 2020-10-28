@@ -87,8 +87,8 @@ class MegaClient(Mega):
         if not file_url:
             raise RequestError('File is not accessible anymore')
         file_size = file_data[file_size_key]
-        # attribs = decrypt_attr(base64_url_decode(file_data['at']), keys)
-        # file_name = attribs[n]
+        # attributes = decrypt_attr(base64_url_decode(file_data['at']), keys)
+        # file_name = attributes[n]
         input_file = requests.get(file_url, stream=True).raw
         key_string = a32_to_str(keys)
         iv_string = a32_to_str([iv[0], iv[1], iv[0], iv[1]])

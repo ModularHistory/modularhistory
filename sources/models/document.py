@@ -21,44 +21,32 @@ JSON_FIELD_NAME = 'extra'
 class DocumentSource(SourceWithPageNumbers):
     """A historical document (as a source)."""
 
-    # collection_number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     help_text='aka acquisition number',
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    collection_number = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # location_info = jsonstore.CharField(
-    #     max_length=LOCATION_INFO_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     help_text='Ex: John H. Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1',
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    location_info = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # descriptive_phrase = jsonstore.CharField(
-    #     max_length=DESCRIPTIVE_PHRASE_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    descriptive_phrase = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # information_url = jsonstore.URLField(
-    #     max_length=URL_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     help_text='URL for information regarding the document',
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    information_url = ExtraField(json_field_name=JSON_FIELD_NAME)
+    collection_number = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+        help_text='aka acquisition number',
+    )
+    location_info = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+        help_text=(
+            'Ex: John Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
+        ),
+    )
+    descriptive_phrase = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+        help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
+    )
+    information_url = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+        help_text='URL for information regarding the document',
+    )
 
 
 class Collection(ModelWithComputations):

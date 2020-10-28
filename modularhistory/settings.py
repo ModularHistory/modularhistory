@@ -635,11 +635,9 @@ ADMIN_TOOLS_THEMING_CSS = 'styles/admin.css'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
 CRISPY_FAIL_SILENTLY = not DEBUG
-CRISPY_CLASS_CONVERTERS: Dict[str, str] = {
-    # 'textinput': 'textinput inputtext'
-}
+CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
 
-# https://django-select2.readthedocs.io/en/latest/django_select2.html#module-django_select2.conf
+# https://django-select2.readthedocs.io/en/latest/django_select2.html#django_select2.conf.Select2Conf.CSS
 # SELECT2_CSS = ''
 
 MENU_ITEMS = [

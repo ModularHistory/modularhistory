@@ -7,7 +7,6 @@ from django_webtest import WebTest
 
 from modularhistory import settings
 
-
 PERMANENT_REDIRECT = 301
 SUCCESS = PERMANENT_REDIRECT if settings.SECURE_SSL_REDIRECT else 200
 
@@ -33,6 +32,6 @@ class TestSearch(WebTest):
         """Test that the search page loads successfully."""
         page = self.app.get(reverse('search'))
         assert page.status_code == SUCCESS
-        # page.mustcontain('<html>')
+        page.mustcontain('<html>')
         assert 'form' in page
         # assert 'My Article' in page.click('Blog')

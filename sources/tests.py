@@ -2,7 +2,6 @@ import pytest
 
 from sources.models import Source
 
-
 # from hypothesis import assume, given
 # from hypothesis.extra.django import from_model
 # from hypothesis.strategies import text

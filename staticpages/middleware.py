@@ -13,7 +13,7 @@ class StaticPageFallbackMiddleware(FlatpageFallbackMiddleware):
     def process_response(self, request, response):
         """Attempt to fall back on a static page."""
         if response.status_code != HTTP404_RESPONSE_CODE:
-            return response  # No need to check for a flatpage for non-404 responses.
+            return response
         try:
             return staticpage(request, request.path_info)
         # Return the original response if any errors happened. Because this

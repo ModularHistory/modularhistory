@@ -50,12 +50,6 @@ class JSONField(BaseJSONField):
         if not self.schema:
             return None
         return json.loads(self.schema) if isinstance(self.schema, str) else self.schema
-        # model_file = inspect.getfile(self.model)
-        # dirname = os.path.dirname(model_file)
-        # # schema file related to model.py path
-        # p = os.path.join(dirname, self.schema)
-        # with open(p, 'r') as file:
-        #     return json.loads(file.read())
 
     def _validate_schema(self, json_value):
         """Validate with JSON Schema."""
@@ -72,11 +66,18 @@ class ExtraField:
 
     name: str
 
-    def __init__(self, json_field_name: str, null: bool = True, blank: bool = True):
+    def __init__(
+        self,
+        json_field_name: str,
+        null: bool = True,
+        blank: bool = True,
+        help_text: Optional[str] = None,
+    ):
         """TODO: add docstring."""
         self.json_field_name = json_field_name
         self.null = null
         self.blank = blank
+        self.help_text = help_text
 
     def __get__(self, instance: Model, owner: Type[Model] = None) -> Optional[Any]:
         """See https://docs.python.org/3/reference/datamodel.html#object.__get__."""

@@ -301,23 +301,25 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
                 f'{html}, information available at '
                 f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
             )
-        # TODO: Remove search icon; insert link intelligently
-        # if self.file_url:
-        #     html += (
-        #         f'<a href="{self.file_url}" class="mx-1 display-source"'
-        #         f' data-toggle="modal" data-target="#modal">'
-        #         f'<i class="fas fa-search"></i>'
-        #         f'</a>'
-        #     )
-        # elif self.url:
-        #     link = self.url
-        #     if self.page_number and 'www.sacred-texts.com' in link:
-        #         link = f'{link}#page_{self.page_number}'
-        #     html += (
-        #         f'<a href="{link}" class="mx-1" target="_blank">'
-        #         f'<i class="fas fa-search"></i>'
-        #         f'</a>'
-        #     )
+        the_code_below_is_good = False
+        if the_code_below_is_good:
+            # TODO: Remove search icon; insert link intelligently
+            if self.file_url:
+                html += (
+                    f'<a href="{self.file_url}" class="mx-1 display-source"'
+                    f' data-toggle="modal" data-target="#modal">'
+                    f'<i class="fas fa-search"></i>'
+                    f'</a>'
+                )
+            elif self.url:
+                link = self.url
+                if self.page_number and 'www.sacred-texts.com' in link:
+                    link = f'{link}#page_{self.page_number}'
+                html += (
+                    f'<a href="{link}" class="mx-1" target="_blank">'
+                    f'<i class="fas fa-search"></i>'
+                    f'</a>'
+                )
         return format_html(fix_comma_positions(html))
 
     html.admin_order_field = FieldNames.string

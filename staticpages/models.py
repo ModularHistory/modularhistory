@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.flatpages.models import FlatPage
+from django.db import models
 
 META_DESCRIPTION_MAX_LENGTH: int = 200
 

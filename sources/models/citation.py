@@ -21,9 +21,9 @@ if TYPE_CHECKING:
     from quotes.models import Quote
 
 # group 1: model class name
-# group 2: citation pk (e.g., '988')
+# group 2: citation pk (e.g., '123')
 # group 3: ignore
-# group 4: page string (e.g., 'p. 22')
+# group 4: page string (e.g., 'p. 10')
 # group 5: ignore
 # group 6: quotation (e.g., "It followed institutionalized procedures....")
 # group 7: ignore
@@ -119,25 +119,27 @@ class Citation(ModelWithComputations):
                             ]
                         )
         # TODO: Remove search icon so citations can be joined together with semicolons
-        # if self.source_file_url:
-        #     html += (
-        #         f'<a href="{self.source_file_url}" class="display-source"'
-        #         f' target="_blank" data-toggle="modal" data-target="#modal">'
-        #         f'<i class="fas fa-search"></i>'
-        #         f'</a>'
-        #     )
-        # elif self.source.url or self.source.container and self.source.container.url:
-        #     link = self.source.url if self.source.url else self.source.container.url
-        #     if self.page_number:
-        #         if 'www.sacred-texts.com' in link:
-        #             link = f'{link}#page_{self.page_number}'
-        #         elif 'josephsmithpapers.org' in link:
-        #             link = f'{link}/{self.page_number}'
-        #     html += (
-        #         f'<a href="{link}" target="_blank">'
-        #         f'<i class="fas fa-search"></i>'
-        #         f'</a>'
-        #     )
+        the_following_code_is_fixed = False
+        if the_following_code_is_fixed:
+            if self.source_file_url:
+                html += (
+                    f'<a href="{self.source_file_url}" class="display-source"'
+                    f' target="_blank" data-toggle="modal" data-target="#modal">'
+                    f'<i class="fas fa-search"></i>'
+                    f'</a>'
+                )
+            elif self.source.url or self.source.container and self.source.container.url:
+                link = self.source.url if self.source.url else self.source.container.url
+                if self.page_number:
+                    if 'www.sacred-texts.com' in link:
+                        link = f'{link}#page_{self.page_number}'
+                    elif 'josephsmithpapers.org' in link:
+                        link = f'{link}/{self.page_number}'
+                html += (
+                    f'<a href="{link}" target="_blank">'
+                    f'<i class="fas fa-search"></i>'
+                    f'</a>'
+                )
         html = f'<span class="citation">{html}</span>'
         return format_html(html)
 

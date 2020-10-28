@@ -3,7 +3,8 @@ from tempfile import NamedTemporaryFile
 from typing import Union
 from urllib.request import urlopen
 
-from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
 from django.db import models
 from django.db.models import QuerySet
@@ -48,13 +49,6 @@ class User(AbstractUser):
     force_password_change = models.BooleanField(
         'Prompt user to change password upon first login', default=False
     )
-
-    # address = models.CharField(null=True, blank=True, max_length=100)
-    # address2 = models.CharField(null=True, blank=True, max_length=40)
-    # city = models.CharField(null=True, blank=True, max_length=20)
-    # state = models.CharField(null=True, blank=True, max_length=2, choices=settings.STATES)
-    # zip_code = models.CharField(null=True, blank=True, max_length=5)
-    # date_of_birth = models.DateField(null=True, blank=True)
 
     social_auth: 'QuerySet[UserSocialAuth]'
     objects: UserManager = UserManager()
