@@ -26,11 +26,15 @@ class SearchableModelAdmin(ModelAdmin):
             request, queryset, search_term
         )
         if search_term:
-            queryset = self.model.objects.search(search_term, suppress_unverified=False)
+            queryset = self.model.objects.search(
+                search_term,
+                suppress_unverified=False,
+                suppress_hidden=False,
+            )
         return queryset, use_distinct
 
     def get_urls(self):
-        """TODO: add docstring."""
+        """Return URLs used by searchable model admins."""
         urls = super().get_urls()
         custom_urls = [
             path(

@@ -31,56 +31,36 @@ class Book(TextualSource):
         'volume_number': NUMBER,
     }
 
-    # translator = jsonstore.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    translator = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # publisher = jsonstore.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    publisher = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # edition_number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    edition_number = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # edition_year = jsonstore.CharField(
-    #     null=True,
-    #     blank=True,
-    #     max_length=4,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    edition_year = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # printing_number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    printing_number = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # volume_number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    volume_number = ExtraField(json_field_name=JSON_FIELD_NAME)
+    translator = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    publisher = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    edition_number = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    edition_year = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    printing_number = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    volume_number = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
 
     @property
     def edition_string(self) -> Optional[str]:

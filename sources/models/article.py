@@ -12,30 +12,8 @@ JSON_FIELD_NAME = 'extra'
 class Article(SourceWithPageNumbers):
     """A published article (as a source)."""
 
-    # Moved to base class
-    # publication = ForeignKey(
-    #     'sources.Publication',
-    #     null=True,
-    #     blank=True,
-    #     on_delete=CASCADE
-    # )
-
-    # JSON fields
-    # number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    number = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # volume = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    volume = ExtraField(json_field_name=JSON_FIELD_NAME)
+    number = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
+    volume = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
 
     searchable_fields = ['full_string', 'publication__name']
 

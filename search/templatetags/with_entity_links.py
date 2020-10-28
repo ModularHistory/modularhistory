@@ -14,7 +14,6 @@ register = template.Library()
 def with_entity_links(html: str):
     """TODO: write docstring."""
     if re.search(ENTITY_NAME_REGEX, html):
-        # from entities.models import Entity
         processed_entity_keys = []
         for match in re.finditer(ENTITY_NAME_REGEX, html):
             key = match.group(1).strip()
@@ -23,7 +22,6 @@ def with_entity_links(html: str):
             if key not in processed_entity_keys:
                 processed_entity_keys.append(key)
                 try:
-                    # entity = Entity.objects.get(pk=key)
                     entity_link = (
                         f'<a href="{reverse("entities:detail", args=[key])}" '
                         f'target="_blank">{entity_name}</a>'

@@ -1,32 +1,40 @@
 import logging
 from os import remove
 from os.path import join
+from typing import TYPE_CHECKING
 
 from django.db.models.fields.files import FieldFile
 
 from modularhistory import settings
 from modularhistory.utils import files
 
+if TYPE_CHECKING:
+    from sources.models import SourceFile, TextualSource
+
 
 class TextualSourceFile(FieldFile):
     """A source file for a textual source."""
 
     # TODO
-    @staticmethod
-    def dedupe():
+    def dedupe(self):
         """Remove duplicated source files."""
         path = join(settings.MEDIA_ROOT, 'sources')
         duplicated_files = files.get_duplicated_files(path)
-        from sources.models import Source
-
-        source_set = Source.objects.all()
-        for source in source_set:
-            if source.source_file:
-                for duplicated_file, duplicate_files in duplicated_files.items():
-                    for filename in duplicate_files:
-                        logging.info(f'{filename} -> {duplicated_file}')
-                        if source.source_file.name == filename:
-                            logging.info(source.source_file.name)
-                            remove(join(settings.MEDIA_ROOT, filename))
-                            source.source_file.name = duplicated_file
+        model_cls = self.instance.__class__
+        source_file: 'SourceFile'
+        for source_file in model_cls.objects.all():
+            for duplicated_file, duplicate_files in duplicated_files.items():
+                for filename in duplicate_files:
+                    duplicated_file_name = join('sources', duplicated_file)
+                    source_file_name = join('sources', filename)
+                    if source_file.name == source_file_name:
+                        designated_source_file: 'SourceFile' = model_cls.objects.get(
+                            file=duplicated_file_name
+                        )
+                        logging.info(f'{source_file.name} -> {duplicated_file_name}')
+                        remove(join(settings.MEDIA_ROOT, filename))
+                        source: 'TextualSource'
+                        for source in source_file.sources.all():
+                            source.db_file = designated_source_file
                             source.save()
+                        source_file.delete()

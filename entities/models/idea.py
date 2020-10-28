@@ -15,7 +15,6 @@ class Idea(Model):
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     description = HTMLField(null=True, blank=True)
     promoters = ManyToManyField('entities.Entity', related_name='ideas', blank=True)
-    # related_ideas = ManyToManyField('self', )
 
     def __str__(self):
         """Return the idea's string representation."""

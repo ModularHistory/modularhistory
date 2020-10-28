@@ -37,12 +37,6 @@ IMAGE_FIELD_NAME = 'image'
 IMAGE_KEY = IMAGE_FIELD_NAME
 
 
-# TODO
-# STORAGE_OPTIONS = (
-#     'mega',
-# )
-
-
 class Image(MediaModel):
     """An image."""
 
@@ -173,12 +167,13 @@ class Image(MediaModel):
             raise ValidationError(
                 f'{self.image} with caption=`{self.caption}` already exists.'
             )
-        # # TODO
-        # if mega and not len(self.links):
-        #     pass
-        #     # mega_client = mega.login(MEGA_USERNAME, MEGA_PASSWORD)
-        #     # mega_client.upload(self.image.url)
-        #     # input('continue?')
+        # TODO
+        enable_mega_backup = False
+        if enable_mega_backup:
+            from modularhistory.storage.mega_storage import mega_client
+
+            if mega_client and not len(self.links):
+                mega_client.upload(self.image.url)
 
     @classmethod
     def get_object_html(

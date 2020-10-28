@@ -24,9 +24,3 @@ class EntitySerializer(serializers.ModelSerializer):
             'images',
             'affiliated_entities',
         ]
-
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     if instance.is_superuser:
-    #         representation['admin'] = True
-    #     return representation

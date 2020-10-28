@@ -20,7 +20,7 @@ ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)
 OBJECT_REGEX = re.compile(r'<< ?(\w+):(?!>>)[\s\S]+? ?>>')
 
 
-def process(_, html: str, processable_content_types: Iterable[str]) -> str:
+def process(html: str) -> str:
     """
     Return the processed version of an HTML field value.
 
@@ -111,8 +111,7 @@ class HTMLField(MceHTMLField):
         """
         field_class = 'modularhistory.fields.HTMLField'
         name, path, args, kwargs = super().deconstruct()
-        if self.processor != self.default_processor:
-            kwargs['processor'] = self.processor
+        kwargs['processor'] = self.processor
         return name, field_class, args, kwargs
 
     def from_db_value(
@@ -155,11 +154,9 @@ class HTMLField(MceHTMLField):
         for pattern, replacement in replacements:
             html_value = re.sub(pattern, replacement, html_value)
         processed_html = html_value
-        if self.processor:
+        if callable(self.processor):
             try:
-                processed_html = self.processor(
-                    html_value, self.processable_content_types
-                )
+                processed_html = self.processor(html_value)
             except RecursionError as error:
                 logging.error(f'Unable to process HTML: {error}')
             except Exception as error:
@@ -194,25 +191,3 @@ class HTMLField(MceHTMLField):
         """Convert the object to a string."""
         html_value = self.value_from_object(html_object)
         return self.get_prep_value(html_value) or EMPTY_STRING
-
-
-# def get_image_html(image: Union['Image', Match]):
-#     """TODO: add docstring."""
-#     if hasattr(image, 'group'):
-#         match = image
-#         key = match.group(1).strip()
-#         from images.models import Image
-#         try:
-#             image = Image.objects.get(pk=key)
-#         except ValueError as e:  # legacy key
-#             logging.error(f'{e}')
-#             image = Image.objects.get(key=key)
-#     image_html = render_to_string(
-#         'images/_card.html',
-#         context={'image': image, 'obj': image}
-#     )
-#     if image.width < FLOAT_UPPER_WIDTH_LIMIT:
-#         image_html = f'<div class="float-right pull-right">{image_html}</div>'
-#     if image.width < CENTER_UPPER_WIDTH_LIMIT:
-#         image_html = f'<div style="text-align: center">{image_html}</div>'
-#     return image_html

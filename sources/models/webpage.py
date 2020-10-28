@@ -11,23 +11,16 @@ class WebPage(TextualSource):
 
     # TODO: Creat WebSite model
 
-    # website_title = jsonstore.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    website_title = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # organization_name = jsonstore.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    organization_name = ExtraField(json_field_name=JSON_FIELD_NAME)
+    website_title = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    organization_name = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
 
     @property
     def __html__(self) -> str:

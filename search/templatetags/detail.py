@@ -5,7 +5,6 @@ from django.template import Library, loader
 from django.template.context import RequestContext
 from django.utils.html import format_html
 
-# from django.apps import apps
 from search.templatetags.highlight import highlight
 
 register = Library()

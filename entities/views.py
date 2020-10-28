@@ -59,7 +59,7 @@ class IndexView(generic.ListView):
 
     model = Entity
     template_name = 'entities/index.html'
-    # paginate_by = 10
+    paginate_by = 20
     context_object_name = 'entities'
 
     def get_queryset(self):

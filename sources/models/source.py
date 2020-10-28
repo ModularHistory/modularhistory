@@ -95,7 +95,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         'self',
         through='sources.SourceContainment',
         through_fields=('source', 'container'),
-        # related_name='contained_sources',
+        related_name='contained_sources',
         symmetrical=False,
         blank=True,
     )

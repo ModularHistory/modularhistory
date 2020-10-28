@@ -33,17 +33,7 @@ class HomePageView(TemplateView):
             excluded_content_types=self.excluded_content_types,
             entities=self.entities,
             topics=self.topics,
-            # places=self.places
-            # initial=data
             collapse_refinements=True,
         )
         context['search_form'] = search_form
         return context
-
-
-# class HomePageView(TemplateView):
-#     template_name = 'home/index.html'
-#
-#
-# class HomePageView(TemplateView):
-#     template_name = 'home/index.html'

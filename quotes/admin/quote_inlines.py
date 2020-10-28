@@ -1,8 +1,10 @@
 """Admin for the quotes app."""
 
+import re
 from typing import Optional
 
-from admin import TabularInline
+from admin import GenericTabularInline, TabularInline
+from modularhistory.constants import OCCURRENCE_CT_ID
 from quotes import models
 
 
@@ -31,24 +33,21 @@ class BitesInline(TabularInline):
 
 
 # TODO: try to get this reverse relationship working
-# class OccurrencesInline(GenericTabularInline):
-#     model = models.QuoteRelation
-#     # readonly_fields = ['']
-#     # autocomplete_fields = ['occurrence']
-#     verbose_name = 'occurrence'
-#     verbose_name_plural = 'occurrences'
-#
-#     def get_queryset(self, request):
-#         # qs: QuerySet = super().get_queryset(request)
-#         pk = re.search(r'/(\d+)/', request.path).group(1)
-#         ct = ContentType.objects.get_for_model(Occurrence)
-#         qs: QuerySet = models.QuoteRelation.objects.filter(
-#             quote_id=pk,
-#             content_type_id=ct.id
-#         )
-#         return qs.filter(content_type_id=ct.id)
-#
-#     def get_extra(self, request, model_instance=None, **kwargs):
-#         if len(self.get_queryset(request)):
-#             return 0
-#         return 1
+class OccurrencesInline(GenericTabularInline):
+    """Inline admin for a quote's related occurrences."""
+
+    model = models.QuoteRelation
+    verbose_name = 'occurrence'
+    verbose_name_plural = 'occurrences'
+
+    def get_queryset(self, request):
+        """Return the filtered queryset."""
+        pk = re.search(r'/(\d+)/', request.path).group(1)
+        ct_id = OCCURRENCE_CT_ID
+        return models.QuoteRelation.objects.filter(quote_id=pk, content_type_id=ct_id)
+
+    def get_extra(self, request, model_instance=None, **kwargs):
+        """Return the number of extra/blank input rows to display."""
+        if len(self.get_queryset(request)):
+            return 0
+        return 1

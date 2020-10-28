@@ -2,7 +2,7 @@
 
 import logging
 from itertools import chain
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from django.db.models import Q, QuerySet, Subquery
 from django.views.generic import ListView
@@ -85,12 +85,7 @@ class SearchResultsView(ListView):
         query = self.request.GET.get(QUERY_KEY)
         context[QUERY_KEY] = query
 
-        # Initial data
-        # data = {
-        #     'content_types': None,
-        #     'entities': None,
-        #     'topics': None,
-        # }
+        initial_data: Dict[str, Any] = {}
         search_form = SearchForm(
             request=self.request,
             query=query,
@@ -99,7 +94,7 @@ class SearchResultsView(ListView):
             excluded_content_types=self.excluded_content_types,
             entities=self.entities,
             topics=self.topics,
-            # initial=data
+            initial=initial_data,
         )
         context['search_form'] = search_form
         return context
@@ -127,19 +122,25 @@ class SearchResultsView(ListView):
             QUERY_KEY: request.GET.get(QUERY_KEY, None),
             'start_year': start_year,
             'end_year': request.GET.get('end_year_0', None),
-            'rank': self.sort_by_relevance,
-            'suppress_unverified': self.suppress_unverified,
-            'db': self.db,
             'entity_ids': entity_ids,
             'topic_ids': topic_ids,
+            'rank': self.sort_by_relevance,
+            'suppress_unverified': self.suppress_unverified,
+            'suppress_hidden': True,
         }
 
         occurrence_results, occurrence_result_ids = _get_occurrence_results(
             ct_ids, **search_kwargs
         )
-        quote_results, quote_result_ids = _get_quote_results(ct_ids, **search_kwargs)
-        image_results = _get_image_results(ct_ids, **search_kwargs)
-        source_results = _get_source_results(ct_ids, **search_kwargs)
+        quote_results, quote_result_ids = _get_quote_results(
+            ct_ids, occurrence_results, occurrence_result_ids, **search_kwargs
+        )
+        image_results = _get_image_results(
+            ct_ids, occurrence_results, quote_results, **search_kwargs
+        )
+        source_results = _get_source_results(
+            ct_ids, occurrence_results, quote_results, **search_kwargs
+        )
 
         self.entities = Entity.objects.filter(
             pk__in=Subquery(
@@ -154,23 +155,8 @@ class SearchResultsView(ListView):
             )
         )
 
-        # # occurrence topic relations
-        # for topic_id in TopicRelation.objects.filter(
-        #     Q(content_type_id=OCCURRENCE_CT_ID) & Q(object_id__in=occurrence_result_ids)
-        # ).values_list('topic_id', flat=True).distinct():
-        #     logging.info(topic_id)
-        #     topics_ids.append(topic_id)
-        #
-        # # quote topic relations
-        # for topic_id in TopicRelation.objects.filter(
-        #     Q(content_type_id=QUOTE_CT_ID) & Q(object_id__in=quote_result_ids)
-        # ).values_list('topic_id', flat=True).distinct():
-        #     logging.info(topic_id)
-        #     topics_ids.append(topic_id)
-
         self.topics = (
-            Topic.objects.using(self.db)
-            .filter(
+            Topic.objects.filter(
                 Q(
                     topic_relations__content_type_id=QUOTE_CT_ID,
                     topic_relations__object_id__in=quote_result_ids,
@@ -183,11 +169,6 @@ class SearchResultsView(ListView):
             .order_by('key')
             .distinct()
         )
-
-        # self.places = Place.objects.filter(
-        #     Q(occurrences__in=occurrence_results)
-        #     | Q(publications__in=source_results)
-        # ).distinct
 
         ordered_queryset = self.order_queryset(
             # Combine querysets
@@ -261,18 +242,23 @@ def _get_image_results(ct_ids, occurrence_results, quote_results, **search_kwarg
     return image_results
 
 
-def _get_source_results(ct_ids, **search_kwargs):
+def _get_source_results(ct_ids, occurrence_results, quote_results, **search_kwargs):
     if SOURCE_CT_ID in ct_ids or not ct_ids:
         source_results = Source.objects.search(**search_kwargs)  # type: ignore
+
         # TODO: This was broken by conversion to generic relations with quotes & occurrences
-        # source_results = source_results.exclude(
-        #     Q(occurrences__in=occurrence_results) |
-        #     Q(quotes__related_occurrences__in=occurrence_results) |
-        #     Q(contained_sources__occurrences__in=occurrence_results) |
-        #     Q(contained_sources__quotes__related_occurrences__in=occurrence_results) |
-        #     Q(quotes__in=quote_results) |
-        #     Q(contained_sources__quotes__in=quote_results)
-        # )
+        not_broken = False
+        if not_broken:
+            source_results = source_results.exclude(
+                Q(occurrences__in=occurrence_results)
+                | Q(quotes__related_occurrences__in=occurrence_results)
+                | Q(contained_sources__occurrences__in=occurrence_results)
+                | Q(
+                    contained_sources__quotes__related_occurrences__in=occurrence_results
+                )
+                | Q(quotes__in=quote_results)
+                | Q(contained_sources__quotes__in=quote_results)
+            )
     else:
         source_results = Source.objects.none()
     return source_results

@@ -42,6 +42,5 @@ class StaticPageAdmin(FlatPageAdmin):
     )
 
 
-# admin.site.unregister(FlatPage)
 admin_site.register(StaticPage, StaticPageAdmin)
 admin_site.register(FlatPage, FlatPageAdmin)

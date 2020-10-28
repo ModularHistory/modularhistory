@@ -52,9 +52,6 @@ class SourceAdmin(SearchableModelAdmin):
     ]
     autocomplete_fields = [model.FieldNames.file, model.FieldNames.location]
 
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
-    date_hierarchy = 'date'
-
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 

@@ -96,7 +96,6 @@ class UserCreationForm(BaseUserCreationForm):
     class Meta:
         model = User
         exclude = ()
-        # fields = [USERNAME_FIELD, EMAIL_FIELD]
 
 
 class RegistrationForm(UserCreationForm):
@@ -111,12 +110,12 @@ class RegistrationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
+        self.helper.field_class = ''
         self.helper.form_id = 'registrationForm'
         self.helper.form_class = 'text-center border border-light p-5'
         self.helper.form_method = 'post'
         self.helper.form_action = '/account/register'
         self.helper.label_class = 'hidden'
-        # self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Register account</p>'),
             HTML(

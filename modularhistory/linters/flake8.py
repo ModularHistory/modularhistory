@@ -6,7 +6,7 @@ https://docs.djangoproject.com/en/3.1/topics/checks/
 
 import re
 import subprocess  # noqa: S404
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from modularhistory.linters.config import (
     ConfigFileOptionsParser as BaseConfigFileOptionsParser,
@@ -15,7 +15,8 @@ from modularhistory.linters.config import LinterOptions, PerModuleOptions
 from modularhistory.utils import linting
 from modularhistory.utils.commands import autoformat
 
-StringOrDict = Union[str, Dict[str, str]]
+StringOrCallable = Union[str, Callable]
+StringOrCallableOrDict = Union[StringOrCallable, Dict[str, StringOrCallable]]
 
 # Example:
 # ./history/fields/html_field.py:138:17: WPS442 Found outer scope names shadowing: Quote
@@ -24,14 +25,14 @@ OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+\d+)\s+(.+)')
 AUTOFORMAT_TRIGGERS = {'BLK100', 'Q000'}
 
 
-def flake8(**kwargs):
+def flake8(interactive: bool = False, **kwargs):
     """Run flake8 linter."""
     output = subprocess.run(['flake8'], capture_output=True).stdout  # noqa: S603, S607
     if output:
-        process_flake8_output(output.decode())
+        process_flake8_output(output.decode(), interactive=interactive)
 
 
-def process_flake8_output(output: str):
+def process_flake8_output(output: str, interactive: bool = False):
     """Process/filters and displays output from flake8."""
     options, per_module_options = _get_flake8_options()
     output_lines = output.rstrip().split('\n')
@@ -53,9 +54,10 @@ def process_flake8_output(output: str):
         if code in AUTOFORMAT_TRIGGERS:
             files_to_autoformat.add(filename)
     print()
-    if len(files_to_autoformat) and input('Autoformat files? [Y/n] ') != 'n':
-        autoformat(files=files_to_autoformat)
-        flake8()
+    if interactive:
+        if len(files_to_autoformat) and input('Autoformat files? [Y/n] ') != 'n':
+            autoformat(files=files_to_autoformat)
+            flake8()
 
 
 def _process_flake8_message(location, filename, code, message, options):
@@ -88,7 +90,7 @@ class ConfigFileFlake8OptionsParser(BaseConfigFileOptionsParser):
 VIOLATION_DEFAULT_URL = (
     'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
 )
-VIOLATION_EXPLANATION_URLS: Dict[str, StringOrDict] = {
+VIOLATION_EXPLANATION_URLS: Dict[str, StringOrCallableOrDict] = {
     'B': 'https://github.com/PyCQA/flake8-bugbear#list-of-warnings',  # Bugbear
     'BLK': 'https://github.com/peterjc/flake8-black',  # Black
     'C': {
@@ -137,7 +139,7 @@ def get_violation_explanation_url(violation_code: str) -> str:  # noqa: C901
     match, url = re.match(r'(\D+)(\d+)', violation_code), None
     if match:
         prefix, number = match.group(1), match.group(2)
-        url_match: Optional[StringOrDict] = VIOLATION_EXPLANATION_URLS.get(
+        url_match: Optional[StringOrCallableOrDict] = VIOLATION_EXPLANATION_URLS.get(
             violation_code
         )
         if url_match is None:

@@ -9,11 +9,6 @@ class FactEntitiesInline(TabularInline):
     extra = 1
 
 
-# class FactTopicsInline(TabularInline):
-#     model = models.Fact.related_topics.through
-#     extra = 1
-
-
 class OccurrencesInline(TabularInline):
     """Inline admin for a fact's related occurences."""
 
@@ -43,11 +38,9 @@ class FactAdmin(ModelAdmin):
     list_display = ['text']
     list_filter = ['related_entities', 'related_occurrences']
     search_fields = ['text']
-    # ordering = ['datetime', 'start_date', 'end_date']
 
     inlines = [
         FactEntitiesInline,
-        # FactTopicsInline,
         OccurrencesInline,
         SupportedFactsInline,
         SupportiveFactsInline,

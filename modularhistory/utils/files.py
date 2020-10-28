@@ -22,23 +22,17 @@ def get_duplicated_files(path) -> DuplicatedFiles:
     reference_filenames = get_extensionless_filenames(path)
     filenames = deepcopy(reference_filenames)
     duplicated_files: DuplicatedFiles = {}
-    for potential_duplicate_file in filenames:
-        for filename in reference_filenames:
-            should_be_edited = all(
-                [
-                    filename in potential_duplicate_file,
-                    potential_duplicate_file != filename,
-                    potential_duplicate_file.startswith(filename[:3]),
-                ]
+    for potential_duplicate_filename in filenames:
+        reference_filenames.remove(potential_duplicate_filename)
+        for reference_filename in reference_filenames:
+            is_duplicate = (
+                reference_filename in potential_duplicate_filename
+                and potential_duplicate_filename.startswith(reference_filename[:3])
             )
-            if should_be_edited:
-                duplicate_files = duplicated_files.get(filename) or []
-                duplicate_files.append(potential_duplicate_file)
-                duplicated_files[filename] = duplicate_files
-                # to_edit.append(
-                #     (f'sources/{filename}.pdf', f'sources/{filename_copy}.pdf')
-                # )
-    raise NotImplementedError
+            if is_duplicate:
+                duplicate_files = duplicated_files.get(reference_filename) or []
+                duplicate_files.append(potential_duplicate_filename)
+                duplicated_files[reference_filename] = duplicate_files
     return duplicated_files
 
 

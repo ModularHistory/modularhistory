@@ -30,7 +30,6 @@ class EntityAdmin(ModelAdmin):
         'id',
     ]
     list_filter = [HasQuotesFilter, HasImageFilter, CategoriesFilter]
-    # list_editable = []
     inlines = [
         ImagesInline,
         CategorizationsInline,

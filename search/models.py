@@ -47,11 +47,6 @@ class Search(Model):
     ordering = models.CharField(max_length=10, choices=ORDERING_OPTIONS)
     start_year = HistoricDateTimeField(null=True, blank=True)
     end_year = HistoricDateTimeField(null=True, blank=True)
-    # entities = ManyToManyField(
-    #
-    # )  # TODO
-    # topics = ManyToManyField(  # TODO
-    # content_types =  # TODO
 
     class Meta:
         verbose_name_plural = 'Searches'

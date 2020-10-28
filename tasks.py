@@ -91,7 +91,7 @@ def commit(context):
 @task
 def flake8(context, *args):
     """Run flake8 linter."""
-    lint_with_flake8()
+    lint_with_flake8(interactive=True)
 
 
 @task
@@ -105,7 +105,7 @@ def lint(context, *args):
     """Run linters."""
     # Run Flake8
     print('Running flake8...')
-    lint_with_flake8()
+    lint_with_flake8(interactive=True)
 
     # Run MyPy
     print('Running mypy...')
@@ -169,18 +169,22 @@ def test(context):
     context.run('coverage combine')
 
 
-# TODO
-# @task
-# def deploy(context):
-#     """Run linters."""
-#     context.run('python manage.py collectstatic')
-#     app_file = 'gc_app.yaml'
-#     env_file = 'gc_env.yaml'
-#     perm_env_file = 'gc_env.yaml.perm'
-#     temp_env_file = 'gc_env.yaml.tmp'
-#     # TODO: load secrets to env
-#     context.run(
-#         f'cp {env_file} {perm_env_file} && envsubst < {env_file} > {temp_env_file} '
-#         f'&& mv {temp_env_file} {env_file} && gcloud app deploy {app_file}'
-#     )
-#     context.run(f'mv {perm_env_file} {env_file}')
+@task
+def deploy(context):
+    """Run linters."""
+    # TODO
+    is_implemented = False
+    if is_implemented:
+        context.run('python manage.py collectstatic')
+        app_file = 'gc_app.yaml'
+        env_file = 'gc_env.yaml'
+        perm_env_file = 'gc_env.yaml.perm'
+        temp_env_file = 'gc_env.yaml.tmp'
+        # TODO: load secrets to env
+        context.run(
+            f'cp {env_file} {perm_env_file} && envsubst < {env_file} > {temp_env_file} '
+            f'&& mv {temp_env_file} {env_file} && gcloud app deploy {app_file}'
+        )
+        context.run(f'mv {perm_env_file} {env_file}')
+    else:
+        raise NotImplementedError

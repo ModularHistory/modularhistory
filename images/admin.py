@@ -56,10 +56,6 @@ class ImageAdmin(ImageCroppingMixin, ModelAdmin):
             if field_name in fields:
                 fields.remove(field_name)
                 fields.insert(0, field_name)
-        # for field_name in ('position', 'page_number', 'end_page_number', 'notes'):
-        #     if field_name in fields:
-        #         fields.remove(field_name)
-        #         fields.append(field_name)
         return fields
 
 

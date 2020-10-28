@@ -26,7 +26,6 @@ class QuoteAdmin(SearchableModelAdmin):
 
     model = models.Quote
 
-    # form = QuoteForm
     list_display = [
         'pk',
         'bite',
@@ -48,12 +47,10 @@ class QuoteAdmin(SearchableModelAdmin):
     ]
     search_fields = models.Quote.searchable_fields
     ordering = ['date']
-    # autocomplete_fields = []
     readonly_fields = SearchableModelAdmin.readonly_fields + ['citation_html']
     inlines = [
         AttributeesInline,
         CitationsInline,
-        # OccurrencesInline,
         RelatedQuotesInline,
         RelatedTopicsInline,
         BitesInline,

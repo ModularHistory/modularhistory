@@ -16,14 +16,11 @@ JSON_FIELD_NAME = 'extra'
 class Affidavit(DocumentSource):
     """An affidavit (as a source)."""
 
-    # certifier = jsonstore.CharField(
-    #     max_length=NAME_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    certifier = ExtraField(json_field_name=JSON_FIELD_NAME)
+    certifier = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
 
     def clean(self):
         """TODO: add docstring."""

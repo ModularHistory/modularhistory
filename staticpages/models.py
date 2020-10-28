@@ -17,7 +17,4 @@ class StaticPage(AbstractFlatPage):
     meta_description = models.TextField(max_length=META_DESCRIPTION_MAX_LENGTH)
 
     class Meta:
-        # db_table = 'django_flatpage'
-        # verbose_name = _('flat page')
-        # verbose_name_plural = _('flat pages')
         ordering = ['url']

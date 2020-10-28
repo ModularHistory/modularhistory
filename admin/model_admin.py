@@ -1,18 +1,15 @@
 from typing import List, Optional, Tuple, Type, Union
 
+import requests
 from aenum import Constant
 from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db.models import JSONField
 from django.http import HttpRequest
-from django_celery_beat.admin import (
-    CrontabSchedule,
-    IntervalSchedule,
-    PeriodicTask,
-    PeriodicTaskAdmin,
-    SolarSchedule,
-)
+from django_celery_beat.admin import CrontabSchedule, IntervalSchedule, PeriodicTask
+from django_celery_beat.admin import PeriodicTaskAdmin as BasePeriodicTaskAdmin
+from django_celery_beat.admin import SolarSchedule
 from django_celery_results.admin import TaskResult, TaskResultAdmin
 from django_json_widget.widgets import JSONEditorWidget
 from nested_admin.nested import NestedModelAdmin
@@ -40,6 +37,9 @@ else:
     BASE_CSS = 'styles/base.css'
     MCE_CSS = 'styles/mce.css'
     ADMIN_CSS = 'styles/admin.css'
+
+# TODO
+enable_celery = False
 
 
 class ModelAdmin(NestedModelAdmin):
@@ -84,56 +84,64 @@ class ModelAdmin(NestedModelAdmin):
         return list(set(readonly_fields))
 
 
-# IntervalSchedule.objects.get_or_create(
-#     every=1,
-#     period=IntervalSchedule.DAYS
-# )
-# CrontabSchedule.objects.get_or_create(
-#     # minute='*',
-#     hour='1',
-#     day_of_week='1',
-#     day_of_month='*',
-#     month_of_year='*',
-# )
-# latitude = '40.23380'
-# longitude = '-111.65850'
-# # address = settings.SERVER_LOCATION
-# # api_key = settings.GOOGLE_MAPS_API_KEY
-# response = requests.get(
-#     f'https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}'
-# ).json()
-# # if response['status'] == 'OK':
-# #     latitude = response['results'][0]['geometry']['location']['lat']
-# #     longitude = response['results'][0]['geometry']['location']['lng']
-# SolarSchedule.objects.get_or_create(
-#     event='sunset',
-#     latitude=latitude,
-#     longitude=longitude,
-# )
-#
-# class CustomPeriodicTaskForm(PeriodicTaskForm):
-#     pass
-#
-# class CustomPeriodicTaskAdmin(PeriodicTaskAdmin):
-#     fieldsets = (
-#         (None, {
-#             u'fields': (u'name', u'regtask', u'task', u'enabled', u'description'),
-#             u'classes': (u'extrapretty', u'wide')
-#         }),
-#         (u'Schedule', {
-#             u'fields': (u'interval', u'crontab', u'solar'),
-#             u'classes': (u'extrapretty', u'wide')
-#         }),
-#         (u'Arguments', {
-#             u'fields': (u'args', u'kwargs'),
-#             u'classes': (u'extrapretty', u'wide', u'collapse', u'in')
-#         }),
-#         (u'Execution Options', {
-#             u'fields': (u'expires', u'queue', u'exchange', u'routing_key'),
-#             u'classes': (u'extrapretty', u'wide', u'collapse', u'in')
-#         })
-#     )
-#     form = CustomPeriodicTaskForm
+if enable_celery:
+    IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.DAYS)
+    CrontabSchedule.objects.get_or_create(
+        hour='1',
+        day_of_week='1',
+        day_of_month='*',
+        month_of_year='*',
+    )
+    latitude = '40.23380'
+    longitude = '-111.65850'
+    address = settings.SERVER_LOCATION
+    api_key = settings.GOOGLE_MAPS_API_KEY
+    response = requests.get(
+        f'https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={api_key}'
+    ).json()
+    if response['status'] == 'OK':
+        latitude = response['results'][0]['geometry']['location']['lat']
+        longitude = response['results'][0]['geometry']['location']['lng']
+    SolarSchedule.objects.get_or_create(
+        event='sunset',
+        latitude=latitude,
+        longitude=longitude,
+    )
+
+
+class PeriodicTaskAdmin(BasePeriodicTaskAdmin):
+    """Admin for periodic Celery tasks."""
+
+    fieldsets = (
+        (
+            None,
+            {
+                u'fields': (u'name', u'regtask', u'task', u'enabled', u'description'),
+                u'classes': (u'extrapretty', u'wide'),
+            },
+        ),
+        (
+            u'Schedule',
+            {
+                u'fields': (u'interval', u'crontab', u'solar'),
+                u'classes': (u'extrapretty', u'wide'),
+            },
+        ),
+        (
+            u'Arguments',
+            {
+                u'fields': (u'args', u'kwargs'),
+                u'classes': (u'extrapretty', u'wide', u'collapse', u'in'),
+            },
+        ),
+        (
+            u'Execution Options',
+            {
+                u'fields': (u'expires', u'queue', u'exchange', u'routing_key'),
+                u'classes': (u'extrapretty', u'wide', u'collapse', u'in'),
+            },
+        ),
+    )
 
 
 class ContentTypeFields(Constant):
@@ -178,14 +186,9 @@ class SiteAdmin(ModelAdmin):
 
 admin_site.register(Site, SiteAdmin)
 
-admin_site.register(PeriodicTask, PeriodicTaskAdmin)
-admin_site.register(SolarSchedule)
-admin_site.register(IntervalSchedule)
-admin_site.register(CrontabSchedule)
-
-admin_site.register(TaskResult, TaskResultAdmin)
-
-# admin_site.register(PeriodicTask, CustomPeriodicTaskAdmin)
-# admin_site.register(IntervalSchedule)
-# admin_site.register(CrontabSchedule)
-# admin_site.register(TaskResult, TaskResultAdmin)
+if enable_celery:
+    admin_site.register(PeriodicTask, PeriodicTaskAdmin)
+    admin_site.register(SolarSchedule)
+    admin_site.register(IntervalSchedule)
+    admin_site.register(CrontabSchedule)
+    admin_site.register(TaskResult, TaskResultAdmin)

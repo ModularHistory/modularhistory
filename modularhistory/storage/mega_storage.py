@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 from datetime import datetime
@@ -15,8 +16,8 @@ from mega.mega import (
     RequestError,
     a32_to_str,
     base64_to_a32,
-    # base64_url_decode,
-    # decrypt_attr,
+    base64_url_decode,
+    decrypt_attr,
     get_chunks,
     str_to_a32,
 )
@@ -56,8 +57,8 @@ class MegaClient(Mega):
                 chunk = aes.decrypt(file_stream.read(chunk_size))
                 temp_output_file.write(chunk)
                 mac_str = _encrypt_chunk(chunk, encryptor, mac_encryptor, file_size)
-                # st_size = os.stat(temp_output_file.name).st_size
-                # print(f'{st_size} of {file_size} downloaded')
+                st_size = os.stat(temp_output_file.name).st_size
+                logging.info(f'{st_size} of {file_size} downloaded')
             file_mac = str_to_a32(mac_str)
             # check mac integrity
             new_meta_mac = (file_mac[0] ^ file_mac[1], file_mac[2] ^ file_mac[3])
@@ -87,8 +88,9 @@ class MegaClient(Mega):
         if not file_url:
             raise RequestError('File is not accessible anymore')
         file_size = file_data[file_size_key]
-        # attributes = decrypt_attr(base64_url_decode(file_data['at']), keys)
-        # file_name = attributes[n]
+        attributes = decrypt_attr(base64_url_decode(file_data['at']), keys)
+        file_name = attributes[n]
+        logging.info(f'Getting file stream for {file_name}...')
         input_file = requests.get(file_url, stream=True).raw
         key_string = a32_to_str(keys)
         iv_string = a32_to_str([iv[0], iv[1], iv[0], iv[1]])

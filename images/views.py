@@ -8,7 +8,7 @@ class IndexView(generic.ListView):
 
     model = Image
     template_name = 'images/index.html'
-    # paginate_by = 10
+    paginate_by = 20
     context_object_name = 'images'
 
     def get_queryset(self):

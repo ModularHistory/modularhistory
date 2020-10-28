@@ -68,22 +68,3 @@ class AdminMenu(Menu):
                 )
             menu_items.append(items.MenuItem(app, children=children))
         return menu_items
-
-    # def init_with_context(self, context):
-    #     """Use this method if you need to access the request context."""
-    #     super().init_with_context(context)
-    #     Use sessions to store the visited pages stack
-    #     history = request.session.get('modularhistory', [])
-    #     for item in history:
-    #         self.children.append(MenuItem(
-    #             title=item['title'],
-    #             url=item['url']
-    #         ))
-    #     # Add the current page to the history
-    #     history.insert(0, {
-    #         'title': context['title'],
-    #         'url': request.META['PATH_INFO']
-    #     })
-    #     if len(history) > 10:
-    #         history = history[:10]
-    #     request.session['modularhistory'] = history

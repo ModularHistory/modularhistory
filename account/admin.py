@@ -8,7 +8,6 @@ from social_django.models import Association, Nonce, UserSocialAuth
 
 from account.models import User
 
-# from account.forms import UserCreationForm #  UserChangeForm
 from admin import TabularInline, admin_site
 
 EMAIL_FIELD = 'email'

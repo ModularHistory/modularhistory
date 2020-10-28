@@ -5,15 +5,7 @@ from search import models
 class SearchAdmin(ModelAdmin):
     """Admin for user searches."""
 
-    list_display = [
-        'pk',
-    ]
-    # list_filter = []
-    # search_fields = models.Quote.searchable_fields
-    # ordering = ['date']
-    # autocomplete_fields = []
-    # readonly_fields = ['citation_html']
-    # inlines = []
+    list_display = ['pk']
 
 
 admin_site.register(models.Search, SearchAdmin)

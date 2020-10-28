@@ -61,10 +61,6 @@ def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
         second, microsecond = inv_exponent, inv_decimal_num
         year = 1
         # TODO
-        # if year_system == BCE:
-        #     pass
-        # elif year_system == YBP:
-        #     pass
     return year, second, microsecond
 
 

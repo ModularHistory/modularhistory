@@ -50,10 +50,12 @@ class SearchForm(forms.Form):
             required=False,
         )
 
-        # TODO: refactor (to not increase queries/page load time) and uncomment
-        # # Disable sorting by relevance if there are no criteria
-        # if not any([query, entities, topics]):
-        #     self.fields['ordering'].widget.attrs['disabled'] = True
+        # TODO: refactor (to not increase queries/page load time)
+        this_code_is_efficient = False
+        if this_code_is_efficient:
+            # Disable sorting by relevance if there are no criteria
+            if not any([query, entities, topics]):
+                self.fields['ordering'].widget.attrs['disabled'] = True
 
         # Filter unverified items
         quality = 'verified' if suppress_unverified else 'unverified'
@@ -94,21 +96,15 @@ class SearchForm(forms.Form):
             widget=Select2MultipleWidget,
             required=False,
         )
-        # self.fields['places'] = ModelMultipleChoiceField(
-        #     queryset=(places or Place.objects.all()),
-        #     # widget=Select2MultipleWidget,
-        #     required=False
-        # )
 
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
         self.helper.form_id = 'refineSearchForm'
-        # self.helper.form_class = 'd-none'
         self.helper.form_method = 'get'
         self.helper.form_action = 'search'
-        # self.helper.label_class = 'col-lg-2'
-        # self.helper.field_class = 'col-lg-8'
-        # self.helper.add_input(Submit('submit', 'Submit')
+        self.helper.form_class = ''
+        self.helper.field_class = ''
+        self.helper.label_class = ''
 
         refinements = [
             Div('start_year', css_class=EMPTY_STRING),

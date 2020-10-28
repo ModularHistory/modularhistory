@@ -20,12 +20,16 @@ class ImageManager(SearchableModelManager):
         topic_ids: Optional[List[int]] = None,
         rank: bool = False,
         suppress_unverified: bool = True,
-        db: str = 'default',
+        suppress_hidden: bool = True,
     ) -> SearchableModelQuerySet:
         """Return search results from images."""
         qs = (
             super()
-            .search(db=db, suppress_unverified=suppress_unverified)
+            .search(
+                query=query,
+                suppress_unverified=suppress_unverified,
+                suppress_hidden=suppress_hidden,
+            )
             .filter_by_date(start_year=start_year, end_year=end_year)
         )
         # Limit to specified entities

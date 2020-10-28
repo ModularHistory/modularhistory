@@ -83,7 +83,8 @@ class SearchableModelQuerySet(QuerySet):
             annotations: Dict[str, Any] = {'search': vector}
             if rank:
                 annotations['rank'] = SearchRank(vector, search_query)
-            qs = qs.annotate(**annotations).filter(search=search_query)  # type: ignore
+            qs = qs.annotate(**annotations)  # type: ignore
+            qs = qs.filter(search=search_query)
         return qs.order_by('id').distinct('id')
 
 
@@ -103,12 +104,14 @@ class SearchableModelManager(Manager):
         topic_ids: Optional[List[int]] = None,
         rank: bool = False,
         suppress_unverified: bool = True,
-        db: str = 'default',
+        suppress_hidden: bool = True,
     ) -> SearchableModelQuerySet:
         """Return a queryset of search results."""
         qs = self.get_queryset().prefetch_related('tags__topic')
         if suppress_unverified:
             qs = qs.filter(verified=True)
+        if suppress_hidden:
+            qs = qs.filter(hidden=False)
         return qs.search(query=query, rank=rank)
 
 

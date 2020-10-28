@@ -95,12 +95,3 @@ class HistoricDateTimeField(DateTimeField):
         if preprep_value and settings.USE_TZ and is_naive(preprep_value):
             preprep_value = make_aware(preprep_value)
         return super().get_prep_value(preprep_value)
-
-    # https://docs.djangoproject.com/en/3.0/howto/customg-model-fields/#converting-query-values-to-database-values
-    # def get_db_prep_value(self, value, connection, prepared=False):
-    #     return self.get_prep_value(value)
-    #
-    # # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#id2
-    # def value_to_string(self, obj) -> str:
-    #     value = self.value_from_object(obj)
-    #     return self.get_prep_value(value) or ''

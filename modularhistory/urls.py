@@ -60,7 +60,6 @@ urlpatterns = [
     path('error', error),  # error trigger (for testing purposes)
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-# urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.ENVIRONMENT == environments.DEV:
     urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
