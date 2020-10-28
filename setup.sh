@@ -181,12 +181,6 @@ pip --version &>/dev/null || {
   exit 1
 }
 
-if [[ "$os" == "$MAC_OS" ]]; then
-  brew install libmagic
-elif [[ "$os" == "$LINUX" ]]; then
-  sudo apt-get install libmagic1
-fi
-
 if [[ "$interactive" == true ]]; then
   # Make sure that Postgres is installed
   psql -V &>/dev/null || {
