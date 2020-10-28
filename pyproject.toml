@@ -116,7 +116,6 @@ tinycss = "==0.4"
 virtualenv = "^20.0"
 wcwidth = "==0.2.5"
 youtube-dl = "^2020.7.28"
-python-magic-bin = "^0.4.14"
 
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"
