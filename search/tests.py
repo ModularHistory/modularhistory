@@ -16,5 +16,5 @@ class TestSearch(WebTest):
         """Test that the search page loads successfully."""
         page = self.app.get(reverse('search'))
         assert page.status_code == SUCCESS
-        page.mustcontain('<html>')
+        page.mustcontain('<body>')
         assert 'form' in page

@@ -371,7 +371,7 @@ python-versions = "*"
 name = "coverage"
 version = "5.3"
 description = "Code coverage measurement for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
@@ -3123,7 +3123,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "2f8898bbb8b47fa3517c79f51c2558c3accd41583dcbe5c11f0dd215d1e9481e"
+content-hash = "38acddfbd2b9c20dcef45d2f9f37cc3c42b92d6badce2f491a1bb3cfd070bbde"
 
 [metadata.files]
 aenum = [

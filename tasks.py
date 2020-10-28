@@ -159,13 +159,17 @@ def restore_squashed_migrations(context):
 def test(context):
     """Run tests."""
     pytest_args = [
+        '-v',
         '-n 3',
         # '-x',
         '--maxfail=2',
         # '--hypothesis-show-statistics',
+        '--disable-warnings',
     ]
     commands.escape_prod_db()
-    context.run(f'coverage run -m pytest {" ".join(pytest_args)}')
+    command = f'coverage run -m pytest {" ".join(pytest_args)}'
+    print(command)
+    context.run(command)
     context.run('coverage combine')
 
 
