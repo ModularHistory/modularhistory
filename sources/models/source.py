@@ -54,7 +54,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     """A source for quotes or historical information."""
 
     full_string = models.CharField(
-        verbose_name='database string',
+        verbose_name='searchable string',
         max_length=MAX_DB_STRING_LENGTH,
         null=False,
         blank=True,
@@ -131,6 +131,7 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         location = 'location'
         title = 'title'
         url = 'url'
+        extra = 'extra'
 
     searchable_fields = [FieldNames.string, FieldNames.description]
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)

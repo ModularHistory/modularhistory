@@ -100,6 +100,7 @@ VIOLATION_EXPLANATION_URLS: Dict[str, StringOrCallableOrDict] = {
     },
     'D': 'https://www.pydocstyle.org/en/latest/error_codes.html',  # Docstrings
     'DAR': 'https://github.com/terrencepreilly/darglint#error-codes',  # Darglint
+    'DJ12': 'https://docs.djangoproject.com/en/dev/internals/contributing/writing-code/coding-style/#model-style',  # noqa: E501
     'DJ': 'https://github.com/rocioar/flake8-django',  # Flake8-Django
     'E800': 'https://github.com/sobolevn/flake8-eradicate',  # Eradicate
     'E': 'http://pycodestyle.pycqa.org/en/latest/intro.html#error-codes',

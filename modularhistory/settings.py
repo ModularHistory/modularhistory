@@ -485,6 +485,29 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
 
+# https://docs.djangoproject.com/en/3.1/topics/logging/
+if DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+                'propagate': False,
+            },
+        },
+    }
+
 # https://django-tinymce.readthedocs.io/en/latest/usage.html
 TINYMCE_JS_URL = 'https://cloud.tinymce.com/stable/tinymce.min.js'
 TINYMCE_JS_ROOT = 'https://cloud.tinymce.com/stable/'

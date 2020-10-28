@@ -17,15 +17,14 @@ from sass_processor.processor import sass_processor
 
 from admin.admin_site import admin_site
 from modularhistory import environments, settings
-from modularhistory.fields import HistoricDateTimeField, SourceFileField
-from modularhistory.forms import HistoricDateWidget, SourceFileInput
+from modularhistory.fields import HistoricDateTimeField
+from modularhistory.forms import HistoricDateWidget
 from modularhistory.models import Model
 
 AdminListFilter = Union[str, Type[ListFilter]]
 
 FORM_FIELD_OVERRIDES = {
     HistoricDateTimeField: {'widget': HistoricDateWidget},
-    SourceFileField: {'widget': SourceFileInput},
     JSONField: {'widget': JSONEditorWidget},
 }
 

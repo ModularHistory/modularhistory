@@ -1,15 +1,15 @@
 """Model classes for source files."""
 
-from os import listdir, rename
-from os.path import isfile, join
+import logging
+from os.path import join
 from typing import Optional
-from django.utils.safestring import SafeString
-from django.utils.html import format_html
 
 from django.core.exceptions import ValidationError
+from django.core.files.storage import Storage, default_storage
 from django.db import models
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
-from modularhistory import settings
 from modularhistory.fields.file_field import SourceFileField, upload_to
 from modularhistory.models import Model
 
@@ -50,24 +50,35 @@ class SourceFile(Model):
 
     def save(self, *args, **kwargs):
         """Save the source file to the database."""
+        self.clean()
+        storage: Storage = default_storage
         if self.name and self.name != self.file_name:
-            full_path = join(settings.MEDIA_ROOT, 'sources')
-            files = [
-                file for file in listdir(full_path) if isfile(join(full_path, file))
-            ]
-            if self.file_name in files:
-                rename(join(full_path, self.file_name), join(full_path, self.name))
-                self.file.name = f'sources/{self.name}'
-        if 'sources/sources' in self.file.name:
-            raise ValidationError(f'Bad file name: {self.file.name}')
-        if self.file.name.endswith('None'):
-            raise ValidationError(f'Bad file name: {self.file.name}')
+            if storage.exists(self.file.name):
+                old_name = self.file.name
+                new_name = join('sources', self.name)
+                logging.debug(f'Renaming {old_name} to {new_name}...')
+                source_file = storage.open(old_name)
+                storage.save(new_name, source_file)
+                self.file.name = new_name
+                storage.delete(old_name)
+            else:
+                logging.debug(f'{self.file.name} does not exist in {storage}.')
+        elif not self.name:
+            self.name = storage.get_available_name(self.file.name)
         super().save(*args, **kwargs)
-        # Set the name attr after the initial save,
-        # because the initial save modifies the file name.
-        if not self.name:
-            self.name = self.file_name
-            super().save()
+
+    def clean(self) -> None:
+        """Prepare the source file to be saved."""
+        super().clean()
+        if self.file:
+            bad_filename_conditions = (
+                self.file.name.endswith('None'),
+                'sources/sources' in self.file.name,
+            )
+            if any(bad_filename_conditions):
+                raise ValidationError(f'Bad file name: {self.file.name}')
+        else:
+            raise ValidationError('No file is selected.')
 
     @property
     def default_page_number(self):
@@ -76,16 +87,10 @@ class SourceFile(Model):
 
     @property
     def file_name(self) -> Optional[str]:
-        """Return the filename of the actual file object."""
+        """Return the filename with the path stripped."""
         if self.file:
             return self.file.name.replace('sources/', '')
         return None
-
-    def full_clean(self, exclude=None, validate_unique=True):
-        """TODO: add docstring."""
-        super().full_clean(exclude=exclude, validate_unique=validate_unique)
-        if not self.file:
-            raise ValidationError('No file.')
 
     @property
     def link(self) -> Optional[SafeString]:

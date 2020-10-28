@@ -41,7 +41,10 @@ class SourceAdmin(SearchableModelAdmin):
         AttributeeFilter,
         TypeFilter,
     ]
-    readonly_fields = SearchableModelAdmin.readonly_fields + ['full_string']
+    readonly_fields = SearchableModelAdmin.readonly_fields + [
+        model.FieldNames.string,
+        model.FieldNames.extra,
+    ]
     search_fields = models.Source.searchable_fields
     ordering = ['date', model.FieldNames.string]
     inlines = [
