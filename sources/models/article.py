@@ -15,7 +15,19 @@ class Article(SourceWithPageNumbers):
     number = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
     volume = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
 
-    searchable_fields = ['full_string', 'publication__name']
+    class FieldNames(SourceWithPageNumbers.FieldNames):
+        number = 'number'
+        volume = 'volume'
+
+    searchable_fields = [FieldNames.string, 'publication__name']
+    extra_fields = {
+        **SourceWithPageNumbers.extra_fields,
+        FieldNames.number: 'number',
+        FieldNames.volume: 'number',
+    }
+    inapplicable_fields = [
+        FieldNames.collection,
+    ]
 
     @property
     def __html__(self) -> str:

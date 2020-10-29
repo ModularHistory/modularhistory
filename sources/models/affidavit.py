@@ -22,6 +22,17 @@ class Affidavit(DocumentSource):
         blank=True,
     )
 
+    class FieldNames(DocumentSource.FieldNames):
+        certifier = 'certifier'
+
+    extra_fields = {
+        **DocumentSource.extra_fields,
+        FieldNames.certifier: 'string',
+    }
+    inapplicable_fields = [
+        FieldNames.publication,
+    ]
+
     def clean(self):
         """TODO: add docstring."""
         super().clean()

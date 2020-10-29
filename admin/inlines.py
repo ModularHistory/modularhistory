@@ -9,8 +9,20 @@ from nested_admin.nested import (
 
 from admin.model_admin import FORM_FIELD_OVERRIDES
 
-GenericTabularInline = NestedGenericTabularInline
-GenericStackedInline = NestedGenericStackedInline
+# GenericTabularInline = NestedGenericTabularInline
+# GenericStackedInline = NestedGenericStackedInline
+
+
+class GenericTabularInline(NestedGenericTabularInline):
+    """Tabular inline admin for generically related objects."""
+
+    formfield_overrides = FORM_FIELD_OVERRIDES
+
+
+class GenericStackedInline(NestedGenericStackedInline):
+    """Stacked inline admin for generically related objects."""
+
+    formfield_overrides = FORM_FIELD_OVERRIDES
 
 
 class StackedInline(NestedStackedInline):

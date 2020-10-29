@@ -96,8 +96,8 @@ class LinterOptions:
         """Return whether the path is to be included in linting."""
         return linting.match(self.include, path)
 
-    def error_is_ignored(self, filename: str, message: str, error_code: str) -> bool:
-        """Return whether the error should be ignored, based on the filename, message, and error code."""
+    def error_is_ignored(self, message: str, error_code: str, filename: str) -> bool:
+        """Return whether the violation should be ignored."""
         return any(
             [
                 linting.match(self.error_filters, message),
@@ -118,7 +118,7 @@ class LinterOptions:
 
     def get_message_level(self, message, error_code, filename) -> Optional[str]:
         """Return a modified message level based on specified options."""
-        if self.error_is_ignored(filename, message, error_code):
+        if self.error_is_ignored(message, error_code, filename):
             return None
         # If we have specified something to check for
         elif self.select and error_code in self.select:

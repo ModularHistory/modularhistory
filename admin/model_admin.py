@@ -7,11 +7,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db.models import JSONField
 from django.http import HttpRequest
-from django_celery_beat.admin import CrontabSchedule, IntervalSchedule, PeriodicTask
-from django_celery_beat.admin import PeriodicTaskAdmin as BasePeriodicTaskAdmin
-from django_celery_beat.admin import SolarSchedule
+from django_celery_beat.admin import (
+    CrontabSchedule,
+    IntervalSchedule,
+    PeriodicTask,
+    PeriodicTaskAdmin as BasePeriodicTaskAdmin,
+    SolarSchedule
+)
 from django_celery_results.admin import TaskResult, TaskResultAdmin
-from django_json_widget.widgets import JSONEditorWidget
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
@@ -20,8 +23,10 @@ from modularhistory import environments, settings
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.forms import HistoricDateWidget
 from modularhistory.models import Model
+from modularhistory.widgets.json_editor_widget import JSONEditorWidget
 
 AdminListFilter = Union[str, Type[ListFilter]]
+
 
 FORM_FIELD_OVERRIDES = {
     HistoricDateTimeField: {'widget': HistoricDateWidget},

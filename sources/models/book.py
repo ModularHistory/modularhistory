@@ -22,15 +22,6 @@ NUMBER = 'number'
 class Book(TextualSource):
     """A book (as a source)."""
 
-    extra_fields = {
-        'translator': STRING,
-        'publisher': STRING,
-        'edition_number': NUMBER,
-        'edition_year': NUMBER,
-        'printing_number': NUMBER,
-        'volume_number': NUMBER,
-    }
-
     translator = ExtraField(
         json_field_name=JSON_FIELD_NAME,
         null=True,
@@ -61,6 +52,24 @@ class Book(TextualSource):
         null=True,
         blank=True,
     )
+
+    class FieldNames(TextualSource.FieldNames):
+        translator = 'translator'
+        publisher = 'publisher'
+        edition_number = 'edition_number'
+        edition_year = 'edition_year'
+        printing_number = 'printing_number'
+        volume_number = 'volume_number'
+
+    extra_fields = {
+        **TextualSource.extra_fields,
+        FieldNames.translator: STRING,
+        FieldNames.publisher: STRING,
+        FieldNames.edition_number: NUMBER,
+        FieldNames.edition_year: NUMBER,
+        FieldNames.printing_number: NUMBER,
+        FieldNames.volume_number: NUMBER,
+    }
 
     @property
     def edition_string(self) -> Optional[str]:

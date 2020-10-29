@@ -2,7 +2,7 @@
 
 import json
 from typing import Any, Dict, List, Optional, Type, Union
-
+import logging
 from django.core.exceptions import ValidationError
 from django.db.models import JSONField as BaseJSONField, Model  # type: ignore
 from jsonschema import exceptions as jsonschema_exceptions, validate
@@ -35,30 +35,48 @@ class JSONField(BaseJSONField):
         # Do regular validation
         super().validate(json_value, model_instance)
         # Do JSON Schema validation
-        self._validate_schema(json_value)
+        self._validate_schema(json_value, model_instance)
 
     def pre_save(self, model_instance, add):
-        """Override `pre_save` to validate with JSON Schema."""
+        """Before saving, validate with JSON Schema and remove null values."""
         json_value = super().pre_save(model_instance, add)
-        if json_value and not self.null:
-            self._validate_schema(json_value)
+        if json_value:
+            if not self.null:  # TODO: check this logic
+                self._validate_schema(json_value, model_instance)
+            # Remove keys with null values
+            for key in json_value:
+                if json_value.get(key) is None:
+                    json_value.pop(key)
         return json_value
 
-    @property
-    def _schema_data(self) -> Optional[Dict]:
+    def get_schema_data(self, model_instance) -> Optional[Dict]:
         """Return the field's JSON schema as a Python object."""
-        if not self.schema:
-            return None
-        return json.loads(self.schema) if isinstance(self.schema, str) else self.schema
+        schema = self.schema or getattr(model_instance, 'schema', None)
+        if schema:
+            if isinstance(schema, str):
+                if hasattr(self.model, schema):
+                    logging.info(f'Getting schema from {self.model.__name__}.{schema}')
+                    schema = getattr(self.model, schema, {})
+            schema_data = json.loads(schema) if isinstance(schema, str) else schema
+            if schema_data.get('properties') is None:
+                schema_data = {
+                    'type': 'object',
+                    'properties': {**schema_data}
+                }
+            return schema_data
+        return None
 
-    def _validate_schema(self, json_value):
+    def _validate_schema(self, json_value, model_instance):
         """Validate with JSON Schema."""
         # Disable JSON Schema validation when migrations are faked
-        if self.schema and self.model.__module__ != '__fake__':
-            try:
-                validate(json_value, self._schema_data)
-            except jsonschema_exceptions.ValidationError as error:
-                raise ValidationError(f'{error}')
+        if self.model.__module__ != '__fake__':
+            schema_data = self.get_schema_data(model_instance)
+            if schema_data:
+                try:
+                    logging.info(f'Validating JSON value against schema: {schema_data}')
+                    validate(json_value, schema_data)
+                except jsonschema_exceptions.ValidationError as error:
+                    raise ValidationError(f'{error}')
 
 
 class ExtraField:

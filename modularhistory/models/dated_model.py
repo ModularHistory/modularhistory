@@ -23,7 +23,8 @@ class DatedModel(Model):
 
     def date_string(self) -> str:
         """Return the string representation of the model instance's date."""
-        return soupify(self.date_html).get_text()
+        date_html = self.date_html
+        return soupify(date_html).get_text() if date_html else ''
 
     date_string.admin_order_field = 'date'
     date_string = property(date_string)  # type: ignore

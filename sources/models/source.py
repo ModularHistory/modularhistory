@@ -1,7 +1,7 @@
 """Model classes for sources."""
 
 import re
-from typing import List, Optional, TYPE_CHECKING, Union
+from typing import Dict, List, Optional, TYPE_CHECKING, Union
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -90,7 +90,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
     creators = models.CharField(
         max_length=MAX_CREATOR_STRING_LENGTH, null=True, blank=True
     )
-
     containers = models.ManyToManyField(
         'self',
         through='sources.SourceContainment',
@@ -106,8 +105,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         related_name='sources',
         blank=True,
     )
-
-    # TODO: forbid access by non-document sources
     # TODO: make many to many
     collection = models.ForeignKey(
         'sources.Collection',
@@ -116,33 +113,67 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         blank=True,
         on_delete=models.SET_NULL,
     )
-
-    # TODO: forbid access by non-document sources
     publication = models.ForeignKey(
         'sources.Publication', null=True, blank=True, on_delete=models.CASCADE
     )
 
-    extra = JSONField(null=True, blank=True, default=dict)
-
-    class FieldNames(SearchableModel.FieldNames):
-        file = 'db_file'
-        string = 'full_string'
-        description = 'description'
-        location = 'location'
-        title = 'title'
-        url = 'url'
-        extra = 'extra'
-
-    searchable_fields = [FieldNames.string, FieldNames.description]
-    admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
-    objects: SourceManager = SourceManager()
+    extra = JSONField(null=True, blank=True, default=dict, schema='extra_fields')
 
     class Meta:
         ordering = ['creators', '-date']
 
+    class FieldNames(SearchableModel.FieldNames):
+        collection = 'collection'
+        creators = 'creators'
+        description = 'description'
+        extra = 'extra'
+        file = 'db_file'
+        location = 'location'
+        publication = 'publication'
+        related = 'related'
+        string = 'full_string'
+        title = 'title'
+        type = 'type'
+        url = 'url'
+
+    objects: SourceManager = SourceManager()
+    searchable_fields = [FieldNames.string, FieldNames.description]
+    admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
+    extra_fields: Dict[str, str] = {}
+    inapplicable_fields: List[str] = [
+        FieldNames.collection,
+        FieldNames.publication,
+    ]
+
     def __str__(self):
         """Return the source's string representation."""
         return soupify(self.html).get_text()  # type: ignore
+
+    def save(self, *args, **kwargs):
+        """Save the source."""
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        """Prepare the source to be saved."""
+        super().clean()
+        if self.pk:  # If this source is not being newly created
+            is_duplicate = (
+                Source.objects.exclude(pk=self.pk)
+                .filter(full_string=self.full_string)
+                .exists()
+            )
+            if is_duplicate:
+                raise ValidationError(
+                    f'Unable to save this source because it duplicates an existing source '
+                    f'or has an identical string: {self.full_string}'
+                )
+            for container in self.containers.all():
+                if self in container.containers.all():
+                    raise ValidationError(
+                        f'This source cannot be contained by {container}, '
+                        f'because that source is already contained by this source.'
+                    )
 
     @property
     def admin_source_link(self) -> SafeString:
@@ -364,27 +395,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         )
         return format_html(html)
 
-    def clean(self):
-        """Prepare the source to be saved."""
-        super().clean()
-        if self.pk:  # If this source is not being newly created
-            is_duplicate = (
-                Source.objects.exclude(pk=self.pk)
-                .filter(full_string=self.full_string)
-                .exists()
-            )
-            if is_duplicate:
-                raise ValidationError(
-                    f'Unable to save this source because it duplicates an existing source '
-                    f'or has an identical string: {self.full_string}'
-                )
-            for container in self.containers.all():
-                if self in container.containers.all():
-                    raise ValidationError(
-                        f'This source cannot be contained by {container}, '
-                        f'because that source is already contained by this source.'
-                    )
-
     @staticmethod
     def components_to_html(components: List[str]):
         """Combine a list of HTML components into an HTML string."""
@@ -397,11 +407,6 @@ class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
         elif self.container and self.container.date:
             return self.container.date
         return None
-
-    def save(self, *args, **kwargs):
-        """Savethe source."""
-        self.clean()
-        super().save(*args, **kwargs)
 
     @property
     def __html__(self) -> str:

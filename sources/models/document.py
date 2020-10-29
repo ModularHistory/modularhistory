@@ -48,6 +48,14 @@ class DocumentSource(SourceWithPageNumbers):
         help_text='URL for information regarding the document',
     )
 
+    class FieldNames(SourceWithPageNumbers.FieldNames):
+        collection_number = 'collection_number'
+        location_info = 'location_info'
+
+    inapplicable_fields = [
+        FieldNames.publication,
+    ]
+
 
 class Collection(ModelWithComputations):
     """A collection of documents."""

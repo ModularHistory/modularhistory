@@ -29,6 +29,17 @@ class Correspondence(DocumentSource):
         blank=True,
     )
 
+    class FieldNames(DocumentSource.FieldNames):
+        recipient = 'recipient'
+
+    extra_fields = {
+        **DocumentSource.extra_fields,
+        FieldNames.recipient: 'string',
+    }
+    inapplicable_fields = [
+        FieldNames.publication,
+    ]
+
     @property
     def __html__(self) -> str:
         """TODO: write docstring."""

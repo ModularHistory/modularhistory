@@ -61,7 +61,7 @@ def process_flake8_output(output: str, interactive: bool = False):
 
 
 def _process_flake8_message(location, filename, code, message, options):
-    if not options.error_is_ignored(filename, message, code):
+    if not options.error_is_ignored(message, code, filename):
         explanation_url = get_violation_explanation_url(code)
         print(
             f'{location}: {linting.colored(message, color="red")} '
