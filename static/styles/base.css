@@ -399,10 +399,7 @@ body {
 
 .main-content {
   position: relative;
-  flex: 1;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover; }
+  flex: 1; }
   .main-content > .container {
     margin-top: 1.5rem; }
 

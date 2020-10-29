@@ -1,6 +1,7 @@
 {% extends "base.htm" %}
 
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block styles %}
     {{ search_form.media.css }}
@@ -11,7 +12,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container" style="position: relative; height: 100%; display: flex; align-items: center; justify-content: center">
+    <div class="container" style="position: relative; height: 100%; display: flex; align-items: center;
+                                  justify-content: center; background-image: url('{% static "topic_cloud.png" %}');
+                                  background-repeat: no-repeat; background-position: center; background-size: cover;">
         <div class="card p-2">
             <div class="card-body">
                 {% crispy search_form %}
