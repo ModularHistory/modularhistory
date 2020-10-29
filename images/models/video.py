@@ -21,7 +21,7 @@ class Video(MediaModel):
         unique_together = ['title', 'url']
 
     def clean(self):
-        """TODO: add docstring."""
+        """Prepare the video to be saved."""
         if not self.url:
             raise ValidationError('Video needs a link.')
         try:

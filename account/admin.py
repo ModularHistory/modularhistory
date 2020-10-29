@@ -8,7 +8,6 @@ from social_django.models import Association, Nonce, UserSocialAuth
 
 from account.models import User
 
-# from account.forms import UserCreationForm #  UserChangeForm
 from admin import TabularInline, admin_site
 
 EMAIL_FIELD = 'email'
@@ -95,7 +94,7 @@ class UserCreationForm(forms.ModelForm):
         ]
 
     def clean_email(self):
-        """Cleans the email field value."""
+        """Clean the email field value."""
         email = self.cleaned_data.get(EMAIL_FIELD)
         if User.objects.filter(email=email).count() > 0:
             raise forms.ValidationError(
@@ -104,7 +103,7 @@ class UserCreationForm(forms.ModelForm):
         return email
 
     def clean_username(self):
-        """Cleans the username field value."""
+        """Clean the username field value."""
         username = self.cleaned_data.get(USERNAME_FIELD) or self.cleaned_data.get(
             EMAIL_FIELD
         )
@@ -115,7 +114,7 @@ class UserCreationForm(forms.ModelForm):
         return username
 
     def clean(self):
-        """Prepares the input values to be saved."""
+        """Prepare the input values to be saved."""
         # Check that the two password entries match
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')
@@ -124,12 +123,12 @@ class UserCreationForm(forms.ModelForm):
         return password2
 
     def save(self, commit=True):
-        """TODO: add docstring."""
+        """Process the user creation from; save the user to the database."""
         # Save the provided password in hashed format
         user = super(UserCreationForm, self).save(commit=False)
-        user.username = self.cleaned_data.get(USERNAME_FIELD) or self.cleaned_data.get(
-            EMAIL_FIELD
-        )
+        username = self.cleaned_data.get(USERNAME_FIELD)
+        email = self.cleaned_data.get(EMAIL_FIELD)
+        user.username = username or email
         user.set_password(self.cleaned_data['password1'])
         if commit:
             user.save()
@@ -277,12 +276,6 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
     inlines = [SocialAuthInline]
-
-    # actions = ['some_action']
-    #
-    # def some_action(self, request, queryset):
-    #     #do something...
-    # some_action.short_description = "blabla"
 
 
 admin_site.register(User, UserAdmin)

@@ -1,4 +1,3 @@
-# from sys import stderr
 from django.contrib.postgres.fields import ArrayField as PostgresArrayField
 from django.forms import Field
 
@@ -9,7 +8,7 @@ class ArrayField(PostgresArrayField):
     """An array field."""
 
     def formfield(self, **kwargs) -> Field:
-        """Constructs the field to be used in forms."""
+        """Construct the field to be used in forms."""
         return super(PostgresArrayField, self).formfield(
             **{
                 'form_class': SimpleArrayField,

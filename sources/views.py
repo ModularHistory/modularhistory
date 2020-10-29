@@ -56,6 +56,5 @@ class EPubView(TemplateView):
         """TODO: add docstring."""
         context = super().get_context_data(**kwargs)
         epub_path = self.kwargs['path']
-        print(f'>>>>>>> {epub_path}')
         context['path'] = epub_path
         return context

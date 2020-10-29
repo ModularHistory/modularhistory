@@ -6,8 +6,28 @@ build-backend = "poetry.masonry.api"
 line-length = 88
 skip-string-normalization = true
 
-[tool.nitpick]
-style = "https://raw.githubusercontent.com/wemake-services/wemake-python-styleguide/master/styles/nitpick-style.toml"
+[tool.coverage.run]
+# https://coverage.readthedocs.io/en/latest/config.html#run
+omit = [
+    ".venv/",
+    ".nox/",
+    ".hypothesis/",
+]
+parallel = true
+
+[tool.coverage.html]
+# https://coverage.readthedocs.io/en/latest/config.html#html
+directory = ".coverage_html"
+
+[tool.isort]
+# https://github.com/timothycrosley/isort/wiki/isort-Settings
+atomic = true
+#default_section = "FIRSTPARTY"
+include_trailing_comma = true
+line_length = 88
+multi_line_output = 3  # vertical hanging indent
+skip_gitignore = true  # ignore files listed in .gitignore
+use_parentheses = true
 
 [tool.poetry]
 name = "modularhistory"
@@ -18,26 +38,14 @@ license = "ISC"
 readme = "README.rst"
 repository = "https://github.com/ModularHistory/modularhistory"
 
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-ra --ds='modularhistory.settings' --disable-warnings"
-python_files = [
-    "tests.py",
-    "test_*.py",
-    "*_test.py",
-]
-norecursedirs = [
-    "*env",
-    ".nox",
-]
-
 [tool.poetry.dependencies]
 python = "^3.7"
+aenum = "^2.2.4"
 appdirs = "==1.4.4"
 beautifulsoup4 = "==4.9.3"
 celery = "==4.4.7"
 certifi = "==2020.6.20"
-coverage = ">=5.3"
+channels = "^2.4.0"
 cycler = "==0.10.0"
 django = "^3.1"
 django_replicated = "==2.7"
@@ -75,6 +83,7 @@ google-cloud-tasks = "==2.0.0"
 gunicorn = "==20.0.4"
 html5lib = "==1.1"
 humanize = "^3.0"
+inflect = "^4.1.0"
 invoke = "^1.4.1"
 jsonschema = "^3.2.0"
 kombu = "==4.6.11"
@@ -86,16 +95,16 @@ pafy = "==0.5.5"
 paramiko = "==2.7.2"
 pdfkit = "==0.6.1"
 pexpect = "==4.8.0"
+Pillow = "^8.0.1"
 psycopg2-binary = "==2.8.6"
 ptyprocess = "==0.6.0"
 PyDrive = "==1.3.1"
 pympler = "==0.9"
 python-dateutil = "==2.8.1"
 python-decouple = "==3.3"
-python-magic = "==0.4.18"
 pytz = "==2020.1"
 requests = "==2.24.0"
-scp = "==0.13.2"
+scp = "^0.13"
 sentry-sdk = "^0.19"
 sigfig = "==1.1.8"
 six = "==1.15.0"
@@ -105,33 +114,61 @@ supervisor = "==4.2.1"
 tabulate = "==0.8.7"
 termcolor = "==1.1.0"
 tinycss = "==0.4"
-virtualenv = "^20.0"
+virtualenv = "^20.1"
 wcwidth = "==0.2.5"
+wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
-channels = "^2.4.0"
-aenum = "^2.2.4"
 
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"
+coverage = {extras = ["toml"], version = "^5.3"}
+darglint = "^1.5.5"
 django-pymemcache = "^1.0.0"
 django-spaghetti-and-meatballs = "^0.3.1"
-django-stubs = "==1.6.0"
+django-stubs = ">=1.7"
+django-webtest = "^1.9.7"
 djangorestframework-stubs = "==1.2.0"
 docker-compose = "^1.26"
 docker-image-size-limit = "^0.3"
+flake8-bandit = "^2.1.2"
+flake8-black = "^0.2.1"
+flake8-broken-line = "^0.2.1"
+flake8-bugbear = "^20.1.4"
+flake8-commas = "^2.0.0"
+flake8-comprehensions = "^3.3.0"
+flake8-debugger = "^3.2.1"
+flake8-django = "^1.1.1"
+flake8-docstrings = "^1.5.0"
+flake8-eradicate = "^1.0.0"
+flake8-executable = "^2.0.4"
+flake8-polyfill = "^1.0.2"
 flake8-pytest-style = "^1.3"
-hypothesis = {extras = ["django"], version = "^5.37"}
-nitpick = "^0.23.0"
+flake8-quotes = "^3.2.0"
+flake8-rst-docstrings = "^0.0.14"
+flake8-spellcheck = "^0.19.1"
+flake8-string-format = "^0.3.0"
+hypothesis = {extras = ["django"], version = "^5.38"}
+isort = "^5.6.4"
 nox = "^2020.8.22"
+pep8-naming = "^0.11.1"
 pytest = "^6.1"
-pytest-django = "^4.0"
+pytest-django = "^4"
 pytest-randomly = "^3.4"
 pytest-xdist = "^2.1.0"
 safety = "^1.9"
 tomlkit = "^0.7.0"
+unify = "^0.5"
 virtualenv-clone = "==0.5.4"
-wemake-python-styleguide = "^0.14.1"
-django-webtest = "^1.9.7"
-flake8-django = "^1.1.1"
-flake8-black = "^0.2.1"
-flake8-executable = "^2.0.4"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra --ds='modularhistory.settings'"
+python_files = [
+    "tests.py",
+    "test_*.py",
+    "*_test.py",
+]
+norecursedirs = [
+    "*env",
+    ".nox",
+]

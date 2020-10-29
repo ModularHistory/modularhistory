@@ -11,6 +11,7 @@ from modularhistory.models import (
     ModelWithComputations,
     retrieve_or_compute,
 )
+from topics.models.topic_relations import TopicRelation
 
 KEY_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
@@ -38,10 +39,10 @@ class TopicParentChildRelation(Model):
     """A relationship between a parent topic and child topic."""
 
     parent_topic = ForeignKey(
-        'Topic', related_name='child_relations', on_delete=CASCADE
+        'topics.Topic', related_name='child_relations', on_delete=CASCADE
     )
     child_topic = ForeignKey(
-        'Topic', related_name='parent_relations', on_delete=CASCADE
+        'topics.Topic', related_name='parent_relations', on_delete=CASCADE
     )
 
     class Meta:
@@ -76,7 +77,7 @@ class Topic(ModelWithRelatedQuotes, ModelWithComputations):
     related = GenericManyToManyField(
         'occurrences.Occurrence',
         'quotes.Quote',
-        through='topics.TopicRelation',
+        through=TopicRelation,
         related_name='topic_relations',
         blank=True,
     )
@@ -87,13 +88,13 @@ class Topic(ModelWithRelatedQuotes, ModelWithComputations):
         ordering = ['key']
 
     def __str__(self) -> str:
-        """Returns the topic's string representation."""
+        """Return the topic's string representation."""
         return self.key
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='child_topics_string')
     def child_topics_string(self) -> str:
-        """Returns a list of the topic's child topics as a string."""
+        """Return a list of the topic's child topics as a string."""
         return TOPIC_STRING_DELIMITER.join(
             [str(topic) for topic in self.child_topics.all()]
         )
@@ -101,7 +102,7 @@ class Topic(ModelWithRelatedQuotes, ModelWithComputations):
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='parent_topics_string')
     def parent_topics_string(self) -> str:
-        """Returns a list of the topic's parent topics as a string."""
+        """Return a list of the topic's parent topics as a string."""
         return TOPIC_STRING_DELIMITER.join(
             [str(topic) for topic in self.parent_topics.all()]
         )
@@ -109,7 +110,7 @@ class Topic(ModelWithRelatedQuotes, ModelWithComputations):
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='related_topics_string')
     def tags_string(self) -> str:
-        """Returns a list of the topic's related topics as a string."""
+        """Return a list of the topic's related topics as a string."""
         return TOPIC_STRING_DELIMITER.join(
             [str(topic) for topic in self.related_topics.all()]
         )

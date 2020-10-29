@@ -2,6 +2,6 @@ from django.apps import AppConfig
 
 
 class EntitiesConfig(AppConfig):
-    """TODO: add docstring."""
+    """Config for the entities app."""
 
     name = 'entities'

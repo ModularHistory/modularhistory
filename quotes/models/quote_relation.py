@@ -20,13 +20,13 @@ class QuoteRelation(Model):
         help_text='Determines the order of quotes.',
     )
 
-    def __str__(self) -> str:
-        """TODO: write docstring."""
-        return soupify(self.quote.bite.html).get_text()
-
     class Meta:
         unique_together = ['quote', 'content_type', 'object_id', 'position']
         ordering = ['position', 'quote']
+
+    def __str__(self) -> str:
+        """TODO: write docstring."""
+        return soupify(self.quote.bite.html).get_text()
 
     @property
     def quote_pk(self) -> str:

@@ -3,7 +3,12 @@
 function adjustMceHeight(iframe) {
     let initial_iframe_height = iframe.height();
     let content_height = iframe.contents().find('html').height() + 30;
-    iframe.height(initial_iframe_height - (initial_iframe_height - content_height));
+    console.log(`>>> content_height: ${content_height}`);
+    let new_iframe_height = initial_iframe_height - (initial_iframe_height - content_height);
+    console.log(`>>> new_iframe_height: ${new_iframe_height}`);
+    // iframe.closest('.mce-wrapper').height(new_iframe_height);
+    iframe.height(new_iframe_height);
+    return new_iframe_height;
 }
 
 $(window).on('load', function() {
@@ -24,6 +29,10 @@ $(window).on('load', function() {
         iframe.contents().find('#tinymce').on('input change keyup', (e) => {
             adjustMceHeight(iframe);
         });
+        let form_row = $(this).parent().parent('.form-row');
+        form_row.prepend('<div class="label"></div>');
+        let label_wrapper = form_row.find('.label');
+        form_row.find('label').appendTo(label_wrapper);
     });
     // $('.add-row a').click(function() {
     //     let iframe = $( this ).closest('fieldset').find('iframe');

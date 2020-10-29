@@ -46,7 +46,7 @@ class TopicAdmin(ModelAdmin):
     ]
 
     def get_urls(self):
-        """Returns the list of URLs used by the topic admin."""
+        """Return the list of URLs used by the topic admin."""
         urls = super().get_urls()
         custom_urls = [
             path(

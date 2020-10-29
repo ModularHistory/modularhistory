@@ -2,7 +2,7 @@ from django.contrib.admin import SimpleListFilter
 
 from admin.model_admin import admin_site, ModelAdmin
 from sources import models
-from sources.admin.source_admin import SourcesInline
+from sources.admin.source_admins.source_admin import SourcesInline
 from modularhistory.constants import YES, NO
 
 PAGE_OFFSET_FIELD = 'page_offset'
@@ -15,11 +15,11 @@ class PdfFilter(SimpleListFilter):
     parameter_name = 'is_pdf'
 
     def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
+        """Return an iterable of tuples (value, verbose value)."""
         return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         if self.value() == YES:
             return queryset.filter(name__icontains='pdf')
         if self.value() == NO:
@@ -35,7 +35,7 @@ class SourceFileAdmin(ModelAdmin):
     list_filter = [PdfFilter]
 
     def get_fields(self, request, model_instance=None):
-        """Returns reordered fields to be displayed in the admin."""
+        """Return reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
         if fields and PAGE_OFFSET_FIELD in fields:
             fields.remove(PAGE_OFFSET_FIELD)

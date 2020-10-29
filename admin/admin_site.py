@@ -1,4 +1,4 @@
-from typing import Dict, TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Dict, Type
 
 from django.contrib.admin import AdminSite as BaseAdminSite
 from massadmin.massadmin import mass_change_selected
@@ -14,7 +14,7 @@ class AdminSite(BaseAdminSite):
     site_header = 'ModularHistory administration'
 
     def get_registry(self) -> Dict[Type['Model'], 'ModelAdmin']:
-        """Returns a dict of Model -> ModelAdmin."""
+        """Return a dict of Model -> ModelAdmin."""
         return self._registry
 
 

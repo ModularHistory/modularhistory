@@ -10,9 +10,9 @@ from staticpages.models import StaticPage
 class StaticPageForm(FlatpageForm):
     """TODO: add docstring."""
 
-    content = forms.CharField(
+    content = forms.CharField(  # noqa: WPS110
         widget=TinyMCE(attrs={'cols': 80, 'rows': 30})
-    )  # noqa: WPS110
+    )
 
     class Meta:
         model = StaticPage
@@ -42,6 +42,5 @@ class StaticPageAdmin(FlatPageAdmin):
     )
 
 
-# admin.site.unregister(FlatPage)
 admin_site.register(StaticPage, StaticPageAdmin)
 admin_site.register(FlatPage, FlatPageAdmin)

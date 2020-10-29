@@ -22,69 +22,58 @@ NUMBER = 'number'
 class Book(TextualSource):
     """A book (as a source)."""
 
+    translator = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    publisher = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    edition_number = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    edition_year = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    printing_number = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+    volume_number = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+
+    class FieldNames(TextualSource.FieldNames):
+        translator = 'translator'
+        publisher = 'publisher'
+        edition_number = 'edition_number'
+        edition_year = 'edition_year'
+        printing_number = 'printing_number'
+        volume_number = 'volume_number'
+
     extra_fields = {
-        'translator': STRING,
-        'publisher': STRING,
-        'edition_number': NUMBER,
-        'edition_year': NUMBER,
-        'printing_number': NUMBER,
-        'volume_number': NUMBER,
+        **TextualSource.extra_fields,
+        FieldNames.translator: STRING,
+        FieldNames.publisher: STRING,
+        FieldNames.edition_number: NUMBER,
+        FieldNames.edition_year: NUMBER,
+        FieldNames.printing_number: NUMBER,
+        FieldNames.volume_number: NUMBER,
     }
-
-    # translator = jsonstore.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    translator = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # publisher = jsonstore.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    publisher = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # edition_number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    edition_number = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # edition_year = jsonstore.CharField(
-    #     null=True,
-    #     blank=True,
-    #     max_length=4,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    edition_year = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # printing_number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    printing_number = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # volume_number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    volume_number = ExtraField(json_field_name=JSON_FIELD_NAME)
 
     @property
     def edition_string(self) -> Optional[str]:
-        """Returns a string representation of the book's edition, if it has one."""
+        """Return a string representation of the book's edition, if it has one."""
         if self.edition_number:
             edition_string = f'{ordinal(self.edition_number)} edition'
             if self.edition_year:
@@ -101,7 +90,7 @@ class Book(TextualSource):
         return edition_string
 
     def get_original_publication_date(self):
-        """Returns the book's original publication date."""
+        """Return the book's original publication date."""
         return (
             self.original_edition.date
             if self.original_edition
@@ -110,7 +99,7 @@ class Book(TextualSource):
 
     @property
     def has_edition_year(self) -> bool:
-        """Returns True if an edition year can be determined for the book, else False."""
+        """Return True if an edition year can be determined for the book, else False."""
         return bool(
             self.edition_year
             or (self.get_original_publication_date() and not self.edition_number)
@@ -165,7 +154,7 @@ class Book(TextualSource):
 
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """Returns the book's HTML representation."""
+        """Return the book's HTML representation."""
         html = self.__html__
         return format_html(html)
 
@@ -178,7 +167,7 @@ class SectionSource(TextualSource):
 
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """Returns the section/chapter's HTML representation."""
+        """Return the section/chapter's HTML representation."""
         return format_html(self.__html__)
 
     html.admin_order_field = 'full_string'
@@ -217,7 +206,7 @@ class SectionSource(TextualSource):
 
     @property
     def string(self) -> str:
-        """Returns the book's string representation."""
+        """Return the book's string representation."""
         return soupify(self.html).get_text()  # type: ignore
 
 

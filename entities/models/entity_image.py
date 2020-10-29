@@ -14,7 +14,7 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 1200
 
 
 class EntityImage(Model):
-    """TODO: add docstring."""
+    """An association of an image with an entity."""
 
     entity = ForeignKey(
         'entities.Entity', related_name='entity_images', on_delete=CASCADE
@@ -25,5 +25,5 @@ class EntityImage(Model):
         unique_together = ['entity', 'image']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the entity–image association."""
         return f'{self.image} ({self.image.id}) --> {self.entity} ({self.entity.id})'

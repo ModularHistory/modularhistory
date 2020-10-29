@@ -19,7 +19,7 @@ PARTS_OF_SPEECH: Tuple[Tuple[str, str], ...] = (
 
 
 class Category(Model):
-    """TODO: add docstring."""
+    """An entity category."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     part_of_speech = models.CharField(
@@ -38,12 +38,12 @@ class Category(Model):
         ordering = [Lower('name')]
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the category's string representation."""
         return self.name
 
 
 class Categorization(Model):
-    """TODO: add docstring."""
+    """A categorization of an entity."""
 
     entity = ForeignKey(
         'entities.Entity', related_name='categorizations', on_delete=CASCADE
@@ -62,10 +62,10 @@ class Categorization(Model):
         unique_together = ['entity', 'category']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the categorization's string representation."""
         return str(self.category)
 
     @property
     def weight(self) -> int:
-        """TODO: add docstring."""
+        """Return the categorization weight."""
         return self.category.weight

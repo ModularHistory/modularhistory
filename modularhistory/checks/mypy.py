@@ -6,7 +6,6 @@ See https://docs.djangoproject.com/en/3.1/topics/checks/.
 
 from typing import List, Optional
 
-# from django.core.checks.messages import CheckMessage, DEBUG, INFO, WARNING, ERROR
 from django.core.checks import register
 
 from modularhistory.linters.mypy import mypy as _mypy
@@ -14,6 +13,6 @@ from modularhistory.linters.mypy import mypy as _mypy
 
 @register()
 def mypy(app_configs: Optional[List] = None, **kwargs) -> List:
-    """Runs mypy as a check before executing management commands."""
+    """Run mypy as a check before executing management commands."""
     _mypy(**kwargs)
     return []

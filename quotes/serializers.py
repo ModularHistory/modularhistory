@@ -6,7 +6,7 @@ from quotes.models import Quote
 
 
 class QuoteSerializer(serializers.ModelSerializer):
-    """TODO: add docstring."""
+    """Serializer for quotes."""
 
     class Meta:
         model = Quote

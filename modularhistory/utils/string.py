@@ -2,7 +2,7 @@ from typing import List
 
 
 def fix_comma_positions(string: str) -> str:
-    """Rearranges commas to fit correctly inside double quotes."""
+    """Rearrange commas to fit correctly inside double quotes."""
     return string.replace('",', ',"')
 
 

@@ -15,3 +15,8 @@ class MediaModel(DatedModel, SearchableModel):
 
     class Meta:
         abstract = True
+
+    class FieldNames(SearchableModel.FieldNames):
+        description = 'description'
+        caption = 'caption'
+        provider = 'provider'

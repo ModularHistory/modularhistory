@@ -72,23 +72,28 @@ class Entity(
         ordering = ['name']
 
     def __str__(self) -> str:
-        """Returns the string representation of the entity."""
+        """Return the string representation of the entity."""
         return f'{self.name}'
+
+    def save(self, *args, **kwargs):
+        """Save the entity to the database."""
+        self.clean()
+        super().save(*args, **kwargs)
 
     @property
     def has_quotes(self) -> bool:
-        """Returns whether the entity has any attributed quotes."""
+        """Return whether the entity has any attributed quotes."""
         return bool(len(self.quotes.all()))
 
     @property
     def truncated_description(self) -> SafeString:
-        """Returns the entity's description, truncated."""
+        """Return the entity's description, truncated."""
         return format_html(
             truncatechars_html(self.description, TRUNCATED_DESCRIPTION_LENGTH)
         )
 
     def clean(self):
-        """Prepares the entity to be saved."""
+        """Prepare the entity to be saved."""
         super().clean()
         if not self.unabbreviated_name:
             self.unabbreviated_name = self.name
@@ -144,11 +149,6 @@ class Entity(
         categorization_words = list(dict.fromkeys(categorization_words))
         return ' '.join(categorization_words)
 
-    def save(self, *args, **kwargs):
-        """TODO: add docstring."""
-        self.clean()
-        super().save(*args, **kwargs)
-
 
 class Person(Entity):
     """A person."""
@@ -187,5 +187,5 @@ class Organization(Entity):
 
     @property
     def founding_date(self) -> datetime:
-        """Returns the date the organization was founded."""
+        """Return the date the organization was founded."""
         return self.birth_date

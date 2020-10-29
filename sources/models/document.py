@@ -21,44 +21,40 @@ JSON_FIELD_NAME = 'extra'
 class DocumentSource(SourceWithPageNumbers):
     """A historical document (as a source)."""
 
-    # collection_number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     help_text='aka acquisition number',
-    #     json_field_name=JSON_FIELD_NAME
-    # )
+    collection_number = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+        help_text='aka acquisition number',
+    )
+    location_info = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+        help_text=(
+            'Ex: John Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
+        ),
+    )
+    descriptive_phrase = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+        help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
+    )
+    information_url = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+        help_text='URL for information regarding the document',
+    )
 
-    collection_number = ExtraField(json_field_name=JSON_FIELD_NAME)
+    class FieldNames(SourceWithPageNumbers.FieldNames):
+        collection_number = 'collection_number'
+        location_info = 'location_info'
 
-    # location_info = jsonstore.CharField(
-    #     max_length=LOCATION_INFO_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     help_text='Ex: John H. Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1',
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    location_info = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # descriptive_phrase = jsonstore.CharField(
-    #     max_length=DESCRIPTIVE_PHRASE_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    descriptive_phrase = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # information_url = jsonstore.URLField(
-    #     max_length=URL_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     help_text='URL for information regarding the document',
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    information_url = ExtraField(json_field_name=JSON_FIELD_NAME)
+    inapplicable_fields = [
+        FieldNames.publication,
+    ]
 
 
 class Collection(ModelWithComputations):
@@ -79,19 +75,19 @@ class Collection(ModelWithComputations):
         unique_together = ['name', 'repository']
 
     def __str__(self) -> str:
-        """Returns the collection's string representation."""
+        """Return the collection's string representation."""
         return soupify(self.html).get_text()
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """Returns the collection's HTML representation."""
+        """Return the collection's HTML representation."""
         html = self.__html__
         return format_html(html)
 
     @property
     def __html__(self) -> str:
-        """Returns the collection's HTML representation."""
+        """Return the collection's HTML representation."""
         components = [
             f'{self.name}' if self.name else '',
             f'{self.repository}',
@@ -126,19 +122,19 @@ class Repository(ModelWithComputations):
         verbose_name_plural = 'Repositories'
 
     def __str__(self) -> str:
-        """Returns the repository's string representation."""
+        """Return the repository's string representation."""
         return soupify(self.html).get_text()
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
-        """Returns the collection's HTML representation."""
+        """Return the collection's HTML representation."""
         html = self.__html__
         return format_html(html)
 
     @property
     def __html__(self) -> str:
-        """Returns the repository's HTML representation."""
+        """Return the repository's HTML representation."""
         location_string = self.location.string if self.location else None
         components = [self.name, self.owner, location_string]
         return ', '.join([component for component in components if component])
@@ -149,7 +145,7 @@ class Document(DocumentSource):
 
     @property
     def __html__(self) -> str:
-        """Returns the repository's HTML representation."""
+        """Return the repository's HTML representation."""
         components = [
             self.attributee_string,
             self.linked_title if self.title else 'untitled document',

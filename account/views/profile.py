@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -20,7 +21,7 @@ class ProfileView(LoginRequiredMixin, View):
     """Profile view."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """Renders the profile view upon request."""
+        """Render the profile view upon request."""
         if isinstance(request.user, User):
             user: User = request.user
             context = {
@@ -37,7 +38,7 @@ class SettingsView(LoginRequiredMixin, View):
     """Account settings view."""
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        """Renders the settings view upon request."""
+        """Render the settings view upon request."""
         if isinstance(request.user, User):
             user: User = request.user
             social_auth_backends = [
@@ -75,7 +76,7 @@ class SettingsView(LoginRequiredMixin, View):
                 except UserSocialAuth.DoesNotExist:
                     pass
                 except Exception as err:
-                    print(
+                    logging.error(
                         f'Error processing social auth integration: {type(err)}: {err}'
                     )
                 backend['domain'] = f'{backend_name.lower()}.com'

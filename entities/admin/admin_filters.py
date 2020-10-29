@@ -18,11 +18,11 @@ class HasQuotesFilter(SimpleListFilter):
     parameter_name = 'has_quotes'
 
     def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
+        """Return an iterable of tuples (value, verbose value)."""
         return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         option = self.value()
         if option == YES:
             return queryset.exclude(quotes=None)
@@ -38,11 +38,11 @@ class HasImageFilter(SimpleListFilter):
     parameter_name = 'has_image'
 
     def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
+        """Return an iterable of tuples (value, verbose value)."""
         return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         option = self.value()
         if option == YES:
             return queryset.exclude(images=None)

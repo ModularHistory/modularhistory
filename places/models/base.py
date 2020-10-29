@@ -36,8 +36,12 @@ class Place(TypedModel, ModelWithComputations):
     class Meta:
         unique_together = ['name', 'location']
 
+    class FieldNames(ModelWithComputations.FieldNames):
+        name = 'name'
+        location = 'location'
+
     def __str__(self) -> str:
-        """Returns the location's string representation."""
+        """Return the location's string representation."""
         return self.string
 
     @property  # type: ignore
@@ -46,18 +50,18 @@ class Place(TypedModel, ModelWithComputations):
         """Presentable string to display in HTML."""
         location = self.location
         # TODO: This is hacky; maybe it can be improved.
-        # Don't append the location's location if it's a continent, region, or inferrable country
+        # Don't append the location's location if it's a continent, region, or inferable country
         if location:
-            inferrable_countries = ['United States of America']
-            location_is_inferrable_country = (
+            inferable_countries = ['United States of America']
+            location_is_inferable_country = (
                 location.type == PlaceTypes.country
-                and location.name in inferrable_countries
+                and location.name in inferable_countries
             )
-            location_is_inferrable = (
-                location_is_inferrable_country
-                or location.type in {PlaceTypes.region, PlaceTypes.continent}
-            )
-            if location_is_inferrable:
+            location_is_inferable = location_is_inferable_country or location.type in {
+                PlaceTypes.region,
+                PlaceTypes.continent,
+            }
+            if location_is_inferable:
                 location = None
         components = [self.name, location.name if location else '']
         return ', '.join([component for component in components if component])

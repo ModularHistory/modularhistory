@@ -18,7 +18,7 @@ class ContentTypeFilter(SimpleListFilter):
     parameter_name = 'content_type'
 
     def lookups(self, request, model_admin):
-        """Returns an iterable of tuples (value, verbose value)."""
+        """Return an iterable of tuples (value, verbose value)."""
         content_type_ids = (
             models.Citation.objects.all().values('content_type').distinct()
         )
@@ -26,7 +26,7 @@ class ContentTypeFilter(SimpleListFilter):
         return [(f'{ct.app_label}.{ct.model}', f'{ct}') for ct in content_types]
 
     def queryset(self, request, queryset):
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         content_type = self.value()
         if not content_type:
             return queryset
@@ -70,11 +70,12 @@ class PagesInline(TabularInline):
     model = models.PageRange
     verbose_name = 'page range'
     verbose_name_plural = 'pages'
+    exclude = ['computations']
 
     def get_extra(
         self, request, model_instance: Optional[models.Citation] = None, **kwargs
     ):
-        """Returns the number of extra/blank rows to include."""
+        """Return the number of extra/blank rows to include."""
         if model_instance and model_instance.pages.count():
             return 0
         return 1
@@ -88,6 +89,7 @@ class CitationsInline(GenericTabularInline):
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
+    exclude = ['computations']
 
     inlines = [PagesInline]
 
@@ -97,7 +99,7 @@ class CitationsInline(GenericTabularInline):
     def get_extra(
         self, request, model_instance: Optional['ModelWithSources'] = None, **kwargs
     ):
-        """Returns the number of extra/blank rows to include."""
+        """Return the number of extra/blank rows to include."""
         if model_instance and model_instance.citations.count():
             return 0
         return 1

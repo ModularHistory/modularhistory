@@ -26,7 +26,7 @@ class ModelWithRelatedEntities(Model):
 
     @property
     def related_entities(self) -> Optional['QuerySet[Entity]']:
-        """Returns the queryset of entities related to the model instance, or None."""
+        """Return the queryset of entities related to the model instance, or None."""
         for attribute_name in ATTRIBUTE_NAMES:
             attribute_value = getattr(self, attribute_name, None)
             if attribute_value:

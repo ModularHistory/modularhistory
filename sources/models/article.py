@@ -12,32 +12,22 @@ JSON_FIELD_NAME = 'extra'
 class Article(SourceWithPageNumbers):
     """A published article (as a source)."""
 
-    # Moved to base class
-    # publication = ForeignKey(
-    #     'sources.Publication',
-    #     null=True,
-    #     blank=True,
-    #     on_delete=CASCADE
-    # )
+    number = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
+    volume = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
 
-    # JSON fields
-    # number = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
+    class FieldNames(SourceWithPageNumbers.FieldNames):
+        number = 'number'
+        volume = 'volume'
 
-    number = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    # volume = jsonstore.PositiveSmallIntegerField(
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    volume = ExtraField(json_field_name=JSON_FIELD_NAME)
-
-    searchable_fields = ['full_string', 'publication__name']
+    searchable_fields = [FieldNames.string, 'publication__name']
+    extra_fields = {
+        **SourceWithPageNumbers.extra_fields,
+        FieldNames.number: 'number',
+        FieldNames.volume: 'number',
+    }
+    inapplicable_fields = [
+        FieldNames.collection,
+    ]
 
     @property
     def __html__(self) -> str:

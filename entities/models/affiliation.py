@@ -34,7 +34,7 @@ class Affiliation(_Engagement):
         unique_together = ['entity', 'affiliated_entity', 'start_date']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the affiliation."""
         return f'{self.entity} — {self.affiliated_entity}'
 
 
@@ -46,7 +46,7 @@ class Role(Model):
     organization = ForeignKey('Entity', related_name='roles', on_delete=CASCADE)
 
     def __str__(self) -> str:
-        """Returns the role's string representation."""
+        """Return the role's string representation."""
         return self.name
 
 

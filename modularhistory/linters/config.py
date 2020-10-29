@@ -19,7 +19,7 @@ from typing import (
     Union,
 )
 
-from modularhistory.constants import COMMA
+from modularhistory.constants import COMMA, NEW_LINE
 from modularhistory.utils import linting
 
 CONFIG_FILE = 'setup.cfg'
@@ -57,24 +57,24 @@ PER_MODULE_OPTIONS = [
 class LinterOptions:
     """Options for linters."""
 
-    # error codes:
-    select: Optional[ErrorCodeSet] = None
-    ignore: Optional[ErrorCodeSet] = None
-    warn: Optional[ErrorCodeSet] = None
+    # errors/warnings
+    select: Optional[ErrorCodeSet]
+    ignore: Optional[ErrorCodeSet]
+    warn: Optional[ErrorCodeSet]
 
-    # paths:
-    include: Optional[PathPatternList] = None
-    exclude: Optional[PathPatternList] = None
+    # paths
+    include: Optional[PathPatternList]
+    exclude: Optional[PathPatternList]
 
-    # per-file ignores:
-    per_file_ignores: Optional[List[PerFileIgnore]] = None
+    # per-file ignores
+    per_file_ignores: Optional[List[PerFileIgnore]]
 
-    # messages:
-    error_filters: Optional[PatternList] = None
-    warning_filters: Optional[PatternList] = None
+    # messages
+    error_filters: Optional[PatternList]
+    warning_filters: Optional[PatternList]
 
     def __init__(self):
-        """Constructs linter options."""
+        """Construct linter options."""
         self.select = ALL
         self.ignore = set()
         self.warn = set()
@@ -85,27 +85,20 @@ class LinterOptions:
         self.warning_filters = []
 
     def __str__(self):
-        """TODO: write docstring."""
+        """Return a string representation of the linter options."""
         return f'{self.__dict__}'
 
     def is_excluded_path(self, path: str) -> bool:
-        """TODO: write docstring."""
+        """Return whether the path is to be excluded from linting."""
         return linting.match(self.exclude, path)
 
     def is_included_path(self, path: str) -> bool:
-        """TODO: write docstring."""
+        """Return whether the path is to be included in linting."""
         return linting.match(self.include, path)
 
-    def error_is_ignored_in_file(self, filename: str, error_code: str):
-        """Return True if an error is specifically ignored for the given filename."""
-        for pattern, error_codes in self.per_file_ignores:
-            if filename in glob(pattern) and error_code in error_codes:
-                return True
-        return False
-
-    def get_message_level(self, message, error_code, filename) -> Optional[str]:
-        """Returns a modified message level based on specified options."""
-        error_is_ignored = any(
+    def error_is_ignored(self, message: str, error_code: str, filename: str) -> bool:
+        """Return whether the violation should be ignored."""
+        return any(
             [
                 linting.match(self.error_filters, message),
                 self.ignore is ALL,
@@ -113,8 +106,19 @@ class LinterOptions:
                 self.error_is_ignored_in_file(filename=filename, error_code=error_code),
             ]
         )
-        # If error is to be ignored
-        if error_is_ignored:
+
+    def error_is_ignored_in_file(self, filename: str, error_code: str):
+        """Return True if an error is specifically ignored for the given filename."""
+        filename = filename.lstrip('./')
+        for pattern, error_codes in self.per_file_ignores:
+            matched_files = glob(pattern, recursive=True)
+            if filename in matched_files and error_code in error_codes:
+                return True
+        return False
+
+    def get_message_level(self, message, error_code, filename) -> Optional[str]:
+        """Return a modified message level based on specified options."""
+        if self.error_is_ignored(message, error_code, filename):
             return None
         # If we have specified something to check for
         elif self.select and error_code in self.select:
@@ -141,7 +145,7 @@ def _parse_multi_options(
         if split_token in options:
             parsed_options = options.split(split_token)
         else:
-            parsed_options = options.split('\n')
+            parsed_options = options.split(NEW_LINE)
     else:
         parsed_options = options  # type: ignore
     return [option.strip() for option in parsed_options if option.strip()]
@@ -159,7 +163,7 @@ def _glob_list(globs: MultiOptions) -> PathPatternList:
 
 def _per_file_ignores_list(per_file_ignores: MultiOptions) -> List[PerFileIgnore]:
     per_file_ignores_list = []
-    entries = _parse_multi_options(per_file_ignores, split_token='\n')  # noqa: S106
+    entries = _parse_multi_options(per_file_ignores, split_token=NEW_LINE)
     for entry in entries:
         pattern, codes = entry.split(':')
         error_codes = {code.strip() for code in codes.split(COMMA)}
@@ -169,7 +173,10 @@ def _per_file_ignores_list(per_file_ignores: MultiOptions) -> List[PerFileIgnore
 
 def _regex_list(patterns: MultiOptions) -> List[Pattern]:
     """."""
-    return [re.compile(pattern) for pattern in _parse_multi_options(patterns)]
+    return [
+        re.compile(pattern)
+        for pattern in _parse_multi_options(patterns, split_token=NEW_LINE)
+    ]
 
 
 def _error_code_set(error_codes: MultiOptions) -> Optional[Set[str]]:
@@ -203,7 +210,7 @@ class ConfigFileOptionsParser:
 
     def __init__(self, script_name: str):
         """
-        Constructs the config file options parser.
+        Construct the config file options parser.
 
         Sets script_name, which is used to determine which section of the config file to read.
         """
@@ -223,6 +230,43 @@ class ConfigFileOptionsParser:
                     module_options.append((config_section_key, opt))
                 for option_key, option_value in updates.items():
                     setattr(opt, option_key.replace('-', '_'), option_value)
+
+    def extract_updates(self, options: LinterOptions) -> Iterator[OptionsUpdate]:
+        """TODO: add docstring."""
+        config_file = os.path.expanduser(CONFIG_FILE)
+        parser = configparser.RawConfigParser()
+        if not os.path.exists(config_file):
+            raise EnvironmentError(f'No config file named {CONFIG_FILE} exists.')
+        try:
+            parser.read(config_file)
+        except configparser.Error as error:
+            print(f'{config_file}: {error}', file=sys.stderr)
+
+        script_name = self.script_name
+        if script_name in parser:
+            section = parser[script_name]  # noqa: WPS529
+            yield None, self._parse_section(options, section)
+        else:
+            print(f'No [{self.script_name}] section in config file', file=sys.stderr)
+
+        for name, section in parser.items():
+            if name.startswith('mypyrun-'):
+                prefix = f'{CONFIG_FILE}: [{name}]'
+                updates = self._parse_section(options, section)
+                if set(updates).intersection(GLOBAL_ONLY_OPTIONS):
+                    print(
+                        f'{prefix}: Per-module sections should only specify per-module flags '
+                        f'({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
+                        file=sys.stderr,
+                    )
+                    updates = {
+                        option_key: option_value
+                        for option_key, option_value in updates.items()
+                        if option_key in PER_MODULE_OPTIONS
+                    }
+                globs = name[8:]
+                for file_glob in globs.split(COMMA):
+                    yield file_glob, updates
 
     def _parse_option(
         self,
@@ -271,40 +315,3 @@ class ConfigFileOptionsParser:
             if processed_value:
                 parsed_section[option_key] = processed_value
         return parsed_section
-
-    def extract_updates(self, options: LinterOptions) -> Iterator[OptionsUpdate]:
-        """TODO: add docstring."""
-        config_file = os.path.expanduser(CONFIG_FILE)
-        parser = configparser.RawConfigParser()
-        if not os.path.exists(config_file):
-            raise EnvironmentError(f'No config file named {CONFIG_FILE} exists.')
-        try:
-            parser.read(config_file)
-        except configparser.Error as error:
-            print(f'{config_file}: {error}', file=sys.stderr)
-
-        script_name = self.script_name
-        if script_name in parser:
-            section = parser[script_name]  # noqa: WPS529
-            yield None, self._parse_section(options, section)
-        else:
-            print(f'No [{self.script_name}] section in config file', file=sys.stderr)
-
-        for name, section in parser.items():
-            if name.startswith('mypyrun-'):
-                prefix = f'{CONFIG_FILE}: [{name}]'
-                updates = self._parse_section(options, section)
-                if set(updates).intersection(GLOBAL_ONLY_OPTIONS):
-                    print(
-                        f'{prefix}: Per-module sections should only specify per-module flags '
-                        f'({", ".join(sorted(set(updates).intersection(GLOBAL_ONLY_OPTIONS)))})',
-                        file=sys.stderr,
-                    )
-                    updates = {
-                        option_key: option_value
-                        for option_key, option_value in updates.items()
-                        if option_key in PER_MODULE_OPTIONS
-                    }
-                globs = name[8:]
-                for file_glob in globs.split(COMMA):
-                    yield file_glob, updates

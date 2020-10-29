@@ -8,9 +8,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import logging
 import os
 import sys
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import sentry_sdk
 from decouple import config
@@ -41,6 +42,9 @@ elif os.environ.get('GITHUB_WORKFLOW'):
     ENVIRONMENT = environments.GITHUB_TEST
 else:
     ENVIRONMENT = environments.DEV
+
+SERVER_LOCATION = 'unknown'  # TODO
+GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
 
 ADMINS = (
     config(
@@ -80,8 +84,7 @@ if ENVIRONMENT == environments.DEV:
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
-# Build paths inside the project like this:
-# os.path.join(BASE_DIR, ...)
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
@@ -142,9 +145,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.flatpages',
     'django.forms',
-    # 'django.contrib.gis',  # https://docs.djangoproject.com/en/3.0/ref/contrib/gis/
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
-    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
+    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
@@ -156,21 +158,15 @@ INSTALLED_APPS = [
     'decouple',
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
-    # TODO: https://django-file-picker.readthedocs.io/en/latest/index.html
-    # 'file_picker',
-    # 'file_picker.uploads',  # file and image Django app
-    # 'file_picker.wymeditor',  # optional WYMeditor plugin
-    # 'sorl.thumbnail',  # required
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'massadmin',  # https://github.com/burke-software/django-mass-edit
-    # 'menu',  # https://github.com/jazzband/django-simple-menu
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'rest_framework',  # https://github.com/encode/django-rest-framework
     'sass_processor',  # https://github.com/jrief/django-sass-processor
-    'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
+    'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'account.apps.AccountConfig',
@@ -213,7 +209,6 @@ MIDDLEWARE = [
     'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     # # https://github.com/yandex/django_replicated
-    # 'django_replicated.middleware.ReplicationMiddleware',  # breaks user sessions
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -330,20 +325,6 @@ else:
         },
     }
 
-# TODO: Fix this so it doesn't break user sessions
-# # https://github.com/yandex/django_replicated
-# from django_replicated.settings import *
-# REPLICATED_DATABASE_SLAVES = ['slave']
-# DATABASE_ROUTERS = ['django_replicated.router.ReplicationRouter']
-# REPLICATED_DATABASE_DOWNTIME = 30
-# REPLICATED_VIEWS_OVERRIDES = {
-#     '/admin/*': 'master',
-#     '/history/*': 'master',  # TODO: probably should use slave eventually
-#     # 'api-store-event': 'slave',
-#     # 'app.views.do_something': 'master',
-#     # '/users/': 'slave',
-# }
-
 # https://django-dbbackup.readthedocs.io/en/master/
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '.backups/')}
@@ -384,7 +365,7 @@ SOCIAL_AUTH_PIPELINE = (
     # Check if the current social-account is already associated in the site.
     'social_core.pipeline.social_auth.social_user',
     # Get the user's email address, if it wasn't automatically obtained
-    'modularhistory.social_auth.get_user_email',
+    'account.social_auth.get_user_email',
     # Make up a username for this person.
     # Append a random string at the end if there's any collision.
     'social_core.pipeline.user.get_username',
@@ -401,7 +382,7 @@ SOCIAL_AUTH_PIPELINE = (
     # Update the user record with any changed info from the auth service.
     'social_core.pipeline.user.user_details',
     # Get the user's profile picture
-    'modularhistory.social_auth.get_user_avatar',
+    'account.social_auth.get_user_avatar',
 )
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
@@ -426,9 +407,9 @@ SOCIAL_AUTH_GITHUB_KEY = config('SOCIAL_AUTH_GITHUB_KEY', default='')
 SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET', default='')
 SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 # Google auth settings
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', default='')
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', default='')
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email']
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH_KEY', default='')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH_SECRET', default='')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email']
 
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -469,20 +450,12 @@ GS_ARTIFACTS_BUCKET_NAME = 'modularhistory-artifacts'
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
-# TODO: Mega backups?
-# mega = None
-# if IS_PROD and MEGA_USERNAME and MEGA_PASSWORD:
-#     mega = Mega()
-
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
-# TODO: Add storage bucket for static files in Google Cloud?
-# if IS_PROD:
-#     STATICFILES_STORAGE = 'modularhistory.storage.GoogleCloudStaticFileStorage'
 
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/3.0/topics/files/
@@ -512,11 +485,33 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
 
+# https://docs.djangoproject.com/en/3.1/topics/logging/
+if DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+                'propagate': False,
+            },
+        },
+    }
+
 # https://django-tinymce.readthedocs.io/en/latest/usage.html
 TINYMCE_JS_URL = 'https://cloud.tinymce.com/stable/tinymce.min.js'
 TINYMCE_JS_ROOT = 'https://cloud.tinymce.com/stable/'
 TINYMCE_DEFAULT_CONFIG = {
-    # 'height': 100,
     'width': '100%',
     'cleanup_on_startup': True,
     'custom_undo_redo_levels': 20,
@@ -634,20 +629,12 @@ ADMIN_TOOLS_THEMING_CSS = 'styles/admin.css'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
 CRISPY_FAIL_SILENTLY = not DEBUG
-CRISPY_CLASS_CONVERTERS: Dict[str, str] = {
-    # 'textinput': 'textinput inputtext'
-}
-
-# https://django-select2.readthedocs.io/en/latest/django_select2.html#module-django_select2.conf
-# SELECT2_CSS = ''
+CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
 
 MENU_ITEMS = [
     ['Occurrences', 'occurrences'],
     ['People', 'entities'],
-    # ['Places', 'places'],
     ['Quotes', 'quotes'],
-    # ['Sources', 'sources'],
-    # ['Topics', 'topics'],
     ['About', 'about'],
 ]
 
@@ -660,15 +647,8 @@ SETTINGS_EXPORT = [
     'ENABLE_PATREON',
 ]
 
-# TODO: show debug toolbar in prod if desired
-# def show_debug_toolbar(request) -> bool:
-#     return DEBUG
-#
-#
-# # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
-# DEBUG_TOOLBAR_CONFIG = {
-#     'SHOW_TOOLBAR_CALLBACK': 'modularhistory.settings.show_debug_toolbar'
-# }
+# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
+DEBUG_TOOLBAR_CONFIG = {'SHOW_COLLAPSED': True}
 
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-panels
 DEBUG_TOOLBAR_PANELS = [
@@ -701,7 +681,7 @@ EMAIL_HOST = config('EMAIL_HOST', default='localhost')
 try:
     EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
 except Exception as error:
-    print(f'{error}', file=sys.stderr)
+    logging.error(f'{error}')
     EMAIL_PORT = 587
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
@@ -715,60 +695,31 @@ SPAGHETTI_SAUCE = {
 }
 
 # Caching settings
+use_dummy_cache_in_dev_environment = True
+Cache = Dict[str, Any]
+CACHES: Dict[str, Cache]
 if ENVIRONMENT == environments.DEV:
-    # CACHES = {
-    #     'default': {
-    #         'BACKEND': 'djpymemcache.backend.PyMemcacheCache',
-    #         'LOCATION': [
-    #             '127.0.0.1:11211',
-    #         ],
-    #         'TIMEOUT': 300  # TODO
-    #         # 'OPTIONS': {
-    #         #     'serializer': <your_serializer>,
-    #         #     'deserializer': <your_deserializer>,
-    #         # },
-    #     },
-    # }
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    if use_dummy_cache_in_dev_environment:
+        CACHES = {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+            }
         }
-    }
-    # CACHES = {
-    #     'default': {
-    #         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-    #         'LOCATION': '127.0.0.1:11211',
-    #     }
-    # }
-    # CACHES = {
-    #     'default': {
-    #         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    #         'LOCATION': 'unique-snowflake',
-    #     }
-    # }
-    # CACHES = {
-    #     'default': {
-    #         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-    #         'LOCATION': ARTIFACTS_ROOT,
-    #     }
-    # }
-    # CACHES = {
-    #     'default': {
-    #         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-    #         'LOCATION': 'cache',
-    #     }
-    # }
+    else:
+        CACHES = {
+            'default': {
+                'BACKEND': 'djpymemcache.backend.PyMemcacheCache',
+                'LOCATION': [
+                    '127.0.0.1:11211',
+                ],
+                'TIMEOUT': 300,  # TODO
+            },
+        }
 
 # Celery settings
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_URL = 'amqp://localhost'
-
-# CELERY_BROKER_URL = 'amqp://guest:**@localhost:5672'
-# CELERY_BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672'
-
-# TODO
-# CELERY_CACHE_BACKEND = 'default'
 
 if ENVIRONMENT == environments.DEV:
     from modularhistory import checks  # noqa: F401

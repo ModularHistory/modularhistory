@@ -21,16 +21,24 @@ TYPE_MAX_LENGTH: int = 10
 class Correspondence(DocumentSource):
     """Correspondence (as a source)."""
 
-    # recipient = jsonstore.CharField(
-    #     max_length=NAME_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
     type_label = 'correspondence'
 
-    recipient = ExtraField(json_field_name=JSON_FIELD_NAME)
+    recipient = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
+
+    class FieldNames(DocumentSource.FieldNames):
+        recipient = 'recipient'
+
+    extra_fields = {
+        **DocumentSource.extra_fields,
+        FieldNames.recipient: 'string',
+    }
+    inapplicable_fields = [
+        FieldNames.publication,
+    ]
 
     @property
     def __html__(self) -> str:

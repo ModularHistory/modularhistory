@@ -11,14 +11,11 @@ JSON_FIELD_NAME = 'extra'
 class Interview(SpokenSource):
     """An interview (as a source)."""
 
-    # interviewers = jsonstore.CharField(
-    #     max_length=INTERVIEWERS_MAX_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    interviewers = ExtraField(null=True, blank=True, json_field_name=JSON_FIELD_NAME)
+    interviewers = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
 
     @property
     def __html__(self) -> str:

@@ -51,7 +51,7 @@
             {{ occurrence.tags_html }}
         </ul>
     {% endif %}
-    {% if occurrence.citations.all|length %}
+    {% if occurrence.citations.exists %}
         <footer class="footer sources-footer">
             <ol class="citations">
                 {% for citation in occurrence.citations.all %}

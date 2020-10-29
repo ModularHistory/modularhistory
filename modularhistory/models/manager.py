@@ -17,7 +17,7 @@ class Manager(ModelManager):
     """Base manager for ModularHistory's models."""
 
     def get_by_natural_key(self, *args):
-        """Retrieves a model instance by its natural key."""
+        """Retrieva model instance by its natural key."""
         fields = self.model.natural_key_fields
         natural_key = {}
         for index, field in enumerate(fields):
@@ -29,7 +29,7 @@ class Manager(ModelManager):
         datetime_value: Union[date, datetime, HistoricDateTime],
         datetime_attr: str = 'date',
     ) -> 'Model':
-        """Returns the model instance closest to the specified datetime_value."""
+        """Return the model instance closest to the specified datetime_value."""
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()
         lesser = (
@@ -43,22 +43,6 @@ class Manager(ModelManager):
             return greater if greater_diff < lesser_diff else lesser
         return greater or lesser
 
-    # def with_counts(self):
-    #     from django.db import connection
-    #     with connection.cursor() as cursor:
-    #         cursor.execute("""
-    #             SELECT p.id, p.question, p.poll_date, COUNT(*)
-    #             FROM polls_opinionpoll p, polls_response r
-    #             WHERE p.id = r.poll_id
-    #             GROUP BY p.id, p.question, p.poll_date
-    #             ORDER BY p.poll_date DESC""")
-    #         result_list = []
-    #         for row in cursor.fetchall():
-    #             p = self.model(id=row[0], question=row[1], poll_date=row[2])
-    #             p.num_responses = row[3]
-    #             result_list.append(p)
-    #     return result_list
-
 
 class SearchableModelQuerySet(QuerySet):
     """A queryset for a searchable model."""
@@ -68,7 +52,7 @@ class SearchableModelQuerySet(QuerySet):
         start_year: Optional[int] = None,
         end_year: Optional[int] = None,
     ) -> 'SearchableModelQuerySet':
-        """Returns a queryset filtered by start_year and/or end_year."""
+        """Return a queryset filtered by start_year and/or end_year."""
         qs = self
         if start_year:
             qs = qs.filter(date__year__gte=start_year)
@@ -79,7 +63,7 @@ class SearchableModelQuerySet(QuerySet):
     def search(
         self, query: Optional[str] = None, rank: bool = False
     ) -> 'SearchableModelQuerySet':
-        """Returns search results from occurrences."""
+        """Return search results from occurrences."""
         qs: 'SearchableModelQuerySet' = self
         searchable_fields = qs.model.get_searchable_fields()
         if query and searchable_fields:
@@ -99,7 +83,8 @@ class SearchableModelQuerySet(QuerySet):
             annotations: Dict[str, Any] = {'search': vector}
             if rank:
                 annotations['rank'] = SearchRank(vector, search_query)
-            qs = qs.annotate(**annotations).filter(search=search_query)  # type: ignore
+            qs = qs.annotate(**annotations)  # type: ignore
+            qs = qs.filter(search=search_query)
         return qs.order_by('id').distinct('id')
 
 
@@ -107,7 +92,7 @@ class SearchableModelManager(Manager):
     """Manager for searchable models."""
 
     def get_queryset(self) -> SearchableModelQuerySet:
-        """Overrides get_queryset to use SearchableModelQuerySet."""
+        """Override get_queryset to use SearchableModelQuerySet."""
         return SearchableModelQuerySet(self.model, using=self._db)
 
     def search(
@@ -119,12 +104,14 @@ class SearchableModelManager(Manager):
         topic_ids: Optional[List[int]] = None,
         rank: bool = False,
         suppress_unverified: bool = True,
-        db: str = 'default',
+        suppress_hidden: bool = True,
     ) -> SearchableModelQuerySet:
-        """Returns a queryset of search results."""
+        """Return a queryset of search results."""
         qs = self.get_queryset().prefetch_related('tags__topic')
         if suppress_unverified:
             qs = qs.filter(verified=True)
+        if suppress_hidden:
+            qs = qs.filter(hidden=False)
         return qs.search(query=query, rank=rank)
 
 

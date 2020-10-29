@@ -8,23 +8,27 @@ class LocationInline(TabularInline):
     """Inline admin for a location's parent location."""
 
     model = models.Place
-    autocomplete_fields = ['location']
+    autocomplete_fields = [model.FieldNames.location]
 
 
 class LocationFilter(AutocompleteFilter):
     """List filter for filtering locations by parent location."""
 
     title = 'location'
-    field_name = 'location'
+    field_name = models.Place.FieldNames.location
 
 
 class LocationAdmin(ModelAdmin):
     """Admin for locations."""
 
-    list_display = ['name', 'location']
+    model = models.Place
+    list_display = [model.FieldNames.name, 'string']
     list_filter = [LocationFilter]
-    search_fields = ['name']
-    ordering = ['name', 'location__name']
+    search_fields = [model.FieldNames.name]
+    ordering = [
+        model.FieldNames.name,
+        f'{model.FieldNames.location}__{model.FieldNames.name}',
+    ]
     form = PlaceForm
     add_form = PlaceForm
 

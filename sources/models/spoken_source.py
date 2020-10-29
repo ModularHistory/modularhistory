@@ -10,14 +10,11 @@ JSON_FIELD_NAME = 'extra'
 class SpokenSource(Source):
     """Spoken words (e.g., a speech, lecture, or discourse) as a source."""
 
-    # audience = jsonstore.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    audience = ExtraField(json_field_name=JSON_FIELD_NAME)
+    audience = ExtraField(
+        json_field_name=JSON_FIELD_NAME,
+        null=True,
+        blank=True,
+    )
 
     @property
     def __html__(self) -> str:

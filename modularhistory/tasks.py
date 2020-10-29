@@ -1,5 +1,7 @@
 """
-Celery is incompatible with Google Cloud.  : /
+Celery is incompatible with Google Cloud.
+
+: /
 
 TODO:
 https://eshlox.net/2020/05/08/google-app-engine-cloud-tasks-and-django-rest-framework-permissions
@@ -14,11 +16,14 @@ from sys import stderr
 from typing import Any, Dict
 
 from celery import Celery
+from decouple import config
 from django.core import management
 from google.cloud import tasks_v2 as tasks
 from google.protobuf.timestamp_pb2 import Timestamp
+from paramiko import SSHClient
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+from scp import SCPClient
 
 from modularhistory import settings
 
@@ -29,11 +34,6 @@ QUEUE_NAME = settings.GC_QUEUE
 
 class TaskMixin:
     """TODO: add docstring."""
-
-    @property
-    def _cloud_task_client(self):
-        """TODO: add docstring."""
-        return tasks.CloudTasksClient()
 
     def send_task(
         self,
@@ -83,6 +83,11 @@ class TaskMixin:
         response = self._cloud_task_client.create_task(parent, task)
         print(f'Created task: {response.name}')
 
+    @property
+    def _cloud_task_client(self):
+        """TODO: add docstring."""
+        return tasks.CloudTasksClient()
+
 
 def _debug(self) -> None:
     """TODO: write docstring."""
@@ -128,21 +133,22 @@ else:  # If not running in Google Cloud
                 return None
             backup_file = max(files, key=os.path.getmtime)
 
-            # # Connect to remote backup server
-            # server = config('REMOTE_BACKUP_SERVER', default=None)
-            # username = config('REMOTE_BACKUP_SERVER_USERNAME', default=None)
-            # password = config('REMOTE_BACKUP_SERVER_PASSWORD', default=None)
-            # ssh_client = SSHClient()
-            # ssh_client.load_system_host_keys()
-            # # ssh_client.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
-            # if server:
-            #     print(f'Connecting to remote backup location: {server}')
-            #     ssh_client.connect(server, username=username, password=password)
-            #     # ssh_client.connect(server, username='username', password='password')
-            #     with SCPClient(ssh_client.get_transport()) as scp_client:
-            #         scp_client.put(backup_file, f'~/history/history/backups/{backup_file}')
-            #         # scp_client.get('test2.txt')
-            #     print(f'Completed remote db backup.')
+            push_to_remote_backup_server = False
+            if push_to_remote_backup_server:
+                # Connect to remote backup server
+                server = config('REMOTE_BACKUP_SERVER', default=None)
+                username = config('REMOTE_BACKUP_SERVER_USERNAME', default=None)
+                password = config('REMOTE_BACKUP_SERVER_PASSWORD', default=None)
+                ssh_client = SSHClient()
+                ssh_client.load_system_host_keys()
+                if server:
+                    print(f'Connecting to remote backup location: {server}')
+                    ssh_client.connect(server, username=username, password=password)
+                    with SCPClient(ssh_client.get_transport()) as scp_client:
+                        scp_client.put(
+                            backup_file, f'~/history/history/backups/{backup_file}'
+                        )
+                    print('Completed remote db backup.')
 
             # TODO: set up Google Drive API after getting 501(c)3 status
             google_drive_api_is_enabled = False

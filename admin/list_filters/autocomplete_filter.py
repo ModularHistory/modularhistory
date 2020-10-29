@@ -1,12 +1,13 @@
 """AutocompleteFilter based on https://github.com/farhan0581/django-admin-autocomplete-filter."""
 
 import re
-from typing import Type
+from typing import Type, Union
 
 from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter
 from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 
 from modularhistory.models import Model
@@ -14,7 +15,7 @@ from modularhistory.models import Model
 
 class AutocompleteFilter(BaseAutocompleteFilter):
     """
-    Wraps admin_auto_filters.filters.AutocompleteFilter.
+    Wrap admin_auto_filters.filters.AutocompleteFilter.
 
     https://github.com/farhan0581/django-admin-autocomplete-filter
     """
@@ -25,14 +26,18 @@ class AutocompleteFilter(BaseAutocompleteFilter):
 class ManyToManyAutocompleteFilter(AutocompleteFilter):
     """Autocomplete filter to be used with many-to-many relationships."""
 
-    _parameter_name: str
-    m2m_cls: Type[Model]
+    m2m_cls: Union[Type[Model], str]
 
     def __init__(self, request, query_params, model, model_admin):
-        """TODO: add docstring."""
+        """Construct the many-to-many autocomplete filter."""
         super().__init__(request, query_params, model, model_admin)
+        m2m_cls: Type[Model]
+        if isinstance(self.m2m_cls, str):
+            m2m_cls = import_string(self.m2m_cls)
+        else:
+            m2m_cls = self.m2m_cls
         if self.value():
-            model_instance = self.m2m_cls.objects.get(pk=self.value())
+            model_instance = m2m_cls.objects.get(pk=self.value())
             rendered_widget = re.sub(
                 r'(selected>).+(</option>)',
                 rf'\g<1>{model_instance}\g<2>',
@@ -42,17 +47,21 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
 
     @property
     def key(self) -> str:
-        """Returns an identifier for the filter."""
+        """Return an identifier for the filter."""
         # Use `title` since `parameter_name` might have an unwanted plural form
         # if the field is m2m.
         return self.title.replace(' ', '_')
 
     def get_autocomplete_url(self, request, model_admin) -> str:
-        """Returns the URL used by the autocomplete filter."""
+        """Return the URL used by the autocomplete filter."""
         return reverse(f'admin:{self.key}_search')
 
     def queryset(self, request, queryset) -> 'QuerySet[Model]':
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         if self.value():
             return queryset.filter(**{self._parameter_name: self.value()})
         return queryset
+
+    @property
+    def _parameter_name(self) -> str:
+        return f'{self.field_name}__pk__exact'

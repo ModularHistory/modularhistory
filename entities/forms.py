@@ -2,7 +2,7 @@ from typing import List
 
 from django.forms import ModelForm
 
-from entities.models import Entity, Group, Idea, Person, Organization
+from entities.models import Entity, Group, Idea, Organization, Person
 
 TYPE = 'type'
 
@@ -15,7 +15,7 @@ class EntityForm(ModelForm):
         exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
-        """Constructs the form for entity admin."""
+        """Construct the form for entity admin."""
         super().__init__(*args, **kwargs)
         self.initial[TYPE] = self.instance.type
 
@@ -28,7 +28,7 @@ class OrganizationForm(ModelForm):
         exclude: List[str] = []
 
     def __init__(self, *args, **kwargs):
-        """Constructs the form for organization admin."""
+        """Construct the form for organization admin."""
         super().__init__(*args, **kwargs)
         self.initial[TYPE] = 'entities.organization'
 
@@ -41,7 +41,7 @@ class PersonForm(ModelForm):
         exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
-        """Constructs the form for person admin."""
+        """Construct the form for person admin."""
         super().__init__(*args, **kwargs)
         self.initial[TYPE] = 'entities.person'
 
@@ -54,7 +54,7 @@ class GroupForm(ModelForm):
         exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
-        """Constructs the form for group admin."""
+        """Construct the form for group admin."""
         super().__init__(*args, **kwargs)
         self.initial[TYPE] = 'entities.group'
 

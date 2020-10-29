@@ -1,16 +1,11 @@
-# from django.http import HttpRequest, JsonResponse
-
 from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models import Q
-from django.db.models.query import QuerySet
-
-# from django.http import HttpRequest, JsonResponse
 from django.views import generic
+from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import permissions
 
-from entities.models import Entity, Category  # , Person, Organization
+from entities.models import Category, Entity  # , Person, Organization
 from entities.serializers import EntitySerializer
 
 
@@ -29,11 +24,11 @@ class EntityListAPIView(ListAPIView):
     serializer_class = EntitySerializer
 
 
-class AttributeeSearchView(AutocompleteJsonView):
+class EntitySearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
 
-    def get_queryset(self) -> 'QuerySet[Entity]':
-        """Returns the filtered queryset."""
+    def get_queryset(self):
+        """Return the filtered queryset."""
         queryset = Entity.objects.all()
         term = self.term
         if term:
@@ -45,25 +40,11 @@ class AttributeeSearchView(AutocompleteJsonView):
         return queryset
 
 
-class EntitySearchView(AutocompleteJsonView):
-    """Used by autocomplete widget in admin."""
-
-    def get_queryset(self):
-        """Returns the filtered queryset."""
-        queryset = Entity.objects.all()
-        term = self.term
-        if term:
-            queryset = queryset.filter(
-                Q(name__icontains=term) | Q(aliases__icontains=term)
-            )
-        return queryset
-
-
 class EntityCategorySearchView(AutocompleteJsonView):
     """Used by autocomplete widget in admin."""
 
     def get_queryset(self):
-        """Returns the filtered queryset."""
+        """Return the filtered queryset."""
         queryset = Category.objects.all()
         term = self.term
         if term:
@@ -78,7 +59,7 @@ class IndexView(generic.ListView):
 
     model = Entity
     template_name = 'entities/index.html'
-    # paginate_by = 10
+    paginate_by = 20
     context_object_name = 'entities'
 
     def get_queryset(self):

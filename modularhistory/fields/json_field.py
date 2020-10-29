@@ -1,6 +1,7 @@
 """A modification of Django's JSONField."""
 
 import json
+import logging
 from typing import Any, Dict, List, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
@@ -30,41 +31,50 @@ class JSONField(BaseJSONField):
         # Call the base JSONField's __init__
         super().__init__(*args, **kwargs)
 
-    @property
-    def _schema_data(self) -> Optional[Dict]:
-        """Return the field's JSON schema as a Python object."""
-        if not self.schema:
-            return None
-        return json.loads(self.schema) if isinstance(self.schema, str) else self.schema
-        # model_file = inspect.getfile(self.model)
-        # dirname = os.path.dirname(model_file)
-        # # schema file related to model.py path
-        # p = os.path.join(dirname, self.schema)
-        # with open(p, 'r') as file:
-        #     return json.loads(file.read())
-
-    def _validate_schema(self, json_value):
-        """Validate with JSON Schema."""
-        # Disable JSON Schema validation when migrations are faked
-        if self.schema and self.model.__module__ != '__fake__':
-            try:
-                validate(json_value, self._schema_data)
-            except jsonschema_exceptions.ValidationError as error:
-                raise ValidationError(f'{error}')
-
     def validate(self, json_value, model_instance):
         """Override `validate` to also validate with JSON Schema."""
         # Do regular validation
         super().validate(json_value, model_instance)
         # Do JSON Schema validation
-        self._validate_schema(json_value)
+        self._validate_schema(json_value, model_instance)
 
     def pre_save(self, model_instance, add):
-        """Override `pre_save` to validate with JSON Schema."""
+        """Before saving, validate with JSON Schema and remove null values."""
         json_value = super().pre_save(model_instance, add)
-        if json_value and not self.null:
-            self._validate_schema(json_value)
-        return json_value
+        if json_value:
+            if not self.null:  # TODO: check this logic
+                self._validate_schema(json_value, model_instance)
+        # Remove keys with null values
+        return {
+            attribute: attribute_value
+            for attribute, attribute_value in json_value.items()
+            if attribute_value is not None
+        }
+
+    def get_schema_data(self, model_instance) -> Optional[Dict]:
+        """Return the field's JSON schema as a Python object."""
+        schema = self.schema
+        if schema:
+            if isinstance(schema, str):
+                if hasattr(model_instance, schema):
+                    schema = getattr(model_instance, schema, {})
+            schema_data = json.loads(schema) if isinstance(schema, str) else schema
+            if schema_data.get('properties') is None:
+                schema_data = {'type': 'object', 'properties': {**schema_data}}
+            return schema_data
+        return None
+
+    def _validate_schema(self, json_value, model_instance):
+        """Validate with JSON Schema."""
+        # Disable JSON Schema validation when migrations are faked
+        if self.model.__module__ != '__fake__':
+            schema_data = self.get_schema_data(model_instance)
+            if schema_data:
+                try:
+                    logging.info(f'Validating JSON value against schema: {schema_data}')
+                    validate(json_value, schema_data)
+                except jsonschema_exceptions.ValidationError as error:
+                    raise ValidationError(f'{error}')
 
 
 class ExtraField:
@@ -72,11 +82,18 @@ class ExtraField:
 
     name: str
 
-    def __init__(self, json_field_name: str, null: bool = True, blank: bool = True):
+    def __init__(
+        self,
+        json_field_name: str,
+        null: bool = True,
+        blank: bool = True,
+        help_text: Optional[str] = None,
+    ):
         """TODO: add docstring."""
         self.json_field_name = json_field_name
         self.null = null
         self.blank = blank
+        self.help_text = help_text
 
     def __get__(self, instance: Model, owner: Type[Model] = None) -> Optional[Any]:
         """See https://docs.python.org/3/reference/datamodel.html#object.__get__."""
@@ -123,12 +140,12 @@ class ExtraField:
 
     @staticmethod
     def from_json(stored_value) -> Any:
-        """Transforms a JSON value to its intended Python value."""
+        """Transform a JSON value to its intended Python value."""
         return stored_value
 
     @staticmethod
     def to_json(value_to_store) -> Union[str, int, List, Dict]:
-        """Transforms a value to a format suitable for storage in JSON."""
+        """Transform a value to a format suitable for storage in JSON."""
         return value_to_store
 
     def get_json_field_value(self, model_instance: Model):
@@ -141,7 +158,7 @@ class ExtraField:
                 pass  # Expected
             else:
                 raise ValueError(
-                    f'Expected `json_value` to be dict type but got {type(json_value)}: {json_value}'
+                    f'Received invalid `json_value` of {type(json_value)}: {json_value}'
                 )
         else:
             json_value = {}

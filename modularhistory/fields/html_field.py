@@ -1,8 +1,7 @@
+import logging
 import re
-from sys import stderr
 from typing import Any, Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 
-from django.contrib.contenttypes.models import ContentType
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
@@ -21,9 +20,10 @@ ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)
 OBJECT_REGEX = re.compile(r'<< ?(\w+):(?!>>)[\s\S]+? ?>>')
 
 
-def process(_, html: str, processable_content_types: Iterable[str]) -> str:
+def process(html: str) -> str:
     """
     Return the processed version of an HTML field value.
+
     This involves replacing model instance placeholders with their HTML.
     """
     for match in OBJECT_REGEX.finditer(html):
@@ -39,10 +39,7 @@ def process(_, html: str, processable_content_types: Iterable[str]) -> str:
             )
             html = html.replace(placeholder, object_html)
         else:
-            print(
-                f'Unable to retrieve model class string for `{object_type}`',
-                file=stderr,
-            )
+            logging.error(f'Unable to retrieve model class string for `{object_type}`')
     return html
 
 
@@ -52,21 +49,19 @@ class HTMLField(MceHTMLField):
     raw_value: str
     html: SafeString
     text: str
-    default_processor: Callable = process
-    processor: Optional[Callable] = default_processor
+    processor: Optional[Callable]
 
     # Types of processable objects included in HTML
     processable_content_types: Iterable[str] = ['quote', 'image', 'citation', 'source']
 
     def __init__(self, *args, **kwargs):
-        """Constructs an HTML field instance."""
+        """Construct an HTML field instance."""
         processor = kwargs.pop('processor', None)
-        if processor and processor != self.default_processor:
-            self.processor = processor
+        self.processor = processor or process
         super().__init__(*args, **kwargs)
 
     def clean(self, html_value, model_instance: 'Model') -> HTML:
-        """Returns a cleaned, ready-to-save instance of HTML."""
+        """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
         raw_html = html.raw_value
         replacements = (
@@ -110,21 +105,22 @@ class HTMLField(MceHTMLField):
 
     def deconstruct(self):
         """
-        Returns a 4-tuple with enough information to recreate the field.
+        Return a 4-tuple with enough information to recreate the field.
+
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.deconstruct
         """
         field_class = 'modularhistory.fields.HTMLField'
         name, path, args, kwargs = super().deconstruct()
-        if self.processor != self.default_processor:
-            kwargs['processor'] = self.processor
+        kwargs['processor'] = self.processor
         return name, field_class, args, kwargs
 
     def from_db_value(
         self, html_value: Optional[str], expression, connection
     ) -> Optional[HTML]:
         """
-        Converts a value as returned by the database to a Python object.
-        It is the reverse of get_prep_value().
+        Convert a value as returned by the database to a Python object.
+
+        This method is the reverse of get_prep_value().
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if html_value is None:
@@ -158,15 +154,13 @@ class HTMLField(MceHTMLField):
         for pattern, replacement in replacements:
             html_value = re.sub(pattern, replacement, html_value)
         processed_html = html_value
-        if self.processor:
+        if callable(self.processor):
             try:
-                processed_html = self.processor(
-                    html_value, self.processable_content_types
-                )
+                processed_html = self.processor(html_value)
             except RecursionError as error:
-                print(f'Unable to process HTML: {error}', file=stderr)
+                logging.error(f'Unable to process HTML: {error}')
             except Exception as error:
-                print(f'Unable to process HTML: {error}\n\n{html_value}', file=stderr)
+                logging.error(f'Unable to process HTML: {error}\n\n{html_value}')
         return HTML(html_value, processed_value=processed_html)
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
@@ -197,36 +191,3 @@ class HTMLField(MceHTMLField):
         """Convert the object to a string."""
         html_value = self.value_from_object(html_object)
         return self.get_prep_value(html_value) or EMPTY_STRING
-
-
-def _get_model_class(ct: ContentType) -> Type['Model']:
-    model_class = ct.model_class()
-    if model_class is None:
-        raise ValueError(f'Could not retrieve model class for {ct}.')
-    from modularhistory.models import Model
-
-    if not issubclass(model_class, Model):
-        raise ValueError(f'{model_class} is not subclassed from custom model class.')
-    return model_class
-
-
-# def get_image_html(image: Union['Image', Match]):
-#     """TODO: add docstring."""
-#     if hasattr(image, 'group'):
-#         match = image
-#         key = match.group(1).strip()
-#         from images.models import Image
-#         try:
-#             image = Image.objects.get(pk=key)
-#         except ValueError as e:  # legacy key
-#             print(f'{e}')
-#             image = Image.objects.get(key=key)
-#     image_html = render_to_string(
-#         'images/_card.html',
-#         context={'image': image, 'obj': image}
-#     )
-#     if image.width < FLOAT_UPPER_WIDTH_LIMIT:
-#         image_html = f'<div class="float-right pull-right">{image_html}</div>'
-#     if image.width < CENTER_UPPER_WIDTH_LIMIT:
-#         image_html = f'<div style="text-align: center">{image_html}</div>'
-#     return image_html

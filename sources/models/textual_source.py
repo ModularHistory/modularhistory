@@ -20,14 +20,7 @@ class TextualSource(Source):
     )
     original_publication_date = HistoricDateTimeField(null=True, blank=True)
 
-    # editors = jsonstore.CharField(
-    #     max_length=MAX_CREATOR_STRING_LENGTH,
-    #     null=True,
-    #     blank=True,
-    #     json_field_name=JSON_FIELD_NAME
-    # )
-
-    editors = ExtraField(json_field_name=JSON_FIELD_NAME)
+    editors = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
 
     @property
     def file_page_number(self) -> Optional[int]:

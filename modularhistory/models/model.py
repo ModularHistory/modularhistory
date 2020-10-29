@@ -1,7 +1,7 @@
 """Base model classes for ModularHistory."""
 
 import re
-from typing import Any, ClassVar, List, Match, Optional, Pattern, Tuple, Type
+from typing import Any, ClassVar, List, Optional, Pattern, Tuple, Type
 
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
@@ -36,13 +36,13 @@ class Model(DjangoModel):
 
     @classmethod
     def get_searchable_fields(cls) -> FieldList:
-        """Returns a list of fields that can be used to search for instances of the model."""
+        """Return a list of fields that can be used to search for instances of the model."""
         return cls.searchable_fields or []
 
     @classmethod
     def get_meta(cls):
         """
-        Returns the model's _meta attribute value.
+        Return the model's _meta attribute value.
 
         This is used purely to avoid warnings about accessing a private attribute.
         """
@@ -50,27 +50,27 @@ class Model(DjangoModel):
 
     @property
     def admin_url(self) -> str:
-        """Returns the model instance's admin URL."""
+        """Return the model instance's admin URL."""
         return self.get_admin_url()
 
     @property
     def ctype(self) -> ContentType:
-        """Returns the model instance's ContentType."""
+        """Return the model instance's ContentType."""
         return ContentType.objects.get_for_model(self)
 
     @property
     def detail_link(self) -> SafeString:
-        """Returns a link to the model instance's detail page."""
+        """Return a link to the model instance's detail page."""
         return self.get_detail_link()
 
     @property
     def detail_url(self) -> str:
-        """Returns the URL of the model instance's detail page."""
-        return reverse(f'{self._meta.app_label}:detail', args=[self.id])
+        """Return the URL of the model instance's detail page."""
+        return reverse(f'{self.get_meta().app_label}:detail', args=[self.id])
 
     @property
     def natural_key_fields(self) -> Optional[List]:
-        """Returns the list of fields that comprise a natural key for the model instance."""
+        """Return the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
             unique_together_is_valid = isinstance(
@@ -94,21 +94,19 @@ class Model(DjangoModel):
         )
 
     def get_admin_url(self):
-        """Returns the URL of the model instance's admin page."""
+        """Return the URL of the model instance's admin page."""
         return reverse(
             f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
             args=[self.id],
         )
 
-    def get_detail_link(self) -> SafeString:
-        """Returns a link to the model instance's detail page."""
-        return format_html(
-            f'<a href="{self.detail_url}" target="_blank">'
-            f'<i class="fas fa-info-circle"></i></a>'
-        )
+    def get_detail_link(self, content: Optional[str] = None) -> SafeString:
+        """Return a link to the model instance's detail page."""
+        content = content or '<i class="fas fa-info-circle"></i>'
+        return format_html(f'<a href="{self.detail_url}" target="_blank">{content}</a>')
 
     def natural_key(self) -> Tuple[Any, ...]:
-        """Returns a tuple of values comprising the model instance's natural key."""
+        """Return a tuple of values comprising the model instance's natural key."""
         natural_key_values = []
         for field in self.natural_key_fields:
             value = getattr(self, field, None)
@@ -130,7 +128,7 @@ class Model(DjangoModel):
     def get_object_html(
         cls, match: re.Match, use_preretrieved_html: bool = False
     ) -> str:
-        """Returns a model instance's HTML based on a placeholder in the admin."""
+        """Return a model instance's HTML based on a placeholder in the admin."""
         if not cls.admin_placeholder_regex.match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
 
@@ -143,8 +141,3 @@ class Model(DjangoModel):
         key = match.group(1).strip()
         model_instance = cls.objects.get(pk=key)
         return model_instance.html
-
-    @classmethod
-    def get_updated_placeholder(cls, match: Match) -> str:
-        """Must be implemented in inheriting model classes."""
-        raise NotImplementedError

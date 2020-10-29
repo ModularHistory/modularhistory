@@ -7,18 +7,18 @@ import invoke
 
 def fix_annotations():
     """
-    Fixes Pyinvoke to accept annotations.
+    Fix Pyinvoke to accept annotations.
 
     Based on: https://github.com/pyinvoke/invoke/pull/606
     """
 
-    def patched_inspect_getargspec(func):
+    def patched_inspect_getargspec(func):  # noqa: WPS430
         spec = getfullargspec(func)
         return ArgSpec(*spec[:4])
 
     org_task_argspec = invoke.tasks.Task.argspec
 
-    def patched_task_argspec(*args, **kwargs):
+    def patched_task_argspec(*args, **kwargs):  # noqa: WPS430
         with patch(target='inspect.getargspec', new=patched_inspect_getargspec):
             return org_task_argspec(*args, **kwargs)
 

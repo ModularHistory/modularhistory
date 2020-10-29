@@ -2,6 +2,6 @@ from django.apps import AppConfig
 
 
 class OccurrencesConfig(AppConfig):
-    """TODO: add docstring."""
+    """Config for the occurrences app."""
 
     name = 'occurrences'

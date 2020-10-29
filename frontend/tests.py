@@ -1,7 +1,7 @@
 """Tests for the frontend app."""
 
 import pytest
-from hypothesis import given, example
+from hypothesis import example, given
 from hypothesis.strategies import text
 
 
@@ -14,5 +14,5 @@ class TestNothing:
     @given(string=text())
     @example(string='Not doing anything')
     def test_nothing(self, string: str):
-        """Tests nothing."""
+        """Testnothing."""
         assert self.do_nothing

@@ -1,16 +1,13 @@
+# import magic
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, HTML, Layout, Submit
-
-# from forms.form import FormMixIn, CustomForm
-from django.contrib.auth.forms import (
-    AuthenticationForm,
-    UserCreationForm as BaseUserCreationForm,
-)
-from django.forms import ValidationError
+from crispy_forms.layout import HTML, Field, Layout, Submit
+from django import forms
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.urls import reverse
-
+import logging
+from account.admin import EMAIL_FIELD, PASSWORD_FIELD, USERNAME_FIELD
 from account.models import User
-from account.admin import EMAIL_FIELD, USERNAME_FIELD, PASSWORD_FIELD
 from modularhistory.constants import SOCIAL_AUTH_URL_NAME
 
 DEFAULT_FIELD_CLASSES = 'form-control mb-4'
@@ -20,16 +17,16 @@ class LoginForm(AuthenticationForm):
     """Crispy login form."""
 
     def __init__(self, request=None, *args, **kwargs):
-        """Constructs the login form."""
+        """Construct the login form."""
         super().__init__(request, *args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
+        self.helper.field_class = ''
         self.helper.form_id = 'loginForm'
         self.helper.form_class = 'text-center border border-light p-5'
         self.helper.form_method = 'post'
         self.helper.form_action = '/account/login'
         self.helper.label_class = 'hidden'
-        # self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Sign in</p>'),
             Field(
@@ -99,7 +96,6 @@ class UserCreationForm(BaseUserCreationForm):
     class Meta:
         model = User
         exclude = ()
-        # fields = [USERNAME_FIELD, EMAIL_FIELD]
 
 
 class RegistrationForm(UserCreationForm):
@@ -110,16 +106,16 @@ class RegistrationForm(UserCreationForm):
         fields = ['first_name', 'last_name', USERNAME_FIELD, EMAIL_FIELD]
 
     def __init__(self, *args, **kwargs):
-        """Constructs a registration form."""
+        """Construct a registration form."""
         super().__init__(*args, **kwargs)
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         self.helper = FormHelper()
+        self.helper.field_class = ''
         self.helper.form_id = 'registrationForm'
         self.helper.form_class = 'text-center border border-light p-5'
         self.helper.form_method = 'post'
         self.helper.form_action = '/account/register'
         self.helper.label_class = 'hidden'
-        # self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Register account</p>'),
             HTML(
@@ -147,7 +143,6 @@ class RegistrationForm(UserCreationForm):
             HTML(
                 f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'
             ),
-            # LoginForm.SOCIAL_LOGIN_COMPONENT,
             HTML(
                 f'''
                 <!-- Social login -->
@@ -179,65 +174,72 @@ class RegistrationForm(UserCreationForm):
         )
 
     def clean_email(self):
-        """Cleans the email field value."""
+        """Clean the email field value."""
         email = self.cleaned_data.get(EMAIL_FIELD)
         if not self.cleaned_data.get(USERNAME_FIELD):
             self.cleaned_data[USERNAME_FIELD] = email
         if email and User.objects.filter(email=email).exists():
-            raise ValidationError(
+            raise forms.ValidationError(
                 'An account with this email address has already been created.'
             )
         return email
 
     def clean_username(self):
-        """Prepares the username field value to be saved."""
+        """Prepare the username field value to be saved."""
         email = self.cleaned_data.get(EMAIL_FIELD)
         username = self.cleaned_data.get(USERNAME_FIELD) or email
         if email:
             if User.objects.filter(email=email).count() > 0:
-                raise ValidationError(
+                raise forms.ValidationError(
                     'An account with this email address already exists.'
                 )
         if username:
             if User.objects.filter(username=username).count() > 0:
-                raise ValidationError(
+                raise forms.ValidationError(
                     'An account with this username has already been created.'
                 )
         return username
 
     def clean_first_name(self):
-        """Prepares the first_name field value to be saved."""
+        """Prepare the first_name field value to be saved."""
         return self.cleaned_data.get('first_name').title()
 
     def clean_last_name(self):
-        """Prepares the last_name field value to be saved."""
+        """Prepare the last_name field value to be saved."""
         return self.cleaned_data.get('last_name').title()
 
     def clean(self):
-        """Prepares field values to be saved."""
+        """Prepare field values to be saved."""
         cleaned_data = super().clean()
         if cleaned_data.get('password1') != cleaned_data.get('password2'):
-            raise ValidationError('Your passwords need to match. Please try again.')
+            raise forms.ValidationError(
+                'Your passwords need to match. Please try again.'
+            )
         return cleaned_data
 
 
-# class PictureForm(FormMixIn, forms.Form):
-#     form_id = 'pictureform'
-#     action = '/account/profile.picture/'
-#     method = 'POST'
-#     submit = 'Upload'
-#     classes = [ 'formlib-form form-horizontal' ]
-#     field_classes = [ '' ]
-#     is_ajax = True
-#
-#     picture = forms.ImageField(label='Profile picture', required=False)
-#
-#     def clean_picture(self):
-#         picture = self.cleaned_data.get("picture", False)
-#         picture.file.seek(0)
-#         mime = magic.from_buffer(picture.file.getvalue(), mime=True)
-#         print(">>> The mime type is %s." % mime)
-#         if mime not in ("image/png", "image/jpeg", "image/jpg"):
-#             raise forms.ValidationError("The file type must be JPG or PNG.")
-#         return picture
-#
+class PictureForm(forms.Form):
+    """Form for submitting or updating a profile picture."""
+
+    form_id = 'pictureform'
+    action = '/account/profile.picture/'
+    method = 'POST'
+    submit = 'Upload'
+    classes = ['formlib-form form-horizontal']
+    field_classes = ['']
+    is_ajax = True
+
+    picture = forms.ImageField(label='Profile picture', required=False)
+
+    def clean_picture(self):
+        """Prepare the picture to be saved."""
+        picture = self.cleaned_data.get('picture', False)
+        picture.file.seek(0)
+        # TODO: install python-magic
+        magic = None
+        if magic:
+            mime = magic.from_buffer(picture.file.getvalue(), mime=True)
+            logging.info(f'>>> The mime type is {mime}.')
+            if mime not in ('image/png', 'image/jpeg', 'image/jpg'):
+                raise forms.ValidationError('The file type must be JPG or PNG.')
+        return picture

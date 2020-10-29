@@ -1,10 +1,10 @@
 from .auth import LoginView, LogoutView, RegisterView
 from .password import (
-    PasswordChangeView,
     PasswordChangeDoneView,
-    PasswordResetView,
-    PasswordResetConfirmView,
+    PasswordChangeView,
     PasswordResetCompleteView,
+    PasswordResetConfirmView,
     PasswordResetDoneView,
+    PasswordResetView,
 )
 from .profile import ProfileView, SettingsView

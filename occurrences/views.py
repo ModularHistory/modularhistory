@@ -39,7 +39,7 @@ class BaseDetailView(generic.detail.DetailView):
     object: Occurrence
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """Returns the context data used to render the view."""
+        """Return the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         occurrence = self.object
         return {**context, **occurrence.get_context()}
@@ -55,18 +55,3 @@ class DetailPartialView(BaseDetailView):
     """Partial view that displays details of a specific occurrence."""
 
     template_name = 'occurrences/_detail.html'
-
-
-# def add(request):
-#     """add an occurrence."""
-#     num_divisions = request.GET.get('numDivisions') if 'numDivisions' in request.GET else None
-#     form = CreateForm(request, num_divisions=(num_divisions if num_divisions else 3))
-#     if request.method == 'POST': # just submitted the form
-#         form = CreateForm(request, num_divisions=(num_divisions if num_divisions else 3))
-#         if form.is_valid():
-#             event = form.save()
-#             return HttpResponseRedirect('/events/manage/')
-#     context = {
-#         'form': form,
-#     }
-#     return request.dmp.render('event.create.html', context)

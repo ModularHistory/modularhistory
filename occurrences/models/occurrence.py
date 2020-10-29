@@ -76,12 +76,34 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
     objects: OccurrenceManager = OccurrenceManager()  # type: ignore
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the occurrence."""
         return self.summary.text or '...'
+
+    def save(self, *args, **kwargs):
+        """Save the occurrence to the database."""
+        self.clean()
+        super().save(*args, **kwargs)
+        if not self.images.exists():
+            image = None
+            if self.involved_entities.exists():
+                for entity in self.involved_entities.all():
+                    if entity.images.exists():
+                        if self.date:
+                            image = entity.images.get_closest_to_datetime(self.date)
+                        else:
+                            image = entity.image
+            if image:
+                OccurrenceImage.objects.create(occurrence=self, image=image)
+
+    def clean(self):
+        """Prepare the occurrence to be saved."""
+        super().clean()
+        if not self.date:
+            raise ValidationError('Occurrence needs a date.')
 
     @property
     def truncated_description(self) -> Optional[SafeString]:
-        """TODO: write docstring."""
+        """Return the occurrence's description, truncated."""
         if not self.description:
             return None
         description = soupify(self.description.html)
@@ -104,12 +126,6 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
             return images
         return None
 
-    def full_clean(self, exclude=None, validate_unique=True):
-        """TODO: add docstring."""
-        super().full_clean(exclude, validate_unique)
-        if not self.date:
-            raise ValidationError('Occurrence needs a date.')
-
     def get_context(self):
         """TODO: add docstring."""
         quotes = (
@@ -128,19 +144,3 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
                 if not image.is_positioned
             ],
         }
-
-    def save(self, *args, **kwargs):
-        """TODO: add docstring."""
-        self.full_clean()
-        super().save(*args, **kwargs)
-        if not self.images.exists():
-            image = None
-            if self.involved_entities.exists():
-                for entity in self.involved_entities.all():
-                    if entity.images.exists():
-                        if self.date:
-                            image = entity.images.get_closest_to_datetime(self.date)
-                        else:
-                            image = entity.image
-            if image:
-                OccurrenceImage.objects.create(occurrence=self, image=image)

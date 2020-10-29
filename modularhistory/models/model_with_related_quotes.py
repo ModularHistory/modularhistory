@@ -17,7 +17,3 @@ class ModelWithRelatedQuotes(Model):
 
     class Meta:
         abstract = True
-
-    # TODO: Do this check in forms rather than in the model, since there's already some bad data
-    # if len(self.citations.filter(position=1)) > 1:
-    #     raise ValidationError('Citation positions should be unique.')

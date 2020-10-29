@@ -34,8 +34,10 @@ class HistoricDateTimeField(DateTimeField):
         self, datetime_value: Optional[DateTime], expression, connection
     ) -> Optional[HistoricDateTime]:
         """
-        Converts a value as returned by the database to a Python object.
-        It is the reverse of get_prep_value().
+        Convert a value as returned by the database to a Python object.
+
+        This method is the reverse of get_prep_value().
+
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if datetime_value is None:
@@ -55,7 +57,8 @@ class HistoricDateTimeField(DateTimeField):
         self, historic_datetime: Optional[Union[DateTime, str]]
     ) -> Optional[HistoricDateTime]:
         """
-        Converts the value into the correct Python object.
+        Convert the value into the correct Python object.
+
         This method acts as the reverse of value_to_string(), and is also called in clean().
         """
         if not historic_datetime:
@@ -80,7 +83,8 @@ class HistoricDateTimeField(DateTimeField):
         self, historic_datetime: Optional[HistoricDateTime]
     ) -> Optional[DateTime]:
         """
-        Returns data in a format prepared for use a db query parameter.
+        Return data in a format prepared for use a db query parameter.
+
         `value` is the current value of the model’s attribute.
         """
         if not historic_datetime:
@@ -91,12 +95,3 @@ class HistoricDateTimeField(DateTimeField):
         if preprep_value and settings.USE_TZ and is_naive(preprep_value):
             preprep_value = make_aware(preprep_value)
         return super().get_prep_value(preprep_value)
-
-    # https://docs.djangoproject.com/en/3.0/howto/customg-model-fields/#converting-query-values-to-database-values
-    # def get_db_prep_value(self, value, connection, prepared=False):
-    #     return self.get_prep_value(value)
-    #
-    # # https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#id2
-    # def value_to_string(self, obj) -> str:
-    #     value = self.value_from_object(obj)
-    #     return self.get_prep_value(value) or ''

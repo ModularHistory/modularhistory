@@ -3,7 +3,7 @@
 from typing import List, Tuple
 
 from django.db import models
-from django.db.models import CASCADE, ForeignKey, SET_NULL
+from django.db.models import CASCADE, SET_NULL, ForeignKey
 
 from account.models import User
 from modularhistory.constants import CONTENT_TYPE_IDS
@@ -35,6 +35,10 @@ class UserSearch(Model):
     )
     datetime = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        """Return a string representation of the user–search instance."""
+        return f'{self.user}, {self.datetime}, `{self.search}`'
+
 
 class Search(Model):
     """A search."""
@@ -43,15 +47,10 @@ class Search(Model):
     ordering = models.CharField(max_length=10, choices=ORDERING_OPTIONS)
     start_year = HistoricDateTimeField(null=True, blank=True)
     end_year = HistoricDateTimeField(null=True, blank=True)
-    # entities = ManyToManyField(
-    #
-    # )  # TODO
-    # topics = ManyToManyField(  # TODO
-    # content_types =  # TODO
 
     class Meta:
         verbose_name_plural = 'Searches'
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return a string representation of the search."""
         return str(self.query)

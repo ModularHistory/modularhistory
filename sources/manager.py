@@ -21,13 +21,16 @@ class SourceManager(TypedModelManager, SearchableModelManager):
         topic_ids: Optional[List[int]] = None,
         rank: bool = False,
         suppress_unverified: bool = True,
-        db: str = 'default',
+        suppress_hidden: bool = True,
     ) -> SearchableModelQuerySet:
-        """Returns search results from sources."""
+        """Return search results from sources."""
         qs = (
             super()
-            .search(db=db, suppress_unverified=suppress_unverified)
-            .filter(hidden=False)
+            .search(
+                query=query,
+                suppress_unverified=suppress_unverified,
+                suppress_hidden=suppress_hidden,
+            )
             .filter_by_date(start_year=start_year, end_year=end_year)
         )
         # Limit to specified entities

@@ -14,7 +14,7 @@ class LocalArtifactsStorage(FileSystemStorage):
     base_url = setting('ARTIFACTS_URL')
 
     def __init__(self, *args, **kwargs):
-        """Instantiates LocalArtifactsStorage."""
+        """Instantiate LocalArtifactsStorage."""
         if not os.path.exists(self.location):
             # TODO: Make sure this does not break if writing permissions are missing
             os.makedirs(self.location)
@@ -27,7 +27,7 @@ class GoogleCloudArtifactsStorage(GoogleCloudStorage):
     bucket_name = setting('GS_ARTIFACTS_BUCKET_NAME')
 
     def url(self, name):
-        """Gives the correct artifact URL (not the Google-generated url)."""
+        """Give the correct artifact URL (not the Google-generated url)."""
         return urljoin(settings.ARTIFACTS_URL, name)
 
 
@@ -38,7 +38,7 @@ class GoogleCloudMediaFileStorage(GoogleCloudStorage):
     location = 'media'
 
     def url(self, name):
-        """Gives the correct media URL (not the Google-generated url)."""
+        """Give the correct media URL (not the Google-generated url)."""
         return urljoin(settings.MEDIA_URL, name)
 
 
@@ -49,5 +49,5 @@ class GoogleCloudStaticFileStorage(GoogleCloudStorage):
     bucket_name = setting('GS_STATIC_BUCKET_NAME')
 
     def url(self, name):
-        """Gives the correct static URL (not the Google-generated URL)."""
+        """Give the correct static URL (not the Google-generated URL)."""
         return urljoin(settings.STATIC_URL, name)

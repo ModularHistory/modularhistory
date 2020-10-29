@@ -21,12 +21,12 @@ class PageRange(Model):
         unique_together = ['citation', 'page_number']
 
     def __str__(self) -> str:
-        """Returns the page range's string representation."""
+        """Return the page range's string representation."""
         return soupify(self.html).get_text()
 
     @property
     def html(self) -> Optional[SafeString]:
-        """Returns the page range's HTML representation."""
+        """Return the page range's HTML representation."""
         citation = self.citation
         if not self.page_number:
             return None

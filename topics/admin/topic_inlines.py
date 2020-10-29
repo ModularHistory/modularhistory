@@ -13,13 +13,6 @@ class TopicRelationsInline(TabularInline):
     verbose_name = 'related topic'
 
 
-# class RelatedOccurrencesInline(TabularInline):
-#     model = models.Topic.related_occurrences.through
-#     extra = 1
-#     verbose_name_plural = 'related occurrences'
-#     verbose_name = 'related occurrence'
-
-
 class ParentTopicsInline(TabularInline):
     """Inline admin for a topic's parent topics."""
 

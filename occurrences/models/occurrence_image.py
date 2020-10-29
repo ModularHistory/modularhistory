@@ -8,7 +8,7 @@ from modularhistory.models import Model
 
 
 class OccurrenceImage(Model):
-    """TODO: add docstring."""
+    """An association of an image with an occurrence."""
 
     occurrence = models.ForeignKey(
         'occurrences.Occurrence', related_name='occurrence_images', on_delete=CASCADE
@@ -23,20 +23,20 @@ class OccurrenceImage(Model):
         ordering = ['position', 'image']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the occurrence–image relation."""
         return format_html(f'{self.position}: {self.image.caption}')
 
     @property
     def is_positioned(self) -> bool:
-        """TODO: write docstring."""
+        """Return True if the image is manually positioned within the occurrence's description."""
         return f'image: {self.image.pk}' in self.occurrence.description.raw_value
 
     @property
     def image_pk(self) -> str:
-        """TODO: write docstring."""
+        """Return the primary key of the image."""
         return self.image.pk
 
     @property
     def key(self) -> str:
-        """TODO: write docstring."""
+        """Return the key of the image."""
         return f'{self.image.key}'
