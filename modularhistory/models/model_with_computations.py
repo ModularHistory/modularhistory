@@ -83,27 +83,30 @@ def retrieve_or_compute(
     def wrap(model_property):  # noqa: WPS430
         @wraps(model_property)  # noqa: WPS430
         def wrapped_property(model_instance: ModelWithComputations, *args, **kwargs):
-            if isinstance(model_instance, ModelWithComputations):
-                property_name = attribute_name or model_property.__name__
-                property_value = model_instance.computations.get(property_name)
-                if property_value is not None:
-                    if caster and callable(caster):
-                        property_value = caster(property_value)
-                else:
-                    property_value = model_property(model_instance, *args, **kwargs)
-                    model_instance.computations[property_name] = property_value
-                    logging.info(
-                        f'Saving computed field `{property_name}` '
-                        f'for {model_instance}...'
-                    )
-                    # Specify `wipe_computations=False` to properly update the JSON value
-                    model_instance.save(wipe_computations=False)
-                return property_value
-            raise TypeError(
-                f'{model_instance.__class__} uses the @retrieve_or_compute decorator'
-                f'on its `{model_property.__name__}` attribute but is not subclassed'
-                f'from ModelWithComputations.'
-            )
+            # Avoid recursion errors when creating new model instances
+            if model_instance.pk:
+                if isinstance(model_instance, ModelWithComputations):
+                    property_name = attribute_name or model_property.__name__
+                    property_value = model_instance.computations.get(property_name)
+                    if property_value is not None:
+                        if caster and callable(caster):
+                            property_value = caster(property_value)
+                    else:
+                        property_value = model_property(model_instance, *args, **kwargs)
+                        model_instance.computations[property_name] = property_value
+                        logging.info(
+                            f'Saving computed field `{property_name}` '
+                            f'for {model_instance}...'
+                        )
+                        # Specify `wipe_computations=False` to properly update the JSON value
+                        model_instance.save(wipe_computations=False)
+                    return property_value
+                raise TypeError(
+                    f'{model_instance.__class__} uses the @retrieve_or_compute decorator'
+                    f'on its `{model_property.__name__}` attribute but is not subclassed'
+                    f'from ModelWithComputations.'
+                )
+            return None
 
         return wrapped_property
 

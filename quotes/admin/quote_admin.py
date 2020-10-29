@@ -18,7 +18,6 @@ from quotes.admin.quote_inlines import AttributeesInline, BitesInline
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
 from sources.admin.citation_admin import CitationsInline
 from topics.admin import HasTagsFilter, RelatedTopicsInline
-from topics.views import TagSearchView
 
 
 class QuoteAdmin(SearchableModelAdmin):
@@ -84,14 +83,9 @@ class QuoteAdmin(SearchableModelAdmin):
         return qs
 
     def get_urls(self):
-        """TODO: add docstring."""
+        """Return the URLs used by the quote admin."""
         urls = super().get_urls()
         custom_urls = [
-            path(
-                'tag_search/',
-                self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
-                name='tag_search',
-            ),
             path(
                 'entity_search/',
                 self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),

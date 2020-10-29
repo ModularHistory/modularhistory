@@ -89,6 +89,7 @@ class Quote(
 
     def __str__(self) -> str:
         """Return the quote's string representation, for debugging and internal use."""
+        # Avoid recursion errors by checking for pk
         attributee_string = self.attributee_string or '<Unknown>'
         date_string = self.date.string if self.date else EMPTY_STRING
         if date_string:
@@ -166,7 +167,7 @@ class Quote(
         return False
 
     @property
-    def attributee_string(self) -> Optional[SafeString]:
+    def attributee_string(self) -> Optional[str]:
         """See the `attributee_html` property."""
         if self.attributee_html:
             return soupify(self.attributee_html).get_text()  # type: ignore

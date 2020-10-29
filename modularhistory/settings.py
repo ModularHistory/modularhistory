@@ -721,5 +721,7 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_URL = 'amqp://localhost'
 
-if ENVIRONMENT == environments.DEV:
+DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
+
+if ENVIRONMENT == environments.DEV and not DISABLE_CHECKS:
     from modularhistory import checks  # noqa: F401
