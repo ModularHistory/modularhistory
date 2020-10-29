@@ -1,3 +1,5 @@
+from typing import Any, Dict, Iterable, Mapping
+
 from django_json_widget.widgets import JSONEditorWidget as BaseJSONEditorWidget
 
 
@@ -12,3 +14,15 @@ class JSONEditorWidget(BaseJSONEditorWidget):
         super().__init__(
             attrs=attrs, mode=mode, options=options, width=width, height=height
         )
+
+    def value_from_datadict(
+        self, data: Dict[str, Any], files: Mapping[str, Iterable[Any]], name: str
+    ) -> Any:
+        json_value = super().value_from_datadict(data, files, name)
+        if isinstance(json_value, dict):
+            return {
+                attribute: attribute_value
+                for attribute, attribute_value in json_value.items()
+                if attribute_value is not None
+            }
+        return json_value

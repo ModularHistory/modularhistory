@@ -87,10 +87,15 @@ def retrieve_or_compute(
             if model_instance.pk:
                 if isinstance(model_instance, ModelWithComputations):
                     property_name = attribute_name or model_property.__name__
-                    property_value = model_instance.computations.get(property_name)
-                    if property_value is not None:
-                        if caster and callable(caster):
-                            property_value = caster(property_value)
+                    # If the computation result is None, the key will be added to the
+                    # JSON but its value will be None. Therefore, to check for a
+                    # previous computation result, we must explicitly check for the
+                    # key in the JSON rather than relying on `get`.
+                    if property_name in model_instance.computations:
+                        property_value = model_instance.computations[property_name]
+                        if property_value is not None:
+                            if caster and callable(caster):
+                                property_value = caster(property_value)
                     else:
                         property_value = model_property(model_instance, *args, **kwargs)
                         model_instance.computations[property_name] = property_value

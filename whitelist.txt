@@ -32,6 +32,7 @@ parsable
 querysets
 RST
 select2
+Select2Widget
 sorl
 StaticPageFallbackMiddleware
 subdirectory
