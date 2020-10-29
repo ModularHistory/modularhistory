@@ -3,6 +3,14 @@
 from aenum import Constant
 
 
+class ResponseCodes(Constant):
+    """Response codes."""
+
+    PERMANENT_REDIRECT = 301
+    REDIRECT = 302
+    SUCCESS = 200
+
+
 class ModelNameSet(Constant):
     """Model name constants (to avoid magic strings)."""
 

@@ -297,27 +297,13 @@ elif ENVIRONMENT == environments.DEV and USE_PROD_DB:
             'HOST': config('PROD_DB_HOST'),
             'PORT': config('PROD_DB_PORT'),
             'ENGINE': 'django.db.backends.postgresql',
-        }
+        },
     }
     print('WARNING: Using production database!  Tread carefully!')
 else:
     DATABASES = {
         'default': {
             'NAME': config('DB_NAME', default='modularhistory'),
-            'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST', default='localhost'),
-            'ENGINE': 'django.db.backends.postgresql',
-        },
-        'slave': {
-            'NAME': 'slave',
-            'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST', default='localhost'),
-            'ENGINE': 'django.db.backends.postgresql',
-        },
-        'backup': {
-            'NAME': 'backup',
             'USER': config('DB_USER', default='postgres'),
             'PASSWORD': config('DB_PASSWORD'),
             'HOST': config('DB_HOST', default='localhost'),
