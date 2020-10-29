@@ -12,6 +12,16 @@ $label-height: 2rem;
   }
 }
 
+// Indent nested inlines
+td.djn-td {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+// Demarcate nested inline admins
+tbody.djn-tbody.has_original {
+  border-bottom: 3px solid lightgray;
+}
+
 .form-row > div {
   position: relative;
   >label {

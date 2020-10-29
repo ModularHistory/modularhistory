@@ -211,6 +211,13 @@ form ul {
   background-color: #2B3746 !important;
   color: white !important; }
 
+td.djn-td {
+  padding-left: 3rem;
+  padding-right: 3rem; }
+
+tbody.djn-tbody.has_original {
+  border-bottom: 3px solid lightgray; }
+
 .form-row > div {
   position: relative; }
   .form-row > div > label {
