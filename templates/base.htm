@@ -192,7 +192,7 @@
                 </ul>
             </div>
         </nav>
-        <div class="main-content">
+        <div class="main-content" style="background-image: url('{% static "topic_cloud.png" %}')">
             {% block breadcrumb %}
                 {% if breadcrumb_items %}
                     <ol class="breadcrumb" style="">
@@ -221,32 +221,30 @@
                             </li>
                         {% endif %}
                     </ul>
-
-                    <div class="row">
-                        <div class="col-md-12 col-lg-12 text-center">
-                            <p class="footer-links mb-1">
-                                <a href="/about">About ModularHistory</a>
-                                <a href="/privacy">Privacy Policy</a>
-                                <a href="/terms">Terms of Use</a>
-                            </p>
-                            <div class="list-social">
-                                <ul class="list-unstyled">
-                                    <li><a href="https://twitter.com/TermsFeed" rel="nofollow noopener" target="_blank" aria-label="Twitter"><i class="icon-twitter"></i></a></li>
-                                    <li><a href="https://www.facebook.com/termsfeed" rel="nofollow noopener" target="_blank" aria-label="Facebook"><i class="icon-facebook"></i></a></li>
-                                    <li><a href="https://www.pinterest.com/termsfeed" rel="nofollow noopener" target="_blank" aria-label="Pinterest"><i class="icon-pinterest"></i></a></li>
-                                    <li><a href="https://www.youtube.com/c/termsfeed" rel="nofollow noopener" target="_blank" aria-label="YouTube"><i class="icon-youtube"></i></a></li>
-                                </ul>
-                            </div>
+                </div>
+                <!-- Footer Elements -->
+                <div class="row">
+                    <div class="col-md-12 col-lg-12 text-center">
+                        <p class="footer-links mb-1" style="background-color: rgba(0,0,0,0.2);">
+                            <!-- Copyright -->
+                            <span class="text-center py-3 mx-5">
+                                &copy; 2020 ModularHistory, Inc.
+                            </span>
+                            <!-- Copyright -->
+                            <a href="/about">About ModularHistory</a>
+                            <a href="/privacy">Privacy Policy</a>
+                            <a href="/terms">Terms of Use</a>
+                        </p>
+                        <div class="list-social">
+                            <ul class="list-unstyled">
+                                <li><a href="https://twitter.com/TermsFeed" rel="nofollow noopener" target="_blank" aria-label="Twitter"><i class="icon-twitter"></i></a></li>
+                                <li><a href="https://www.facebook.com/termsfeed" rel="nofollow noopener" target="_blank" aria-label="Facebook"><i class="icon-facebook"></i></a></li>
+                                <li><a href="https://www.pinterest.com/termsfeed" rel="nofollow noopener" target="_blank" aria-label="Pinterest"><i class="icon-pinterest"></i></a></li>
+                                <li><a href="https://www.youtube.com/c/termsfeed" rel="nofollow noopener" target="_blank" aria-label="YouTube"><i class="icon-youtube"></i></a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <!-- Footer Elements -->
-
-                <!-- Copyright -->
-                <div class="footer-copyright text-center py-3">
-                    &copy; 2020 ModularHistory, Inc.
-                </div>
-                <!-- Copyright -->
 
             </footer>
             <!-- Footer -->

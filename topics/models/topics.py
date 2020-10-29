@@ -11,6 +11,7 @@ from modularhistory.models import (
     ModelWithComputations,
     retrieve_or_compute,
 )
+from topics.models.topic_relations import TopicRelation
 
 KEY_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
@@ -38,10 +39,10 @@ class TopicParentChildRelation(Model):
     """A relationship between a parent topic and child topic."""
 
     parent_topic = ForeignKey(
-        'Topic', related_name='child_relations', on_delete=CASCADE
+        'topics.Topic', related_name='child_relations', on_delete=CASCADE
     )
     child_topic = ForeignKey(
-        'Topic', related_name='parent_relations', on_delete=CASCADE
+        'topics.Topic', related_name='parent_relations', on_delete=CASCADE
     )
 
     class Meta:
@@ -76,7 +77,7 @@ class Topic(ModelWithRelatedQuotes, ModelWithComputations):
     related = GenericManyToManyField(
         'occurrences.Occurrence',
         'quotes.Quote',
-        through='topics.TopicRelation',
+        through=TopicRelation,
         related_name='topic_relations',
         blank=True,
     )

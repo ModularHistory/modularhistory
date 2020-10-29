@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey
 
 from modularhistory.models import Model
-from topics.models.topics import Topic
 
 MAX_WEIGHT = 1000
 DEFAULT_WEIGHT = MAX_WEIGHT / 2
@@ -15,7 +14,7 @@ DEFAULT_WEIGHT = MAX_WEIGHT / 2
 class TopicRelation(Model):
     """A relation to a topic (by any other model)."""
 
-    topic = ForeignKey(Topic, related_name='topic_relations', on_delete=CASCADE)
+    topic = ForeignKey('topics.Topic', related_name='topic_relations', on_delete=CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
