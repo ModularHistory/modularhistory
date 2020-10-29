@@ -89,13 +89,16 @@ class Quote(
 
     def __str__(self) -> str:
         """Return the quote's string representation, for debugging and internal use."""
-        attributee_string = self.attributee_string or '<Unknown>'
-        date_string = self.date.string if self.date else EMPTY_STRING
-        if date_string:
-            string = f'{attributee_string}, {date_string}: {self.bite.text}'
-        else:
-            string = f'{attributee_string}: {self.bite.text}'
-        return string
+        # Avoid recursion errors by checking for pk
+        if self.pk:
+            attributee_string = self.attributee_string or '<Unknown>'
+            date_string = self.date.string if self.date else EMPTY_STRING
+            if date_string:
+                string = f'{attributee_string}, {date_string}: {self.bite.text}'
+            else:
+                string = f'{attributee_string}: {self.bite.text}'
+            return string
+        return EMPTY_STRING
 
     def save(self, *args, **kwargs):
         """Save the quote to the database."""
@@ -119,6 +122,8 @@ class Quote(
     @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
     def attributee_html(self) -> Optional[SafeString]:
         """Return the HTML representing the quote's attributees."""
+        if not self.pk:
+            return None
         attributees = self.ordered_attributees
         if attributees:
             n_attributions = len(attributees)
@@ -166,7 +171,7 @@ class Quote(
         return False
 
     @property
-    def attributee_string(self) -> Optional[SafeString]:
+    def attributee_string(self) -> Optional[str]:
         """See the `attributee_html` property."""
         if self.attributee_html:
             return soupify(self.attributee_html).get_text()  # type: ignore

@@ -18,7 +18,6 @@ from quotes.admin.quote_inlines import AttributeesInline, BitesInline
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
 from sources.admin.citation_admin import CitationsInline
 from topics.admin import HasTagsFilter, RelatedTopicsInline
-from topics.views import TagSearchView
 
 
 class QuoteAdmin(SearchableModelAdmin):
@@ -62,14 +61,14 @@ class QuoteAdmin(SearchableModelAdmin):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 
-    def get_fields(self, request, model_instance=None):
-        """Return reordered fields to be displayed in the admin."""
-        fields = list(super().get_fields(request, model_instance))
-        for field_name in ('date', 'date_is_circa'):
-            if fields and field_name in fields:
-                fields.remove(field_name)
-                fields.append(field_name)
-        return fields
+    # def get_fields(self, request, model_instance=None):
+    #     """Return reordered fields to be displayed in the admin."""
+    #     fields = list(super().get_fields(request, model_instance))
+    #     for field_name in ('date', 'date_is_circa'):
+    #         if fields and field_name in fields:
+    #             fields.remove(field_name)
+    #             fields.append(field_name)
+    #     return fields
 
     def get_queryset(self, request) -> 'QuerySet[models.Quote]':
         """
@@ -84,14 +83,9 @@ class QuoteAdmin(SearchableModelAdmin):
         return qs
 
     def get_urls(self):
-        """TODO: add docstring."""
+        """Return the URLs used by the quote admin."""
         urls = super().get_urls()
         custom_urls = [
-            path(
-                'tag_search/',
-                self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
-                name='tag_search',
-            ),
             path(
                 'entity_search/',
                 self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
