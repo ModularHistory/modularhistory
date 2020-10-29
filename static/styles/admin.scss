@@ -1,7 +1,7 @@
 @import "generic";
 @import "mce.scss";
 
-$label-width: 160px;
+$label-height: 2rem;
 
 .nimbus-is-editor {
   #container {
@@ -12,9 +12,15 @@ $label-width: 160px;
   }
 }
 
-.form-row > div > .mce-tinymce.mce-container.mce-panel {
-  margin-left: $label-width !important;
-  max-width: 80vw !important;
+.form-row > div {
+  position: relative;
+  >label {
+    z-index: 10;
+  }
+  >.mce-tinymce.mce-container.mce-panel {
+    margin-top: $label-height !important;
+    max-width: 100% !important;
+  }
 }
 
 td.field-source {

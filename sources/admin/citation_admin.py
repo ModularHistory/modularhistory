@@ -70,6 +70,7 @@ class PagesInline(TabularInline):
     model = models.PageRange
     verbose_name = 'page range'
     verbose_name_plural = 'pages'
+    exclude = ['computations']
 
     def get_extra(
         self, request, model_instance: Optional[models.Citation] = None, **kwargs
@@ -88,6 +89,7 @@ class CitationsInline(GenericTabularInline):
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
+    exclude = ['computations']
 
     inlines = [PagesInline]
 

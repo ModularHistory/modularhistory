@@ -5,10 +5,8 @@ import logging
 from typing import Any, Dict, List, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
-from django.db.models import JSONField as BaseJSONField  # type: ignore
-from django.db.models import Model
-from jsonschema import exceptions as jsonschema_exceptions
-from jsonschema import validate
+from django.db.models import JSONField as BaseJSONField, Model  # type: ignore
+from jsonschema import exceptions as jsonschema_exceptions, validate
 
 
 class JSONField(BaseJSONField):
@@ -55,12 +53,11 @@ class JSONField(BaseJSONField):
 
     def get_schema_data(self, model_instance) -> Optional[Dict]:
         """Return the field's JSON schema as a Python object."""
-        schema = self.schema or getattr(model_instance, 'schema', None)
+        schema = self.schema
         if schema:
             if isinstance(schema, str):
-                if hasattr(self.model, schema):
-                    logging.info(f'Getting schema from {self.model.__name__}.{schema}')
-                    schema = getattr(self.model, schema, {})
+                if hasattr(model_instance, schema):
+                    schema = getattr(model_instance, schema, {})
             schema_data = json.loads(schema) if isinstance(schema, str) else schema
             if schema_data.get('properties') is None:
                 schema_data = {'type': 'object', 'properties': {**schema_data}}

@@ -211,9 +211,13 @@ form ul {
   background-color: #2B3746 !important;
   color: white !important; }
 
-.form-row > div > .mce-tinymce.mce-container.mce-panel {
-  margin-left: 160px !important;
-  max-width: 80vw !important; }
+.form-row > div {
+  position: relative; }
+  .form-row > div > label {
+    z-index: 10; }
+  .form-row > div > .mce-tinymce.mce-container.mce-panel {
+    margin-top: 2rem !important;
+    max-width: 100% !important; }
 
 td.field-source {
   max-width: 600px; }
