@@ -48,6 +48,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
         TopicFilter,
         LocationFilter,
     ]
+    list_per_page = 15
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields
     search_fields = models.Occurrence.searchable_fields

@@ -2,7 +2,7 @@
 
 from functools import wraps
 from typing import Callable, Optional
-
+import logging
 from modularhistory.fields import JSONField
 from modularhistory.models.model import Model
 
@@ -92,6 +92,10 @@ def retrieve_or_compute(
                 else:
                     property_value = model_property(model_instance, *args, **kwargs)
                     model_instance.computations[property_name] = property_value
+                    logging.info(
+                        f'Saving computed field `{property_name}` '
+                        f'for {model_instance}...'
+                    )
                     # Specify `wipe_computations=False` to properly update the JSON value
                     model_instance.save(wipe_computations=False)
                 return property_value

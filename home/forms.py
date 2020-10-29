@@ -2,7 +2,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, Submit
 from django import forms
 from django.http import HttpRequest
-from django_select2.forms import Select2Widget
 
 from modularhistory.constants.topics import TOPICS
 
@@ -36,7 +35,11 @@ class SearchForm(forms.Form):
         self.helper.form_class = 'text-center'
         self.helper.form_show_labels = False
         layout = [
-            Field('query', css_class='form-control', style='width: 20rem; max-width: 100%;'),
+            Field(
+                'query',
+                css_class='form-control',
+                style='width: 20rem; max-width: 100%;',
+            ),
             Submit('submit', self.submit_button_text),
         ]
         self.helper.layout = Layout(*layout)
