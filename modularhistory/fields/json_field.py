@@ -1,11 +1,14 @@
 """A modification of Django's JSONField."""
 
 import json
-from typing import Any, Dict, List, Optional, Type, Union
 import logging
+from typing import Any, Dict, List, Optional, Type, Union
+
 from django.core.exceptions import ValidationError
-from django.db.models import JSONField as BaseJSONField, Model  # type: ignore
-from jsonschema import exceptions as jsonschema_exceptions, validate
+from django.db.models import JSONField as BaseJSONField  # type: ignore
+from django.db.models import Model
+from jsonschema import exceptions as jsonschema_exceptions
+from jsonschema import validate
 
 
 class JSONField(BaseJSONField):
@@ -43,11 +46,12 @@ class JSONField(BaseJSONField):
         if json_value:
             if not self.null:  # TODO: check this logic
                 self._validate_schema(json_value, model_instance)
-            # Remove keys with null values
-            for key in json_value:
-                if json_value.get(key) is None:
-                    json_value.pop(key)
-        return json_value
+        # Remove keys with null values
+        return {
+            attribute: attribute_value
+            for attribute, attribute_value in json_value.items()
+            if attribute_value is not None
+        }
 
     def get_schema_data(self, model_instance) -> Optional[Dict]:
         """Return the field's JSON schema as a Python object."""
@@ -59,10 +63,7 @@ class JSONField(BaseJSONField):
                     schema = getattr(self.model, schema, {})
             schema_data = json.loads(schema) if isinstance(schema, str) else schema
             if schema_data.get('properties') is None:
-                schema_data = {
-                    'type': 'object',
-                    'properties': {**schema_data}
-                }
+                schema_data = {'type': 'object', 'properties': {**schema_data}}
             return schema_data
         return None
 

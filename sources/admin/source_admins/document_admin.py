@@ -1,6 +1,9 @@
 from admin import ModelAdmin, admin_site
 from sources import models
-from sources.admin.source_admins.textual_source_admin import TextualSourceAdmin, TextualSourceForm
+from sources.admin.source_admins.textual_source_admin import (
+    TextualSourceAdmin,
+    TextualSourceForm,
+)
 
 
 class CollectionAdmin(ModelAdmin):

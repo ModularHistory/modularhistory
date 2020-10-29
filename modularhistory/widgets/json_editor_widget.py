@@ -10,9 +10,5 @@ class JSONEditorWidget(BaseJSONEditorWidget):
         attrs = attrs or {'style': 'display: inline-block; width: 90%;'}
 
         super().__init__(
-            attrs=attrs,
-            mode=mode,
-            options=options,
-            width=width,
-            height=height
+            attrs=attrs, mode=mode, options=options, width=width, height=height
         )
