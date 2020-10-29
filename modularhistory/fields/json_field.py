@@ -44,12 +44,7 @@ class JSONField(BaseJSONField):
         if json_value:
             if not self.null:  # TODO: check this logic
                 self._validate_schema(json_value, model_instance)
-        # Remove keys with null values
-        return {
-            attribute: attribute_value
-            for attribute, attribute_value in json_value.items()
-            if attribute_value is not None
-        }
+        return json_value
 
     def get_schema_data(self, model_instance) -> Optional[Dict]:
         """Return the field's JSON schema as a Python object."""

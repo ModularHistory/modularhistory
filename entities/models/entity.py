@@ -8,6 +8,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from images.models import Image
+from modularhistory.constants import EMPTY_STRING
 from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
 from modularhistory.models import (
     ModelWithImages,
@@ -122,32 +123,30 @@ class Entity(
         return categorizations.select_related('category')
 
     @retrieve_or_compute(attribute_name='categorization_string')
-    def get_categorization_string(
-        self, date: Optional[DateTime] = None
-    ) -> Optional[str]:
-        """Intelligently build a categorization string, like `conservative LDS apostle`."""
+    def get_categorization_string(self, date: Optional[DateTime] = None) -> str:
+        """Intelligently build a categorization string, like `liberal scholar`."""
         categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
-        if not categorizations:
-            return None
-        # Build the string
-        categorization_words: List[str] = []
-        for part_of_speech in ('noun', 'any', 'adj'):
-            pos_categorizations = categorizations.filter(
-                category__part_of_speech=part_of_speech
-            )
-            if pos_categorizations.exists():
-                categorization_str = str(
-                    pos_categorizations.order_by('category__weight', 'date').last()
+        if categorizations:
+            # Build the string
+            categorization_words: List[str] = []
+            for part_of_speech in ('noun', 'any', 'adj'):
+                pos_categorizations = categorizations.filter(
+                    category__part_of_speech=part_of_speech
                 )
-                words = [
-                    word
-                    for word in categorization_str.split(' ')
-                    if word not in categorization_words
-                ]
-                categorization_words = words + categorization_words
-        # Remove duplicate words
-        categorization_words = list(dict.fromkeys(categorization_words))
-        return ' '.join(categorization_words)
+                if pos_categorizations.exists():
+                    categorization_str = str(
+                        pos_categorizations.order_by('category__weight', 'date').last()
+                    )
+                    words = [
+                        word
+                        for word in categorization_str.split(' ')
+                        if word not in categorization_words
+                    ]
+                    categorization_words = words + categorization_words
+            # Remove duplicate words
+            categorization_words = list(dict.fromkeys(categorization_words))
+            return ' '.join(categorization_words)
+        return EMPTY_STRING
 
 
 class Person(Entity):

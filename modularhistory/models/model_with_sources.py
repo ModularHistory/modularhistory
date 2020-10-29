@@ -8,6 +8,7 @@ from django.utils.safestring import SafeString
 from django.core.exceptions import ObjectDoesNotExist
 from modularhistory.models import retrieve_or_compute
 from modularhistory.models.searchable_model import SearchableModel
+from modularhistory.constants import EMPTY_STRING
 
 if TYPE_CHECKING:
     from sources.models import Citation
@@ -45,12 +46,12 @@ class ModelWithSources(SearchableModel):
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='citation_html', caster=format_html)
-    def citation_html(self) -> Optional[SafeString]:
+    def citation_html(self) -> SafeString:
         """Return the quote's citation HTML, if a citation exists."""
         try:
             citation_html = '; '.join(
                 [citation.html for citation in self.citations.all()]
             )
         except (ObjectDoesNotExist, AttributeError, ValueError):
-            return None
-        return format_html(citation_html) if citation_html else None
+            citation_html = EMPTY_STRING
+        return format_html(citation_html)
