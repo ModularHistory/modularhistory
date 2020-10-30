@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import Manager as ModelManager, QuerySet
 from typedmodels.models import TypedModelManager as BaseTypedModelManager
-
+import logging
 from modularhistory.structures.historic_datetime import HistoricDateTime
 
 if TYPE_CHECKING:
@@ -85,7 +85,9 @@ class SearchableModelQuerySet(QuerySet):
                 annotations['rank'] = SearchRank(vector, search_query)
             qs = qs.annotate(**annotations)  # type: ignore
             qs = qs.filter(search=search_query)
-        return qs.order_by('id').distinct('id')
+        distinct_results = qs.order_by('pk').distinct('pk')
+        logging.info(f'Returning {len(distinct_results)} distinct search results...')
+        return distinct_results
 
 
 class SearchableModelManager(Manager):

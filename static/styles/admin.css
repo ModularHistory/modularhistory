@@ -218,6 +218,12 @@ td.djn-td {
 tbody.djn-tbody.has_original {
   border-bottom: 3px solid lightgray; }
 
+.djn-tr > td.original > p:nth-child(n+3) {
+  display: none; }
+
+.djn-tr > td.original > p:nth-child(2) {
+  margin-left: 1rem; }
+
 .form-row > div {
   position: relative; }
   .form-row > div > label {

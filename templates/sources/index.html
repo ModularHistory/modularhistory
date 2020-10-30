@@ -1,13 +1,13 @@
 {% extends "base.htm" %}
 
-{% load card %}
+{% load get_html_for_view %}
 
 {% block content %}
     <div class="container">
         {% if sources|length %}
             <div>
                 {% for source in sources %}
-                    {% card source %}
+                    {{ source|get_html_for_view:"card" }}
                 {% endfor %}
             </div>
         {% else %}

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Iterable, List, Optional
 
 from django.core.exceptions import ValidationError
 from django.db.models import ManyToManyField
@@ -6,6 +6,7 @@ from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
+from django.core.exceptions import ObjectDoesNotExist
 from images.models import Image
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
@@ -114,9 +115,28 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         )
 
     @property
+    def ordered_images(self):
+        """Careful!  These are occurrence-images, not images."""
+        return self.occurrence_images.all().select_related('image')
+
+    @property
+    def unpositioned_images(self) -> Iterable[OccurrenceImage]:
+        """Return the occurrence's images that are not manually positioned in HTML."""
+        # 'unpositioned_images' is a little misleading; these are positioned
+        # by their `position` attribute rather than manually positioned.
+        unpositioned_images = self.ordered_images.filter(is_positioned=False)
+        if unpositioned_images.exists():
+            return unpositioned_images
+        elif self.entity_images:
+            unpositioned_images = self.entity_images
+        elif self.primary_image:
+            unpositioned_images = [self.primary_image]
+        return unpositioned_images
+
+    @property
     def entity_images(self) -> Optional[List[Image]]:
         """TODO: write docstring."""
-        if self.involved_entities.exists():
+        try:
             images = []
             for entity in self.involved_entities.all():
                 if entity.images.exists():
@@ -124,7 +144,8 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
                         image = entity.images.get_closest_to_datetime(self.date)
                         images.append(image)
             return images
-        return None
+        except (ObjectDoesNotExist, AttributeError):
+            return None
 
     def get_context(self):
         """TODO: add docstring."""
@@ -136,11 +157,4 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         return {
             'occurrence': self,
             'quotes': sorted(quotes, key=quote_sorter_key),
-            # 'unpositioned_images' is a little misleading;
-            # these are positioned by their `position` attribute rather than manually positioned.
-            'unpositioned_images': [
-                image
-                for image in self.occurrence_images.all()
-                if not image.is_positioned
-            ],
         }

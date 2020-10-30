@@ -1,9 +1,9 @@
 {% extends "base.htm" %}
 
-{% load detail %}
+{% load get_html_for_view %}
 
 {% block content %}
     <div class="container">
-        {% detail entity %}
+        {{ entity|get_html_for_view:"detail" }}
     </div>
 {% endblock %}

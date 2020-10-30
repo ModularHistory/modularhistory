@@ -1,12 +1,10 @@
 {% load get_admin_url %}
-{% load card %}
-{% load class_name %}
 {% load static %}
+{% load get_html_for_view %}
 {% load with_entity_links %}
-{% load highlight %}
 
 <div class="detail">
-    {% if request.user.is_superuser %}
+    {% if show_edit_links %}
         <a class="edit-object-button float-right" target="_blank" href="{{ occurrence|get_admin_url }}">
             <i class="fa fa-edit"></i>
         </a>
@@ -17,30 +15,16 @@
         {% endif %}
     </h2>
     <div class="card-text">
-        {% if unpositioned_images|length %}
-            {% for occurrence_image in unpositioned_images %}
-                <div class="img-container" style="max-width: 44%">
-                    {% card occurrence_image.image %}
-                </div>
-            {% endfor %}
-        {% elif not occurrence.images.exists %}
-            {% if occurrence.entity_images %}
-                {% for image in occurrence.entity_images %}
-                    <div class="img-container" style="max-width: 44%">
-                        {% card image %}
-                    </div>
-                {% endfor %}
-            {% elif occurrence.primary_image and not occurrence.images.all|length %}
-                <div class="img-container" style="max-width: 44%">
-                    {% card occurrence.primary_image %}
-                </div>
-            {% endif %}
-        {% endif %}
+        {% for occurrence_image in occurrence.unpositioned_images %}
+            <div class="img-container" style="max-width: 44%">
+                {{ occurrence_image.image|get_html_for_view:"card" }}
+            </div>
+        {% endfor %}
         <div class="lead">
-            {{ occurrence.summary.html | with_entity_links }}
+            {{ occurrence.summary.html|with_entity_links }}
         </div>
         <div>
-            {{ occurrence.description.html | with_entity_links }}
+            {{ occurrence.description.html|with_entity_links }}
         </div>
     </div>
     {% if occurrence.postscript %}

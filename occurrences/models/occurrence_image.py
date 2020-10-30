@@ -13,7 +13,10 @@ class OccurrenceImage(Model):
     occurrence = models.ForeignKey(
         'occurrences.Occurrence', related_name='occurrence_images', on_delete=CASCADE
     )
-    image = models.ForeignKey('images.Image', on_delete=models.PROTECT)
+    image = models.ForeignKey(
+        'images.Image', related_name='occurrence_images', on_delete=models.PROTECT
+    )
+    is_positioned = models.BooleanField(blank=True, default=False)
     position = models.PositiveSmallIntegerField(
         null=True, blank=True, help_text='Set to 0 if the image is positioned manually.'
     )
@@ -26,10 +29,20 @@ class OccurrenceImage(Model):
         """Return the string representation of the occurrence–image relation."""
         return format_html(f'{self.position}: {self.image.caption}')
 
-    @property
-    def is_positioned(self) -> bool:
-        """Return True if the image is manually positioned within the occurrence's description."""
-        return f'image: {self.image.pk}' in self.occurrence.description.raw_value
+    def save(self, *args, **kwargs):
+        """Save the occurrence–image association."""
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        """Prepare the occurrence–image association to be saved."""
+        try:
+            is_positioned = (
+                f'image: {self.image.pk}' in self.occurrence.description.raw_value
+            )
+        except AttributeError:
+            is_positioned = False
+        self.is_positioned = is_positioned
 
     @property
     def image_pk(self) -> str:

@@ -5,9 +5,11 @@ from typing import Any, Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
+from django.core.exceptions import ValidationError
 
 from modularhistory.constants import EMPTY_STRING, MODEL_CLASS_PATHS
 from modularhistory.structures.html import HTML
+from modularhistory.utils.string import truncate
 
 if TYPE_CHECKING:
     from modularhistory.models import Model
@@ -64,6 +66,10 @@ class HTMLField(MceHTMLField):
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
         raw_html = html.raw_value
+        if '{' in raw_html or '}' in raw_html:
+            raise ValidationError(
+                'The "{" and "}" characters are illegal in HTML fields.'
+            )
         replacements = (
             (r'<blockquote>', '<blockquote class="blockquote">'),
             (r'<table>', '<table class="table">'),
@@ -158,9 +164,12 @@ class HTMLField(MceHTMLField):
             try:
                 processed_html = self.processor(html_value)
             except RecursionError as error:
-                logging.error(f'Unable to process HTML: {error}')
+                logging.error(f'>>> Unable to process HTML: {error}')
             except Exception as error:
-                logging.error(f'Unable to process HTML: {error}\n\n{html_value}')
+                logging.error(
+                    f'>>> {error} resulted from attempting to process HTML: '
+                    f'\n{truncate(html_value)}\n'
+                )
         return HTML(html_value, processed_value=processed_html)
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python

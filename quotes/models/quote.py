@@ -204,7 +204,7 @@ class Quote(
         WARNING: This queries the database.
         """
         try:
-            attributions = self.attributions.select_related('attributee')
+            attributions = self.attributions.select_related('attributee').iterator()
             return [attribution.attributee for attribution in attributions]
         except (AttributeError, ObjectDoesNotExist) as error:
             logging.error(f'>>> {type(error)}: {error}')

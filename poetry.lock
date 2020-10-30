@@ -368,6 +368,31 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "coreapi"
+version = "2.3.3"
+description = "Python client library for Core API."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+coreschema = "*"
+itypes = "*"
+requests = "*"
+uritemplate = "*"
+
+[[package]]
+name = "coreschema"
+version = "0.0.4"
+description = "Core Schema."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+jinja2 = "*"
+
+[[package]]
 name = "coverage"
 version = "5.3"
 description = "Code coverage measurement for Python"
@@ -530,15 +555,15 @@ django = ">=1.8"
 
 [[package]]
 name = "django-celery-beat"
-version = "2.0.0"
+version = "2.1.0"
 description = "Database-backed Periodic Tasks."
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-celery = "*"
-Django = ">=1.11.17"
+celery = ">=4.4,<6.0"
+Django = ">=2.2"
 django-timezone-field = ">=4.0,<5.0"
 python-crontab = ">=2.3.4"
 
@@ -858,16 +883,18 @@ django = ">=2.2"
 
 [[package]]
 name = "djangorestframework-stubs"
-version = "1.2.0"
+version = "1.3.0"
 description = "PEP-484 stubs for django-rest-framework"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 
 [package.dependencies]
-django-stubs = ">=1.3.0"
-mypy = ">=0.750"
-typing-extensions = "*"
+coreapi = ">=2.0.0"
+django-stubs = ">=1.7.0"
+mypy = ">=0.790"
+requests = ">=2.0.0"
+typing-extensions = ">=3.7.2"
 
 [[package]]
 name = "docker"
@@ -1212,7 +1239,7 @@ restructuredtext_lint = "*"
 
 [[package]]
 name = "flake8-spellcheck"
-version = "0.19.1"
+version = "0.20.0"
 description = "Spellcheck variables, comments and docstrings"
 category = "dev"
 optional = false
@@ -1559,7 +1586,7 @@ idna = ">=2.5"
 
 [[package]]
 name = "hypothesis"
-version = "5.38.1"
+version = "5.41.0"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -1678,6 +1705,14 @@ description = "Various helpers to pass data to untrusted environments and back."
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
+name = "itypes"
+version = "1.2.0"
+description = "Simple immutable types for python."
+category = "dev"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "jinja2"
@@ -3164,7 +3199,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "f28da204000dea5554f5edb4415f0ee6f7878a4efd3c99e394b31a4ed631f065"
+content-hash = "dfde476f5461cb22fe44496483b789ce21d319ad26f94c68ac07e1ee50b39709"
 
 [metadata.files]
 aenum = [
@@ -3322,6 +3357,14 @@ constantly = [
     {file = "constantly-15.1.0-py2.py3-none-any.whl", hash = "sha256:dd2fa9d6b1a51a83f0d7dd76293d734046aa176e384bf6e33b7e44880eb37c5d"},
     {file = "constantly-15.1.0.tar.gz", hash = "sha256:586372eb92059873e29eba4f9dec8381541b4d3834660707faf8ba59146dfc35"},
 ]
+coreapi = [
+    {file = "coreapi-2.3.3-py2.py3-none-any.whl", hash = "sha256:bf39d118d6d3e171f10df9ede5666f63ad80bba9a29a8ec17726a66cf52ee6f3"},
+    {file = "coreapi-2.3.3.tar.gz", hash = "sha256:46145fcc1f7017c076a2ef684969b641d18a2991051fddec9458ad3f78ffc1cb"},
+]
+coreschema = [
+    {file = "coreschema-0.0.4-py2-none-any.whl", hash = "sha256:5e6ef7bf38c1525d5e55a895934ab4273548629f16aed5c0a6caa74ebf45551f"},
+    {file = "coreschema-0.0.4.tar.gz", hash = "sha256:9503506007d482ab0867ba14724b93c18a33b22b6d19fb419ef2d239dd4a1607"},
+]
 coverage = [
     {file = "coverage-5.3-cp27-cp27m-macosx_10_13_intel.whl", hash = "sha256:bd3166bb3b111e76a4f8e2980fa1addf2920a4ca9b2b8ca36a3bc3dedc618270"},
     {file = "coverage-5.3-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:9342dd70a1e151684727c9c91ea003b2fb33523bf19385d4554f7897ca0141d4"},
@@ -3431,8 +3474,8 @@ django-bootstrap-datepicker-plus = [
     {file = "django_bootstrap_datepicker_plus-3.0.5-py3-none-any.whl", hash = "sha256:a8bc19cc6846f97ff1e6c447f4e0387881d16e8afa1e8bd7a652c19e545c566b"},
 ]
 django-celery-beat = [
-    {file = "django-celery-beat-2.0.0.tar.gz", hash = "sha256:fdf1255eecfbeb770c6521fe3e69989dfc6373cd5a7f0fe62038d37f80f47e48"},
-    {file = "django_celery_beat-2.0.0-py2.py3-none-any.whl", hash = "sha256:fe0b2a1b31d4a6234fea4b31986ddfd4644a48fab216ce1843f3ed0ddd2e9097"},
+    {file = "django-celery-beat-2.1.0.tar.gz", hash = "sha256:4eb0e8412e2e05ba0029912a6f80d1054731001eecbcb4d59688c4e07cf4d9d3"},
+    {file = "django_celery_beat-2.1.0-py2.py3-none-any.whl", hash = "sha256:8a169e11d96faed8b72d505ddbc70e7fe0b16cdc854df43cb209c153ed08d651"},
 ]
 django-celery-results = [
     {file = "django_celery_results-1.2.1-py2.py3-none-any.whl", hash = "sha256:a29ab580f0e38c66c39f51cc426bbdbb2a391b8cc0867df9dea748db2c961db2"},
@@ -3535,8 +3578,8 @@ djangorestframework = [
     {file = "djangorestframework-3.12.1.tar.gz", hash = "sha256:d54452aedebb4b650254ca092f9f4f5df947cb1de6ab245d817b08b4f4156249"},
 ]
 djangorestframework-stubs = [
-    {file = "djangorestframework-stubs-1.2.0.tar.gz", hash = "sha256:cd98afa2a7a718689c8aafe162120074976c996f755b0c03d106b6c6c73b95f7"},
-    {file = "djangorestframework_stubs-1.2.0-py3-none-any.whl", hash = "sha256:5df991dcdf28b2b761645282dfcae53f41d58200291ff7d5c0d028925fd9f215"},
+    {file = "djangorestframework-stubs-1.3.0.tar.gz", hash = "sha256:4467ed6d981169b150fa5eb470eab22723fb0305b9d34b87bd435aee71b8c75c"},
+    {file = "djangorestframework_stubs-1.3.0-py3-none-any.whl", hash = "sha256:05bd53444f23648049e8063ff100682b981d9319a21cde9e7ce2c61c3c8a69bc"},
 ]
 docker = [
     {file = "docker-4.3.1-py2.py3-none-any.whl", hash = "sha256:13966471e8bc23b36bfb3a6fb4ab75043a5ef1dac86516274777576bed3b9828"},
@@ -3642,8 +3685,8 @@ flake8-rst-docstrings = [
     {file = "flake8-rst-docstrings-0.0.14.tar.gz", hash = "sha256:8f8bcb18f1408b506dd8ba2c99af3eac6128f6911d4bf6ff874b94caa70182a2"},
 ]
 flake8-spellcheck = [
-    {file = "flake8-spellcheck-0.19.1.tar.gz", hash = "sha256:b986e8c0f30b397d66557da2a41875ac7f9c8f2f7336ee997f72dc660d519895"},
-    {file = "flake8_spellcheck-0.19.1-py2.py3-none-any.whl", hash = "sha256:7e8cf57d570b1b3518d8a58ebfa56e47fc84a2560a4ec1f3cd1fbd6c3d891d2c"},
+    {file = "flake8-spellcheck-0.20.0.tar.gz", hash = "sha256:532deae561fc87e27d263823adb613e529b4487f6fdc75cd28f0d6c16886c27f"},
+    {file = "flake8_spellcheck-0.20.0-py2.py3-none-any.whl", hash = "sha256:2140dbb1787b0b01dae51ce00e7e10a6dfc352cc49a32dd60271620f33810e14"},
 ]
 flake8-string-format = [
     {file = "flake8-string-format-0.3.0.tar.gz", hash = "sha256:65f3da786a1461ef77fca3780b314edb2853c377f2e35069723348c8917deaa2"},
@@ -3802,8 +3845,8 @@ hyperlink = [
     {file = "hyperlink-20.0.1.tar.gz", hash = "sha256:47fcc7cd339c6cb2444463ec3277bdcfe142c8b1daf2160bdd52248deec815af"},
 ]
 hypothesis = [
-    {file = "hypothesis-5.38.1-py3-none-any.whl", hash = "sha256:84a83d3d1f05c82e80c04e50d0e4d9ae233676734baa60e488047102f9d5420a"},
-    {file = "hypothesis-5.38.1.tar.gz", hash = "sha256:49d87a00e904d9bd4468f89130932c947410cbf9bd5ec18937b40b045486bc27"},
+    {file = "hypothesis-5.41.0-py3-none-any.whl", hash = "sha256:e6f8da2dcc2e1397094e1504d5661d1021a360a6e7ec97eacac4d4961ccedde8"},
+    {file = "hypothesis-5.41.0.tar.gz", hash = "sha256:17b846e06daa678570979fe6fae1ba3c57f68305ae0bb6d4b8d831bca4f8ceaa"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -3840,6 +3883,10 @@ isort = [
 itsdangerous = [
     {file = "itsdangerous-1.1.0-py2.py3-none-any.whl", hash = "sha256:b12271b2047cb23eeb98c8b5622e2e5c5e9abd9784a153e9d8ef9cb4dd09d749"},
     {file = "itsdangerous-1.1.0.tar.gz", hash = "sha256:321b033d07f2a4136d3ec762eac9f16a10ccd60f53c0c91af90217ace7ba1f19"},
+]
+itypes = [
+    {file = "itypes-1.2.0-py2.py3-none-any.whl", hash = "sha256:03da6872ca89d29aef62773672b2d408f490f80db48b23079a4b194c86dd04c6"},
+    {file = "itypes-1.2.0.tar.gz", hash = "sha256:af886f129dea4a2a1e3d36595a2d139589e4dd287f5cab0b40e799ee81570ff1"},
 ]
 jinja2 = [
     {file = "Jinja2-2.11.2-py2.py3-none-any.whl", hash = "sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035"},

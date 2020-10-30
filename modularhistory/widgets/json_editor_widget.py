@@ -18,6 +18,11 @@ class JSONEditorWidget(BaseJSONEditorWidget):
     def value_from_datadict(
         self, data: Dict[str, Any], files: Mapping[str, Iterable[Any]], name: str
     ) -> Any:
+        """
+        Process the value returned from the JSON editor.
+
+        Return the value to be saved.
+        """
         json_value = super().value_from_datadict(data, files, name)
         if isinstance(json_value, dict):
             return {

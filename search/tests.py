@@ -1,17 +1,17 @@
 import pytest
 from django.urls import reverse
-from django_webtest import WebTest
 
 from modularhistory.constants import ResponseCodes
 
+EXPECTED_N_SQL_QUERIES = 15
+
 
 @pytest.mark.django_db
-class TestSearch(WebTest):
-    """Test the search app."""
-
-    def test_search(self):
-        """Test that the search page loads successfully."""
-        page = self.app.get(reverse('search'))
-        assert page.status_code == ResponseCodes.SUCCESS
-        page.mustcontain('<body>')
-        assert 'form' in page
+def test_search(django_app, django_assert_max_num_queries):
+    """Test that the search page loads successfully."""
+    page = django_app.get(reverse('search'))
+    assert page.status_code == ResponseCodes.SUCCESS
+    page.mustcontain('<body>')
+    assert 'form' in page
+    with django_assert_max_num_queries(EXPECTED_N_SQL_QUERIES):
+        django_app.get(reverse('search'))

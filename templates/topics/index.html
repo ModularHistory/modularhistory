@@ -1,12 +1,12 @@
 {% extends "base.htm" %}
-{% load card %}
+{% load get_html_for_view %}
 
 {% block content %}
     <div class="container">
         {% if topics|length %}
             <div>
                 {% for topic in topics %}
-                    {% card topic %}
+                    {{ topic|get_html_for_view:"card" }}
                 {% endfor %}
             </div>
         {% else %}

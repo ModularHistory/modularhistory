@@ -1,6 +1,5 @@
 {% extends 'base.htm' %}
-{% load card %}
-{% load detail %}
+{% load get_html_for_view %}
 {% load class_name %}
 {% load is_instance %}
 {% load crispy_forms_tags %}
@@ -29,12 +28,12 @@
                         {% with selected_option=display_option %}
                             <span class="display-option">
                                 <input type="radio" id="2pane-option" name="display" value="2pane"
-                                        {% if selected_option == '2pane' or not selected_option %} checked{% endif %} />
+                                        {% if selected_option == '2pane' %} checked{% endif %} />
                                 <label for="2pane-option"><i class="fas fa-list"></i></label>
                             </span>
                             <span class="display-option">
                                 <input type="radio" id="rows-option" name="display" value="rows"
-                                        {% if selected_option == 'rows' %} checked{% endif %} />
+                                        {% if selected_option == 'rows' or not selected_option %} checked{% endif %} />
                                 <label for="rows-option"><i class="fas fa-bars"></i></label>
                             </span>
                             <span class="display-option">
@@ -47,24 +46,24 @@
                     <div class="results-container">
                         {% block page_header %}
                         {% endblock %}
-                        {% if display_option == '2pane' or not display_option %}
+                        {% if display_option == '2pane' %}
                             <div class="two-pane-container">
                                 <div class="results result-cards">
                                     {% for object in object_list %}
-                                        {% card object %}
+                                        {{ object|get_html_for_view:"card" }}
                                     {% endfor %}
                                 </div>
                                 <div class="card view-detail sticky">
                                     {% with object_list|first as object %}
-                                        {% detail object %}
+                                        {{ object|get_html_for_view:"detail" }}
                                     {% endwith %}
                                 </div>
                             </div>
-                        {% elif display_option == 'rows' %}
-                            <div class="results">
+                        {% elif display_option == 'rows' or not display_option %}
+                            <div class="container results">
                                 {% for object in object_list %}
                                     <div class="result" data-key="{{ object.key }}">
-                                        {% detail object %}
+                                        {{ object|get_html_for_view:"detail" }}
                                     </div>
                                     <hr style="clear: both" />
                                 {% endfor %}

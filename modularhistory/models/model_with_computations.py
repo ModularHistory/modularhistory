@@ -102,8 +102,9 @@ def retrieve_or_compute(
                         logging.info(
                             # Do not use the model instance's __str__ method;
                             # it may cause a recursion error.
-                            f'Saving computed field `{property_name}` for '
-                            f'{model_instance.__class__.__name__} ({model_instance.pk})'
+                            f'>>> Saving computed field `{property_name}` to '
+                            f'{model_instance.__class__.__name__} ({model_instance.pk}) '
+                            f'with value: {property_value}'
                         )
                         # Specify `wipe_computations=False` to properly update the JSON value
                         model_instance.save(wipe_computations=False)
