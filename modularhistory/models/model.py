@@ -1,7 +1,7 @@
 """Base model classes for ModularHistory."""
 
 import re
-from typing import Any, ClassVar, List, Optional, Pattern, Tuple, Type
+from typing import Any, ClassVar, Dict, List, Optional, Pattern, Tuple, Type
 
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
@@ -94,6 +94,10 @@ class Model(DjangoModel):
         raise NotImplementedError(
             'Model must have Meta.unique_together and/or `natural_key_fields` method defined.'
         )
+
+    @property
+    def prefetched_objects(self) -> Dict:
+        return self._prefetched_objects_cache or {}
 
     def get_admin_url(self):
         """Return the URL of the model instance's admin page."""

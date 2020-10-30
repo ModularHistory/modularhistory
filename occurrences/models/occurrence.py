@@ -5,7 +5,7 @@ from django.db.models import ManyToManyField
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-
+import logging
 from django.core.exceptions import ObjectDoesNotExist
 from images.models import Image
 from modularhistory.fields import HTMLField, HistoricDateTimeField
@@ -117,15 +117,26 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
     @property
     def ordered_images(self):
         """Careful!  These are occurrence-images, not images."""
-        return self.occurrence_images.all().select_related('image')
+        try:
+            # Raise an exception if images are not prefetched
+            logging.info(
+                f'{self.prefetched_objects[self.occurrence_images.prefetch_cache_name]}'
+            )
+            return self.occurrence_images.all()
+        except (AttributeError, KeyError):
+            # Not prefetched
+            return self.occurrence_images.all().select_related('image')
 
     @property
-    def unpositioned_images(self) -> Iterable[OccurrenceImage]:
+    def unpositioned_images(self) -> Iterable[Image]:
         """Return the occurrence's images that are not manually positioned in HTML."""
         # 'unpositioned_images' is a little misleading; these are positioned
         # by their `position` attribute rather than manually positioned.
-        unpositioned_images = self.ordered_images.filter(is_positioned=False)
-        if unpositioned_images.exists():
+        unpositioned_images = [
+            occurrence_image.image for occurrence_image in self.ordered_images
+            if not occurrence_image.is_positioned
+        ]
+        if unpositioned_images:
             return unpositioned_images
         elif self.entity_images:
             unpositioned_images = self.entity_images
