@@ -112,7 +112,7 @@ def generate_artifacts(context):
     )
     text = '\n'.join([topic.key for topic in ordered_topics])
     with open(
-        os.path.join(settings.BASE_DIR, 'topics/artifacts/topics.txt'), mode='w+'
+        os.path.join(settings.BASE_DIR, 'topics/topics.txt'), mode='w+'
     ) as artifact:
         artifact.write(text)
 

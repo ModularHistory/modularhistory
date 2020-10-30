@@ -15,9 +15,9 @@
         {% endif %}
     </h2>
     <div class="card-text">
-        {% for occurrence_image in occurrence.unpositioned_images %}
+        {% for image in occurrence.unpositioned_images %}
             <div class="img-container" style="max-width: 44%">
-                {{ occurrence_image.image|get_html_for_view:"card" }}
+                {{ image|get_html_for_view:"card" }}
             </div>
         {% endfor %}
         <div class="lead">
@@ -35,17 +35,15 @@
             {{ occurrence.tags_html }}
         </ul>
     {% endif %}
-    {% if occurrence.citations.exists %}
-        <footer class="footer sources-footer">
-            <ol class="citations">
-                {% for citation in occurrence.citations.all %}
-                    <li class="source" id="{{ citation.html_id }}">
-                        {{ citation.html }}
-                    </li>
-                {% endfor %}
-            </ol>
-        </footer>
-    {% endif %}
+    <footer class="footer sources-footer">
+        <ol class="citations">
+            {% for citation in occurrence.citations.all %}
+                <li class="source" id="{{ citation.html_id }}">
+                    {{ citation.html }}
+                </li>
+            {% endfor %}
+        </ol>
+    </footer>
     {% if request.user.is_superuser %}
         <a class="edit-object-button float-right" target="_blank" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>
     {% endif %}
