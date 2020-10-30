@@ -23,6 +23,6 @@ class TestAdmin(WebTest):
         form = page.form
         form['username'] = user.username
         form['password'] = password
-        form.submit().follow()
+        form.submit()
         page = self.app.get('/admin/')
         assert page.status_code == ResponseCodes.SUCCESS
