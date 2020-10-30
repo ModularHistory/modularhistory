@@ -1,7 +1,7 @@
 from typing import Optional
 
-from django.utils.html import format_html, mark_safe
-from django.utils.safestring import SafeString
+from django.utils.html import format_html
+from django.utils.safestring import SafeString, mark_safe
 import logging
 from modularhistory.utils.html import soupify
 from modularhistory.utils.string import truncate

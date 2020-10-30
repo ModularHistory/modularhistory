@@ -1,6 +1,5 @@
 {% load get_admin_url %}
-{% load card %}
-{% load detail %}
+{% load get_html_for_view %}
 
 <div class="card-text">
     {{ source }}
@@ -17,7 +16,7 @@
         {% for quote in quotes %}
             <hr style="clear: both" />
             <div class="m-2" data-key="{{ quote.key }}" data-href="{% block detail_url %}{% endblock %}">
-                {% detail quote %}
+                {{ quote|get_html_for_view:"detail" }}
             </div>
         {% endfor %}
     {% else %}

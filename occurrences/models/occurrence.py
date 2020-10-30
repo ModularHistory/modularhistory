@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Iterable, List, Optional
 
 from django.core.exceptions import ValidationError
 from django.db.models import ManyToManyField
@@ -115,6 +115,25 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         )
 
     @property
+    def ordered_images(self):
+        """Careful!  These are occurrence-images, not images."""
+        return self.occurrence_images.all().select_related('image')
+
+    @property
+    def unpositioned_images(self) -> Iterable[OccurrenceImage]:
+        """Return the occurrence's images that are not manually positioned in HTML."""
+        # 'unpositioned_images' is a little misleading; these are positioned
+        # by their `position` attribute rather than manually positioned.
+        unpositioned_images = self.ordered_images.filter(is_positioned=False)
+        if unpositioned_images.exists():
+            return unpositioned_images
+        elif self.entity_images:
+            unpositioned_images = self.entity_images
+        elif self.primary_image:
+            unpositioned_images = [self.primary_image]
+        return unpositioned_images
+
+    @property
     def entity_images(self) -> Optional[List[Image]]:
         """TODO: write docstring."""
         try:
@@ -135,18 +154,7 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
             if self.quote_relations.exists()
             else []
         )
-        if self.images.exists():
-            unpositioned_images = [
-                occurrence_image.image
-                for occurrence_image in self.occurrence_images.all()
-                if not occurrence_image.is_positioned
-            ]
-        else:
-            unpositioned_images = self.entity_images or [self.primary_image]
         return {
             'occurrence': self,
             'quotes': sorted(quotes, key=quote_sorter_key),
-            # 'unpositioned_images' is a little misleading;
-            # these are positioned by their `position` attribute rather than manually positioned.
-            'unpositioned_images': unpositioned_images,
         }

@@ -19,6 +19,8 @@ FieldList = List[str]
 # Currently, only one level of inheritance from BaseTypedModel is permitted, unfortunately.
 TypedModel: Type[BaseTypedModel] = BaseTypedModel
 
+# TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
+
 
 class Model(DjangoModel):
     """Model with additional properties used in ModularHistory apps."""

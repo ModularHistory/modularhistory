@@ -1,5 +1,5 @@
 {% load get_admin_url %}
-{% load card %}
+{% load get_html_for_view %}
 
 <div class="detail">
     <h2 class="text-center card-title">
@@ -8,7 +8,7 @@
     <div class="card-text">
         {% if quote.primary_image %}
             <div class="img-container" style="max-width: 44%">
-                {% card quote.primary_image %}
+                {{ quote.primary_image|get_html_for_view:"card" }}
             </div>
         {% endif %}
         {% if request.user.is_superuser %}

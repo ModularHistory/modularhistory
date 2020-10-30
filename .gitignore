@@ -17,6 +17,7 @@ venv/
 
 # Artifacts
 .artifacts/
+artifacts/
 
 # Django
 media/

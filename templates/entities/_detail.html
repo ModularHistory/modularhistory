@@ -1,5 +1,5 @@
 {% load get_admin_url %}
-{% load card %}
+{% load get_html_for_view %}
 
 <div class="container my-4">
     <a class="edit-object-button float-right pull-right" target="_blank" href="{{ entity|get_admin_url }}">
@@ -15,7 +15,7 @@
     {% endif %}
     <div>
         {% if entity.images.exists and not entity.quotes.all|length %}
-            <div class="img-container">{% card entity.images.first %}</div>
+            <div class="img-container">{{ entity.images.first|get_html_for_view:"card" }}</div>
         {% endif %}
         {{ entity.description.html }}
     </div>
@@ -27,7 +27,7 @@
                     {% if quote.primary_image %}
                         {% if quote.html|length > 1500 or entity.quotes.all|length == 1 %}
                             <div class="img-container">
-                                {% card quote.primary_image %}
+                                {{ quote.primary_image|get_html_for_view:"card" }}
                             </div>
                         {% endif %}
                     {% endif %}
