@@ -1,5 +1,7 @@
-from typing import Any
 import logging
+from functools import lru_cache
+from typing import Any
+
 import inflect
 from django.template import Library, loader
 from django.template.context import RequestContext
@@ -21,6 +23,7 @@ ALLOWED_MODELS = (
 )
 
 
+@lru_cache(maxsize=128)
 @register.simple_tag(takes_context=True)
 def card(context: RequestContext, model_instance: Any) -> SafeString:
     """Return the card HTML for a supported ModularHistory object."""

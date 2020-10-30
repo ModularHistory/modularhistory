@@ -4,7 +4,7 @@ import inflect
 from django.template import Library, loader
 from django.template.context import RequestContext
 from django.utils.html import format_html
-
+from functools import lru_cache
 from search.templatetags.highlight import highlight
 
 register = Library()
@@ -20,6 +20,7 @@ ALLOWED_MODELS = (
 )
 
 
+@lru_cache(maxsize=128)
 @register.simple_tag(takes_context=True)
 def detail(context: RequestContext, model_instance: Any):
     """TODO: add docstring."""

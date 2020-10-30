@@ -681,7 +681,7 @@ SPAGHETTI_SAUCE = {
 }
 
 # Caching settings
-use_dummy_cache_in_dev_environment = True
+use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', default=False)
 Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 if ENVIRONMENT == environments.DEV:
@@ -698,7 +698,7 @@ if ENVIRONMENT == environments.DEV:
                 'LOCATION': [
                     '127.0.0.1:11211',
                 ],
-                'TIMEOUT': 300,  # TODO
+                # TODO: https://github.com/django-pymemcache/django-pymemcache
             },
         }
 
