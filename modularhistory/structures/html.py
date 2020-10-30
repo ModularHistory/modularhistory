@@ -1,9 +1,10 @@
 from typing import Optional
 
-from django.utils.html import format_html
+from django.utils.html import format_html, mark_safe
 from django.utils.safestring import SafeString
-
+import logging
 from modularhistory.utils.html import soupify
+from modularhistory.utils.string import truncate
 
 
 class HTML:
@@ -19,7 +20,11 @@ class HTML:
             raw_value = raw_value.strip()
             processed_value = processed_value or raw_value
             self.raw_value = raw_value
-            self.html = format_html(processed_value)
+            try:
+                self.html = format_html(processed_value)
+            except ValueError as e:
+                logging.error(f'>>> {e}: {processed_value}')
+                self.html = mark_safe(processed_value)
             self.text = soupify(self.raw_value).get_text()
         else:
             self.raw_value = ''
@@ -35,7 +40,11 @@ class HTML:
         """
         # TODO: Add logic for converting back to unparsed Python vars so self.html can be used.
         # Do not directly use self.html here; Python vars need to remain unparsed.
-        return format_html(self.raw_value)
+        try:
+            return format_html(self.raw_value)
+        except ValueError as e:
+            logging.error(f'>>> {e}: {truncate(self.raw_value)}')
+            return mark_safe(self.raw_value)
 
     # for BeautifulSoup
     def __len__(self):

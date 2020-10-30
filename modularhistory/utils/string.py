@@ -12,3 +12,8 @@ def components_to_string(components: List[str], delimiter=', '):
     components = [component for component in components if component]
     # Join components; rearrange commas and double quotes
     return fix_comma_positions(delimiter.join(components))
+
+
+def truncate(string, max_length: int = 100):
+    """Return a truncated version of the string."""
+    return f'{string[:max_length]} ...' if len(string) > max_length else string

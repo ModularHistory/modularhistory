@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Tuple, Type
 from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
 from django.urls import path
-
+import logging
 from admin.model_admin import ModelAdmin
 from topics.views import TagSearchView
 
@@ -27,10 +27,13 @@ class SearchableModelAdmin(ModelAdmin):
         )
         if search_term:
             queryset = self.model.objects.search(
-                search_term,
+                query=search_term,
                 suppress_unverified=False,
                 suppress_hidden=False,
             )
+        logging.info(
+            f'Returning {len(queryset)} search results with use_distinct={use_distinct}'
+        )
         return queryset, use_distinct
 
     def get_urls(self):

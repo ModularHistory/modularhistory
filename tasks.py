@@ -17,18 +17,18 @@ from typing import Any, Callable, TypeVar
 
 import django
 
+from modularhistory import settings
 from modularhistory.constants import NEGATIVE, SPACE
 from modularhistory.linters import flake8 as lint_with_flake8, mypy as lint_with_mypy
 from modularhistory.utils import commands
 from modularhistory.utils.files import relativize
 from monkeypatch import fix_annotations
 
-if fix_annotations():
-    import invoke
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
 
+if fix_annotations():
+    import invoke
 
 TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
 
@@ -92,6 +92,42 @@ def commit(context):
 def flake8(context, *args):
     """Run flake8 linter."""
     lint_with_flake8(interactive=True)
+
+
+@task
+def generate_artifacts(context):
+    """Generate artifacts."""
+    from django.db.models import Count
+    from wordcloud import WordCloud
+
+    from topics.models import Topic
+
+    print('Building topics.txt...')
+    ordered_topics = (
+        Topic.objects.prefetch_related('topic_relations')
+        .annotate(num_quotes=Count('topic_relations'))
+        .order_by('-num_quotes')
+    )
+    text = '\n'.join([topic.key for topic in ordered_topics])
+    with open(
+        os.path.join(settings.BASE_DIR, 'topics/artifacts/topics.txt'), mode='w+'
+    ) as artifact:
+        artifact.write(text)
+
+    print('Building topic_cloud.png...')
+    # https://github.com/amueller/word_cloud
+    word_cloud = WordCloud(
+        background_color=None,
+        mode='RGBA',
+        width=1200,
+        height=700,
+        min_font_size=6,
+        collocations=False,
+        normalize_plurals=False,
+        regexp=r'\w[\w\' ]+',
+    ).generate(text)
+    word_cloud.to_file(os.path.join(settings.BASE_DIR, 'static', 'topic_cloud.png'))
+    print('Done.')
 
 
 @task

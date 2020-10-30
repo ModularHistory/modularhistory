@@ -1,5 +1,5 @@
 from typing import Any
-
+import logging
 import inflect
 from django.template import Library, loader
 from django.template.context import RequestContext
@@ -25,6 +25,7 @@ ALLOWED_MODELS = (
 def card(context: RequestContext, model_instance: Any) -> SafeString:
     """Return the card HTML for a supported ModularHistory object."""
     model_name = f'{model_instance.__class__.__name__}'.lower()
+    logging.info(f'Loading {model_name} card...')
     if model_name not in ALLOWED_MODELS:
         raise ValueError(f'{type(model_instance)}: {model_instance}')
     template_directory_name = inflect.engine().plural(model_name)

@@ -104,5 +104,8 @@ class CitationsInline(GenericTabularInline):
             return 0
         return 1
 
+    def get_queryset(self, request) -> QuerySet:
+        return super().get_queryset(request).prefetch_related('pages')
+
 
 admin_site.register(models.Citation, CitationAdmin)

@@ -21,6 +21,16 @@ td.djn-td {
 tbody.djn-tbody.has_original {
   border-bottom: 3px solid lightgray;
 }
+// Hide overlapping text from multiple paragraphs
+// in string representations of associations in inline admins.
+.djn-tr > td.original {
+  > p:nth-child(n+3) {
+    display: none;
+  }
+  > p:nth-child(2) {
+    margin-left: 1rem;
+  }
+}
 
 .form-row > div {
   position: relative;

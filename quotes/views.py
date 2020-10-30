@@ -21,7 +21,6 @@ class ListView(generic.list.ListView):
         """Return the queryset of quotes."""
         return Quote.objects.filter(verified=True).prefetch_related(
             'attributees',
-            # 'attributees__categories',
             'images',
         )
 

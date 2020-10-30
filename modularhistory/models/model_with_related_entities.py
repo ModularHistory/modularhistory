@@ -38,8 +38,7 @@ class ModelWithRelatedEntities(Model):
         # Wrap entity names in spans to identify them (so that links can be added if desired).
         entities = self.related_entities
         if entities and entities.exists():
-            entities = entities.all()
-            for entity in entities:
+            for entity in entities.all():  # TODO: use .iterator() ?
                 ent: 'Entity' = entity
                 aliases = ent.aliases or []
                 for name in set([ent.name] + aliases):

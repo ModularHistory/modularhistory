@@ -2,7 +2,7 @@
 
 import re
 import uuid
-from typing import Match, TYPE_CHECKING
+from typing import TYPE_CHECKING, Match
 
 from django.db.models import BooleanField, UUIDField
 
@@ -10,6 +10,17 @@ from modularhistory.models.taggable_model import TaggableModel
 
 if TYPE_CHECKING:
     from modularhistory.models.manager import SearchableModelManager
+
+# group 1: model class name
+# group 2: model instance pk
+# group 3: ignore
+# group 4: model instance HTML
+# group 5: closing brackets
+ADMIN_PLACEHOLDER_REGEX = (
+    r'<<\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?>>)'
+)
+MODEL_NAME_GROUP = 1
+PK_GROUP = 2
 
 
 class SearchableModel(TaggableModel):
@@ -36,15 +47,7 @@ class SearchableModel(TaggableModel):
         abstract = True
 
     objects: 'SearchableModelManager'
-
-    # group 1: model class name
-    # group 2: model instance pk
-    # group 3: ignore
-    # group 4: model instance HTML
-    # group 5: closing brackets
-    admin_placeholder_regex = re.compile(
-        r'<<\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?>>)'
-    )
+    admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
 
     @classmethod
     def get_updated_placeholder(cls, match: Match) -> str:
@@ -66,5 +69,5 @@ class SearchableModel(TaggableModel):
         """Given a regex match of a model instance placeholder, return the instance."""
         if not cls.admin_placeholder_regex.match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
-        key = match.group(1).strip()
+        key = match.group(PK_GROUP).strip()
         return cls.objects.get(pk=key)

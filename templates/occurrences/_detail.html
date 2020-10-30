@@ -17,25 +17,11 @@
         {% endif %}
     </h2>
     <div class="card-text">
-        {% if unpositioned_images|length %}
-            {% for occurrence_image in unpositioned_images %}
-                <div class="img-container" style="max-width: 44%">
-                    {% card occurrence_image.image %}
-                </div>
-            {% endfor %}
-        {% elif not occurrence.images.exists %}
-            {% if occurrence.entity_images %}
-                {% for image in occurrence.entity_images %}
-                    <div class="img-container" style="max-width: 44%">
-                        {% card image %}
-                    </div>
-                {% endfor %}
-            {% elif occurrence.primary_image and not occurrence.images.all|length %}
-                <div class="img-container" style="max-width: 44%">
-                    {% card occurrence.primary_image %}
-                </div>
-            {% endif %}
-        {% endif %}
+        {% for image in unpositioned_images %}
+            <div class="img-container" style="max-width: 44%">
+                {% card image %}
+            </div>
+        {% endfor %}
         <div class="lead">
             {{ occurrence.summary.html | with_entity_links }}
         </div>

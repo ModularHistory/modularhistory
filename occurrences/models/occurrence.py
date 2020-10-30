@@ -6,6 +6,7 @@ from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
+from django.core.exceptions import ObjectDoesNotExist
 from images.models import Image
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
@@ -116,7 +117,7 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
     @property
     def entity_images(self) -> Optional[List[Image]]:
         """TODO: write docstring."""
-        if self.involved_entities.exists():
+        try:
             images = []
             for entity in self.involved_entities.all():
                 if entity.images.exists():
@@ -124,7 +125,8 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
                         image = entity.images.get_closest_to_datetime(self.date)
                         images.append(image)
             return images
-        return None
+        except (ObjectDoesNotExist, AttributeError):
+            return None
 
     def get_context(self):
         """TODO: add docstring."""
@@ -133,14 +135,18 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
             if self.quote_relations.exists()
             else []
         )
+        if self.images.exists():
+            unpositioned_images = [
+                occurrence_image.image
+                for occurrence_image in self.occurrence_images.all()
+                if not occurrence_image.is_positioned
+            ]
+        else:
+            unpositioned_images = self.entity_images or [self.primary_image]
         return {
             'occurrence': self,
             'quotes': sorted(quotes, key=quote_sorter_key),
             # 'unpositioned_images' is a little misleading;
             # these are positioned by their `position` attribute rather than manually positioned.
-            'unpositioned_images': [
-                image
-                for image in self.occurrence_images.all()
-                if not image.is_positioned
-            ],
+            'unpositioned_images': unpositioned_images,
         }
