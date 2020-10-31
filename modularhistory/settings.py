@@ -37,9 +37,9 @@ TESTING: bool = 'test' in sys.argv
 
 # Environment
 if IS_PROD:
-    ENVIRONMENT = environments.PROD
+    ENVIRONMENT = Environments.PROD
 elif os.environ.get('GITHUB_WORKFLOW'):
-    ENVIRONMENT = environments.GITHUB_TEST
+    ENVIRONMENT = Environments.GITHUB_TEST
 else:
     ENVIRONMENT = Environments.DEV
 

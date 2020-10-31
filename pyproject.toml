@@ -155,11 +155,11 @@ pytest = "^6.1"
 pytest-django = "^4"
 pytest-xdist = "^2.1.0"
 safety = "^1.9"
+selenium = "^3.141.0"
+seleniumbase = "^1.50.4"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
-selenium = "^3.141.0"
-seleniumbase = "^1.50.4"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
