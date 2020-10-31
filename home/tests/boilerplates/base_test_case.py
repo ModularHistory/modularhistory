@@ -2,7 +2,6 @@ from seleniumbase import BaseCase
 
 
 class BaseTestCase(BaseCase):
-
     def setUp(self):
         super().setUp()
         # <<< Run custom code AFTER the super() line >>>

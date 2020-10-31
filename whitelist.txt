@@ -29,6 +29,7 @@ monkeypatch
 mypy
 nbsp
 parsable
+prefetched
 querysets
 RST
 select2

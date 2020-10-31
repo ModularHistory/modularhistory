@@ -1,24 +1,25 @@
 import logging
-from typing import Dict, Iterable, List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, Iterable, List, Optional, Union
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from occurrences.serializers import OccurrenceSerializer
+
 from images.models import Image
-from modularhistory.fields import HTMLField, HistoricDateTimeField
+from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.models import (
     DatedModel,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithSources,
-    SearchableModel
+    SearchableModel,
 )
 from modularhistory.utils.html import soupify
 from occurrences.manager import OccurrenceManager
 from occurrences.models.occurrence_image import OccurrenceImage
+from occurrences.serializers import OccurrenceSerializer
 from quotes.models import quote_sorter_key
 
 if TYPE_CHECKING:
@@ -27,7 +28,13 @@ if TYPE_CHECKING:
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
-class Occurrence(DatedModel, SearchableModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithImages):
+class Occurrence(
+    DatedModel,
+    SearchableModel,
+    ModelWithRelatedQuotes,
+    ModelWithSources,
+    ModelWithImages,
+):
     """Something that happened."""
 
     date = HistoricDateTimeField(null=True, blank=True)
@@ -142,7 +149,8 @@ class Occurrence(DatedModel, SearchableModel, ModelWithRelatedQuotes, ModelWithS
         # 'unpositioned_images' is a little misleading; these are positioned
         # by their `position` attribute rather than manually positioned.
         unpositioned_images = [
-            image for image in self.serialized_images
+            image
+            for image in self.serialized_images
             if f'image: {image.get("pk")}' not in self.description.raw_value
         ]
         if unpositioned_images:

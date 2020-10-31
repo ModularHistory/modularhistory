@@ -1,2 +1,2 @@
 class Page(object):
-    html = "html"
+    html = 'html'

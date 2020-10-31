@@ -20,7 +20,6 @@ import logging
 
 from django.conf import settings
 from django.conf.urls.static import static
-from django.shortcuts import redirect
 from django.urls import include, path, re_path
 
 from admin.model_admin import admin_site
@@ -62,6 +61,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns = [path('__debug__', include(debug_toolbar.urls))] + urlpatterns
     urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
 

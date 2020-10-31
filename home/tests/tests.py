@@ -2,14 +2,15 @@
 # from hypothesis import example, given
 # from hypothesis.strategies import text
 from django.urls import reverse
-from seleniumbase import BaseCase
 from parameterized import parameterized
-from modularhistory.settings import ENVIRONMENT
+from seleniumbase import BaseCase
+
 from modularhistory.constants import Environments
+from modularhistory.settings import ENVIRONMENT
 
 HOMEPAGE_URL = {
     Environments.DEV: 'http://127.0.0.1:8000',
-    Environments.GITHUB_TEST: ' http://localhost:4444/wd/hub'
+    Environments.GITHUB_TEST: ' http://localhost:4444/wd/hub',
 }
 
 
@@ -32,16 +33,19 @@ class HomepageTestSuite(BaseCase):
         # self.click_link_text("geohashing")
         # self.assert_element("#comic img")
 
-    @parameterized.expand([
-        ["pypi", "pypi.org"],
-        ["wikipedia", "wikipedia.org"],
-        ["seleniumbase", "seleniumbase/SeleniumBase"],
-    ])
+    @parameterized.expand(
+        [
+            ['pypi', 'pypi.org'],
+            ['wikipedia', 'wikipedia.org'],
+            ['seleniumbase', 'seleniumbase/SeleniumBase'],
+        ]
+    )
     def test_parameterized_google_search(self, search_term, expected_text):
         self.open('https://google.com/ncr')
         # self.type('input[title="Search"]', search_term + '\n')
         # self.assert_element('#result-stats')
         # self.assert_text(expected_text, '#search')
+
 
 # class MyTestClass(BaseCase):
 #

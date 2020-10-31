@@ -1,9 +1,9 @@
-from pprint import pprint
 from typing import Dict, Optional, Union
 
 import inflect
 from django.template import Library, loader
-from django.utils.html import SafeString, format_html
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 from modularhistory.models import SearchableModel
 from search.templatetags.highlight import highlight
@@ -15,7 +15,7 @@ register = Library()
 def get_html_for_view(
     model_instance: Union[Dict, SearchableModel],
     template_name: str,
-    text_to_highlight: Optional[str] = None
+    text_to_highlight: Optional[str] = None,
 ) -> SafeString:
     """Return the HTML for the specified view of the model instance."""
     if '/' in template_name:
