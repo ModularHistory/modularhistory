@@ -97,11 +97,6 @@ class Model(DjangoModel):
             'Model must have Meta.unique_together and/or `natural_key_fields` method defined.'
         )
 
-    @property
-    def prefetched_objects(self) -> Dict:
-        """Return the instance's prefetched objects cache."""
-        return self._prefetched_objects_cache or {}
-
     def get_admin_url(self):
         """Return the URL of the model instance's admin page."""
         return reverse(

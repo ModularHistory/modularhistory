@@ -133,15 +133,7 @@ class Occurrence(
     @property
     def ordered_images(self):
         """Careful!  These are occurrence-images, not images."""
-        try:
-            # Raise an exception if images are not prefetched
-            logging.info(
-                f'{self.prefetched_objects[self.image_relations.prefetch_cache_name]}'
-            )
-            return self.image_relations.all()
-        except (AttributeError, KeyError):
-            # Not prefetched
-            return self.image_relations.all().select_related('image')
+        return self.image_relations.all().select_related('image')
 
     @property
     def unpositioned_images(self) -> Iterable[Union[Image, Dict]]:
