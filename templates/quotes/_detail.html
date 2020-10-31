@@ -8,7 +8,7 @@
     <div class="card-text">
         {% if quote.primary_image %}
             <div class="img-container" style="max-width: 44%">
-                {{ quote.primary_image|get_html_for_view:"card" }}
+                {{ quote.primary_image|get_html_for_view:"image/card" }}
             </div>
         {% endif %}
         {% if request.user.is_superuser %}

@@ -1,10 +1,12 @@
 """Classes for models with related entities."""
 
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Dict, List, Optional, TYPE_CHECKING
 
-from modularhistory.models.model import Model
+from images.serializers import ImageSerializer
+from modularhistory.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
     from images.models import Image
 
 
@@ -16,12 +18,25 @@ class ModelWithImages(Model):
     it must be defined as an abstract model class.
     """
 
-    images: Any
+    images: 'RelatedManager'
+    image_relations: 'RelatedManager'
 
     class Meta:
         abstract = True
 
     @property
-    def primary_image(self) -> Optional['Image']:
+    def primary_image(self) -> Optional[Dict]:
         """Return the image to represent the model instance by default."""
-        return self.images.first() if self.images.exists() else None
+        try:
+            return self.serialized_images[0]
+        except IndexError:
+            return None
+
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='serialized_images')
+    def serialized_images(self) -> List[Dict]:
+        """Return a list of dictionaries representing the instance's images."""
+        return [
+            ImageSerializer(image_relation.image).data
+            for image_relation in self.image_relations.all().select_related('image')
+        ]

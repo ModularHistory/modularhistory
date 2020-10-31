@@ -1,8 +1,9 @@
 """Base classes for models that appear in ModularHistory search results."""
 
+import logging
 from functools import wraps
 from typing import Callable, Optional
-import logging
+
 from modularhistory.fields import JSONField
 from modularhistory.models.model import Model
 
@@ -109,10 +110,10 @@ def retrieve_or_compute(
                         # Specify `wipe_computations=False` to properly update the JSON value
                         model_instance.save(wipe_computations=False)
                     return property_value
-                raise TypeError(
-                    f'{model_instance.__class__} uses the @retrieve_or_compute decorator'
-                    f'on its `{model_property.__name__}` attribute but is not subclassed'
-                    f'from ModelWithComputations.'
+                logging.error(
+                    f'{model_instance.__class__.__name__} uses @retrieve_or_compute '
+                    f'on its `{model_property.__name__}` attribute '
+                    f'but is not subclassed from ModelWithComputations.'
                 )
             return None
 

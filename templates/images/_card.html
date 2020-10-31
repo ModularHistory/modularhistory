@@ -13,7 +13,7 @@
     {% endwith %}
 {% endblock %}
 
-{% block detail_url %}{{ image|get_detail_url }}{% endblock %}
+{% block detail_url %}{% url 'images:detail' image.pk %}{% endblock %}
 
 {% block top %}
     <div class="view overlay" style="max-width: {{ image.width }}px; max-height: {{ image.height }}px;">
@@ -28,9 +28,9 @@
 {% endblock %}
 
 {% block body %}
-    {% if image.caption %}
+    {% if image.caption_html %}
         <div class="card-text">
-            {{ image.caption.html }}
+            {{ image.caption_html|safe }}
             {% if image.provider_string %}
                 <div class="image-credit float-right">
                     <p>

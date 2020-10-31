@@ -11,10 +11,10 @@ class OccurrenceImage(Model):
     """An association of an image with an occurrence."""
 
     occurrence = models.ForeignKey(
-        'occurrences.Occurrence', related_name='occurrence_images', on_delete=CASCADE
+        'occurrences.Occurrence', related_name='image_relations', on_delete=CASCADE
     )
     image = models.ForeignKey(
-        'images.Image', related_name='occurrence_images', on_delete=models.PROTECT
+        'images.Image', related_name='occurrence_relations', on_delete=models.PROTECT
     )
     is_positioned = models.BooleanField(blank=True, default=False)
     position = models.PositiveSmallIntegerField(

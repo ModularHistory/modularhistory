@@ -16,6 +16,7 @@ from modularhistory.constants import EMPTY_STRING, OCCURRENCE_CT_ID
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
     DatedModel,
+    SearchableModel,
     ModelWithImages,
     ModelWithRelatedEntities,
     ModelWithRelatedQuotes,
@@ -31,6 +32,7 @@ BITE_MAX_LENGTH: int = 400
 
 class Quote(
     DatedModel,
+    SearchableModel,
     ModelWithSources,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,
@@ -120,6 +122,7 @@ class Quote(
     @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
     def attributee_html(self) -> Optional[SafeString]:
         """Return the HTML representing the quote's attributees."""
+        logging.info('Computing attributee HTML...')
         attributees = self.ordered_attributees
         if attributees:
             n_attributions = len(attributees)

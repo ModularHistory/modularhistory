@@ -14,8 +14,8 @@
         <p>d. {{ entity.death_date.html }}</p>
     {% endif %}
     <div>
-        {% if entity.images.exists and not entity.quotes.all|length %}
-            <div class="img-container">{{ entity.images.first|get_html_for_view:"card" }}</div>
+        {% if entity.serialized_images and not entity.quotes.all|length %}
+            <div class="img-container">{{ entity.primary_image|get_html_for_view:"image/card" }}</div>
         {% endif %}
         {{ entity.description.html }}
     </div>
@@ -27,7 +27,7 @@
                     {% if quote.primary_image %}
                         {% if quote.html|length > 1500 or entity.quotes.all|length == 1 %}
                             <div class="img-container">
-                                {{ quote.primary_image|get_html_for_view:"card" }}
+                                {{ quote.primary_image|get_html_for_view:"image/card" }}
                             </div>
                         {% endif %}
                     {% endif %}

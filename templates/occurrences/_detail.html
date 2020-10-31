@@ -17,7 +17,7 @@
     <div class="card-text">
         {% for image in occurrence.unpositioned_images %}
             <div class="img-container" style="max-width: 44%">
-                {{ image|get_html_for_view:"card" }}
+                {{ image|get_html_for_view:"image/card" }}
             </div>
         {% endfor %}
         <div class="lead">
@@ -37,9 +37,9 @@
     {% endif %}
     <footer class="footer sources-footer">
         <ol class="citations">
-            {% for citation in occurrence.citations.all %}
-                <li class="source" id="{{ citation.html_id }}">
-                    {{ citation.html }}
+            {% for citation in occurrence.serialized_citations %}
+                <li class="source" id="citation-{{ citation.pk }}">
+                    {{ citation.html|safe }}
                 </li>
             {% endfor %}
         </ol>

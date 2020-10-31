@@ -5,16 +5,15 @@
 
 from rest_framework import serializers
 
-from sources.models import Source
 
-
-class SourceSerializer(serializers.ModelSerializer):
+class SourceSerializer(serializers.Serializer):
     """Serializer for sources."""
 
     html = serializers.CharField(source='html')
 
-    class Meta:
-        model = Source
-        fields = [
-            'html',
-        ]
+
+class CitationSerializer(serializers.Serializer):
+    """Serializer for citations."""
+
+    html = serializers.CharField()
+    pk = serializers.IntegerField()

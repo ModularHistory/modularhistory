@@ -1,12 +1,6 @@
-from typing import TYPE_CHECKING
-
-from django.db.models import ForeignKey, CASCADE
+from django.db.models import CASCADE, ForeignKey
 
 from modularhistory.models import Model
-from images.models import Image
-
-if TYPE_CHECKING:
-    pass
 
 NAME_MAX_LENGTH: int = 100
 
@@ -17,9 +11,11 @@ class EntityImage(Model):
     """An association of an image with an entity."""
 
     entity = ForeignKey(
-        'entities.Entity', related_name='entity_images', on_delete=CASCADE
+        'entities.Entity', related_name='image_relations', on_delete=CASCADE
     )
-    image = ForeignKey(Image, related_name='image_entities', on_delete=CASCADE)
+    image = ForeignKey(
+        'images.Image', related_name='entity_relations', on_delete=CASCADE
+    )
 
     class Meta:
         unique_together = ['entity', 'image']

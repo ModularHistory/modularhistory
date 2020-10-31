@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import Any, Optional, TYPE_CHECKING, Union
+from typing import Optional, TYPE_CHECKING, Union
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -18,6 +18,7 @@ from modularhistory.utils import pdf
 from modularhistory.utils.html import components_to_html, compose_link, soupify
 
 if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
     from quotes.models import Quote
 
 # group 1: model class name
@@ -63,7 +64,7 @@ class Citation(ModelWithComputations):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
-    pages: Any
+    pages: 'RelatedManager'
     position = PositiveSmallIntegerField(
         null=True,
         blank=True,  # TODO: add cleaning logic
@@ -142,13 +143,6 @@ class Citation(ModelWithComputations):
                 )
         html = f'<span class="citation">{html}</span>'
         return format_html(html)
-
-    @property
-    def html_id(self) -> Optional[str]:
-        """Return the citation's HTML id."""
-        if self.pk:
-            return f'citation-{self.pk}'
-        return None
 
     @property
     def number(self):
@@ -246,7 +240,6 @@ class Citation(ModelWithComputations):
         except ObjectDoesNotExist:
             logging.error(f'Unable to retrieve citation: {key}')
             return None
-        html_id = citation.html_id
         source_string = str(citation)
         page_string = match.group(4)
         quotation = match.group(6)
@@ -263,7 +256,7 @@ class Citation(ModelWithComputations):
         source_string = source_string.replace('"', '&quot;').replace("'", '&#39;')
         return compose_link(
             f'<sup>{citation.number}</sup>',
-            href=f'#{html_id}',
+            href=f'#citation-{citation.pk}',
             klass='citation-link',
             title=source_string,
         )
