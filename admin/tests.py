@@ -4,7 +4,6 @@ from hypothesis.extra.django import from_model
 from hypothesis.strategies import just
 
 from account.models import User
-from modularhistory.constants import ResponseCodes
 
 
 @pytest.mark.django_db
