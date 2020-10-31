@@ -138,12 +138,13 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.flatpages',
     'django.contrib.messages',
     'django.contrib.postgres',
+    'django.contrib.redirects',
+    'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.staticfiles',
-    'django.contrib.flatpages',
     'django.forms',
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
@@ -208,14 +209,15 @@ MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    # # https://github.com/yandex/django_replicated
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    # Staticpage middleware, based on Django's Flatpage middleware:
+    # Staticpage middleware, based on Django's Flatpage middleware
     # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
     'staticpages.middleware.StaticPageFallbackMiddleware',
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'modularhistory.urls'
@@ -444,7 +446,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files (images, etc. uploaded by users)
-# https://docs.djangoproject.com/en/3.0/topics/files/
+# https://docs.djangoproject.com/en/3.1/topics/files/
 MEDIA_URL = (
     f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/'
     if IS_PROD
