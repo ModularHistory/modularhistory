@@ -198,16 +198,18 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # # TODO: enable cache
+    # # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     # Set the site attribute on every request obj, so request.site returns the current site:
     # 'django.contrib.sites.middleware.CurrentSiteMiddleware',
     # https://docs.djangoproject.com/en/3.1/topics/http/sessions/
     'django.contrib.sessions.middleware.SessionMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
     'django.middleware.common.CommonMiddleware',
-    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # # TODO: enable cache
+    # # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
