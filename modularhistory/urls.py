@@ -33,11 +33,6 @@ def error(request):
     raise Exception('Raising an exception for testing purposes.')
 
 
-def media_redirect(request, media_path: str):
-    """Redirect media requests, if necessary."""
-    return redirect(f'{settings.MEDIA_URL}/{media_path}')
-
-
 urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
     path('nested_admin/', include('nested_admin.urls')),
@@ -64,12 +59,10 @@ urlpatterns = [
     path('', include('home.urls')),
     path('error', error),  # error trigger (for testing purposes)
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [path('__debug__', include(debug_toolbar.urls))] + urlpatterns
     urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
-else:
-    # Redirect media requests in production, if necessary
-    urlpatterns.append(path('media/<path>', media_redirect))
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
