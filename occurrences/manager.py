@@ -33,7 +33,7 @@ class OccurrenceManager(SearchableModelManager):
             )
             .filter(hidden=False)
             .filter_by_date(start_year=start_year, end_year=end_year)
-            .prefetch_related('citations', Prefetch('occurrence_images', queryset=OccurrenceImage.objects.select_related('image')))
+            .prefetch_related('citations', Prefetch('image_relations', queryset=OccurrenceImage.objects.select_related('image')))
         )
         # Limit to specified entities
         if entity_ids:

@@ -78,6 +78,27 @@ class Image(MediaModel):
         """Return the string representation of the image."""
         return self.caption.text if self.caption else self.image.name
 
+    def clean(self):
+        """Prepare the image to be saved."""
+        super().clean()
+        if not self.caption:
+            raise ValidationError('Image needs a caption.')
+        image_is_duplicated = (
+            self.caption
+            and Image.objects.filter(image=self.image, caption=self.caption).exists()
+        )
+        if image_is_duplicated:
+            raise ValidationError(
+                f'{self.image} with caption=`{self.caption}` already exists.'
+            )
+        # TODO
+        enable_mega_backup = False
+        if enable_mega_backup:
+            from modularhistory.storage.mega_storage import mega_client
+
+            if mega_client and not len(self.links):
+                mega_client.upload(self.image.url)
+
     @property
     def admin_image_element(self) -> SafeString:
         """Return an image element to be displayed in the image admin."""
@@ -94,6 +115,11 @@ class Image(MediaModel):
     def aspect_ratio(self) -> float:
         """Return the image's aspect ratio as a float."""
         return self.width / self.height
+
+    @property
+    def caption_html(self) -> str:
+        """Returns the user-facing caption HTML."""
+        return self.caption.html if self.caption else ''
 
     @property
     def cropped_image_url(self) -> Optional[str]:
@@ -153,27 +179,6 @@ class Image(MediaModel):
         # try to to avoid cutting off heads.
         multiplier = 1.2
         return 'center 10%' if self.height > (self.width * multiplier) else 'center'
-
-    def clean(self):
-        """Prepare the image to be saved."""
-        super().clean()
-        if not self.caption:
-            raise ValidationError('Image needs a caption.')
-        image_is_duplicated = (
-            self.caption
-            and Image.objects.filter(image=self.image, caption=self.caption).exists()
-        )
-        if image_is_duplicated:
-            raise ValidationError(
-                f'{self.image} with caption=`{self.caption}` already exists.'
-            )
-        # TODO
-        enable_mega_backup = False
-        if enable_mega_backup:
-            from modularhistory.storage.mega_storage import mega_client
-
-            if mega_client and not len(self.links):
-                mega_client.upload(self.image.url)
 
     @classmethod
     def get_object_html(

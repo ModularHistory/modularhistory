@@ -14,6 +14,7 @@ from modularhistory.constants import EMPTY_STRING
 from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
 from modularhistory.models import (
     DatedModel,
+    ModelWithComputations,
     ModelWithRelatedEntities,
     SearchableModel,
     retrieve_or_compute,
@@ -50,7 +51,12 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class Source(TypedModel, DatedModel, SearchableModel, ModelWithRelatedEntities):
+class Source(
+    TypedModel,
+    DatedModel,
+    SearchableModel,
+    ModelWithRelatedEntities,
+):
     """A source for quotes or historical information."""
 
     full_string = models.CharField(

@@ -5,17 +5,13 @@
 
 from rest_framework import serializers
 
-from images.models import Image
 
-
-class ImageSerializer(serializers.ModelSerializer):
+class ImageSerializer(serializers.Serializer):
     """Serializer for images."""
 
-    class Meta:
-        model = Image
-        fields = [
-            'image',
-            'links',
-            'width',
-            'height',
-        ]
+    pk = serializers.IntegerField()
+    src_url = serializers.CharField()
+    width = serializers.IntegerField()
+    height = serializers.IntegerField()
+    caption_html = serializers.CharField()
+    provider_string = serializers.CharField()

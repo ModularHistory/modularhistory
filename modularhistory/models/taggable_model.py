@@ -9,17 +9,16 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
-from modularhistory.models import retrieve_or_compute
-from modularhistory.models.model_with_computations import ModelWithComputations
+from modularhistory.models import retrieve_or_compute, Model
 from topics.models import Topic
 
 
-class TaggableModel(ModelWithComputations):
+class TaggableModel(Model):
     """Mixin for models that are topic-taggable."""
 
     tags = GenericRelation('topics.TopicRelation')
 
-    class FieldNames(ModelWithComputations.FieldNames):
+    class FieldNames(Model.FieldNames):
         tags = 'tags'
 
     class Meta:

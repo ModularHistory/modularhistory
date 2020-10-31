@@ -1,20 +1,22 @@
 """Classes for models with relations to sources."""
 
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Dict, List, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from django.core.exceptions import ObjectDoesNotExist
-from modularhistory.models import retrieve_or_compute
-from modularhistory.models.searchable_model import SearchableModel
+
 from modularhistory.constants import EMPTY_STRING
+from modularhistory.models import Model, retrieve_or_compute
+from sources.serializers import CitationSerializer
 
 if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
     from sources.models import Citation
 
 
-class ModelWithSources(SearchableModel):
+class ModelWithSources(Model):
     """
     A model that has sources; e.g., a quote or occurrence.
 
@@ -22,9 +24,8 @@ class ModelWithSources(SearchableModel):
     it must be defined as an abstract model class.
     """
 
-    sources: Any
-
     citations = GenericRelation('sources.Citation')
+    sources: 'RelatedManager'
 
     class Meta:
         abstract = True
@@ -45,13 +46,16 @@ class ModelWithSources(SearchableModel):
             return None
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='citation_html', caster=format_html)
+    @retrieve_or_compute(attribute_name='serialized_citations')
+    def serialized_citations(self) -> List[Dict]:
+        """Return a list of dictionaries representing the instance's citations."""
+        return [CitationSerializer(citation).data for citation in self.citations.all()]
+
+    @property
     def citation_html(self) -> SafeString:
-        """Return the quote's citation HTML, if a citation exists."""
+        """Return the instance's full citation HTML."""
         try:
-            citation_html = '; '.join(
-                [citation.html for citation in self.citations.all()]
-            )
+            citation_html = '; '.join(citation['html'] for citation in self.serialized_citations)
         except (ObjectDoesNotExist, AttributeError, ValueError):
             citation_html = EMPTY_STRING
         return format_html(citation_html)

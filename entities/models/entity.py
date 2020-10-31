@@ -7,10 +7,10 @@ from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from images.models import Image
 from modularhistory.constants import EMPTY_STRING
 from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
 from modularhistory.models import (
+    ModelWithComputations,
     ModelWithImages,
     ModelWithRelatedEntities,
     ModelWithRelatedQuotes,
@@ -37,6 +37,7 @@ PARTS_OF_SPEECH = (
 class Entity(
     TypedModel,
     TaggableModel,
+    ModelWithComputations,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,
@@ -60,7 +61,10 @@ class Entity(
         blank=True,
     )
     images = ManyToManyField(
-        Image, through='entities.EntityImage', related_name='entities', blank=True
+        'images.Image',
+        through='entities.EntityImage',
+        related_name='entities',
+        blank=True,
     )
     affiliated_entities = ManyToManyField(
         'self', through='entities.Affiliation', blank=True

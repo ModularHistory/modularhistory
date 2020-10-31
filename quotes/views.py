@@ -19,10 +19,7 @@ class ListView(generic.list.ListView):
 
     def get_queryset(self):
         """Return the queryset of quotes."""
-        return Quote.objects.filter(verified=True).prefetch_related(
-            'attributees',
-            'images',
-        )
+        return Quote.objects.filter(verified=True)
 
     def get_context_data(self, *args, **kwargs) -> Dict:
         """Return the context data used to render the view."""

@@ -1,11 +1,13 @@
 """Classes for models with related entities."""
 
 import re
-from typing import Optional, TYPE_CHECKING
+from typing import Dict, List, Optional, TYPE_CHECKING
 
 from django.db.models import QuerySet
 
-from modularhistory.models.model import Model
+from modularhistory.models import Model
+from modularhistory.models.model_with_computations import retrieve_or_compute
+from entities.serializers import EntitySerializer
 
 if TYPE_CHECKING:
     from entities.models import Entity
@@ -32,6 +34,15 @@ class ModelWithRelatedEntities(Model):
             if attribute_value:
                 return attribute_value
         return None
+
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='serialized_images')
+    def serialized_entities(self) -> List[Dict]:
+        """Return a list of dictionaries representing the instance's images."""
+        return [
+            EntitySerializer(image_relation.image).data
+            for image_relation in self.image_relations.all().select_related('image')
+        ]
 
     def preprocess_html(self, html: str) -> str:
         """Modify the value of an HTML field during cleaning."""

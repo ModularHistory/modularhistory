@@ -681,7 +681,7 @@ SPAGHETTI_SAUCE = {
 }
 
 # Caching settings
-use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', default=False)
+use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', cast=bool, default=False)
 Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 if ENVIRONMENT == environments.DEV:

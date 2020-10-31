@@ -1,12 +1,12 @@
-from typing import Any, Iterable, List, Optional
+import logging
+from typing import Dict, Iterable, List, Optional, TYPE_CHECKING, Union
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-import logging
-from django.core.exceptions import ObjectDoesNotExist
+
 from images.models import Image
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
@@ -14,16 +14,20 @@ from modularhistory.models import (
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithSources,
+    SearchableModel
 )
 from modularhistory.utils.html import soupify
 from occurrences.manager import OccurrenceManager
 from occurrences.models.occurrence_image import OccurrenceImage
 from quotes.models import quote_sorter_key
 
+if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
+
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
-class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithImages):
+class Occurrence(DatedModel, SearchableModel, ModelWithRelatedQuotes, ModelWithSources, ModelWithImages):
     """Something that happened."""
 
     date = HistoricDateTimeField(null=True, blank=True)
@@ -48,7 +52,7 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         related_name='occurrences',
         blank=True,
     )
-    occurrence_images: Any
+    image_relations: 'RelatedManager'
     involved_entities = ManyToManyField(
         'entities.Entity',
         through='occurrences.OccurrenceEntityInvolvement',
@@ -120,28 +124,27 @@ class Occurrence(DatedModel, ModelWithRelatedQuotes, ModelWithSources, ModelWith
         try:
             # Raise an exception if images are not prefetched
             logging.info(
-                f'{self.prefetched_objects[self.occurrence_images.prefetch_cache_name]}'
+                f'{self.prefetched_objects[self.image_relations.prefetch_cache_name]}'
             )
-            return self.occurrence_images.all()
+            return self.image_relations.all()
         except (AttributeError, KeyError):
             # Not prefetched
-            return self.occurrence_images.all().select_related('image')
+            return self.image_relations.all().select_related('image')
 
     @property
-    def unpositioned_images(self) -> Iterable[Image]:
+    def unpositioned_images(self) -> Iterable[Union[Image, Dict]]:
         """Return the occurrence's images that are not manually positioned in HTML."""
         # 'unpositioned_images' is a little misleading; these are positioned
         # by their `position` attribute rather than manually positioned.
         unpositioned_images = [
-            occurrence_image.image for occurrence_image in self.ordered_images
-            if not occurrence_image.is_positioned
+            image for image in self.serialized_images
+            if f'image: {image.get("pk")}' not in self.description.raw_value
         ]
         if unpositioned_images:
             return unpositioned_images
-        elif self.entity_images:
-            unpositioned_images = self.entity_images
-        elif self.primary_image:
-            unpositioned_images = [self.primary_image]
+        # TODO: optimize
+        # elif self.entity_images:
+        #     unpositioned_images = self.entity_images
         return unpositioned_images
 
     @property

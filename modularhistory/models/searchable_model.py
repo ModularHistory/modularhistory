@@ -11,6 +11,7 @@ from django.template import loader
 from django.utils.html import SafeString, format_html
 
 from modularhistory.models.taggable_model import TaggableModel
+from modularhistory.models.model_with_computations import ModelWithComputations
 from search.templatetags.highlight import highlight
 
 if TYPE_CHECKING:
@@ -35,7 +36,7 @@ class Views(Constant):
     CARD = 'card'
 
 
-class SearchableModel(TaggableModel):
+class SearchableModel(TaggableModel, ModelWithComputations):
     """
     A model that shows up in ModularHistory's search results; e.g., a quote or occurrence.
 
