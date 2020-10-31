@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from typedmodels.models import TypedModel as BaseTypedModel
+from rest_framework.serializers import Serializer
 
 from modularhistory.models.manager import Manager
 
@@ -30,6 +31,7 @@ class Model(DjangoModel):
 
     objects: Manager = Manager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
+    serializer: Type[Serializer]
 
     admin_placeholder_regex: Pattern
 

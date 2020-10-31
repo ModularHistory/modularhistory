@@ -21,7 +21,7 @@ from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from modularhistory import environments
+from modularhistory.constants import Environments
 
 ENABLE_ASGI: bool = False
 
@@ -37,11 +37,11 @@ TESTING: bool = 'test' in sys.argv
 
 # Environment
 if IS_PROD:
-    ENVIRONMENT = environments.PROD
+    ENVIRONMENT = Environments.PROD
 elif os.environ.get('GITHUB_WORKFLOW'):
-    ENVIRONMENT = environments.GITHUB_TEST
+    ENVIRONMENT = Environments.GITHUB_TEST
 else:
-    ENVIRONMENT = environments.DEV
+    ENVIRONMENT = Environments.DEV
 
 SERVER_LOCATION = 'unknown'  # TODO
 GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
@@ -61,7 +61,7 @@ ADMINS = (
 )
 
 # Initialize the Sentry SDK for error reporting.
-if ENVIRONMENT != environments.DEV:
+if ENVIRONMENT != Environments.DEV:
     integrations: List[Integration] = [
         DjangoIntegration(),
     ]
@@ -77,7 +77,7 @@ if ENVIRONMENT != environments.DEV:
         send_default_pii=True,
     )
 
-if ENVIRONMENT == environments.DEV:
+if ENVIRONMENT == Environments.DEV:
     # Make sure the celery app is imported when Django starts,
     # so that shared_task will use the app.
     from .tasks import app as celery_app  # noqa: F401
@@ -89,7 +89,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
 DEBUG = (
-    ENVIRONMENT == environments.DEV
+    ENVIRONMENT == Environments.DEV
 )  # DEBUG must be False in production (for security)
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
@@ -138,12 +138,13 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.flatpages',
     'django.contrib.messages',
     'django.contrib.postgres',
+    'django.contrib.redirects',
+    'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.staticfiles',
-    'django.contrib.flatpages',
     'django.forms',
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
@@ -187,7 +188,7 @@ if ENABLE_ASGI:
     INSTALLED_APPS = [
         'channels',  # https://channels.readthedocs.io/en/latest/index.html
     ] + INSTALLED_APPS
-if ENVIRONMENT == environments.DEV:
+if ENVIRONMENT == Environments.DEV:
     INSTALLED_APPS += [
         'django_spaghetti',  # https://github.com/LegoStormtroopr/django-spaghetti-and-meatballs
     ]
@@ -208,14 +209,15 @@ MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    # # https://github.com/yandex/django_replicated
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    # Staticpage middleware, based on Django's Flatpage middleware:
+    # Staticpage middleware, based on Django's Flatpage middleware
     # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
     'staticpages.middleware.StaticPageFallbackMiddleware',
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'modularhistory.urls'
@@ -267,7 +269,7 @@ REST_FRAMEWORK = {
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if ENVIRONMENT == environments.PROD:
+if ENVIRONMENT == Environments.PROD:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -277,7 +279,7 @@ if ENVIRONMENT == environments.PROD:
             'PASSWORD': config('DB_PASSWORD'),
         }
     }
-elif ENVIRONMENT == environments.GITHUB_TEST:
+elif ENVIRONMENT == Environments.GITHUB_TEST:
     DATABASES = {
         'default': {
             'NAME': 'postgres',
@@ -288,7 +290,7 @@ elif ENVIRONMENT == environments.GITHUB_TEST:
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
-elif ENVIRONMENT == environments.DEV and USE_PROD_DB:
+elif ENVIRONMENT == Environments.DEV and USE_PROD_DB:
     DATABASES = {
         'default': {
             'NAME': config('PROD_DB_NAME'),
@@ -444,7 +446,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files (images, etc. uploaded by users)
-# https://docs.djangoproject.com/en/3.0/topics/files/
+# https://docs.djangoproject.com/en/3.1/topics/files/
 MEDIA_URL = (
     f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/'
     if IS_PROD
@@ -684,7 +686,7 @@ SPAGHETTI_SAUCE = {
 use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', cast=bool, default=False)
 Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
-if ENVIRONMENT == environments.DEV:
+if ENVIRONMENT == Environments.DEV:
     if use_dummy_cache_in_dev_environment:
         CACHES = {
             'default': {
@@ -709,5 +711,5 @@ CELERY_BROKER_URL = 'amqp://localhost'
 
 DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
 
-if ENVIRONMENT == environments.DEV and not DISABLE_CHECKS:
+if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
     from modularhistory import checks  # noqa: F401

@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField, Q, QuerySet
@@ -10,22 +10,19 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 
-from entities.models import Entity
-from images.models import Image
 from modularhistory.constants import EMPTY_STRING, OCCURRENCE_CT_ID
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
-    DatedModel,
-    SearchableModel,
-    ModelWithImages,
-    ModelWithRelatedEntities,
-    ModelWithRelatedQuotes,
-    ModelWithSources,
-    retrieve_or_compute,
+    DatedModel, ModelWithImages, ModelWithRelatedEntities, ModelWithRelatedQuotes, ModelWithSources,
+    SearchableModel, retrieve_or_compute,
 )
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
 from quotes.models.quote_image import QuoteImage
+from quotes.serializers import QuoteSerializer
+
+if TYPE_CHECKING:
+    from entities.models import Entity
 
 BITE_MAX_LENGTH: int = 400
 
@@ -56,7 +53,10 @@ class Quote(
     )
     date = HistoricDateTimeField(null=True)
     attributees = ManyToManyField(
-        Entity, through='quotes.QuoteAttribution', related_name='quotes', blank=True
+        'entities.Entity',
+        through='quotes.QuoteAttribution',
+        related_name='quotes',
+        blank=True
     )
     related = GenericManyToManyField(
         'occurrences.Occurrence',
@@ -67,7 +67,7 @@ class Quote(
         blank=True,
     )
     images = ManyToManyField(
-        Image, through='quotes.QuoteImage', related_name='quotes', blank=True
+        'images.Image', through='quotes.QuoteImage', related_name='quotes', blank=True
     )
 
     class Meta:
@@ -78,6 +78,7 @@ class Quote(
         text = 'text'
         attributees = 'attributees'
 
+    objects: QuoteManager = QuoteManager()  # type: ignore
     searchable_fields = [
         FieldNames.text,
         'context',
@@ -87,7 +88,7 @@ class Quote(
         'tags__topic__key',
         'tags__topic__aliases',
     ]
-    objects: QuoteManager = QuoteManager()  # type: ignore
+    serializer = QuoteSerializer
 
     def __str__(self) -> str:
         """Return the quote's string representation, for debugging and internal use."""
@@ -200,7 +201,7 @@ class Quote(
         return format_html(html)
 
     @property
-    def ordered_attributees(self) -> Optional[List[Entity]]:
+    def ordered_attributees(self) -> Optional[List['Entity']]:
         """
         Return an ordered list of the quote's attributees.
 

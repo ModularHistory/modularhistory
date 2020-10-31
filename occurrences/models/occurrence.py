@@ -6,7 +6,7 @@ from django.db.models import ManyToManyField
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-
+from occurrences.serializers import OccurrenceSerializer
 from images.models import Image
 from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
@@ -69,16 +69,21 @@ class Occurrence(DatedModel, SearchableModel, ModelWithRelatedQuotes, ModelWithS
         unique_together = ['summary', 'date']
         ordering = ['-date']
 
+    class FieldNames(SearchableModel.FieldNames):
+        summary = 'summary'
+        description = 'description'
+
+    objects: OccurrenceManager = OccurrenceManager()  # type: ignore
     searchable_fields = [
-        'summary',
-        'description',
+        FieldNames.summary,
+        FieldNames.description,
         'date__year',
         'involved_entities__name',
         'involved_entities__aliases',
         'tags__topic__key',
         'tags__topic__aliases',
     ]
-    objects: OccurrenceManager = OccurrenceManager()  # type: ignore
+    serializer = OccurrenceSerializer
 
     def __str__(self) -> str:
         """Return the string representation of the occurrence."""

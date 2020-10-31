@@ -13,6 +13,7 @@ from image_cropping import ImageRatioField
 
 from images.manager import ImageManager
 from images.models.media_model import MediaModel
+from images.serializers import ImageSerializer
 from modularhistory.fields.file_field import upload_to
 from modularhistory.utils.string import components_to_string
 
@@ -67,12 +68,14 @@ class Image(MediaModel):
         allow_fullsize=True,
         help_text='Not yet fully implemented.',
     )
+
+    objects: ImageManager = ImageManager()  # type: ignore
     searchable_fields = [
         FieldNames.caption,
         FieldNames.description,
         FieldNames.provider,
     ]
-    objects: ImageManager = ImageManager()  # type: ignore
+    serializer = ImageSerializer
 
     def __str__(self) -> str:
         """Return the string representation of the image."""

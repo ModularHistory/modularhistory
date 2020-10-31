@@ -20,10 +20,10 @@ import logging
 
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
 from django.urls import include, path, re_path
 
 from admin.model_admin import admin_site
-from modularhistory import environments
 from search.views import SearchResultsView
 
 
@@ -31,6 +31,11 @@ def error(request):
     """Raise an error, so that ModularHistory's server error page is rendered."""
     logging.info(f'Received request to trigger a server error: {request}')
     raise Exception('Raising an exception for testing purposes.')
+
+
+def media_redirect(request, media_path: str):
+    """Redirect media requests, if necessary."""
+    return redirect(f'{settings.MEDIA_URL}/{media_path}')
 
 
 urlpatterns = [
@@ -61,10 +66,10 @@ urlpatterns = [
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if settings.ENVIRONMENT == environments.DEV:
-    urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
-
 if settings.DEBUG:
     import debug_toolbar
-
     urlpatterns = [path('__debug__', include(debug_toolbar.urls))] + urlpatterns
+    urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
+else:
+    # Redirect media requests in production, if necessary
+    urlpatterns.append(path('media/<path>', media_redirect))

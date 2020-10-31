@@ -5,22 +5,11 @@
 
 from rest_framework import serializers
 
-from occurrences.models import Occurrence
 
-
-class OccurrenceSerializer(serializers.ModelSerializer):
+class OccurrenceSerializer(serializers.Serializer):
     """Serializer for occurrences."""
 
-    class Meta:
-        model = Occurrence
-        fields = [
-            'date',
-            'end_date',
-            'summary',
-            'description',
-            'postscript',
-            'locations',
-            'images',
-            'involved_entities',
-            'chains',
-        ]
+    date = serializers.DateTimeField()
+    end_date = serializers.DateTimeField()
+    summary = serializers.CharField()
+    description = serializers.CharField()
