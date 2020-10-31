@@ -110,7 +110,7 @@ def retrieve_or_compute(
                         # Specify `wipe_computations=False` to properly update the JSON value
                         model_instance.save(wipe_computations=False)
                     return property_value
-                logging.error(
+                logging.error(  # type: ignore
                     f'{model_instance.__class__.__name__} uses @retrieve_or_compute '
                     f'on its `{model_property.__name__}` attribute '
                     f'but is not subclassed from ModelWithComputations.'

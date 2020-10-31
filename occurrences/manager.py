@@ -1,7 +1,7 @@
 from typing import List, Optional
 
-from django.db.models import Q
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
+
 from modularhistory.models.manager import (
     SearchableModelManager,
     SearchableModelQuerySet,
@@ -33,7 +33,13 @@ class OccurrenceManager(SearchableModelManager):
             )
             .filter(hidden=False)
             .filter_by_date(start_year=start_year, end_year=end_year)
-            .prefetch_related('citations', Prefetch('image_relations', queryset=OccurrenceImage.objects.select_related('image')))
+            .prefetch_related(
+                'citations',
+                Prefetch(
+                    'image_relations',
+                    queryset=OccurrenceImage.objects.select_related('image'),
+                ),
+            )
         )
         # Limit to specified entities
         if entity_ids:

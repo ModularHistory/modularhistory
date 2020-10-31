@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField, Q, QuerySet
@@ -11,10 +11,15 @@ from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 
 from modularhistory.constants import EMPTY_STRING, OCCURRENCE_CT_ID
-from modularhistory.fields import HTMLField, HistoricDateTimeField
+from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.models import (
-    DatedModel, ModelWithImages, ModelWithRelatedEntities, ModelWithRelatedQuotes, ModelWithSources,
-    SearchableModel, retrieve_or_compute,
+    DatedModel,
+    ModelWithImages,
+    ModelWithRelatedEntities,
+    ModelWithRelatedQuotes,
+    ModelWithSources,
+    SearchableModel,
+    retrieve_or_compute,
 )
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
@@ -56,7 +61,7 @@ class Quote(
         'entities.Entity',
         through='quotes.QuoteAttribution',
         related_name='quotes',
-        blank=True
+        blank=True,
     )
     related = GenericManyToManyField(
         'occurrences.Occurrence',
@@ -108,7 +113,7 @@ class Quote(
         if not self.images.exists():
             image = None
             try:
-                attributee = self.attributees.first()
+                attributee: 'Entity' = self.attributees.first()
                 if self.date:
                     image = attributee.images.get_closest_to_datetime(self.date)
                 else:

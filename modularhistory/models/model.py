@@ -99,6 +99,7 @@ class Model(DjangoModel):
 
     @property
     def prefetched_objects(self) -> Dict:
+        """Return the instance's prefetched objects cache."""
         return self._prefetched_objects_cache or {}
 
     def get_admin_url(self):

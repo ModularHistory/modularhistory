@@ -1,9 +1,9 @@
 from seleniumbase import BaseCase
+
 from .google_objects import HomePage, ResultsPage
 
 
 class GoogleTests(BaseCase):
-
     def test_google_dot_com(self):
         self.open('https://google.com/ncr')
         self.type(HomePage.search_box, 'github')

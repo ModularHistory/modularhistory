@@ -1,6 +1,7 @@
 {% extends "base.htm" %}
 
 {% load get_html_for_view %}
+{% load media %}
 
 {% block title %}{% endblock %}
 
@@ -12,7 +13,7 @@
                     <!-- Card image -->
                     {% if entity.serialized_images %}
                         <div class="view overlay">
-                            <img class="card-img-top" src="{{ entity.primary_image.src_url }}" alt="Card image cap">
+                            <img class="card-img-top" src="{% media entity.primary_image.src_url %}" alt="Card image cap">
                             <a href="{{ entity.detail_url }}">
                                 <div class="mask rgba-white-slight"></div>
                             </a>

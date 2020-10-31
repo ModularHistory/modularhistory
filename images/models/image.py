@@ -121,7 +121,7 @@ class Image(MediaModel):
 
     @property
     def caption_html(self) -> str:
-        """Returns the user-facing caption HTML."""
+        """Return the user-facing caption HTML."""
         return self.caption.html if self.caption else ''
 
     @property

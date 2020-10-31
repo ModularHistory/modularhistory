@@ -1,6 +1,6 @@
 """Classes for models with relations to sources."""
 
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,6 +13,7 @@ from sources.serializers import CitationSerializer
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
+
     from sources.models import Citation
 
 
@@ -55,7 +56,9 @@ class ModelWithSources(Model):
     def citation_html(self) -> SafeString:
         """Return the instance's full citation HTML."""
         try:
-            citation_html = '; '.join(citation['html'] for citation in self.serialized_citations)
+            citation_html = '; '.join(
+                citation['html'] for citation in self.serialized_citations
+            )
         except (ObjectDoesNotExist, AttributeError, ValueError):
             citation_html = EMPTY_STRING
         return format_html(citation_html)

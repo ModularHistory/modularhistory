@@ -1,5 +1,6 @@
 {% extends "_card.html" %}
 {% load static %}
+{% load media %}
 
 {% block edit %}
     {% with object=image request=request %}
@@ -11,7 +12,7 @@
     <div class="view overlay">
         <img class="card-img-top lazy"
              src="{% static 'img-placeholder.jpg' %}"
-             data-src="{{ image.src_url }}"
+             data-src="{% media image.src_url %}"
              alt="{{ image.image.name }}" />
         <a href="#!">
             <div class="mask rgba-white-slight"></div>

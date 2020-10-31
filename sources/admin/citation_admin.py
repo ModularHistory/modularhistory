@@ -105,6 +105,7 @@ class CitationsInline(GenericTabularInline):
         return 1
 
     def get_queryset(self, request) -> QuerySet:
+        """Return the queryset of citations to display in an inline admin."""
         return super().get_queryset(request).prefetch_related('pages')
 
 
