@@ -7,6 +7,7 @@ from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
+from entities.serializers import EntitySerializer
 from modularhistory.constants import EMPTY_STRING
 from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
 from modularhistory.models import (
@@ -70,11 +71,12 @@ class Entity(
         'self', through='entities.Affiliation', blank=True
     )
 
-    searchable_fields = ['name', 'aliases', 'description']
-
     class Meta:
         verbose_name_plural = 'Entities'
         ordering = ['name']
+
+    searchable_fields = ['name', 'aliases', 'description']
+    serializer = EntitySerializer
 
     def __str__(self) -> str:
         """Return the string representation of the entity."""

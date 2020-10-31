@@ -63,6 +63,8 @@ jobs:
       if: ${{ success() }}
       run: ./setup.sh --noninteractive
     # Run tests
+    - name: Start selenoid
+      uses: Xotabu4/selenoid-github-action@v1  # https://github.com/marketplace/actions/start-selenoid-server
     - name: Run tests
       if: ${{ success() }}
       run: invoke test

@@ -219,6 +219,7 @@ def restore_squashed_migrations(context):
 @task
 def test(context):
     """Run tests."""
+    commands.escape_prod_db()
     pytest_args = [
         '-v',
         '-n 3',
@@ -227,7 +228,6 @@ def test(context):
         # '--hypothesis-show-statistics',
         '--disable-warnings',
     ]
-    commands.escape_prod_db()
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
     print(command)
     context.run(command)

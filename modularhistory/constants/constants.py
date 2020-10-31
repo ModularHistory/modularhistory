@@ -3,6 +3,13 @@
 from aenum import Constant
 
 
+class Environments(Constant):
+    """Environments."""
+    PROD = 'prod'
+    GITHUB_TEST = 'test'
+    DEV = 'dev'
+
+
 class ResponseCodes(Constant):
     """Response codes."""
 

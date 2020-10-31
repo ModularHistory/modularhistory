@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 from django.urls import include, path, re_path
 
 from admin.model_admin import admin_site
-from modularhistory import environments
+from modularhistory.constants import Environments
 from search.views import SearchResultsView
 
 
@@ -61,7 +61,7 @@ urlpatterns = [
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if settings.ENVIRONMENT == environments.DEV:
+if settings.ENVIRONMENT == Environments.DEV:
     urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
 
 if settings.DEBUG:

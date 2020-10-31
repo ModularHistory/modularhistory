@@ -7,15 +7,20 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db.models import JSONField
 from django.http import HttpRequest
-from django_celery_beat.admin import CrontabSchedule, IntervalSchedule, PeriodicTask
-from django_celery_beat.admin import PeriodicTaskAdmin as BasePeriodicTaskAdmin
-from django_celery_beat.admin import SolarSchedule
+from django_celery_beat.admin import (
+    CrontabSchedule,
+    IntervalSchedule,
+    PeriodicTask,
+    PeriodicTaskAdmin as BasePeriodicTaskAdmin,
+    SolarSchedule
+)
 from django_celery_results.admin import TaskResult, TaskResultAdmin
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
 from admin.admin_site import admin_site
-from modularhistory import environments, settings
+from modularhistory import settings
+from modularhistory.constants import Environments
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.forms import HistoricDateWidget
 from modularhistory.models import Model
@@ -29,7 +34,7 @@ FORM_FIELD_OVERRIDES = {
     JSONField: {'widget': JSONEditorWidget},
 }
 
-if settings.ENVIRONMENT == environments.DEV:
+if settings.ENVIRONMENT == Environments.DEV:
     BASE_CSS = sass_processor('styles/base.scss')
     MCE_CSS = sass_processor('styles/mce.scss')
     ADMIN_CSS = sass_processor('styles/admin.scss')
