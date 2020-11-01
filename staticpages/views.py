@@ -7,7 +7,7 @@ from django.template import loader
 from django.utils.html import format_html
 from django.views.decorators.csrf import csrf_protect
 
-from modularhistory.constants import SLASH
+from modularhistory.constants.strings import SLASH
 from staticpages.models import StaticPage
 
 DEFAULT_TEMPLATE = 'staticpages/default.html'

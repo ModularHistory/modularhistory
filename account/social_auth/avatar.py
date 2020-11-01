@@ -6,8 +6,8 @@ from social_core.backends.github import GithubOAuth2
 from social_core.backends.google import GoogleOAuth2
 from social_core.backends.twitter import TwitterOAuth
 
-from account.models import AuthBackend, User
-from account.social_auth.auth_data import auth_data_interfaces
+from account.models import User
+from account.social_auth.auth_data import AuthBackend, auth_data_interfaces
 
 FACEBOOK = 'facebook'
 TWITTER = 'twitter'

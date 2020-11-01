@@ -17,7 +17,7 @@ from modularhistory.structures.historic_datetime import (
     get_month_from_season,
     get_season_from_month,
 )
-from modularhistory.constants import SPACE, COLON, PERIOD
+from modularhistory.constants.strings import SPACE, COLON, PERIOD
 
 CE = 'CE'
 BCE = 'BCE'

@@ -14,7 +14,7 @@ from admin.list_filters.autocomplete_filter import (
     ManyToManyAutocompleteFilter,
 )
 from entities.models import Category, Entity
-from modularhistory.constants import NO, YES
+from modularhistory.constants.strings import NO, YES
 
 
 class AttributeeFilter(ManyToManyAutocompleteFilter):

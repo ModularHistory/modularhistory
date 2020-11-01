@@ -12,7 +12,8 @@ from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, SET
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.constants import EMPTY_STRING, QUOTE_CT_ID
+from modularhistory.constants import QUOTE_CT_ID
+from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.models import ModelWithComputations, retrieve_or_compute
 from modularhistory.utils import pdf
 from modularhistory.utils.html import components_to_html, compose_link, soupify

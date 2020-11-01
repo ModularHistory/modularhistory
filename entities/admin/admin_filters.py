@@ -1,7 +1,7 @@
 from django.contrib.admin import SimpleListFilter
 
 from admin.list_filters import AutocompleteFilter
-from modularhistory.constants import YES, NO
+from modularhistory.constants.strings import YES, NO
 
 
 class CategoriesFilter(AutocompleteFilter):

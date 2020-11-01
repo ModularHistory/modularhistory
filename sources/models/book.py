@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from humanize import ordinal
 
-from modularhistory.constants import EMPTY_STRING
+from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ExtraField
 from modularhistory.models import retrieve_or_compute
 from modularhistory.utils.html import soupify

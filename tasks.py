@@ -13,18 +13,21 @@ See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
 import errno
+import linecache
 import os
+import tracemalloc
 from typing import Any, Callable, TypeVar
 
 import django
 
 from modularhistory import settings
-from modularhistory.constants import NEGATIVE, SPACE
-from modularhistory.linters import flake8 as lint_with_flake8
-from modularhistory.linters import mypy as lint_with_mypy
+from modularhistory.constants.strings import NEGATIVE, SPACE
+from modularhistory.linters import flake8 as lint_with_flake8, mypy as lint_with_mypy
 from modularhistory.utils import commands
 from modularhistory.utils.files import relativize
 from monkeypatch import fix_annotations
+
+tracemalloc.start(25)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
@@ -219,6 +222,7 @@ def restore_squashed_migrations(context):
 @task
 def test(context):
     """Run tests."""
+    ref_snapshot = tracemalloc.take_snapshot()
     commands.escape_prod_db()
     pytest_args = [
         '-v',
@@ -231,6 +235,23 @@ def test(context):
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
     print(command)
     context.run(command)
+    snapshot = tracemalloc.take_snapshot()
+    traces = snapshot.statistics('traceback')
+    for index, stat in enumerate(snapshot.compare_to(ref_snapshot, 'lineno')[:15]):
+        diff = f'{stat}'
+        filters = (
+            '<frozen importlib._bootstrap' not in diff,
+            'linecache' not in diff,
+            'autoreload.py' not in diff,
+        )
+        if all(filters):
+            print(diff)
+            trace = traces[index]
+            print("%s memory blocks: %.1f KiB" % (stat.count, stat.size / 1024))
+            for line in trace.traceback.format():
+                print(line)
+        print()
+    # display_top(snapshot)
     context.run('coverage combine')
 
 
@@ -253,3 +274,28 @@ def deploy(context):
         context.run(f'mv {perm_env_file} {env_file}')
     else:
         raise NotImplementedError
+
+
+def display_top(snapshot, key_type='lineno', limit=15):
+    snapshot = snapshot.filter_traces((
+        tracemalloc.Filter(False, "<frozen importlib._bootstrap>"),
+        tracemalloc.Filter(False, "<frozen importlib._bootstrap_external>"),
+        tracemalloc.Filter(False, "<unknown>"),
+    ))
+    top_stats = snapshot.statistics(key_type)
+
+    print("Top %s lines" % limit)
+    for index, stat in enumerate(top_stats[:limit], 1):
+        frame = stat.traceback[0]
+        print("#%s: %s:%s: %.1f KiB"
+              % (index, frame.filename, frame.lineno, stat.size / 1024))
+        line = linecache.getline(frame.filename, frame.lineno).strip()
+        if line:
+            print('    %s' % line)
+
+    other = top_stats[limit:]
+    if other:
+        size = sum(stat.size for stat in other)
+        print("%s other: %.1f KiB" % (len(other), size / 1024))
+    total = sum(stat.size for stat in top_stats)
+    print("Total allocated size: %.1f KiB" % (total / 1024))

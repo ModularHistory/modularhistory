@@ -10,7 +10,8 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 
-from modularhistory.constants import EMPTY_STRING, OCCURRENCE_CT_ID
+from modularhistory.constants import OCCURRENCE_CT_ID
+from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.models import (
     DatedModel,

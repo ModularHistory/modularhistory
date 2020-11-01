@@ -9,16 +9,15 @@ from invoke.context import Context
 
 from modularhistory.constants import (
     APPS_WITH_MIGRATIONS,
-    BASH_PLACEHOLDER,
     LOCAL,
     MAX_MIGRATION_COUNT,
     MIGRATIONS_DIRNAME,
-    NEGATIVE,
     PROD_DB_ENV_VAR,
     PROD_DB_ENV_VAR_VALUES,
     PRODUCTION,
     SQUASHED_MIGRATIONS_DIRNAME,
 )
+from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from modularhistory.utils.files import relativize
 
 TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])

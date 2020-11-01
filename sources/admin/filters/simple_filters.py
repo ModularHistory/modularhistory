@@ -2,7 +2,7 @@ from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
 
 from admin.list_filters import BooleanListFilter
-from modularhistory.constants import EMPTY_STRING, NO, YES
+from modularhistory.constants.strings import EMPTY_STRING, NO, YES
 from sources.models import Source
 
 

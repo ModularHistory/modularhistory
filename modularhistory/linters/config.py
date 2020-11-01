@@ -19,7 +19,7 @@ from typing import (
     Union,
 )
 
-from modularhistory.constants import COMMA, NEW_LINE
+from modularhistory.constants.strings import COMMA, NEW_LINE
 from modularhistory.utils import linting
 
 CONFIG_FILE = 'setup.cfg'

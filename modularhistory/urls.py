@@ -18,6 +18,7 @@ Examples:
 
 import logging
 
+import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
@@ -56,13 +57,11 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),
     path('', include('home.urls')),
+    path('__debug__', include(debug_toolbar.urls)),
     path('error', error),  # error trigger (for testing purposes)
 ]
 
 if settings.DEBUG:
-    import debug_toolbar
-
-    urlpatterns = [path('__debug__', include(debug_toolbar.urls))] + urlpatterns
     urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

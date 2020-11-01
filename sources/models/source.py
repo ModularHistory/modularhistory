@@ -10,7 +10,7 @@ from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
-from modularhistory.constants import EMPTY_STRING
+from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
 from modularhistory.models import (
     DatedModel,

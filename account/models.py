@@ -1,21 +1,16 @@
 import logging
 from tempfile import NamedTemporaryFile
-from typing import Union
 from urllib.request import urlopen
 
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import UserManager as BaseUserManager
+from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 from django.core.files import File
 from django.db import models
 from django.db.models import QuerySet
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
-from social_core.backends.oauth import BaseOAuth1, BaseOAuth2
 from social_django.models import UserSocialAuth
 
 from modularhistory.fields.file_field import upload_to
-
-AuthBackend = Union[BaseOAuth1, BaseOAuth2]
 
 AVATAR_QUALITY: int = 70
 AVATAR_WIDTH: int = 200

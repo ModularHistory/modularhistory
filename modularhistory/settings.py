@@ -60,13 +60,15 @@ ADMINS = (
     else []
 )
 
+ENABLE_CELERY = False
+
 # Initialize the Sentry SDK for error reporting.
 if ENVIRONMENT != Environments.DEV:
     integrations: List[Integration] = [
         DjangoIntegration(),
     ]
     # If not in Google Cloud, add the Celery integration.
-    if not IS_GCP:
+    if ENABLE_CELERY and not IS_GCP:
         integrations.append(CeleryIntegration())
     sentry_sdk.init(
         dsn='https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835',
@@ -77,7 +79,7 @@ if ENVIRONMENT != Environments.DEV:
         send_default_pii=True,
     )
 
-if ENVIRONMENT == Environments.DEV:
+if ENABLE_CELERY:
     # Make sure the celery app is imported when Django starts,
     # so that shared_task will use the app.
     from .tasks import app as celery_app  # noqa: F401
@@ -150,8 +152,9 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
-    'django_celery_beat',  # https://github.com/celery/django-celery-beat
-    'django_celery_results',  # https://github.com/celery/django-celery-results
+    # TODO
+    # 'django_celery_beat',  # https://github.com/celery/django-celery-beat
+    # 'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_json_widget',  # https://github.com/jmrivas86/django-json-widget
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
