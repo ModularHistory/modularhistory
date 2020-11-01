@@ -6,7 +6,7 @@
         {%if places|length %}
             <div id="occurrences-list">
                 {% for place in places %}
-                    {{ place|get_html_for_view:"card" }}
+                    {{ place|get_html_for_view:"place/card" }}
                 {% endfor %}
             </div>
         {% else %}
