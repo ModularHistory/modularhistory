@@ -230,7 +230,6 @@ def test(context):
         # '-x',
         '--maxfail=2',
         # '--hypothesis-show-statistics',
-        '--disable-warnings',
     ]
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
     print(command)

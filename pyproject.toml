@@ -163,7 +163,7 @@ virtualenv-clone = "==0.5.4"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra --ds='modularhistory.settings' --capture=no --ignore conftest.py -p no:cacheprovider"
+addopts = "-ra --ds='modularhistory.settings' --capture=no --ignore conftest.py -p no:cacheprovider --disable-warnings"
 norecursedirs = [
     "*env",
     ".nox",

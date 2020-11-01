@@ -5,7 +5,7 @@ from django.template import Library, loader
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.models import SearchableModel
+from modularhistory.models import Model
 from search.templatetags.highlight import highlight
 
 register = Library()
@@ -13,14 +13,14 @@ register = Library()
 
 @register.filter(is_safe=True)
 def get_html_for_view(
-    model_instance: Union[Dict, SearchableModel],
+    model_instance: Union[Dict, Model],
     template_name: str,
     text_to_highlight: Optional[str] = None,
 ) -> SafeString:
     """Return the HTML for the specified view of the model instance."""
     if '/' in template_name:
         model_name, template_name = template_name.split('/')
-    elif isinstance(model_instance, SearchableModel):
+    elif isinstance(model_instance, Model):
         model_name = f'{model_instance.__class__.__name__}'.lower()
     else:
         raise ValueError(

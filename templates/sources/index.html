@@ -7,7 +7,7 @@
         {% if sources|length %}
             <div>
                 {% for source in sources %}
-                    {{ source|get_html_for_view:"card" }}
+                    {{ source|get_html_for_view:"source/card" }}
                 {% endfor %}
             </div>
         {% else %}
