@@ -1,9 +1,12 @@
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 import requests
+from social_core.backends.oauth import BaseOAuth1, BaseOAuth2
 
 from account.models import User
+
+AuthBackend = Union[BaseOAuth1, BaseOAuth2]
 
 
 class AuthData:

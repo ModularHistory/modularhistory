@@ -9,7 +9,7 @@ from django.http import HttpRequest
 from django_select2.forms import Select2MultipleWidget
 
 from entities.models import Entity
-from modularhistory.constants import EMPTY_STRING
+from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.forms import HistoricDateFormField
 from modularhistory.widgets.historic_date_widget import YearInput
 from search.models import CONTENT_TYPE_OPTIONS, ORDERING_OPTIONS

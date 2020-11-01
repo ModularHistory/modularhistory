@@ -56,24 +56,11 @@ QUOTE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.quote)
 IMAGE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.image)
 SOURCE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.source)
 
-YES = 'Yes'
-NO = 'No'
-EMPTY_STRING = ''
-SLASH = '/'
-SPACE = ' '
-COLON = ':'
-COMMA = ','
-PERIOD = '.'
-NEW_LINE = '\n'
-
 PDF_URL_PAGE_KEY = 'page'
 
 MIGRATIONS_DIRNAME = 'migrations'
 SQUASHED_MIGRATIONS_DIRNAME = 'squashed_migrations'
 
-BASH_PLACEHOLDER = '{}'  # noqa: P103
-NEGATIVE = 'n'
-AFFIRMATIVE = 'y'
 PROD_DB_ENV_VAR = 'USE_PROD_DB'
 LOCAL = 'local'
 PRODUCTION = 'production'

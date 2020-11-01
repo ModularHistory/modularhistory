@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.constants import EMPTY_STRING
+from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.models import Model, retrieve_or_compute
 from sources.serializers import CitationSerializer
 

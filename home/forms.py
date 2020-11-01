@@ -3,15 +3,13 @@ from crispy_forms.layout import Field, Layout, Submit
 from django import forms
 from django.http import HttpRequest
 
-from modularhistory.constants.topics import TOPICS
-
-AUTOCOMPLETE_CHOICES = [(topic, topic) for topic in TOPICS]
+# TODO: this causes memory issue?
+# from modularhistory.constants.topics import TOPICS
+# AUTOCOMPLETE_CHOICES = [(topic, topic) for topic in TOPICS]
 
 
 class SearchForm(forms.Form):
     """Form for searching for searchable model instances."""
-
-    submit_button_text = 'Search'
 
     def __init__(
         self,
@@ -34,12 +32,11 @@ class SearchForm(forms.Form):
         self.helper.form_action = 'search'
         self.helper.form_class = 'text-center'
         self.helper.form_show_labels = False
-        layout = [
+        self.helper.layout = Layout(
             Field(
                 'query',
                 css_class='form-control',
                 style='width: 20rem; max-width: 100%;',
             ),
-            Submit('submit', self.submit_button_text),
-        ]
-        self.helper.layout = Layout(*layout)
+            Submit('submit', 'Search')
+        )

@@ -7,10 +7,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db.models import JSONField
 from django.http import HttpRequest
-from django_celery_beat.admin import CrontabSchedule, IntervalSchedule, PeriodicTask
-from django_celery_beat.admin import PeriodicTaskAdmin as BasePeriodicTaskAdmin
-from django_celery_beat.admin import SolarSchedule
-from django_celery_results.admin import TaskResult, TaskResultAdmin
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
@@ -38,9 +34,6 @@ else:
     BASE_CSS = 'styles/base.css'
     MCE_CSS = 'styles/mce.css'
     ADMIN_CSS = 'styles/admin.css'
-
-# TODO
-enable_celery = False
 
 
 class ModelAdmin(NestedModelAdmin):
@@ -85,7 +78,12 @@ class ModelAdmin(NestedModelAdmin):
         return list(set(readonly_fields))
 
 
-if enable_celery:
+if settings.ENABLE_CELERY:
+    from django_celery_beat.admin import CrontabSchedule, IntervalSchedule, PeriodicTask
+    from django_celery_beat.admin import PeriodicTaskAdmin as BasePeriodicTaskAdmin
+    from django_celery_beat.admin import SolarSchedule
+    from django_celery_results.admin import TaskResult, TaskResultAdmin
+
     IntervalSchedule.objects.get_or_create(every=1, period=IntervalSchedule.DAYS)
     CrontabSchedule.objects.get_or_create(
         hour='1',
@@ -109,40 +107,45 @@ if enable_celery:
         longitude=longitude,
     )
 
+    class PeriodicTaskAdmin(BasePeriodicTaskAdmin):
+        """Admin for periodic Celery tasks."""
 
-class PeriodicTaskAdmin(BasePeriodicTaskAdmin):
-    """Admin for periodic Celery tasks."""
+        fieldsets = (
+            (
+                None,
+                {
+                    u'fields': (u'name', u'regtask', u'task', u'enabled', u'description'),
+                    u'classes': (u'extrapretty', u'wide'),
+                },
+            ),
+            (
+                u'Schedule',
+                {
+                    u'fields': (u'interval', u'crontab', u'solar'),
+                    u'classes': (u'extrapretty', u'wide'),
+                },
+            ),
+            (
+                u'Arguments',
+                {
+                    u'fields': (u'args', u'kwargs'),
+                    u'classes': (u'extrapretty', u'wide', u'collapse', u'in'),
+                },
+            ),
+            (
+                u'Execution Options',
+                {
+                    u'fields': (u'expires', u'queue', u'exchange', u'routing_key'),
+                    u'classes': (u'extrapretty', u'wide', u'collapse', u'in'),
+                },
+            ),
+        )
 
-    fieldsets = (
-        (
-            None,
-            {
-                u'fields': (u'name', u'regtask', u'task', u'enabled', u'description'),
-                u'classes': (u'extrapretty', u'wide'),
-            },
-        ),
-        (
-            u'Schedule',
-            {
-                u'fields': (u'interval', u'crontab', u'solar'),
-                u'classes': (u'extrapretty', u'wide'),
-            },
-        ),
-        (
-            u'Arguments',
-            {
-                u'fields': (u'args', u'kwargs'),
-                u'classes': (u'extrapretty', u'wide', u'collapse', u'in'),
-            },
-        ),
-        (
-            u'Execution Options',
-            {
-                u'fields': (u'expires', u'queue', u'exchange', u'routing_key'),
-                u'classes': (u'extrapretty', u'wide', u'collapse', u'in'),
-            },
-        ),
-    )
+    admin_site.register(PeriodicTask, PeriodicTaskAdmin)
+    admin_site.register(SolarSchedule)
+    admin_site.register(IntervalSchedule)
+    admin_site.register(CrontabSchedule)
+    admin_site.register(TaskResult, TaskResultAdmin)
 
 
 class ContentTypeFields(Constant):
@@ -186,10 +189,3 @@ class SiteAdmin(ModelAdmin):
 
 
 admin_site.register(Site, SiteAdmin)
-
-if enable_celery:
-    admin_site.register(PeriodicTask, PeriodicTaskAdmin)
-    admin_site.register(SolarSchedule)
-    admin_site.register(IntervalSchedule)
-    admin_site.register(CrontabSchedule)
-    admin_site.register(TaskResult, TaskResultAdmin)

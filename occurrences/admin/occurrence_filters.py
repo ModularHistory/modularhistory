@@ -2,7 +2,7 @@ from admin.list_filters import AutocompleteFilter
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count, Q
 
-from modularhistory.constants import NO, YES
+from modularhistory.constants.strings import NO, YES
 
 
 class EntityFilter(AutocompleteFilter):

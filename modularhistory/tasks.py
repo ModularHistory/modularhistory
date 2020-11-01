@@ -15,7 +15,6 @@ from glob import glob
 from sys import stderr
 from typing import Any, Dict
 
-from celery import Celery
 from decouple import config
 from django.core import management
 from google.cloud import tasks_v2 as tasks
@@ -97,9 +96,9 @@ def _debug(self) -> None:
     print(f'User: {getuser()}', file=stderr)
 
 
-if settings.IS_GCP:
-    app = None
-else:  # If not running in Google Cloud
+if settings.ENABLE_CELERY:
+    from celery import Celery
+    # If not running in Google Cloud
     # Set the default Django settings module for the 'celery' program.
     app = Celery('modularhistory')
 
@@ -159,3 +158,5 @@ else:  # If not running in Google Cloud
                 file_to_upload = drive.CreateFile({'title': backup_file})
                 file_to_upload.SetContentFile(backup_file)
                 file_to_upload.Upload()
+else:
+    app = None

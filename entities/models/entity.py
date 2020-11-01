@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from entities.serializers import EntitySerializer
-from modularhistory.constants import EMPTY_STRING
+from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
 from modularhistory.models import (
     ModelWithComputations,

@@ -21,7 +21,7 @@ class ListView(generic.list.ListView):
         return Occurrence.objects.filter(verified=True)
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """TODO: write docstring."""
+        """Return the context data used to render the list view."""
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
@@ -42,7 +42,8 @@ class BaseDetailView(generic.detail.DetailView):
         """Return the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         occurrence = self.object
-        return {**context, **occurrence.get_context()}
+        context_data = {**context, **occurrence.get_context()}
+        return context_data
 
 
 class DetailView(BaseDetailView):

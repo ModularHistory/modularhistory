@@ -7,7 +7,8 @@ from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
 from django.core.exceptions import ValidationError
 
-from modularhistory.constants import EMPTY_STRING, MODEL_CLASS_PATHS
+from modularhistory.constants import MODEL_CLASS_PATHS
+from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
 from modularhistory.utils.string import truncate
 
