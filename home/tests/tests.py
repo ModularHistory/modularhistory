@@ -36,8 +36,11 @@ class HomepageTestSuite(BaseCase):
             all_objects = muppy.get_objects()
             n_objects = len(all_objects)
             if n_objects > n_ref_objects:
-                for object_type in all_objects:
-                    print(object_type)
+                for object_type in memory_tracker.diff():
+                    try:
+                        input(object_type)
+                    except UnicodeEncodeError as err:
+                        print(err)
                 memory_tracker.print_diff()
                 self.fail(
                     f'Number of objects increased by {n_objects - n_ref_objects}.'
