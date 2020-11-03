@@ -4,7 +4,6 @@ import django.contrib.auth.models
 import django.contrib.auth.validators
 from django.db import migrations, models
 import django.utils.timezone
-import imagekit.models.fields
 
 
 class Migration(migrations.Migration):
@@ -100,7 +99,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'avatar',
-                    imagekit.models.fields.ProcessedImageField(
+                    models.ImageField(
                         blank=True,
                         null=True,
                         upload_to='account/profile_pictures/%Y/%m',

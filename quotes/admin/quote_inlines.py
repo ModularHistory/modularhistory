@@ -4,7 +4,7 @@ import re
 from typing import Optional
 
 from admin import GenericTabularInline, TabularInline
-from modularhistory.constants import OCCURRENCE_CT_ID
+from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from quotes import models
 
 

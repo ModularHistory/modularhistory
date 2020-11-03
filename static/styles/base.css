@@ -398,7 +398,6 @@ body {
   min-height: 100vh; }
 
 .main-content {
-  position: relative;
   flex: 1; }
   .main-content > .container {
     margin-top: 1.5rem; }

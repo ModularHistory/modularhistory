@@ -3,7 +3,7 @@
 import re
 import uuid
 from typing import Match, TYPE_CHECKING
-
+import serpy
 from django.db.models import BooleanField, UUIDField
 
 from modularhistory.models.model_with_computations import ModelWithComputations
@@ -72,3 +72,16 @@ class SearchableModel(TaggableModel, ModelWithComputations):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
         key = match.group(PK_GROUP).strip()
         return cls.objects.get(pk=key)
+
+
+class SearchableModelSerializer(serpy.Serializer):
+    """Base serializer for searchable models."""
+
+    pk = serpy.Field()
+    key = serpy.Field()
+    tags_html = serpy.Field()
+    model = serpy.MethodField()
+
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of the instance."""
+        return instance.__class__.__name__.lower()

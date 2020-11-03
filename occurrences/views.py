@@ -1,9 +1,8 @@
 from typing import Dict
 
-from django.db.models import QuerySet
 from django.views import generic
 
-from modularhistory.constants import IMAGE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
+from modularhistory.constants.misc import IMAGE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
 from occurrences.models import Occurrence
 from search.forms import SearchForm
 
@@ -14,11 +13,14 @@ class ListView(generic.list.ListView):
     model = Occurrence
     template_name = 'occurrences/index.html'
     context_object_name = 'occurrences'
-    paginate_by = 20
+    paginate_by = 5
 
-    def get_queryset(self) -> QuerySet:
+    def get_queryset(self):
         """Return the queryset."""
-        return Occurrence.objects.filter(verified=True)
+        return [
+            Occurrence.serializer(occurrence).data
+            for occurrence in Occurrence.objects.filter(verified=True).iterator()
+        ]
 
     def get_context_data(self, *args, **kwargs) -> Dict:
         """Return the context data used to render the list view."""
@@ -42,7 +44,8 @@ class BaseDetailView(generic.detail.DetailView):
         """Return the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         occurrence = self.object
-        context_data = {**context, **occurrence.get_context()}
+        context_data = {**context, **occurrence.get_context()}  # TODO
+        context_data['occurrence'] = Occurrence.serializer(occurrence).data
         return context_data
 
 

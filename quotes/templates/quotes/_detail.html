@@ -2,8 +2,12 @@
 {% load get_html_for_view %}
 
 <div class="detail">
+    <a class="edit-object-button float-right" target="_blank"
+       href="{% url 'admin:quotes_quote_change' quote.pk %}">
+        <i class="fa fa-edit"></i>
+    </a>
     <h2 class="text-center card-title">
-        {{ quote.attributee_html }}{% if quote.date %}, {{ quote.date_string }}{% endif %}
+        {{ quote.attributee_html }}{% if quote.date_html %}, {{ quote.date_html }}{% endif %}
     </h2>
     <div class="card-text">
         {% if quote.primary_image %}
@@ -17,7 +21,7 @@
                 <i class="fa fa-edit"></i>
             </a>
         {% endif %}
-        {{ quote.html }}
+        {{ quote.html|safe }}
         {% if request.user.is_superuser %}
             <a class="edit-object-button float-right" style="position: relative; bottom: 2rem; margin-left: 1rem;"
                target="_blank" href="{{ quote|get_admin_url }}">
@@ -26,8 +30,17 @@
         {% endif %}
         {% if quote.tags_html %}
             <ul class="tags">
-                {{ quote.tags_html }}
+                {{ quote.tags_html|safe }}
             </ul>
         {% endif %}
+        <footer class="footer sources-footer">
+            <ol class="citations">
+                {% for citation in quote.serialized_citations %}
+                    <li class="source" id="citation-{{ citation.pk }}">
+                        {{ citation.html|safe }}
+                    </li>
+                {% endfor %}
+            </ol>
+        </footer>
     </div>
 </div>

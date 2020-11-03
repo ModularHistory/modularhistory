@@ -9,7 +9,7 @@ from django.views.generic import ListView
 
 from entities.models import Entity
 from images.models import Image
-from modularhistory.constants import (
+from modularhistory.constants.misc import (
     IMAGE_CT_ID,
     OCCURRENCE_CT_ID,
     QUOTE_CT_ID,

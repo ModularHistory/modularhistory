@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import CASCADE, SET_NULL, ForeignKey
 
 from account.models import User
-from modularhistory.constants import CONTENT_TYPE_IDS
+from modularhistory.constants.misc import CONTENT_TYPE_IDS
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.models import Model
 

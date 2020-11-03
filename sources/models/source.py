@@ -10,11 +10,9 @@ from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
-from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
 from modularhistory.models import (
     DatedModel,
-    ModelWithComputations,
     ModelWithRelatedEntities,
     SearchableModel,
     retrieve_or_compute,
@@ -45,7 +43,7 @@ COMPONENT_DELIMITER = ', '
 SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
 
 CITATION_PHRASE_OPTIONS = (
-    (None, EMPTY_STRING),
+    (None, ''),
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in'),
 )
@@ -184,7 +182,7 @@ class Source(
     @property
     def admin_source_link(self) -> SafeString:
         """Return a file link to display in the admin."""
-        element = EMPTY_STRING
+        element = ''
         if self.source_file:
             element = compose_link(
                 '<i class="fa fa-search"></i>',

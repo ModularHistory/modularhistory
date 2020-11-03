@@ -18,10 +18,11 @@ from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
-from sentry_sdk.integrations.celery import CeleryIntegration
+
+# from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from modularhistory.constants import Environments
+from modularhistory.constants.misc import Environments
 
 ENABLE_ASGI: bool = False
 
@@ -68,8 +69,8 @@ if ENVIRONMENT != Environments.DEV:
         DjangoIntegration(),
     ]
     # If not in Google Cloud, add the Celery integration.
-    if ENABLE_CELERY and not IS_GCP:
-        integrations.append(CeleryIntegration())
+    # if ENABLE_CELERY and not IS_GCP:
+    #     integrations.append(CeleryIntegration())
     sentry_sdk.init(
         dsn='https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835',
         environment=ENVIRONMENT,
@@ -79,10 +80,10 @@ if ENVIRONMENT != Environments.DEV:
         send_default_pii=True,
     )
 
-if ENABLE_CELERY:
-    # Make sure the celery app is imported when Django starts,
-    # so that shared_task will use the app.
-    from .tasks import app as celery_app  # noqa: F401
+# if ENABLE_CELERY:
+#     # Make sure the celery app is imported when Django starts,
+#     # so that shared_task will use the app.
+#     from .tasks import app as celery_app  # noqa: F401
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
@@ -90,9 +91,8 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
-DEBUG = (
-    ENVIRONMENT == Environments.DEV
-)  # DEBUG must be False in production (for security)
+# DEBUG must be False in production (for security)
+DEBUG = ENVIRONMENT == Environments.DEV
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
 SECRET_KEY = config('SECRET_KEY')
@@ -159,12 +159,12 @@ INSTALLED_APPS = [
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
-    'decouple',
+    'django_social_share',  # https://github.com/fcurella/django-social-share
+    'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
-    'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
@@ -223,6 +223,8 @@ MIDDLEWARE = [
     'staticpages.middleware.StaticPageFallbackMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    # memory profiler
+    'modularhistory.middleware.PymplerMiddleware',
 ]
 
 ROOT_URLCONF = 'modularhistory.urls'
@@ -709,10 +711,10 @@ if ENVIRONMENT == Environments.DEV:
             },
         }
 
-# Celery settings
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'amqp://localhost'
+# # Celery settings
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_CACHE_BACKEND = 'django-cache'
+# CELERY_BROKER_URL = 'amqp://localhost'
 
 DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
 

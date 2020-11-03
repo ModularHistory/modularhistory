@@ -10,7 +10,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 
-from modularhistory.constants import OCCURRENCE_CT_ID
+from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.models import (
@@ -80,15 +80,11 @@ class Quote(
         unique_together = ['date', 'bite']
         ordering = ['date']
 
-    class FieldNames(ModelWithSources.FieldNames):
-        text = 'text'
-        attributees = 'attributees'
-
     objects: QuoteManager = QuoteManager()  # type: ignore
     searchable_fields = [
-        FieldNames.text,
+        'text',
         'context',
-        f'{FieldNames.attributees}__name',
+        'attributees__name',
         'date__year',
         'sources__full_string',
         'tags__topic__key',

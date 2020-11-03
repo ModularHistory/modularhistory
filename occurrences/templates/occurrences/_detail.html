@@ -4,35 +4,37 @@
 {% load with_entity_links %}
 
 <div class="detail">
-    {% if show_edit_links %}
-        <a class="edit-object-button float-right" target="_blank" href="{{ occurrence|get_admin_url }}">
-            <i class="fa fa-edit"></i>
-        </a>
-    {% endif %}
+    <a class="edit-object-button float-right" target="_blank"
+       href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}">
+        <i class="fa fa-edit"></i>
+    </a>
     <h2 class="text-center card-title">
-        {% if occurrence.date %}
-            {{ occurrence.date_html }}
+        {% if request.user.is_superuser %}
+            ...
         {% endif %}
+        {{ occurrence.date_html|safe }}
     </h2>
     <div class="card-text">
-        {% for image in occurrence.unpositioned_images %}
-            <div class="img-container" style="max-width: 44%">
-                {{ image|get_html_for_view:"image/card" }}
-            </div>
+        {% for image in occurrence.serialized_images %}
+            {% if image.src_url not in occurrence.description %}
+                <div class="img-container" style="max-width: 44%">
+                    {{ image|get_html_for_view:"image/card" }}
+                </div>
+            {% endif %}
         {% endfor %}
         <div class="lead">
-            {{ occurrence.summary.html|with_entity_links }}
+            {{ occurrence.summary|with_entity_links }}
         </div>
         <div>
-            {{ occurrence.description.html|with_entity_links }}
+            {{ occurrence.description|with_entity_links }}
         </div>
     </div>
     {% if occurrence.postscript %}
-        {{ occurrence.postscript.html }}
+        {{ occurrence.postscript|safe }}
     {% endif %}
     {% if occurrence.tags_html %}
         <ul class="tags">
-            {{ occurrence.tags_html }}
+            {{ occurrence.tags_html|safe }}
         </ul>
     {% endif %}
     <footer class="footer sources-footer">

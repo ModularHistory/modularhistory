@@ -21,26 +21,22 @@
     <div class="card-text">
         <blockquote class="blockquote">
             {% if quote.bite %}
-                {{ quote.bite.html }}
+                {{ quote.bite|safe }}
             {% else %}
-                {{ quote.text.html|truncatechars_html:100 }}
+                {{ quote.text|truncatechars_html:100|safe }}
             {% endif %}
             <footer class="blockquote-footer">
                 {% if quote.attributee_string %}
                     {{ quote.attributee_string }}
-                    {% if not quote.has_multiple_attributees %}
-                        {% with categorization=quote.attributees.first|get_categorization_string:quote.date %}
-                            {% if categorization %}
-                                <span style="opacity: 0.5; margin-left: 0.5rem;">
-                                    ({{ categorization }})
-                                </span>
-                            {% endif %}
-                        {% endwith %}
-                    {% endif %}
-                {% elif quote.citation %}
-                    {{ quote.citation }}
-                {% else %}
-                    Unknown
+{#                    {% if not quote.has_multiple_attributees %}#}
+{#                        {% with categorization=quote.attributees.first|get_categorization_string:quote.date %}#}
+{#                            {% if categorization %}#}
+{#                                <span style="opacity: 0.5; margin-left: 0.5rem;">#}
+{#                                    ({{ categorization }})#}
+{#                                </span>#}
+{#                            {% endif %}#}
+{#                        {% endwith %}#}
+{#                    {% endif %}#}
                 {% endif %}
             </footer>
         </blockquote>

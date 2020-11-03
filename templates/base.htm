@@ -212,7 +212,7 @@
             <footer id="footer" class="page-footer font-small unique-color-dark pt-4">
 
                 <!-- Footer Elements -->
-                <div class="container">
+                <div class="container-fluid">
                     <!-- Call to action -->
                     <ul class="list-unstyled list-inline text-center py-2">
                         {% if settings.ENABLE_PATREON %}
@@ -221,31 +221,28 @@
                             </li>
                         {% endif %}
                     </ul>
-                </div>
-                <!-- Footer Elements -->
-                <div class="row">
-                    <div class="col-md-12 col-lg-12 text-center">
-                        <p class="footer-links mb-1" style="background-color: rgba(0,0,0,0.2);">
-                            <!-- Copyright -->
-                            <span class="text-center py-3 mx-5">
-                                &copy; 2020 ModularHistory, Inc.
-                            </span>
-                            <!-- Copyright -->
-                            <a href="/about">About ModularHistory</a>
-                            <a href="/privacy">Privacy Policy</a>
-                            <a href="/terms">Terms of Use</a>
-                        </p>
-                        <div class="list-social">
-                            <ul class="list-unstyled">
-                                <li><a href="https://twitter.com/TermsFeed" rel="nofollow noopener" target="_blank" aria-label="Twitter"><i class="icon-twitter"></i></a></li>
-                                <li><a href="https://www.facebook.com/termsfeed" rel="nofollow noopener" target="_blank" aria-label="Facebook"><i class="icon-facebook"></i></a></li>
-                                <li><a href="https://www.pinterest.com/termsfeed" rel="nofollow noopener" target="_blank" aria-label="Pinterest"><i class="icon-pinterest"></i></a></li>
-                                <li><a href="https://www.youtube.com/c/termsfeed" rel="nofollow noopener" target="_blank" aria-label="YouTube"><i class="icon-youtube"></i></a></li>
-                            </ul>
+
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12 text-center">
+                            <div class="footer-links mb-1" style="background-color: rgba(0,0,0,0.2);">
+                                <!-- Copyright -->
+                                <span class="text-center py-3 mx-5">
+                                    &copy; 2020 ModularHistory, Inc.
+                                </span>
+                                <!-- Copyright -->
+                                <a href="/about">About ModularHistory</a>
+                                <a href="/privacy">Privacy Policy</a>
+                                <a href="/terms">Terms of Use</a>
+                                <ul class="list-social list-unstyled list-inline mx-5" style="display: inline-block">
+                                    <li style="display: inline-block"><a href="https://twitter.com/modularhistory" rel="nofollow noopener" target="_blank" aria-label="Twitter"><span class="fab fa-twitter"></span></a></li>
+                                    <li style="display: inline-block"><a href="https://www.facebook.com/modularhistory" rel="nofollow noopener" target="_blank" aria-label="Facebook"><span class="fab fa-facebook-f"></span></a></li>
+                                    <li style="display: inline-block"><a href="https://www.pinterest.com/modularhistory" rel="nofollow noopener" target="_blank" aria-label="Pinterest"><span class="fab fa-pinterest"></span></a></li>
+                                    <li style="display: inline-block"><a href="https://www.youtube.com/c/modularhistory" rel="nofollow noopener" target="_blank" aria-label="YouTube"><span class="fab fa-youtube-f"></span></a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </footer>
             <!-- Footer -->
         {% endblock %}

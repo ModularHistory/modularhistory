@@ -3,7 +3,6 @@ from typing import Dict
 from social_core.backends.github import GithubOAuth2
 
 from account.social_auth.auth_data import auth_data_interfaces, AuthBackend
-from account.social_auth.avatar import AuthBackend
 
 
 def get_user_email(backend: AuthBackend, response: Dict, **kwargs):
