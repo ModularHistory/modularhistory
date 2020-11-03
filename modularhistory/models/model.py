@@ -3,18 +3,16 @@
 import re
 from typing import Any, ClassVar, List, Optional, Pattern, Tuple, Type
 
-import inflect
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
-from django.template import loader
 from django.urls import reverse
 from django.utils.html import SafeString, format_html
 from rest_framework.serializers import Serializer
 from typedmodels.models import TypedModel as BaseTypedModel
 
 from modularhistory.models.manager import Manager
-from search.templatetags.highlight import highlight
+from modularhistory.utils.models import get_html_for_view as get_html_for_view_
 
 FieldList = List[str]
 
@@ -118,23 +116,6 @@ class Model(DjangoModel):
         content = content or '<i class="fas fa-info-circle"></i>'
         return format_html(f'<a href="{self.detail_url}" target="_blank">{content}</a>')
 
-    def generate_html_for_view(
-        self,
-        view: str = Views.DETAIL,
-    ) -> str:
-        """Generate HTML for the model instance's detail page."""
-        model_name = f'{self.__class__.__name__}'.lower()
-        app_name = inflect.engine().plural(model_name)
-        template_directory_name = app_name
-        template_name = f'{template_directory_name}/_{view}.html'
-        template = loader.get_template(template_name)
-        context = {
-            model_name: self,
-            'object': self,
-            'show_edit_links': False,
-        }
-        return template.render(context)
-
     def get_html_for_view(
         self,
         view: str = Views.DETAIL,
@@ -154,10 +135,9 @@ class Model(DjangoModel):
         #         logging.info(f'Reading artifact: {artifact_name}')
         #         with open(artifact_path) as artifact:
         #             response = artifact.read()
-        response = self.generate_html_for_view(view=view)
-        if text_to_highlight:
-            response = highlight(response, text_to_highlight=text_to_highlight)
-        return format_html(response)
+        return get_html_for_view_(
+            self, template_name=view, text_to_highlight=text_to_highlight
+        )
 
     def natural_key(self) -> Tuple[Any, ...]:
         """Return a tuple of values comprising the model instance's natural key."""

@@ -1,32 +1,26 @@
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, TYPE_CHECKING, Union
 
 import inflect
-from django.template import Library, loader
+from django.template import loader
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.models import Model
 from search.templatetags.highlight import highlight
 
-register = Library()
+if TYPE_CHECKING:
+    from modularhistory.models import Model
 
 
-@register.filter(is_safe=True)
 def get_html_for_view(
-    model_instance: Union[Dict, Model],
+    model_instance: Union[Dict, 'Model'],
     template_name: str,
     text_to_highlight: Optional[str] = None,
 ) -> SafeString:
     """Return the HTML for the specified view of the model instance."""
-    if '/' in template_name:
-        model_name, template_name = template_name.split('/')
-    elif isinstance(model_instance, Model):
-        model_name = f'{model_instance.__class__.__name__}'.lower()
+    if isinstance(model_instance, dict):
+        model_name = model_instance.get('model')
     else:
-        raise ValueError(
-            f'When rendering HTML for a serialized model instance, `template_name` '
-            f'must include the model name; e.g., "image/card" rather than "card"'
-        )
+        model_name = model_instance.__class__.__name__.lower()
     app_name = inflect.engine().plural(model_name)
     template_directory_name = app_name
     template_name = f'{template_directory_name}/_{template_name}.html'

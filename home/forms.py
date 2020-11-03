@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Submit
+from crispy_forms.layout import Field, Layout, Submit, HTML
 from django import forms
 from django.http import HttpRequest
 
@@ -22,6 +22,7 @@ class SearchForm(forms.Form):
         self.request = request
         self.fields['query'] = forms.CharField(
             required=False,
+            help_text='',
             # widget=Select2Widget(choices=AUTOCOMPLETE_CHOICES),  # TODO
         )
 
@@ -33,10 +34,11 @@ class SearchForm(forms.Form):
         self.helper.form_class = 'text-center'
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
+            HTML('<p>Search modules by topic, entity, or keywords.</p>'),
             Field(
                 'query',
                 css_class='form-control',
                 style='width: 20rem; max-width: 100%;',
             ),
-            Submit('submit', 'Search')
+            Submit('submit', 'Search'),
         )

@@ -1,7 +1,7 @@
 {% extends 'list.html' %}
 
 {% block list %}
-    {% with object_list=occurrences %}
+    {% with model='occurrence' object_list=occurrences %}
         {{ block.super }}
     {% endwith %}
 {% endblock %}

@@ -1,23 +1,23 @@
-from typing import Optional
+from typing import Dict, Optional, Union
 
+import inflect
 from django import template
 from django.urls import reverse
 
 from modularhistory.models import Model
-from typing import Union, Dict
 
 register = template.Library()
 
 
 @register.filter()
-def get_detail_url(instance) -> Optional[str]:
+def get_detail_url(instance: Union[Model, Dict]) -> Optional[str]:
     """Return the URL for the model instance's detail page."""
     if isinstance(instance, Model):
-        model_instance = instance
+        app_label = instance.get_meta().app_label
+        pk = instance.pk
+    elif instance:
+        app_label = inflect.engine().plural(instance.get('model'))
+        pk = instance.get('pk')
     else:
-        model_instance = instance.instance
-    if model_instance:
-        return reverse(
-            f'{model_instance.get_meta().app_label}:detail', args=[model_instance.id]
-        )
-    return None
+        return None
+    return reverse(f'{app_label}:detail', args=[pk])

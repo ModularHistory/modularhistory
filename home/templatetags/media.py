@@ -8,5 +8,5 @@ register = template.Library()
 def media(url: str) -> str:
     if url.startswith(MEDIA_URL):
         return url
-    url = url.lstrip('/media/')
+    url = url.replace('/media/', '')
     return f'{MEDIA_URL}/{url}'

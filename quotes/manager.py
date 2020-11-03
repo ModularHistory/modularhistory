@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from django.db.models import Q
 
-from modularhistory.constants import OCCURRENCE_CT_ID
+from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from modularhistory.models.manager import (
     SearchableModelManager,
     SearchableModelQuerySet,

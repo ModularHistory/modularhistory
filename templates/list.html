@@ -1,5 +1,6 @@
 {% extends 'base.htm' %}
-{% load get_html_for_view %}
+{% load get_card_html %}
+{% load get_detail_html %}
 {% load class_name %}
 {% load is_instance %}
 {% load crispy_forms_tags %}
@@ -50,12 +51,12 @@
                             <div class="two-pane-container">
                                 <div class="results result-cards">
                                     {% for object in object_list %}
-                                        {{ object|get_html_for_view:"card" }}
+                                        {{ object|get_card_html }}
                                     {% endfor %}
                                 </div>
                                 <div class="card view-detail sticky">
                                     {% with object_list|first as object %}
-                                        {{ object|get_html_for_view:"detail" }}
+                                        {{ object|get_detail_html }}
                                     {% endwith %}
                                 </div>
                             </div>
@@ -63,7 +64,7 @@
                             <div class="container results">
                                 {% for object in object_list %}
                                     <div class="result" data-key="{{ object.key }}">
-                                        {{ object|get_html_for_view:"detail" }}
+                                        {{ object|get_detail_html }}
                                     </div>
                                     <hr style="clear: both" />
                                 {% endfor %}

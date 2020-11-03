@@ -12,7 +12,7 @@ from sass_processor.processor import sass_processor
 
 from admin.admin_site import admin_site
 from modularhistory import settings
-from modularhistory.constants import Environments
+from modularhistory.constants.misc import Environments
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.forms import HistoricDateWidget
 from modularhistory.models import Model

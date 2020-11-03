@@ -7,7 +7,7 @@ from django.core.management import call_command
 from django.db import transaction
 from invoke.context import Context
 
-from modularhistory.constants import (
+from modularhistory.constants.misc import (
     APPS_WITH_MIGRATIONS,
     LOCAL,
     MAX_MIGRATION_COUNT,

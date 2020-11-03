@@ -18,10 +18,11 @@ from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
+
 # from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from modularhistory.constants import Environments
+from modularhistory.constants.misc import Environments
 
 ENABLE_ASGI: bool = False
 
@@ -90,9 +91,8 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
-DEBUG = (
-    ENVIRONMENT == Environments.DEV
-)  # DEBUG must be False in production (for security)
+# DEBUG must be False in production (for security)
+DEBUG = ENVIRONMENT == Environments.DEV
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
 SECRET_KEY = config('SECRET_KEY')
@@ -159,7 +159,8 @@ INSTALLED_APPS = [
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
-    'decouple',
+    'django_social_share',  # https://github.com/fcurella/django-social-share
+    'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
@@ -222,6 +223,8 @@ MIDDLEWARE = [
     'staticpages.middleware.StaticPageFallbackMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    # memory profiler
+    'modularhistory.middleware.PymplerMiddleware',
 ]
 
 ROOT_URLCONF = 'modularhistory.urls'

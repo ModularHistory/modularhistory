@@ -1,11 +1,12 @@
 from typing import Optional
 
 from django.db.models import BooleanField
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 
 from modularhistory.fields import HistoricDateTimeField
-from modularhistory.models import Model
+from modularhistory.models.model import Model
+from modularhistory.models.model_with_computations import retrieve_or_compute
 from modularhistory.structures import HistoricDateTime
 from modularhistory.utils.html import soupify
 
@@ -29,10 +30,11 @@ class DatedModel(Model):
     date_string.admin_order_field = 'date'
     date_string = property(date_string)  # type: ignore
 
-    @property
-    def date_html(self) -> Optional[SafeString]:
+    @property  # type: ignore
+    @retrieve_or_compute(caster=format_html)
+    def date_html(self) -> SafeString:
         """Return the HTML representation of the model instance's date."""
-        date = self.get_date()
+        date, date_html = self.get_date(), ''
         if date:
             date_html = f'{date.html}'
             date_html_requires_circa_prefix = (
@@ -51,8 +53,7 @@ class DatedModel(Model):
             )
             if use_ce:
                 date_html = f'{date_html} CE'
-            return format_html(date_html)
-        return None
+        return format_html(date_html)
 
     @property
     def year_html(self) -> Optional[SafeString]:

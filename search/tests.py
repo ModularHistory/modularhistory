@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 
-from modularhistory.constants import ResponseCodes
+from modularhistory.constants.misc import ResponseCodes
 
 EXPECTED_N_SQL_QUERIES = 15
 

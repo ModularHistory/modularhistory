@@ -117,6 +117,9 @@ virtualenv = "^20.1"
 wcwidth = "==0.2.5"
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
+serpy = "^0.3.1"
+objgraph = "^3.5.0"
+django-social-share = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"
@@ -159,6 +162,7 @@ seleniumbase = "^1.50.4"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
+blackfire = "^1.5.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

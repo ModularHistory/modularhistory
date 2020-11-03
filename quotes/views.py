@@ -4,7 +4,7 @@ from typing import Dict
 
 from django.views import generic
 
-from modularhistory.constants import IMAGE_CT_ID, OCCURRENCE_CT_ID, SOURCE_CT_ID
+from modularhistory.constants.misc import IMAGE_CT_ID, OCCURRENCE_CT_ID, SOURCE_CT_ID
 from quotes.models import Quote
 from search.forms import SearchForm
 
@@ -15,11 +15,14 @@ class ListView(generic.list.ListView):
     model = Quote
     template_name = 'quotes/index.html'
     context_object_name = 'quotes'
-    paginate_by = 20
+    paginate_by = 10
 
     def get_queryset(self):
-        """Return the queryset of quotes."""
-        return Quote.objects.filter(verified=True)
+        """Return the queryset."""
+        return [
+            Quote.serializer(quote).data
+            for quote in Quote.objects.filter(verified=True).iterator()
+        ]
 
     def get_context_data(self, *args, **kwargs) -> Dict:
         """Return the context data used to render the view."""

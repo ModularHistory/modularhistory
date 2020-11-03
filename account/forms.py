@@ -8,7 +8,7 @@ from django.urls import reverse
 import logging
 from account.admin import EMAIL_FIELD, PASSWORD_FIELD, USERNAME_FIELD
 from account.models import User
-from modularhistory.constants import SOCIAL_AUTH_URL_NAME
+from modularhistory.constants.misc import SOCIAL_AUTH_URL_NAME
 
 DEFAULT_FIELD_CLASSES = 'form-control mb-4'
 
