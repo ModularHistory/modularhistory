@@ -75,12 +75,14 @@
                     </div>
                 {% endwith %}
             {% else %}
-                <p class="lead">
-                    There are no results for your search. Please try a different search.
-                </p>
-                <div class='row'>
-                    <div class='col-12 col-md-6 mx-auto my-5 py-5'>
-                        {% crispy search_form %}
+                <div class="container">
+                    <p class="lead text-center my-3 py-3">
+                        There are no results for your search. Please try a different search.
+                    </p>
+                    <div class="row">
+                        <div class="col-12 col-md-6 mx-auto my-3 py-3">
+                            {% crispy search_form %}
+                        </div>
                     </div>
                 </div>
             {% endif %}
