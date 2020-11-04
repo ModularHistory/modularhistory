@@ -123,10 +123,11 @@ class Quote(
                 QuoteImage.objects.create(quote=self, image=image)
 
     @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
-    def attributee_html(self) -> Optional[SafeString]:
+    def attributee_html(self) -> SafeString:
         """Return the HTML representing the quote's attributees."""
         logging.info('Computing attributee HTML...')
         attributees = self.ordered_attributees
+        attributee_html = ''
         if attributees:
             n_attributions = len(attributees)
             primary_attributee = attributees[0]
@@ -150,9 +151,7 @@ class Quote(
                     )
                 else:
                     attributee_html = f'{primary_attributee_html} et al.'
-        else:
-            attributee_html = EMPTY_STRING
-        return format_html(attributee_html) if attributee_html else None
+        return format_html(attributee_html)
 
     # TODO: Order by `attributee_string` instead of `attributee`
     attributee_html.admin_order_field = 'attributee'

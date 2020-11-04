@@ -10,7 +10,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
-
+from easy_thumbnails.exceptions import InvalidImageFormatError
 from images.manager import ImageManager
 from images.models.media_model import MediaModel
 from images.serializers import ImageSerializer
@@ -141,12 +141,11 @@ class Image(MediaModel):
                     'detail': True,
                 }
                 return get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
-            except KeyError as error:
+            except (KeyError, OSError, InvalidImageFormatError) as error:
                 # TODO: Send email to admins about the error. Figure out why.
-                logging.error(f'KeyError: {error}')
-            except OSError as error:
-                # TODO: Send email to admins about the error. Figure out why.
-                logging.error(f'OSError: {error}')
+                logging.error(
+                    f'Attempt to retrieve cropped_image_url for image {self.pk} '
+                    f'({self}) resulted in {type(error)}: {error}')
         return None
 
     @property

@@ -93,10 +93,10 @@ def retrieve_or_compute(
                     # previous computation result, we must explicitly check for the
                     # key in the JSON rather than relying on `get`.
                     if property_name in model_instance.computations:
-                        property_value = model_instance.computations[property_name]
-                        if property_value is not None:
-                            if caster and callable(caster):
-                                property_value = caster(property_value)
+                        saved_value = model_instance.computations[property_name]
+                        property_value = '' if saved_value is None else saved_value
+                        if caster and callable(caster):
+                            property_value = caster(property_value)
                     else:
                         property_value = model_property(model_instance, *args, **kwargs)
                         model_instance.computations[property_name] = property_value
