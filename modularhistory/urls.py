@@ -25,6 +25,7 @@ from django.urls import include, path, re_path
 
 from admin.model_admin import admin_site
 from search.views import SearchResultsView
+from django.views.generic import TemplateView
 
 
 def error(request):
@@ -59,6 +60,7 @@ urlpatterns = [
     path('', include('home.urls')),
     path('__debug__', include(debug_toolbar.urls)),
     path('error', error),  # error trigger (for testing purposes)
+    re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
 ]
 
 if settings.DEBUG:

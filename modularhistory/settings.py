@@ -173,6 +173,7 @@ INSTALLED_APPS = [
     'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
+    'webpack_loader',  #
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',
     'entities.apps.EntitiesConfig',
@@ -715,6 +716,19 @@ if ENVIRONMENT == Environments.DEV:
 # CELERY_RESULT_BACKEND = 'django-db'
 # CELERY_CACHE_BACKEND = 'django-cache'
 # CELERY_BROKER_URL = 'amqp://localhost'
+
+VUE_FRONTEND_DIR = os.path.join(BASE_DIR, 'client')
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'vue/',  # must end with slash
+        'STATS_FILE': os.path.join(VUE_FRONTEND_DIR, 'webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': [r'.+\.hot-update.js', r'.+\.map']
+    }
+}
 
 DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
 
