@@ -824,6 +824,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "django-webpack-loader"
+version = "0.7.0"
+description = "Transparently use webpack with django"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "django-webtest"
 version = "1.9.7"
 description = "Instant integration of Ian Bicking's WebTest (http://docs.pylonsproject.org/projects/webtest/) with django's testing framework."
@@ -3275,7 +3283,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "1c8990ab5ecc85a649cc36afe55acd31b5851ef1c708f0eb8a3361e58ace9e14"
+content-hash = "fefd16986c27527da8bdf0cee9d4370f6cd73486a6cff6f71c4909ba3e041d80"
 
 [metadata.files]
 aenum = [
@@ -3684,6 +3692,10 @@ django-tinymce = [
 django-typed-models = [
     {file = "django-typed-models-0.10.0.tar.gz", hash = "sha256:0682c87e5887124d4990f851d73e172103828e8b48ad2ce53ae039b1498cedb6"},
     {file = "django_typed_models-0.10.0-py2.py3-none-any.whl", hash = "sha256:ddf44fc1c1ffbef6379444317072bdfb3e1ab39dbb60835ea33dae536efd8e34"},
+]
+django-webpack-loader = [
+    {file = "django-webpack-loader-0.7.0.tar.gz", hash = "sha256:7a3c88201aa54481f9399465615cbe7b9aece8081496a6d0287b7cb8e232f447"},
+    {file = "django_webpack_loader-0.7.0-py2.py3-none-any.whl", hash = "sha256:d28a276ed3d89e97a313b74967e373693f8b86afe629f4c91eea91c5b4f2ec20"},
 ]
 django-webtest = [
     {file = "django-webtest-1.9.7.tar.gz", hash = "sha256:c5a1e486a3d8d3623aa615b6db2f27de848aa7079303a84721e9a685f839796c"},

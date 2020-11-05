@@ -73,3 +73,18 @@ wheels/
 *.egg
 *.manifest
 *.spec
+
+# Node JS
+node_modules
+/dist
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

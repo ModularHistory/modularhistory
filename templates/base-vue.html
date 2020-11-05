@@ -1,0 +1,12 @@
+{% extends "base.htm" %}
+
+{% block scripts %}
+    <script type="text/javascript" src="http://127.0.0.1:8080/js/chunk-vendors.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8080/js/app.js"></script>
+{% endblock %}
+
+{% block styles %}
+    <link href="http://127.0.0.1:8080/js/about.js" rel="prefetch">
+    <link href="http://127.0.0.1:8080/js/app.js" rel="preload" as="script">
+    <link href="http://127.0.0.1:8080/js/chunk-vendors.js" rel="preload" as="script">
+{% endblock %}
