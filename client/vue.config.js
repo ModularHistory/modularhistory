@@ -16,9 +16,7 @@ module.exports = {
     filenameHashing: false,
     productionSourceMap: false,
     publicPath: process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080/',
-    outputDir: '../django_vue_mpa/static/vue/',
-    // outputDir: '../server/static/dist',
-    // indexPath: '../../templates/base-vue.html', // relative to outputDir!
+    outputDir: '../modularhistory/static/vue/',
 
     chainWebpack: config => {
         config.optimization

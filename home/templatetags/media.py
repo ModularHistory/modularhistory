@@ -1,5 +1,6 @@
 from django import template
 from modularhistory.settings import MEDIA_URL
+from urllib.parse import urljoin
 
 register = template.Library()
 
@@ -8,5 +9,4 @@ register = template.Library()
 def media(url: str) -> str:
     if url.startswith(MEDIA_URL):
         return url
-    url = url.replace('/media/', '')
-    return f'{MEDIA_URL}/{url}'
+    return urljoin(MEDIA_URL, url).replace('/media/media/', '/media/')
