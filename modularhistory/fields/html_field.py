@@ -6,7 +6,7 @@ from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
 from django.core.exceptions import ValidationError
-
+import inflect
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
@@ -37,6 +37,7 @@ def process(html: str) -> str:
             model_cls: Type[Model] = import_string(model_cls_str)
             # TODO
             object_match = model_cls.admin_placeholder_regex.match(placeholder)
+            logging.info(f'Processing {model_cls_str} placeholder: {placeholder}...')
             object_html = model_cls.get_object_html(
                 object_match, use_preretrieved_html=True
             )

@@ -201,7 +201,7 @@ class Image(MediaModel):
             logging.error(f'{key} --> {image.pk}: {error}')
             # image_placeholder = image_placeholder.replace(key, str(image.pk))  # TODO
         image_html = render_to_string(
-            'images/_card.html', context={IMAGE_KEY: image, 'obj': image}
+            'images/_card.html', context={IMAGE_KEY: image}
         )
         if image.width < FLOAT_UPPER_WIDTH_LIMIT:
             image_html = f'<div class="float-right pull-right">{image_html}</div>'

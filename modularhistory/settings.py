@@ -628,9 +628,9 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
 
 MENU_ITEMS = [
-    ['Occurrences', 'occurrences'],
-    ['People', 'entities'],
-    ['Quotes', 'quotes'],
+    # ['Occurrences', 'occurrences'],
+    # ['People', 'entities'],
+    # ['Quotes', 'quotes'],
     ['About', 'about'],
 ]
 
