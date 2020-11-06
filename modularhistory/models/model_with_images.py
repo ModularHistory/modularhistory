@@ -1,13 +1,14 @@
 """Classes for models with related entities."""
 
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import Dict, List, Optional, Sequence, TYPE_CHECKING
 
 from images.serializers import ImageSerializer
 from modularhistory.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
-    from django.db.models.manager import RelatedManager
-    from images.models import Image
+    from django.db.models.manager import Manager, RelatedManager
+    from images.models.image import Image
+    from django.db.models import ManyToManyField
 
 
 class ModelWithImages(Model):
@@ -18,8 +19,8 @@ class ModelWithImages(Model):
     it must be defined as an abstract model class.
     """
 
-    images: 'RelatedManager'
-    image_relations: 'RelatedManager'
+    images: 'ManyToManyField[Sequence[Image], RelatedManager[Image]]'
+    image_relations: 'Manager'
 
     class Meta:
         abstract = True

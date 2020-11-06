@@ -50,7 +50,7 @@ class ModelWithSources(Model):
     @retrieve_or_compute(attribute_name='serialized_citations')
     def serialized_citations(self) -> List[Dict]:
         """Return a list of dictionaries representing the instance's citations."""
-        return [CitationSerializer(citation).data for citation in self.citations.all()]
+        return [citation.serialize() for citation in self.citations.all()]
 
     @property
     def citation_html(self) -> SafeString:
@@ -59,6 +59,6 @@ class ModelWithSources(Model):
             citation_html = '; '.join(
                 citation['html'] for citation in self.serialized_citations
             )
-        except (ObjectDoesNotExist, AttributeError, ValueError):
+        except (ObjectDoesNotExist, AttributeError, ValueError, TypeError):
             citation_html = EMPTY_STRING
         return format_html(citation_html)

@@ -1,8 +1,20 @@
 """Base model classes for ModularHistory."""
 
-import re
-from typing import Any, ClassVar, Dict, List, Match, Optional, Pattern, Tuple, Type, Union
 import logging
+import re
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Match,
+    Optional,
+    Pattern,
+    Tuple,
+    Type,
+    Union,
+)
+
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
@@ -51,7 +63,7 @@ class Model(DjangoModel):
     searchable_fields: ClassVar[Optional[FieldList]] = None
     serializer: Type[Serializer]
 
-    admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
+    admin_placeholder_regex: Pattern = re.compile(ADMIN_PLACEHOLDER_REGEX)
 
     class Meta:
         abstract = True

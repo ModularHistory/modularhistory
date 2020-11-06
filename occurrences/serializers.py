@@ -21,13 +21,13 @@ class OccurrenceSerializer(SearchableModelSerializer):
     tags_html = serpy.Field()
 
     def get_summary(self, instance):
+        """Return the user-facing summary HTML."""
         return instance.summary.html
 
     def get_description(self, instance):
-        html = instance.description.html
-        if '<<' in html:
-            raise Exception('wth')
+        """Return the user-facing description HTML."""
         return instance.description.html
 
     def get_postscript(self, instance):
+        """Return the user-facing postscript HTML."""
         return instance.postscript.html if instance.postscript else ''

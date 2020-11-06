@@ -2,11 +2,11 @@ import logging
 import re
 from typing import Any, Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
 
+from django.core.exceptions import ValidationError
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
-from django.core.exceptions import ValidationError
-import inflect
+
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML

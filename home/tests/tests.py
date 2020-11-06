@@ -1,6 +1,3 @@
-# import pytest
-# from hypothesis import example, given
-# from hypothesis.strategies import text
 import linecache
 import tracemalloc
 
@@ -13,9 +10,6 @@ from seleniumbase import BaseCase
 
 from modularhistory.constants.misc import Environments
 from modularhistory.settings import ENVIRONMENT
-
-# probe.initialize()
-# tracemalloc.start(25)
 
 HOMEPAGE_URL = {
     Environments.DEV: 'http://127.0.0.1:8000',

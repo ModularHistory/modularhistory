@@ -1,4 +1,4 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField
@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from images.models import Image
-from modularhistory.fields import HTMLField, HistoricDateTimeField
+from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.models import (
     DatedModel,
     ModelWithImages,
@@ -22,7 +22,7 @@ from occurrences.serializers import OccurrenceSerializer
 from quotes.models import quote_sorter_key
 
 if TYPE_CHECKING:
-    from django.db.models.manager import RelatedManager
+    from django.db.models.manager import Manager
 
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
@@ -58,7 +58,7 @@ class Occurrence(
         related_name='occurrences',
         blank=True,
     )
-    image_relations: 'RelatedManager'
+    image_relations: 'Manager'
     involved_entities = ManyToManyField(
         'entities.Entity',
         through='occurrences.OccurrenceEntityInvolvement',
@@ -114,18 +114,6 @@ class Occurrence(
             raise ValidationError('Occurrence needs a date.')
 
     @property
-    def description_html(self) -> str:
-        return self.description.html if self.description else ''
-
-    @property
-    def postscript_html(self) -> str:
-        return self.postscript.html if self.postscript else ''
-
-    @property
-    def summary_html(self) -> str:
-        return self.summary.html if self.summary else ''
-
-    @property
     def truncated_description(self) -> Optional[SafeString]:
         """Return the occurrence's description, truncated."""
         if not self.description:
@@ -141,23 +129,6 @@ class Occurrence(
     def ordered_images(self):
         """Careful!  These are occurrence-images, not images."""
         return self.image_relations.all().select_related('image')
-
-    # @property
-    # def unpositioned_images(self) -> Iterable[Union[Image, Dict]]:
-    #     """Return the occurrence's images that are not manually positioned in HTML."""
-    #     # 'unpositioned_images' is a little misleading; these are positioned
-    #     # by their `position` attribute rather than manually positioned.
-    #     unpositioned_images = [
-    #         image
-    #         for image in self.serialized_images
-    #         if f'image: {image.get("pk")}' not in self.description.raw_value
-    #     ]
-    #     if unpositioned_images:
-    #         return unpositioned_images
-    #     # TODO: optimize
-    #     # elif self.entity_images:
-    #     #     unpositioned_images = self.entity_images
-    #     return unpositioned_images
 
     @property
     def entity_images(self) -> Optional[List[Image]]:
@@ -175,9 +146,12 @@ class Occurrence(
 
     def get_context(self):
         """TODO: add docstring."""
-        quotes = (
-            [quote_relation.quote for quote_relation in self.quote_relations.all().select_related('quote').iterator()]
-        )
+        quotes = [
+            quote_relation.quote
+            for quote_relation in self.quote_relations.all()
+            .select_related('quote')
+            .iterator()
+        ]
         return {
             'occurrence': self,
             'quotes': sorted(quotes, key=quote_sorter_key),

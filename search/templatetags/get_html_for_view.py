@@ -24,8 +24,8 @@ def get_html_for_view(
         model_name = f'{model_instance.__class__.__name__}'.lower()
     else:
         raise ValueError(
-            f'When rendering HTML for a serialized model instance, `template_name` '
-            f'must include the model name; e.g., "image/card" rather than "card"'
+            'When rendering HTML for a serialized model instance, `template_name` '
+            'must include the model name; e.g., "image/card" rather than "card"'
         )
     app_name = inflect.engine().plural(model_name)
     template_directory_name = app_name

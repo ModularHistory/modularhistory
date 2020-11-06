@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Tuple, Type
 from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
 from django.urls import path
-import logging
+
 from admin.model_admin import ModelAdmin
 from topics.views import TagSearchView
 
