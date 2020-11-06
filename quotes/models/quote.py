@@ -146,7 +146,7 @@ class Quote(
                     )
                 elif n_attributions == 3:
                     attributee_html = (
-                        f'{primary_attributee_html}, {secondary_attributee_html}, and'
+                        f'{primary_attributee_html}, {secondary_attributee_html}, and '
                         f'{attributees[2].get_detail_link(attributees[2].name)}'
                     )
                 else:
