@@ -447,11 +447,12 @@ MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
 # Static files (CSS, JavaScript, images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'static')
+SHARED_STATICFILES_DIR = os.path.join(BASE_DIR, 'modularhistory/static')
+STATICFILES_DIRS = (SHARED_STATICFILES_DIR,)
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/3.1/topics/files/

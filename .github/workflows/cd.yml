@@ -97,7 +97,7 @@ jobs:
       if: ${{ success() }}
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      run: python manage.py collectstatic
+      run: python manage.py collectstatic --noinput
     # Deploy to Google Cloud
     - name: Deploy to Google Cloud
       if: ${{ success() }}
