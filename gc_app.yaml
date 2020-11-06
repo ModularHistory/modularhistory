@@ -21,7 +21,7 @@ automatic_scaling:
 handlers:
   # Configure Google App Engine to serve the files in the app's static directory.
   - url: /static
-    static_dir: staticfiles/
+    static_dir: static/
   # Route all other requests to the main app. This is required when static routes are defined
   # but can be omitted (along with the entire handlers section) if no static files are defined.
   - url: /.*

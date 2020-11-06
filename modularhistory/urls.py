@@ -36,7 +36,7 @@ def error(request):
 
 urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
-    path('nested_admin/', include('nested_admin.urls')),
+    path('_nested_admin/', include('nested_admin.urls')),
     path('chat/', include('chat.urls')),
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
