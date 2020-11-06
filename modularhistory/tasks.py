@@ -11,18 +11,11 @@ import json
 import os
 import time
 from getpass import getuser
-from glob import glob
 from sys import stderr
 from typing import Any, Dict
 
-from decouple import config
-from django.core import management
 from google.cloud import tasks_v2 as tasks
 from google.protobuf.timestamp_pb2 import Timestamp
-from paramiko import SSHClient
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-from scp import SCPClient
 
 from modularhistory import settings
 

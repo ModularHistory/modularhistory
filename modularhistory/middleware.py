@@ -10,6 +10,10 @@ from modularhistory import settings
 class PymplerMiddleware:
     """Run Pympler (memory profiler)."""
 
+    memory_tracker: tracker.SummaryTracker
+    class_tracker: classtracker.ClassTracker
+    object_count: int
+
     def __init__(self, get_response):
         """Construct and configure the middleware, one time."""
         if True or not settings.DEBUG:
@@ -21,6 +25,7 @@ class PymplerMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        """Run the middleware."""
         # Code to be executed for each request before
         # the view (and later middleware) are called.
 

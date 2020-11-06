@@ -8,9 +8,10 @@ from django.db.models import JSONField
 from django.template.loader import render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
-from easy_thumbnails.exceptions import InvalidImageFormatError
+
 from images.manager import ImageManager
 from images.models.media_model import MediaModel
 from images.serializers import ImageSerializer
@@ -145,7 +146,8 @@ class Image(MediaModel):
                 # TODO: Send email to admins about the error. Figure out why.
                 logging.error(
                     f'Attempt to retrieve cropped_image_url for image {self.pk} '
-                    f'({self}) resulted in {type(error)}: {error}')
+                    f'({self}) resulted in {type(error)}: {error}'
+                )
         return None
 
     @property
@@ -192,6 +194,7 @@ class Image(MediaModel):
             preretrieved_html = match.group(4)
             if preretrieved_html:
                 return preretrieved_html.strip()
+        image: 'Image'
         try:
             image = cls.get_object_from_placeholder(match)
         except ValueError as error:  # legacy key
@@ -200,9 +203,7 @@ class Image(MediaModel):
             image = cls.objects.get(key=key)
             logging.error(f'{key} --> {image.pk}: {error}')
             # image_placeholder = image_placeholder.replace(key, str(image.pk))  # TODO
-        image_html = render_to_string(
-            'images/_card.html', context={IMAGE_KEY: image}
-        )
+        image_html = render_to_string('images/_card.html', context={IMAGE_KEY: image})
         if image.width < FLOAT_UPPER_WIDTH_LIMIT:
             image_html = f'<div class="float-right pull-right">{image_html}</div>'
         if image.width < CENTER_UPPER_WIDTH_LIMIT:

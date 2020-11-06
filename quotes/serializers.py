@@ -22,4 +22,5 @@ class QuoteSerializer(SearchableModelSerializer):
     serialized_citations = serpy.Field()
 
     def get_bite(self, instance: 'Quote'):
+        """Return the user-facing bite HTML."""
         return instance.bite.html

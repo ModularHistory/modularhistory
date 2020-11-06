@@ -12,11 +12,11 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
-import errno
 import os
 from typing import Any, Callable, TypeVar
-from pympler import tracker
+
 import django
+from pympler import tracker
 
 from modularhistory import settings
 from modularhistory.constants.strings import NEGATIVE, SPACE
@@ -150,29 +150,6 @@ def generate_artifacts(context):
     ).generate(text)
     word_cloud.to_file(os.path.join(settings.BASE_DIR, 'static', 'topic_cloud.png'))
     print('Done.')
-
-    print('Building detail artifacts...')
-    from occurrences.models import Occurrence
-    from quotes.models import Quote
-
-    models_with_artifacts = (Occurrence, Quote)
-    for model_cls in models_with_artifacts:
-        app_name = model_cls.get_meta().app_label.lower()
-        for model_instance in model_cls.objects.all().iterator():
-            detail_html = model_instance.generate_html_for_view()
-            artifact_name = f'{model_instance.pk}.html'
-            artifact_dir = os.path.join(
-                settings.BASE_DIR, app_name, 'artifacts/details'
-            )
-            artifact_path = os.path.join(artifact_dir, artifact_name)
-            if not os.path.exists(artifact_dir):
-                try:
-                    os.makedirs(artifact_dir)
-                except OSError as error:  # Guard against race condition
-                    if error.errno != errno.EEXIST:
-                        raise
-            with open(artifact_path, mode='w') as artifact:
-                artifact.write(detail_html)
 
 
 @task

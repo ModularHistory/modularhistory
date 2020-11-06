@@ -1,8 +1,7 @@
 """Base classes for models that appear in ModularHistory search results."""
 
-import re
 import uuid
-from typing import Dict, Match, TYPE_CHECKING, Union
+from typing import Match, TYPE_CHECKING
 
 import serpy
 from django.db.models import BooleanField, UUIDField

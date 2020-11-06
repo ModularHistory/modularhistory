@@ -33,14 +33,6 @@ class User(AbstractUser):
         blank=True,
         upload_to=upload_to('account/avatars'),
     )
-    # avatar = ProcessedImageField(
-    #     null=True,
-    #     blank=True,
-    #     upload_to=upload_to('account/avatars'),
-    #     processors=[ResizeToFill(AVATAR_WIDTH, AVATAR_HEIGHT)],
-    #     format='JPEG',
-    #     options={'quality': AVATAR_QUALITY},
-    # )
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, auto_now=True)
     locked = models.BooleanField('Lock the account', default=False)
