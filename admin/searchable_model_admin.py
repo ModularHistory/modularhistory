@@ -31,9 +31,6 @@ class SearchableModelAdmin(ModelAdmin):
                 suppress_unverified=False,
                 suppress_hidden=False,
             )
-        logging.info(
-            f'Returning {len(queryset)} search results with use_distinct={use_distinct}'
-        )
         return queryset, use_distinct
 
     def get_urls(self):

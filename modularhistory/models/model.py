@@ -1,8 +1,8 @@
 """Base model classes for ModularHistory."""
 
 import re
-from typing import Any, ClassVar, List, Optional, Pattern, Tuple, Type
-
+from typing import Any, ClassVar, Dict, List, Match, Optional, Pattern, Tuple, Type, Union
+import logging
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
@@ -22,6 +22,17 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 
 # TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
 
+# group 1: model class name
+# group 2: model instance pk
+# group 3: ignore
+# group 4: model instance HTML
+# group 5: closing brackets
+ADMIN_PLACEHOLDER_REGEX = (
+    r'<<\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?>>)'
+)
+MODEL_NAME_GROUP = 1
+PK_GROUP = 2
+
 
 class Views(Constant):
     """Labels of views for which model instances can generate HTML."""
@@ -40,7 +51,7 @@ class Model(DjangoModel):
     searchable_fields: ClassVar[Optional[FieldList]] = None
     serializer: Type[Serializer]
 
-    admin_placeholder_regex: Pattern
+    admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
 
     class Meta:
         abstract = True
@@ -158,9 +169,17 @@ class Model(DjangoModel):
         """
         return html
 
+    def serialize(self) -> Dict:
+        """Return the serialized model instance (dictionary)."""
+        serialized_instance = self.serializer(self).data
+        logging.info(f'Serialized instance: {serialized_instance}')
+        return serialized_instance
+
     @classmethod
     def get_object_html(
-        cls, match: re.Match, use_preretrieved_html: bool = False
+        cls,
+        match: re.Match,
+        use_preretrieved_html: bool = False,
     ) -> str:
         """Return a model instance's HTML based on a placeholder in the admin."""
         if not cls.admin_placeholder_regex.match(match.group(0)):
@@ -171,7 +190,26 @@ class Model(DjangoModel):
             preretrieved_html = match.group(3)
             if preretrieved_html:
                 return preretrieved_html.strip()
+            logging.info(
+                f'Could not use preretrieved HTML for {match.group(MODEL_NAME_GROUP)} '
+                f'({match.group(PK_GROUP)}); querying db instead.'
+            )
 
-        key = match.group(1).strip()
+        key = match.group(PK_GROUP).strip()
         model_instance = cls.objects.get(pk=key)
-        return model_instance.html
+        object_html = model_instance.html
+        logging.info(f'Retrieved object HTML: {object_html}')
+        return object_html
+
+    @classmethod
+    def get_object_from_placeholder(
+        cls, match: Match, serialize: bool = False
+    ) -> Union['Model', Dict]:
+        """Given a regex match of a model instance placeholder, return the instance."""
+        if not cls.admin_placeholder_regex.match(match.group(0)):
+            raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
+        key = match.group(PK_GROUP).strip()
+        model_instance: 'Model' = cls.objects.get(pk=key)
+        if serialize:
+            return model_instance.serialize()
+        return model_instance

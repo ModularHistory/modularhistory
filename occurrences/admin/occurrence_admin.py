@@ -1,6 +1,9 @@
 """Admin classes for occurrences."""
 
 
+from django.db.models import QuerySet
+from django.http import HttpRequest
+
 from admin import ModelAdmin, SearchableModelAdmin, admin_site
 from modularhistory.models.taggable_model import TopicFilter
 from occurrences import models
@@ -37,7 +40,6 @@ class OccurrenceAdmin(SearchableModelAdmin):
         'pk',
         'summary',
         'detail_link',
-        'truncated_description',
         'date_string',
     ]
     list_filter = [
@@ -52,6 +54,9 @@ class OccurrenceAdmin(SearchableModelAdmin):
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields
     search_fields = models.Occurrence.searchable_fields
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
+        return super().get_queryset(request).prefetch_related('images')
 
 
 class OccurrenceChainAdmin(ModelAdmin):

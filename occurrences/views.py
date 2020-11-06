@@ -18,7 +18,7 @@ class ListView(generic.list.ListView):
     def get_queryset(self):
         """Return the queryset."""
         return [
-            Occurrence.serializer(occurrence).data
+            occurrence.serialize()
             for occurrence in Occurrence.objects.filter(verified=True).iterator()
         ]
 
@@ -45,7 +45,7 @@ class BaseDetailView(generic.detail.DetailView):
         context = super().get_context_data(*args, **kwargs)
         occurrence = self.object
         context_data = {**context, **occurrence.get_context()}  # TODO
-        context_data['occurrence'] = Occurrence.serializer(occurrence).data
+        context_data['occurrence'] = occurrence.serialize()
         return context_data
 
 

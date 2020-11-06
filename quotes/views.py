@@ -20,7 +20,7 @@ class ListView(generic.list.ListView):
     def get_queryset(self):
         """Return the queryset."""
         return [
-            Quote.serializer(quote).data
+            quote.serialize()
             for quote in Quote.objects.filter(verified=True).iterator()
         ]
 
