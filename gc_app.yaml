@@ -24,8 +24,9 @@ handlers:
   - url: /static
     static_dir: static/
   # Serve robots.txt
-  - url: /robots.txt
-    static_files: templates/robots.txt
+  - url: /robots\.txt$
+    static_files: templates/robots\.txt
+    upload: templates/robots\.txt$
   # Route all other requests to the main app
   - url: /.*
     secure: always
