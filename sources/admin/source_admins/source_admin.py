@@ -2,10 +2,9 @@ import logging
 from typing import Dict, Optional
 
 from django.forms import ModelForm
-from django.urls import path
 
-from admin import SearchableModelAdmin, TabularInline, admin_site
-from entities.views import EntitySearchView
+from admin import TabularInline, admin_site
+from admin.searchable_model_admin import SearchableModelAdmin
 from sources import models
 from sources.admin.filters import (
     AttributeeFilter,
@@ -122,18 +121,6 @@ class SourceAdmin(SearchableModelAdmin):
                 fields.remove(field)
                 fields.insert(0, field)
         return fields
-
-    def get_urls(self):
-        """TODO: add docstring."""
-        urls = super().get_urls()
-        additional_urls = [
-            path(
-                'entity_search/',
-                self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
-                name='entity_search',
-            ),
-        ]
-        return additional_urls + urls
 
 
 class SpeechForm(SourceForm):

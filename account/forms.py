@@ -118,13 +118,11 @@ class RegistrationForm(UserCreationForm):
         self.helper.label_class = 'hidden'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Register account</p>'),
-            HTML(
-                '<div class="form-row mb-4">' '<div class="col">' '<!-- First name -->'
-            ),
+            HTML('<div class="form-row mb-4"><div class="col">'),
             Field('first_name', placeholder='First name'),
-            HTML('</div>' '<div class="col">' '<!-- Last name -->'),
+            HTML('</div><div class="col">'),
             Field('last_name', placeholder='Last name'),
-            HTML('</div>' '</div>'),
+            HTML('</div></div>'),
             Field(
                 EMAIL_FIELD,
                 css_class=DEFAULT_FIELD_CLASSES,
@@ -221,12 +219,10 @@ class RegistrationForm(UserCreationForm):
 class PictureForm(forms.Form):
     """Form for submitting or updating a profile picture."""
 
-    form_id = 'pictureform'
+    form_id = 'picture-form'
     action = '/account/profile.picture/'
     method = 'POST'
     submit = 'Upload'
-    classes = ['formlib-form form-horizontal']
-    field_classes = ['']
     is_ajax = True
 
     picture = forms.ImageField(label='Profile picture', required=False)

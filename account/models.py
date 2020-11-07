@@ -44,7 +44,7 @@ class User(AbstractUser):
     objects: UserManager = UserManager()
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return a string representation of the user."""
         return self.get_full_name()
 
     @property

@@ -7,4 +7,3 @@ from .inlines import (
     TabularInline,
 )
 from .model_admin import ModelAdmin, admin_site
-from .searchable_model_admin import SearchableModelAdmin

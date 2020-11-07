@@ -45,7 +45,7 @@ class EntityAdmin(ModelAdmin):
 
 
 class PersonAdmin(EntityAdmin):
-    """TODO: add docstring."""
+    """Admin for persons."""
 
     model = models.Person
     exclude = ['parent_organization']
@@ -54,7 +54,7 @@ class PersonAdmin(EntityAdmin):
 
 
 class GroupAdmin(EntityAdmin):
-    """TODO: add docstring."""
+    """Admin for groups."""
 
     model = models.Group
     exclude = ['parent_organization']

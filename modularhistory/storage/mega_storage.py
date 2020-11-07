@@ -120,7 +120,7 @@ mega_client = MegaClient().login(settings.MEGA_USERNAME, settings.MEGA_PASSWORD)
 
 
 class MegaStorage(Storage):
-    """TODO: add docstring."""
+    """Storage class for Mega.nz cloud storage."""
 
     def delete(self, name: str):
         """

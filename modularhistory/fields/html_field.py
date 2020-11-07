@@ -37,7 +37,6 @@ def process(html: str) -> str:
             model_cls: Type[Model] = import_string(model_cls_str)
             # TODO
             object_match = model_cls.admin_placeholder_regex.match(placeholder)
-            logging.info(f'Processing {model_cls_str} placeholder: {placeholder}...')
             object_html = model_cls.get_object_html(
                 object_match, use_preretrieved_html=True
             )
@@ -94,21 +93,30 @@ class HTMLField(MceHTMLField):
             raw_html = model_instance.preprocess_html(raw_html)
 
         # Update obj placeholders.
-        # This (1) improves readability when editing and (2) reduces time to process search results.
-        for content_type in self.processable_content_types:
-            model_cls_str = MODEL_CLASS_PATHS.get(content_type)
-            if model_cls_str:
-                model_cls = import_string(model_cls_str)
-                for match in model_cls.admin_placeholder_regex.finditer(raw_html):
-                    placeholder = match.group(0)
-                    updated_placeholder = model_cls.get_updated_placeholder(match)
-                    raw_html = raw_html.replace(placeholder, updated_placeholder)
+        raw_html = self.update_placeholders(raw_html)
 
         # Wrap HTML content in a <p> tag if necessary
         if not raw_html.startswith('<') and raw_html.endswith('>'):
             raw_html = f'<p>{raw_html}</p>'
 
         html.raw_value = raw_html
+        return html
+
+    def update_placeholders(self, html) -> str:
+        """
+        Modify object placeholders to include up-to-date HTML representations.
+
+        Including HTML in the placeholders (1) improves readability when editing
+        and (2) reduces time to process search results.
+        """
+        for content_type in self.processable_content_types:
+            model_cls_str = MODEL_CLASS_PATHS.get(content_type)
+            if model_cls_str:
+                model_cls = import_string(model_cls_str)
+                for match in model_cls.admin_placeholder_regex.finditer(html):
+                    placeholder = match.group(0)
+                    updated_placeholder = model_cls.get_updated_placeholder(match)
+                    html = html.replace(placeholder, updated_placeholder)
         return html
 
     def deconstruct(self):

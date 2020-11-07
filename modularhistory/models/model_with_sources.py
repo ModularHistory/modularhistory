@@ -1,6 +1,6 @@
 """Classes for models with relations to sources."""
 
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import Dict, List, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,12 +9,10 @@ from django.utils.safestring import SafeString
 
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.models import Model, retrieve_or_compute
-from sources.serializers import CitationSerializer
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
-
-    from sources.models import Citation
+    from sources.models import Citation, Source
 
 
 class ModelWithSources(Model):
@@ -26,7 +24,7 @@ class ModelWithSources(Model):
     """
 
     citations = GenericRelation('sources.Citation')
-    sources: 'RelatedManager'
+    sources: 'RelatedManager[Source]'
 
     class Meta:
         abstract = True

@@ -4,7 +4,7 @@ from places.models import Place
 
 
 class IndexView(generic.list.ListView):
-    """TODO: add docstring."""
+    """List view for places."""
 
     model = Place
     template_name = 'places/index.html'
@@ -16,7 +16,7 @@ class IndexView(generic.list.ListView):
 
 
 class DetailView(generic.detail.DetailView):
-    """TODO: add docstring."""
+    """Detail view for places."""
 
     model = Place
     template_name = 'places/detail.html'
@@ -24,7 +24,7 @@ class DetailView(generic.detail.DetailView):
 
 
 class DetailPartView(generic.detail.DetailView):
-    """TODO: add docstring."""
+    """Partial detail view for places."""
 
     model = Place
     template_name = 'places/_detail.html'

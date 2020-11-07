@@ -7,7 +7,6 @@ from django.db.models import QuerySet
 
 from modularhistory.models import Model
 from modularhistory.models.model_with_computations import retrieve_or_compute
-from entities.serializers import EntitySerializer
 
 if TYPE_CHECKING:
     from entities.models import Entity
@@ -36,25 +35,21 @@ class ModelWithRelatedEntities(Model):
         return None
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='serialized_images')
+    @retrieve_or_compute(attribute_name='serialized_entities')
     def serialized_entities(self) -> List[Dict]:
         """Return a list of dictionaries representing the instance's images."""
-        return [
-            EntitySerializer(image_relation.image).data
-            for image_relation in self.image_relations.all().select_related('image')
-        ]
+        return [entity.serialize() for entity in self.related_entities.all().iterator()]
 
     def preprocess_html(self, html: str) -> str:
         """Modify the value of an HTML field during cleaning."""
         # Wrap entity names in spans to identify them (so that links can be added if desired).
-        entities = self.related_entities
-        if entities and entities.exists():
-            for entity in entities.all():  # TODO: use .iterator() ?
-                ent: 'Entity' = entity
-                aliases = ent.aliases or []
-                for name in set([ent.name] + aliases):
+        entities = self.serialized_entities
+        if entities:
+            for entity in entities:
+                aliases = entity.get('aliases') or []
+                for name in set([entity['name']] + aliases):
                     opening_span_tag = (
-                        f'<span class="entity-name" data-entity-id="{ent.pk}">'
+                        f'<span class="entity-name" data-entity-id="{entity["pk"]}">'
                     )
                     closing_span_tag = '</span>'
                     html = re.sub(

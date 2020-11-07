@@ -333,7 +333,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "colorlog"
-version = "4.4.0"
+version = "4.5.0"
 description = "Log formatting with colors!"
 category = "dev"
 optional = false
@@ -3283,7 +3283,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "fefd16986c27527da8bdf0cee9d4370f6cd73486a6cff6f71c4909ba3e041d80"
+content-hash = "58e2452fb146959b00fd6558e6328d3071bf99c58504a959d9627be87f2630ee"
 
 [metadata.files]
 aenum = [
@@ -3474,8 +3474,8 @@ colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
 ]
 colorlog = [
-    {file = "colorlog-4.4.0-py2.py3-none-any.whl", hash = "sha256:f14f30f58e2ce6ef40b0088307cac7efb9ecff5605fa2267a2d29955f26aff23"},
-    {file = "colorlog-4.4.0.tar.gz", hash = "sha256:0272c537469ab1e63b9915535874d15b671963c9325db0c4891a2aeff97ce3d1"},
+    {file = "colorlog-4.5.0-py2.py3-none-any.whl", hash = "sha256:677d39a84c4ca37c87532729c143c6a35cb558a1225b9544713fe42a04102ad2"},
+    {file = "colorlog-4.5.0.tar.gz", hash = "sha256:72d25293d6d191e5adc851879240ad33a1ce131a7b36b37f940e505681007e65"},
 ]
 commonmark = [
     {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},

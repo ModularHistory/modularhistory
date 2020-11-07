@@ -145,19 +145,6 @@ class Model(DjangoModel):
         text_to_highlight: Optional[str] = None,
     ) -> SafeString:
         """Return HTML for the view (e.g., "card" or "detail") of the instance."""
-        # model_name = f'{self.__class__.__name__}'.lower()
-        # app_name = inflect.engine().plural(model_name)
-        # artifacts_are_used = False
-        # if artifacts_are_used:
-        #     artifact_subdir = inflect.engine().plural(view)
-        #     artifact_name = f'{artifact_subdir}/{self.key}.html'
-        #     artifact_path = os.path.join(
-        #         settings.BASE_DIR, app_name, 'artifacts', artifact_name
-        #     )
-        #     if os.path.exists(artifact_path):
-        #         logging.info(f'Reading artifact: {artifact_name}')
-        #         with open(artifact_path) as artifact:
-        #             response = artifact.read()
         return get_html_for_view_(
             self, template_name=view, text_to_highlight=text_to_highlight
         )

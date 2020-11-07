@@ -1,10 +1,9 @@
 """Admin for the quotes app."""
 
 from django.db.models.query import QuerySet
-from django.urls import path
 
-from admin import SearchableModelAdmin, admin_site
-from entities.views import EntityCategorySearchView, EntitySearchView
+from admin import admin_site
+from admin.searchable_model_admin import SearchableModelAdmin
 from modularhistory.models.taggable_model import TopicFilter
 from quotes import models
 from quotes.admin.quote_filters import (
@@ -81,25 +80,6 @@ class QuoteAdmin(SearchableModelAdmin):
         if ordering and ordering != models.Quote.get_meta().ordering:
             qs = qs.order_by(*ordering)
         return qs
-
-    def get_urls(self):
-        """Return the URLs used by the quote admin."""
-        urls = super().get_urls()
-        custom_urls = [
-            path(
-                'entity_search/',
-                self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
-                name='entity_search',
-            ),
-            path(
-                'entity_category_search/',
-                self.admin_site.admin_view(
-                    EntityCategorySearchView.as_view(model_admin=self)
-                ),
-                name='entity_category_search',
-            ),
-        ]
-        return custom_urls + urls
 
 
 admin_site.register(models.Quote, QuoteAdmin)

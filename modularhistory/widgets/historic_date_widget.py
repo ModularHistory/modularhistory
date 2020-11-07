@@ -111,7 +111,7 @@ class HistoricDateWidget(MultiWidget):
     """Widget for dates that may be before common era and have variable specificity."""
 
     def __init__(self, attrs: Optional[Dict] = None):
-        """TODO: add docstring."""
+        """Construct the widget."""
         default_attrs = {'style': 'margin-right: 1rem'}
         attrs = {**attrs, **default_attrs} if attrs else default_attrs
         placeholder_attr = 'placeholder'

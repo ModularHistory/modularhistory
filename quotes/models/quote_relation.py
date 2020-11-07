@@ -25,10 +25,14 @@ class QuoteRelation(Model):
         ordering = ['position', 'quote']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the relation."""
         return soupify(self.quote.bite.html).get_text()
 
     @property
     def quote_pk(self) -> str:
-        """TODO: write docstring."""
+        """
+        Return the primary key of the quote relation's quote.
+
+        This attribute can be included in inline admins.
+        """
         return self.quote.pk
