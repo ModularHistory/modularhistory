@@ -62,6 +62,10 @@ urlpatterns = [
     path('error', error),  # error trigger (for testing purposes)
     # TODO: enable Vue templates
     # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
+    path(
+        "robots.txt",
+        TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
+    ),
 ]
 
 if settings.DEBUG:
