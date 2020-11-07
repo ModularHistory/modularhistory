@@ -199,13 +199,13 @@ class Image(MediaModel):
         except ValueError as error:  # legacy key
             # Update key if necessary
             key = match.group(2).strip()
-            image = cls.objects.get(key=key)
+            image: Image = cls.objects.get(key=key)
             logging.error(f'{key} --> {image.pk}: {error}')
             # image_placeholder = image_placeholder.replace(key, str(image.pk))  # TODO
         if isinstance(image, dict):
-            width, height = image['width'], image['height']
+            width = image['width']
         elif isinstance(image, Image):
-            width, height = image.width, image.height
+            width = image.width
         else:
             raise TypeError(f'k{image} is not an image or dictionary.')
         image_html = render_to_string('images/_card.html', context={IMAGE_KEY: image})

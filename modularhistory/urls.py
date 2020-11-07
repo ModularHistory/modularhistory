@@ -22,10 +22,10 @@ import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
+from django.views.generic import TemplateView
 
 from admin.model_admin import admin_site
 from search.views import SearchResultsView
-from django.views.generic import TemplateView
 
 
 def error(request):
@@ -63,8 +63,8 @@ urlpatterns = [
     # TODO: enable Vue templates
     # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
     path(
-        "robots.txt",
-        TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
+        'robots.txt',
+        TemplateView.as_view(template_name='robots.txt', content_type='text/plain'),
     ),
 ]
 

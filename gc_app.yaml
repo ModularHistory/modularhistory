@@ -18,12 +18,15 @@ automatic_scaling:
   max_pending_latency: automatic
   max_concurrent_requests: 10
 
+# https://cloud.google.com/appengine/docs/standard/python3/config/appref#handlers_element
 handlers:
-  # Configure Google App Engine to serve the files in the app's static directory.
+  # Serve files in the static directory
   - url: /static
     static_dir: static/
-  # Route all other requests to the main app. This is required when static routes are defined
-  # but can be omitted (along with the entire handlers section) if no static files are defined.
+  # Serve robots.txt
+  - url: /robots.txt
+    static_files: templates/robots.txt
+  # Route all other requests to the main app
   - url: /.*
     secure: always
     script: auto

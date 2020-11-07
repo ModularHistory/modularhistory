@@ -44,16 +44,3 @@ class HomepageTestSuite(BaseCase):
         if failed:
             memory_tracker.print_diff()
             self.fail(f'Number of objects increased: {" --> ".join(results)}')
-
-    @pytest.mark.skip
-    @parameterized.expand(
-        [
-            ['pypi', 'pypi.org'],
-            ['wikipedia', 'wikipedia.org'],
-        ]
-    )
-    def test_parameterized_google_search(self, search_term, expected_text):
-        self.open('https://google.com/ncr')
-        # self.type('input[title="Search"]', search_term + '\n')
-        # self.assert_element('#result-stats')
-        # self.assert_text(expected_text, '#search')
