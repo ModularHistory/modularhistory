@@ -2,7 +2,6 @@
 
 from typing import Dict, List, Optional, Sequence, TYPE_CHECKING
 
-from images.serializers import ImageSerializer
 from modularhistory.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
@@ -38,6 +37,6 @@ class ModelWithImages(Model):
     def serialized_images(self) -> List[Dict]:
         """Return a list of dictionaries representing the instance's images."""
         return [
-            ImageSerializer(image_relation.image).data
+            image_relation.image.serialize()
             for image_relation in self.image_relations.all().select_related('image')
         ]
