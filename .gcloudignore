@@ -8,6 +8,12 @@
 .git
 .gitignore
 
+# Ungathered static files
+static/
+
+# Media files
+media/
+
 # All files specified in .gitignore (with exceptions)
 #!include:.gitignore
 
@@ -21,12 +27,6 @@
 # GitHub
 .github/
 README.md
-
-# Ungathered static files
-static/
-
-# Media files
-media/
 
 # Tests
 tests/
