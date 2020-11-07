@@ -12,9 +12,8 @@ register = template.Library()
 
 @register.filter(is_safe=True)
 def with_entity_links(html: str):
-    """TODO: write docstring."""
+    """Return the HTML string with entity names linked to detail pages."""
     try:
-        # html = str(html)
         if re.search(ENTITY_NAME_REGEX, html):
             processed_entity_keys = []
             for match in re.finditer(ENTITY_NAME_REGEX, html):
