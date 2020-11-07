@@ -18,7 +18,7 @@ from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
-from sentry_sdk.integrations.celery import CeleryIntegration
+# from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from modularhistory.constants.misc import Environments
@@ -68,8 +68,8 @@ if ENVIRONMENT != Environments.DEV:
         DjangoIntegration(),
     ]
     # If not in Google Cloud, add the Celery integration.
-    if ENABLE_CELERY and not IS_GCP:
-        integrations.append(CeleryIntegration())
+    # if ENABLE_CELERY and not IS_GCP:
+    #     integrations.append(CeleryIntegration())
     sentry_sdk.init(
         # https://docs.sentry.io/platforms/python/configuration/options/#dsn
         dsn='https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835',
