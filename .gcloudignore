@@ -13,7 +13,7 @@
 
 # Exceptions (explicitly included)
 !requirements.txt
-!staticfiles/
+!static/
 !.credentials/
 !.secrets/
 !*credentials.json

@@ -194,7 +194,6 @@ class Image(MediaModel):
             preretrieved_html = match.group(4)
             if preretrieved_html:
                 return preretrieved_html.strip()
-        image: 'Image'
         try:
             image = cls.get_object_from_placeholder(match)
         except ValueError as error:  # legacy key
@@ -203,9 +202,15 @@ class Image(MediaModel):
             image = cls.objects.get(key=key)
             logging.error(f'{key} --> {image.pk}: {error}')
             # image_placeholder = image_placeholder.replace(key, str(image.pk))  # TODO
+        if isinstance(image, dict):
+            width, height = image['width'], image['height']
+        elif isinstance(image, Image):
+            width, height = image.width, image.height
+        else:
+            raise TypeError(f'k{image} is not an image or dictionary.')
         image_html = render_to_string('images/_card.html', context={IMAGE_KEY: image})
-        if image.width < FLOAT_UPPER_WIDTH_LIMIT:
+        if width < FLOAT_UPPER_WIDTH_LIMIT:
             image_html = f'<div class="float-right pull-right">{image_html}</div>'
-        if image.width < CENTER_UPPER_WIDTH_LIMIT:
+        if width < CENTER_UPPER_WIDTH_LIMIT:
             image_html = f'<div style="text-align: center">{image_html}</div>'
         return image_html

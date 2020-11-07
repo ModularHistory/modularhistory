@@ -1,11 +1,14 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Submit, HTML
+from crispy_forms.layout import HTML, Field, Layout, Submit
 from django import forms
 from django.http import HttpRequest
 
 # TODO: this causes memory issue?
-# from modularhistory.constants.topics import TOPICS
-# AUTOCOMPLETE_CHOICES = [(topic, topic) for topic in TOPICS]
+ENABLE_AUTOCOMPLETE = False
+if ENABLE_AUTOCOMPLETE:
+    from modularhistory.constants.topics import TOPICS
+
+    AUTOCOMPLETE_CHOICES = [(topic, topic) for topic in TOPICS]
 
 
 class SearchForm(forms.Form):

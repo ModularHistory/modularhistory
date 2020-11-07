@@ -1,6 +1,6 @@
 """HistoricDateTime module."""
 
-# TODO: optimize memory by storing attributes in __init__
+# TODO: optimize memory by storing attributes in __init__?
 
 from datetime import datetime
 from decimal import Decimal, getcontext

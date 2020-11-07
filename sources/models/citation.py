@@ -17,6 +17,7 @@ from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.models import ModelWithComputations, retrieve_or_compute
 from modularhistory.utils import pdf
 from modularhistory.utils.html import components_to_html, compose_link, soupify
+from sources.serializers import CitationSerializer
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
@@ -31,8 +32,8 @@ if TYPE_CHECKING:
 # group 7: ignore
 # group 8: citation HTML
 ADMIN_PLACEHOLDER_REGEX = (
-    r'\ ?<<\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?\ ?'
-    r'(<span style="display: none;?">(.+)<\/span>)?\ ?>>'
+    r'\ ?<<\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?'
+    r'(\ ?<span style="display: none;?">(.+)<\/span>)?\ ?>>'
 )
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
@@ -78,6 +79,7 @@ class Citation(ModelWithComputations):
 
     admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
     page_string_regex = re.compile(PAGE_STRING_REGEX)
+    serializer = CitationSerializer
 
     def __str__(self) -> str:
         """Return the citation's string representation."""
@@ -268,13 +270,13 @@ class Citation(ModelWithComputations):
         placeholder = match.group(0)
         appendage = match.group(7)
         updated_appendage = (
-            f'<span style="display: none">{cls.get_object_html(match)}</span>'
+            f' <span style="display: none">{cls.get_object_html(match)}</span>'
         )
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
             updated_placeholder = (
-                f'{placeholder.replace(" }}", "").replace("}}", "")}'
+                f'{placeholder.replace(" >>", "").replace(">>", "")}'
                 f'{updated_appendage} >>'
             )
         return updated_placeholder

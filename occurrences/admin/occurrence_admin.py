@@ -1,6 +1,7 @@
 """Admin classes for occurrences."""
 
-from admin import ModelAdmin, SearchableModelAdmin, admin_site
+from admin import ModelAdmin, admin_site
+from admin.searchable_model_admin import SearchableModelAdmin
 from modularhistory.models.taggable_model import TopicFilter
 from occurrences import models
 from occurrences.admin.occurrence_filters import (

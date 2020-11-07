@@ -250,11 +250,17 @@ class Quote(
             if preretrieved_html:
                 return preretrieved_html.strip()
         quote = cls.get_object_from_placeholder(match)
+        if isinstance(quote, dict):
+            body = quote['text']
+            footer = quote.get('citation_html') or quote.get('attributee_string')
+        else:
+            body = quote.text.html
+            footer = quote.citation_html or quote.attributee_string
         return (
             f'<blockquote class="blockquote">'
-            f'{quote.text.html}'
+            f'{body}'
             f'<footer class="blockquote-footer" style="position: relative;">'
-            f'{quote.citation_html or quote.attributee_string}'
+            f'{footer}'
             f'</footer>'
             f'</blockquote>'
         )

@@ -9,7 +9,7 @@ from modularhistory.models import Model
 
 
 class QuoteAttribution(Model):
-    """TODO: add docstring."""
+    """An attribution of a quote to an entity."""
 
     quote = ForeignKey('quotes.Quote', related_name='attributions', on_delete=CASCADE)
     attributee = ForeignKey(
@@ -22,16 +22,16 @@ class QuoteAttribution(Model):
         ordering = ['position']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the quote attribution."""
         return str(self.attributee)
 
     def save(self, *args, **kwargs):
-        """TODO: write docstring."""
+        """Save the quote attribution to the database."""
         self.clean()
         super().save(*args, **kwargs)
 
     def clean(self):
-        """TODO: write docstring."""
+        """Prepare the quote attribution to be saved."""
         super().clean()
         if self.position > 0:
             duplications = QuoteAttribution.objects.exclude(pk=self.pk).filter(

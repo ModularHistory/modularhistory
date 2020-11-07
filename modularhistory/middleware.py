@@ -6,6 +6,8 @@ from django.template.base import Template
 
 from modularhistory import settings
 
+ENABLE = False
+
 
 class PymplerMiddleware:
     """Run Pympler (memory profiler)."""
@@ -16,13 +18,14 @@ class PymplerMiddleware:
 
     def __init__(self, get_response):
         """Construct and configure the middleware, one time."""
-        if True or not settings.DEBUG:
+        if ENABLE and not settings.DEBUG:
+            self.memory_tracker = tracker.SummaryTracker()
+            self.class_tracker = classtracker.ClassTracker()
+            self.class_tracker.track_class(Template)
+            self.object_count = len(muppy.get_objects())
+            self.get_response = get_response
+        else:
             raise MiddlewareNotUsed('PymplerMiddleware will not be used.')
-        self.memory_tracker = tracker.SummaryTracker()
-        self.class_tracker = classtracker.ClassTracker()
-        self.class_tracker.track_class(Template)
-        self.object_count = len(muppy.get_objects())
-        self.get_response = get_response
 
     def __call__(self, request):
         """Run the middleware."""

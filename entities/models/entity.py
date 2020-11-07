@@ -106,7 +106,7 @@ class Entity(
             self.unabbreviated_name = self.name
 
     def get_categorization(self, date: DateTime) -> Optional['Categorization']:
-        """TODO: add docstring."""
+        """Return the most applicable categorization based on the date."""
         if not self.categories.exists():
             return None
         categorizations = self.categorizations.all()

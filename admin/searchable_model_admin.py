@@ -5,6 +5,7 @@ from django.http.request import HttpRequest
 from django.urls import path
 
 from admin.model_admin import ModelAdmin
+from entities.views import EntityCategorySearchView, EntitySearchView
 from topics.views import TagSearchView
 
 if TYPE_CHECKING:
@@ -41,6 +42,18 @@ class SearchableModelAdmin(ModelAdmin):
                 'tag_search/',
                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
                 name='tag_search',
+            ),
+            path(
+                'entity_search/',
+                self.admin_site.admin_view(EntitySearchView.as_view(model_admin=self)),
+                name='entity_search',
+            ),
+            path(
+                'entity_category_search/',
+                self.admin_site.admin_view(
+                    EntityCategorySearchView.as_view(model_admin=self)
+                ),
+                name='entity_category_search',
             ),
         ]
         return custom_urls + urls
