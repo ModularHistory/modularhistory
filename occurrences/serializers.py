@@ -5,7 +5,7 @@
 # https://github.com/clarkduvall/serpy
 
 import serpy
-
+import logging
 from modularhistory.models.searchable_model import SearchableModelSerializer
 
 
@@ -26,7 +26,10 @@ class OccurrenceSerializer(SearchableModelSerializer):
 
     def get_description(self, instance):
         """Return the user-facing description HTML."""
-        return instance.description.html
+        logging.info(f'>>>> Getting description for instance {instance.pk}')
+        html = instance.description.html
+        # logging.info(f'>>>> Got html: {html}')
+        return html
 
     def get_postscript(self, instance):
         """Return the user-facing postscript HTML."""

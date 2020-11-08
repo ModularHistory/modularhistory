@@ -1,12 +1,11 @@
 import logging
 import re
 from typing import Any, Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
-
 from django.core.exceptions import ValidationError
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
-
+from django.core.exceptions import ObjectDoesNotExist
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
@@ -19,8 +18,16 @@ if TYPE_CHECKING:
 # group 2: entity name
 ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
-# group 1: obj type
-OBJECT_REGEX = re.compile(r'<< ?(\w+):(?!>>)[\s\S]+? ?>>')
+# group 1: model class name
+# group 2: model instance pk
+# group 3: ignore
+# group 4: model instance HTML
+# group 5: closing brackets, i.e., >>
+OBJECT_PLACEHOLDER_REGEX = re.compile(
+    r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)(:\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'
+)
+MODEL_NAME_GROUP = 1
+PK_GROUP = 2
 
 
 def process(html: str) -> str:
@@ -29,17 +36,22 @@ def process(html: str) -> str:
 
     This involves replacing model instance placeholders with their HTML.
     """
-    for match in OBJECT_REGEX.finditer(html):
+    for match in OBJECT_PLACEHOLDER_REGEX.finditer(html):
         placeholder = match.group(0)
-        object_type = match.group(1)
+        object_type = match.group(MODEL_NAME_GROUP)
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
             model_cls: Type[Model] = import_string(model_cls_str)
             # TODO
             object_match = model_cls.admin_placeholder_regex.match(placeholder)
-            object_html = model_cls.get_object_html(
-                object_match, use_preretrieved_html=True
-            )
+            try:
+                object_html = model_cls.get_object_html(
+                    object_match, use_preretrieved_html=True
+                )
+            except ObjectDoesNotExist:
+                raise ValidationError(
+                    f'Could not retrieve HTML for placeholder: {object_match.group(0)}'
+                )
             html = html.replace(placeholder, object_html)
         else:
             logging.error(f'Unable to retrieve model class string for `{object_type}`')
@@ -78,6 +90,8 @@ class HTMLField(MceHTMLField):
             (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
             (r'<p>&nbsp;<\/p>', EMPTY_STRING),
+            (r'>&lt;>&lt;', '<<'),
+            (r'>&gt;>&gt;', '>>'),
         )
         for pattern, replacement in replacements:
             try:
@@ -115,8 +129,13 @@ class HTMLField(MceHTMLField):
                 model_cls = import_string(model_cls_str)
                 for match in model_cls.admin_placeholder_regex.finditer(html):
                     placeholder = match.group(0)
-                    updated_placeholder = model_cls.get_updated_placeholder(match)
-                    html = html.replace(placeholder, updated_placeholder)
+                    try:
+                        updated_placeholder = model_cls.get_updated_placeholder(match)
+                        html = html.replace(placeholder, updated_placeholder)
+                    except ObjectDoesNotExist:
+                        logging.error(
+                            f'Unable to retrieve object matching {match.group(0)}'
+                        )
         return html
 
     def deconstruct(self):
@@ -173,6 +192,7 @@ class HTMLField(MceHTMLField):
         if callable(self.processor):
             try:
                 processed_html = self.processor(html_value)
+                logging.info(f'>>> Processed HTML: {truncate(processed_html)}')
             except RecursionError as error:
                 logging.error(f'>>> Unable to process HTML: {error}')
             except Exception as error:
