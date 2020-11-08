@@ -14,7 +14,7 @@ from typing import (
     Type,
     Union,
 )
-
+from pprint import pformat
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
@@ -25,6 +25,7 @@ from typedmodels.models import TypedModel as BaseTypedModel
 
 from modularhistory.models.manager import Manager
 from modularhistory.utils.models import get_html_for_view as get_html_for_view_
+from modularhistory.fields.html_field import OBJECT_PLACEHOLDER_REGEX
 
 FieldList = List[str]
 
@@ -39,9 +40,7 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 # group 3: ignore
 # group 4: model instance HTML
 # group 5: closing brackets
-ADMIN_PLACEHOLDER_REGEX = (
-    r'<<\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?>>)'
-)
+ADMIN_PLACEHOLDER_REGEX = OBJECT_PLACEHOLDER_REGEX
 MODEL_NAME_GROUP = 1
 PK_GROUP = 2
 
@@ -171,7 +170,10 @@ class Model(DjangoModel):
     def serialize(self) -> Dict:
         """Return the serialized model instance (dictionary)."""
         serialized_instance = self.serializer(self).data
-        logging.info(f'Serialized instance: {serialized_instance}')
+        # logging.info(
+        #     f'Serialized {self.__class__.__name__.lower()}:\n'
+        #     f'{pformat(serialized_instance)}'
+        # )
         return serialized_instance
 
     @classmethod
