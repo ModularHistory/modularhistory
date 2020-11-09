@@ -411,6 +411,10 @@ body {
     margin-top: auto;
     margin-bottom: auto; }
 
+span.date {
+  display: inline-block;
+  white-space: nowrap; }
+
 .footer-links a {
   display: inline-block;
   margin: 0.5rem 1rem; }

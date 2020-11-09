@@ -38,6 +38,15 @@ body {
   }
 }
 
+span.date {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+span.citation-placeholder {
+  //display: none;
+}
+
 .footer-links a {
   display: inline-block;
   margin: 0.5rem 1rem;
