@@ -6,6 +6,7 @@ from typing import Match, TYPE_CHECKING
 import serpy
 from django.db.models import BooleanField, UUIDField
 
+from modularhistory.models.model import ModelSerializer
 from modularhistory.models.model_with_computations import ModelWithComputations
 from modularhistory.models.taggable_model import TaggableModel
 
@@ -54,14 +55,8 @@ class SearchableModel(TaggableModel, ModelWithComputations):
         return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
 
 
-class SearchableModelSerializer(serpy.Serializer):
+class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
-    pk = serpy.Field()
     key = serpy.Field()
     tags_html = serpy.Field()
-    model = serpy.MethodField()
-
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return instance.__class__.__name__.lower()

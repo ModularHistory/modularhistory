@@ -20,6 +20,10 @@ class OccurrenceSerializer(SearchableModelSerializer):
     serialized_citations = serpy.Field()
     tags_html = serpy.Field()
 
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of the instance."""
+        return 'occurrences.occurrence'
+
     def get_summary(self, instance):
         """Return the user-facing summary HTML."""
         return instance.summary.html

@@ -21,6 +21,10 @@ class QuoteSerializer(SearchableModelSerializer):
     primary_image = serpy.Field()
     serialized_citations = serpy.Field()
 
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of the instance."""
+        return 'quotes.quote'
+
     def get_bite(self, instance: 'Quote'):
         """Return the user-facing bite HTML."""
         return instance.bite.html

@@ -207,9 +207,7 @@ def _get_occurrence_results(ct_ids, **search_kwargs):
     return occurrence_results, [occurrence['pk'] for occurrence in occurrence_results]
 
 
-def _get_quote_results(
-    ct_ids, occurrence_result_ids, **search_kwargs
-):
+def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
     if QUOTE_CT_ID in ct_ids or not ct_ids:
         quote_results = Quote.objects.search(**search_kwargs)  # type: ignore
         if occurrence_result_ids:
@@ -224,7 +222,9 @@ def _get_quote_results(
     return quote_results, [quote['pk'] for quote in quote_results]
 
 
-def _get_image_results(ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs):
+def _get_image_results(
+    ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+):
     if IMAGE_CT_ID in ct_ids or not ct_ids:
         image_results = Image.objects.search(**search_kwargs).filter(  # type: ignore
             entities=None
@@ -235,14 +235,18 @@ def _get_image_results(ct_ids, occurrence_result_ids, quote_result_ids, **search
                 | Q(entities__involved_occurrences__id__in=occurrence_result_ids)
             )
         if quote_result_ids:
-            image_results = image_results.exclude(entities__quotes__id__in=quote_result_ids)
+            image_results = image_results.exclude(
+                entities__quotes__id__in=quote_result_ids
+            )
         image_results = [image.serialize() for image in image_results.iterator()]
     else:
         image_results = []
     return image_results
 
 
-def _get_source_results(ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs):
+def _get_source_results(
+    ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+):
     if SOURCE_CT_ID in ct_ids or not ct_ids:
         source_results = Source.objects.search(**search_kwargs)  # type: ignore
 
