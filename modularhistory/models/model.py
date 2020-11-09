@@ -14,7 +14,6 @@ from typing import (
     Type,
     Union,
 )
-from pprint import pformat
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel

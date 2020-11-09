@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Callable, Optional
 
 from django.utils.html import format_html
 from django.utils.safestring import SafeString, mark_safe
@@ -8,27 +8,32 @@ from modularhistory.utils.string import truncate
 
 
 class HTML:
-    """HTML with a raw value, optional processed value, and text."""
+    """HTML with a raw value, optional processor, and text."""
 
     raw_value: str
+    _html: Optional[SafeString]
     html: SafeString
     text: str
+    processor: Optional[Callable]
 
-    def __init__(self, raw_value: Optional[str], processed_value: Optional[str] = None):
+    def __init__(self, raw_value: Optional[str], processor: Optional[Callable] = None):
         """Construct an HTML object."""
+        self.processor = processor
         if raw_value:
             raw_value = raw_value.strip()
-            processed_value = processed_value or raw_value
             self.raw_value = raw_value
-            try:
-                self.html = format_html(processed_value)
-            except ValueError as e:
-                logging.error(f'>>> {e}: {processed_value}')
-                self.html = mark_safe(processed_value)
+            if callable(processor):
+                self._html = None  # Defer to the `html` property
+            else:
+                try:
+                    self._html = format_html(raw_value)
+                except ValueError as e:
+                    logging.error(f'>>> {e}: {raw_value}')
+                    self._html = mark_safe(raw_value)
             self.text = soupify(self.raw_value).get_text()
         else:
             self.raw_value = ''
-            self.html = format_html('')
+            self._html = format_html('')
             self.text = ''
 
     # for Django Admin templates
@@ -54,3 +59,21 @@ class HTML:
     def __bool__(self):
         """Return whether the HTML has a non-empty value."""
         return bool(self.raw_value)
+
+    @property
+    def html(self) -> SafeString:
+        """Return the processed HTML value."""
+        if self._html is None:
+            if callable(self.processor):
+                try:
+                    processed_html = self.processor(self.raw_value)
+                    self._html = format_html(processed_html)
+                    logging.info(f'Processed HTML: {truncate(processed_html)}')
+                except RecursionError as error:
+                    logging.error(f'Unable to process HTML: {error}')
+                except Exception as error:
+                    logging.error(
+                        f'{error} resulted from attempting to process HTML: '
+                        f'\n{truncate(self.raw_value)}\n'
+                    )
+        return self._html

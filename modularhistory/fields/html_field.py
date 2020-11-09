@@ -24,7 +24,7 @@ ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)
 # group 4: model instance HTML
 # group 5: closing brackets, i.e., >>
 OBJECT_PLACEHOLDER_REGEX = re.compile(
-    r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)(:\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'
+    r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)((?:\ |:)\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'
 )
 MODEL_NAME_GROUP = 1
 PK_GROUP = 2
@@ -36,8 +36,10 @@ def process(html: str) -> str:
 
     This involves replacing model instance placeholders with their HTML.
     """
+    logging.info(f'Processing HTML: {html}...')
     for match in OBJECT_PLACEHOLDER_REGEX.finditer(html):
         placeholder = match.group(0)
+        logging.info(f'Processing placeholder: {placeholder}...')
         object_type = match.group(MODEL_NAME_GROUP)
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
@@ -55,6 +57,8 @@ def process(html: str) -> str:
             html = html.replace(placeholder, object_html)
         else:
             logging.error(f'Unable to retrieve model class string for `{object_type}`')
+    # TODO: optimize
+    html = re.sub(r'(\S)\ (<a [^>]+?citation-link)', r'\g<1>\g<2>', html)
     return html
 
 
@@ -188,19 +192,7 @@ class HTMLField(MceHTMLField):
         )
         for pattern, replacement in replacements:
             html_value = re.sub(pattern, replacement, html_value)
-        processed_html = html_value
-        if callable(self.processor):
-            try:
-                processed_html = self.processor(html_value)
-                logging.info(f'>>> Processed HTML: {truncate(processed_html)}')
-            except RecursionError as error:
-                logging.error(f'>>> Unable to process HTML: {error}')
-            except Exception as error:
-                logging.error(
-                    f'>>> {error} resulted from attempting to process HTML: '
-                    f'\n{truncate(html_value)}\n'
-                )
-        return HTML(html_value, processed_value=processed_html)
+        return HTML(html_value, processor=self.processor)
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
     def to_python(self, html_value: Optional[Union[HTML, str]]) -> Optional[HTML]:

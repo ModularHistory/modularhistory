@@ -86,7 +86,7 @@ class HistoricDateTime(datetime):
     def html(self) -> SafeString:
         """Return the datetime's HTML representation."""
         return format_html(
-            f'<span style="display: inline-block; white-space: nowrap;">{self.string}</span>'
+            f'<span class="date">{self.string}</span>'
         )
 
     @property

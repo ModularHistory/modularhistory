@@ -32,8 +32,7 @@ if TYPE_CHECKING:
 # group 7: ignore
 # group 8: citation HTML
 ADMIN_PLACEHOLDER_REGEX = (
-    r'\ ?<<\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?'
-    r'(\ ?<span style="display: none;?">(.+)<\/span>)?\ ?>>'
+    r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?((?:\ |:)\ ?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'
 )
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
@@ -270,13 +269,12 @@ class Citation(ModelWithComputations):
         placeholder = match.group(0)
         appendage = match.group(7)
         updated_appendage = (
-            f' <span style="display: none">{cls.get_object_html(match)}</span>'
+            f' <span class="citation-placeholder">{cls.get_object_html(match)}</span>'
         )
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
             updated_placeholder = (
-                f'{placeholder.replace(" >>", "").replace(">>", "")}'
-                f'{updated_appendage} >>'
+                f'{re.sub(r" ?(?:>>|&gt;&gt;)", "", placeholder)}{updated_appendage} >>'
             )
         return updated_placeholder
