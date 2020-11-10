@@ -10,6 +10,7 @@ from tinymce.models import HTMLField as MceHTMLField
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
+from modularhistory.utils.string import truncate
 
 if TYPE_CHECKING:
     from modularhistory.models import Model
@@ -21,10 +22,10 @@ ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)
 # group 1: model class name
 # group 2: model instance pk
 # group 3: ignore
-# group 4: model instance HTML
+# group 4: model instance HTML (or additional groups captured in pattern overrides)
 # group 5: closing brackets, i.e., >>
 OBJECT_PLACEHOLDER_REGEX = re.compile(
-    r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)((?:\ |:)\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'
+    r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)([:\ ,]\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'
 )
 MODEL_NAME_GROUP = 1
 PK_GROUP = 2
@@ -36,14 +37,16 @@ def process(html: str) -> str:
 
     This involves replacing model instance placeholders with their HTML.
     """
-    logging.info(f'Processing HTML: {html}...')
+    logging.info(f'Processing HTML: {truncate(html)}')
     for match in OBJECT_PLACEHOLDER_REGEX.finditer(html):
         placeholder = match.group(0)
-        logging.info(f'Processing placeholder: {placeholder}...')
         object_type = match.group(MODEL_NAME_GROUP)
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
             model_cls: Type[Model] = import_string(model_cls_str)
+            logging.info(
+                f'Processing {model_cls.__name__} placeholder: {placeholder}...'
+            )
             # TODO
             object_match = model_cls.admin_placeholder_regex.match(placeholder)
             try:

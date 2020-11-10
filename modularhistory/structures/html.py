@@ -61,8 +61,8 @@ class HTML:
                     logging.info(f'Processed HTML: {truncate(processed_html)}')
                 except (RecursionError, Exception) as error:
                     logging.error(
-                        f'{error} resulted from attempting to process HTML: '
-                        f'\n{truncate(self.raw_value)}\n'
+                        f'ERROR: {error} resulted from attempting to process HTML:\n'
+                        f'{truncate(self.raw_value)}\n'
                     )
         html = processed_html or self.raw_value
         try:

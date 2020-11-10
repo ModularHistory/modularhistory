@@ -26,13 +26,15 @@ if TYPE_CHECKING:
 
 # group 1: model class name
 # group 2: citation pk (e.g., '123')
-# group 3: ignore
+# group 3: ignore (full appendage after pk)
 # group 4: page string (e.g., 'p. 10')
-# group 5: ignore
+# group 5: ignore (full appendage after page string)
 # group 6: quotation (e.g., "It followed institutionalized procedures....")
 # group 7: ignore
 # group 8: citation HTML
-ADMIN_PLACEHOLDER_REGEX = r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?((?:\ |:)\ ?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'
+ADMIN_PLACEHOLDER_REGEX = (
+    r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?([:\ ]?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'
+)
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 

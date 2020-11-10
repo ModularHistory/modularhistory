@@ -205,7 +205,9 @@ class Image(MediaModel):
         except ValueError as error:  # legacy key
             # Update key if necessary
             key = match.group(2).strip()
-            logging.error(f'{error} resulted from attempting to retrieve image={key}')
+            logging.error(
+                f'ERROR: {error} resulted from attempting to retrieve image={key}'
+            )
             image = cls.objects.get(key=key)
             # image_placeholder = image_placeholder.replace(key, str(image.pk))  # TODO
         if isinstance(image, dict):
