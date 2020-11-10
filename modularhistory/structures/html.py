@@ -11,9 +11,6 @@ class HTML:
     """HTML with a raw value, optional processor, and text."""
 
     raw_value: str
-    _html: Optional[SafeString]
-    html: SafeString
-    text: str
     processor: Optional[Callable]
 
     def __init__(self, raw_value: Optional[str], processor: Optional[Callable] = None):
@@ -22,19 +19,10 @@ class HTML:
         if raw_value:
             raw_value = raw_value.strip()
             self.raw_value = raw_value
-            if callable(processor):
-                self._html = None  # Defer to the `html` property
-            else:
-                try:
-                    self._html = format_html(raw_value)
-                except ValueError as e:
-                    logging.error(f'>>> {e}: {raw_value}')
-                    self._html = mark_safe(raw_value)
-            self.text = soupify(self.raw_value).get_text()
+            self._html = None  # Defer to the `html` property
         else:
             self.raw_value = ''
             self._html = format_html('')
-            self.text = ''
 
     # for Django Admin templates
     def __str__(self) -> SafeString:
@@ -63,17 +51,28 @@ class HTML:
     @property
     def html(self) -> SafeString:
         """Return the processed HTML value."""
-        if self._html is None:
+        processed_html = ''
+        if self._html is not None:
+            return self._html
+        else:
             if callable(self.processor):
                 try:
                     processed_html = self.processor(self.raw_value)
-                    self._html = format_html(processed_html)
                     logging.info(f'Processed HTML: {truncate(processed_html)}')
-                except RecursionError as error:
-                    logging.error(f'Unable to process HTML: {error}')
-                except Exception as error:
+                except (RecursionError, Exception) as error:
                     logging.error(
                         f'{error} resulted from attempting to process HTML: '
                         f'\n{truncate(self.raw_value)}\n'
                     )
+        html = processed_html or self.raw_value
+        try:
+            self._html = format_html(html)
+        except ValueError as e:
+            logging.error(f'>>> {e}: {html}')
+            self._html = mark_safe(html)
         return self._html
+
+    @property
+    def text(self) -> str:
+        """Return the textual content with all HTML tags removed."""
+        return soupify(self.raw_value).get_text() if self.raw_value else ''

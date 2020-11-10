@@ -2,13 +2,13 @@
 
 import logging
 import re
-from typing import Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, SET_NULL
+from django.db.models import CASCADE, SET_NULL, ForeignKey, PositiveSmallIntegerField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
@@ -21,6 +21,7 @@ from sources.serializers import CitationSerializer
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
+
     from quotes.models import Quote
 
 # group 1: model class name
@@ -31,9 +32,7 @@ if TYPE_CHECKING:
 # group 6: quotation (e.g., "It followed institutionalized procedures....")
 # group 7: ignore
 # group 8: citation HTML
-ADMIN_PLACEHOLDER_REGEX = (
-    r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?((?:\ |:)\ ?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'
-)
+ADMIN_PLACEHOLDER_REGEX = r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?((?:\ |:)\ ?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 

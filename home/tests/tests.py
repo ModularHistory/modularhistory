@@ -1,6 +1,5 @@
 import pytest
 from django.urls import reverse
-from parameterized import parameterized
 from pympler import muppy, tracker
 from seleniumbase import BaseCase
 
