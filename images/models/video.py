@@ -18,6 +18,12 @@ class Video(MediaModel):
     duration = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
+        """
+        Meta options for the Video model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = ['title', 'url']
 
     def clean(self):

@@ -9,4 +9,5 @@ from .model_with_related_entities import ModelWithRelatedEntities
 from .model_with_related_quotes import ModelWithRelatedQuotes
 from .model_with_sources import ModelWithSources
 from .searchable_model import SearchableModel
+from .searchable_dated_model import SearchableDatedModel
 from .taggable_model import TaggableModel

@@ -72,7 +72,7 @@ test = ["coverage", "flake8", "pexpect", "wheel"]
 
 [[package]]
 name = "asgiref"
-version = "3.3.0"
+version = "3.3.1"
 description = "ASGI specs, helper code, and adapters"
 category = "main"
 optional = false
@@ -274,7 +274,7 @@ python-versions = "~=3.5"
 
 [[package]]
 name = "certifi"
-version = "2020.6.20"
+version = "2020.11.8"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -293,7 +293,7 @@ pycparser = "*"
 
 [[package]]
 name = "channels"
-version = "3.0.1"
+version = "3.0.2"
 description = "Brings async, event-driven capabilities to Django. Django 2.2 and up only."
 category = "main"
 optional = false
@@ -333,7 +333,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "colorlog"
-version = "4.5.0"
+version = "4.6.2"
 description = "Log formatting with colors!"
 category = "dev"
 optional = false
@@ -700,11 +700,11 @@ six = "*"
 
 [[package]]
 name = "django-reverse-admin"
-version = "2.9.0"
+version = "2.9.3"
 description = ""
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3"
 
 [[package]]
 name = "django-sass-processor"
@@ -1534,7 +1534,7 @@ idna = ">=2.5"
 
 [[package]]
 name = "hypothesis"
-version = "5.41.1"
+version = "5.41.2"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -2048,7 +2048,7 @@ python-versions = "*"
 
 [[package]]
 name = "pathspec"
-version = "0.8.0"
+version = "0.8.1"
 description = "Utility library for gitignore style pattern matching of file paths."
 category = "dev"
 optional = false
@@ -2939,7 +2939,7 @@ saml = ["python-saml (>=2.2.0)"]
 
 [[package]]
 name = "sortedcontainers"
-version = "2.2.2"
+version = "2.3.0"
 description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
 category = "main"
 optional = false
@@ -3283,7 +3283,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "58e2452fb146959b00fd6558e6328d3071bf99c58504a959d9627be87f2630ee"
+content-hash = "b8cc5904b83d05d1d4ce1f0aff4e6bc8ac56f003a393dce208be3f36a7d9bd17"
 
 [metadata.files]
 aenum = [
@@ -3316,8 +3316,8 @@ argcomplete = [
     {file = "argcomplete-1.12.1.tar.gz", hash = "sha256:849c2444c35bb2175aea74100ca5f644c29bf716429399c0f2203bb5d9a8e4e6"},
 ]
 asgiref = [
-    {file = "asgiref-3.3.0-py3-none-any.whl", hash = "sha256:a5098bc870b80e7b872bff60bb363c7f2c2c89078759f6c47b53ff8c525a152e"},
-    {file = "asgiref-3.3.0.tar.gz", hash = "sha256:cd88907ecaec59d78e4ac00ea665b03e571cb37e3a0e37b3702af1a9e86c365a"},
+    {file = "asgiref-3.3.1-py3-none-any.whl", hash = "sha256:5ee950735509d04eb673bd7f7120f8fa1c9e2df495394992c73234d526907e17"},
+    {file = "asgiref-3.3.1.tar.gz", hash = "sha256:7162a3cb30ab0609f1a4c95938fd73e8604f63bdba516a7f7d64b83ff09478f0"},
 ]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
@@ -3417,8 +3417,8 @@ cachetools = [
     {file = "cachetools-4.1.1.tar.gz", hash = "sha256:bbaa39c3dede00175df2dc2b03d0cf18dd2d32a7de7beb68072d13043c9edb20"},
 ]
 certifi = [
-    {file = "certifi-2020.6.20-py2.py3-none-any.whl", hash = "sha256:8fc0819f1f30ba15bdb34cceffb9ef04d99f420f68eb75d901e9560b8749fc41"},
-    {file = "certifi-2020.6.20.tar.gz", hash = "sha256:5930595817496dd21bb8dc35dad090f1c2cd0adfaf21204bf6732ca5d8ee34d3"},
+    {file = "certifi-2020.11.8-py2.py3-none-any.whl", hash = "sha256:1f422849db327d534e3d0c5f02a263458c3955ec0aae4ff09b95f195c59f4edd"},
+    {file = "certifi-2020.11.8.tar.gz", hash = "sha256:f05def092c44fbf25834a51509ef6e631dc19765ab8a57b4e7ab85531f0a9cf4"},
 ]
 cffi = [
     {file = "cffi-1.14.3-2-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:3eeeb0405fd145e714f7633a5173318bd88d8bbfc3dd0a5751f8c4f70ae629bc"},
@@ -3459,8 +3459,8 @@ cffi = [
     {file = "cffi-1.14.3.tar.gz", hash = "sha256:f92f789e4f9241cd262ad7a555ca2c648a98178a953af117ef7fad46aa1d5591"},
 ]
 channels = [
-    {file = "channels-3.0.1-py3-none-any.whl", hash = "sha256:5cdd9c6b9ee663cdf1bbb00de7cdab885a3c418f9d32a29f04b09498828020f6"},
-    {file = "channels-3.0.1.tar.gz", hash = "sha256:b02e150b48704ec3607d4168402ac5c26138dd183fcdb7f2aeb965e6e19fd558"},
+    {file = "channels-3.0.2-py3-none-any.whl", hash = "sha256:74db79c9eca616be69d38013b22083ab5d3f9ccda1ab5e69096b1bb7da2d9b18"},
+    {file = "channels-3.0.2.tar.gz", hash = "sha256:f50a6e79757a64c1e45e95e144a2ac5f1e99ee44a0718ab182c501f5e5abd268"},
 ]
 chardet = [
     {file = "chardet-3.0.4-py2.py3-none-any.whl", hash = "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"},
@@ -3474,8 +3474,8 @@ colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
 ]
 colorlog = [
-    {file = "colorlog-4.5.0-py2.py3-none-any.whl", hash = "sha256:677d39a84c4ca37c87532729c143c6a35cb558a1225b9544713fe42a04102ad2"},
-    {file = "colorlog-4.5.0.tar.gz", hash = "sha256:72d25293d6d191e5adc851879240ad33a1ce131a7b36b37f940e505681007e65"},
+    {file = "colorlog-4.6.2-py2.py3-none-any.whl", hash = "sha256:edd5ada5de03e880e42b2526f8be5570fd9b692f8eb7cf6b1fdcac3e3fb23976"},
+    {file = "colorlog-4.6.2.tar.gz", hash = "sha256:54e5f153419c22afc283c130c4201db19a3dbd83221a0f4657d5ee66234a2ea4"},
 ]
 commonmark = [
     {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
@@ -3653,7 +3653,7 @@ django-replicated = [
     {file = "django_replicated-2.7.tar.gz", hash = "sha256:9f983343b707aaaed7ccc664dde5f16a7c56f896ff08b3087e8d9b45a9f77e7c"},
 ]
 django-reverse-admin = [
-    {file = "django_reverse_admin-2.9.0.zip", hash = "sha256:475c6552a83acccfe777e63c4fb040ee12b40be441e2fab8e56086e6a8659af2"},
+    {file = "django_reverse_admin-2.9.3.zip", hash = "sha256:c8374b41d991b164d55e3c18ab3ca5ce1dd5038f6d72d3b483ff18d22aa6aac6"},
 ]
 django-sass-processor = [
     {file = "django-sass-processor-0.8.2.tar.gz", hash = "sha256:9b46a12ca8bdcb397d46fbcc49e6a926ff9f76a93c5efeb23b495419fd01fc7a"},
@@ -3968,8 +3968,8 @@ hyperlink = [
     {file = "hyperlink-20.0.1.tar.gz", hash = "sha256:47fcc7cd339c6cb2444463ec3277bdcfe142c8b1daf2160bdd52248deec815af"},
 ]
 hypothesis = [
-    {file = "hypothesis-5.41.1-py3-none-any.whl", hash = "sha256:427af0c964e784d296f1c3ed8804c3d03677cafe641a4ab574980e5672b179f5"},
-    {file = "hypothesis-5.41.1.tar.gz", hash = "sha256:06776c245b5eb25011040f94779fda6bbfa9def72074672af2e79a5e6bce8b38"},
+    {file = "hypothesis-5.41.2-py3-none-any.whl", hash = "sha256:868be828390ae2d8bb90ba77271fd05269b9e0bc8d4ebb246a579edfcacfc4e7"},
+    {file = "hypothesis-5.41.2.tar.gz", hash = "sha256:f8c281355aaba1da696e40f1488c2bb47c42660424f5750daea45a85e2d047b3"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -4296,8 +4296,8 @@ pathlib = [
     {file = "pathlib-1.0.1.tar.gz", hash = "sha256:6940718dfc3eff4258203ad5021090933e5c04707d5ca8cc9e73c94a7894ea9f"},
 ]
 pathspec = [
-    {file = "pathspec-0.8.0-py2.py3-none-any.whl", hash = "sha256:7d91249d21749788d07a2d0f94147accd8f845507400749ea19c1ec9054a12b0"},
-    {file = "pathspec-0.8.0.tar.gz", hash = "sha256:da45173eb3a6f2a5a487efba21f050af2b41948be6ab52b6a1e3ff22bb8b7061"},
+    {file = "pathspec-0.8.1-py2.py3-none-any.whl", hash = "sha256:aa0cb481c4041bf52ffa7b0d8fa6cd3e88a2ca4879c533c9153882ee2556790d"},
+    {file = "pathspec-0.8.1.tar.gz", hash = "sha256:86379d6b86d75816baba717e64b1a3a3469deb93bb76d613c9ce79edc5cb68fd"},
 ]
 pbr = [
     {file = "pbr-5.5.1-py2.py3-none-any.whl", hash = "sha256:b236cde0ac9a6aedd5e3c34517b423cd4fd97ef723849da6b0d2231142d89c00"},
@@ -4779,8 +4779,8 @@ social-auth-core = [
     {file = "social_auth_core-3.3.3-py3-none-any.whl", hash = "sha256:21c0639c56befd33ec162c2210d583bb1de8e1136d53b21bafb96afaf2f86c91"},
 ]
 sortedcontainers = [
-    {file = "sortedcontainers-2.2.2-py2.py3-none-any.whl", hash = "sha256:c633ebde8580f241f274c1f8994a665c0e54a17724fecd0cae2f079e09c36d3f"},
-    {file = "sortedcontainers-2.2.2.tar.gz", hash = "sha256:4e73a757831fc3ca4de2859c422564239a31d8213d09a2a666e375807034d2ba"},
+    {file = "sortedcontainers-2.3.0-py2.py3-none-any.whl", hash = "sha256:37257a32add0a3ee490bb170b599e93095eed89a55da91fa9f48753ea12fd73f"},
+    {file = "sortedcontainers-2.3.0.tar.gz", hash = "sha256:59cc937650cf60d677c16775597c89a960658a09cf7c1a668f86e1e4464b10a1"},
 ]
 soupsieve = [
     {file = "soupsieve-2.0.1-py3-none-any.whl", hash = "sha256:1634eea42ab371d3d346309b93df7870a88610f0725d47528be902a0d95ecc55"},

@@ -14,6 +14,12 @@ class MediaModel(DatedModel, SearchableModel):
     provider = models.CharField(max_length=PROVIDER_MAX_LENGTH, null=True, blank=True)
 
     class Meta:
+        """
+        Meta options for MediaModel.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         abstract = True
 
     class FieldNames(SearchableModel.FieldNames):

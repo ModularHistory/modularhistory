@@ -1,15 +1,15 @@
 from datetime import datetime
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from django.db import models
-from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
+from django.db.models import SET_NULL, ForeignKey, ManyToManyField, QuerySet
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from entities.serializers import EntitySerializer
 from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
+from modularhistory.fields import ArrayField, HistoricDateTimeField, HTMLField
 from modularhistory.models import (
     ModelWithComputations,
     ModelWithImages,
@@ -72,6 +72,12 @@ class Entity(
     )
 
     class Meta:
+        """
+        Meta options for the Entity model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Entities'
         ordering = ['name']
 
@@ -159,6 +165,12 @@ class Person(Entity):
     """A person."""
 
     class Meta:
+        """
+        Meta options for the Person model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'People'
 
 
@@ -166,6 +178,12 @@ class Deity(Entity):
     """A deity."""
 
     class Meta:
+        """
+        Meta options for the Deity model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Deities'
 
 
@@ -173,6 +191,12 @@ class Group(Entity):
     """A group of people."""
 
     class Meta:
+        """
+        Meta options for the Group model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Groups'
 
 
@@ -188,6 +212,12 @@ class Organization(Entity):
     )
 
     class Meta:
+        """
+        Meta options for the Organization model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Organizations'
 
     @property

@@ -1,7 +1,7 @@
 """Model classes for ideas."""
 
 from django.db import models
-from django.db.models import ForeignKey, ManyToManyField, CASCADE
+from django.db.models import CASCADE, ForeignKey, ManyToManyField
 
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model
@@ -30,6 +30,12 @@ class EntityIdea(Model):
     idea = ForeignKey('entities.Idea', on_delete=CASCADE, related_name='entity_ideas')
 
     class Meta:
+        """
+        Meta options for the EntityIdea model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = ['entity', 'idea']
 
     def __str__(self):

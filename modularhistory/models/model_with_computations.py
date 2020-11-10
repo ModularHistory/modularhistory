@@ -22,6 +22,12 @@ class ModelWithComputations(Model):
         computations = 'computations'
 
     class Meta:
+        """
+        Meta options for ModelWithComputations.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         abstract = True
 
     def save(self, *args, **kwargs) -> None:

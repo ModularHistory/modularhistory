@@ -20,6 +20,12 @@ class DatedModel(Model):
     date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
+        """
+        Meta options for DatedModel.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         abstract = True
 
     def date_string(self) -> str:

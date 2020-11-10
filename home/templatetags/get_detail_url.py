@@ -1,6 +1,5 @@
 from typing import Dict, Optional, Union
 
-import inflect
 from django import template
 from django.urls import reverse
 
@@ -17,7 +16,7 @@ def get_detail_url(instance: Union[Model, Dict]) -> Optional[str]:
         pk = instance.pk
     elif isinstance(instance, dict):
         app_label, _ = instance['model'].split('.')
-        pk = instance.get('pk')
+        pk = instance['pk']
     else:
         return None
     return reverse(f'{app_label}:detail', args=[pk])
