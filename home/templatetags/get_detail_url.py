@@ -15,8 +15,8 @@ def get_detail_url(instance: Union[Model, Dict]) -> Optional[str]:
     if isinstance(instance, Model):
         app_label = instance.get_meta().app_label
         pk = instance.pk
-    elif instance:
-        app_label = inflect.engine().plural(instance.get('model'))
+    elif isinstance(instance, dict):
+        app_label, _ = instance['model'].split('.')
         pk = instance.get('pk')
     else:
         return None
