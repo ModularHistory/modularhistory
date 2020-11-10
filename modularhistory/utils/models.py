@@ -18,10 +18,10 @@ def get_html_for_view(
 ) -> SafeString:
     """Return the HTML for the specified view of the model instance."""
     if isinstance(model_instance, dict):
-        model_name = model_instance.get('model')
+        app_name, model_name = model_instance['model'].split('.')
     else:
+        app_name = model_instance.__class__.get_meta().app_label
         model_name = model_instance.__class__.__name__.lower()
-    app_name = inflect.engine().plural(model_name)
     template_directory_name = app_name
     template_name = f'{template_directory_name}/_{template_name}.html'
     template = loader.get_template(template_name)
