@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField
@@ -7,13 +7,12 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from images.models import Image
-from modularhistory.fields import HistoricDateTimeField, HTMLField
+from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
-    DatedModel,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithSources,
-    SearchableModel,
+    SearchableDatedModel,
 )
 from modularhistory.utils.html import soupify
 from occurrences.manager import OccurrenceManager
@@ -28,8 +27,7 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
 class Occurrence(
-    DatedModel,
-    SearchableModel,
+    SearchableDatedModel,
     ModelWithRelatedQuotes,
     ModelWithSources,
     ModelWithImages,

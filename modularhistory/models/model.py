@@ -2,7 +2,6 @@
 
 import logging
 import re
-import serpy
 from typing import (
     Any,
     ClassVar,
@@ -15,6 +14,8 @@ from typing import (
     Type,
     Union,
 )
+
+import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model as DjangoModel
@@ -23,9 +24,9 @@ from django.utils.html import SafeString, format_html
 from rest_framework.serializers import Serializer
 from typedmodels.models import TypedModel as BaseTypedModel
 
+from modularhistory.fields.html_field import OBJECT_PLACEHOLDER_REGEX
 from modularhistory.models.manager import Manager
 from modularhistory.utils.models import get_html_for_view as get_html_for_view_
-from modularhistory.fields.html_field import OBJECT_PLACEHOLDER_REGEX
 
 FieldList = List[str]
 
@@ -65,6 +66,12 @@ class Model(DjangoModel):
     admin_placeholder_regex: Pattern = re.compile(ADMIN_PLACEHOLDER_REGEX)
 
     class Meta:
+        """
+        Meta options for Model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         abstract = True
 
     @classmethod

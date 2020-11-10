@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField, Q, QuerySet
@@ -12,14 +12,13 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.fields import HistoricDateTimeField, HTMLField
+from modularhistory.fields import HTMLField, HistoricDateTimeField
 from modularhistory.models import (
-    DatedModel,
     ModelWithImages,
     ModelWithRelatedEntities,
     ModelWithRelatedQuotes,
     ModelWithSources,
-    SearchableModel,
+    SearchableDatedModel,
     retrieve_or_compute,
 )
 from modularhistory.utils.html import soupify
@@ -34,8 +33,7 @@ BITE_MAX_LENGTH: int = 400
 
 
 class Quote(
-    DatedModel,
-    SearchableModel,
+    SearchableDatedModel,
     ModelWithSources,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,

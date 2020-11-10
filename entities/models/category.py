@@ -34,6 +34,12 @@ class Category(Model):
     weight = models.PositiveSmallIntegerField(default=1, blank=True)
 
     class Meta:
+        """
+        Meta options for the Category model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'categories'
         ordering = [Lower('name')]
 
@@ -59,6 +65,12 @@ class Categorization(Model):
     end_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
+        """
+        Meta options for the Categorization model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = ['entity', 'category']
 
     def __str__(self) -> str:

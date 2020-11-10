@@ -18,6 +18,12 @@ class QuoteAttribution(Model):
     position = models.PositiveSmallIntegerField(default=0, blank=True)
 
     class Meta:
+        """
+        Meta options.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = ['quote', 'attributee']
         ordering = ['position']
 

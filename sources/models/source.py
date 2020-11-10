@@ -1,7 +1,7 @@
 """Model classes for sources."""
 
 import re
-from typing import Dict, List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -10,11 +10,10 @@ from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
-from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
+from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
 from modularhistory.models import (
-    DatedModel,
     ModelWithRelatedEntities,
-    SearchableModel,
+    SearchableDatedModel,
     retrieve_or_compute,
 )
 from modularhistory.structures.historic_datetime import HistoricDateTime
@@ -49,12 +48,7 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class Source(
-    TypedModel,
-    DatedModel,
-    SearchableModel,
-    ModelWithRelatedEntities,
-):
+class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source for quotes or historical information."""
 
     full_string = models.CharField(
@@ -126,7 +120,7 @@ class Source(
     class Meta:
         ordering = ['creators', '-date']
 
-    class FieldNames(SearchableModel.FieldNames):
+    class FieldNames(SearchableDatedModel.FieldNames):
         collection = 'collection'
         creators = 'creators'
         description = 'description'

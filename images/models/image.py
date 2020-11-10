@@ -56,6 +56,12 @@ class Image(MediaModel):
     height = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
+        """
+        Meta options for the Image model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = [IMAGE_FIELD_NAME, MediaModel.FieldNames.caption]
         ordering = ['date']
 
