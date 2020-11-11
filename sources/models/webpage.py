@@ -26,8 +26,8 @@ class WebPage(TextualSource):
     def __html__(self) -> str:
         """TODO: write docstring."""
         components = [
-            self.attributee_string,
-            self.linked_title,
+            self.attributee_html,
+            f'"{self.linked_title}"',
             f'<i>{self.website_title}</i>',
             self.organization_name,
             self.date.string if self.date else '',

@@ -115,7 +115,7 @@ class Citation(ModelWithComputations):
                     else:
                         html = components_to_html(
                             [
-                                f'{quote.attributee_string or "Unidentified person"}',
+                                f'{quote.attributee_html or "Unidentified person"}',
                                 f'{quote.date_string}' if quote.date else EMPTY_STRING,
                                 f'quoted in {source_html}',
                             ]

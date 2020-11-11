@@ -37,7 +37,7 @@ class Article(SourceWithPageNumbers):
         The string has the following form:
             ... TODO
         """
-        attributee_html = self.attributee_string
+        attributee_html = self.attributee_html
         title = self.linked_title.replace('"', "'") if self.title else EMPTY_STRING
         publication_html = (
             self.publication.html if self.publication else EMPTY_STRING

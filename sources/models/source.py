@@ -1,7 +1,8 @@
 """Model classes for sources."""
 
+import logging
 import re
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import Dict, List, Optional, TYPE_CHECKING, Union
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -10,7 +11,7 @@ from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
-from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
+from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
 from modularhistory.models import (
     ModelWithRelatedEntities,
     SearchableDatedModel,
@@ -187,24 +188,43 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         return format_html(element)
 
     @property
-    def attributee_string(self) -> Optional[str]:
-        """Return a string representing the source's attributees."""
-        if self.creators:
-            return self.creators
+    def attributee_html(self) -> Optional[SafeString]:
+        """Return an HTML string representing the source's attributees."""
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
-        elif not self.pk or not self.attributees.exists():
+        has_attributees = self.attributees.exists() if self.pk else False
+        if self.creators:
+            attributee_html = self.creators
+            if has_attributees:
+                for entity in self.attributees.all().iterator():
+                    if entity.name in attributee_html:
+                        attributee_html = attributee_html.replace(
+                            entity.name, entity.name_html
+                        )
+            else:
+                logging.info(f'Returning uncomputed creator string: {attributee_html}')
+            return format_html(attributee_html)
+        elif not has_attributees:
             return None
         attributees = self.ordered_attributees
         n_attributions = len(attributees)
         first_attributee = attributees[0]
-        string = str(first_attributee)
+        html = first_attributee.name_html
         if n_attributions == 2:
-            string = f'{string} and {attributees[1]}'
+            html = f'{html} and {attributees[1].name_html}'
         elif n_attributions == 3:
-            string = f'{string}, {attributees[1]}, and {attributees[2]}'
+            html = (
+                f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
+            )
         elif n_attributions > 3:
-            string = f'{string} et al.'
-        return string
+            html = f'{html} et al.'
+        return format_html(html)
+
+    @property
+    def attributee_string(self) -> Optional[str]:
+        """Return a string representing the source's attributees."""
+        if self.attributee_html:
+            return soupify(self.attributee_html).get_text()
+        return None
 
     @property
     def container(self) -> Optional['Source']:
@@ -249,7 +269,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
             container_html = f'{containment.container.html}'
 
             # Determine whether the container has the same attributee
-            if containment.container.attributee_string != self.attributee_string:
+            if containment.container.attributee_html != self.attributee_html:
                 same_creator = False
 
             # Remove redundant creator string if necessary
@@ -257,13 +277,13 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
                 all(
                     [
                         same_creator,
-                        self.attributee_string,
+                        self.attributee_html,
                     ]
                 )
-                and self.attributee_string in container_html
+                and self.attributee_html in container_html
             )
             if creator_string_is_duplicated:
-                container_html = container_html[len(f'{self.attributee_string}, ') :]
+                container_html = container_html[len(f'{self.attributee_html}, ') :]
 
             # Include the page number
             if containment.page_number:
@@ -310,9 +330,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         This method is accessible as a property.
         """
         # TODO: html methods should be split into different classes and/or mixins.
-        html = self.computations.get('html')
-        if html:
-            return format_html(html)
         html = self.__html__
         container_strings = self.get_container_strings()
         if container_strings:

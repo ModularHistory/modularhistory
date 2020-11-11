@@ -43,7 +43,7 @@ class Correspondence(DocumentSource):
     @property
     def __html__(self) -> str:
         """TODO: write docstring."""
-        html = f'{self.attributee_string}, '
+        html = f'{self.attributee_html}, '
         if self.href:
             html = f'{html}<a href="{self.href}" target="_blank">'
         html = f'{html}{self.type_label} to {self.recipient or "<Unknown>"}'

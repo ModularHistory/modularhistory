@@ -147,7 +147,7 @@ class Document(DocumentSource):
     def __html__(self) -> str:
         """Return the repository's HTML representation."""
         components = [
-            self.attributee_string,
+            self.attributee_html,
             self.linked_title if self.title else 'untitled document',
             self.date.string if self.date else 'date unknown',
             self.descriptive_phrase,

@@ -10,5 +10,13 @@ class TopicSerializer(ModelSerializer):
     key = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return f'topics.topic'
+        """Return the model name of serialized topics."""
+        return 'topics.topic'
+
+
+class FactSerializer(ModelSerializer):
+    """Serializer for facts."""
+
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of serialized facts."""
+        return 'topics.fact'

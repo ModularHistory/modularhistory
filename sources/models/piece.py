@@ -12,7 +12,7 @@ class Piece(SourceWithPageNumbers):
     def __html__(self) -> str:
         """TODO: write docstring."""
         components = [
-            self.attributee_string,
+            self.attributee_html,
             f'"{self.linked_title}"',
             self.date.string if self.date else '',
         ]

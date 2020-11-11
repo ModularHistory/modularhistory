@@ -17,7 +17,6 @@ from modularhistory.constants.misc import (
 )
 from modularhistory.models import Model, SearchableDatedModel
 from modularhistory.structures.historic_datetime import HistoricDateTime
-from modularhistory.utils.string import truncate
 from occurrences.models import Occurrence
 from quotes.models import Quote
 from search.forms import SearchForm
@@ -25,6 +24,7 @@ from sources.models import Source
 from topics.models import Topic
 
 QUERY_KEY = 'query'
+N_RESULTS_PER_PAGE = 10
 
 
 def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDateTime:
@@ -42,7 +42,6 @@ def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDa
     if getattr(model_instance, 'end_date', None):
         microsecond = date.microsecond + 1
         date = date.replace(microsecond=microsecond)
-    logging.info(f'{date}: {truncate(str(model_instance))}\n')
     return date
 
 
@@ -51,7 +50,7 @@ def rank_sorter(model_instance: SearchableDatedModel):
     rank = getattr(model_instance, 'rank', None)
     if not rank:
         raise Exception('No rank')
-    logging.info(f'{rank}: {model_instance}\n')
+    logging.debug(f'{rank}: {model_instance}\n')
     return rank
 
 
@@ -61,7 +60,7 @@ class SearchResultsView(ListView):
     """View that displays search results."""
 
     template_name = 'search/search_results.html'
-    paginate_by = 10
+    paginate_by = N_RESULTS_PER_PAGE
 
     excluded_content_types: Optional[List[int]]
     sort_by_relevance: bool
@@ -85,6 +84,9 @@ class SearchResultsView(ListView):
     def get_context_data(self, *args, **kwargs) -> Dict:
         """Return the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
+        context['object_list'] = [
+            instance.serialize() for instance in context['object_list']
+        ]
         context['count'] = self.results_count or 0
         query = self.request.GET.get(QUERY_KEY)
         context[QUERY_KEY] = query
@@ -180,8 +182,7 @@ class SearchResultsView(ListView):
         )
 
         self.results_count = len(ordered_queryset)
-
-        return [instance.serialize() for instance in ordered_queryset]
+        return ordered_queryset
 
     def order_queryset(self, queryset_chain):
         """Return an ordered queryset based on a queryset chain."""

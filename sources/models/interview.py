@@ -21,7 +21,7 @@ class Interview(SpokenSource):
     def __html__(self) -> str:
         """TODO: write docstring."""
         components = [
-            f'{self.attributee_string} to {self.interviewers or "interviewer"}',
+            f'{self.attributee_html} to {self.interviewers or "interviewer"}',
             self.date.string if self.date else '',
         ]
         return self.components_to_html(components)

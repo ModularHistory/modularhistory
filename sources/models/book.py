@@ -139,7 +139,7 @@ class Book(TextualSource):
     def __html__(self) -> str:
         """Return the book's HTML representation."""
         components = [
-            self.attributee_string if self.attributee_string else EMPTY_STRING,
+            self.attributee_html if self.attributee_html else EMPTY_STRING,
             f'<i>{self.linked_title}</i>' if self.title else EMPTY_STRING,
             self.edition_string,
             self.printing_string,
@@ -186,15 +186,15 @@ class SectionSource(TextualSource):
         container_html = None
         if self.container:
             container_html = f'{self.container.html}'
-            if self.attributee_string:
-                if self.attributee_string == self.container.attributee_string:
+            if self.attributee_html:
+                if self.attributee_html == self.container.attributee_html:
                     container_html = container_html.replace(
-                        f'{self.attributee_string}, ', EMPTY_STRING
+                        f'{self.attributee_html}, ', EMPTY_STRING
                     )
-        if self.attributee_string:
-            attributee_string = self.attributee_string
+        if self.attributee_html:
+            attributee_string = self.attributee_html
         elif self.container:
-            attributee_string = self.container.attributee_string
+            attributee_string = self.container.attributee_html
         else:
             attributee_string = None
         components = [

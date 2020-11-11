@@ -43,7 +43,7 @@ class Affidavit(DocumentSource):
     def __html__(self) -> str:
         """TODO: add docstring."""
         components = [
-            self.attributee_string,
+            self.attributee_html,
             f'affidavit sworn {self.date_html} at {self.location.string} before {self.certifier}',
         ]
         return self.components_to_html(components)

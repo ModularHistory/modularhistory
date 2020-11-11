@@ -29,6 +29,8 @@ class ModelNameSet(Constant):
     place = 'place'
     quote = 'quote'
     source = 'source'
+    topic = 'topic'
+    fact = 'fact'
 
 
 MODEL_CLASS_PATHS = {
@@ -39,6 +41,7 @@ MODEL_CLASS_PATHS = {
     ModelNameSet.place: 'places.models.Place',
     ModelNameSet.quote: 'quotes.models.Quote',
     ModelNameSet.source: 'sources.models.Source',
+    ModelNameSet.fact: 'topics.models.Fact'
 }
 
 CONTENT_TYPE_IDS = {

@@ -38,14 +38,14 @@ def get_html_for_view(
         model_name: model_instance,
         'object': model_instance,
     }
-    logging.info(f'Rendering {template_name} for {model_instance}...')
+    logging.debug(f'Rendering {template_name} for {model_instance}...')
     template = loader.get_template(template_name)
     try:
         response = template.render(context)
     except ValueError:
         template_directory_name = inflect.engine().plural(model_name)
         template_name = f'{template_directory_name}/_{view_name}.html'
-        logging.info(f'Rendering {template_name} for {model_instance}...')
+        logging.debug(f'Rendering {template_name} for {model_instance}...')
         template = loader.get_template(template_name)
         response = template.render(context)
     if text_to_highlight:

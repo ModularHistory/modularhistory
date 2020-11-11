@@ -22,7 +22,7 @@ class Documentary(VideoSource):
     def __html__(self) -> str:
         """TODO: add docstring."""
         components = [
-            self.attributee_string,
+            self.attributee_html,
             f'<em>{self.linked_title}</em>',
             self.date.string if self.date else '',
         ]

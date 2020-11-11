@@ -44,7 +44,7 @@ class SpokenSource(Source):
                     delivery_string = f'{delivery_string} in {self.date_string}'
         # Build full string
         components = [
-            self.attributee_string,
+            self.attributee_html,
             f'"{self.linked_title}"' if self.title else '',
             delivery_string,
         ]

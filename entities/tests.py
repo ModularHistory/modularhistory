@@ -16,3 +16,6 @@ def test_entities(django_app, django_assert_max_num_queries):
     page.mustcontain('<body>')
     with django_assert_max_num_queries(EXPECTED_N_SQL_QUERIES):
         django_app.get(reverse('entities:index'))
+
+
+# TODO: test that name_html matches regex in html_field

@@ -1,15 +1,16 @@
+import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from django.db import models
-from django.db.models import SET_NULL, ForeignKey, ManyToManyField, QuerySet
+from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from entities.serializers import EntitySerializer
 from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.fields import ArrayField, HistoricDateTimeField, HTMLField
+from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
 from modularhistory.models import (
     ModelWithComputations,
     ModelWithImages,
@@ -93,10 +94,24 @@ class Entity(
         self.clean()
         super().save(*args, **kwargs)
 
+    def clean(self):
+        """Prepare the entity to be saved."""
+        super().clean()
+        if not self.unabbreviated_name:
+            self.unabbreviated_name = self.name
+
     @property
     def has_quotes(self) -> bool:
         """Return whether the entity has any attributed quotes."""
         return bool(len(self.quotes.all()))
+
+    @property
+    def name_html(self) -> SafeString:
+        """Return an HTML string of the entity's name."""
+        logging.debug(f'Getting name_html for {self}')
+        return format_html(
+            f'<span class="entity-name" data-entity-id="{self.pk}">{self.name}</span>'
+        )
 
     @property
     def truncated_description(self) -> SafeString:
@@ -104,12 +119,6 @@ class Entity(
         return format_html(
             truncatechars_html(self.description, TRUNCATED_DESCRIPTION_LENGTH)
         )
-
-    def clean(self):
-        """Prepare the entity to be saved."""
-        super().clean()
-        if not self.unabbreviated_name:
-            self.unabbreviated_name = self.name
 
     def get_categorization(self, date: DateTime) -> Optional['Categorization']:
         """Return the most applicable categorization based on the date."""

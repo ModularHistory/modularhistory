@@ -10,6 +10,7 @@ from topics.models.fact_relations import (
     OccurrenceFactRelation,
     TopicFactRelation,
 )
+from topics.serializers import FactSerializer
 
 
 class FactSupport(FactRelation):
@@ -25,11 +26,14 @@ class FactSupport(FactRelation):
     class Meta:
         unique_together = ['supported_fact', 'supportive_fact']
 
+    serializer = FactSerializer
+
 
 class Fact(Model):
     """A fact."""
 
     text = HTMLField(unique=True)
+    elaboration = HTMLField(null=True, blank=True)
     supportive_facts = ManyToManyField(
         'self', through=FactSupport, related_name='supported_facts', symmetrical=False
     )

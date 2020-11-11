@@ -74,7 +74,9 @@ class HTMLField(MceHTMLField):
     processor: Optional[Callable]
 
     # Types of processable objects included in HTML
-    processable_content_types: Iterable[str] = ['quote', 'image', 'citation', 'source']
+    processable_content_types: Iterable[str] = [
+        'quote', 'image', 'citation', 'source', 'fact'
+    ]
 
     def __init__(self, *args, **kwargs):
         """Construct an HTML field instance."""

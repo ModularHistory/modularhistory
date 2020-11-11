@@ -18,7 +18,7 @@ class JournalEntry(SourceWithPageNumbers):
     def __html__(self) -> str:
         """TODO: add docstring."""
         components = [
-            self.attributee_string,
-            f'{"journal" if self.attributee_string else "Journal"} entry dated {self.date.string}',
+            self.attributee_html,
+            f'{"journal" if self.attributee_html else "Journal"} entry dated {self.date.string}',
         ]
         return self.components_to_html(components)
