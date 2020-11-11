@@ -9,10 +9,11 @@ from typing import List, Optional
 
 # from asgiref.sync import sync_to_async
 from django.core.checks import register
-# from django_q.tasks import async_task
 
 from modularhistory.linters.flake8 import flake8
 from modularhistory.linters.mypy import mypy
+
+# from django_q.tasks import async_task
 
 
 def print_result(task):

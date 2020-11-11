@@ -1,6 +1,4 @@
-"""
-Asynchronous tasks.
-"""
+"""Asynchronous tasks."""
 
 import os
 from getpass import getuser

@@ -5,8 +5,10 @@ import logging
 from typing import Any, Dict, List, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
-from django.db.models import JSONField as BaseJSONField, Model  # type: ignore
-from jsonschema import exceptions as jsonschema_exceptions, validate
+from django.db.models import JSONField as BaseJSONField  # type: ignore
+from django.db.models import Model
+from jsonschema import exceptions as jsonschema_exceptions
+from jsonschema import validate
 
 
 class JSONField(BaseJSONField):
@@ -66,7 +68,9 @@ class JSONField(BaseJSONField):
             schema_data = self.get_schema_data(model_instance)
             if schema_data:
                 try:
-                    logging.debug(f'Validating JSON value against schema: {schema_data}')
+                    logging.debug(
+                        f'Validating JSON value against schema: {schema_data}'
+                    )
                     validate(json_value, schema_data)
                 except jsonschema_exceptions.ValidationError as error:
                     raise ValidationError(f'{error}')

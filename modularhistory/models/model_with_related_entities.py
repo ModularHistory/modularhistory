@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from django.db.models import QuerySet
 
@@ -50,9 +50,7 @@ class ModelWithRelatedEntities(Model):
                 aliases = entity.get('aliases') or []
                 for name in set([entity['name']] + aliases):
                     try:
-                        opening_span_tag = (
-                            f'<span class="entity-name" data-entity-id="{entity["pk"]}">'
-                        )
+                        opening_span_tag = f'<span class="entity-name" data-entity-id="{entity["pk"]}">'
                         closing_span_tag = '</span>'
                         html = re.sub(
                             # match instances not in quotations

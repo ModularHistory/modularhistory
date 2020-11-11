@@ -4,9 +4,6 @@ import json
 import logging
 from functools import wraps
 from typing import Callable, Optional
-import re
-
-from django.utils.safestring import SafeString, mark_safe
 
 from modularhistory.fields import JSONField
 from modularhistory.models.model import Model
