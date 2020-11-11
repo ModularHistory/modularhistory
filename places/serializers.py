@@ -1,20 +1,15 @@
 """Serializers for the entities app."""
 
 
-from rest_framework import serializers
+import serpy
+from modularhistory.models.model import ModelSerializer
 
-from places.models import Place
 
-
-class PlaceSerializer(serializers.ModelSerializer):
+class PlaceSerializer(ModelSerializer):
     """Serializer for places."""
 
-    string = serializers.CharField(source='string')
+    string = serpy.Field()
 
-    class Meta:
-        model = Place
-        fields = [
-            'name',
-            'location',
-            'string',
-        ]
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of the instance."""
+        return f'places.place'

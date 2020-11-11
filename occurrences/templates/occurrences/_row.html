@@ -8,7 +8,7 @@
     <div class="card-text">
         {% if occurrence.primary_image %}
             <div style="float:right; max-width:33%;">
-                {{ occurrence.primary_image|get_html_for_view:"image/card" }}
+                {{ occurrence.primary_image|get_html_for_view:"card" }}
             </div>
         {% endif %}
         <div class="lead">
@@ -18,7 +18,7 @@
     </div>
     {% if occurrence.related_quotes.all|length %}
         {% for quote in occurrence.related_quotes.all %}
-            {{ quote|get_html_for_view:"quote/card" }}
+            {{ quote|get_html_for_view:"card" }}
         {% endfor %}
     {% endif %}
     <a class="edit-object-button" target="_blank" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>

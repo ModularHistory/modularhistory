@@ -6,7 +6,7 @@
         {% if topics|length %}
             <div>
                 {% for topic in topics %}
-                    {{ topic|get_html_for_view:"topic/card" }}
+                    {{ topic|get_html_for_view:"card" }}
                 {% endfor %}
             </div>
         {% else %}

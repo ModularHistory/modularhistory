@@ -1,17 +1,18 @@
 """Serializers for the entities app."""
 
-# TODO: https://medium.com/better-programming/how-to-use-drf-serializers-effectively-dc58edc73998
-# TODO: https://www.valentinog.com/blog/drf/
-
-from rest_framework import serializers
+from modularhistory.models.searchable_model import SearchableModelSerializer
+import serpy
 
 
-class ImageSerializer(serializers.Serializer):
+class ImageSerializer(SearchableModelSerializer):
     """Serializer for images."""
 
-    pk = serializers.IntegerField()
-    src_url = serializers.CharField()
-    width = serializers.IntegerField()
-    height = serializers.IntegerField()
-    caption_html = serializers.CharField()
-    provider_string = serializers.CharField()
+    src_url = serpy.Field()
+    width = serpy.IntField()
+    height = serpy.IntField()
+    caption_html = serpy.Field()
+    provider_string = serpy.Field()
+
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of the instance."""
+        return f'images.image'

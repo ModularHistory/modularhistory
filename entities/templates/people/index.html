@@ -1,0 +1,42 @@
+{% extends "entities/index.html" %}
+
+{% load get_html_for_view %}
+{% load media %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+    <div class="container gallery">
+        {% if persons|length %}
+            {% for person in persons %}
+                <div class="card" style="">
+                    <!-- Card image -->
+                    {% if person.serialized_images %}
+                        <div class="view overlay">
+                            <img class="card-img-top" src="{% media person.primary_image.src_url %}" alt="Card image cap">
+                            <a href="{{ person.detail_url }}">
+                                <div class="mask rgba-white-slight"></div>
+                            </a>
+                        </div>
+                    {% endif %}
+                    <!-- Card content -->
+                    <div class="card-body">
+                        <!-- Title -->
+                        <h4 class="card-title">{{ person.name }}</h4>
+                        <!-- Text -->
+                        <p class="card-text">
+                            {{ person.description.html|truncatechars_html:100 }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="lead">
+                Hell is other people.
+            </p>
+            <p>
+                If you have any questions, please <a href="/contact/">contact me</a>.
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}

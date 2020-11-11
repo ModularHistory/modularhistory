@@ -15,7 +15,7 @@ from typing import (
     Type,
     Union,
 )
-
+from django.core.exceptions import ObjectDoesNotExist
 import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
@@ -208,9 +208,13 @@ class Model(DjangoModel):
             )
         key = match.group(PK_GROUP).strip()
         logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
-        model_instance = cls.objects.get(pk=key)
-        object_html = model_instance.html
-        logging.debug(f'Retrieved object HTML: {object_html}')
+        try:
+            model_instance = cls.objects.get(pk=key)
+            object_html = model_instance.html
+            logging.debug(f'Retrieved object HTML: {object_html}')
+        except ObjectDoesNotExist as e:
+            logging.error(f'Unable to retrieve object HTML; {e}')
+            return ''
         return object_html
 
     @classmethod

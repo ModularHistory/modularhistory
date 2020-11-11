@@ -1,5 +1,5 @@
 from typing import Dict, Optional, TYPE_CHECKING, Union
-
+import logging
 from django.template import loader
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -23,6 +23,7 @@ def get_html_for_view(
         model_name = model_instance.__class__.__name__.lower()
     template_directory_name = app_name
     template_name = f'{template_directory_name}/_{template_name}.html'
+    logging.debug(f'Rendering {template_name} for {model_instance}...')
     template = loader.get_template(template_name)
     context = {
         model_name: model_instance,

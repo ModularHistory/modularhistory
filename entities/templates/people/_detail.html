@@ -2,30 +2,30 @@
 {% load get_html_for_view %}
 
 <div class="container my-4">
-    <a class="edit-object-button float-right pull-right" target="_blank" href="{{ entity|get_admin_url }}">
+    <a class="edit-object-button float-right pull-right" target="_blank" href="{{ person|get_admin_url }}">
         <i class="fa fa-edit"></i>
     </a>
-    <h1>{{ entity }}</h1>
-    {% if entity.birth_date and entity.death_date %}
-        <p>{{ entity.birth_date.html }} – {{ entity.death_date.html }}</p>
-    {% elif entity.birth_date %}
-        <p>b. {{ entity.birth_date.html }}</p>
-    {% elif entity.death_date %}
-        <p>d. {{ entity.death_date.html }}</p>
+    <h1>{{ person }}</h1>
+    {% if person.birth_date and person.death_date %}
+        <p>{{ person.birth_date.html }} – {{ person.death_date.html }}</p>
+    {% elif person.birth_date %}
+        <p>b. {{ person.birth_date.html }}</p>
+    {% elif person.death_date %}
+        <p>d. {{ person.death_date.html }}</p>
     {% endif %}
     <div>
-        {% if entity.serialized_images and not entity.quotes.all|length %}
-            <div class="img-container">{{ entity.primary_image|get_html_for_view:"card" }}</div>
+        {% if person.serialized_images and not person.quotes.all|length %}
+            <div class="img-container">{{ person.primary_image|get_html_for_view:"card" }}</div>
         {% endif %}
-        {{ entity.description.html }}
+        {{ person.description.html }}
     </div>
     <div>
-        {% if entity.quotes.all|length %}
-            {% for quote in entity.quotes.all %}
+        {% if person.quotes.all|length %}
+            {% for quote in person.quotes.all %}
                 <hr style="clear: both" />
                 <div class="m-2" data-key="{{ quote.key }}" data-href="{% block detail_url %}{% endblock %}">
                     {% if quote.primary_image %}
-                        {% if quote.html|length > 1500 or entity.quotes.all|length == 1 %}
+                        {% if quote.html|length > 1500 or person.quotes.all|length == 1 %}
                             <div class="img-container">
                                 {{ quote.primary_image|get_html_for_view:"card" }}
                             </div>

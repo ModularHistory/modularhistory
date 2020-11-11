@@ -1,12 +1,14 @@
 """Serializers for the entities app."""
 
-# TODO: https://medium.com/better-programming/how-to-use-drf-serializers-effectively-dc58edc73998
-# TODO: https://www.valentinog.com/blog/drf/
-
-from rest_framework import serializers
+from modularhistory.models.model import ModelSerializer
+import serpy
 
 
-class EntitySerializer(serializers.Serializer):
+class EntitySerializer(ModelSerializer):
     """Serializer for entities."""
 
-    name = serializers.CharField()
+    name = serpy.Field()
+
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of the instance."""
+        return f'entities.{instance.__class__.__name__.lower()}'

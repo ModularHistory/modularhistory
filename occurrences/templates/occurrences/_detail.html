@@ -18,7 +18,7 @@
         {% for image in occurrence.serialized_images %}
             {% if image.src_url not in occurrence.description %}
                 <div class="img-container" style="max-width: 44%">
-                    {{ image|get_html_for_view:"image/card" }}
+                    {{ image|get_html_for_view:"card" }}
                 </div>
             {% endif %}
         {% endfor %}

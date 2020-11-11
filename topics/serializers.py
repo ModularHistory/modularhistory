@@ -1,15 +1,14 @@
 """Serializers for the entities app."""
 
-from rest_framework import serializers
+from modularhistory.models.model import ModelSerializer
+import serpy
 
-from topics.models import Topic
 
-
-class TopicSerializer(serializers.ModelSerializer):
+class TopicSerializer(ModelSerializer):
     """Serializer for topics."""
 
-    class Meta:
-        model = Topic
-        fields = [
-            'key',
-        ]
+    key = serpy.Field()
+
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of the instance."""
+        return f'topics.topic'
