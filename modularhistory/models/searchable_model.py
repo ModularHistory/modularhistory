@@ -1,5 +1,6 @@
 """Base classes for models that appear in ModularHistory search results."""
 
+import re
 import uuid
 from typing import Match, TYPE_CHECKING
 
@@ -49,8 +50,7 @@ class SearchableModel(TaggableModel, ModelWithComputations):
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
             updated_placeholder = (
-                f'{placeholder.replace(" >>", "").replace(">>", "")}'
-                f'{updated_appendage} >>'
+                f'{re.sub(r" ?(?:>>|&gt;&gt;)", "", placeholder)}{updated_appendage} >>'
             )
         return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
 
