@@ -58,5 +58,5 @@ class SearchableModel(TaggableModel, ModelWithComputations):
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
-    key = serpy.Field()
+    key = serpy.StrField()
     tags_html = serpy.Field()
