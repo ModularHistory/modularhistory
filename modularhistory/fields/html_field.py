@@ -190,8 +190,8 @@ class HTMLField(MceHTMLField):
             (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
             (r'<p>&nbsp;<\/p>', EMPTY_STRING),
-            (r'\{\{', '<<'),
-            (r'\}\}', '>>'),
+            (r'(?:\{\{|&lt;&lt;)', '<<'),
+            (r'(?:\}\}|&gt;&gt;)', '>>'),
         )
         for pattern, replacement in replacements:
             html_value = re.sub(pattern, replacement, html_value)

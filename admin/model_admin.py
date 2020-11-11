@@ -53,6 +53,7 @@ class ModelAdmin(NestedModelAdmin):
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
+                'https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
                 BASE_CSS,
                 MCE_CSS,
                 ADMIN_CSS,

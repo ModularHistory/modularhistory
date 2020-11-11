@@ -45,6 +45,9 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 ADMIN_PLACEHOLDER_REGEX = OBJECT_PLACEHOLDER_REGEX
 MODEL_NAME_GROUP = 1
 PK_GROUP = 2
+APPENDAGE_GROUP = 3
+PRERETRIEVED_HTML_GROUP = 4
+CLOSING_BRACKETS_GROUP = 5
 
 
 class Views(Constant):
@@ -196,15 +199,15 @@ class Model(DjangoModel):
 
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(3)
+            preretrieved_html = match.group(PRERETRIEVED_HTML_GROUP)
             if preretrieved_html:
                 return preretrieved_html.strip()
             logging.info(
                 f'Could not use preretrieved HTML for {match.group(MODEL_NAME_GROUP)} '
                 f'({match.group(PK_GROUP)}); querying db instead.'
             )
-
         key = match.group(PK_GROUP).strip()
+        logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
         model_instance = cls.objects.get(pk=key)
         object_html = model_instance.html
         logging.debug(f'Retrieved object HTML: {object_html}')
