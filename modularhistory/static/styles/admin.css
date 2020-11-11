@@ -224,6 +224,9 @@ tbody.djn-tbody.has_original {
 .djn-tr > td.original > p:nth-child(2) {
   margin-left: 1rem; }
 
+div.readonly {
+  white-space: pre; }
+
 .form-row > div {
   position: relative; }
   .form-row > div > label {

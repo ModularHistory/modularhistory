@@ -123,7 +123,7 @@ class Quote(
     @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
     def attributee_html(self) -> SafeString:
         """Return the HTML representing the quote's attributees."""
-        logging.info('Computing attributee HTML...')
+        logging.debug('Computing attributee HTML...')
         attributees = self.ordered_attributees
         attributee_html = ''
         if attributees:

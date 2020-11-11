@@ -91,7 +91,7 @@ def commit(context):
 
 @task
 def deploy(context):
-    """Run linters."""
+    """Deploy ModularHistory."""
     # TODO
     is_implemented = False
     if is_implemented:

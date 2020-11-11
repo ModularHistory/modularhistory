@@ -17,7 +17,7 @@ class SearchableModelAdmin(ModelAdmin):
 
     model: Type['SearchableModel']
 
-    readonly_fields = ['computations']
+    readonly_fields = ['pretty_computations']
 
     def get_search_results(
         self, request: HttpRequest, queryset: QuerySet, search_term: str

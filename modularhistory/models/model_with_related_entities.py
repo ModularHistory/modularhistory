@@ -1,5 +1,6 @@
 """Classes for models with related entities."""
 
+import logging
 import re
 from typing import Dict, List, Optional, TYPE_CHECKING
 
@@ -48,14 +49,17 @@ class ModelWithRelatedEntities(Model):
             for entity in entities:
                 aliases = entity.get('aliases') or []
                 for name in set([entity['name']] + aliases):
-                    opening_span_tag = (
-                        f'<span class="entity-name" data-entity-id="{entity["pk"]}">'
-                    )
-                    closing_span_tag = '</span>'
-                    html = re.sub(
-                        # match instances not in quotations
-                        rf'(^|^<p>|[^>])({name})(?:(?!\w|[^\ ]\"))',
-                        rf'\g<1>{opening_span_tag}\g<2>{closing_span_tag}',
-                        html,
-                    )
+                    try:
+                        opening_span_tag = (
+                            f'<span class="entity-name" data-entity-id="{entity["pk"]}">'
+                        )
+                        closing_span_tag = '</span>'
+                        html = re.sub(
+                            # match instances not in quotations
+                            rf'(^|^<p>|[^>])({name})(?:(?!\w|[^\ ]\"))',
+                            rf'\g<1>{opening_span_tag}\g<2>{closing_span_tag}',
+                            html,
+                        )
+                    except KeyError as err:
+                        logging.error(f'{err}')
         return html

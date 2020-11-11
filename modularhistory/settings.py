@@ -165,6 +165,7 @@ INSTALLED_APPS = [
     'django_json_widget',  # https://github.com/jmrivas86/django-json-widget
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
+    'django_q',  # https://django-q.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
     'decouple',  # https://github.com/henriquebastos/python-decouple/
@@ -305,28 +306,33 @@ elif ENVIRONMENT == Environments.GITHUB_TEST:
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
-elif ENVIRONMENT == Environments.DEV and USE_PROD_DB:
-    DATABASES = {
-        'default': {
-            'NAME': config('PROD_DB_NAME'),
-            'USER': config('PROD_DB_USER'),
-            'PASSWORD': config('PROD_DB_PASSWORD'),
-            'HOST': config('PROD_DB_HOST'),
-            'PORT': config('PROD_DB_PORT'),
-            'ENGINE': 'django.db.backends.postgresql',
-        },
-    }
-    print('WARNING: Using production database!  Tread carefully!')
-else:
-    DATABASES = {
-        'default': {
-            'NAME': config('DB_NAME', default='modularhistory'),
-            'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST', default='localhost'),
-            'ENGINE': 'django.db.backends.postgresql',
-        },
-    }
+elif ENVIRONMENT == Environments.DEV:
+    if USE_PROD_DB:
+        DATABASES = {
+            'default': {
+                'NAME': config('PROD_DB_NAME'),
+                'USER': config('PROD_DB_USER'),
+                'PASSWORD': config('PROD_DB_PASSWORD'),
+                'HOST': config('PROD_DB_HOST'),
+                'PORT': config('PROD_DB_PORT'),
+                'ENGINE': 'django.db.backends.postgresql',
+            },
+        }
+        print('WARNING: Using production database!  Tread carefully!')
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': config('DB_NAME', default='modularhistory'),
+                'USER': config('DB_USER', default='postgres'),
+                'PASSWORD': config('DB_PASSWORD'),
+                'HOST': config('DB_HOST', default='localhost'),
+            },
+            # 'mongo': {
+            #     'ENGINE' : 'django_mongodb_engine',
+            #     'NAME' : 'default'
+            # }
+        }
 
 # https://django-dbbackup.readthedocs.io/en/master/
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
@@ -719,6 +725,21 @@ if ENVIRONMENT == Environments.DEV:
                 # TODO: https://github.com/django-pymemcache/django-pymemcache
             },
         }
+
+    # https://django-q.readthedocs.io/en/latest/configure.html
+    Q_CLUSTER = {
+        # 'name': 'MongoDB',
+        # 'workers': 8,
+        # 'timeout': 60,
+        # 'retry': 70,
+        # 'queue_limit': 100,
+        'orm': 'default'
+        # TODO
+        # 'mongo': {
+        #     'host': '127.0.0.1',
+        #     'port': 27017
+        # }
+    }
 
 # # Celery settings
 # CELERY_RESULT_BACKEND = 'django-db'

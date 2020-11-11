@@ -34,7 +34,7 @@ class TopicAdmin(ModelAdmin):
     ]
     list_filter = [RelatedTopicFilter]
     list_per_page = 20
-    readonly_fields = ['computations']
+    readonly_fields = ['pretty_computations']
     search_fields = ['key', 'aliases', 'description']
     ordering = ['key']
 

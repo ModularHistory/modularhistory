@@ -15,8 +15,9 @@ from modularhistory.constants.misc import (
     QUOTE_CT_ID,
     SOURCE_CT_ID,
 )
-from modularhistory.models import DatedModel, Model
+from modularhistory.models import Model, SearchableDatedModel
 from modularhistory.structures.historic_datetime import HistoricDateTime
+from modularhistory.utils.string import truncate
 from occurrences.models import Occurrence
 from quotes.models import Quote
 from search.forms import SearchForm
@@ -26,11 +27,13 @@ from topics.models import Topic
 QUERY_KEY = 'query'
 
 
-def date_sorter(model_instance: Union[Model, DatedModel]) -> HistoricDateTime:
+def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDateTime:
     """Return the value used to sort the model instance by date."""
     get_date = getattr(model_instance, 'get_date', None)
     if get_date is not None:
         date = get_date()
+    elif isinstance(model_instance, dict):
+        date = model_instance.get('date')
     else:
         date = getattr(model_instance, 'date', None)
     if not date:
@@ -39,15 +42,16 @@ def date_sorter(model_instance: Union[Model, DatedModel]) -> HistoricDateTime:
     if getattr(model_instance, 'end_date', None):
         microsecond = date.microsecond + 1
         date = date.replace(microsecond=microsecond)
+    logging.info(f'{date}: {truncate(str(model_instance))}\n')
     return date
 
 
-def rank_sorter(model_instance: Model):
+def rank_sorter(model_instance: SearchableDatedModel):
     """Return the value used to sort the model instance by rank/relevance."""
     rank = getattr(model_instance, 'rank', None)
     if not rank:
         raise Exception('No rank')
-    logging.info(f'>>> {rank}: {model_instance}\n')
+    logging.info(f'{rank}: {model_instance}\n')
     return rank
 
 
@@ -177,7 +181,7 @@ class SearchResultsView(ListView):
 
         self.results_count = len(ordered_queryset)
 
-        return ordered_queryset
+        return [instance.serialize() for instance in ordered_queryset]
 
     def order_queryset(self, queryset_chain):
         """Return an ordered queryset based on a queryset chain."""
@@ -198,13 +202,10 @@ class SearchResultsView(ListView):
 
 def _get_occurrence_results(ct_ids, **search_kwargs):
     if OCCURRENCE_CT_ID in ct_ids or not ct_ids:
-        occurrence_results = [
-            occurrence.serialize()
-            for occurrence in Occurrence.objects.search(**search_kwargs).iterator()
-        ]
+        occurrence_results = list(Occurrence.objects.search(**search_kwargs).iterator())
     else:
         occurrence_results = []
-    return occurrence_results, [occurrence['pk'] for occurrence in occurrence_results]
+    return occurrence_results, [occurrence.pk for occurrence in occurrence_results]
 
 
 def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
@@ -216,10 +217,10 @@ def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
                 Q(relations__content_type_id=OCCURRENCE_CT_ID)
                 & Q(relations__object_id__in=occurrence_result_ids)
             )
-        quote_results = [quote.serialize() for quote in quote_results.iterator()]
+        quote_results = list(quote_results.iterator())
     else:
         quote_results = []
-    return quote_results, [quote['pk'] for quote in quote_results]
+    return quote_results, [quote.pk for quote in quote_results]
 
 
 def _get_image_results(
@@ -238,7 +239,7 @@ def _get_image_results(
             image_results = image_results.exclude(
                 entities__quotes__id__in=quote_result_ids
             )
-        image_results = [image.serialize() for image in image_results.iterator()]
+        image_results = list(image_results.iterator())
     else:
         image_results = []
     return image_results
@@ -263,7 +264,7 @@ def _get_source_results(
                 | Q(quotes__id__in=quote_result_ids)
                 | Q(contained_sources__quotes__id__in=quote_result_ids)
             )
-        source_results = [source.serialize() for source in source_results.iterator()]
+        source_results = [source for source in source_results.iterator()]
     else:
-        source_results = Source.objects.none()
-    return source_results, [source['pk'] for source in source_results]
+        source_results = []
+    return source_results, [source.pk for source in source_results]

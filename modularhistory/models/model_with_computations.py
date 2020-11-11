@@ -1,8 +1,12 @@
 """Base classes for models that appear in ModularHistory search results."""
 
+import json
 import logging
 from functools import wraps
 from typing import Callable, Optional
+import re
+
+from django.utils.safestring import SafeString, mark_safe
 
 from modularhistory.fields import JSONField
 from modularhistory.models.model import Model
@@ -43,6 +47,11 @@ class ModelWithComputations(Model):
         if wipe_computations:
             self.computations = {}  # type: ignore
         super().save(*args, **kwargs)
+
+    @property
+    def pretty_computations(self) -> str:
+        """Return prettified JSON string of computations, for debugging/admin."""
+        return json.dumps(self.computations, indent=4)
 
 
 def retrieve_or_compute(

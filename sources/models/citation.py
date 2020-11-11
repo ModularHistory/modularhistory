@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 # group 7: ignore
 # group 8: citation HTML
 ADMIN_PLACEHOLDER_REGEX = (
-    r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?([:\ ]?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'
+    r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?([:\ ]?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'  # noqa: E501
 )
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'

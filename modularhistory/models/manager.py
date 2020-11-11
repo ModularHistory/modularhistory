@@ -86,7 +86,7 @@ class SearchableModelQuerySet(QuerySet):
             qs = qs.annotate(**annotations)  # type: ignore
             qs = qs.filter(search=search_query)
         distinct_results = qs.order_by('pk').distinct('pk')
-        logging.info(f'Returning {len(distinct_results)} distinct search results...')
+        logging.debug(f'Returning {len(distinct_results)} distinct search results...')
         return distinct_results
 
 

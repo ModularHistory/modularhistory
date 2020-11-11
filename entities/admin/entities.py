@@ -40,7 +40,7 @@ class EntityAdmin(ModelAdmin):
         RelatedQuotesInline,
     ]
     ordering = ['name', 'birth_date']
-    readonly_fields = ['computations']
+    readonly_fields = ['pretty_computations']
     search_fields = ['name', 'aliases']
 
 

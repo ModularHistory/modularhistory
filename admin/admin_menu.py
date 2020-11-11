@@ -35,8 +35,6 @@ def _get_models_registered_in_app(app: str) -> Iterable:
 class AdminMenu(Menu):
     """Custom menu for ModularHistory's admin site."""
 
-    apps_to_include = APPS_TO_INCLUDE
-
     class Media:
         """Static files to be included with the menu."""
 
@@ -51,14 +49,19 @@ class AdminMenu(Menu):
             items.Bookmarks(),
             items.AppList(
                 title='Applications',
-                exclude=['django.contrib.*', 'social_django.*', 'django_celery_*'],
+                exclude=[
+                    'django.contrib.*',
+                    'social_django.*',
+                    'django_celery_*',
+                    'django_q.*',
+                ],
             ),
         ] + self._menu_items
 
     @property
     def _menu_items(self):
         menu_items = []
-        for app in self.apps_to_include:
+        for app in APPS_TO_INCLUDE:
             models = _get_models_registered_in_app(app)
             children = []
             for model_cls in models:

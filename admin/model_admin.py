@@ -6,6 +6,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db.models import JSONField
 from django.http import HttpRequest
+from django_q.admin import FailAdmin, QueueAdmin, ScheduleAdmin, TaskAdmin
+from django_q.models import Failure, OrmQ, Schedule, Task
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
@@ -118,3 +120,8 @@ class SiteAdmin(ModelAdmin):
 
 
 admin_site.register(Site, SiteAdmin)
+
+admin_site.register(Failure, FailAdmin)
+admin_site.register(Schedule, ScheduleAdmin)
+admin_site.register(OrmQ, QueueAdmin)
+admin_site.register(Task, TaskAdmin)

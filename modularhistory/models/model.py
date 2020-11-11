@@ -2,6 +2,7 @@
 
 import logging
 import re
+from pprint import pformat
 from typing import (
     Any,
     ClassVar,
@@ -177,10 +178,10 @@ class Model(DjangoModel):
     def serialize(self) -> Dict:
         """Return the serialized model instance (dictionary)."""
         serialized_instance = self.serializer(self).data
-        # logging.info(
-        #     f'Serialized {self.__class__.__name__.lower()}:\n'
-        #     f'{pformat(serialized_instance)}'
-        # )
+        logging.debug(
+            f'Serialized {self.__class__.__name__.lower()}:\n'
+            f'{pformat(serialized_instance)}'
+        )
         return serialized_instance
 
     @classmethod
@@ -206,7 +207,7 @@ class Model(DjangoModel):
         key = match.group(PK_GROUP).strip()
         model_instance = cls.objects.get(pk=key)
         object_html = model_instance.html
-        logging.info(f'Retrieved object HTML: {object_html}')
+        logging.debug(f'Retrieved object HTML: {object_html}')
         return object_html
 
     @classmethod

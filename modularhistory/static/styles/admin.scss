@@ -32,6 +32,10 @@ tbody.djn-tbody.has_original {
   }
 }
 
+div.readonly {
+  white-space: pre;
+}
+
 .form-row > div {
   position: relative;
   >label {

@@ -36,7 +36,7 @@ class ImageAdmin(ImageCroppingMixin, ModelAdmin):
     ]
     inlines = [EntitiesInline, OccurrencesInline]
     search_fields = Image.searchable_fields
-    readonly_fields = ['height', 'width', 'links', 'computations']
+    readonly_fields = ['height', 'width', 'links', 'pretty_computations']
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10

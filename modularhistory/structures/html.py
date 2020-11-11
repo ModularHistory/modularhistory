@@ -58,7 +58,7 @@ class HTML:
             if callable(self.processor):
                 try:
                     processed_html = self.processor(self.raw_value)
-                    logging.info(f'Processed HTML: {truncate(processed_html)}')
+                    logging.debug(f'Processed HTML: {truncate(processed_html)}')
                 except (RecursionError, Exception) as error:
                     logging.error(
                         f'ERROR: {error} resulted from attempting to process HTML:\n'
