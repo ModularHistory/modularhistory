@@ -1,5 +1,5 @@
 from admin import ModelAdmin, StackedInline, TabularInline, admin_site
-from topics import models
+from facts import models
 
 
 class FactEntitiesInline(TabularInline):
@@ -35,9 +35,9 @@ class SupportiveFactsInline(StackedInline):
 class FactAdmin(ModelAdmin):
     """Admin for facts."""
 
-    list_display = ['text']
+    list_display = ['pk', 'text']
     list_filter = ['related_entities', 'related_occurrences']
-    search_fields = ['text']
+    search_fields = ['text', 'elaboration']
 
     inlines = [
         FactEntitiesInline,

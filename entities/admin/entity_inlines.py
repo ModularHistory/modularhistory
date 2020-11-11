@@ -2,7 +2,7 @@ from admin import TabularInline
 from entities import models
 from occurrences.models import OccurrenceEntityInvolvement
 from quotes.models import Quote
-from topics.models import EntityFactRelation
+from facts.models import EntityFactRelation
 
 
 class QuotesInline(TabularInline):

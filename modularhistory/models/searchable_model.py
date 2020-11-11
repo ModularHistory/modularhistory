@@ -1,8 +1,7 @@
 """Base classes for models that appear in ModularHistory search results."""
 
-import re
 import uuid
-from typing import Match, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import serpy
 from django.db.models import BooleanField, UUIDField
@@ -39,20 +38,6 @@ class SearchableModel(TaggableModel, ModelWithComputations):
         abstract = True
 
     objects: 'SearchableModelManager'
-
-    @classmethod
-    def get_updated_placeholder(cls, match: Match) -> str:
-        """Return a placeholder for a model instance depicted in an HTML field."""
-        placeholder = match.group(0)
-        appendage = match.group(3)
-        updated_appendage = f': {cls.get_object_html(match)}'
-        if appendage:
-            updated_placeholder = placeholder.replace(appendage, updated_appendage)
-        else:
-            updated_placeholder = (
-                f'{re.sub(r" ?(?:>>|&gt;&gt;)", "", placeholder)}{updated_appendage} >>'
-            )
-        return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
 
 
 class SearchableModelSerializer(ModelSerializer):

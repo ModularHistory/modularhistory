@@ -20,6 +20,7 @@ from modularhistory.models import (
     ModelWithSources,
     SearchableDatedModel,
     retrieve_or_compute,
+    PlaceholderGroups,
 )
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
@@ -244,7 +245,7 @@ class Quote(
         """Return the obj's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(4)
+            preretrieved_html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
             if preretrieved_html:
                 return preretrieved_html.strip()
         quote = cls.get_object_from_placeholder(match)

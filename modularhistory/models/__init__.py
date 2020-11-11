@@ -1,6 +1,6 @@
 """Public base models and mixins."""
 
-from .model import Model, BaseTypedModel as TypedModel
+from .model import Model, PlaceholderGroups, BaseTypedModel as TypedModel
 from .dated_model import DatedModel
 from .manager import Manager, SearchableModelManager, TypedModelManager
 from .model_with_computations import ModelWithComputations, retrieve_or_compute

@@ -50,6 +50,7 @@ urlpatterns = [
     path('quotes/', include(('quotes.urls', 'quotes'), namespace='quotes')),
     path('sources/', include(('sources.urls', 'sources'), namespace='sources')),
     path('topics/', include(('topics.urls', 'topics'), namespace='topics')),
+    path('facts/', include(('facts.urls', 'facts'), namespace='facts')),
     re_path(r'search/?', SearchResultsView.as_view(), name='search'),
     path('search/', include(('search.urls', 'search'), namespace='search')),
     path('oauth/', include('social_django.urls', namespace='social')),

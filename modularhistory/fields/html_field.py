@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
-
+from aenum import Constant
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
@@ -19,16 +19,24 @@ if TYPE_CHECKING:
 # group 2: entity name
 ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
-# group 1: model class name
-# group 2: model instance pk
-# group 3: ignore
-# group 4: model instance HTML (or additional groups captured in pattern overrides)
-# group 5: closing brackets, i.e., >>
+# Placeholder groups are defined subsequently.
 OBJECT_PLACEHOLDER_REGEX = re.compile(
     r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)([:\ ,]\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'
 )
-MODEL_NAME_GROUP = 1
-PK_GROUP = 2
+
+
+class PlaceholderGroups(Constant):
+    """Groups in the object placeholder regex pattern."""
+    # group 1: model class name
+    MODEL_NAME_GROUP = 1
+    # group 2: model instance pk
+    PK_GROUP = 2
+    # group 3: ignore
+    APPENDAGE_GROUP = 3
+    # group 4: model instance HTML
+    PRERETRIEVED_HTML_GROUP = 4
+    # group 5: closing brackets
+    CLOSING_BRACKETS_GROUP = 5
 
 
 def process(html: str) -> str:
@@ -40,7 +48,7 @@ def process(html: str) -> str:
     logging.debug(f'Processing HTML: {truncate(html)}')
     for match in OBJECT_PLACEHOLDER_REGEX.finditer(html):
         placeholder = match.group(0)
-        object_type = match.group(MODEL_NAME_GROUP)
+        object_type = match.group(PlaceholderGroups.MODEL_NAME_GROUP)
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
             model_cls: Type[Model] = import_string(model_cls_str)

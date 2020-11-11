@@ -15,17 +15,18 @@ from typing import (
     Type,
     Union,
 )
-from django.core.exceptions import ObjectDoesNotExist
+
 import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
 from django.utils.html import SafeString, format_html
 from rest_framework.serializers import Serializer
 from typedmodels.models import TypedModel as BaseTypedModel
 
-from modularhistory.fields.html_field import OBJECT_PLACEHOLDER_REGEX
+from modularhistory.fields.html_field import OBJECT_PLACEHOLDER_REGEX, PlaceholderGroups
 from modularhistory.models.manager import Manager
 from modularhistory.utils.models import get_html_for_view as get_html_for_view_
 
@@ -37,17 +38,8 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 
 # TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
 
-# group 1: model class name
-# group 2: model instance pk
-# group 3: ignore
-# group 4: model instance HTML
-# group 5: closing brackets
+
 ADMIN_PLACEHOLDER_REGEX = OBJECT_PLACEHOLDER_REGEX
-MODEL_NAME_GROUP = 1
-PK_GROUP = 2
-APPENDAGE_GROUP = 3
-PRERETRIEVED_HTML_GROUP = 4
-CLOSING_BRACKETS_GROUP = 5
 
 
 class Views(Constant):
@@ -199,14 +191,15 @@ class Model(DjangoModel):
 
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(PRERETRIEVED_HTML_GROUP)
+            preretrieved_html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
             if preretrieved_html:
                 return preretrieved_html.strip()
             logging.info(
-                f'Could not use preretrieved HTML for {match.group(MODEL_NAME_GROUP)} '
-                f'({match.group(PK_GROUP)}); querying db instead.'
+                f'Could not use preretrieved HTML for '
+                f'{match.group(PlaceholderGroups.MODEL_NAME_GROUP)} '
+                f'({match.group(PlaceholderGroups.PK_GROUP)}); querying db instead.'
             )
-        key = match.group(PK_GROUP).strip()
+        key = match.group(PlaceholderGroups.PK_GROUP).strip()
         logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
         try:
             model_instance = cls.objects.get(pk=key)
@@ -224,11 +217,25 @@ class Model(DjangoModel):
         """Given a regex match of a model instance placeholder, return the instance."""
         if not cls.admin_placeholder_regex.match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
-        key = match.group(PK_GROUP).strip()
+        key = match.group(PlaceholderGroups.PK_GROUP).strip()
         model_instance: 'Model' = cls.objects.get(pk=key)
         if serialize:
             return model_instance.serialize()
         return model_instance
+
+    @classmethod
+    def get_updated_placeholder(cls, match: Match) -> str:
+        """Return a placeholder for a model instance depicted in an HTML field."""
+        placeholder = match.group(0)
+        appendage = match.group(PlaceholderGroups.APPENDAGE_GROUP)
+        updated_appendage = f': {cls.get_object_html(match)}'
+        if appendage:
+            updated_placeholder = placeholder.replace(appendage, updated_appendage)
+        else:
+            updated_placeholder = (
+                f'{re.sub(r" ?(?:>>|&gt;&gt;)", "", placeholder)}{updated_appendage} >>'
+            )
+        return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
 
 
 class ModelSerializer(serpy.Serializer):

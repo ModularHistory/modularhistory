@@ -176,6 +176,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',
     'entities.apps.EntitiesConfig',
+    'facts.apps.FactsConfig',
     'home.apps.HomeConfig',
     'markup.apps.MarkupConfig',
     'search.apps.SearchConfig',
