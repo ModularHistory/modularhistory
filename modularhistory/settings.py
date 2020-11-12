@@ -163,6 +163,7 @@ INSTALLED_APPS = [
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
+    # 'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html

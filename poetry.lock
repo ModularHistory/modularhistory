@@ -472,7 +472,7 @@ six = "*"
 
 [[package]]
 name = "daphne"
-version = "3.0.0"
+version = "3.0.1"
 description = "Django ASGI (HTTP/WebSocket) server"
 category = "main"
 optional = false
@@ -672,6 +672,23 @@ python-versions = ">=3.5"
 
 [package.dependencies]
 django-appconf = ">=1.0.2"
+
+[[package]]
+name = "django-imagekit"
+version = "4.0.2"
+description = "Automated image processing for Django models."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+django-appconf = ">=0.5"
+pilkit = ">=0.2.0"
+six = "*"
+
+[package.extras]
+async = ["django-celery (>=3.0)"]
+async_rq = ["django-rq (>=0.6.0)"]
 
 [[package]]
 name = "django-json-widget"
@@ -2192,6 +2209,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "pilkit"
+version = "2.0"
+description = "A collection of utilities and processors for the Python Imaging Libary."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pillow"
 version = "8.0.1"
 description = "Python Imaging Library (Fork)"
@@ -2870,7 +2895,7 @@ zipp = {version = "3.4.0", markers = "python_version >= \"3.6\""}
 
 [[package]]
 name = "sentry-sdk"
-version = "0.19.2"
+version = "0.19.3"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
@@ -3357,7 +3382,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "2655f22488edaf353e248ce712c16fe71a43aa0e4fe9dfd126005c4a0cc8b02c"
+content-hash = "eda5e3adaa0ee045d060d0210a95cc39b6b8b865425a1e29fe1d3225e4f8f09b"
 
 [metadata.files]
 aenum = [
@@ -3649,8 +3674,8 @@ cycler = [
     {file = "cycler-0.10.0.tar.gz", hash = "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"},
 ]
 daphne = [
-    {file = "daphne-3.0.0-py3-none-any.whl", hash = "sha256:60856f7efa0b1e1b969efa074e8698bd09de4713ecc06e6a4d19d04c66c4a3bd"},
-    {file = "daphne-3.0.0.tar.gz", hash = "sha256:b43e70d74ff832a634ff6c92badd208824e4530e08b340116517e5aad0aca774"},
+    {file = "daphne-3.0.1-py3-none-any.whl", hash = "sha256:0052c9887600c57054a5867d4b0240159fa009faa3bcf6a1627271d9cdcb005a"},
+    {file = "daphne-3.0.1.tar.gz", hash = "sha256:c22b692707f514de9013651ecb687f2abe4f35cf6fe292ece634e9f1737bc7e3"},
 ]
 darglint = [
     {file = "darglint-1.5.5-py3-none-any.whl", hash = "sha256:cd882c812f28ee3b5577259bfd8d6d25962386dd87fc1f3756eac24370aaa060"},
@@ -3720,6 +3745,10 @@ django-gm2m = [
 django-image-cropping = [
     {file = "django-image-cropping-1.5.0.tar.gz", hash = "sha256:59744e8df88db7e46e37b526fc715fdde665d9efa345922745f50411a6dadb3f"},
     {file = "django_image_cropping-1.5.0-py3-none-any.whl", hash = "sha256:81dbcabb6421c5a1e88fac9d96f336d6109a23dcb8fa6c678329d3688c9973c4"},
+]
+django-imagekit = [
+    {file = "django-imagekit-4.0.2.tar.gz", hash = "sha256:6ec0afb77cdf52cd453c9fc2c10ef350d111edfd6ce53c5977aa8a0e22cee00c"},
+    {file = "django_imagekit-4.0.2-py2.py3-none-any.whl", hash = "sha256:304c3379f6a5cac387e47ace11195a603ad3cb01e3e951b45489824d25b00359"},
 ]
 django-json-widget = [
     {file = "django-json-widget-1.0.1.tar.gz", hash = "sha256:c582cf6284598ec2e601ac3b326784d59fa1be8df2967d27c74083e66bc75d4a"},
@@ -4431,6 +4460,9 @@ pickleshare = [
     {file = "pickleshare-0.7.5-py2.py3-none-any.whl", hash = "sha256:9649af414d74d4df115d5d718f82acb59c9d418196b7b4290ed47a12ce62df56"},
     {file = "pickleshare-0.7.5.tar.gz", hash = "sha256:87683d47965c1da65cdacaf31c8441d12b8044cdec9aca500cd78fc2c683afca"},
 ]
+pilkit = [
+    {file = "pilkit-2.0.tar.gz", hash = "sha256:ddb30c2f0198a147e56b151476c3bb9fe045fbfd5b0a0fa2a3148dba62d1559f"},
+]
 pillow = [
     {file = "Pillow-8.0.1-cp36-cp36m-macosx_10_10_x86_64.whl", hash = "sha256:b63d4ff734263ae4ce6593798bcfee6dbfb00523c82753a3a03cbc05555a9cc3"},
     {file = "Pillow-8.0.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:5f9403af9c790cc18411ea398a6950ee2def2a830ad0cfe6dc9122e6d528b302"},
@@ -4851,8 +4883,8 @@ seleniumbase = [
     {file = "seleniumbase-1.50.4.tar.gz", hash = "sha256:d22e716e7e5d33b9c8fd8016f22881f94ff28c3fec41c402f1dc1e580366301e"},
 ]
 sentry-sdk = [
-    {file = "sentry-sdk-0.19.2.tar.gz", hash = "sha256:17b725df2258354ccb39618ae4ead29651aa92c01a92acf72f98efe06ee2e45a"},
-    {file = "sentry_sdk-0.19.2-py2.py3-none-any.whl", hash = "sha256:9040539485226708b5cad0401d76628fba4eed9154bf301c50579767afe344fd"},
+    {file = "sentry-sdk-0.19.3.tar.gz", hash = "sha256:fd48f627945511c140546939b4d73815be4860cd1d2b9149577d7f6563e7bd60"},
+    {file = "sentry_sdk-0.19.3-py2.py3-none-any.whl", hash = "sha256:81d7a5d8ca0b13a16666e8280127b004565aa988bfeec6481e98a8601804b215"},
 ]
 serpy = [
     {file = "serpy-0.3.1-py2.py3-none-any.whl", hash = "sha256:750ded3df0671918b81d6efcab2b85cac12f9fcc2bce496c24a0ffa65d84b5da"},

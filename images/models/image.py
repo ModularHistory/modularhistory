@@ -55,6 +55,14 @@ class Image(MediaModel):
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
 
+    # https://github.com/jonasundderwolf/django-image-cropping
+    cropping = ImageRatioField(
+        IMAGE_FIELD_NAME,
+        free_crop=True,
+        allow_fullsize=True,
+        help_text='Not yet fully implemented.',
+    )
+
     class Meta:
         """
         Meta options for the Image model.
@@ -67,14 +75,6 @@ class Image(MediaModel):
 
     class FieldNames(MediaModel.FieldNames):
         image = IMAGE_FIELD_NAME
-
-    # https://github.com/jonasundderwolf/django-image-cropping
-    cropping = ImageRatioField(
-        FieldNames.image,
-        free_crop=True,
-        allow_fullsize=True,
-        help_text='Not yet fully implemented.',
-    )
 
     objects: ImageManager = ImageManager()  # type: ignore
     searchable_fields = [
@@ -101,13 +101,6 @@ class Image(MediaModel):
             raise ValidationError(
                 f'{self.image} with caption=`{self.caption}` already exists.'
             )
-        # TODO
-        enable_mega_backup = False
-        if enable_mega_backup:
-            from modularhistory.storage.mega_storage import mega_client
-
-            if mega_client and not len(self.links):
-                mega_client.upload(self.image.url)
 
     @property
     def admin_image_element(self) -> SafeString:
@@ -148,7 +141,7 @@ class Image(MediaModel):
                     'detail': True,
                 }
                 return get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
-            except (KeyError, OSError, InvalidImageFormatError) as error:
+            except Exception as error:
                 # TODO: Send email to admins about the error. Figure out why.
                 logging.error(
                     f'Attempt to retrieve cropped_image_url for image {self.pk} '
