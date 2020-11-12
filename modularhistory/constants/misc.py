@@ -41,7 +41,7 @@ MODEL_CLASS_PATHS = {
     ModelNameSet.place: 'places.models.Place',
     ModelNameSet.quote: 'quotes.models.Quote',
     ModelNameSet.source: 'sources.models.Source',
-    ModelNameSet.fact: 'facts.models.Fact'
+    ModelNameSet.fact: 'facts.models.Fact',
 }
 
 CONTENT_TYPE_IDS = {

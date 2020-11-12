@@ -32,6 +32,45 @@ function initializeListeners(element=null) {
     // Tooltips
     $(scope).tooltip({ selector: '[data-toggle="tooltip"]' });
 
+    $(scope).on()
+
+    $(scope).dblclick(function(event) {
+        let selection = window.getSelection();
+        let node = selection.getRangeAt(0).commonAncestorContainer;
+        if (node.nodeType !== 1) {
+            node = node.parentNode;
+        }
+        let html = $(node).html();
+        if (!$(node).is('[title]')) {
+            event.preventDefault();
+            let word = selection && selection.toString();
+            if (word) {
+                console.log(`Requesting definitions for "${word}"...`);
+                let pattern = `([ >";])${word}([ \.,;:&<])`;
+                let request = {
+                    "url": `/search/words/${word}`,
+                    "crossDomain": false,
+                    "async": true,
+                    "method": "GET",
+                };
+                $.ajax(request).done(function (response) {
+                    let definitions = response['definitions'];
+                    if (definitions) {
+                        let definitions_html = '<ol>'
+                        definitions.forEach(function (item, index) {
+                            definitions_html += `<li>${item['definition']}</li>`;
+                        });
+                        definitions_html += '</ol>';
+                        let word_span = `<span title="${definitions_html}" data-toggle="tooltip" data-html="true" data-trigger="dblclick">${word}</span>`;
+                        $(node).html(html.replaceAll(new RegExp(pattern, "g"), `$1${word_span}$2`));
+                    } else {
+                        console.log(`Failed to retrieve definitions for ${word}.`);
+                    }
+                });
+            }
+        }
+    });
+
     // TODO: clean up
     // // enable annotations
     // $(scope).find('.detail').annotator().annotator('setupPlugins');

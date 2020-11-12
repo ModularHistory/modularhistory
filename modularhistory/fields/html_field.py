@@ -1,12 +1,13 @@
 import logging
 import re
-from typing import Any, Callable, Iterable, Optional, TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Type, Union
 
+from aenum import Constant
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
-from aenum import Constant
+
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
@@ -27,6 +28,7 @@ OBJECT_PLACEHOLDER_REGEX = re.compile(
 
 class PlaceholderGroups(Constant):
     """Groups in the object placeholder regex pattern."""
+
     # group 1: model class name
     MODEL_NAME_GROUP = 1
     # group 2: model instance pk
@@ -83,7 +85,11 @@ class HTMLField(MceHTMLField):
 
     # Types of processable objects included in HTML
     processable_content_types: Iterable[str] = [
-        'quote', 'image', 'citation', 'source', 'fact'
+        'quote',
+        'image',
+        'citation',
+        'source',
+        'fact',
     ]
 
     def __init__(self, *args, **kwargs):

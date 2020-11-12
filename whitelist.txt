@@ -21,12 +21,15 @@ formatpainter
 gunicorn
 hacky
 href
+http
+https
 inferable
 js
 jsonstore
 mixins
 modularhistory
 monkeypatch
+mp3
 mypy
 nbsp
 parsable

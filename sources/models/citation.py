@@ -2,28 +2,33 @@
 
 import logging
 import re
-from typing import Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, SET_NULL
+from django.db.models import CASCADE, SET_NULL, ForeignKey, PositiveSmallIntegerField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from modularhistory.constants.misc import QUOTE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.models import (
-    ModelWithComputations, PlaceholderGroups as DefaultPlaceholderGroups,
-    retrieve_or_compute,
-)
+from modularhistory.models import ModelWithComputations
+from modularhistory.models import PlaceholderGroups as DefaultPlaceholderGroups
+from modularhistory.models import retrieve_or_compute
 from modularhistory.utils import pdf
-from modularhistory.utils.html import components_to_html, compose_link, escape_quotes, soupify
+from modularhistory.utils.html import (
+    components_to_html,
+    compose_link,
+    escape_quotes,
+    soupify,
+)
 from sources.serializers import CitationSerializer
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
+
     from quotes.models import Quote
     from sources.models import PageRange
 
@@ -33,6 +38,7 @@ ADMIN_PLACEHOLDER_REGEX = r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp
 
 class PlaceholderGroups(DefaultPlaceholderGroups):
     """Group numbers for ADMIN_PLACEHOLDER_REGEX."""
+
     # group 1: model class name
     MODEL_NAME_GROUP = 1
     # group 2: citation pk (e.g., '123')

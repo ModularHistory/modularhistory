@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import Dict, List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -11,7 +11,7 @@ from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
-from modularhistory.fields import HTMLField, HistoricDateTimeField, JSONField
+from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
 from modularhistory.models import (
     ModelWithRelatedEntities,
     SearchableDatedModel,
@@ -188,7 +188,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         return format_html(element)
 
     @property
-    def attributee_html(self) -> Optional[SafeString]:
+    def attributee_html(self) -> Optional[str]:
         """Return an HTML string representing the source's attributees."""
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
         has_attributees = self.attributees.exists() if self.pk else False
@@ -212,12 +212,10 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         if n_attributions == 2:
             html = f'{html} and {attributees[1].name_html}'
         elif n_attributions == 3:
-            html = (
-                f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
-            )
+            html = f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
         elif n_attributions > 3:
             html = f'{html} et al.'
-        return format_html(html)
+        return html
 
     @property
     def attributee_string(self) -> Optional[str]:

@@ -1,10 +1,14 @@
 """Views for the search app."""
 
+import json
 import logging
+from http import client
 from itertools import chain
 from typing import Any, Dict, List, Optional, Union
 
+from django.conf import settings
 from django.db.models import Q, QuerySet, Subquery
+from django.http import JsonResponse
 from django.views.generic import ListView
 
 from entities.models import Entity
@@ -52,6 +56,92 @@ def rank_sorter(model_instance: SearchableDatedModel):
         raise Exception('No rank')
     logging.debug(f'{rank}: {model_instance}\n')
     return rank
+
+
+def word_search(request, word: str) -> JsonResponse:
+    """
+    Pass a request to Words API and return the results as JSON.
+
+    Example response:
+    {
+        'word': 'opinion',
+        'definitions': [
+            {'definition': "the reason for a court's judgment", 'partOfSpeech': 'noun'},
+            {'definition': 'the legal document stating the reasons for a judicial decision', 'partOfSpeech': 'noun'},
+            {'definition': 'a personal belief that is not founded on proof or certainty', 'partOfSpeech': 'noun'},
+            {'definition': 'a message expressing a belief about something', 'partOfSpeech': 'noun'},
+        ]
+    }
+    """
+    host = 'wordsapiv1.p.rapidapi.com'
+    connection = client.HTTPSConnection(host)
+    headers = {
+        'x-rapidapi-key': settings.RAPIDAPI_KEY,
+        'x-rapidapi-host': host,
+    }
+    request_url = f'/words/{word}/definitions'
+    connection.request('GET', request_url, headers=headers)
+    logging.debug(f'Made Words API request to {request_url}...')
+    data = json.loads(connection.getresponse().read().decode('utf-8'))
+    logging.info(f'Received response from Words API: {data}')
+    return JsonResponse(data)
+    # TODO: use Google Dictionary API
+    # request_url = f'https://api.dictionaryapi.dev/api/v2/entries/en/{word}'
+    # Sample response:
+    # [
+    #     {
+    #         "word": "hello",
+    #         "phonetics": [
+    #             {
+    #                 "text": "/həˈloʊ/",
+    #                 "audio": "https://lex-audio.useremarkable.com/mp3/hello_us_1_rr.mp3"
+    #             },
+    #             {
+    #                 "text": "/hɛˈloʊ/",
+    #                 "audio": "https://lex-audio.useremarkable.com/mp3/hello_us_2_rr.mp3"
+    #             }
+    #         ],
+    #         "meanings": [
+    #             {
+    #                 "partOfSpeech": "exclamation",
+    #                 "definitions": [
+    #                     {
+    #                         "definition": "Used as a greeting or to begin a phone conversation.",
+    #                         "example": "hello there, Katie!"
+    #                     }
+    #                 ]
+    #             },
+    #             {
+    #                 "partOfSpeech": "noun",
+    #                 "definitions": [
+    #                     {
+    #                         "definition": "An utterance of “hello”; a greeting.",
+    #                         "example": "she was getting polite nods and hellos from people",
+    #                         "synonyms": [
+    #                             "greeting",
+    #                             "welcome",
+    #                             "salutation",
+    #                             "saluting",
+    #                             "hailing",
+    #                             "address",
+    #                             "hello",
+    #                             "hallo"
+    #                         ]
+    #                     }
+    #                 ]
+    #             },
+    #             {
+    #                 "partOfSpeech": "intransitive verb",
+    #                 "definitions": [
+    #                     {
+    #                         "definition": "Say or shout “hello”; greet someone.",
+    #                         "example": "I pressed the phone button and helloed"
+    #                     }
+    #                 ]
+    #             }
+    #         ]
+    #     }
+    # ]
 
 
 # TODO: https://docs.djangoproject.com/en/3.0/topics/db/search/
@@ -265,7 +355,7 @@ def _get_source_results(
                 | Q(quotes__id__in=quote_result_ids)
                 | Q(contained_sources__quotes__id__in=quote_result_ids)
             )
-        source_results = [source for source in source_results.iterator()]
+        source_results = list(source_results.iterator())
     else:
         source_results = []
     return source_results, [source.pk for source in source_results]

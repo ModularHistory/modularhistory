@@ -670,8 +670,7 @@ DEBUG_TOOLBAR_PANELS = [
     # 'debug_toolbar.panels.versions.VersionsPanel',
 ]
 
-X_RAPIDAPI_HOST = config('X_RAPIDAPI_HOST', default=None)
-X_RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default=None)
+RAPIDAPI_KEY = config('RAPIDAPI_KEY', default='')
 
 # https://docs.djangoproject.com/en/3.0/ref/contrib/sites/
 SITE_ID = 1

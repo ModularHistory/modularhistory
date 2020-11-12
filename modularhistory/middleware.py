@@ -4,7 +4,7 @@ from django.core.exceptions import MiddlewareNotUsed
 from pympler import muppy, tracker, classtracker
 from django.template.base import Template
 
-from modularhistory import settings
+from django.conf import settings
 
 ENABLE = False
 

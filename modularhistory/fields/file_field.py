@@ -7,7 +7,7 @@ from typing import Callable
 
 from django.db.models import FileField, Model
 
-from modularhistory import settings
+from django.conf import settings
 from modularhistory.structures.source_file import TextualSourceFile
 
 

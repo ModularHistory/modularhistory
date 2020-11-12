@@ -6,7 +6,6 @@ from django.db import models
 from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
-from django.utils.safestring import SafeString
 
 from entities.serializers import EntitySerializer
 from modularhistory.constants.strings import EMPTY_STRING
@@ -106,7 +105,7 @@ class Entity(
         return bool(len(self.quotes.all()))
 
     @property
-    def name_html(self) -> SafeString:
+    def name_html(self) -> str:
         """Return an HTML string of the entity's name."""
         logging.debug(f'Getting name_html for {self}')
         return format_html(
@@ -114,7 +113,7 @@ class Entity(
         )
 
     @property
-    def truncated_description(self) -> SafeString:
+    def truncated_description(self) -> str:
         """Return the entity's description, truncated."""
         return format_html(
             truncatechars_html(self.description, TRUNCATED_DESCRIPTION_LENGTH)

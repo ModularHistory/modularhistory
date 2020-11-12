@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from django.db.models.fields.files import FieldFile
 
-from modularhistory import settings
+from django.conf import settings
 from modularhistory.utils import files
 
 if TYPE_CHECKING:

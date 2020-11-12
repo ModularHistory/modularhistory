@@ -13,6 +13,18 @@
                         1
                     </a>
                 </li>
+                {% if page_obj.previous_page_number > 2 %}
+                    <li class="page-item disabled">
+                        <a class="page-link" tabindex="-1" href="?{% if query %}query={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                            ...
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if query %}query={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                        {{ page_obj.previous_page_number }}
+                    </a>
+                </li>
             {% endif %}
             <li class="page-item active">
                 <a class="page-link">
@@ -27,7 +39,7 @@
                 </li>
                 {% if page_obj.next_page_number < page_obj.paginator.num_pages %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="?{% if query %}query={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">
+                        <a class="page-link" tabindex="-1" href="?{% if query %}query={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">
                             ...
                         </a>
                     </li>
