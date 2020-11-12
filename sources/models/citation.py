@@ -2,42 +2,55 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, Optional, Union
+from typing import Optional, TYPE_CHECKING, Union
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import CASCADE, SET_NULL, ForeignKey, PositiveSmallIntegerField
+from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField, SET_NULL
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from modularhistory.constants.misc import QUOTE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.models import ModelWithComputations, retrieve_or_compute
+from modularhistory.models import (
+    ModelWithComputations, PlaceholderGroups as DefaultPlaceholderGroups,
+    retrieve_or_compute,
+)
 from modularhistory.utils import pdf
-from modularhistory.utils.html import components_to_html, compose_link, soupify
+from modularhistory.utils.html import components_to_html, compose_link, escape_quotes, soupify
 from sources.serializers import CitationSerializer
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
-
     from quotes.models import Quote
+    from sources.models import PageRange
 
-# group 1: model class name
-# group 2: citation pk (e.g., '123')
-# group 3: ignore (full appendage after pk)
-# group 4: page string (e.g., 'p. 10')
-# group 5: ignore (full appendage after page string)
-# group 6: quotation (e.g., "It followed institutionalized procedures....")
-# group 7: ignore
-# group 8: citation HTML
+
 ADMIN_PLACEHOLDER_REGEX = r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?([:\ ]?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'  # noqa: E501
+
+
+class PlaceholderGroups(DefaultPlaceholderGroups):
+    """Group numbers for ADMIN_PLACEHOLDER_REGEX."""
+    # group 1: model class name
+    MODEL_NAME_GROUP = 1
+    # group 2: citation pk (e.g., '123')
+    PK_GROUP = 2
+    # group 3: ignore (full appendage after pk)
+    # group 4: page string (e.g., 'p. 10')
+    PAGE_STRING_GROUP = 4
+    # group 5: ignore (full appendage after page string)
+    # group 6: quotation (e.g., "It followed institutionalized procedures....")
+    QUOTATION_GROUP = 6
+    # group 7: ignore
+    # group 8: citation HTML
+    PRERETRIEVED_HTML_GROUP = 8
+
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 
 SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
-
 CITATION_PHRASE_OPTIONS = (
     (None, EMPTY_STRING),
     ('quoted in', 'quoted in'),
@@ -64,7 +77,7 @@ class Citation(ModelWithComputations):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
-    pages: 'RelatedManager'
+    pages: 'RelatedManager[PageRange]'
     position = PositiveSmallIntegerField(
         null=True,
         blank=True,  # TODO: add cleaning logic
@@ -254,7 +267,7 @@ class Citation(ModelWithComputations):
                 source_string = f'{source_string}, {page_string}'
         if quotation:
             source_string = f'{source_string}: {quotation}'
-        source_string = source_string.replace('"', '&quot;').replace("'", '&#39;')
+        source_string = escape_quotes(source_string)
         return compose_link(
             f'<sup>{citation.number}</sup>',
             href=f'#citation-{citation.pk}',

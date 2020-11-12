@@ -1,0 +1,20 @@
+{% extends "_card.html" %}
+{% load get_detail_url %}
+
+{% block edit %}
+    {% with object=topic request=request %}
+        {{block.super}}
+    {% endwith %}
+{% endblock %}
+
+{% block detail_url %}{{ fact|get_detail_url }}{% endblock %}
+
+{% block body %}
+    <h4 class="card-title">
+        <a href="/facts/{{ fact.id }}/">{{ fact.text }}</a>
+    </h4>
+    <!--Text-->
+    <p class="card-text">
+        {{ fact.elaboration }}
+    </p>
+{% endblock %}

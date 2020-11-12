@@ -32,3 +32,8 @@ def compose_link(text, href, klass: Optional[str] = None, **html_attributes) -> 
 def components_to_html(components: List[str], delimiter=', ') -> str:
     """Combine a list of HTML components into an HTML string."""
     return components_to_string(components, delimiter=delimiter)
+
+
+def escape_quotes(html: str) -> str:
+    """Replace quotation marks with character references."""
+    return html.replace('"', '&quot;').replace("'", '&#39;')

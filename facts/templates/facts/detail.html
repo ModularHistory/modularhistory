@@ -1,0 +1,9 @@
+{% extends "base.htm" %}
+
+{% load get_html_for_view %}
+
+{% block content %}
+    <div class="container">
+        {{ fact|get_html_for_view:"detail" }}
+    </div>
+{% endblock %}

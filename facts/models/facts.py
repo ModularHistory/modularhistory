@@ -6,6 +6,7 @@ from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.urls import reverse
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model, PlaceholderGroups
+from modularhistory.utils.html import escape_quotes
 from facts.models.fact_relations import (
     EntityFactRelation,
     FactRelation,
@@ -74,7 +75,10 @@ class Fact(Model):
             pk = fact.pk
             text = fact.text.html
             elaboration = fact.elaboration.html if fact.elaboration else ''
-        return (
+        html = (
             f'<a href="{reverse("facts:detail", args=[pk])}" class="fact-link" '
-            f'title="{elaboration}" data-toggle="tooltip" data-html="true">{text}</a>'
+            f'target="_blank" title="{escape_quotes(elaboration)}" '
+            f'data-toggle="tooltip" data-html="true">{text}</a>'
         )
+        logging.info(f'Retrieved fact HTML: {html}')
+        return html

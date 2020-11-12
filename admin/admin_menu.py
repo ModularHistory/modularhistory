@@ -18,12 +18,13 @@ APPS_TO_INCLUDE = (
     'entities',
     'quotes',
     'occurrences',
-    'sources',
-    'images',
+    'facts',
     'topics',
+    'images',
     'places',
-    'staticpages',
+    'sources',
     'account',
+    'staticpages',
 )
 
 

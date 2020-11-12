@@ -29,6 +29,9 @@ function initializeListeners(element=null) {
         }
     });
 
+    // Tooltips
+    $(scope).tooltip({ selector: '[data-toggle="tooltip"]' });
+
     // TODO: clean up
     // // enable annotations
     // $(scope).find('.detail').annotator().annotator('setupPlugins');
