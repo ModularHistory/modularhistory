@@ -152,7 +152,8 @@ class Image(MediaModel):
                 # TODO: Send email to admins about the error. Figure out why.
                 logging.error(
                     f'Attempt to retrieve cropped_image_url for image {self.pk} '
-                    f'({self}) resulted in {type(error)}: {error}'
+                    f'({self.image.file}, associated with {self}) resulted in '
+                    f'{type(error)}: {error}'
                 )
         return None
 

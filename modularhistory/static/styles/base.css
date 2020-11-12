@@ -263,7 +263,7 @@ body,
       .results-container .view-detail {
         display: none; } }
   .results-container .results {
-    padding: 5rem;
+    padding: 5rem 5rem 1rem 5rem;
     text-align: left; }
     @media only screen and (max-width: 660px) {
       .results-container .results {
@@ -338,7 +338,7 @@ body,
           display: none; }
 
 .pagination {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   display: flex;
   align-items: center;

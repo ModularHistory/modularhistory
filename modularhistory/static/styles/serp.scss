@@ -169,7 +169,7 @@ $refinements-container-bg-color: whitesmoke;
     @include mobile {
       width: unset;
     }
-    padding: 5rem;
+    padding: 5rem 5rem 1rem 5rem;
     text-align: left;
     .result {
       clear: both;
@@ -297,7 +297,7 @@ $refinements-container-bg-color: whitesmoke;
 }
 
 .pagination {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
