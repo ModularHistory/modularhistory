@@ -206,6 +206,9 @@ class HTMLField(MceHTMLField):
             (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
             (r'<p>&nbsp;<\/p>', EMPTY_STRING),
+            (r'<p>&nbsp;<\/p>', EMPTY_STRING),
+            # Prevent related videos from different channels from being displayed
+            (r'''(<iframe .*?src=["'].*youtube\.com\/[^?]+?)(["'])''', r'\g<1>?rel=0\g<2>'),
             (r'(?:\{\{|&lt;&lt;)', '<<'),
             (r'(?:\}\}|&gt;&gt;)', '>>'),
         )
