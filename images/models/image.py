@@ -132,8 +132,8 @@ class Image(MediaModel):
         Reference:
         https://github.com/jonasundderwolf/django-image-cropping#user-content-easy-thumbnails
         """
-        if self.cropping:
-            try:
+        try:
+            if self.cropping:
                 thumbnail_params = {
                     'size': (self.width, self.height),
                     'box': self.cropping,
@@ -141,13 +141,13 @@ class Image(MediaModel):
                     'detail': True,
                 }
                 return get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
-            except Exception as error:
-                # TODO: Send email to admins about the error. Figure out why.
-                logging.error(
-                    f'Attempt to retrieve cropped_image_url for image {self.pk} '
-                    f'({self.image.file}, associated with {self}) resulted in '
-                    f'{type(error)}: {error}'
-                )
+        except Exception as error:
+            # TODO: Send email to admins about the error. Figure out why.
+            logging.error(
+                f'Attempt to retrieve cropped_image_url for image {self.pk} '
+                f'({self.image.file}, associated with {self}) resulted in '
+                f'{type(error)}: {error}'
+            )
         return None
 
     @property
@@ -168,7 +168,7 @@ class Image(MediaModel):
     @property
     def src_url(self) -> str:
         """Return the URL to be used for the `src` attribute in HTML."""
-        return self.cropped_image_url or self.image.url
+        return self.image.url  # TODO: self.cropped_image_url
 
     @property
     def bg_img_position(self) -> str:
