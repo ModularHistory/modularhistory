@@ -1,6 +1,7 @@
 import os
 from urllib.parse import urljoin
-
+import logging
+from google.auth.exceptions import DefaultCredentialsError
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from storages.backends.gcloud import GoogleCloudStorage
@@ -40,6 +41,15 @@ class GoogleCloudMediaFileStorage(GoogleCloudStorage):
     def url(self, name):
         """Give the correct media URL (not the Google-generated url)."""
         return urljoin(settings.MEDIA_URL, name)
+
+    def open(self, name: str, mode: str = 'rb'):
+        """Retrieve the specified file from storage."""
+        try:
+            super().open(name, mode)
+        except DefaultCredentialsError as err:
+            raise ValueError(
+                f'Attempting to open invalid file "{name}" resulted in {err}'
+            )
 
 
 # TODO

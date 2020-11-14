@@ -7,7 +7,7 @@ import serpy
 class ImageSerializer(SearchableModelSerializer):
     """Serializer for images."""
 
-    src_url = serpy.Field()
+    src_url = serpy.StrField()
     width = serpy.IntField()
     height = serpy.IntField()
     caption_html = serpy.Field()
