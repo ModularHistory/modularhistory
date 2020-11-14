@@ -45,7 +45,9 @@ class GoogleCloudMediaFileStorage(GoogleCloudStorage):
     def open(self, name: str, mode: str = 'rb'):
         """Retrieve the specified file from storage."""
         try:
+            logging.debug(f'Opening {name} with GoogleCloudMediaFileStorage...')
             super().open(name, mode)
+            logging.debug(f'Successfully opened {name}.')
         except DefaultCredentialsError as err:
             raise ValueError(
                 f'Attempting to open invalid file "{name}" resulted in {err}'

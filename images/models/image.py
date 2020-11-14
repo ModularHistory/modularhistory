@@ -55,13 +55,13 @@ class Image(MediaModel):
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
 
-    # https://github.com/jonasundderwolf/django-image-cropping
-    cropping = ImageRatioField(
-        IMAGE_FIELD_NAME,
-        free_crop=True,
-        allow_fullsize=True,
-        help_text='Not yet fully implemented.',
-    )
+    # # https://github.com/jonasundderwolf/django-image-cropping
+    # cropping = ImageRatioField(
+    #     IMAGE_FIELD_NAME,
+    #     free_crop=True,
+    #     allow_fullsize=True,
+    #     help_text='Not yet fully implemented.',
+    # )
 
     class Meta:
         """
@@ -132,23 +132,26 @@ class Image(MediaModel):
         Reference:
         https://github.com/jonasundderwolf/django-image-cropping#user-content-easy-thumbnails
         """
-        try:
-            if self.cropping:
-                thumbnail_params = {
-                    'size': (self.width, self.height),
-                    'box': self.cropping,
-                    'crop': True,
-                    'detail': True,
-                }
-                return get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
-        except Exception as error:
-            # TODO: Send email to admins about the error. Figure out why.
-            logging.error(
-                f'Attempt to retrieve cropped_image_url for image {self.pk} '
-                f'({self.image.file}, associated with {self}) resulted in '
-                f'{type(error)}: {error}'
-            )
-        return None
+        enable_cropped_images = False
+        if enable_cropped_images:
+            try:
+                if self.cropping:
+                    thumbnail_params = {
+                        'size': (self.width, self.height),
+                        'box': self.cropping,
+                        'crop': True,
+                        'detail': True,
+                    }
+                    return get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
+            except Exception as error:
+                # TODO: Send email to admins about the error. Figure out why.
+                logging.error(
+                    f'Attempt to retrieve cropped_image_url for image {self.pk} '
+                    f'({self.image.file}, associated with {self}) resulted in '
+                    f'{type(error)}: {error}'
+                )
+            return None
+        return self.image.url
 
     @property
     def provider_string(self) -> Optional[str]:

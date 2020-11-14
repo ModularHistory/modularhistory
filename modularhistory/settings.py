@@ -462,15 +462,13 @@ SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/3.1/topics/files/
-MEDIA_URL = (
-    f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/'
-    if IS_PROD
-    else '/media/'
-)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if IS_PROD:
+    MEDIA_URL = f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/'
     DEFAULT_FILE_STORAGE = 'modularhistory.storage.GoogleCloudMediaFileStorage'
     GS_BUCKET_NAME = GS_MEDIA_BUCKET_NAME
+else:
+    MEDIA_URL = '/media/'
 
 ARTIFACTS_URL = (
     f'https://storage.googleapis.com/{GS_ARTIFACTS_BUCKET_NAME}/'
