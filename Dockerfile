@@ -18,10 +18,17 @@ RUN apt-get install memcached libmemcached-tools -y
 
 EXPOSE 11211/tcp 11211/udp
 
-RUN mkdir /code
-WORKDIR /code
-COPY poetry.lock pyproject.toml /code/
+RUN mkdir -p /src
+WORKDIR /src
+COPY poetry.lock pyproject.toml /src/
 
 RUN poetry config virtualenvs.create false
 RUN poetry install $(test "$ENVIRONMENT" == production && echo "--no-dev") --no-interaction --no-ansi
-#COPY . /code/
+
+COPY . /src
+
+EXPOSE 8000
+
+COPY init.sh /usr/local/bin/
+RUN chmod u+x /usr/local/bin/init.sh
+ENTRYPOINT ["init.sh"]
