@@ -403,3 +403,6 @@ if [[ "${USE_PROD_DB}" != 'True' ]]; then
   python manage.py migrate
   echo ""
 fi
+
+# TODO
+git update-index --skip-worktree .vscode/

@@ -1,6 +1,6 @@
 FROM python:3.7-buster
 
-ARG ENVIRONMENT
+ARG ENVIRONMENT=production
 
 ENV \
   ENVIRONMENT=${ENVIRONMENT} \
@@ -23,7 +23,7 @@ WORKDIR /src
 COPY poetry.lock pyproject.toml /src/
 
 RUN poetry config virtualenvs.create false
-RUN poetry install $(test "$ENVIRONMENT" == production && echo "--no-dev") --no-interaction --no-ansi
+RUN poetry install $(test "$ENVIRONMENT" = production && echo "--no-dev") --no-interaction --no-ansi
 
 COPY . /src
 

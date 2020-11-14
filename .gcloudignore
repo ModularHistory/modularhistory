@@ -7,6 +7,9 @@
 .gcloudignore
 .git
 .gitignore
+.dockerignore
+docker-compose.yml
+Dockerfile
 
 # Ungathered static files
 static/
@@ -27,6 +30,8 @@ media/
 # GitHub
 .github/
 README.md
+LICENSE.txt
+SECURITY.md
 
 # Tests
 tests/
