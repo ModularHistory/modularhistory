@@ -1,0 +1,121 @@
+.gcloudignore
+.git
+.gitignore
+
+# Ungathered static files
+static/
+
+# Media files
+media/
+
+# User scripts
+clean_data.py
+
+# Environment & credentials
+.env
+*credentials.json
+.credentials/
+.secrets/
+
+# Legacy dependency management
+requirements.txt
+
+# Virtual Python environment
+env/
+venv/
+.venv/
+
+# Artifacts
+.artifacts/
+artifacts/
+
+# Django
+/media/
+/static/
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+
+# Node JS
+node_modules/
+
+# Python
+*.py[cod]
+*$py.class
+
+# PyCharm / IntelliJ
+.idea
+.idea/
+.DS_Store
+
+# Backup files
+*.bak
+.backups/
+backups/
+
+# Testing / linting / coverage reports
+.cache
+.coverage_html/
+.hypothesis/
+.mypy_cache/
+.nox/
+.pytest_cache/
+.tox/
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+coverage.xml
+nosetests.xml
+
+# Celery
+celerybeat-schedule.*
+
+# Distribution / packaging
+*.egg-info/
+.eggs/
+eggs/
+wheels/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+
+# Node JS
+node_modules
+/dist
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Exceptions (explicitly included)
+!/static/
+!.credentials/
+!.secrets/
+!*credentials.json
+
+# GitHub
+.github/
+README.md
+
+# Tests
+tests/
+tests.py
+
+# User scripts
+setup.sh
+
+# PyCharm / IntelliJ
+.idea
+.idea/
+.DS_Store
