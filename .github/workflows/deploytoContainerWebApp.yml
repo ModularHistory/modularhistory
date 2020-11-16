@@ -51,8 +51,93 @@ jobs:
               "slotSetting": false
             },
             {
-              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
-              "value": "${{ steps.create-acr.outputs.acr_password }}",
+              "name": "ADMINS",
+              "value": "${{ secrets.ADMINS }}",
+              "slotSetting": false
+            },
+            {
+              "name": "SECRET_KEY",
+              "value": "${{ secrets.SECRET_KEY }}",
+              "slotSetting": false
+            },
+            {
+              "name": "ALLOWED_HOSTS",
+              "value": "${{ secrets.ALLOWED_HOSTS }}",
+              "slotSetting": false
+            },
+            {
+              "name": "SOCIAL_AUTH_TWITTER_KEY",
+              "value": "${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}",
+              "slotSetting": false
+            },
+            {
+              "name": "SOCIAL_AUTH_TWITTER_SECRET",
+              "value": "${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}",
+              "slotSetting": false
+            },
+            {
+              "name": "SOCIAL_AUTH_FACEBOOK_KEY",
+              "value": "${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}",
+              "slotSetting": false
+            },
+            {
+              "name": "SOCIAL_AUTH_FACEBOOK_SECRET",
+              "value": "${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}",
+              "slotSetting": false
+            },
+            {
+              "name": "SOCIAL_AUTH_GITHUB_KEY",
+              "value": "${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}",
+              "slotSetting": false
+            },
+            {
+              "name": "SOCIAL_AUTH_GITHUB_SECRET",
+              "value": "${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}",
+              "slotSetting": false
+            },
+            {
+              "name": "EMAIL_HOST",
+              "value": "${{ secrets.EMAIL_HOST }}",
+              "slotSetting": false
+            },
+            {
+              "name": "EMAIL_PORT",
+              "value": "${{ secrets.EMAIL_PORT }}",
+              "slotSetting": false
+            },
+            {
+              "name": "EMAIL_HOST_USER",
+              "value": "${{ secrets.EMAIL_HOST_USER }}",
+              "slotSetting": false
+            },
+            {
+              "name": "EMAIL_HOST_PASSWORD",
+              "value": "${{ secrets.EMAIL_HOST_PASSWORD }}",
+              "slotSetting": false
+            },
+            {
+              "name": "ALPHA_VANTAGE_ACCESS_KEY",
+              "value": "${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}",
+              "slotSetting": false
+            },
+            {
+              "name": "RAPIDAPI_KEY",
+              "value": "${{ secrets.RAPIDAPI_KEY }}",
+              "slotSetting": false
+            },
+            {
+              "name": "MEGA_USERNAME",
+              "value": "${{ secrets.MEGA_USERNAME }}",
+              "slotSetting": false
+            },
+            {
+              "name": "MEGA_PASSWORD",
+              "value": "${{ secrets.MEGA_PASSWORD }}",
+              "slotSetting": false
+            },
+            {
+              "name": "GOOGLE_APPLICATION_CREDENTIALS",
+              "value": "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}",
               "slotSetting": false
             }
           ]
