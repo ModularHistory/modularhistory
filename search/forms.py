@@ -87,12 +87,12 @@ class SearchForm(forms.Form):
         )
 
         self.fields['entities'] = forms.ModelMultipleChoiceField(
-            queryset=(entities or Entity.objects.all().only(Entity.searchable_fields)),
+            queryset=(entities or Entity.objects.all().only(*Entity.searchable_fields)),
             widget=Select2MultipleWidget,
             required=False,
         )
         self.fields['topics'] = forms.ModelMultipleChoiceField(
-            queryset=(topics or Topic.objects.all().only(Topic.searchable_fields)),
+            queryset=(topics or Topic.objects.all().only(*Topic.searchable_fields)),
             widget=Select2MultipleWidget,
             required=False,
         )
