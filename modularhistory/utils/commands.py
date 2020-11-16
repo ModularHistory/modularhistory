@@ -1,3 +1,5 @@
+# pylint: disable=anomalous-backslash-in-string
+
 import os
 from glob import glob, iglob
 from os.path import join

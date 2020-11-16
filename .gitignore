@@ -16,6 +16,7 @@ venv/
 .venv/
 
 # Artifacts
+.postgres-data/
 .artifacts/
 artifacts/
 

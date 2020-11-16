@@ -155,6 +155,7 @@ INSTALLED_APPS = [
     # 'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_json_widget',  # https://github.com/jmrivas86/django-json-widget
     'django_replicated',  # https://github.com/yandex/django_replicated
+    # 'django_spaghetti',  # https://github.com/LegoStormtroopr/django-spaghetti-and-meatballs  # TODO
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_q',  # https://django-q.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
@@ -193,10 +194,6 @@ if ENABLE_ASGI:
     INSTALLED_APPS = [
         'channels',  # https://channels.readthedocs.io/en/latest/index.html
     ] + INSTALLED_APPS
-if ENVIRONMENT == Environments.DEV:
-    INSTALLED_APPS += [
-        'django_spaghetti',  # https://github.com/LegoStormtroopr/django-spaghetti-and-meatballs
-    ]
 
 MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
@@ -687,12 +684,13 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
 
-# http://127.0.0.1:8000/plate/
-SPAGHETTI_SAUCE = {
-    'apps': ['sources', 'quotes'],
-    'show_fields': False,
-    'exclude': {'account': ['user']},
-}
+# TODO
+# # http://127.0.0.1:8000/plate/
+# SPAGHETTI_SAUCE = {
+#     'apps': ['sources', 'quotes'],
+#     'show_fields': False,
+#     'exclude': {'account': ['user']},
+# }
 
 # Caching settings
 use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', cast=bool, default=False)

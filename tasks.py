@@ -222,7 +222,7 @@ def squash_migrations(context, dry: bool = True):
 
 
 @task
-def test(context):
+def test(context, docker=False):
     """Run tests."""
     commands.escape_prod_db()
     pytest_args = [
@@ -234,5 +234,7 @@ def test(context):
     ]
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
     print(command)
+    if docker:
+        context.run(f'docker build -t modularhistory/modularhistory . && docker-compose up')
     context.run(command)
     context.run('coverage combine')

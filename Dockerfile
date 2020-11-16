@@ -15,8 +15,7 @@ RUN pip install poetry
 RUN apt-get update
 RUN apt-get install memcached libmemcached-tools -y
 #RUN systemctl start memcached && systemctl enable memcached
-
-EXPOSE 11211/tcp 11211/udp
+# EXPOSE 11211/tcp 11211/udp
 
 RUN mkdir -p /src
 WORKDIR /src

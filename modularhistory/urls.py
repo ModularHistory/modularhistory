@@ -69,7 +69,8 @@ urlpatterns = [
     # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
 ]
 
-if settings.DEBUG:
-    urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
+# TODO
+# if settings.DEBUG:
+#     urlpatterns.append(path('plate/', include('django_spaghetti.urls')))
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
