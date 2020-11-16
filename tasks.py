@@ -20,7 +20,8 @@ from pympler import tracker
 
 from modularhistory import settings
 from modularhistory.constants.strings import NEGATIVE, SPACE
-from modularhistory.linters import flake8 as lint_with_flake8, mypy as lint_with_mypy
+from modularhistory.linters import flake8 as lint_with_flake8
+from modularhistory.linters import mypy as lint_with_mypy
 from modularhistory.utils import commands
 from modularhistory.utils.files import relativize
 from monkeypatch import fix_annotations
@@ -235,6 +236,8 @@ def test(context, docker=False):
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
     print(command)
     if docker:
-        context.run(f'docker build -t modularhistory/modularhistory . && docker-compose up')
+        context.run(
+            f'docker build -t modularhistory/modularhistory . && docker-compose up'
+        )
     context.run(command)
     context.run('coverage combine')

@@ -208,7 +208,10 @@ class HTMLField(MceHTMLField):
             (r'<p>&nbsp;<\/p>', EMPTY_STRING),
             (r'<p>&nbsp;<\/p>', EMPTY_STRING),
             # Prevent related videos from different channels from being displayed
-            (r'''(<iframe .*?src=["'].*youtube\.com\/[^?]+?)(["'])''', r'\g<1>?rel=0\g<2>'),
+            (
+                r'''(<iframe .*?src=["'].*youtube\.com\/[^?]+?)(["'])''',
+                r'\g<1>?rel=0\g<2>',
+            ),
             (r'(?:\{\{|&lt;&lt;)', '<<'),
             (r'(?:\}\}|&gt;&gt;)', '>>'),
         )

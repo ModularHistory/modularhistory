@@ -142,7 +142,9 @@ class Image(MediaModel):
                         'crop': True,
                         'detail': True,
                     }
-                    return get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
+                    return (
+                        get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
+                    )
             except Exception as error:
                 # TODO: Send email to admins about the error. Figure out why.
                 logging.error(

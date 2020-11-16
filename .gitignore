@@ -6,6 +6,7 @@ clean_data.py
 *credentials.json
 .credentials/
 .secrets/
+.devcontainer/
 
 # Legacy dependency management
 requirements.txt
