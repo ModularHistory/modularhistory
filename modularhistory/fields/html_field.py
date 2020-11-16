@@ -22,7 +22,7 @@ ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)
 
 # Placeholder groups are defined subsequently.
 OBJECT_PLACEHOLDER_REGEX = re.compile(
-    r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)([:\ ,]\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'
+    r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)([:\ ,]\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'  # noqa: E501
 )
 
 

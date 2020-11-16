@@ -48,11 +48,6 @@
 
         <!--<link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>-->
 
-        <!-- TODO -->
-{#        <!-- AnnotatorJS (http://docs.annotatorjs.org/en/) -->#}
-{#        <script src="{% static "libraries/annotator/annotator-full.min.js" %}" defer></script>#}
-{#        <link rel="stylesheet" href="{% static "libraries/annotator/annotator.min.css" %}">#}
-
         <!-- ModularHistory styles -->
         <link rel="stylesheet"
               href="{% if settings.ENVIRONMENT == 'dev' %}{% sass_src 'styles/base.scss' %}{% else %}{% static 'styles/base.css' %}{% endif %}"

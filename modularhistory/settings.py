@@ -30,8 +30,8 @@ GC_PROJECT: Optional[str] = config('GC_PROJECT', default=None)
 GC_QUEUE: Optional[str] = config('GC_QUEUE', default=None)
 GC_REGION: Optional[str] = config('GC_REGION', default=None)
 
-IS_GCP: Optional[bool] = bool(os.getenv('GAE_APPLICATION', None))
-IS_PROD = IS_GCP
+RUNNING_IN_GC: Optional[bool] = bool(os.getenv('GAE_APPLICATION', None))
+IS_PROD = RUNNING_IN_GC
 USE_PROD_DB: bool = config('USE_PROD_DB', default=IS_PROD, cast=bool)
 TESTING: bool = 'test' in sys.argv
 
@@ -275,11 +275,11 @@ REST_FRAMEWORK = {
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if ENVIRONMENT == Environments.PROD:
+if RUNNING_IN_GC:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME'),
+            'NAME': config('DB_NAME', default='modularhistory'),
             'HOST': config('DB_HOST'),
             'USER': config('DB_USER'),
             'PASSWORD': config('DB_PASSWORD'),
@@ -296,33 +296,32 @@ elif ENVIRONMENT == Environments.GITHUB_TEST:
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
-elif ENVIRONMENT == Environments.DEV:
-    if USE_PROD_DB:
-        DATABASES = {
-            'default': {
-                'NAME': config('PROD_DB_NAME'),
-                'USER': config('PROD_DB_USER'),
-                'PASSWORD': config('PROD_DB_PASSWORD'),
-                'HOST': config('PROD_DB_HOST'),
-                'PORT': config('PROD_DB_PORT'),
-                'ENGINE': 'django.db.backends.postgresql',
-            },
-        }
-        print('WARNING: Using production database!  Tread carefully!')
-    else:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': config('DB_NAME', default='modularhistory'),
-                'USER': config('DB_USER', default='postgres'),
-                'PASSWORD': config('DB_PASSWORD'),
-                'HOST': config('DB_HOST', default='localhost'),
-            },
-            # 'mongo': {
-            #     'ENGINE' : 'django_mongodb_engine',
-            #     'NAME' : 'default'
-            # }
-        }
+elif USE_PROD_DB:
+    DATABASES = {
+        'default': {
+            'NAME': config('PROD_DB_NAME', default='modularhistory'),
+            'USER': config('PROD_DB_USER'),
+            'PASSWORD': config('PROD_DB_PASSWORD'),
+            'HOST': config('PROD_DB_HOST'),
+            'PORT': config('PROD_DB_PORT'),
+            'ENGINE': 'django.db.backends.postgresql',
+        },
+    }
+    print('WARNING: Using production database!  Tread carefully!')
+else:  # development, etc.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME', default='modularhistory'),
+            'USER': config('DB_USER', default='postgres'),
+            'PASSWORD': config('DB_PASSWORD', default='postgres'),
+            'HOST': config('DB_HOST', default='localhost'),
+        },
+        # 'mongo': {
+        #     'ENGINE' : 'django_mongodb_engine',
+        #     'NAME' : 'default'
+        # }
+    }
 
 # https://django-dbbackup.readthedocs.io/en/master/
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'

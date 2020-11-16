@@ -31,8 +31,8 @@ class SearchForm(forms.Form):
         suppress_unverified: bool = True,
         order_by_relevance: bool = False,
         excluded_content_types: List[int] = None,
-        entities: Optional[QuerySet] = None,
-        topics: Optional[QuerySet] = None,
+        entities: Optional['QuerySet[Entity]'] = None,
+        topics: Optional['QuerySet[Topic]'] = None,
         collapse_refinements: bool = False,
         *args,
         **kwargs,
@@ -87,12 +87,12 @@ class SearchForm(forms.Form):
         )
 
         self.fields['entities'] = forms.ModelMultipleChoiceField(
-            queryset=(entities or Entity.objects.all()),
+            queryset=(entities or Entity.objects.all().only(Entity.searchable_fields)),
             widget=Select2MultipleWidget,
             required=False,
         )
         self.fields['topics'] = forms.ModelMultipleChoiceField(
-            queryset=(topics or Topic.objects.all()),
+            queryset=(topics or Topic.objects.all().only(Topic.searchable_fields)),
             widget=Select2MultipleWidget,
             required=False,
         )

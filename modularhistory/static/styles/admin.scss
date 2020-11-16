@@ -13,7 +13,7 @@ $label-height: 2rem;
 }
 
 // Indent nested inlines
-td.djn-td {
+tr:not(.has_original) > td.djn-td {
   padding-left: 3rem;
   padding-right: 3rem;
 }
@@ -27,8 +27,11 @@ tbody.djn-tbody.has_original {
   > p:nth-child(n+3) {
     display: none;
   }
-  > p:nth-child(2) {
-    margin-left: 1rem;
+  > p:nth-child(-n+2) {
+    padding-bottom: 1.4rem;
+    &:nth-child(2) {
+      margin-left: 1rem;
+    }
   }
 }
 

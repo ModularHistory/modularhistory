@@ -82,3 +82,21 @@ class Fact(Model):
         )
         logging.info(f'Retrieved fact HTML: {html}')
         return html
+
+    @classmethod
+    def get_updated_placeholder(cls, match: re.Match) -> str:
+        """Return a placeholder for a model instance depicted in an HTML field."""
+        placeholder = match.group(0)
+        if match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP):
+            return placeholder
+        placeholder = match.group(0)
+        appendage = match.group(PlaceholderGroups.APPENDAGE_GROUP)
+        updated_appendage = f': {cls.get_object_html(match)}'
+        if appendage:
+            # TODO: preserve capitalization, etc.
+            updated_placeholder = placeholder.replace(appendage, updated_appendage)
+        else:
+            updated_placeholder = (
+                f'{re.sub(r" ?(?:>>|&gt;&gt;)", "", placeholder)}{updated_appendage} >>'
+            )
+        return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')

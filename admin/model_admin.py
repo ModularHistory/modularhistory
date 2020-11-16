@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Type, Union
+from typing import List, Optional, Type, Union
 
 from aenum import Constant
 from django.contrib.admin import ListFilter
@@ -53,7 +53,7 @@ class ModelAdmin(NestedModelAdmin):
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                'https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',
+                # 'https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',  # TODO
                 BASE_CSS,
                 MCE_CSS,
                 ADMIN_CSS,
@@ -69,10 +69,10 @@ class ModelAdmin(NestedModelAdmin):
 
     def get_readonly_fields(
         self, request: HttpRequest, model_instance: Optional[Model] = None
-    ) -> Union[List[str], Tuple]:
+    ) -> List[str]:
         """Add additional readonly fields."""
         default_readonly_fields = ('computations',)
-        readonly_fields = super().get_readonly_fields(request, model_instance)
+        readonly_fields = list(super().get_readonly_fields(request, model_instance))
         if model_instance:
             for additional_readonly_field in default_readonly_fields:
                 if hasattr(model_instance, additional_readonly_field):  # noqa: WPS421

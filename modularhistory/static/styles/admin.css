@@ -17,6 +17,9 @@
   min-width: 100%;
   max-width: 100%; }
 
+img {
+  max-width: 100%; }
+
 .lazy-bg {
   background-image: url("/static/img-placeholder.jpg"); }
 
@@ -116,6 +119,9 @@ form ul {
   min-width: 100%;
   max-width: 100%; }
 
+img {
+  max-width: 100%; }
+
 .lazy-bg {
   background-image: url("/static/img-placeholder.jpg"); }
 
@@ -211,7 +217,7 @@ form ul {
   background-color: #2B3746 !important;
   color: white !important; }
 
-td.djn-td {
+tr:not(.has_original) > td.djn-td {
   padding-left: 3rem;
   padding-right: 3rem; }
 
@@ -221,8 +227,10 @@ tbody.djn-tbody.has_original {
 .djn-tr > td.original > p:nth-child(n+3) {
   display: none; }
 
-.djn-tr > td.original > p:nth-child(2) {
-  margin-left: 1rem; }
+.djn-tr > td.original > p:nth-child(-n+2) {
+  padding-bottom: 1.4rem; }
+  .djn-tr > td.original > p:nth-child(-n+2):nth-child(2) {
+    margin-left: 1rem; }
 
 div.readonly {
   white-space: pre; }
