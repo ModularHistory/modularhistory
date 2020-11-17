@@ -6,7 +6,7 @@ from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.urls import reverse
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model, PlaceholderGroups
-from modularhistory.utils.html import escape_quotes
+from modularhistory.utils.html import escape_quotes, soupify
 from facts.models.fact_relations import (
     EntityFactRelation,
     FactRelation,
@@ -75,6 +75,11 @@ class Fact(Model):
             pk = fact.pk
             text = fact.text.html
             elaboration = fact.elaboration.html if fact.elaboration else ''
+        try:
+            text = soupify(text).p.decode_contents()
+        except Exception as err:
+            logging.error(f'{err}')
+        elaboration = elaboration.replace('\n', '')
         html = (
             f'<a href="{reverse("facts:detail", args=[pk])}" class="fact-link" '
             f'target="_blank" title="{escape_quotes(elaboration)}" '
@@ -91,7 +96,7 @@ class Fact(Model):
             html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
             if '<a ' not in html:
                 return re.sub(
-                    r'(.+?>).+?(<\/a>)',
+                    r'(.+?">).+?(<\/a>)',  # TODO
                     rf'\g<1>{html}\g<2>',
                     cls.get_object_html(match),
                 )
