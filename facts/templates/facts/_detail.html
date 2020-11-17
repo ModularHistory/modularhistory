@@ -1,11 +1,13 @@
 {% load get_admin_url %}
 
-<p class="lead">
-    {{ fact.text }}
-</p>
+<h1 class="lead">
+    {{ fact.summary }}
+</h1>
+
 {% if fact.elaboration %}
-<p>
+<div>
     {{ fact.elaboration }}
-</p>
+</div>
 {% endif %}
+
 <a class="edit-object-button" target="_blank" href="{{ fact|get_admin_url }}"><i class="fa fa-edit"></i></a>

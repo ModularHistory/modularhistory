@@ -39,9 +39,10 @@ class SupportiveFactsInline(StackedInline):
 class FactAdmin(ModelAdmin):
     """Admin for facts."""
 
-    list_display = ['pk', 'text']
+    model = models.Fact
+    list_display = ['pk', 'summary']
     list_filter = ['related_entities', 'related_occurrences']
-    search_fields = ['text', 'elaboration']
+    search_fields = model.searchable_fields
 
     inlines = [
         FactEntitiesInline,

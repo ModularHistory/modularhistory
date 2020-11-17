@@ -37,7 +37,7 @@ class FactSupport(FactRelation):
 class Fact(Model):
     """A fact."""
 
-    text = HTMLField(unique=True)
+    summary = HTMLField(unique=True)
     elaboration = HTMLField(null=True, blank=True)
     supportive_facts = ManyToManyField(
         'self', through=FactSupport, related_name='supported_facts', symmetrical=False
@@ -52,7 +52,7 @@ class Fact(Model):
         'occurrences.Occurrence', through=OccurrenceFactRelation, related_name='facts'
     )
 
-    searchable_fields = ['text']
+    searchable_fields = ['summary', 'elaboration']
 
     def __str__(self) -> str:
         """Return the fact's string representation."""
@@ -71,11 +71,11 @@ class Fact(Model):
         fact = cls.get_object_from_placeholder(match)
         if isinstance(fact, dict):
             pk = fact['pk']
-            text = fact['text']
+            summary = fact['summary']
             elaboration = fact['elaboration'] or ''
         else:
             pk = fact.pk
-            text = fact.text.html
+            summary = fact.summary.html
             elaboration = fact.elaboration.html if fact.elaboration else ''
         try:
             # To return HTML, use .decode_contents() rather than .string
@@ -93,7 +93,7 @@ class Fact(Model):
             if add_elaboration_tooltip
             else (
                 f'<a href="{reverse("facts:detail", args=[pk])}" class="fact-link" '
-                f'target="_blank">{text}</a>'
+                f'target="_blank">{summary}</a>'
             )
         )
         return html

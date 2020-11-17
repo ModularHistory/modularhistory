@@ -859,17 +859,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "django-spaghetti-and-meatballs"
-version = "0.3.1"
-description = "Its a spicy meatball for serving up fresh hot entity-relationship diagrams straight from your django models."
-category = "main"
-optional = false
-python-versions = ">=3.6,<4.0"
-
-[package.dependencies]
-django = ">=2.2"
-
-[[package]]
 name = "django-storages"
 version = "1.10.1"
 description = "Support for many storage backends in Django"
@@ -2822,6 +2811,17 @@ typing-extensions = ">=3.7.4,<4.0.0"
 jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
 
 [[package]]
+name = "rope"
+version = "0.18.0"
+description = "a python refactoring library..."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.extras]
+dev = ["pytest"]
+
+[[package]]
 name = "rsa"
 version = "4.6"
 description = "Pure-Python RSA implementation"
@@ -3427,7 +3427,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "428f6aef79dd03dc7974ea817b051cacca85bf4c33d5a89eb6a04d994804d2c8"
+content-hash = "e7ba26af2e5bf02aebe4aab549c0e1da89273d4ac0aee5532461315010f4b4e9"
 
 [metadata.files]
 aenum = [
@@ -3845,10 +3845,6 @@ django-simple-menu = [
 django-social-share = [
     {file = "django-social-share-2.1.0.tar.gz", hash = "sha256:9fca9558c4fbe496e09e0bed3d26d51ee84c8a397762cfb0107d8cbd56c4a9dc"},
     {file = "django_social_share-2.1.0-py2.py3-none-any.whl", hash = "sha256:5cae1a68a298a5312f6e5900b6b9d341ba5568609eba7aadcdb3ee41db372e1a"},
-]
-django-spaghetti-and-meatballs = [
-    {file = "django-spaghetti-and-meatballs-0.3.1.tar.gz", hash = "sha256:cb8812fcd6399b40568cf40a1e33be394688cd9f34831aa6ca9258ff1f28fd13"},
-    {file = "django_spaghetti_and_meatballs-0.3.1-py3-none-any.whl", hash = "sha256:6f8a65edc123150c6909ce7466bc0a1d382b04aea029079964655f9a1ce51ff6"},
 ]
 django-storages = [
     {file = "django-storages-1.10.1.tar.gz", hash = "sha256:652275ab7844538c462b62810276c0244866f345878256a9e0e86f5b1283ae18"},
@@ -4937,6 +4933,9 @@ restructuredtext-lint = [
 rich = [
     {file = "rich-9.1.0-py3-none-any.whl", hash = "sha256:5dd934a0f8953b59d9a5d8d58864012174f0b5ad2de687fd04f4df195f7f7066"},
     {file = "rich-9.1.0.tar.gz", hash = "sha256:05f1cf4dc191c483867b098d8572546de266440d61911d8270069023e325d14a"},
+]
+rope = [
+    {file = "rope-0.18.0.tar.gz", hash = "sha256:786b5c38c530d4846aa68a42604f61b4e69a493390e3ca11b88df0fbfdc3ed04"},
 ]
 rsa = [
     {file = "rsa-4.6-py3-none-any.whl", hash = "sha256:6166864e23d6b5195a5cfed6cd9fed0fe774e226d8f854fcb23b7bbef0350233"},
