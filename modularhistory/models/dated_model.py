@@ -44,9 +44,7 @@ class DatedModel(Model):
         if date:
             date_html = f'{date.html}'
             date_html_requires_circa_prefix = (
-                date_html
-                and self.date_is_circa
-                and not date_html.startswith(CIRCA_PREFIX)
+                date_html and self.date_is_circa and CIRCA_PREFIX not in date_html
             )
             if date_html_requires_circa_prefix:
                 date_html = f'{CIRCA_PREFIX}{date_html}'

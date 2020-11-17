@@ -177,7 +177,7 @@ class HistoricDateTime(datetime):
         return super().second
 
     @property
-    def string(self) -> SafeString:
+    def string(self) -> str:
         """Return the datetime's string representation."""
         year_string = self.year_string
         if self.day_is_known:
@@ -186,7 +186,7 @@ class HistoricDateTime(datetime):
             year_string = f'{self.strftime("%B")} {year_string}'
         elif self.season_is_known:
             year_string = f'{self.season.title()} {year_string}'
-        return format_html(year_string)
+        return year_string
 
     @property
     def year_string(self) -> str:

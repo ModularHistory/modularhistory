@@ -88,6 +88,13 @@ class Fact(Model):
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
         if match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP):
+            html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
+            if '<a ' not in html:
+                return re.sub(
+                    r'(.+?>).+?(<\/a>)',
+                    rf'\g<1>{html}\g<2>',
+                    cls.get_object_html(match),
+                )
             return placeholder
         placeholder = match.group(0)
         appendage = match.group(PlaceholderGroups.APPENDAGE_GROUP)

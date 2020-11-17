@@ -273,13 +273,13 @@ class Citation(ModelWithComputations):
                 source_string = f'{source_string}, {page_string}'
         if quotation:
             source_string = f'{source_string}: {quotation}'
-        source_string = escape_quotes(source_string)
-        return compose_link(
+        citation_link = compose_link(
             f'<sup>{citation.number}</sup>',
             href=f'#citation-{citation.pk}',
             klass='citation-link',
-            title=source_string,
+            title=escape_quotes(source_string),
         )
+        return f'<sup>[{citation_link}]</sup>'
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
