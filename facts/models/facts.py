@@ -85,23 +85,26 @@ class Fact(Model):
             f'target="_blank" title="{escape_quotes(elaboration)}" '
             f'data-toggle="tooltip" data-html="true">{text}</a>'
         )
-        logging.info(f'Retrieved fact HTML: {html}')
         return html
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
+        logging.info(f'Getting updated fact placeholder for {placeholder}...')
         if match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP):
             html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
             if '<a ' not in html:
-                return re.sub(
+                fact_html = cls.get_object_html(match)
+                fact_html = re.sub(
                     r'(.+?">).+?(<\/a>)',  # TODO
                     rf'\g<1>{html}\g<2>',
-                    cls.get_object_html(match),
+                    fact_html,
+                )
+                placeholder = placeholder.replace(
+                    match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP), fact_html
                 )
             return placeholder
-        placeholder = match.group(0)
         appendage = match.group(PlaceholderGroups.APPENDAGE_GROUP)
         updated_appendage = f': {cls.get_object_html(match)}'
         if appendage:

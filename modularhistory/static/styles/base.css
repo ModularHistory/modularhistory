@@ -414,6 +414,9 @@ body {
     margin-top: auto;
     margin-bottom: auto; }
 
+.tooltip-inner {
+  max-width: 90%; }
+
 span.date {
   display: inline-block;
   white-space: nowrap; }

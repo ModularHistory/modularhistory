@@ -151,6 +151,11 @@ class HTMLField(MceHTMLField):
             if model_cls_str:
                 model_cls = import_string(model_cls_str)
                 for match in model_cls.admin_placeholder_regex.finditer(html):
+                    if match.group(PlaceholderGroups.MODEL_NAME_GROUP) != content_type:
+                        logging.error(
+                            f'{match.group(0)} is not an instance of {content_type}.'
+                        )
+                        continue
                     placeholder = match.group(0)
                     try:
                         updated_placeholder = model_cls.get_updated_placeholder(match)

@@ -218,7 +218,9 @@ class Model(DjangoModel):
         if not cls.admin_placeholder_regex.match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
         key = match.group(PlaceholderGroups.PK_GROUP).strip()
+        logging.info(f'Retrieving {cls.__name__} {key}...')
         model_instance: 'Model' = cls.objects.get(pk=key)
+        logging.info(f'Retrieved {cls.__name__} {key}')
         if serialize:
             return model_instance.serialize()
         return model_instance
