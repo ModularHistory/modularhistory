@@ -72,7 +72,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,
         help_text='URL where the source can be accessed online',
     )
-    description = HTMLField(null=True, blank=True)
+    description = HTMLField(null=True, blank=True, paragraphed=True)
     date = HistoricDateTimeField(null=True, blank=True)
     publication_date = HistoricDateTimeField(null=True, blank=True)
     location = models.ForeignKey(

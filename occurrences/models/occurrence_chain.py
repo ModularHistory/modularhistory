@@ -13,7 +13,7 @@ DESCRIPTION_MAX_LENGTH = 200
 class OccurrenceChain(Model):
     """A chain of related occurrences."""
 
-    description = HTMLField(max_length=DESCRIPTION_MAX_LENGTH, null=True, unique=True)
+    description = HTMLField(null=True, unique=True, paragraphed=True)
     parent_chain = ForeignKey('self', on_delete=CASCADE, related_name='sub_chains')
 
     def __str__(self):

@@ -19,7 +19,7 @@ class Publication(TypedModel, Model):
 
     name = models.CharField(max_length=100, null=True, blank=True, unique=True)
     aliases = models.CharField(max_length=100, null=True, blank=True)
-    description = HTMLField(null=True, blank=True)
+    description = HTMLField(null=True, blank=True, paragraphed=True)
 
     class Meta:
         ordering = ['name']

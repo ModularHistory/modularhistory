@@ -12,6 +12,7 @@ from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
 from modularhistory.utils.string import truncate
+from modularhistory.utils.html import soupify
 
 if TYPE_CHECKING:
     from modularhistory.models import Model
@@ -83,7 +84,10 @@ class HTMLField(MceHTMLField):
     text: str
     processor: Optional[Callable]
 
-    # Types of processable objects included in HTML
+    # Whether content should be wrapped in <p> tags (if none are present)
+    paragraphed: bool
+
+    # Types of processable objects that can be included in HTML fields
     processable_content_types: Iterable[str] = [
         'quote',
         'image',
@@ -92,10 +96,16 @@ class HTMLField(MceHTMLField):
         'fact',
     ]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        paragraphed: Optional[bool] = None,
+        processor: Optional[Callable] = None,
+        **kwargs,
+    ):
         """Construct an HTML field instance."""
-        processor = kwargs.pop('processor', None)
         self.processor = processor or process
+        self.paragraphed = paragraphed
         super().__init__(*args, **kwargs)
 
     def clean(self, html_value, model_instance: 'Model') -> HTML:
@@ -133,11 +143,26 @@ class HTMLField(MceHTMLField):
         # Update obj placeholders.
         raw_html = self.update_placeholders(raw_html)
 
-        # Wrap HTML content in a <p> tag if necessary
-        if not raw_html.startswith('<') and raw_html.endswith('>'):
-            raw_html = f'<p>{raw_html}</p>'
+        # Add or remove <p> tags if necessary
+        raw_html = self.format_html(raw_html)
 
         html.raw_value = raw_html
+        return html
+
+    def format_html(self, html: str) -> str:
+        """Add or remove <p> tags if necessary."""
+        if self.paragraphed is None:
+            pass
+        elif self.paragraphed:
+            # TODO: move this to a util method
+            if html.startswith('<p') and html.endswith('</p>'):
+                pass
+            else:
+                html = f'<p>{html}</p>'
+        else:  # if paragraphed is False
+            # TODO: move this to a util method
+            if html.startswith('<p') and html.endswith('</p>'):
+                html = soupify(html).p.decode_contents()
         return html
 
     def update_placeholders(self, html) -> str:
@@ -176,6 +201,7 @@ class HTMLField(MceHTMLField):
         field_class = 'modularhistory.fields.HTMLField'
         name, path, args, kwargs = super().deconstruct()
         kwargs['processor'] = self.processor
+        kwargs['paragraphed'] = self.paragraphed
         return name, field_class, args, kwargs
 
     def from_db_value(
@@ -189,8 +215,8 @@ class HTMLField(MceHTMLField):
         """
         if html_value is None:
             return html_value
-        if not html_value.startswith('<') and html_value.endswith('>'):
-            html_value = f'<p>{html_value}</p>'
+        # Add or remove <p> tags if necessary
+        html_value = self.format_html(html_value)
         replacements = (
             (r'074c54e4-ff1d-4952-9964-7d1e52cec4db', '6'),
             (r'354f9d11-74bb-4e2a-8e0d-5df877b4c461', '86'),

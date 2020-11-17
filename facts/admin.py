@@ -22,7 +22,7 @@ class SupportedFactsInline(StackedInline):
     verbose_name = 'supported fact'
     verbose_name_plural = 'supported facts'
     model = models.FactSupport
-    fk_name = 'supported_fact'
+    fk_name = 'supportive_fact'
     extra = 0
 
 
@@ -32,7 +32,7 @@ class SupportiveFactsInline(StackedInline):
     verbose_name = 'supportive fact'
     verbose_name_plural = 'supportive facts'
     model = models.FactSupport
-    fk_name = 'supportive_fact'
+    fk_name = 'supported_fact'
     extra = 0
 
 

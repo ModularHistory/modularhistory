@@ -54,7 +54,7 @@ class Entity(
     )
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
-    description = HTMLField(null=True, blank=True)
+    description = HTMLField(null=True, blank=True, paragraphed=True)
     categories = ManyToManyField(
         'entities.Category',
         through='entities.Categorization',

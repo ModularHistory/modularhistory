@@ -36,12 +36,17 @@ class Occurrence(
 
     date = HistoricDateTimeField(null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
-    summary = HTMLField(verbose_name='Summary', null=True, blank=True)
-    description = HTMLField(verbose_name='Description', null=True, blank=True)
+    summary = HTMLField(
+        verbose_name='Summary', null=True, blank=True, paragraphed=False
+    )
+    description = HTMLField(
+        verbose_name='Description', null=True, blank=True, paragraphed=True
+    )
     postscript = HTMLField(
         verbose_name='Postscript',
         null=True,
         blank=True,
+        paragraphed=True,
         help_text='Content to be displayed below all related data',
     )
     locations = ManyToManyField(

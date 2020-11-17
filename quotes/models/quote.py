@@ -42,18 +42,20 @@ class Quote(
 ):
     """A quote."""
 
-    text = HTMLField(verbose_name='Text')
+    text = HTMLField(verbose_name='Text', paragraphed=True)
     bite = HTMLField(verbose_name='Bite', null=True, blank=True)
     pretext = HTMLField(
         verbose_name='Pretext',
         null=True,
         blank=True,
+        paragraphed=False,
         help_text='Content to be displayed before the quote',
     )
     context = HTMLField(
         verbose_name='Context',
         null=True,
         blank=True,
+        paragraphed=True,
         help_text='Content to be displayed after the quote',
     )
     date = HistoricDateTimeField(null=True)

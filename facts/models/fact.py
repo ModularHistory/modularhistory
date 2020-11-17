@@ -6,7 +6,7 @@ import re
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.urls import reverse
 
-from facts.models.fact_relations import (
+from facts.models.fact_relation import (
     EntityFactRelation,
     FactRelation,
     OccurrenceFactRelation,
@@ -14,7 +14,7 @@ from facts.models.fact_relations import (
 )
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model, PlaceholderGroups
-from modularhistory.utils.html import escape_quotes, soupify
+from modularhistory.utils.html import escape_quotes
 from topics.serializers import FactSerializer
 
 
@@ -37,8 +37,8 @@ class FactSupport(FactRelation):
 class Fact(Model):
     """A fact."""
 
-    summary = HTMLField(unique=True)
-    elaboration = HTMLField(null=True, blank=True)
+    summary = HTMLField(unique=True, paragraphed=False)
+    elaboration = HTMLField(null=True, blank=True, paragraphed=True)
     supportive_facts = ManyToManyField(
         'self', through=FactSupport, related_name='supported_facts', symmetrical=False
     )
@@ -56,7 +56,26 @@ class Fact(Model):
 
     def __str__(self) -> str:
         """Return the fact's string representation."""
-        return self.text.text
+        return self.summary.text
+
+    @property
+    def summary_link(self) -> str:
+        """Return an HTML link to the fact, containing the summary text."""
+        add_elaboration_tooltip = False
+        elaboration = self.elaboration.html if self.elaboration else ''
+        elaboration = elaboration.replace('\n', '')
+        if add_elaboration_tooltip:
+            summary_link = (
+                f'<a href="{reverse("facts:detail", args=[self.pk])}" class="fact-link" '
+                f'target="_blank" title="{escape_quotes(elaboration)}" '
+                f'data-toggle="tooltip" data-html="true">{self.summary.html}</a>'
+            )
+        else:
+            summary_link = (
+                f'<a href="{reverse("facts:detail", args=[self.pk])}" class="fact-link" '
+                f'target="_blank">{self.summary.html}</a>'
+            )
+        return summary_link
 
     @classmethod
     def get_object_html(
@@ -68,35 +87,8 @@ class Fact(Model):
             preretrieved_html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
             if preretrieved_html:
                 return preretrieved_html.strip()
-        fact = cls.get_object_from_placeholder(match)
-        if isinstance(fact, dict):
-            pk = fact['pk']
-            summary = fact['summary']
-            elaboration = fact['elaboration'] or ''
-        else:
-            pk = fact.pk
-            summary = fact.summary.html
-            elaboration = fact.elaboration.html if fact.elaboration else ''
-        try:
-            # To return HTML, use .decode_contents() rather than .string
-            text = soupify(text).p.string
-        except Exception as err:
-            logging.error(f'{err}')
-        elaboration = elaboration.replace('\n', '')
-        add_elaboration_tooltip = False
-        html = (
-            (
-                f'<a href="{reverse("facts:detail", args=[pk])}" class="fact-link" '
-                f'target="_blank" title="{escape_quotes(elaboration)}" '
-                f'data-toggle="tooltip" data-html="true">{text}</a>'
-            )
-            if add_elaboration_tooltip
-            else (
-                f'<a href="{reverse("facts:detail", args=[pk])}" class="fact-link" '
-                f'target="_blank">{summary}</a>'
-            )
-        )
-        return html
+        fact: 'Fact' = cls.get_object_from_placeholder(match)
+        return fact.summary_link
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:

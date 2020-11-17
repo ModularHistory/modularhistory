@@ -58,7 +58,7 @@ class Topic(ModelWithRelatedQuotes, ModelWithComputations):
 
     key = models.CharField(max_length=KEY_MAX_LENGTH, unique=True)
     aliases = ArrayField(models.CharField(max_length=100), null=True, blank=True)
-    description = HTMLField(null=True, blank=True)
+    description = HTMLField(null=True, blank=True, paragraphed=True)
     parent_topics = ManyToManyField(
         'self',
         through=TopicParentChildRelation,
