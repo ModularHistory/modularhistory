@@ -11,8 +11,6 @@ HOMEPAGE_URL = {
 
 url = f'{HOMEPAGE_URL.get(ENVIRONMENT)}{reverse("home")}'
 
-TRACEMALLOC, PYMPLER = 'tracemalloc', 'pympler'
-
 
 class HomepageTestSuite(BaseCase):
     """Test suite for the homepage."""

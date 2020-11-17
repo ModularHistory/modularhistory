@@ -113,8 +113,9 @@ class HTMLField(MceHTMLField):
             (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
             (r'<p>&nbsp;<\/p>', EMPTY_STRING),
-            (r'>&lt;>&lt;', '<<'),
-            (r'>&gt;>&gt;', '>>'),
+            (r'(?:<|&lt;){2}', '<<'),
+            (r'(?:>|&gt;){2}', '>>'),
+            (r'&lt;([^\s]+?)&gt;', r'<\g<1>>'),
         )
         for pattern, replacement in replacements:
             try:
