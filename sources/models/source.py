@@ -27,12 +27,6 @@ if TYPE_CHECKING:
     from entities.models import Entity
     from sources.models.source_containment import SourceContainment
 
-# group 1: source pk
-# group 2: ignore (entire appendage including HTML and closing curly brackets)
-# group 3: source HTML
-# group 4: closing brackets
-ADMIN_PLACEHOLDER_REGEX = r'<<\ ?source:\ ?([\w\d-]+?)(:\ ?(?!>>)([\s\S]+?))?(\ ?>>)'
-
 MAX_DB_STRING_LENGTH: int = 500
 MAX_URL_LENGTH: int = 100
 MAX_CREATOR_STRING_LENGTH: int = 100
@@ -137,7 +131,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     objects: SourceManager = SourceManager()
     searchable_fields = [FieldNames.string, FieldNames.description]
-    admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
     extra_fields: Dict[str, str] = {}
     inapplicable_fields: List[str] = [
         FieldNames.collection,

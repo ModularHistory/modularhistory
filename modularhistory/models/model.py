@@ -26,7 +26,11 @@ from django.utils.html import SafeString, format_html
 from rest_framework.serializers import Serializer
 from typedmodels.models import TypedModel as BaseTypedModel
 
-from modularhistory.fields.html_field import OBJECT_PLACEHOLDER_REGEX, PlaceholderGroups
+from modularhistory.fields.html_field import (
+    OBJECT_PLACEHOLDER_REGEX,
+    PlaceholderGroups,
+    TYPE_GROUP,
+)
 from modularhistory.models.manager import Manager
 from modularhistory.utils.models import get_html_for_view as get_html_for_view_
 
@@ -37,9 +41,6 @@ FieldList = List[str]
 TypedModel: Type[BaseTypedModel] = BaseTypedModel
 
 # TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
-
-
-ADMIN_PLACEHOLDER_REGEX = OBJECT_PLACEHOLDER_REGEX
 
 
 class Views(Constant):
@@ -59,8 +60,6 @@ class Model(DjangoModel):
     searchable_fields: ClassVar[Optional[FieldList]] = None
     serializer: Type[Serializer]
 
-    admin_placeholder_regex: Pattern = re.compile(ADMIN_PLACEHOLDER_REGEX)
-
     class Meta:
         """
         Meta options for Model.
@@ -69,6 +68,17 @@ class Model(DjangoModel):
         """
 
         abstract = True
+
+    @classmethod
+    def get_admin_placeholder_regex(cls) -> Pattern:
+        """Return a compiled Regex pattern to match a model instance placeholder."""
+        content_type = cls.__name__.lower()
+        pattern = OBJECT_PLACEHOLDER_REGEX.replace(
+            TYPE_GROUP,
+            rf'(?P<{PlaceholderGroups.MODEL_NAME_GROUP}>{content_type})',
+        )
+        logging.info(f'Calculated placeholder regex for {content_type}: {pattern}')
+        return re.compile(pattern)
 
     @classmethod
     def get_searchable_fields(cls) -> FieldList:
@@ -186,7 +196,7 @@ class Model(DjangoModel):
         use_preretrieved_html: bool = False,
     ) -> str:
         """Return a model instance's HTML based on a placeholder in the admin."""
-        if not cls.admin_placeholder_regex.match(match.group(0)):
+        if not cls.get_admin_placeholder_regex().match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
 
         if use_preretrieved_html:
@@ -215,7 +225,7 @@ class Model(DjangoModel):
         cls, match: Match, serialize: bool = False
     ) -> Union['Model', Dict]:
         """Given a regex match of a model instance placeholder, return the instance."""
-        if not cls.admin_placeholder_regex.match(match.group(0)):
+        if not cls.get_admin_placeholder_regex().match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
         key = match.group(PlaceholderGroups.PK_GROUP).strip()
         logging.info(f'Retrieving {cls.__name__} {key}...')

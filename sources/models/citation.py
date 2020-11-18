@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional, Pattern, Union
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -94,13 +94,17 @@ class Citation(ModelWithComputations):
         unique_together = ['source', 'content_type', 'object_id', 'position']
         ordering = ['position', 'source']
 
-    admin_placeholder_regex = re.compile(ADMIN_PLACEHOLDER_REGEX)
     page_string_regex = re.compile(PAGE_STRING_REGEX)
     serializer = CitationSerializer
 
     def __str__(self) -> str:
         """Return the citation's string representation."""
         return soupify(self.html).get_text()
+
+    @classmethod
+    def get_admin_placeholder_regex(cls) -> Pattern:
+        """Return a compiled Regex pattern to match a model instance placeholder."""
+        return re.compile(ADMIN_PLACEHOLDER_REGEX)
 
     # TODO: refactor
     @property  # type: ignore

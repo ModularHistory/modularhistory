@@ -116,7 +116,11 @@ def _encrypt_chunk(chunk, encryptor, mac_encryptor, file_size):
     return mac_encryptor.encrypt(encryptor.encrypt(block))
 
 
-mega_client = MegaClient().login(settings.MEGA_USERNAME, settings.MEGA_PASSWORD)
+try:
+    mega_client = MegaClient().login(settings.MEGA_USERNAME, settings.MEGA_PASSWORD)
+except Exception as err:
+    logging.error(f'Failed to initialize Mega client: {err}')
+    mega_client = None
 
 
 class MegaStorage(Storage):

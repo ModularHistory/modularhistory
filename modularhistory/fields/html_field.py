@@ -21,25 +21,31 @@ if TYPE_CHECKING:
 # group 2: entity name
 ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
-# Placeholder groups are defined subsequently.
-OBJECT_PLACEHOLDER_REGEX = re.compile(
-    r'(?:<<|&lt;&lt;)\ ?([a-zA-Z]+?):\ ?([\w\d-]+?)([:\ ,]\ ?(?!(?:>>|&gt;&gt;))([\s\S]+?))?(\ ?(?:>>|&gt;&gt;))'  # noqa: E501
-)
-
 
 class PlaceholderGroups(Constant):
     """Groups in the object placeholder regex pattern."""
 
     # group 1: model class name
-    MODEL_NAME_GROUP = 1
+    MODEL_NAME_GROUP = 'content_type'
     # group 2: model instance pk
-    PK_GROUP = 2
+    PK_GROUP = 'key'
     # group 3: ignore
     APPENDAGE_GROUP = 3
     # group 4: model instance HTML
-    PRERETRIEVED_HTML_GROUP = 4
-    # group 5: closing brackets
-    CLOSING_BRACKETS_GROUP = 5
+    PRERETRIEVED_HTML_GROUP = 'html'
+
+
+TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME_GROUP}>[a-zA-Z]+?)'
+KEY_GROUP = rf'(?P<{PlaceholderGroups.PK_GROUP}>[\w\d-]+?)'
+HTML_GROUP = (
+    rf'(?!(?:>>|&gt;&gt;))(?P<{PlaceholderGroups.PRERETRIEVED_HTML_GROUP}>[\s\S]+?)'
+)
+APPENDAGE_GROUP = rf'([:\ ,]\ ?{HTML_GROUP})'
+
+OBJECT_PLACEHOLDER_REGEX = rf'(?:<<|&lt;&lt;)\ ?{TYPE_GROUP}:\ ?{KEY_GROUP}{APPENDAGE_GROUP}?\ ?(?:>>|&gt;&gt;)'  # noqa: E501
+logging.info(f'Calculated object placeholder regex: {OBJECT_PLACEHOLDER_REGEX}')
+
+object_placeholder_regex = re.compile(OBJECT_PLACEHOLDER_REGEX)
 
 
 def process(html: str) -> str:
@@ -49,7 +55,7 @@ def process(html: str) -> str:
     This involves replacing model instance placeholders with their HTML.
     """
     logging.debug(f'Processing HTML: {truncate(html)}')
-    for match in OBJECT_PLACEHOLDER_REGEX.finditer(html):
+    for match in object_placeholder_regex.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(PlaceholderGroups.MODEL_NAME_GROUP)
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
@@ -59,7 +65,7 @@ def process(html: str) -> str:
                 f'Processing {model_cls.__name__} placeholder: {placeholder}...'
             )
             # TODO
-            object_match = model_cls.admin_placeholder_regex.match(placeholder)
+            object_match = model_cls.get_admin_placeholder_regex().match(placeholder)
             try:
                 object_html = model_cls.get_object_html(
                     object_match, use_preretrieved_html=True
@@ -176,7 +182,7 @@ class HTMLField(MceHTMLField):
             model_cls_str = MODEL_CLASS_PATHS.get(content_type)
             if model_cls_str:
                 model_cls = import_string(model_cls_str)
-                for match in model_cls.admin_placeholder_regex.finditer(html):
+                for match in model_cls.get_admin_placeholder_regex().finditer(html):
                     if match.group(PlaceholderGroups.MODEL_NAME_GROUP) != content_type:
                         logging.error(
                             f'{match.group(0)} is not an instance of {content_type}.'
