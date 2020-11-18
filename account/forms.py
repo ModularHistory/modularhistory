@@ -237,7 +237,7 @@ class PictureForm(forms.Form):
         magic = None
         if magic:
             mime = magic.from_buffer(picture.file.getvalue(), mime=True)
-            logging.info(f'>>> The mime type is {mime}.')
+            logging.info(f'Picture mime type is {mime}.')
             if mime not in ('image/png', 'image/jpeg', 'image/jpg'):
                 raise forms.ValidationError('The file type must be JPG or PNG.')
         return picture

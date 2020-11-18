@@ -173,9 +173,9 @@ class SectionSource(TextualSource):
     html.admin_order_field = 'full_string'
     html: SafeString = property(html)  # type: ignore
 
-    def full_clean(self, exclude=None, validate_unique=True):
-        """TODO: add docstring."""
-        super().full_clean(exclude, validate_unique)
+    def clean(self):
+        """Prepare the section/chapter to be saved."""
+        super().clean()
         if self.pk:
             if self.container and not isinstance(self.container, Book):
                 raise ValidationError('Chapter container must be a book.')

@@ -2,8 +2,7 @@
 
 import logging
 import re
-from logging import log
-from typing import TYPE_CHECKING, Optional, Pattern, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType

@@ -67,7 +67,7 @@ jobs:
     # Set up ModularHistory
     - name: Set up ModularHistory
       if: ${{ success() }}
-      run: ./setup.sh --noninteractive
+      run: ./setup.sh --noninteractive --skip-dev-dependencies
     # Bump version and push tag
     - name: Bump version and push tag
       id: version

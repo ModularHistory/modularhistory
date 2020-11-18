@@ -23,7 +23,7 @@ def get_user_avatar(backend: AuthBackend, response: Dict, user: User, *args, **k
         if url:
             user.update_avatar(url)
     except Exception as error:
-        logging.error(f'>>> {type(error)} in get_user_avatar: {error}')
+        logging.error(f'{type(error)} in get_user_avatar: {error}')
         raise
 
 

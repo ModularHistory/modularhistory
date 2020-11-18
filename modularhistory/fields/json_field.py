@@ -21,10 +21,8 @@ class JSONField(BaseJSONField):
     schema: Optional[Union[str, Dict]]
     model: Type[Model]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, schema=None, **kwargs):
         """Override `__init__`."""
-        # Remove the `schema` param before calling regular __init__
-        schema = kwargs.pop('schema', None)
         self.schema = schema
 
         # Use a default `default` value of dict (callable)
@@ -73,7 +71,9 @@ class JSONField(BaseJSONField):
                     )
                     validate(json_value, schema_data)
                 except jsonschema_exceptions.ValidationError as error:
-                    raise ValidationError(f'{error}')
+                    raise ValidationError(
+                        f'JSON schema validation failed with {type(error)}; {error}'
+                    )
 
 
 class ExtraField:

@@ -39,8 +39,10 @@ TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME}>[a-zA-Z]+?)'
 KEY_GROUP = rf'(?P<{PlaceholderGroups.PK}>[\w\d-]+?)'
 HTML_GROUP = rf'(?!(?:>>|&gt;&gt;))(?P<{PlaceholderGroups.HTML}>[\s\S]+?)'
 APPENDAGE_GROUP = rf'(?P<{PlaceholderGroups.APPENDAGE}>[:\ ,]\ ?{HTML_GROUP})'
+START_PATTERN = r'(?:<<|&lt;&lt;|\[\[)'
+END_PATTERN = r'(?:>>|&gt;&gt;|\]\])'
 
-OBJECT_PLACEHOLDER_REGEX = rf'(?:<<|&lt;&lt;)\ ?{TYPE_GROUP}:\ ?{KEY_GROUP}{APPENDAGE_GROUP}?\ ?(?:>>|&gt;&gt;)'  # noqa: E501
+OBJECT_PLACEHOLDER_REGEX = rf'{START_PATTERN}\ ?{TYPE_GROUP}:\ ?{KEY_GROUP}{APPENDAGE_GROUP}?\ ?{END_PATTERN}'  # noqa: E501
 logging.info(f'Calculated object placeholder regex: {OBJECT_PLACEHOLDER_REGEX}')
 
 object_placeholder_regex = re.compile(OBJECT_PLACEHOLDER_REGEX)
@@ -128,8 +130,8 @@ class HTMLField(MceHTMLField):
             (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
             (r'<p>&nbsp;<\/p>', EMPTY_STRING),
-            (r'(?:<|&lt;){2}', '<<'),
-            (r'(?:>|&gt;){2}', '>>'),
+            (r'(?:<<|&lt;&lt;)', '[['),
+            (r'(?:>>|&gt;&gt;)', ']]'),
             (r'&lt;([^\s]+?)&gt;', r'<\g<1>>'),
         )
         for pattern, replacement in replacements:
@@ -243,14 +245,14 @@ class HTMLField(MceHTMLField):
             (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
             (r'<p>&nbsp;<\/p>', EMPTY_STRING),
-            (r'<p>&nbsp;<\/p>', EMPTY_STRING),
+            (r'<div>&nbsp;<\/div>', EMPTY_STRING),
             # Prevent related videos from different channels from being displayed
             (
                 r'''(<iframe .*?src=["'].*youtube\.com\/[^?]+?)(["'])''',
                 r'\g<1>?rel=0\g<2>',
             ),
-            (r'(?:\{\{|&lt;&lt;)', '<<'),
-            (r'(?:\}\}|&gt;&gt;)', '>>'),
+            (r'(?:\{\{|&lt;&lt;|<<)', '[['),
+            (r'(?:\}\}|&gt;&gt;|>>)', ']]'),
         )
         for pattern, replacement in replacements:
             html_value = re.sub(pattern, replacement, html_value)
