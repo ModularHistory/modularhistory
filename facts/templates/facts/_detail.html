@@ -21,7 +21,7 @@
 
     {% if fact.elaboration %}
     <div>
-        {{ fact.elaboration|safe }}
+        {{ fact.elaboration.html|safe }}
     </div>
     {% endif %}
 </div>
