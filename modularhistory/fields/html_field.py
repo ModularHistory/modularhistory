@@ -26,21 +26,19 @@ class PlaceholderGroups(Constant):
     """Groups in the object placeholder regex pattern."""
 
     # group 1: model class name
-    MODEL_NAME_GROUP = 'content_type'
+    MODEL_NAME = 'content_type'
     # group 2: model instance pk
-    PK_GROUP = 'key'
+    PK = 'key'
     # group 3: ignore
-    APPENDAGE_GROUP = 3
+    APPENDAGE = 'appendage'
     # group 4: model instance HTML
-    PRERETRIEVED_HTML_GROUP = 'html'
+    HTML = 'html'
 
 
-TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME_GROUP}>[a-zA-Z]+?)'
-KEY_GROUP = rf'(?P<{PlaceholderGroups.PK_GROUP}>[\w\d-]+?)'
-HTML_GROUP = (
-    rf'(?!(?:>>|&gt;&gt;))(?P<{PlaceholderGroups.PRERETRIEVED_HTML_GROUP}>[\s\S]+?)'
-)
-APPENDAGE_GROUP = rf'([:\ ,]\ ?{HTML_GROUP})'
+TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME}>[a-zA-Z]+?)'
+KEY_GROUP = rf'(?P<{PlaceholderGroups.PK}>[\w\d-]+?)'
+HTML_GROUP = rf'(?!(?:>>|&gt;&gt;))(?P<{PlaceholderGroups.HTML}>[\s\S]+?)'
+APPENDAGE_GROUP = rf'(?P<{PlaceholderGroups.APPENDAGE}>[:\ ,]\ ?{HTML_GROUP})'
 
 OBJECT_PLACEHOLDER_REGEX = rf'(?:<<|&lt;&lt;)\ ?{TYPE_GROUP}:\ ?{KEY_GROUP}{APPENDAGE_GROUP}?\ ?(?:>>|&gt;&gt;)'  # noqa: E501
 logging.info(f'Calculated object placeholder regex: {OBJECT_PLACEHOLDER_REGEX}')
@@ -57,7 +55,7 @@ def process(html: str) -> str:
     logging.debug(f'Processing HTML: {truncate(html)}')
     for match in object_placeholder_regex.finditer(html):
         placeholder = match.group(0)
-        object_type = match.group(PlaceholderGroups.MODEL_NAME_GROUP)
+        object_type = match.group(PlaceholderGroups.MODEL_NAME)
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
             model_cls: Type[Model] = import_string(model_cls_str)
@@ -70,6 +68,7 @@ def process(html: str) -> str:
                 object_html = model_cls.get_object_html(
                     object_match, use_preretrieved_html=True
                 )
+                logging.info(f'Retrieved {model_cls_str} HTML: {truncate(object_html)}')
             except ObjectDoesNotExist:
                 raise ValidationError(
                     f'Could not retrieve HTML for placeholder: {object_match.group(0)}'
@@ -183,7 +182,7 @@ class HTMLField(MceHTMLField):
             if model_cls_str:
                 model_cls = import_string(model_cls_str)
                 for match in model_cls.get_admin_placeholder_regex().finditer(html):
-                    if match.group(PlaceholderGroups.MODEL_NAME_GROUP) != content_type:
+                    if match.group(PlaceholderGroups.MODEL_NAME) != content_type:
                         logging.error(
                             f'{match.group(0)} is not an instance of {content_type}.'
                         )

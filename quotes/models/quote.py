@@ -26,11 +26,20 @@ from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
 from quotes.models.quote_image import QuoteImage
 from quotes.serializers import QuoteSerializer
+from modularhistory.fields.html_field import (
+    OBJECT_PLACEHOLDER_REGEX,
+    PlaceholderGroups,
+    TYPE_GROUP,
+)
 
 if TYPE_CHECKING:
     from entities.models import Entity
 
 BITE_MAX_LENGTH: int = 400
+
+quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>quote)'
+)
 
 
 class Quote(
@@ -82,6 +91,7 @@ class Quote(
         ordering = ['date']
 
     objects: QuoteManager = QuoteManager()  # type: ignore
+    placeholder_regex = quote_placeholder_regex
     searchable_fields = [
         'text',
         'context',
@@ -247,7 +257,7 @@ class Quote(
         """Return the obj's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
+            preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
         quote = cls.get_object_from_placeholder(match)

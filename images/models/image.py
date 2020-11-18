@@ -2,6 +2,11 @@ import logging
 import re
 from typing import Optional
 
+from modularhistory.fields.html_field import (
+    OBJECT_PLACEHOLDER_REGEX,
+    PlaceholderGroups,
+    TYPE_GROUP,
+)
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import JSONField
@@ -37,6 +42,10 @@ TYPE_NAME_MAX_LENGTH = 14
 
 IMAGE_FIELD_NAME = 'image'
 IMAGE_KEY = IMAGE_FIELD_NAME
+
+image_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'
+)
 
 
 class Image(MediaModel):
@@ -77,6 +86,7 @@ class Image(MediaModel):
         image = IMAGE_FIELD_NAME
 
     objects: ImageManager = ImageManager()  # type: ignore
+    placeholder_regex = image_placeholder_regex
     searchable_fields = [
         FieldNames.caption,
         FieldNames.description,

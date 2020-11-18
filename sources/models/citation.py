@@ -1,9 +1,16 @@
 """Model class for citations."""
 
 import logging
+from logging import log
 import re
 from typing import TYPE_CHECKING, Optional, Pattern, Union
 
+from modularhistory.fields.html_field import (
+    PlaceholderGroups as DefaultPlaceholderGroups,
+    OBJECT_PLACEHOLDER_REGEX,
+    TYPE_GROUP,
+    APPENDAGE_GROUP,
+)
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -14,9 +21,10 @@ from django.utils.safestring import SafeString
 
 from modularhistory.constants.misc import QUOTE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.models import ModelWithComputations
-from modularhistory.models import PlaceholderGroups as DefaultPlaceholderGroups
-from modularhistory.models import retrieve_or_compute
+from modularhistory.models.model_with_computations import (
+    ModelWithComputations,
+    retrieve_or_compute,
+)
 from modularhistory.utils import pdf
 from modularhistory.utils.html import (
     components_to_html,
@@ -33,26 +41,21 @@ if TYPE_CHECKING:
     from sources.models import PageRange
 
 
-ADMIN_PLACEHOLDER_REGEX = r'\ ?(?:<<|&lt;&lt;)\ ?(citation):\ ?([\d\w-]+)(,\ (pp?\.\ [\d]+))?(,\ (\".+?\"))?([:\ ]?(?:<span style="display: none;?">|<span class="citation-placeholder">)(.+)<\/span>)?\ ?(?:>>|&gt;&gt;)'  # noqa: E501
-
-
 class PlaceholderGroups(DefaultPlaceholderGroups):
-    """Group numbers for ADMIN_PLACEHOLDER_REGEX."""
+    """Group numbers for placeholder regex."""
 
-    # group 1: model class name
-    MODEL_NAME_GROUP = 1
-    # group 2: citation pk (e.g., '123')
-    PK_GROUP = 2
-    # group 3: ignore (full appendage after pk)
-    # group 4: page string (e.g., 'p. 10')
-    PAGE_STRING_GROUP = 4
-    # group 5: ignore (full appendage after page string)
-    # group 6: quotation (e.g., "It followed institutionalized procedures....")
-    QUOTATION_GROUP = 6
-    # group 7: ignore
-    # group 8: citation HTML
-    PRERETRIEVED_HTML_GROUP = 8
+    PAGE_STRING = 'page_string'
+    # quotation (e.g., "It followed institutionalized procedures....")
+    QUOTATION = 'quotation'
 
+
+PAGE_STRING_GROUP = rf'(?P<{PlaceholderGroups.PAGE_STRING}>pp?\.\ [\d]+)'
+QUOTATION_GROUP = rf'(?P<{PlaceholderGroups.QUOTATION}>\".+?\")'
+HTML_GROUP = rf'(?P<{PlaceholderGroups.HTML}>.+)'
+citation_placeholder_pattern = rf'\ ?{OBJECT_PLACEHOLDER_REGEX}'.replace(
+    APPENDAGE_GROUP,
+    rf'(,\ {PAGE_STRING_GROUP})?(,\ {QUOTATION_GROUP})?([:\ ]?(?:<span style="display: none;?">|<span class="citation-placeholder">){HTML_GROUP}<\/span>)',  # noqa: E501'
+).replace(TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>citation)')
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 
@@ -95,16 +98,12 @@ class Citation(ModelWithComputations):
         ordering = ['position', 'source']
 
     page_string_regex = re.compile(PAGE_STRING_REGEX)
+    placeholder_regex = citation_placeholder_pattern
     serializer = CitationSerializer
 
     def __str__(self) -> str:
         """Return the citation's string representation."""
         return soupify(self.html).get_text()
-
-    @classmethod
-    def get_admin_placeholder_regex(cls) -> Pattern:
-        """Return a compiled Regex pattern to match a model instance placeholder."""
-        return re.compile(ADMIN_PLACEHOLDER_REGEX)
 
     # TODO: refactor
     @property  # type: ignore
@@ -251,22 +250,22 @@ class Citation(ModelWithComputations):
         cls, match: re.Match, use_preretrieved_html: bool = False
     ) -> Optional[str]:
         """Return the object's HTML based on a placeholder in the admin."""
-        if not re.match(ADMIN_PLACEHOLDER_REGEX, match.group(0)):
-            raise ValueError(f'{match} does not match {ADMIN_PLACEHOLDER_REGEX}')
+        if not re.match(citation_placeholder_pattern, match.group(0)):
+            raise ValueError(f'{match} does not match {citation_placeholder_pattern}')
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(8)
+            preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
-        key = match.group(2).strip()
+        key = match.group(PlaceholderGroups.PK).strip()
         try:
             citation = cls.objects.get(pk=key)
         except ObjectDoesNotExist:
             logging.error(f'Unable to retrieve citation: {key}')
             return None
         source_string = str(citation)
-        page_string = match.group(4)
-        quotation = match.group(6)
+        page_string = match.group(PlaceholderGroups.PAGE_STRING)
+        quotation = match.group(PlaceholderGroups.QUOTATION)
         if page_string:
             page_string = page_string.strip()
             page_str_match = cls.page_string_regex.match(source_string)
@@ -283,6 +282,7 @@ class Citation(ModelWithComputations):
             klass='citation-link',
             title=escape_quotes(source_string),
         )
+        logging.info('Composed citation link.')
         return f'<sup>[{citation_link}]</sup>'
 
     @classmethod

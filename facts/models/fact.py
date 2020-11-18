@@ -84,7 +84,7 @@ class Fact(Model):
         """Return the obj's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
+            preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
         fact: 'Fact' = cls.get_object_from_placeholder(match)
@@ -95,8 +95,8 @@ class Fact(Model):
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
         logging.info(f'Getting updated fact placeholder for {placeholder}...')
-        if match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP):
-            html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
+        if match.group(PlaceholderGroups.HTML):
+            html = match.group(PlaceholderGroups.HTML)
             if '<a ' not in html:
                 fact_html = cls.get_object_html(match)
                 fact_html = re.sub(
@@ -105,10 +105,10 @@ class Fact(Model):
                     fact_html,
                 )
                 placeholder = placeholder.replace(
-                    match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP), fact_html
+                    match.group(PlaceholderGroups.HTML), fact_html
                 )
             return placeholder
-        appendage = match.group(PlaceholderGroups.APPENDAGE_GROUP)
+        appendage = match.group(PlaceholderGroups.APPENDAGE)
         updated_appendage = f': {cls.get_object_html(match)}'
         if appendage:
             # TODO: preserve capitalization, etc.

@@ -59,6 +59,7 @@ class Model(DjangoModel):
     objects: Manager = Manager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
     serializer: Type[Serializer]
+    placeholder_regex: Optional[str] = None
 
     class Meta:
         """
@@ -72,12 +73,16 @@ class Model(DjangoModel):
     @classmethod
     def get_admin_placeholder_regex(cls) -> Pattern:
         """Return a compiled Regex pattern to match a model instance placeholder."""
+        pattern = cls.placeholder_regex
         content_type = cls.__name__.lower()
-        pattern = OBJECT_PLACEHOLDER_REGEX.replace(
-            TYPE_GROUP,
-            rf'(?P<{PlaceholderGroups.MODEL_NAME_GROUP}>{content_type})',
-        )
-        logging.info(f'Calculated placeholder regex for {content_type}: {pattern}')
+        if pattern:
+            logging.info(f'Retrieved {content_type} placeholder regex: {pattern}')
+        else:
+            pattern = OBJECT_PLACEHOLDER_REGEX.replace(
+                TYPE_GROUP,
+                rf'(?P<{PlaceholderGroups.MODEL_NAME}>{content_type})',
+            )
+            logging.info(f'Calculated placeholder regex for {content_type}: {pattern}')
         return re.compile(pattern)
 
     @classmethod
@@ -201,15 +206,15 @@ class Model(DjangoModel):
 
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(PlaceholderGroups.PRERETRIEVED_HTML_GROUP)
+            preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
             logging.info(
                 f'Could not use preretrieved HTML for '
-                f'{match.group(PlaceholderGroups.MODEL_NAME_GROUP)} '
-                f'({match.group(PlaceholderGroups.PK_GROUP)}); querying db instead.'
+                f'{match.group(PlaceholderGroups.MODEL_NAME)} '
+                f'({match.group(PlaceholderGroups.PK)}); querying db instead.'
             )
-        key = match.group(PlaceholderGroups.PK_GROUP).strip()
+        key = match.group(PlaceholderGroups.PK).strip()
         logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
         try:
             model_instance = cls.objects.get(pk=key)
@@ -227,7 +232,7 @@ class Model(DjangoModel):
         """Given a regex match of a model instance placeholder, return the instance."""
         if not cls.get_admin_placeholder_regex().match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
-        key = match.group(PlaceholderGroups.PK_GROUP).strip()
+        key = match.group(PlaceholderGroups.PK).strip()
         logging.info(f'Retrieving {cls.__name__} {key}...')
         model_instance: 'Model' = cls.objects.get(pk=key)
         logging.info(f'Retrieved {cls.__name__} {key}')
@@ -239,7 +244,7 @@ class Model(DjangoModel):
     def get_updated_placeholder(cls, match: Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
-        appendage = match.group(PlaceholderGroups.APPENDAGE_GROUP)
+        appendage = match.group(PlaceholderGroups.APPENDAGE)
         updated_appendage = f': {cls.get_object_html(match)}'
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
