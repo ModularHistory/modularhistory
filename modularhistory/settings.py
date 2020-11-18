@@ -18,7 +18,6 @@ from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
-
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from modularhistory.constants.misc import Environments
@@ -187,8 +186,9 @@ INSTALLED_APPS = [
     'places.apps.LocationsConfig',
     'quotes.apps.QuotesConfig',
     'sources.apps.SourcesConfig',
-    'topics.apps.TopicsConfig',
     'staticpages.apps.StaticPagesConfig',
+    'topics.apps.TopicsConfig',
+    'verification.apps.VerificationConfig',
 ]
 if ENABLE_ASGI:
     INSTALLED_APPS = [

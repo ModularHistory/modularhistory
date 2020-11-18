@@ -1,5 +1,5 @@
+from admin.model_admin import ModelAdmin, admin_site
 from entities import models
-from admin.model_admin import admin_site, ModelAdmin
 
 CATEGORY_NAME_FIELD = 'name'
 ALIASES_FIELD = 'aliases'

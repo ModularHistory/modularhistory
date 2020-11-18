@@ -8,16 +8,16 @@ from django import forms
 from django.forms import MultiWidget
 from sigfig import round
 
+from modularhistory.constants.strings import COLON, PERIOD, SPACE
 from modularhistory.structures.historic_datetime import (
     BP_REFERENCE_YEAR,
     DECIMAL_INVERSION_BASIS,
     EXPONENT_INVERSION_BASIS,
-    HistoricDateTime,
     SEASONS,
+    HistoricDateTime,
     get_month_from_season,
     get_season_from_month,
 )
-from modularhistory.constants.strings import SPACE, COLON, PERIOD
 
 CE = 'CE'
 BCE = 'BCE'

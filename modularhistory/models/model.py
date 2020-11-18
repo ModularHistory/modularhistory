@@ -28,8 +28,8 @@ from typedmodels.models import TypedModel as BaseTypedModel
 
 from modularhistory.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
-    PlaceholderGroups,
     TYPE_GROUP,
+    PlaceholderGroups,
 )
 from modularhistory.models.manager import Manager
 from modularhistory.utils.models import get_html_for_view as get_html_for_view_

@@ -1,7 +1,8 @@
 """Serializers for the entities app."""
 
-from modularhistory.models.searchable_model import SearchableModelSerializer
 import serpy
+
+from modularhistory.models.searchable_model import SearchableModelSerializer
 
 
 class ImageSerializer(SearchableModelSerializer):

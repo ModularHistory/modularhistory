@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType

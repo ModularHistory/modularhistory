@@ -1,13 +1,14 @@
 """Classes for models with related entities."""
 
-from typing import Dict, List, Optional, Sequence, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence
 
 from modularhistory.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
-    from django.db.models.manager import Manager, RelatedManager
-    from images.models.image import Image
     from django.db.models import ManyToManyField
+    from django.db.models.manager import Manager, RelatedManager
+
+    from images.models.image import Image
 
 
 class ModelWithImages(Model):

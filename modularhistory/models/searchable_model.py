@@ -9,12 +9,13 @@ from django.db.models import BooleanField, UUIDField
 from modularhistory.models.model import ModelSerializer
 from modularhistory.models.model_with_computations import ModelWithComputations
 from modularhistory.models.taggable_model import TaggableModel
+from verification.models import VerifiableModel
 
 if TYPE_CHECKING:
     from modularhistory.models.manager import SearchableModelManager
 
 
-class SearchableModel(TaggableModel, ModelWithComputations):
+class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
     """
     A model that shows up in ModularHistory's search results; e.g., a quote or occurrence.
 
@@ -22,13 +23,12 @@ class SearchableModel(TaggableModel, ModelWithComputations):
     it must be defined as an abstract model class.
     """
 
-    verified = BooleanField(default=False, blank=True)
+    key = UUIDField(primary_key=False, default=uuid.uuid4, editable=False, unique=True)
     hidden = BooleanField(
         default=False,
         blank=True,
         help_text="Don't let this item appear in search results.",
     )
-    key = UUIDField(primary_key=False, default=uuid.uuid4, editable=False, unique=True)
 
     class FieldNames(TaggableModel.FieldNames):
         verified = 'verified'

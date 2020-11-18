@@ -1,7 +1,7 @@
 """Public models of the entities app."""
 
-from .entity import Entity, Group, Organization, Person, Deity
-from .entity_image import EntityImage
 from .affiliation import Affiliation, Role, RoleFulfillment
-from .category import Category, Categorization
-from .idea import Idea, EntityIdea
+from .category import Categorization, Category
+from .entity import Deity, Entity, Group, Organization, Person
+from .entity_image import EntityImage
+from .idea import EntityIdea, Idea

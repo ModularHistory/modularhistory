@@ -1,10 +1,9 @@
 import logging
 
-from django.core.exceptions import MiddlewareNotUsed
-from pympler import muppy, tracker, classtracker
-from django.template.base import Template
-
 from django.conf import settings
+from django.core.exceptions import MiddlewareNotUsed
+from django.template.base import Template
+from pympler import classtracker, muppy, tracker
 
 ENABLE = False
 

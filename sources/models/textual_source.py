@@ -1,6 +1,6 @@
 from typing import Optional
 
-from django.db.models import ForeignKey, SET_NULL
+from django.db.models import SET_NULL, ForeignKey
 
 from modularhistory.fields import ExtraField, HistoricDateTimeField
 from sources.models.source import Source

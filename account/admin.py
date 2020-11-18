@@ -7,7 +7,6 @@ from social_django.admin import AssociationOption, NonceOption, UserSocialAuthOp
 from social_django.models import Association, Nonce, UserSocialAuth
 
 from account.models import User
-
 from admin import TabularInline, admin_site
 
 EMAIL_FIELD = 'email'

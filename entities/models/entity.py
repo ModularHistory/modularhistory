@@ -1,15 +1,15 @@
 import logging
 from datetime import datetime
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from django.db import models
-from django.db.models import ForeignKey, ManyToManyField, QuerySet, SET_NULL
+from django.db.models import SET_NULL, ForeignKey, ManyToManyField, QuerySet
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 
 from entities.serializers import EntitySerializer
 from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.fields import ArrayField, HTMLField, HistoricDateTimeField
+from modularhistory.fields import ArrayField, HistoricDateTimeField, HTMLField
 from modularhistory.models import (
     ModelWithComputations,
     ModelWithImages,

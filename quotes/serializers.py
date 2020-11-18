@@ -1,7 +1,9 @@
 """Serializers for the entities app."""
 
-import serpy
 from typing import TYPE_CHECKING
+
+import serpy
+
 from modularhistory.models.searchable_model import SearchableModelSerializer
 
 if TYPE_CHECKING:

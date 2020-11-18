@@ -1,3 +1,4 @@
+from admin.model_admin import ModelAdmin, admin_site
 from entities import models
 from entities.admin.admin_filters import (
     CategoriesFilter,
@@ -7,13 +8,12 @@ from entities.admin.admin_filters import (
 from entities.admin.affiliations import AffiliationsInline
 from entities.admin.entity_inlines import (
     CategorizationsInline,
-    QuotesInline,
+    FactsInline,
     ImagesInline,
     OccurrencesInline,
-    FactsInline,
+    QuotesInline,
 )
-from entities.forms import PersonForm, GroupForm, OrganizationForm
-from admin.model_admin import admin_site, ModelAdmin
+from entities.forms import GroupForm, OrganizationForm, PersonForm
 from quotes.admin import RelatedQuotesInline
 
 

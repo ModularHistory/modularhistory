@@ -1,11 +1,11 @@
-from modularhistory.utils.html import soupify
 from django.db import models
-from django.utils.safestring import SafeString
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from typedmodels.models import TypedModel
 
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model
+from modularhistory.utils.html import soupify
 
 PUBLICATION_TYPES = (
     ('journal', 'Journal'),

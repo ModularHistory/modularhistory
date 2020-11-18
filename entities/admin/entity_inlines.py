@@ -1,8 +1,8 @@
 from admin import TabularInline
 from entities import models
+from facts.models import EntityFactRelation
 from occurrences.models import OccurrenceEntityInvolvement
 from quotes.models import Quote
-from facts.models import EntityFactRelation
 
 
 class QuotesInline(TabularInline):

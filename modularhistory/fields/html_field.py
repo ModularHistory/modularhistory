@@ -11,8 +11,8 @@ from tinymce.models import HTMLField as MceHTMLField
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
-from modularhistory.utils.string import truncate
 from modularhistory.utils.html import soupify
+from modularhistory.utils.string import truncate
 
 if TYPE_CHECKING:
     from modularhistory.models import Model

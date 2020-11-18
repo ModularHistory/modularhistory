@@ -7,8 +7,8 @@ from gm2m import GM2MField as GenericManyToManyField
 from modularhistory.fields import ArrayField, HTMLField
 from modularhistory.models import (
     Model,
-    ModelWithRelatedQuotes,
     ModelWithComputations,
+    ModelWithRelatedQuotes,
     retrieve_or_compute,
 )
 from topics.models.topic_relations import TopicRelation

@@ -5,9 +5,9 @@ from functools import partial
 from os.path import join
 from typing import Callable
 
+from django.conf import settings
 from django.db.models import FileField, Model
 
-from django.conf import settings
 from modularhistory.structures.source_file import TextualSourceFile
 
 

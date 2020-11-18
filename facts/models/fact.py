@@ -13,13 +13,14 @@ from facts.models.fact_relation import (
     TopicFactRelation,
 )
 from modularhistory.fields import HTMLField
-from modularhistory.models import Model, PlaceholderGroups
+from modularhistory.models.model import PlaceholderGroups
 from modularhistory.utils.html import escape_quotes
 from topics.serializers import FactSerializer
+from verification.models import VerifiableModel
 
 
 class FactSupport(FactRelation):
-    """TODO: add docstring."""
+    """A supportion of a fact by another fact."""
 
     supported_fact = ForeignKey(
         'facts.Fact', on_delete=CASCADE, related_name='supported_fact_supports'
@@ -29,12 +30,18 @@ class FactSupport(FactRelation):
     )
 
     class Meta:
+        """
+        Meta options for the FactSupport model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = ['supported_fact', 'supportive_fact']
 
     serializer = FactSerializer
 
 
-class Fact(Model):
+class Fact(VerifiableModel):
     """A fact."""
 
     summary = HTMLField(unique=True, paragraphed=False)

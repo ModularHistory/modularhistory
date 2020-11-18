@@ -1,6 +1,7 @@
 import logging
 
-from django.contrib.auth import authenticate, login, views as auth_views
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import views as auth_views
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import View

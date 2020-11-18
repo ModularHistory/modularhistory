@@ -14,13 +14,11 @@ from typing import Pattern  # not included in * for some reason
 from django.conf import settings
 from mypy import api as mypy_client
 
+from modularhistory.linters.config import CONFIG_FILE, PARSING_FAIL
 from modularhistory.linters.config import (
-    CONFIG_FILE,
     ConfigFileOptionsParser as BaseConfigFileOptionsParser,
-    LinterOptions,
-    PARSING_FAIL,
-    PerFileIgnore,
 )
+from modularhistory.linters.config import LinterOptions, PerFileIgnore
 from modularhistory.utils import linting
 
 ERROR_CODE_LIST_URL: str = 'https://mypy.readthedocs.io/en/stable/error_code_list.html'

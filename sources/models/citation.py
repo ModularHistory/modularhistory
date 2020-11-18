@@ -1,16 +1,10 @@
 """Model class for citations."""
 
 import logging
-from logging import log
 import re
+from logging import log
 from typing import TYPE_CHECKING, Optional, Pattern, Union
 
-from modularhistory.fields.html_field import (
-    PlaceholderGroups as DefaultPlaceholderGroups,
-    OBJECT_PLACEHOLDER_REGEX,
-    TYPE_GROUP,
-    APPENDAGE_GROUP,
-)
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,6 +15,14 @@ from django.utils.safestring import SafeString
 
 from modularhistory.constants.misc import QUOTE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
+from modularhistory.fields.html_field import (
+    APPENDAGE_GROUP,
+    OBJECT_PLACEHOLDER_REGEX,
+    TYPE_GROUP,
+)
+from modularhistory.fields.html_field import (
+    PlaceholderGroups as DefaultPlaceholderGroups,
+)
 from modularhistory.models.model_with_computations import (
     ModelWithComputations,
     retrieve_or_compute,
@@ -277,7 +279,7 @@ class Citation(ModelWithComputations):
         if quotation:
             source_string = f'{source_string}: {quotation}'
         citation_link = compose_link(
-            f'<sup>{citation.number}</sup>',
+            f'{citation.number}',
             href=f'#citation-{citation.pk}',
             klass='citation-link',
             title=escape_quotes(source_string),

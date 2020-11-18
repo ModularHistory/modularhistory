@@ -1,11 +1,13 @@
 # import magic
+import logging
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Field, Layout, Submit
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.urls import reverse
-import logging
+
 from account.admin import EMAIL_FIELD, PASSWORD_FIELD, USERNAME_FIELD
 from account.models import User
 from modularhistory.constants.misc import SOCIAL_AUTH_URL_NAME

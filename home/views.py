@@ -1,5 +1,7 @@
 from typing import Dict
+
 from django.views.generic import TemplateView  # , RedirectView
+
 from home.forms import SearchForm
 
 

@@ -3,9 +3,9 @@ from os import remove
 from os.path import join
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.db.models.fields.files import FieldFile
 
-from django.conf import settings
 from modularhistory.utils import files
 
 if TYPE_CHECKING:

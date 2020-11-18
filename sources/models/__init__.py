@@ -21,8 +21,8 @@ from .spoken_source import (
     Lecture,
     Sermon,
     Speech,
-    Statement,
     SpokenSource,
+    Statement,
 )
 from .textual_source import TextualSource
 from .video_source import Documentary, VideoSource

@@ -1,9 +1,9 @@
 from django.contrib.admin import SimpleListFilter
 
-from admin.model_admin import admin_site, ModelAdmin
+from admin.model_admin import ModelAdmin, admin_site
+from modularhistory.constants.strings import NO, YES
 from sources import models
 from sources.admin.source_admins.source_admin import SourcesInline
-from modularhistory.constants.strings import YES, NO
 
 PAGE_OFFSET_FIELD = 'page_offset'
 

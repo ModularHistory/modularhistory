@@ -1,12 +1,13 @@
 """Models for the markup app."""
 
+from difflib import ndiff
+
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from account.models import User
 from modularhistory.models import Model
-from difflib import ndiff
 
 
 class GenericContentInteraction(Model):

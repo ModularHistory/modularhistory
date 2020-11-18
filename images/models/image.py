@@ -2,11 +2,6 @@ import logging
 import re
 from typing import Optional
 
-from modularhistory.fields.html_field import (
-    OBJECT_PLACEHOLDER_REGEX,
-    PlaceholderGroups,
-    TYPE_GROUP,
-)
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import JSONField
@@ -21,6 +16,11 @@ from images.manager import ImageManager
 from images.models.media_model import MediaModel
 from images.serializers import ImageSerializer
 from modularhistory.fields.file_field import upload_to
+from modularhistory.fields.html_field import (
+    OBJECT_PLACEHOLDER_REGEX,
+    TYPE_GROUP,
+    PlaceholderGroups,
+)
 from modularhistory.utils.string import components_to_string
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300

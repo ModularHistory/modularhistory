@@ -1,6 +1,6 @@
 """Classes for models with relations to sources."""
 
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,6 +12,7 @@ from modularhistory.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
+
     from sources.models import Citation, Source
 
 

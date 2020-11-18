@@ -2,7 +2,7 @@
 
 from typing import List
 
-from django.db.models import ForeignKey, CASCADE
+from django.db.models import CASCADE, ForeignKey
 
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model

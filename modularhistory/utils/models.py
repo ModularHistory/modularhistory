@@ -1,5 +1,6 @@
-from typing import Dict, Optional, TYPE_CHECKING, Union
 import logging
+from typing import TYPE_CHECKING, Dict, Optional, Union
+
 from django.template import loader
 from django.utils.html import format_html
 from django.utils.safestring import SafeString

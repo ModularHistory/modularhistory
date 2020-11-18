@@ -1,7 +1,8 @@
 """Serializers for the entities app."""
 
-from modularhistory.models.model import ModelSerializer
 import serpy
+
+from modularhistory.models.model import ModelSerializer
 
 
 class TopicSerializer(ModelSerializer):

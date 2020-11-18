@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField, Q, QuerySet
@@ -12,25 +12,25 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.fields import HTMLField, HistoricDateTimeField
+from modularhistory.fields import HistoricDateTimeField, HTMLField
+from modularhistory.fields.html_field import (
+    OBJECT_PLACEHOLDER_REGEX,
+    TYPE_GROUP,
+    PlaceholderGroups,
+)
 from modularhistory.models import (
     ModelWithImages,
     ModelWithRelatedEntities,
     ModelWithRelatedQuotes,
     ModelWithSources,
+    PlaceholderGroups,
     SearchableDatedModel,
     retrieve_or_compute,
-    PlaceholderGroups,
 )
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
 from quotes.models.quote_image import QuoteImage
 from quotes.serializers import QuoteSerializer
-from modularhistory.fields.html_field import (
-    OBJECT_PLACEHOLDER_REGEX,
-    PlaceholderGroups,
-    TYPE_GROUP,
-)
 
 if TYPE_CHECKING:
     from entities.models import Entity

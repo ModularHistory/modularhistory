@@ -1,4 +1,5 @@
 from django import template
+
 from modularhistory.settings import MEDIA_URL
 
 register = template.Library()

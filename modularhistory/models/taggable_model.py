@@ -9,7 +9,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
-from modularhistory.models import retrieve_or_compute, Model
+from modularhistory.models import Model, retrieve_or_compute
 from topics.models import Topic
 
 

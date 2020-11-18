@@ -1,12 +1,14 @@
 """Manager classes for ModularHistory's models."""
 
+import logging
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import Manager as ModelManager, QuerySet
+from django.db.models import Manager as ModelManager
+from django.db.models import QuerySet
 from typedmodels.models import TypedModelManager as BaseTypedModelManager
-import logging
+
 from modularhistory.structures.historic_datetime import HistoricDateTime
 
 if TYPE_CHECKING:

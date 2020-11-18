@@ -1,10 +1,10 @@
-from modularhistory.utils.html import soupify
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
 
 from modularhistory.models import Model
+from modularhistory.utils.html import soupify
 
 
 class QuoteRelation(Model):

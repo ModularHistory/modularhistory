@@ -1,9 +1,10 @@
+import logging
 import os
 from urllib.parse import urljoin
-import logging
-from google.auth.exceptions import DefaultCredentialsError
+
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from google.auth.exceptions import DefaultCredentialsError
 from storages.backends.gcloud import GoogleCloudStorage
 from storages.utils import setting
 

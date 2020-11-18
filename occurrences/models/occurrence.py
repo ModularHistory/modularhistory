@@ -1,4 +1,4 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField
@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from images.models import Image
-from modularhistory.fields import HTMLField, HistoricDateTimeField
+from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.models import (
     ModelWithImages,
     ModelWithRelatedQuotes,

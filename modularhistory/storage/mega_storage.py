@@ -2,7 +2,7 @@ import logging
 import os
 import tempfile
 from datetime import datetime
-from typing import Any, IO, List, Optional, Tuple
+from typing import IO, Any, List, Optional, Tuple
 
 import requests
 from django.conf import settings
