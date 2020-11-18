@@ -34,6 +34,9 @@ OPTIONS
   --skip-dependencies
       Option that makes the script skip installing dependencies with Poetry/Pip
 
+  --skip-dev-dependencies
+      Option that makes the script skip installing dev dependencies with Poetry/Pip
+
   --
       Specify end of options; useful if the first non option
       argument starts with a hyphen
@@ -82,6 +85,9 @@ while getopts "$optspec" optchar; do
       ;;
     skip-dependencies)
       skip_dependencies=true
+      ;;
+    skip-dev-dependencies)
+      skip_dev_dependencies=true
       ;;
     -) break ;;
     *) fatal "Unknown option '--${OPTARG}'" "See '${0} --help' for usage" ;;
@@ -305,10 +311,17 @@ poetry config virtualenvs.create false
 if [[ ! "$skip_dependencies" == true ]]; then
   # Install dependencies with Poetry
   echo "Installing dependencies..."
-  poetry install --no-root || {
-    error "Failed to install dependencies with Poetry."
-    exit 1
-  }
+  if [[ ! "$skip_dev_dependencies" == true ]]; then
+    poetry install --no-dev --no-root || {
+      error "Failed to install dependencies with Poetry."
+      exit 1
+    }
+  else
+    poetry install --no-root || {
+      error "Failed to install dependencies with Poetry."
+      exit 1
+    }
+  fi
 fi
 
 # TODO: remove lock command after https://github.com/python-poetry/poetry/issues/3023 is fixed
