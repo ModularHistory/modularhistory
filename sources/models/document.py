@@ -82,10 +82,8 @@ class Collection(ModelWithComputations):
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the collection's HTML representation."""
-        html = self.__html__
-        return format_html(html)
+        return format_html(self.__html__())
 
-    @property
     def __html__(self) -> str:
         """Return the collection's HTML representation."""
         components = [
@@ -129,10 +127,8 @@ class Repository(ModelWithComputations):
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the collection's HTML representation."""
-        html = self.__html__
-        return format_html(html)
+        return format_html(self.__html__())
 
-    @property
     def __html__(self) -> str:
         """Return the repository's HTML representation."""
         location_string = self.location.string if self.location else None
@@ -143,7 +139,6 @@ class Repository(ModelWithComputations):
 class Document(DocumentSource):
     """A historical document (as a source)."""
 
-    @property
     def __html__(self) -> str:
         """Return the repository's HTML representation."""
         components = [

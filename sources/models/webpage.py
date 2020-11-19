@@ -22,7 +22,6 @@ class WebPage(TextualSource):
         blank=True,
     )
 
-    @property
     def __html__(self) -> str:
         """TODO: write docstring."""
         components = [

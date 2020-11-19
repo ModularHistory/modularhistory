@@ -6,7 +6,6 @@ from sources.models.source import Source
 class VideoSource(Source):
     """A video source."""
 
-    @property
     def __html__(self) -> str:
         """TODO: write docstring."""
         raise NotImplementedError
@@ -18,7 +17,6 @@ class Documentary(VideoSource):
     class Meta:
         verbose_name_plural = 'Documentaries'
 
-    @property
     def __html__(self) -> str:
         """TODO: add docstring."""
         components = [

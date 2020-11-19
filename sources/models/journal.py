@@ -14,7 +14,6 @@ class JournalEntry(SourceWithPageNumbers):
     class Meta:
         verbose_name_plural = 'Journal entries'
 
-    @property
     def __html__(self) -> str:
         """TODO: add docstring."""
         components = [

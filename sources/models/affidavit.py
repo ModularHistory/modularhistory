@@ -39,7 +39,6 @@ class Affidavit(DocumentSource):
         if not self.location:
             raise ValidationError('Affidavit needs a certification location.')
 
-    @property
     def __html__(self) -> str:
         """TODO: add docstring."""
         components = [

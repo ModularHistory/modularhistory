@@ -1,6 +1,9 @@
+import json
 from typing import Any, Dict, Iterable, Mapping
-
+import logging
 from django_json_widget.widgets import JSONEditorWidget as BaseJSONEditorWidget
+
+from modularhistory.utils.html import soupify
 
 
 class JSONEditorWidget(BaseJSONEditorWidget):
@@ -17,7 +20,7 @@ class JSONEditorWidget(BaseJSONEditorWidget):
 
     def value_from_datadict(
         self, data: Dict[str, Any], files: Mapping[str, Iterable[Any]], name: str
-    ) -> Any:
+    ) -> str:
         """
         Process the value returned from the JSON editor.
 
@@ -25,9 +28,18 @@ class JSONEditorWidget(BaseJSONEditorWidget):
         """
         json_value = super().value_from_datadict(data, files, name)
         if isinstance(json_value, dict):
-            return {
-                attribute: attribute_value
-                for attribute, attribute_value in json_value.items()
-                if attribute_value is not None
-            }
-        return json_value
+            json_data = json_value
+        else:
+            try:
+                json_data = json.loads(soupify(json_value).get_text())
+            except Exception as err:
+                logging.error(
+                    f'Loading value from JSON editor widget resulted in {err}'
+                )
+                return json_value
+        json_data = {
+            attribute: attribute_value
+            for attribute, attribute_value in json_data.items()
+            if attribute_value is not None
+        }
+        return json.dumps(json_data)

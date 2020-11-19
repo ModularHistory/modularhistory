@@ -33,9 +33,8 @@ class Publication(TypedModel, Model):
     @property
     def html(self) -> SafeString:
         """Return the publication's HTML representation."""
-        return format_html(self.__html__)
+        return format_html(self.__html__())
 
-    @property
     def __html__(self) -> str:
         """Return the publication's HTML representation."""
         return f'<i>{self.name}</i>'

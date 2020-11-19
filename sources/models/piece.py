@@ -8,7 +8,6 @@ PIECE_TYPES = (('essay', 'Essay'),)
 class Piece(SourceWithPageNumbers):
     """A piece (e.g., essay)."""
 
-    @property
     def __html__(self) -> str:
         """TODO: write docstring."""
         components = [

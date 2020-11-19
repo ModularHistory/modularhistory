@@ -16,7 +16,6 @@ class SpokenSource(Source):
         blank=True,
     )
 
-    @property
     def __html__(self) -> str:
         """TODO: write docstring."""
         type_label = str(self.type_label)

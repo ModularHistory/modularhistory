@@ -135,7 +135,6 @@ class Book(TextualSource):
             return printing_year_string
         return None
 
-    @property
     def __html__(self) -> str:
         """Return the book's HTML representation."""
         components = [
@@ -155,8 +154,7 @@ class Book(TextualSource):
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the book's HTML representation."""
-        html = self.__html__
-        return format_html(html)
+        return format_html(self.__html__())
 
     html.admin_order_field = 'full_string'
     html: SafeString = property(html)  # type: ignore
@@ -168,7 +166,7 @@ class SectionSource(TextualSource):
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the section/chapter's HTML representation."""
-        return format_html(self.__html__)
+        return format_html(self.__html__())
 
     html.admin_order_field = 'full_string'
     html: SafeString = property(html)  # type: ignore
@@ -180,7 +178,6 @@ class SectionSource(TextualSource):
             if self.container and not isinstance(self.container, Book):
                 raise ValidationError('Chapter container must be a book.')
 
-    @property
     def __html__(self) -> str:
         """Return the section/chapter's HTML representation."""
         container_html = None

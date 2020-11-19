@@ -148,7 +148,17 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     def clean(self):
         """Prepare the source to be saved."""
+        logging.info(f'Cleaning source ({self.type})...')
         super().clean()
+        if self.type == 'sources.source' or not self.type:
+            raise ValidationError('Source must have a type.')
+        else:
+            # Prevent a RuntimeError when saving a new source
+            self.recast(self.type)
+        try:
+            self.full_string = str(self)
+        except Exception as err:
+            logging.error(f'Attempt to save searchable source string resulted in {err}')
         if self.pk:  # If this source is not being newly created
             is_duplicate = (
                 Source.objects.exclude(pk=self.pk)
@@ -229,9 +239,20 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     def containment(self) -> Optional['SourceContainment']:
         """Return the source's primary containment."""
         try:
-            return self.source_containments.first()
-        except (ObjectDoesNotExist, AttributeError):
+            return self.serialized_containers[0]
+        except (TypeError, IndexError):
             return None
+
+    @property  # type: ignore
+    @retrieve_or_compute(attribute_name='containers')
+    def serialized_containments(self) -> List[Dict]:
+        """Return the source's containers, serialized."""
+        return [
+            containment.container.serialize()
+            for containment in self.source_containments.all().select_related(
+                'container'
+            )
+        ]
 
     @property
     def source_file(self) -> Optional[SourceFile]:
@@ -313,6 +334,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
             url = self.url
         return url
 
+    # Note: This method is subsequently transformed into a property.
     @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """
@@ -321,7 +343,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         This method is accessible as a property.
         """
         # TODO: html methods should be split into different classes and/or mixins.
-        html = self.__html__
+        html = self.__html__()
         container_strings = self.get_container_strings()
         if container_strings:
             containers = ', and '.join(container_strings)
@@ -414,7 +436,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
             return self.container.date
         return None
 
-    @property
     def __html__(self) -> str:
         """
         Return the source's HTML representation, not including its containers.

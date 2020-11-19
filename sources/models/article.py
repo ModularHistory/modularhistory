@@ -29,7 +29,6 @@ class Article(SourceWithPageNumbers):
         FieldNames.collection,
     ]
 
-    @property
     def __html__(self) -> str:
         """
         Return the article's HTML string representation.

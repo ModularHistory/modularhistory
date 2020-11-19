@@ -43,9 +43,10 @@ class SourceForm(ModelForm):
             logging.info(f'Setting initial type to {source_type}')
             initial['type'] = source_type
         if schema:
+            extra = (instance.extra or {}) if instance else {}
             initial_extra_fields = initial.get(self.model.FieldNames.extra, {})
             for key in schema:
-                initial_value = instance.extra.get(key, None) if instance else None
+                initial_value = extra.get(key, None) if instance else None
                 initial_extra_fields[key] = initial_value
             initial[models.Source.FieldNames.extra] = initial_extra_fields
         kwargs[INITIAL] = initial
@@ -77,6 +78,7 @@ class SourceAdmin(SearchableModelAdmin):
     ]
     readonly_fields = SearchableModelAdmin.readonly_fields + [
         model.FieldNames.string,
+        'computations',
     ]
     search_fields = models.Source.searchable_fields
     ordering = ['date', model.FieldNames.string]

@@ -5,7 +5,7 @@ import logging
 from typing import Any, Dict, List, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
-from django.db.models import JSONField as BaseJSONField  # type: ignore
+from django.db.models import JSONField as BaseJSONField
 from django.db.models import Model
 from jsonschema import exceptions as jsonschema_exceptions
 from jsonschema import validate

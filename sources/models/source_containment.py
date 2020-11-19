@@ -5,6 +5,7 @@ from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 
 from modularhistory.models import Model
+from sources.serializers import ContainmentSerializer
 
 PHRASE_MAX_LENGTH: int = 12
 CONTAINMENT_PHRASES = (
@@ -48,6 +49,8 @@ class SourceContainment(Model):
 
     class Meta:
         ordering = ['position', 'source']
+
+    serializer = ContainmentSerializer
 
     def __str__(self) -> str:
         """TODO: write docstring."""

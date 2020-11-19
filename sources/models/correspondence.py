@@ -40,7 +40,6 @@ class Correspondence(DocumentSource):
         FieldNames.publication,
     ]
 
-    @property
     def __html__(self) -> str:
         """TODO: write docstring."""
         html = f'{self.attributee_html}, '
