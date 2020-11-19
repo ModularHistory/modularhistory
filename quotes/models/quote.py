@@ -23,7 +23,6 @@ from modularhistory.models import (
     ModelWithRelatedEntities,
     ModelWithRelatedQuotes,
     ModelWithSources,
-    PlaceholderGroups,
     SearchableDatedModel,
     retrieve_or_compute,
 )

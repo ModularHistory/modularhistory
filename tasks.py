@@ -237,7 +237,7 @@ def test(context, docker=False):
     print(command)
     if docker:
         context.run(
-            f'docker build -t modularhistory/modularhistory . && docker-compose up'
+            'docker build -t modularhistory/modularhistory . && docker-compose up'
         )
     context.run(command)
     context.run('coverage combine')

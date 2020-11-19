@@ -149,9 +149,6 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
-    # TODO
-    # 'django_celery_beat',  # https://github.com/celery/django-celery-beat
-    # 'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_json_widget',  # https://github.com/jmrivas86/django-json-widget
     'django_replicated',  # https://github.com/yandex/django_replicated
     # 'django_spaghetti',  # https://github.com/LegoStormtroopr/django-spaghetti-and-meatballs  # TODO

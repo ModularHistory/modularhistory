@@ -34,6 +34,7 @@ mypy
 nbsp
 parsable
 prefetched
+pylint
 querysets
 RST
 select2
@@ -45,6 +46,7 @@ tracemalloc
 uncomment
 unparsed
 unpositioned
+v2
 Vue
 YBP
 0

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from typedmodels.models import TypedModel
-
+from django.core.exceptions import ValidationError
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model
 from modularhistory.utils.html import soupify
@@ -29,6 +29,20 @@ class Publication(TypedModel, Model):
     def __str__(self) -> str:
         """Return the publication's string representation."""
         return soupify(self.html).get_text()
+
+    def save(self, *args, **kwargs):
+        """Save the publication."""
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        """Prepare the publication to be saved."""
+        super().clean()
+        if self.type == 'sources.publication' or not self.type:
+            raise ValidationError('Publication must have a type.')
+        else:
+            # Prevent a RuntimeError when saving a new publication
+            self.recast(self.type)
 
     @property
     def html(self) -> SafeString:
