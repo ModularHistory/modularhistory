@@ -239,8 +239,8 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     def containment(self) -> Optional['SourceContainment']:
         """Return the source's primary containment."""
         try:
-            return self.serialized_containers[0]
-        except (TypeError, IndexError):
+            return self.source_containments.first()
+        except (ObjectDoesNotExist, AttributeError):
             return None
 
     @property  # type: ignore
