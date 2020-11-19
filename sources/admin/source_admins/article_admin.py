@@ -41,4 +41,7 @@ class ArticlesInline(StackedInline):
 
 admin_site.register(models.Article, ArticleAdmin)
 admin_site.register(models.Publication, PublicationAdmin)
+admin_site.register(models.Journal, PublicationAdmin)
+admin_site.register(models.Newspaper, PublicationAdmin)
+admin_site.register(models.Magazine, PublicationAdmin)
 admin_site.register(models.WebPage, TextualSourceAdmin)
