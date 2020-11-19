@@ -2,6 +2,7 @@ from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
 
 from admin.list_filters import BooleanListFilter
+from admin.list_filters import TypeFilter as BaseTypeFilter
 from modularhistory.constants.strings import EMPTY_STRING, NO, YES
 from sources.models import Source
 
@@ -73,19 +74,7 @@ class ImpreciseDateFilter(BooleanListFilter):
         return queryset
 
 
-class TypeFilter(SimpleListFilter):
+class TypeFilter(BaseTypeFilter):
     """Filters sources by type."""
 
-    title = 'type'
-    parameter_name = 'type'
-
-    def lookups(self, request, model_admin):
-        """Return an iterable of tuples (value, verbose value)."""
-        return Source.get_meta().get_field('type').choices
-
-    def queryset(self, request, queryset):
-        """Return the queryset filtered by type."""
-        type_value = self.value()
-        if not type_value:
-            return queryset
-        return queryset.filter(type=type_value)
+    base_model = Source

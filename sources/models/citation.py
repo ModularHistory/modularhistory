@@ -55,8 +55,9 @@ QUOTATION_GROUP = rf'(?P<{PlaceholderGroups.QUOTATION}>\".+?\")'
 HTML_GROUP = rf'(?P<{PlaceholderGroups.HTML}>.+)'
 citation_placeholder_pattern = rf'\ ?{OBJECT_PLACEHOLDER_REGEX}'.replace(
     APPENDAGE_GROUP,
-    rf'(,\ {PAGE_STRING_GROUP})?(,\ {QUOTATION_GROUP})?([:\ ]?(?:<span style="display: none;?">|<span class="citation-placeholder">){HTML_GROUP}<\/span>)',  # noqa: E501'
+    rf'(,\ {PAGE_STRING_GROUP})?(,\ {QUOTATION_GROUP})?(:?\ ?(?:<span style="display: none;?">|<span class="citation-placeholder">){HTML_GROUP}<\/span>)',  # noqa: E501'
 ).replace(TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>citation)')
+logging.info(f'Citation placeholder pattern: {citation_placeholder_pattern}')
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 

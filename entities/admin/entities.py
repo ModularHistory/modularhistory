@@ -2,6 +2,7 @@ from admin.model_admin import ModelAdmin, admin_site
 from entities import models
 from entities.admin.admin_filters import (
     CategoriesFilter,
+    EntityTypeFilter,
     HasImageFilter,
     HasQuotesFilter,
 )
@@ -13,7 +14,7 @@ from entities.admin.entity_inlines import (
     OccurrencesInline,
     QuotesInline,
 )
-from entities.forms import GroupForm, OrganizationForm, PersonForm
+from entities.forms import DeityForm, GroupForm, OrganizationForm, PersonForm
 from quotes.admin import RelatedQuotesInline
 
 
@@ -21,15 +22,8 @@ class EntityAdmin(ModelAdmin):
     """Admin for entities."""
 
     model = models.Entity
-    list_display = [
-        'name',
-        'truncated_description',
-        'birth_date',
-        'death_date',
-        'aliases',
-        'id',
-    ]
-    list_filter = [HasQuotesFilter, HasImageFilter, CategoriesFilter]
+
+    exclude = ['computations']  # display read-only pretty_computations instead
     inlines = [
         ImagesInline,
         CategorizationsInline,
@@ -39,30 +33,61 @@ class EntityAdmin(ModelAdmin):
         QuotesInline,
         RelatedQuotesInline,
     ]
+    list_display = [
+        'name',
+        'truncated_description',
+        'birth_date',
+        'death_date',
+        'aliases',
+        'type',
+    ]
+    list_filter = [HasQuotesFilter, HasImageFilter, CategoriesFilter, EntityTypeFilter]
     ordering = ['name', 'birth_date']
     readonly_fields = ['pretty_computations']
     search_fields = ['name', 'aliases']
 
 
-class PersonAdmin(EntityAdmin):
+class TypedEntityAdmin(EntityAdmin):
+    """Base admin for typed entities."""
+
+    list_display = [
+        'name',
+        'truncated_description',
+        'birth_date',
+        'death_date',
+        'aliases',
+    ]
+    list_filter = [HasQuotesFilter, HasImageFilter, CategoriesFilter]
+
+
+class PersonAdmin(TypedEntityAdmin):
     """Admin for persons."""
 
     model = models.Person
-    exclude = ['parent_organization']
+    exclude = [*TypedEntityAdmin.exclude, 'parent_organization']
     form = PersonForm
     add_form = PersonForm
 
 
-class GroupAdmin(EntityAdmin):
+class DeityAdmin(TypedEntityAdmin):
+    """Admin for persons."""
+
+    model = models.Deity
+    exclude = [*TypedEntityAdmin.exclude, 'parent_organization']
+    form = DeityForm
+    add_form = DeityForm
+
+
+class GroupAdmin(TypedEntityAdmin):
     """Admin for groups."""
 
     model = models.Group
-    exclude = ['parent_organization']
+    exclude = [*TypedEntityAdmin.exclude, 'parent_organization']
     form = GroupForm
     add_form = GroupForm
 
 
-class OrganizationAdmin(EntityAdmin):
+class OrganizationAdmin(TypedEntityAdmin):
     """TODO: add docstring."""
 
     model = models.Person

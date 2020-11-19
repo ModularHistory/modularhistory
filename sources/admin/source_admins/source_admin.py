@@ -40,7 +40,7 @@ class SourceForm(ModelForm):
         initial = kwargs.pop(INITIAL, {})
         if instance is None:
             source_type = f'sources.{self.model.__name__.lower()}'
-            logging.info(f'Setting initial type to {source_type}')
+            logging.debug(f'Setting initial type to {source_type}')
             initial['type'] = source_type
         if schema:
             extra = (instance.extra or {}) if instance else {}

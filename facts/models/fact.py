@@ -3,42 +3,28 @@
 import logging
 import re
 
-from django.db.models import CASCADE, ForeignKey, ManyToManyField
+from django.db.models import ManyToManyField
 from django.urls import reverse
 
 from facts.models.fact_relation import (
     EntityFactRelation,
-    FactRelation,
     OccurrenceFactRelation,
     TopicFactRelation,
 )
 from modularhistory.fields import HTMLField
-from modularhistory.models.model import PlaceholderGroups
+from modularhistory.fields.html_field import (
+    OBJECT_PLACEHOLDER_REGEX,
+    TYPE_GROUP,
+    PlaceholderGroups,
+)
 from modularhistory.utils.html import escape_quotes
 from topics.serializers import FactSerializer
 from verification.models import VerifiableModel
 
-
-class FactSupport(FactRelation):
-    """A supportion of a fact by another fact."""
-
-    supported_fact = ForeignKey(
-        'facts.Fact', on_delete=CASCADE, related_name='supported_fact_supports'
-    )
-    supportive_fact = ForeignKey(
-        'facts.Fact', on_delete=CASCADE, related_name='supportive_fact_supports'
-    )
-
-    class Meta:
-        """
-        Meta options for the FactSupport model.
-
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
-
-        unique_together = ['supported_fact', 'supportive_fact']
-
-    serializer = FactSerializer
+fact_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>fact)'
+)
+logging.info(f'Fact placeholder pattern: {fact_placeholder_regex}')
 
 
 class Fact(VerifiableModel):
@@ -47,7 +33,10 @@ class Fact(VerifiableModel):
     summary = HTMLField(unique=True, paragraphed=False)
     elaboration = HTMLField(null=True, blank=True, paragraphed=True)
     supportive_facts = ManyToManyField(
-        'self', through=FactSupport, related_name='supported_facts', symmetrical=False
+        'self',
+        through='facts.FactSupport',
+        related_name='supported_facts',
+        symmetrical=False,
     )
     related_entities = ManyToManyField(
         'entities.Entity', through=EntityFactRelation, related_name='facts'
@@ -60,6 +49,7 @@ class Fact(VerifiableModel):
     )
 
     searchable_fields = ['summary', 'elaboration']
+    serializer = FactSerializer
 
     def __str__(self) -> str:
         """Return the fact's string representation."""
@@ -101,7 +91,7 @@ class Fact(VerifiableModel):
     def get_updated_placeholder(cls, match: re.Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
-        logging.info(f'Getting updated fact placeholder for {placeholder}...')
+        logging.debug(f'Getting updated fact placeholder for {placeholder}...')
         if match.group(PlaceholderGroups.HTML):
             html = match.group(PlaceholderGroups.HTML)
             if '<a ' not in html:

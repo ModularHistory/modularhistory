@@ -148,7 +148,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     def clean(self):
         """Prepare the source to be saved."""
-        logging.info(f'Cleaning source ({self.type})...')
+        logging.debug(f'Cleaning source ({self.type})...')
         super().clean()
         if self.type == 'sources.source' or not self.type:
             raise ValidationError('Source must have a type.')

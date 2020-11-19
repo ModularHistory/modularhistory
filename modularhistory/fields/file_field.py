@@ -13,7 +13,7 @@ from modularhistory.structures.source_file import TextualSourceFile
 
 def _generate_upload_path(instance: Model, filename: str, path: str) -> str:
     if settings.DEBUG:
-        logging.info(
+        logging.debug(
             f'Generating upload path for {filename} (associated with {instance})...'
         )
     filename = filename.replace(' ', '_')

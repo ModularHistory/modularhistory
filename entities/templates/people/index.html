@@ -10,7 +10,6 @@
         {% if persons|length %}
             {% for person in persons %}
                 <div class="card" style="">
-                    <!-- Card image -->
                     {% if person.serialized_images %}
                         <div class="view overlay">
                             <img class="card-img-top" src="{% media person.primary_image.src_url %}" alt="Card image cap">
@@ -19,11 +18,8 @@
                             </a>
                         </div>
                     {% endif %}
-                    <!-- Card content -->
                     <div class="card-body">
-                        <!-- Title -->
                         <h4 class="card-title">{{ person.name }}</h4>
-                        <!-- Text -->
                         <p class="card-text">
                             {{ person.description.html|truncatechars_html:100 }}
                         </p>

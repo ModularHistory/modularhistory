@@ -1,6 +1,7 @@
 import json
-from typing import Any, Dict, Iterable, Mapping
 import logging
+from typing import Any, Dict, Iterable, Mapping
+
 from django_json_widget.widgets import JSONEditorWidget as BaseJSONEditorWidget
 
 from modularhistory.utils.html import soupify

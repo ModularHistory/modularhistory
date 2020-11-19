@@ -1,6 +1,7 @@
-from django.contrib.admin import SimpleListFilter
+"""List filters for the entities admin."""
 
-from admin.list_filters import AutocompleteFilter
+from admin.list_filters import AutocompleteFilter, BooleanListFilter, TypeFilter
+from entities.models.entity import Entity
 from modularhistory.constants.strings import NO, YES
 
 
@@ -11,15 +12,11 @@ class CategoriesFilter(AutocompleteFilter):
     field_name = 'categories'
 
 
-class HasQuotesFilter(SimpleListFilter):
+class HasQuotesFilter(BooleanListFilter):
     """Admin filter for whether entities have quotes."""
 
     title = 'has quotes'
     parameter_name = 'has_quotes'
-
-    def lookups(self, request, model_admin):
-        """Return an iterable of tuples (value, verbose value)."""
-        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
         """Return the filtered queryset."""
@@ -31,15 +28,11 @@ class HasQuotesFilter(SimpleListFilter):
         return queryset
 
 
-class HasImageFilter(SimpleListFilter):
+class HasImageFilter(BooleanListFilter):
     """Admin filter for whether entities have images."""
 
     title = 'has image'
     parameter_name = 'has_image'
-
-    def lookups(self, request, model_admin):
-        """Return an iterable of tuples (value, verbose value)."""
-        return (YES, YES), (NO, NO)
 
     def queryset(self, request, queryset):
         """Return the filtered queryset."""
@@ -49,3 +42,9 @@ class HasImageFilter(SimpleListFilter):
         elif option == NO:
             return queryset.filter(images=None)
         return queryset
+
+
+class EntityTypeFilter(TypeFilter):
+    """Admin filter for type of entity."""
+
+    base_model = Entity

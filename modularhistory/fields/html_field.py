@@ -9,7 +9,6 @@ from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
 
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
-from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.structures.html import HTML
 from modularhistory.utils.html import soupify
 from modularhistory.utils.string import truncate
@@ -35,15 +34,15 @@ class PlaceholderGroups(Constant):
     HTML = 'html'
 
 
+START_PATTERN = r'\[\['
+END_PATTERN = r'\]\]'
 TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME}>[a-zA-Z]+?)'
 KEY_GROUP = rf'(?P<{PlaceholderGroups.PK}>[\w\d-]+?)'
-HTML_GROUP = rf'(?!(?:>>|&gt;&gt;))(?P<{PlaceholderGroups.HTML}>[\s\S]+?)'
+HTML_GROUP = rf'(?!(?:{END_PATTERN}))(?P<{PlaceholderGroups.HTML}>[\s\S]+?)'
 APPENDAGE_GROUP = rf'(?P<{PlaceholderGroups.APPENDAGE}>[:\ ,]\ ?{HTML_GROUP})'
-START_PATTERN = r'(?:<<|&lt;&lt;|\[\[)'
-END_PATTERN = r'(?:>>|&gt;&gt;|\]\])'
 
 OBJECT_PLACEHOLDER_REGEX = rf'{START_PATTERN}\ ?{TYPE_GROUP}:\ ?{KEY_GROUP}{APPENDAGE_GROUP}?\ ?{END_PATTERN}'  # noqa: E501
-logging.info(f'Calculated object placeholder regex: {OBJECT_PLACEHOLDER_REGEX}')
+logging.info(f'Object placeholder pattern: {OBJECT_PLACEHOLDER_REGEX}')
 
 object_placeholder_regex = re.compile(OBJECT_PLACEHOLDER_REGEX)
 
@@ -70,7 +69,9 @@ def process(html: str) -> str:
                 object_html = model_cls.get_object_html(
                     object_match, use_preretrieved_html=True
                 )
-                logging.info(f'Retrieved {model_cls_str} HTML: {truncate(object_html)}')
+                logging.debug(
+                    f'Retrieved {model_cls_str} HTML: {truncate(object_html)}'
+                )
             except ObjectDoesNotExist:
                 raise ValidationError(
                     f'Could not retrieve HTML for placeholder: {object_match.group(0)}'
@@ -124,15 +125,16 @@ class HTMLField(MceHTMLField):
                 'The "{" and "}" characters are illegal in HTML fields.'
             )
         replacements = (
+            # Update placeholder markers to square brackets
+            (r'(?:\{\{|&lt;&lt;|\<\<)', '[['),
+            (r'(?:\}\}|&gt;&gt;|\>\>)', ']]'),
+            # Add bootstrap classes to HTML elements
             (r'<blockquote>', '<blockquote class="blockquote">'),
             (r'<table>', '<table class="table">'),
-            # Remove empty divs
-            (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
-            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
-            (r'<p>&nbsp;<\/p>', EMPTY_STRING),
-            (r'(?:<<|&lt;&lt;)', '[['),
-            (r'(?:>>|&gt;&gt;)', ']]'),
-            (r'&lt;([^\s]+?)&gt;', r'<\g<1>>'),
+            # Remove empty divs & paragraphs
+            (r'\n?<div>&nbsp;<\/div>', ''),
+            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
+            (r'<p>&nbsp;<\/p>', ''),
         )
         for pattern, replacement in replacements:
             try:
@@ -158,18 +160,19 @@ class HTMLField(MceHTMLField):
 
     def format_html(self, html: str) -> str:
         """Add or remove <p> tags if necessary."""
-        if self.paragraphed is None:
-            pass
-        elif self.paragraphed:
-            # TODO: move this to a util method
-            if html.startswith('<p') and html.endswith('</p>'):
+        if html:
+            if self.paragraphed is None:
                 pass
-            else:
-                html = f'<p>{html}</p>'
-        else:  # if paragraphed is False
-            # TODO: move this to a util method
-            if html.startswith('<p') and html.endswith('</p>'):
-                html = soupify(html).p.decode_contents()
+            elif self.paragraphed:
+                # TODO: move this to a util method
+                if html.startswith('<p') and html.endswith('</p>'):
+                    pass
+                else:
+                    html = f'<p>{html}</p>'
+            else:  # if paragraphed is False
+                # TODO: move this to a util method
+                if html.startswith('<p') and html.endswith('</p>'):
+                    html = soupify(html).p.decode_contents()
         return html
 
     def update_placeholders(self, html) -> str:
@@ -225,6 +228,14 @@ class HTMLField(MceHTMLField):
         # Add or remove <p> tags if necessary
         html_value = self.format_html(html_value)
         replacements = (
+            # Prevent related videos from different channels from being displayed
+            (
+                r'''(<iframe .*?src=["'].*youtube\.com\/[^?]+?)(["'])''',
+                r'\g<1>?rel=0\g<2>',
+            ),
+            # Update placeholder markers to square brackets
+            (r'(?:\{\{|&lt;&lt;|\<\<)', '[['),
+            (r'(?:\}\}|&gt;&gt;|\>\>)', ']]'),
             (r'074c54e4-ff1d-4952-9964-7d1e52cec4db', '6'),
             (r'354f9d11-74bb-4e2a-8e0d-5df877b4c461', '86'),
             (r'53a517fc-68a6-42bd-ac6b-e3a84a617ace', '8'),
@@ -242,17 +253,11 @@ class HTMLField(MceHTMLField):
             (r'5610f0f6-8bba-4647-9642-e0a623c266d9', '261'),
             (r'e93eda83-560d-4a8a-8eac-8c28798b52ff', '262'),
             (r'ed35a437-15a0-4c03-9661-903db39fe216', '91'),
-            (r'\n?<div[^>]+?>&nbsp;<\/div>', EMPTY_STRING),
-            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', EMPTY_STRING),
-            (r'<p>&nbsp;<\/p>', EMPTY_STRING),
-            (r'<div>&nbsp;<\/div>', EMPTY_STRING),
-            # Prevent related videos from different channels from being displayed
-            (
-                r'''(<iframe .*?src=["'].*youtube\.com\/[^?]+?)(["'])''',
-                r'\g<1>?rel=0\g<2>',
-            ),
-            (r'(?:\{\{|&lt;&lt;|<<)', '[['),
-            (r'(?:\}\}|&gt;&gt;|>>)', ']]'),
+            # Remove empty divs & paragraphs
+            (r'\n?<div>&nbsp;<\/div>', ''),
+            (r'<div>&nbsp;<\/div>', ''),
+            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
+            (r'<p>&nbsp;<\/p>', ''),
         )
         for pattern, replacement in replacements:
             html_value = re.sub(pattern, replacement, html_value)
@@ -285,4 +290,4 @@ class HTMLField(MceHTMLField):
     def value_to_string(self, html_object: Any) -> str:
         """Convert the object to a string."""
         html_value = self.value_from_object(html_object)
-        return self.get_prep_value(html_value) or EMPTY_STRING
+        return self.get_prep_value(html_value) or ''

@@ -10,7 +10,6 @@
         {% if entities|length %}
             {% for entity in entities %}
                 <div class="card" style="">
-                    <!-- Card image -->
                     {% if entity.serialized_images %}
                         <div class="view overlay">
                             <img class="card-img-top" src="{% media entity.primary_image.src_url %}" alt="Card image cap">
@@ -19,11 +18,8 @@
                             </a>
                         </div>
                     {% endif %}
-                    <!-- Card content -->
                     <div class="card-body">
-                        <!-- Title -->
                         <h4 class="card-title">{{ entity.name }}</h4>
-                        <!-- Text -->
                         <p class="card-text">
                             {{ entity.description.html|truncatechars_html:100 }}
                         </p>

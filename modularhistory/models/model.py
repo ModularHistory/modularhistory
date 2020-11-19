@@ -76,13 +76,13 @@ class Model(DjangoModel):
         pattern = cls.placeholder_regex
         content_type = cls.__name__.lower()
         if pattern:
-            logging.info(f'Retrieved {content_type} placeholder regex: {pattern}')
+            logging.debug(f'Retrieved {content_type} placeholder regex: {pattern}')
         else:
             pattern = OBJECT_PLACEHOLDER_REGEX.replace(
                 TYPE_GROUP,
                 rf'(?P<{PlaceholderGroups.MODEL_NAME}>{content_type})',
             )
-            logging.info(f'Calculated placeholder regex for {content_type}: {pattern}')
+            logging.debug(f'Calculated placeholder regex for {content_type}: {pattern}')
         return re.compile(pattern)
 
     @classmethod
@@ -215,7 +215,7 @@ class Model(DjangoModel):
                 f'({match.group(PlaceholderGroups.PK)}); querying db instead.'
             )
         key = match.group(PlaceholderGroups.PK).strip()
-        logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
+        logging.debug(f'Retrieving object HTML for {cls.__name__} {key}...')
         try:
             model_instance = cls.objects.get(pk=key)
             object_html = model_instance.html
@@ -233,9 +233,9 @@ class Model(DjangoModel):
         if not cls.get_admin_placeholder_regex().match(match.group(0)):
             raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
         key = match.group(PlaceholderGroups.PK).strip()
-        logging.info(f'Retrieving {cls.__name__} {key}...')
+        logging.debug(f'Retrieving {cls.__name__} {key}...')
         model_instance: 'Model' = cls.objects.get(pk=key)
-        logging.info(f'Retrieved {cls.__name__} {key}')
+        logging.debug(f'Retrieved {cls.__name__} {key}')
         if serialize:
             return model_instance.serialize()
         return model_instance

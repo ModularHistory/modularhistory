@@ -2,7 +2,7 @@ from typing import List
 
 from django.forms import ModelForm
 
-from entities.models import Entity, Group, Idea, Organization, Person
+from entities.models import Deity, Entity, Group, Idea, Organization, Person
 
 TYPE = 'type'
 
@@ -20,12 +20,25 @@ class EntityForm(ModelForm):
         self.initial[TYPE] = self.instance.type
 
 
+class DeityForm(ModelForm):
+    """Form for deity admin."""
+
+    class Meta:
+        model = Deity
+        exclude: List[str] = []
+
+    def __init__(self, *args, **kwargs):
+        """Construct the form for entity admin."""
+        super().__init__(*args, **kwargs)
+        self.initial[TYPE] = 'entities.deity'
+
+
 class OrganizationForm(ModelForm):
     """Form for organization admin."""
 
     class Meta:
         model = Organization
-        exclude: List[str] = []
+        exclude: List[str] = ['parent_organization']
 
     def __init__(self, *args, **kwargs):
         """Construct the form for organization admin."""

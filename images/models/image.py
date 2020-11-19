@@ -46,6 +46,7 @@ IMAGE_KEY = IMAGE_FIELD_NAME
 image_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'
 )
+logging.info(f'Image placeholder pattern: {image_placeholder_regex}')
 
 
 class Image(MediaModel):
@@ -228,6 +229,6 @@ class Image(MediaModel):
         image_html = render_to_string('images/_card.html', context={IMAGE_KEY: image})
         if width < FLOAT_UPPER_WIDTH_LIMIT:
             image_html = f'<div class="float-right pull-right">{image_html}</div>'
-        if width < CENTER_UPPER_WIDTH_LIMIT:
+        elif width < CENTER_UPPER_WIDTH_LIMIT:
             image_html = f'<div style="text-align: center">{image_html}</div>'
         return image_html
