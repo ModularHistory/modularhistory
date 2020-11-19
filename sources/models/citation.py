@@ -170,7 +170,7 @@ class Citation(ModelWithComputations):
 
     @property
     def number(self):
-        """Return the citation's 1-based index in its source's citation set."""
+        """Return the citation's 1-based index."""
         return self.position + 1
 
     @property
@@ -292,12 +292,11 @@ class Citation(ModelWithComputations):
         placeholder = match.group(0)
         appendage = match.group(7)
         updated_appendage = (
-            f' <span class="citation-placeholder">{cls.get_object_html(match)}</span>'
+            f'<span class="citation-placeholder">{cls.get_object_html(match)}</span>'
         )
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
-            updated_placeholder = (
-                f'{re.sub(r" ?(?:>>|&gt;&gt;)", "", placeholder)}{updated_appendage} >>'
-            )
+            stem = re.sub(r' ?(?:>>|&gt;&gt;|\]\])', '', placeholder)
+            updated_placeholder = f'{stem}{updated_appendage} ]]'
         return updated_placeholder

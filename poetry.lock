@@ -3393,7 +3393,7 @@ python-versions = "*"
 
 [[package]]
 name = "youtube-dl"
-version = "2020.11.18"
+version = "2020.11.19"
 description = "YouTube video downloader"
 category = "main"
 optional = false
@@ -5210,8 +5210,8 @@ wrapt = [
     {file = "wrapt-1.12.1.tar.gz", hash = "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"},
 ]
 youtube-dl = [
-    {file = "youtube_dl-2020.11.18-py2.py3-none-any.whl", hash = "sha256:b1f9544d6f6046e9195280eaed6e25d3e0064906eb123899b4bdb736becf8115"},
-    {file = "youtube_dl-2020.11.18.tar.gz", hash = "sha256:fd879801004d80d875680041d8dcba25bd36cfdaeb0ca704607f16b3709a4f21"},
+    {file = "youtube_dl-2020.11.19-py2.py3-none-any.whl", hash = "sha256:e20c4178669749e34878c88bea165382aadeffbe2bf8074443d2fa1c53e974fc"},
+    {file = "youtube_dl-2020.11.19.tar.gz", hash = "sha256:2d6adbf7643467fa448939ebe6bebb002071b11dadf545909ca973f101b2584c"},
 ]
 zipp = [
     {file = "zipp-3.4.0-py3-none-any.whl", hash = "sha256:102c24ef8f171fd729d46599845e95c7ab894a4cf45f5de11a44cc7444fb1108"},

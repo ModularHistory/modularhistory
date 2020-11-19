@@ -2,6 +2,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.fields import GenericRelation
 
 from modularhistory.models.model import Model
 
@@ -10,6 +11,8 @@ class VerifiableModel(Model):
     """An item that can, hopefully, be researched and verified."""
 
     verified = models.BooleanField(_('verified'), default=False)
+
+    verifications = GenericRelation('verification.Verification')
 
     class Meta:
         """
