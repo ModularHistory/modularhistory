@@ -24,7 +24,7 @@ AdminListFilter = Union[str, Type[ListFilter]]
 
 FORM_FIELD_OVERRIDES = {
     HistoricDateTimeField: {'widget': HistoricDateWidget},
-    JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'raw'})},  # Broken
+    JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'raw'})},
 }
 
 if settings.ENVIRONMENT == Environments.DEV:

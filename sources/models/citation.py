@@ -17,6 +17,7 @@ from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
+    END_PATTERN
 )
 from modularhistory.fields.html_field import (
     PlaceholderGroups as DefaultPlaceholderGroups,
@@ -297,6 +298,6 @@ class Citation(ModelWithComputations):
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
-            stem = re.sub(r' ?(?:>>|&gt;&gt;|\]\])', '', placeholder)
+            stem = re.sub(rf' ?{END_PATTERN}', '', placeholder)
             updated_placeholder = f'{stem}{updated_appendage} ]]'
         return updated_placeholder

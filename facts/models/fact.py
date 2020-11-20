@@ -15,6 +15,7 @@ from modularhistory.fields import HTMLField
 from modularhistory.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
+    END_PATTERN,
     PlaceholderGroups,
 )
 from modularhistory.utils.html import escape_quotes
@@ -111,7 +112,6 @@ class Fact(VerifiableModel):
             # TODO: preserve capitalization, etc.
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
-            updated_placeholder = (
-                f'{re.sub(r" ?(?:>>|&gt;&gt;)", "", placeholder)}{updated_appendage} >>'
-            )
+            stem = re.sub(rf' ?{END_PATTERN}', '', placeholder)
+            updated_placeholder = f'{stem}{updated_appendage} ]]'
         return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')

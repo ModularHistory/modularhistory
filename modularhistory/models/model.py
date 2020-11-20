@@ -27,6 +27,7 @@ from rest_framework.serializers import Serializer
 from typedmodels.models import TypedModel as BaseTypedModel
 
 from modularhistory.fields.html_field import (
+    END_PATTERN,
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
     PlaceholderGroups,
@@ -249,9 +250,8 @@ class Model(DjangoModel):
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
-            updated_placeholder = (
-                f'{re.sub(r" ?(?:>>|&gt;&gt;)", "", placeholder)}{updated_appendage} >>'
-            )
+            stem = re.sub(rf' ?{END_PATTERN}', '', placeholder)
+            updated_placeholder = f'{stem}{updated_appendage} ]]'
         return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
 
 

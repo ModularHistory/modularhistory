@@ -1,7 +1,7 @@
 """Model classes for articles."""
 
 from typing import List
-
+from django.core.exceptions import ValidationError
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ExtraField
 from sources.models.piece import SourceWithPageNumbers
@@ -19,7 +19,6 @@ class Article(SourceWithPageNumbers):
         number = 'number'
         volume = 'volume'
 
-    searchable_fields = [FieldNames.string, 'publication__name']
     extra_fields = {
         FieldNames.volume: 'number',
         FieldNames.number: 'number',
@@ -28,6 +27,12 @@ class Article(SourceWithPageNumbers):
     inapplicable_fields = [
         FieldNames.collection,
     ]
+    searchable_fields = [FieldNames.string, 'publication__name']
+
+    def clean(self):
+        super().clean()
+        if not self.publication:
+            raise ValidationError('Article must have an associated publication.')
 
     def __html__(self) -> str:
         """
