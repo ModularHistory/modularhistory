@@ -25,8 +25,8 @@ class Affidavit(DocumentSource):
     class FieldNames(DocumentSource.FieldNames):
         certifier = 'certifier'
 
-    extra_fields = {
-        **DocumentSource.extra_fields,
+    extra_field_schema = {
+        **DocumentSource.extra_field_schema,
         FieldNames.certifier: 'string',
     }
     inapplicable_fields = [

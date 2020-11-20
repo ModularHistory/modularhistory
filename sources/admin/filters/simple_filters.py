@@ -1,5 +1,5 @@
 from django.contrib.admin import SimpleListFilter
-from django.db.models import Q
+from django.db.models import Count, Q
 
 from admin.list_filters import BooleanListFilter
 from admin.list_filters import TypeFilter as BaseTypeFilter
@@ -57,6 +57,35 @@ class HasFilePageOffsetFilter(BooleanListFilter):
             if bool(source_file.page_offset) == include_if_has_page_offset:
                 ids.append(source.id)
         return sources.filter(id__in=ids)
+
+
+class HasMultipleCitationsFilter(BooleanListFilter):
+    """TODO: add docstring."""
+
+    title = 'has multiple citations'
+    parameter_name = 'has_multiple_citations'
+
+    def queryset(self, request, queryset):
+        """Return the filtered queryset."""
+        queryset = queryset.annotate(citation_count=Count('citations'))
+        if self.value() == YES:
+            return queryset.exclude(citation_count__lt=2)
+        if self.value() == NO:
+            return queryset.filter(citation_count__gte=2)
+
+
+class HasSourceFilter(BooleanListFilter):
+    """TODO: add docstring."""
+
+    title = 'has source'
+    parameter_name = 'has_source'
+
+    def queryset(self, request, queryset):
+        """Return the filtered queryset."""
+        if self.value() == YES:
+            return queryset.exclude(sources=None)
+        if self.value() == NO:
+            return queryset.filter(sources=None)
 
 
 class ImpreciseDateFilter(BooleanListFilter):

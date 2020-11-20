@@ -32,8 +32,8 @@ class Correspondence(DocumentSource):
     class FieldNames(DocumentSource.FieldNames):
         recipient = 'recipient'
 
-    extra_fields = {
-        **DocumentSource.extra_fields,
+    extra_field_schema = {
+        **DocumentSource.extra_field_schema,
         FieldNames.recipient: 'string',
     }
     inapplicable_fields = [

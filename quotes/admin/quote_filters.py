@@ -1,5 +1,3 @@
-# TODO: stop ignoring types when mypy bug is fixed
-
 import re
 
 from admin_auto_filters.filters import AutocompleteSelect
@@ -14,7 +12,6 @@ from admin.list_filters.autocomplete_filter import (
     ManyToManyAutocompleteFilter,
 )
 from entities.models import Category, Entity
-from modularhistory.constants.strings import NO, YES
 
 
 class AttributeeFilter(ManyToManyAutocompleteFilter):
@@ -95,24 +92,6 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
         return self.m2m_cls.objects.all()
 
 
-class HasSourceFilter(SimpleListFilter):
-    """TODO: add docstring."""
-
-    title = 'has source'
-    parameter_name = 'has_source'
-
-    def lookups(self, request, model_admin):
-        """Return an iterable of tuples (value, verbose value)."""
-        return (YES, YES), (NO, NO)
-
-    def queryset(self, request, queryset):
-        """Return the filtered queryset."""
-        if self.value() == YES:
-            return queryset.exclude(sources=None)
-        if self.value() == NO:
-            return queryset.filter(sources=None)
-
-
 class AttributeeCountFilter(SimpleListFilter):
     """TODO: add docstring."""
 
@@ -139,22 +118,3 @@ class AttributeeCountFilter(SimpleListFilter):
         if attributee_count == 4:
             return queryset.exclude(attributee_count__lt=attributee_count)
         return queryset.filter(attributee_count=attributee_count)
-
-
-class HasMultipleCitationsFilter(SimpleListFilter):
-    """TODO: add docstring."""
-
-    title = 'has multiple citations'
-    parameter_name = 'has_multiple_citations'
-
-    def lookups(self, request, model_admin):
-        """Return an iterable of tuples (value, verbose value)."""
-        return (YES, YES), (NO, NO)
-
-    def queryset(self, request, queryset):
-        """Return the filtered queryset."""
-        queryset = queryset.annotate(citation_count=Count('citations'))
-        if self.value() == YES:
-            return queryset.exclude(citation_count__lt=2)
-        if self.value() == NO:
-            return queryset.filter(citation_count__gte=2)

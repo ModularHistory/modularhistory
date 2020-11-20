@@ -14,7 +14,16 @@ def components_to_string(components: List[str], delimiter=', '):
     return fix_comma_positions(delimiter.join(components))
 
 
-def truncate(string, max_length: int = 200):
+def truncate(string, max_length: int = 200, strip_newlines: bool = True):
     """Return a truncated version of the string."""
-    string = string.strip().split('\n')[0]
+    if strip_newlines:
+        string = string.replace('\n', ' ')
+    string = string.strip()
     return f'{string[:max_length]} ...' if len(string) > max_length else string
+
+
+def dedupe_newlines(string):
+    """Return the string with unnecessary newlines removed."""
+    while '\n\n' in string:
+        string = string.replace('\n\n', '\n')
+    return string

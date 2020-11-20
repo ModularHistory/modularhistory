@@ -22,10 +22,10 @@ class SourceWithPageNumbers(TextualSource):
         blank=True,
     )
 
-    extra_fields = {
+    extra_field_schema = {
         'page_number': 'number',
         'end_page_number': 'number',
-        **TextualSource.extra_fields,
+        **TextualSource.extra_field_schema,
     }
 
     @property

@@ -61,8 +61,8 @@ class Book(TextualSource):
         printing_number = 'printing_number'
         volume_number = 'volume_number'
 
-    extra_fields = {
-        **TextualSource.extra_fields,
+    extra_field_schema = {
+        **TextualSource.extra_field_schema,
         FieldNames.translator: STRING,
         FieldNames.publisher: STRING,
         FieldNames.edition_number: NUMBER,

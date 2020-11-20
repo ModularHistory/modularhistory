@@ -5,4 +5,6 @@ from .simple_filters import (
     HasFilePageOffsetFilter,
     ImpreciseDateFilter,
     TypeFilter,
+    HasSourceFilter,
+    HasMultipleCitationsFilter,
 )

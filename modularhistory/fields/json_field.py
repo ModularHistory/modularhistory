@@ -63,7 +63,7 @@ class JSONField(BaseJSONField):
             schema_data = self.get_schema_data(model_instance)
             if schema_data:
                 try:
-                    logging.info(
+                    logging.debug(
                         f'Validating JSON value \n{pformat(json_value)}\n'
                         f'against schema: {schema_data}'
                     )
@@ -73,7 +73,8 @@ class JSONField(BaseJSONField):
                     jsonschema_exceptions.SchemaError,
                 ) as error:
                     raise ValidationError(
-                        f'JSON schema validation failed with {type(error)}; {error}'
+                        f'JSON schema validation failed with {type(error)}; {error}\n'
+                        f'\nEnsure the value complies with its schema:\n{schema_data}'
                     )
 
 

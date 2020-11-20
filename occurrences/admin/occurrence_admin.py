@@ -18,6 +18,7 @@ from occurrences.admin.occurrence_inlines import (
 )
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
 from sources.admin import CitationsInline
+from sources.admin.filters import HasSourceFilter, HasMultipleCitationsFilter
 from topics.admin import RelatedTopicsInline
 
 
@@ -48,6 +49,8 @@ class OccurrenceAdmin(SearchableModelAdmin):
         EntityFilter,
         TopicFilter,
         LocationFilter,
+        HasSourceFilter,
+        HasMultipleCitationsFilter,
     ]
     list_per_page = 10
     ordering = ['date']

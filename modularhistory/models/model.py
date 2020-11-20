@@ -33,6 +33,8 @@ from modularhistory.fields.html_field import (
     PlaceholderGroups,
 )
 from modularhistory.models.manager import Manager
+from modularhistory.utils.string import truncate
+from modularhistory.utils.html import prettify
 from modularhistory.utils.models import get_html_for_view as get_html_for_view_
 
 FieldList = List[str]
@@ -216,11 +218,11 @@ class Model(DjangoModel):
                 f'({match.group(PlaceholderGroups.PK)}); querying db instead.'
             )
         key = match.group(PlaceholderGroups.PK).strip()
-        logging.debug(f'Retrieving object HTML for {cls.__name__} {key}...')
+        logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
         try:
             model_instance = cls.objects.get(pk=key)
             object_html = model_instance.html
-            logging.debug(f'Retrieved object HTML: {object_html}')
+            logging.info(f'Retrieved object HTML: {object_html}')
         except ObjectDoesNotExist as e:
             logging.error(f'Unable to retrieve object HTML; {e}')
             return ''
@@ -245,14 +247,21 @@ class Model(DjangoModel):
     def get_updated_placeholder(cls, match: Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
-        appendage = match.group(PlaceholderGroups.APPENDAGE)
-        updated_appendage = f': {cls.get_object_html(match)}'
-        if appendage:
-            updated_placeholder = placeholder.replace(appendage, updated_appendage)
+        logging.debug(f'Looking at {truncate(placeholder)}')
+        extant_html = match.group(PlaceholderGroups.HTML)
+        html = cls.get_object_html(match)
+        if extant_html:
+            logging.debug(
+                f'Replacing extant HTML in {truncate(placeholder)}\n'
+                f'{truncate(extant_html)} ---> {truncate(html)}'
+            )
+            placeholder = placeholder.replace(extant_html, html)
         else:
-            stem = re.sub(rf' ?{END_PATTERN}', '', placeholder)
-            updated_placeholder = f'{stem}{updated_appendage} ]]'
-        return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
+            model_name = match.group(PlaceholderGroups.MODEL_NAME)
+            pk = match.group(PlaceholderGroups.PK)
+            placeholder = f'[[ {model_name}: {pk}: {html} ]]'
+        logging.debug(f'Updated {placeholder}')
+        return placeholder
 
 
 class ModelSerializer(serpy.Serializer):

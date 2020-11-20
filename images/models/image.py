@@ -21,7 +21,8 @@ from modularhistory.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from modularhistory.utils.string import components_to_string
+from modularhistory.utils.string import components_to_string, dedupe_newlines
+from modularhistory.utils.html import prettify
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
 CENTER_UPPER_WIDTH_LIMIT: int = 500
@@ -46,7 +47,7 @@ IMAGE_KEY = IMAGE_FIELD_NAME
 image_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'
 )
-logging.info(f'Image placeholder pattern: {image_placeholder_regex}')
+logging.debug(f'Image placeholder pattern: {image_placeholder_regex}')
 
 
 class Image(MediaModel):
@@ -207,14 +208,14 @@ class Image(MediaModel):
         """Return the image's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(4)
+            preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
         try:
             image = cls.get_object_from_placeholder(match)
         except ValueError as error:  # legacy key
             # Update key if necessary
-            key = match.group(2).strip()
+            key = match.group(PlaceholderGroups.PK).strip()
             logging.error(
                 f'ERROR: {error} resulted from attempting to retrieve image={key}'
             )
@@ -231,4 +232,6 @@ class Image(MediaModel):
             image_html = f'<div class="float-right pull-right">{image_html}</div>'
         elif width < CENTER_UPPER_WIDTH_LIMIT:
             image_html = f'<div style="text-align: center">{image_html}</div>'
+        image_html = prettify(image_html).strip()
+        logging.info(f'Retrieved image HTML:\n{image_html}')
         return image_html

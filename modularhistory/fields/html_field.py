@@ -38,7 +38,7 @@ START_PATTERN = r'\[\['
 END_PATTERN = r'\]\]'
 TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME}>[a-zA-Z]+?)'
 KEY_GROUP = rf'(?P<{PlaceholderGroups.PK}>[\w\d-]+)'
-HTML_GROUP = rf'(?!(?:{END_PATTERN}))(?P<{PlaceholderGroups.HTML}>[\s\S]+?)'
+HTML_GROUP = rf'(?!(?:{END_PATTERN}))(?P<{PlaceholderGroups.HTML}>\S[\s\S]+?)'
 APPENDAGE_GROUP = rf'(?P<{PlaceholderGroups.APPENDAGE}>[:\ ,]?\ ?{HTML_GROUP})'
 
 OBJECT_PLACEHOLDER_REGEX = rf'{START_PATTERN}\ ?{TYPE_GROUP}:\ ?{KEY_GROUP}{APPENDAGE_GROUP}?\ ?{END_PATTERN}'  # noqa: E501

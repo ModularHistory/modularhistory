@@ -19,10 +19,10 @@ class Article(SourceWithPageNumbers):
         number = 'number'
         volume = 'volume'
 
-    extra_fields = {
+    extra_field_schema = {
         FieldNames.volume: 'number',
         FieldNames.number: 'number',
-        **SourceWithPageNumbers.extra_fields,
+        **SourceWithPageNumbers.extra_field_schema,
     }
     inapplicable_fields = [
         FieldNames.collection,
@@ -30,6 +30,7 @@ class Article(SourceWithPageNumbers):
     searchable_fields = [FieldNames.string, 'publication__name']
 
     def clean(self):
+        """Prepare the article to be saved."""
         super().clean()
         if not self.publication:
             raise ValidationError('Article must have an associated publication.')

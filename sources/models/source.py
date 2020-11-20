@@ -110,7 +110,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         'sources.Publication', null=True, blank=True, on_delete=models.CASCADE
     )
 
-    extra = JSONField(null=True, blank=True, default=dict, schema='extra_fields')
+    extra = JSONField(null=True, blank=True, default=dict, schema='extra_field_schema')
 
     class Meta:
         ordering = ['creators', '-date']
@@ -131,7 +131,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     objects: SourceManager = SourceManager()
     searchable_fields = [FieldNames.string, FieldNames.description]
-    extra_fields: Dict[str, str] = {}
+    extra_field_schema: Dict[str, str] = {}
     inapplicable_fields: List[str] = []
 
     def __str__(self):

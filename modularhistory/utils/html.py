@@ -37,3 +37,9 @@ def components_to_html(components: List[str], delimiter=', ') -> str:
 def escape_quotes(html: str) -> str:
     """Replace quotation marks with character references."""
     return html.replace('"', '&quot;').replace("'", '&#39;')
+
+
+def prettify(html: str) -> str:
+    """Return prettified HTML."""
+    # Use 'html.parser' so that <html> and <body> tags aren't added.
+    return BeautifulSoup(html, 'html.parser').prettify()

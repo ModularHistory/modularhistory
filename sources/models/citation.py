@@ -17,7 +17,7 @@ from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
-    END_PATTERN
+    END_PATTERN,
 )
 from modularhistory.fields.html_field import (
     PlaceholderGroups as DefaultPlaceholderGroups,
@@ -52,7 +52,7 @@ class PlaceholderGroups(DefaultPlaceholderGroups):
 
 PAGE_STRING_GROUP = rf'(?P<{PlaceholderGroups.PAGE_STRING}>pp?\.\ [\d]+)'
 QUOTATION_GROUP = rf'(?P<{PlaceholderGroups.QUOTATION}>\".+?\")'
-HTML_GROUP = rf'(?P<{PlaceholderGroups.HTML}>.+?)'
+HTML_GROUP = rf'(?P<{PlaceholderGroups.HTML}>\S.+?)'
 citation_placeholder_pattern = rf'\ ?{OBJECT_PLACEHOLDER_REGEX}'.replace(
     APPENDAGE_GROUP,
     rf'(,\ {PAGE_STRING_GROUP})?(,\ {QUOTATION_GROUP})?(:?\ ?(?:<span style="display: none;?">|<span class="citation-placeholder">){HTML_GROUP}<\/span>)',  # noqa: E501'
@@ -284,8 +284,9 @@ class Citation(ModelWithComputations):
             klass='citation-link',
             title=escape_quotes(source_string),
         )
-        logging.info('Composed citation link.')
-        return f'<sup>[{citation_link}]</sup>'
+        citation_link = f'<sup>[{citation_link}]</sup>'
+        logging.info(f'Composed citation link: {citation_link}')
+        return citation_link
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:

@@ -37,7 +37,9 @@ class SourceForm(ModelForm):
     def __init__(self, *args, **kwargs):
         """Construct the source form."""
         instance: Optional[models.Source] = kwargs.get('instance', None)
-        schema: Dict = instance.extra_fields if instance else self.model.extra_fields
+        schema: Dict = (
+            instance.extra_field_schema if instance else self.model.extra_field_schema
+        )
         initial = kwargs.pop(INITIAL, {})
         if instance is None:
             source_type = f'sources.{self.model.__name__.lower()}'
