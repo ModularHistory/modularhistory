@@ -3,7 +3,7 @@
 import json
 import logging
 from typing import Any, Dict, List, Optional, Type, Union
-
+from pprint import pformat
 from django.core.exceptions import ValidationError
 from django.db.models import JSONField as BaseJSONField
 from django.db.models import Model
@@ -53,10 +53,7 @@ class JSONField(BaseJSONField):
             if isinstance(schema, str):
                 if hasattr(model_instance, schema):
                     schema = getattr(model_instance, schema, {})
-            schema_data = json.loads(schema) if isinstance(schema, str) else schema
-            if schema_data.get('properties') is None:
-                schema_data = {'type': 'object', 'properties': {**schema_data}}
-            return schema_data
+            return json.loads(schema) if isinstance(schema, str) else schema
         return None
 
     def _validate_schema(self, json_value, model_instance):
@@ -66,11 +63,15 @@ class JSONField(BaseJSONField):
             schema_data = self.get_schema_data(model_instance)
             if schema_data:
                 try:
-                    logging.debug(
-                        f'Validating JSON value against schema: {schema_data}'
+                    logging.info(
+                        f'Validating JSON value \n{pformat(json_value)}\n'
+                        f'against schema: {schema_data}'
                     )
                     validate(json_value, schema_data)
-                except jsonschema_exceptions.ValidationError as error:
+                except (
+                    jsonschema_exceptions.ValidationError,
+                    jsonschema_exceptions.SchemaError,
+                ) as error:
                     raise ValidationError(
                         f'JSON schema validation failed with {type(error)}; {error}'
                     )

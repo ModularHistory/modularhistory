@@ -25,6 +25,8 @@ class OccurrenceAdmin(SearchableModelAdmin):
     """Model admin for occurrences."""
 
     model = models.Occurrence
+
+    exclude = SearchableModelAdmin.exclude
     inlines = [
         RelatedQuotesInline,
         InvolvedEntitiesInline,
@@ -47,7 +49,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
         TopicFilter,
         LocationFilter,
     ]
-    list_per_page = 15
+    list_per_page = 10
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields
     search_fields = models.Occurrence.searchable_fields

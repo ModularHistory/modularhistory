@@ -21,9 +21,9 @@ class Article(SourceWithPageNumbers):
 
     searchable_fields = [FieldNames.string, 'publication__name']
     extra_fields = {
-        **SourceWithPageNumbers.extra_fields,
-        FieldNames.number: 'number',
         FieldNames.volume: 'number',
+        FieldNames.number: 'number',
+        **SourceWithPageNumbers.extra_fields,
     }
     inapplicable_fields = [
         FieldNames.collection,

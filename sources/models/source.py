@@ -132,10 +132,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     objects: SourceManager = SourceManager()
     searchable_fields = [FieldNames.string, FieldNames.description]
     extra_fields: Dict[str, str] = {}
-    inapplicable_fields: List[str] = [
-        FieldNames.collection,
-        FieldNames.publication,
-    ]
+    inapplicable_fields: List[str] = []
 
     def __str__(self):
         """Return the source's string representation."""

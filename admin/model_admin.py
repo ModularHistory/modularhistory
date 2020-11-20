@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.db.models import JSONField
+from modularhistory.fields import JSONField
 from django.http import HttpRequest
 from django_q.admin import FailAdmin, QueueAdmin, ScheduleAdmin, TaskAdmin
 from django_q.models import Failure, OrmQ, Schedule, Task
@@ -24,7 +24,7 @@ AdminListFilter = Union[str, Type[ListFilter]]
 
 FORM_FIELD_OVERRIDES = {
     HistoricDateTimeField: {'widget': HistoricDateWidget},
-    JSONField: {'widget': JSONEditorWidget},
+    JSONField: {'widget': JSONEditorWidget(attrs={'initial': 'raw'})},  # Broken
 }
 
 if settings.ENVIRONMENT == Environments.DEV:

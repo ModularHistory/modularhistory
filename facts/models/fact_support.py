@@ -1,22 +1,7 @@
-"""Model classes for facts."""
+"""Model class for fact supportations."""
 
-import logging
-import re
-
-from django.db.models import CASCADE, ForeignKey, ManyToManyField
-from django.urls import reverse
-
-from facts.models.fact_relation import (
-    EntityFactRelation,
-    FactRelation,
-    OccurrenceFactRelation,
-    TopicFactRelation,
-)
-from modularhistory.fields import HTMLField
-from modularhistory.models.model import PlaceholderGroups
-from modularhistory.utils.html import escape_quotes
-from topics.serializers import FactSerializer
-from verification.models import VerifiableModel
+from django.db.models import CASCADE, ForeignKey
+from facts.models.fact_relation import FactRelation
 
 
 class FactSupport(FactRelation):

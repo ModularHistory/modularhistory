@@ -149,7 +149,6 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
-    'django_json_widget',  # https://github.com/jmrivas86/django-json-widget
     'django_replicated',  # https://github.com/yandex/django_replicated
     # 'django_spaghetti',  # https://github.com/LegoStormtroopr/django-spaghetti-and-meatballs  # TODO
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
@@ -163,6 +162,7 @@ INSTALLED_APPS = [
     # 'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'massadmin',  # https://github.com/burke-software/django-mass-edit
+    'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'rest_framework',  # https://github.com/encode/django-rest-framework
@@ -503,13 +503,14 @@ if DEBUG:
     }
 
 # https://django-tinymce.readthedocs.io/en/latest/usage.html
+# TODO: https://django-tinymce.readthedocs.io/en/latest/installation.html#prerequisites
 TINYMCE_JS_URL = 'https://cloud.tinymce.com/stable/tinymce.min.js'
 TINYMCE_JS_ROOT = 'https://cloud.tinymce.com/stable/'
 TINYMCE_DEFAULT_CONFIG = {
     'width': '100%',
     'cleanup_on_startup': True,
     'custom_undo_redo_levels': 20,
-    'selector': 'textarea',
+    'selector': 'textarea.tinymce',
     'theme': 'modern',
     'plugins': (
         'autolink, autoresize, autosave, blockquote, '

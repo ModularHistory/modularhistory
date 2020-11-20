@@ -21,6 +21,7 @@ from sources.admin.source_inlines import (
     RelatedInline,
 )
 
+
 INITIAL = 'initial'
 
 
@@ -99,24 +100,15 @@ class SourceAdmin(SearchableModelAdmin):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
     save_as_continue = True
 
-    def get_queryset(self, request):
-        """
-        Return the queryset of quotes to be displayed in the admin.
-
-        https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
-        """
-        qs = models.Source.objects.all().select_related(
-            models.Source.FieldNames.file,
-            models.Source.FieldNames.location,
-        )
-        ordering = self.get_ordering(request)
-        if ordering and ordering != models.Source.get_meta().ordering:
-            qs = qs.order_by(*ordering)
-        return qs
-
-    def get_fields(self, request, model_instance=None):
+    def get_fields(self, request, model_instance: Optional[models.Source] = None):
         """Return reordered fields to be displayed in the admin."""
         fields = list(super().get_fields(request, model_instance))
+        inapplicable_fields = getattr(model_instance, 'inapplicable_fields', [])
+        for field in inapplicable_fields:
+            try:
+                fields.remove(field)
+            except Exception as err:
+                logging.error(f'{err}')
         fields_to_move = (models.Source.FieldNames.string,)
         for field in fields_to_move:
             if field in fields:

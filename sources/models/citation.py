@@ -13,7 +13,6 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from modularhistory.constants.misc import QUOTE_CT_ID
-from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
     OBJECT_PLACEHOLDER_REGEX,
@@ -63,7 +62,7 @@ PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 
 SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
 CITATION_PHRASE_OPTIONS = (
-    (None, EMPTY_STRING),
+    (None, ''),
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in'),
     ('partially reproduced in', 'partially reproduced in'),
@@ -114,7 +113,7 @@ class Citation(ModelWithComputations):
         """Return the citation's HTML representation."""
         html = f'{self.source.html}'
         if self.primary_page_number:
-            page_string = self.page_number_html or EMPTY_STRING
+            page_string = self.page_number_html or ''
             # Replace the source's page string if it exists
             match = self.page_string_regex.match(html)
             if match:
@@ -140,7 +139,7 @@ class Citation(ModelWithComputations):
                         html = components_to_html(
                             [
                                 f'{quote.attributee_html or "Unidentified person"}',
-                                f'{quote.date_string}' if quote.date else EMPTY_STRING,
+                                f'{quote.date_string}' if quote.date else '',
                                 f'quoted in {source_html}',
                             ]
                         )

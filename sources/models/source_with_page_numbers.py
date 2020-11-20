@@ -22,6 +22,12 @@ class SourceWithPageNumbers(TextualSource):
         blank=True,
     )
 
+    extra_fields = {
+        'page_number': 'number',
+        'end_page_number': 'number',
+        **TextualSource.extra_fields,
+    }
+
     @property
     def file_page_number(self) -> Optional[int]:
         """Return the page number to use for opening the source's associated file."""

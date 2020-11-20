@@ -30,29 +30,19 @@ CONTEXT = Context()
 def autoformat(context: Context = CONTEXT, files: Optional[Iterable[str]] = None):
     """Autoformat all of ModularHistory's Python code."""
     commands = (
-        ('unify {filename}', 'unify --in-place {filename}'),
-        ('isort {filename} --diff', 'isort {filename}'),
-        ('black {filename} --diff', 'black {filename}'),
+        (
+            'autoflake --imports=django,requests,urllib3 --ignore-init-module-imports '
+            '--in-place {filename}'
+        ),
+        ('unify --in-place {filename}'),
+        ('isort {filename}'),
+        ('black {filename}'),
     )
     file_names = files or iglob('[!.]**/*.py', recursive=True)
     for filename in file_names:
-        print(f'Checking {filename}...')
-        dry = False
-        for dry_command, command in commands:
-            if dry:
-                diff_output = context.run(
-                    dry_command.format(filename=filename), pty=True
-                ).stdout
-                if diff_output and '1 file would be left unchanged.' not in diff_output:
-                    if input('Overwrite file? [Y/n] ') != NEGATIVE:
-                        if filename.lstrip('.') in str(__file__):
-                            raise ValueError(
-                                f'\n{filename}: File cannot be autoformatted.\n'
-                                f'Hint: Do it manually instead.'
-                            )
-                        dry = False
-            if not dry:
-                context.run(command.format(filename=filename))
+        print(f'Formatting {filename}...')
+        for command in commands:
+            context.run(command.format(filename=filename))
 
 
 def clear_migration_history(context: Context = CONTEXT, environment: str = LOCAL):

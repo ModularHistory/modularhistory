@@ -12,7 +12,6 @@ class ChatConsumer(WebsocketConsumer):
 
     def disconnect(self, close_code):
         """."""
-        pass
 
     def receive(self, text_data):
         """."""
