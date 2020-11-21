@@ -64,7 +64,7 @@ class PersonAdmin(TypedEntityAdmin):
     """Admin for persons."""
 
     model = models.Person
-    exclude = [*TypedEntityAdmin.exclude, 'parent_organization']
+    exclude = [*TypedEntityAdmin.exclude]
     form = PersonForm
     add_form = PersonForm
 
@@ -73,7 +73,7 @@ class DeityAdmin(TypedEntityAdmin):
     """Admin for persons."""
 
     model = models.Deity
-    exclude = [*TypedEntityAdmin.exclude, 'parent_organization']
+    exclude = [*TypedEntityAdmin.exclude]
     form = DeityForm
     add_form = DeityForm
 
@@ -82,7 +82,7 @@ class GroupAdmin(TypedEntityAdmin):
     """Admin for groups."""
 
     model = models.Group
-    exclude = [*TypedEntityAdmin.exclude, 'parent_organization']
+    exclude = [*TypedEntityAdmin.exclude]
     form = GroupForm
     add_form = GroupForm
 

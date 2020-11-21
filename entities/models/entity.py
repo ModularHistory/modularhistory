@@ -211,14 +211,6 @@ class Group(Entity):
 class Organization(Entity):
     """An organization."""
 
-    parent_organization = ForeignKey(
-        'self',
-        related_name='child_organizations',
-        null=True,
-        blank=True,
-        on_delete=SET_NULL,
-    )
-
     class Meta:
         """
         Meta options for the Organization model.
