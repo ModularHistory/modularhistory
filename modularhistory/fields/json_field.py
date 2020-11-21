@@ -2,8 +2,9 @@
 
 import json
 import logging
-from typing import Any, Dict, List, Optional, Type, Union
 from pprint import pformat
+from typing import Any, Dict, List, Optional, Type, Union
+
 from django.core.exceptions import ValidationError
 from django.db.models import JSONField as BaseJSONField
 from django.db.models import Model

@@ -33,9 +33,9 @@ from modularhistory.fields.html_field import (
     PlaceholderGroups,
 )
 from modularhistory.models.manager import Manager
-from modularhistory.utils.string import truncate
 from modularhistory.utils.html import prettify
 from modularhistory.utils.models import get_html_for_view as get_html_for_view_
+from modularhistory.utils.string import truncate
 
 FieldList = List[str]
 

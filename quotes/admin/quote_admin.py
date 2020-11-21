@@ -15,8 +15,8 @@ from quotes.admin.quote_inlines import AttributeesInline, BitesInline
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
 from sources.admin.citation_admin import CitationsInline
 from sources.admin.filters.simple_filters import (
-    HasSourceFilter,
     HasMultipleCitationsFilter,
+    HasSourceFilter,
 )
 from topics.admin import HasTagsFilter, RelatedTopicsInline
 

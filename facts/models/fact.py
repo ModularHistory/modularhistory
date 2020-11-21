@@ -13,9 +13,9 @@ from facts.models.fact_relation import (
 )
 from modularhistory.fields import HTMLField
 from modularhistory.fields.html_field import (
+    END_PATTERN,
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
-    END_PATTERN,
     PlaceholderGroups,
 )
 from modularhistory.utils.html import escape_quotes

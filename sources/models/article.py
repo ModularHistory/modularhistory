@@ -1,7 +1,9 @@
 """Model classes for articles."""
 
 from typing import List
+
 from django.core.exceptions import ValidationError
+
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ExtraField
 from sources.models.piece import SourceWithPageNumbers

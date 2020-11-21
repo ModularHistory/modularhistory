@@ -18,7 +18,7 @@ from occurrences.admin.occurrence_inlines import (
 )
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
 from sources.admin import CitationsInline
-from sources.admin.filters import HasSourceFilter, HasMultipleCitationsFilter
+from sources.admin.filters import HasMultipleCitationsFilter, HasSourceFilter
 from topics.admin import RelatedTopicsInline
 
 

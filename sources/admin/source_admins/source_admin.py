@@ -21,7 +21,6 @@ from sources.admin.source_inlines import (
     RelatedInline,
 )
 
-
 INITIAL = 'initial'
 
 

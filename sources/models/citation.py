@@ -15,9 +15,9 @@ from django.utils.safestring import SafeString
 from modularhistory.constants.misc import QUOTE_CT_ID
 from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
+    END_PATTERN,
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
-    END_PATTERN,
 )
 from modularhistory.fields.html_field import (
     PlaceholderGroups as DefaultPlaceholderGroups,

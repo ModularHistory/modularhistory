@@ -21,8 +21,8 @@ from modularhistory.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from modularhistory.utils.string import components_to_string, dedupe_newlines
 from modularhistory.utils.html import prettify
+from modularhistory.utils.string import components_to_string, dedupe_newlines
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
 CENTER_UPPER_WIDTH_LIMIT: int = 500
@@ -233,5 +233,4 @@ class Image(MediaModel):
         elif width < CENTER_UPPER_WIDTH_LIMIT:
             image_html = f'<div style="text-align: center">{image_html}</div>'
         image_html = prettify(image_html).strip()
-        logging.info(f'Retrieved image HTML:\n{image_html}')
         return image_html

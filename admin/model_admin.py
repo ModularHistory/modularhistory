@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from modularhistory.fields import JSONField
 from django.http import HttpRequest
 from django_q.admin import FailAdmin, QueueAdmin, ScheduleAdmin, TaskAdmin
 from django_q.models import Failure, OrmQ, Schedule, Task
@@ -14,7 +13,7 @@ from sass_processor.processor import sass_processor
 
 from admin.admin_site import admin_site
 from modularhistory.constants.misc import Environments
-from modularhistory.fields import HistoricDateTimeField
+from modularhistory.fields import HistoricDateTimeField, JSONField
 from modularhistory.forms import HistoricDateWidget
 from modularhistory.models import Model
 from modularhistory.widgets.json_editor_widget import JSONEditorWidget

@@ -1,6 +1,7 @@
 """Model class for fact supportations."""
 
 from django.db.models import CASCADE, ForeignKey
+
 from facts.models.fact_relation import FactRelation
 
 

@@ -3,8 +3,8 @@ from .simple_filters import (
     HasContainerFilter,
     HasFileFilter,
     HasFilePageOffsetFilter,
+    HasMultipleCitationsFilter,
+    HasSourceFilter,
     ImpreciseDateFilter,
     TypeFilter,
-    HasSourceFilter,
-    HasMultipleCitationsFilter,
 )

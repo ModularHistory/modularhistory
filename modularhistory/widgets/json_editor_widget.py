@@ -1,8 +1,10 @@
 import json
 import logging
-from typing import Any, Dict, Iterable, Mapping
 from pprint import pformat
+from typing import Any, Dict, Iterable, Mapping
+
 from prettyjson import PrettyJSONWidget
+
 from modularhistory.utils.html import soupify
 
 
