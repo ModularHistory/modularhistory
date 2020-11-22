@@ -28,8 +28,17 @@ fact_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
 logging.debug(f'Fact placeholder pattern: {fact_placeholder_regex}')
 
 
+DEGREES_OF_CERTAINTY = (
+    (0, 'No credible evidence'),
+    (1, 'Some credible evidence'),
+    (2, 'A preponderance of evidence'),
+    (3, 'Beyond reasonable doubt'),
+    (4, 'Beyond any shadow of a doubt'),
+)
+
+
 class Fact(VerifiableModel):
-    """A fact."""
+    """A postulation."""
 
     summary = HTMLField(unique=True, paragraphed=False)
     elaboration = HTMLField(null=True, blank=True, paragraphed=True)

@@ -3,12 +3,14 @@
 import logging
 from os.path import join
 from typing import Optional
-
+from datetime import datetime
+from django.core.files.storage import Storage
 from django.core.exceptions import ValidationError
 from django.core.files.storage import Storage, default_storage
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.core.files.uploadedfile import UploadedFile
 
 from modularhistory.fields.file_field import SourceFileField, upload_to
 from modularhistory.models import Model
@@ -40,6 +42,7 @@ class SourceFile(Model):
             'on which the relevant text begins (usually 1).'
         ),
     )
+    uploaded_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -52,6 +55,14 @@ class SourceFile(Model):
         """Save the source file to the database."""
         self.clean()
         storage: Storage = default_storage
+        if isinstance(getattr(self.file, 'file', None), UploadedFile):
+            # If a file was just uploaded...
+            self.uploaded_at = datetime.now()  # TODO: timezone
+        elif not self.uploaded_at:
+            try:
+                self.uploaded_at = storage.get_created_time(self.file.name)
+            except Exception as err:
+                logging.error(f'{err}')
         if self.name and self.name != self.file_name:
             if storage.exists(self.file.name):
                 old_name = self.file.name

@@ -45,7 +45,7 @@ class SourceForm(ModelForm):
             logging.debug(f'Setting initial type to {source_type}')
             initial['type'] = source_type
         if schema:
-            extra = (instance.extra or {}) if instance else {}
+            extra: Dict = (instance.extra or {}) if instance else {}
             initial_extra_fields = initial.get(self.model.FieldNames.extra, {})
             for key in schema:
                 initial_value = extra.get(key, None) if instance else None
