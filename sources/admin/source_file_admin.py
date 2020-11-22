@@ -29,11 +29,11 @@ class PdfFilter(SimpleListFilter):
 class SourceFileAdmin(ModelAdmin):
     """Admin for source files."""
 
-    list_display = ['name', PAGE_OFFSET_FIELD, 'link', 'uploaded_at']
+    list_display = ['name', PAGE_OFFSET_FIELD, 'link', 'uploaded_at', 'id']
     search_fields = ['file', 'name']
     inlines = [SourcesInline]
     list_filter = [PdfFilter]
-    ordering = ['name', 'uploaded_at']
+    ordering = ['name', 'uploaded_at', 'id']
 
     def get_fields(self, request, model_instance=None):
         """Return reordered fields to be displayed in the admin."""
