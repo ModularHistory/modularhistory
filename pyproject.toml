@@ -109,7 +109,7 @@ youtube-dl = "^2020.7.28"
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"
 coverage = {extras = ["toml"], version = "^5.3"}
-darglint = "^1.5.5"
+darglint = "^1.5.7"
 django-pymemcache = "^1.0.0"
 django-stubs = ">=1.7"
 django-webtest = "^1.9.7"
