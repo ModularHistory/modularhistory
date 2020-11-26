@@ -2,6 +2,8 @@ from django.urls import path
 
 from images import views
 
+app_name = 'images'
+
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('<int:pk>/part', views.DetailPartView.as_view(), name='detail_part'),

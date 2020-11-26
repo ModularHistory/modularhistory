@@ -27,13 +27,11 @@ from rest_framework.serializers import Serializer
 from typedmodels.models import TypedModel as BaseTypedModel
 
 from modularhistory.fields.html_field import (
-    END_PATTERN,
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
     PlaceholderGroups,
 )
 from modularhistory.models.manager import Manager
-from modularhistory.utils.html import prettify
 from modularhistory.utils.models import get_html_for_view as get_html_for_view_
 from modularhistory.utils.string import truncate
 
@@ -120,7 +118,7 @@ class Model(DjangoModel):
     @property
     def detail_url(self) -> str:
         """Return the URL of the model instance's detail page."""
-        return reverse(f'{self.get_meta().app_label}:detail', args=[self.id])
+        return reverse(f'{self.get_meta().app_label}:detail', args=[self.pk])
 
     @property
     def natural_key_fields(self) -> Optional[List]:
@@ -151,7 +149,7 @@ class Model(DjangoModel):
         """Return the URL of the model instance's admin page."""
         return reverse(
             f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
-            args=[self.id],
+            args=[self.pk],
         )
 
     def get_detail_link(self, content: Optional[str] = None) -> SafeString:
@@ -222,7 +220,7 @@ class Model(DjangoModel):
         try:
             model_instance = cls.objects.get(pk=key)
             object_html = model_instance.html
-            logging.info(f'Retrieved object HTML: {object_html}')
+            logging.debug(f'Retrieved object HTML: {object_html}')
         except ObjectDoesNotExist as e:
             logging.error(f'Unable to retrieve object HTML; {e}')
             return ''
@@ -246,6 +244,11 @@ class Model(DjangoModel):
     @classmethod
     def get_updated_placeholder(cls, match: Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
+        if not match:
+            logging.error(
+                '{cls.__name__}.get_updated_placeholder was called without a match.'
+            )
+            raise ValueError
         placeholder = match.group(0)
         logging.debug(f'Looking at {truncate(placeholder)}')
         extant_html = match.group(PlaceholderGroups.HTML)

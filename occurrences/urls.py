@@ -2,6 +2,8 @@ from django.urls import path
 
 from occurrences import views
 
+app_name = 'occurrences'
+
 urlpatterns = [
     path('', views.ListView.as_view(), name='index'),
     path('<int:pk>/part', views.DetailPartialView.as_view(), name='detail_part'),

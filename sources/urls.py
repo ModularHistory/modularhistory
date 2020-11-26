@@ -3,6 +3,8 @@ from django.views.generic import TemplateView
 
 from sources import views
 
+app_name = 'sources'
+
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('<int:pk>/part', views.DetailPartView.as_view(), name='detail_part'),

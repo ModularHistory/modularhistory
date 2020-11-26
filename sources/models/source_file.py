@@ -1,16 +1,16 @@
 """Model classes for source files."""
 
 import logging
+from datetime import datetime
 from os.path import join
 from typing import Optional
-from datetime import datetime
-from django.core.files.storage import Storage
+
 from django.core.exceptions import ValidationError
 from django.core.files.storage import Storage, default_storage
+from django.core.files.uploadedfile import UploadedFile
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from django.core.files.uploadedfile import UploadedFile
 
 from modularhistory.fields.file_field import SourceFileField, upload_to
 from modularhistory.models import Model

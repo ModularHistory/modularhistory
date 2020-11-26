@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Optional, Type, Union
 
 from aenum import Constant
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -42,7 +42,7 @@ HTML_GROUP = rf'(?!(?:{END_PATTERN}))(?P<{PlaceholderGroups.HTML}>\S[\s\S]+?)'
 APPENDAGE_GROUP = rf'(?P<{PlaceholderGroups.APPENDAGE}>[:\ ,]?\ ?{HTML_GROUP})'
 
 OBJECT_PLACEHOLDER_REGEX = rf'{START_PATTERN}\ ?{TYPE_GROUP}:\ ?{KEY_GROUP}{APPENDAGE_GROUP}?\ ?{END_PATTERN}'  # noqa: E501
-logging.info(f'Object placeholder pattern: {OBJECT_PLACEHOLDER_REGEX}')
+logging.debug(f'Object placeholder pattern: {OBJECT_PLACEHOLDER_REGEX}')
 
 object_placeholder_regex = re.compile(OBJECT_PLACEHOLDER_REGEX)
 
@@ -54,33 +54,46 @@ def process(html: str) -> str:
     This involves replacing model instance placeholders with their HTML.
     """
     logging.debug(f'Processing HTML: {truncate(html)}')
+    model_classes: Dict[str, Type[Model]] = {}
     for match in object_placeholder_regex.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(PlaceholderGroups.MODEL_NAME)
+        logging.info(f'Found {object_type} placeholder: {truncate(placeholder)}')
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
-            model_cls: Type[Model] = import_string(model_cls_str)
+            model_cls: Type[Model] = model_classes.get(
+                model_cls_str, import_string(model_cls_str)
+            )
+            if model_cls_str not in model_classes:
+                model_classes[model_cls_str] = model_cls
             logging.debug(
-                f'Processing {model_cls.__name__} placeholder: {placeholder}...'
+                f'Processing {object_type} placeholder: {truncate(placeholder)}'
             )
             # TODO
             object_match = model_cls.get_admin_placeholder_regex().match(placeholder)
-            try:
-                object_html = model_cls.get_object_html(
-                    object_match, use_preretrieved_html=True
+            if object_match:
+                try:
+                    object_html = model_cls.get_object_html(
+                        object_match, use_preretrieved_html=True
+                    )
+                    logging.debug(
+                        f'Retrieved {object_type} HTML: {truncate(object_html)}'
+                    )
+                except ObjectDoesNotExist:
+                    raise ValidationError(
+                        f'Could not get HTML for placeholder: {truncate(placeholder)}'
+                    )
+                html = html.replace(placeholder, object_html)
+            else:
+                logging.error(
+                    f'ERROR: {model_cls.get_admin_placeholder_regex()} '
+                    f'did not match {truncate(placeholder)}'
                 )
-                logging.debug(
-                    f'Retrieved {model_cls_str} HTML: {truncate(object_html)}'
-                )
-            except ObjectDoesNotExist:
-                raise ValidationError(
-                    f'Could not retrieve HTML for placeholder: {object_match.group(0)}'
-                )
-            html = html.replace(placeholder, object_html)
         else:
-            logging.error(f'Unable to retrieve model class string for `{object_type}`')
+            logging.error(f'ERROR: Unable to get model class string for {object_type}')
     # TODO: optimize
     html = re.sub(r'(\S)\ (<a [^>]+?citation-link)', r'\g<1>\g<2>', html)
+    logging.debug(f'Successfuly processed {truncate(html)}')
     return html
 
 
@@ -101,7 +114,7 @@ class HTMLField(MceHTMLField):
         'image',
         'citation',
         'source',
-        'fact',
+        'postulation',
     ]
 
     def __init__(
@@ -135,6 +148,8 @@ class HTMLField(MceHTMLField):
             (r'\n?<div>&nbsp;<\/div>', ''),
             (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
             (r'<p>&nbsp;<\/p>', ''),
+            # fact --> postulation  # TODO
+            (r'\[\[ fact: ', '[[ postulation: '),
         )
         for pattern, replacement in replacements:
             try:
@@ -236,6 +251,7 @@ class HTMLField(MceHTMLField):
             # Update placeholder markers to square brackets
             (r'(?:\{\{|&lt;&lt;|\<\<)', '[['),
             (r'(?:\}\}|&gt;&gt;|\>\>)', ']]'),
+            (r'\[\[ fact: ', '[[ postulation: '),
             (r'074c54e4-ff1d-4952-9964-7d1e52cec4db', '6'),
             (r'354f9d11-74bb-4e2a-8e0d-5df877b4c461', '86'),
             (r'53a517fc-68a6-42bd-ac6b-e3a84a617ace', '8'),

@@ -1,4 +1,5 @@
-from django.contrib.admin import SimpleListFilter
+"""Simple list filters for the source admin."""
+
 from django.db.models import Count, Q
 
 from admin.list_filters import BooleanListFilter

@@ -13,12 +13,12 @@ from facts.models.fact_relation import (
 )
 from modularhistory.fields import HTMLField
 from modularhistory.fields.html_field import (
-    END_PATTERN,
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
     PlaceholderGroups,
 )
 from modularhistory.utils.html import escape_quotes
+from modularhistory.utils.string import truncate, dedupe_newlines
 from topics.serializers import FactSerializer
 from verification.models import VerifiableModel
 
@@ -37,14 +37,14 @@ DEGREES_OF_CERTAINTY = (
 )
 
 
-class Fact(VerifiableModel):
+class Postulation(VerifiableModel):
     """A postulation."""
 
     summary = HTMLField(unique=True, paragraphed=False)
     elaboration = HTMLField(null=True, blank=True, paragraphed=True)
     supportive_facts = ManyToManyField(
         'self',
-        through='facts.FactSupport',
+        through='facts.PostulationSupport',
         related_name='supported_facts',
         symmetrical=False,
     )
@@ -89,38 +89,38 @@ class Fact(VerifiableModel):
         cls, match: re.Match, use_preretrieved_html: bool = False
     ) -> str:
         """Return the obj's HTML based on a placeholder in the admin."""
+        if not match:
+            logging.error('fact.get_object_html was called without a match')
+            raise ValueError
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
-        fact: 'Fact' = cls.get_object_from_placeholder(match)
+        fact: 'Postulation' = cls.get_object_from_placeholder(match)
         return fact.summary_link
 
     @classmethod
     def get_updated_placeholder(cls, match: re.Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
-        logging.debug(f'Getting updated fact placeholder for {placeholder}...')
-        if match.group(PlaceholderGroups.HTML):
-            html = match.group(PlaceholderGroups.HTML)
-            if '<a ' not in html:
-                fact_html = cls.get_object_html(match)
-                fact_html = re.sub(
+        logging.debug(f'Looking at {truncate(placeholder)}')
+        extant_html = match.group(PlaceholderGroups.HTML).strip()
+        if extant_html:
+            if '<a ' not in extant_html:
+                html = cls.get_object_html(match)
+                html = re.sub(
                     r'(.+?">).+?(<\/a>)',  # TODO
-                    rf'\g<1>{html}\g<2>',
-                    fact_html,
+                    rf'\g<1>{extant_html}\g<2>',
+                    html,
                 )
                 placeholder = placeholder.replace(
-                    match.group(PlaceholderGroups.HTML), fact_html
+                    match.group(PlaceholderGroups.HTML), html
                 )
             return placeholder
-        appendage = match.group(PlaceholderGroups.APPENDAGE)
-        updated_appendage = f': {cls.get_object_html(match)}'
-        if appendage:
-            # TODO: preserve capitalization, etc.
-            updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
-            stem = re.sub(rf' ?{END_PATTERN}', '', placeholder)
-            updated_placeholder = f'{stem}{updated_appendage} ]]'
-        return updated_placeholder.replace('\n\n\n', '\n').replace('\n\n', '\n')
+            html = cls.get_object_html(match)
+            model_name = match.group(PlaceholderGroups.MODEL_NAME)
+            pk = match.group(PlaceholderGroups.PK)
+            placeholder = f'[[ {model_name}: {pk}: {html} ]]'
+        return dedupe_newlines(placeholder)

@@ -14,7 +14,7 @@ def components_to_string(components: List[str], delimiter=', '):
     return fix_comma_positions(delimiter.join(components))
 
 
-def truncate(string, max_length: int = 200, strip_newlines: bool = True):
+def truncate(string, max_length: int = 150, strip_newlines: bool = True):
     """Return a truncated version of the string."""
     if strip_newlines:
         string = string.replace('\n', ' ')

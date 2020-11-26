@@ -7,8 +7,8 @@ from sources.models import Source
 class TestSources:
     """Test the sources app."""
 
-    @pytest.mark.parametrize('source_type', ['sources.book', 'sources.article'])
-    def test_source(self, source_type: str):
+    @pytest.mark.parametrize('source_type', ['sources.book'])
+    def test_source_creation(self, source_type: str):
         """Test creation of sources."""
         title = f'asdf {source_type}'
         source = Source(type=source_type, title=title)

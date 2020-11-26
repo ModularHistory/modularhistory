@@ -3,7 +3,8 @@
 import json
 import logging
 from functools import wraps
-from typing import Callable, Optional
+from pprint import pformat
+from typing import Callable, Optional, Union
 
 from modularhistory.fields import JSONField
 from modularhistory.models.model import Model
@@ -95,7 +96,9 @@ def retrieve_or_compute(
 
     def wrap(model_property):  # noqa: WPS430
         @wraps(model_property)  # noqa: WPS430
-        def wrapped_property(model_instance: ModelWithComputations, *args, **kwargs):
+        def wrapped_property(
+            model_instance: Union[ModelWithComputations, Model], *args, **kwargs
+        ):
             # Avoid recursion errors when creating new model instances
             if model_instance.pk:
                 if isinstance(model_instance, ModelWithComputations):
@@ -117,12 +120,12 @@ def retrieve_or_compute(
                             # it may cause a recursion error.
                             f'Saving computed field `{property_name}` to '
                             f'{model_instance.__class__.__name__} ({model_instance.pk}) '
-                            f'with value: {property_value}'
+                            f'with value: {pformat(property_value)}'
                         )
                         # Specify `wipe_computations=False` to properly update the JSON value
                         model_instance.save(wipe_computations=False)
                     return property_value
-                logging.error(  # type: ignore
+                logging.error(
                     f'{model_instance.__class__.__name__} uses @retrieve_or_compute '
                     f'on its `{model_property.__name__}` attribute '
                     f'but is not subclassed from ModelWithComputations.'

@@ -37,34 +37,45 @@ def error(request):
 urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
-    path('chat/', include('chat.urls')),
+    # Account
+    path('account/', include(('account.urls', 'account'), namespace='account')),
+    # Admin
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
-    path(
-        'occurrences/',
-        include(('occurrences.urls', 'occurrences'), namespace='occurrences'),
-    ),
-    path('entities/', include(('entities.urls', 'entities'), namespace='entities')),
-    path('images/', include(('images.urls', 'images'), namespace='images')),
-    path('places/', include(('places.urls', 'places'), namespace='places')),
-    path('quotes/', include(('quotes.urls', 'quotes'), namespace='quotes')),
-    path('sources/', include(('sources.urls', 'sources'), namespace='sources')),
-    path('topics/', include(('topics.urls', 'topics'), namespace='topics')),
+    # Chat
+    path('chat/', include('chat.urls')),
+    # Entities
+    path('entities/', include('entities.urls', namespace='entities')),
+    # Postulations
     path('facts/', include(('facts.urls', 'facts'), namespace='facts')),
-    path('search/', include(('search.urls', 'search'), namespace='search')),
+    path('postulations/', include(('facts.urls', 'facts'), namespace='postulations')),
+    # Images
+    path('images/', include('images.urls', namespace='images')),
+    # Occurrences
+    path('occurrences/', include('occurrences.urls', namespace='occurrences')),
+    # Places
+    path('places/', include(('places.urls', 'places'), namespace='places')),
+    path('locations/', include(('places.urls', 'places'), namespace='locations')),
+    # Quotes
+    path('quotes/', include('quotes.urls', namespace='quotes')),
+    # Search
+    path('search/', include('search.urls', namespace='search')),
     re_path(r'search$', SearchResultsView.as_view(), name='search'),
+    # Sources
+    path('sources/', include('sources.urls', namespace='sources')),
+    # Topics
+    path('topics/', include('topics.urls', namespace='topics')),
     path('oauth/', include('social_django.urls', namespace='social')),
-    path('account/', include(('account.urls', 'account'), namespace='account')),
     path('api-auth/', include('rest_framework.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),
     path('', include('home.urls')),
-    path('__debug__', include(debug_toolbar.urls)),
     path('error', error),  # error trigger (for testing purposes)
     path(
         'robots.txt',
         TemplateView.as_view(template_name='robots.txt', content_type='text/plain'),
     ),
+    path('__debug__', include(debug_toolbar.urls)),
     # TODO: enable Vue templates
     # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
 ]

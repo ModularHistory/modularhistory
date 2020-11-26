@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, List, Optional
 
 from django.db import models
-from django.db.models import SET_NULL, ForeignKey, ManyToManyField, QuerySet
+from django.db.models import QuerySet
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 
@@ -55,19 +55,19 @@ class Entity(
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
     description = HTMLField(null=True, blank=True, paragraphed=True)
-    categories = ManyToManyField(
+    categories = models.ManyToManyField(
         'entities.Category',
         through='entities.Categorization',
         related_name='entities',
         blank=True,
     )
-    images = ManyToManyField(
+    images = models.ManyToManyField(
         'images.Image',
         through='entities.EntityImage',
         related_name='entities',
         blank=True,
     )
-    affiliated_entities = ManyToManyField(
+    affiliated_entities = models.ManyToManyField(
         'self', through='entities.Affiliation', blank=True
     )
 

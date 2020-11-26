@@ -32,7 +32,7 @@ class JSONEditorWidget(PrettyJSONWidget):
         if isinstance(json_value, dict):
             json_data = json_value
         else:
-            logging.info(f'JSON string from editor: {json_value}')
+            logging.debug(f'JSON string from editor: {json_value}')
             try:
                 json_data = json.loads(soupify(json_value).get_text())
             except Exception as err:
@@ -40,11 +40,11 @@ class JSONEditorWidget(PrettyJSONWidget):
                     f'Loading value from JSON editor widget resulted in {err}'
                 )
                 return json_value
-        logging.info(f'JSON before removing null attributes: {pformat(json_data)}')
+        logging.debug(f'JSON before removing null attributes: {pformat(json_data)}')
         json_data = {
             attribute: attribute_value
             for attribute, attribute_value in json_data.items()
             if attribute_value is not None
         }
-        logging.info(f'JSON after removing null attributes: {pformat(json_data)}')
+        logging.debug(f'JSON after removing null attributes: {pformat(json_data)}')
         return json.dumps(json_data)

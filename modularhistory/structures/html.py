@@ -65,6 +65,7 @@ class HTML:
                         f'ERROR: {error} resulted from attempting to process HTML:\n'
                         f'{truncate(self.raw_value)}\n'
                     )
+                    raise
         html = processed_html or self.raw_value
         try:
             self._html = format_html(html)

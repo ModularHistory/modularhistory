@@ -6,6 +6,8 @@ from entities import views
 router = routers.DefaultRouter()
 router.register(r'entities', views.EntityViewSet)
 
+app_name = 'entities'
+
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('<int:pk>/part', views.DetailPartView.as_view(), name='detail'),

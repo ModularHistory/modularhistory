@@ -8,9 +8,8 @@ from django.db.models import JSONField
 from django.template.loader import render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from easy_thumbnails.exceptions import InvalidImageFormatError
+# from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.files import get_thumbnailer
-from image_cropping import ImageRatioField
 
 from images.manager import ImageManager
 from images.models.media_model import MediaModel
@@ -22,7 +21,10 @@ from modularhistory.fields.html_field import (
     PlaceholderGroups,
 )
 from modularhistory.utils.html import prettify
-from modularhistory.utils.string import components_to_string, dedupe_newlines
+from modularhistory.utils.string import components_to_string
+
+# from image_cropping import ImageRatioField
+
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
 CENTER_UPPER_WIDTH_LIMIT: int = 500

@@ -2,6 +2,8 @@ from django.urls import path
 
 from topics import views
 
+app_name = 'topics'
+
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('<int:pk>/part', views.DetailPartView.as_view(), name='detail'),

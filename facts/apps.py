@@ -5,3 +5,4 @@ class FactsConfig(AppConfig):
     """Config for the facts app."""
 
     name = 'facts'
+    verbose_name = "Postulations"
