@@ -412,10 +412,14 @@ fi
 
 # Run database migrations
 if [[ "${USE_PROD_DB}" != 'True' ]]; then
-  while [ "$run_migrations" != "y" ] && [ "$run_migrations" != "n" ]; do
-    echo "Run db migrations? [y/n] "
-    read -r run_migrations
-  done
+  if [[ "$interactive" == true ]]; then
+    while [ "$run_migrations" != "y" ] && [ "$run_migrations" != "n" ]; do
+      echo "Run db migrations? [y/n] "
+      read -r run_migrations
+    done
+  else
+    run_migrations="y"
+  fi
   if [[ "$run_migrations" == "y" ]]; then
     echo "Running database migrations..."
     python manage.py migrate

@@ -1,5 +1,6 @@
 from admin import ModelAdmin, StackedInline, TabularInline, admin_site
 from postulations import models
+from entities.admin.admin_filters import EntityAutocompleteFilter
 
 
 class FactEntitiesInline(TabularInline):

@@ -13,17 +13,14 @@ from admin.list_filters.autocomplete_filter import (
 )
 from entities.models import Category, Entity
 
+from entities.admin.admin_filters import EntityAutocompleteFilter
 
-class AttributeeFilter(ManyToManyAutocompleteFilter):
+
+class AttributeeFilter(EntityAutocompleteFilter):
     """Autocomplete filter for a quote's attributees."""
 
     title = 'attributee'
     field_name = 'attributees'
-    m2m_cls = Entity
-
-    def get_autocomplete_url(self, request, model_admin):
-        """Return the URL of the autocomplete view."""
-        return reverse('admin:entity_search')
 
 
 class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):

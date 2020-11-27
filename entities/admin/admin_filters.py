@@ -1,8 +1,14 @@
 """List filters for the entities admin."""
 
-from admin.list_filters import AutocompleteFilter, BooleanListFilter, TypeFilter
+from admin.list_filters import (
+    AutocompleteFilter,
+    BooleanListFilter,
+    TypeFilter,
+    ManyToManyAutocompleteFilter,
+)
 from entities.models.entity import Entity
 from modularhistory.constants.strings import NO, YES
+from django.urls import reverse
 
 
 class CategoriesFilter(AutocompleteFilter):
@@ -48,3 +54,22 @@ class EntityTypeFilter(TypeFilter):
     """Admin filter for type of entity."""
 
     base_model = Entity
+
+
+class EntityAutocompleteFilter(ManyToManyAutocompleteFilter):
+    """Autocomplete filter for a quote's attributees."""
+
+    title: str
+    field_name: str
+    m2m_cls = Entity
+
+    def get_autocomplete_url(self, request, model_admin):
+        """Return the URL of the autocomplete view."""
+        return reverse('admin:entity_search')
+
+
+class RelatedEntityFilter(EntityAutocompleteFilter):
+    """Autocomplete filter for related entities."""
+
+    title = 'related entity'
+    field_name = 'related_entities'
