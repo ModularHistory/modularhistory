@@ -78,7 +78,7 @@ jobs:
     # Setup gcloud environment
     - name: Setup gcloud environment
       if: ${{ success() }}
-      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master  # https://github.com/GoogleCloudPlatform/github-actions/blob/master/setup-gcloud/README.md
+      uses: google-github-actions/setup-gcloud@master  # https://github.com/google-github-actions/setup-gcloud
       with:
         project_id: modularhistory
         service_account_key: ${{ secrets.GCP_CREDENTIALS }}

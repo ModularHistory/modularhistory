@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from typing import TYPE_CHECKING, List, Optional
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import QuerySet
 from django.template.defaultfilters import truncatechars_html
@@ -98,6 +99,11 @@ class Entity(
         super().clean()
         if not self.unabbreviated_name:
             self.unabbreviated_name = self.name
+        if self.type == 'entities.entity' or not self.type:
+            raise ValidationError('Entity must have a type.')
+        else:
+            # Prevent a RuntimeError when saving a new publication
+            self.recast(self.type)
 
     @property
     def has_quotes(self) -> bool:

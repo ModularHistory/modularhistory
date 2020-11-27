@@ -18,7 +18,7 @@ from modularhistory.fields.html_field import (
     PlaceholderGroups,
 )
 from modularhistory.utils.html import escape_quotes
-from modularhistory.utils.string import truncate, dedupe_newlines
+from modularhistory.utils.string import dedupe_newlines, truncate
 from topics.serializers import FactSerializer
 from verification.models import VerifiableModel
 
