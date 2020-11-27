@@ -9,7 +9,7 @@ import modularhistory.fields.html_field
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('facts', '0002_auto_20201117_2008'),
+        ('postulations', '0002_auto_20201117_2008'),
     ]
 
     operations = [

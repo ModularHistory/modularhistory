@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load get_html_for_view %}
+
+{% block content %}
+    <div class="container">
+        {% if postulations|length %}
+            <div>
+                {% for postulation in postulations %}
+                    {{ postulation|get_html_for_view:"card" }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,7 +1,9 @@
+from typing import Dict, Union
+
 from django import template
 from django.urls import reverse
+
 from modularhistory.models import Model
-from typing import Dict, Union
 
 register = template.Library()
 

@@ -1,5 +1,5 @@
 from admin import ModelAdmin, StackedInline, TabularInline, admin_site
-from facts import models
+from postulations import models
 
 
 class FactEntitiesInline(TabularInline):
@@ -17,17 +17,17 @@ class OccurrencesInline(TabularInline):
 
 
 class SupportedFactsInline(StackedInline):
-    """Inline admin for a fact's supported facts."""
+    """Inline admin for a fact's supported postulations."""
 
     verbose_name = 'supported fact'
-    verbose_name_plural = 'supported facts'
+    verbose_name_plural = 'supported postulations'
     model = models.PostulationSupport
     fk_name = 'supportive_fact'
     extra = 0
 
 
 class SupportiveFactsInline(StackedInline):
-    """Inline admin for a fact's supportive facts."""
+    """Inline admin for a postulation's supportive facts."""
 
     verbose_name = 'supportive fact'
     verbose_name_plural = 'supportive facts'
@@ -37,7 +37,7 @@ class SupportiveFactsInline(StackedInline):
 
 
 class FactAdmin(ModelAdmin):
-    """Admin for facts."""
+    """Admin for postulations."""
 
     model = models.Postulation
     list_display = ['pk', 'summary']

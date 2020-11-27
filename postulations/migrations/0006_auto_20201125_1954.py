@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         ('entities', '0004_remove_entity_parent_organization'),
         ('occurrences', '0008_auto_20201118_2018'),
         ('topics', '0005_auto_20201118_2005'),
-        ('facts', '0005_auto_20201121_1757'),
+        ('postulations', '0005_auto_20201121_1757'),
     ]
 
     operations = [
@@ -22,21 +22,21 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='postulation',
             name='supportive_facts',
-            field=models.ManyToManyField(related_name='supported_facts', through='facts.PostulationSupport', to='facts.Postulation'),
+            field=models.ManyToManyField(related_name='supported_facts', through='postulations.PostulationSupport', to='postulations.Postulation'),
         ),
         migrations.AlterField(
             model_name='entityfactrelation',
             name='fact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_entity_relations', to='facts.postulation'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_entity_relations', to='postulations.postulation'),
         ),
         migrations.AlterField(
             model_name='occurrencefactrelation',
             name='fact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_occurrence_relations', to='facts.postulation'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_occurrence_relations', to='postulations.postulation'),
         ),
         migrations.AlterField(
             model_name='topicfactrelation',
             name='fact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_topic_relations', to='facts.postulation'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_topic_relations', to='postulations.postulation'),
         )
     ]

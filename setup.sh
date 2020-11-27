@@ -311,7 +311,7 @@ poetry config virtualenvs.create false
 if [[ ! "$skip_dependencies" == true ]]; then
   # Install dependencies with Poetry
   echo "Installing dependencies..."
-  if [[ ! "$skip_dev_dependencies" == true ]]; then
+  if [[ "$skip_dev_dependencies" == true ]]; then
     poetry install --no-dev --no-root || {
       error "Failed to install dependencies with Poetry."
       exit 1
@@ -412,9 +412,15 @@ fi
 
 # Run database migrations
 if [[ "${USE_PROD_DB}" != 'True' ]]; then
-  echo "Running database migrations..."
-  python manage.py migrate
-  echo ""
+  while [ "$run_migrations" != "y" ] && [ "$run_migrations" != "n" ]; do
+    echo "Run db migrations? [y/n] "
+    read -r run_migrations
+  done
+  if [[ "$run_migrations" == "y" ]]; then
+    echo "Running database migrations..."
+    python manage.py migrate
+    echo ""
+  fi
 fi
 
 # TODO

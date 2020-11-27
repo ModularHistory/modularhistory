@@ -1,8 +1,4 @@
-from typing import TYPE_CHECKING, Tuple, Type
-
-from django.db.models.query import QuerySet
-from django.http.request import HttpRequest
-from django.urls import path
+from typing import TYPE_CHECKING, Type
 
 from admin.model_admin import ModelAdmin, admin_site
 from dates import models

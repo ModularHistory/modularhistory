@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('facts', '0004_fact_verified'),
+        ('postulations', '0004_fact_verified'),
     ]
 
     operations = [

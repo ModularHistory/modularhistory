@@ -1,7 +1,7 @@
 from admin import TabularInline
 from entities import models
-from facts.models import EntityFactRelation
 from occurrences.models import OccurrenceEntityInvolvement
+from postulations.models import EntityFactRelation
 from quotes.models import Quote
 
 
@@ -40,7 +40,7 @@ class OccurrencesInline(TabularInline):
 
 
 class FactsInline(TabularInline):
-    """Inline admin for facts."""
+    """Inline admin for postulations."""
 
     model = EntityFactRelation
     extra = 1

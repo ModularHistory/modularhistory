@@ -42,8 +42,8 @@ MODEL_CLASS_PATHS = {
     ModelNameSet.place: 'places.models.Place',
     ModelNameSet.quote: 'quotes.models.Quote',
     ModelNameSet.source: 'sources.models.Source',
-    ModelNameSet.fact: 'facts.models.Postulation',
-    ModelNameSet.postulation: 'facts.models.Postulation',
+    ModelNameSet.fact: 'postulations.models.Postulation',
+    ModelNameSet.postulation: 'postulations.models.Postulation',
 }
 
 CONTENT_TYPE_IDS = {
@@ -64,13 +64,13 @@ SOURCE_CT_ID = CONTENT_TYPE_IDS.get(ModelNameSet.source)
 PDF_URL_PAGE_KEY = 'page'
 
 MIGRATIONS_DIRNAME = 'migrations'
-SQUASHED_MIGRATIONS_DIRNAME = 'squashed_migrations'
+SQUASHED_MIGRATIONS_DIRNAME = 'squashed'
 
 PROD_DB_ENV_VAR = 'USE_PROD_DB'
 LOCAL = 'local'
 PRODUCTION = 'production'
 PROD_DB_ENV_VAR_VALUES = {LOCAL: '', PRODUCTION: 'True'}
-MAX_MIGRATION_COUNT = 3
+MAX_MIGRATION_COUNT = 2
 
 APPS_WITH_MIGRATIONS = (
     # 'account',  # affected by social_django
@@ -79,6 +79,7 @@ APPS_WITH_MIGRATIONS = (
     'markup',
     'occurrences',
     'places',
+    'postulations',
     'quotes',
     'search',
     'sources',

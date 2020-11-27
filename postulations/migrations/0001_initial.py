@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                         ('text', modularhistory.fields.HTMLField(processor=modularhistory.fields.html_field.process, unique=True)),
                         ('elaboration', modularhistory.fields.HTMLField(blank=True, null=True, processor=modularhistory.fields.html_field.process)),
-                        ('related_entities', models.ManyToManyField(related_name='facts', through='facts.EntityFactRelation', to='entities.Entity')),
+                        ('related_entities', models.ManyToManyField(related_name='facts', through='postulations.EntityFactRelation', to='entities.Entity')),
                     ],
                     options={
                         'abstract': False,
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                     name='TopicFactRelation',
                     fields=[
                         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_topic_relations', to='facts.fact')),
+                        ('fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_topic_relations', to='postulations.fact')),
                         ('topic', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='topic_fact_relations', to='topics.topic')),
                     ],
                     options={
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
                     name='OccurrenceFactRelation',
                     fields=[
                         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_occurrence_relations', to='facts.fact')),
+                        ('fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_occurrence_relations', to='postulations.fact')),
                         ('occurrence', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='occurrence_fact_relations', to='occurrences.occurrence')),
                     ],
                     options={
@@ -65,8 +65,8 @@ class Migration(migrations.Migration):
                     name='FactSupport',
                     fields=[
                         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('supported_fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supported_fact_supports', to='facts.fact')),
-                        ('supportive_fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supportive_fact_supports', to='facts.fact')),
+                        ('supported_fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supported_fact_supports', to='postulations.fact')),
+                        ('supportive_fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supportive_fact_supports', to='postulations.fact')),
                     ],
                     options={
                         'unique_together': {('supported_fact', 'supportive_fact')},
@@ -75,22 +75,22 @@ class Migration(migrations.Migration):
                 migrations.AddField(
                     model_name='fact',
                     name='related_occurrences',
-                    field=models.ManyToManyField(related_name='facts', through='facts.OccurrenceFactRelation', to='occurrences.Occurrence'),
+                    field=models.ManyToManyField(related_name='facts', through='postulations.OccurrenceFactRelation', to='occurrences.Occurrence'),
                 ),
                 migrations.AddField(
                     model_name='fact',
                     name='related_topics',
-                    field=models.ManyToManyField(related_name='facts', through='facts.TopicFactRelation', to='topics.Topic'),
+                    field=models.ManyToManyField(related_name='facts', through='postulations.TopicFactRelation', to='topics.Topic'),
                 ),
                 migrations.AddField(
                     model_name='fact',
                     name='supportive_facts',
-                    field=models.ManyToManyField(related_name='supported_facts', through='facts.FactSupport', to='facts.Fact'),
+                    field=models.ManyToManyField(related_name='supported_facts', through='postulations.FactSupport', to='postulations.Fact'),
                 ),
                 migrations.AddField(
                     model_name='entityfactrelation',
                     name='fact',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_entity_relations', to='facts.fact'),
+                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_entity_relations', to='postulations.fact'),
                 ),
                 migrations.AlterUniqueTogether(
                     name='entityfactrelation',

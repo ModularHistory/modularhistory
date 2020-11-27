@@ -1,0 +1,19 @@
+{% extends "_card.html" %}
+{% load get_detail_url %}
+
+{% block edit %}
+    {% with object=postulation request=request %}
+        {{block.super}}
+    {% endwith %}
+{% endblock %}
+
+{% block detail_url %}{{ postulation|get_detail_url }}{% endblock %}
+
+{% block body %}
+    <h4 class="card-title">
+        <a href="/postulations/{{ postulation.pk }}/">{{ postulation.summary }}</a>
+    </h4>
+    <p class="card-text">
+        {{ postulation.elaboration }}
+    </p>
+{% endblock %}

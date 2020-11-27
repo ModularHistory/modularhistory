@@ -145,6 +145,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.forms',
+    'django_rename_app',  # TODO: remove
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
@@ -175,9 +176,9 @@ INSTALLED_APPS = [
     'chat.apps.ChatConfig',
     'dates.apps.DatesConfig',
     'entities.apps.EntitiesConfig',
-    'facts.apps.FactsConfig',
     'home.apps.HomeConfig',
     'markup.apps.MarkupConfig',
+    'postulations.apps.PostulationsConfig',
     'search.apps.SearchConfig',
     'images.apps.ImagesConfig',
     'occurrences.apps.OccurrencesConfig',

@@ -47,8 +47,8 @@ urlpatterns = [
     # Entities
     path('entities/', include('entities.urls', namespace='entities')),
     # Postulations
-    path('facts/', include(('facts.urls', 'facts'), namespace='facts')),
-    path('postulations/', include(('facts.urls', 'facts'), namespace='postulations')),
+    path('facts/', include('postulations.urls', namespace='facts')),
+    path('postulations/', include('postulations.urls', namespace='postulations')),
     # Images
     path('images/', include('images.urls', namespace='images')),
     # Occurrences

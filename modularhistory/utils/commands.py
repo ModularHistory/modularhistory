@@ -98,7 +98,7 @@ def migrate(
         context.run('python manage.py dbbackup')
     print('Running migrations...')
     with transaction.atomic():
-        call_command('migrate', *args)
+        context.run(f'python manage.py migrate {" ".join(args)}')
     print()
     context.run('python manage.py showmigrations')
     print()
@@ -228,9 +228,15 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
 
     # Make sure models fit the current db schema
     context.run('python manage.py makemigrations')
+    if input('Run db migrations? [Y/n] ') != NEGATIVE:
+        for environment, _prod_db_env_var_value in prod_db_env_var_values:
+            migrate(context, environment=environment, noninteractive=True)
+
+    # Clear the migrations history for each app
+    context.run('')
+    for pyc in iglob('**/migrations/*.pyc'):
+        os.remove(pyc)
     for environment, _prod_db_env_var_value in prod_db_env_var_values:
-        migrate(context, environment=environment, noninteractive=True)
-        # Clear the migrations history for each app
         clear_migration_history(context, environment=environment)
     escape_prod_db()
 

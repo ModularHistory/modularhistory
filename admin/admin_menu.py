@@ -18,7 +18,7 @@ APPS_TO_INCLUDE = (
     'entities',
     'quotes',
     'occurrences',
-    'facts',
+    'postulations',
     'topics',
     'images',
     'places',

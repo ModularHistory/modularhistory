@@ -1,16 +1,12 @@
-"""Model classes for facts."""
+"""Model classes for postulations."""
 
 import logging
 import re
+from typing import Optional
 
 from django.db.models import ManyToManyField
 from django.urls import reverse
 
-from facts.models.fact_relation import (
-    EntityFactRelation,
-    OccurrenceFactRelation,
-    TopicFactRelation,
-)
 from modularhistory.fields import HTMLField
 from modularhistory.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
@@ -19,11 +15,16 @@ from modularhistory.fields.html_field import (
 )
 from modularhistory.utils.html import escape_quotes
 from modularhistory.utils.string import dedupe_newlines, truncate
+from postulations.models.fact_relation import (
+    EntityFactRelation,
+    OccurrenceFactRelation,
+    TopicFactRelation,
+)
 from topics.serializers import FactSerializer
 from verification.models import VerifiableModel
 
 fact_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
-    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>fact)'
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>(?:fact|postulation))'
 )
 logging.debug(f'Fact placeholder pattern: {fact_placeholder_regex}')
 
@@ -44,18 +45,18 @@ class Postulation(VerifiableModel):
     elaboration = HTMLField(null=True, blank=True, paragraphed=True)
     supportive_facts = ManyToManyField(
         'self',
-        through='facts.PostulationSupport',
-        related_name='supported_facts',
+        through='postulations.PostulationSupport',
+        related_name='supported_postulations',
         symmetrical=False,
     )
     related_entities = ManyToManyField(
-        'entities.Entity', through=EntityFactRelation, related_name='facts'
+        'entities.Entity', through=EntityFactRelation, related_name='postulations'
     )
     related_topics = ManyToManyField(
-        'topics.Topic', through=TopicFactRelation, related_name='facts'
+        'topics.Topic', through=TopicFactRelation, related_name='postulations'
     )
     related_occurrences = ManyToManyField(
-        'occurrences.Occurrence', through=OccurrenceFactRelation, related_name='facts'
+        'occurrences.Occurrence', through=OccurrenceFactRelation, related_name='postulations'
     )
 
     searchable_fields = ['summary', 'elaboration']
@@ -73,13 +74,13 @@ class Postulation(VerifiableModel):
         elaboration = elaboration.replace('\n', '')
         if add_elaboration_tooltip:
             summary_link = (
-                f'<a href="{reverse("facts:detail", args=[self.pk])}" class="fact-link" '
+                f'<a href="{reverse("postulations:detail", args=[self.pk])}" class="fact-link" '
                 f'target="_blank" title="{escape_quotes(elaboration)}" '
                 f'data-toggle="tooltip" data-html="true">{self.summary.html}</a>'
             )
         else:
             summary_link = (
-                f'<a href="{reverse("facts:detail", args=[self.pk])}" class="fact-link" '
+                f'<a href="{reverse("postulations:detail", args=[self.pk])}" class="fact-link" '
                 f'target="_blank">{self.summary.html}</a>'
             )
         return summary_link
@@ -105,8 +106,10 @@ class Postulation(VerifiableModel):
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
         logging.debug(f'Looking at {truncate(placeholder)}')
-        extant_html = match.group(PlaceholderGroups.HTML).strip()
+        extant_html: Optional[str] = match.group(PlaceholderGroups.HTML)
+        extant_html = extant_html.strip() if extant_html else extant_html
         if extant_html:
+
             if '<a ' not in extant_html:
                 html = cls.get_object_html(match)
                 html = re.sub(

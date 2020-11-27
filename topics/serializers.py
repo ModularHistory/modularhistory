@@ -16,8 +16,8 @@ class TopicSerializer(ModelSerializer):
 
 
 class FactSerializer(ModelSerializer):
-    """Serializer for facts."""
+    """Serializer for postulations."""
 
     def get_model(self, instance) -> str:  # noqa
-        """Return the model name of serialized facts."""
+        """Return the model name of serialized postulations."""
         return 'topics.fact'
