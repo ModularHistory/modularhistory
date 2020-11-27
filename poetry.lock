@@ -796,6 +796,17 @@ rollbar = ["django-q-rollbar (>=0.1)"]
 sentry = ["django-q-sentry (>=0.1)"]
 
 [[package]]
+name = "django-rename-app"
+version = "0.1.2"
+description = "A Django Management Command to rename existing Django Applications."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+django = "*"
+
+[[package]]
 name = "django-replicated"
 version = "2.7"
 description = "Django DB router for stateful master-slave replication"
@@ -3443,7 +3454,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "a3216d669609b73eb1348f524c0b31431bd95811de922e8900a9f3cab7b7bfa8"
+content-hash = "bc69bb5023254221dbe12f95b6acc013a2b628eae53fe25a0241fb2546291cc1"
 
 [metadata.files]
 aenum = [
@@ -3841,6 +3852,10 @@ django-pymemcache = [
 django-q = [
     {file = "django-q-1.3.4.tar.gz", hash = "sha256:523d54dcf1b66152c1b658f914f00ed3b518a3432a9decd4898738ca8dbbe10f"},
     {file = "django_q-1.3.4-py3-none-any.whl", hash = "sha256:7e5c5c021a15cff6807044a3aa48f5757789ccfef839d71c575f5512931a3e33"},
+]
+django-rename-app = [
+    {file = "django_rename_app-0.1.2-py2.py3-none-any.whl", hash = "sha256:47e9954cdb26ac1b2b0c951e9d630cd8d79b733bb7713e0d137a8a969af31e5a"},
+    {file = "django_rename_app-0.1.2.tar.gz", hash = "sha256:d59990f11e0e5c73fff62122daf4dbd52185dc1e050e3b41fd7954f579fca056"},
 ]
 django-replicated = [
     {file = "django_replicated-2.7.tar.gz", hash = "sha256:9f983343b707aaaed7ccc664dde5f16a7c56f896ff08b3087e8d9b45a9f77e7c"},
