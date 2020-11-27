@@ -170,7 +170,6 @@ def remove_migrations_from_app(
     else:
         context.run(f'mkdir {squashed_migrations_path}')
         # Move the migration files to the squashed_migrations directory
-        print('Files to remove:')
         context.run(
             f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
             f'-exec echo "{BASH_PLACEHOLDER}" \;'  # noqa: W605
@@ -183,8 +182,9 @@ def remove_migrations_from_app(
         print(command)
         context.run(command)
         if not glob(relativize(f'{join(app, SQUASHED_MIGRATIONS_DIRNAME)}/*.py')):
-            raise Exception(
-                f'Could not move migration files to {SQUASHED_MIGRATIONS_DIRNAME} dir.'
+            print(
+                'ERROR: Could not move migration files '
+                f'to {SQUASHED_MIGRATIONS_DIRNAME}'
             )
     command = (
         f'find {relativize(app)} -path "migrations/*.pyc" '

@@ -422,7 +422,7 @@ if [[ "${USE_PROD_DB}" != 'True' ]]; then
   fi
   if [[ "$run_migrations" == "y" ]]; then
     echo "Running database migrations..."
-    python manage.py migrate
+    # python manage.py migrate
     echo ""
   fi
 fi

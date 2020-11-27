@@ -24,7 +24,7 @@ from topics.serializers import FactSerializer
 from verification.models import VerifiableModel
 
 fact_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
-    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>(?:fact|postulation))'
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>postulation)'
 )
 logging.debug(f'Fact placeholder pattern: {fact_placeholder_regex}')
 
