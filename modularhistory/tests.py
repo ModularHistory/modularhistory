@@ -1,10 +1,8 @@
 """Tests for the whole ModularHistory application."""
 
 import pytest
-from django.urls import reverse
 
 from modularhistory.constants.misc import ResponseCodes
-
 
 # def test_app_inclusion():
 #     """Test that the entities page loads successfully."""

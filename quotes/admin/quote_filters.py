@@ -11,9 +11,8 @@ from admin.list_filters.autocomplete_filter import (
     BaseAutocompleteFilter,
     ManyToManyAutocompleteFilter,
 )
-from entities.models import Category, Entity
-
 from entities.admin.admin_filters import EntityAutocompleteFilter
+from entities.models import Category, Entity
 
 
 class AttributeeFilter(EntityAutocompleteFilter):

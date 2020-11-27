@@ -1,14 +1,15 @@
 """List filters for the entities admin."""
 
+from django.urls import reverse
+
 from admin.list_filters import (
     AutocompleteFilter,
     BooleanListFilter,
-    TypeFilter,
     ManyToManyAutocompleteFilter,
+    TypeFilter,
 )
 from entities.models.entity import Entity
 from modularhistory.constants.strings import NO, YES
-from django.urls import reverse
 
 
 class CategoriesFilter(AutocompleteFilter):
