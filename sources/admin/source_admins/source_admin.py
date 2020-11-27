@@ -4,7 +4,7 @@ from typing import Dict, Optional
 from django.forms import ModelForm
 
 from admin import TabularInline, admin_site
-from admin.searchable_model_admin import SearchableModelAdmin
+from search.admin import SearchableModelAdmin
 from sources import models
 from sources.admin.filters import (
     AttributeeFilter,

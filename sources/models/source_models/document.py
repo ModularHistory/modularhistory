@@ -8,7 +8,8 @@ from django.utils.safestring import SafeString
 from modularhistory.fields import ExtraField
 from modularhistory.models import ModelWithComputations, retrieve_or_compute
 from modularhistory.utils.html import soupify
-from sources.models.piece import SourceWithPageNumbers
+
+from .piece import SourceWithPageNumbers
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400

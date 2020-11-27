@@ -8,11 +8,11 @@ from django.db.models import BooleanField, UUIDField
 
 from modularhistory.models.model import ModelSerializer
 from modularhistory.models.model_with_computations import ModelWithComputations
-from modularhistory.models.taggable_model import TaggableModel
+from topics.models.taggable_model import TaggableModel
 from verification.models import VerifiableModel
 
 if TYPE_CHECKING:
-    from modularhistory.models.manager import SearchableModelManager
+    from search.models.manager import SearchableModelManager
 
 
 class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):

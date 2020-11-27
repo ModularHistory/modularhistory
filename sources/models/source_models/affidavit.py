@@ -3,7 +3,8 @@
 from django.core.exceptions import ValidationError
 
 from modularhistory.fields import ExtraField
-from sources.models.document import DocumentSource
+
+from .document import DocumentSource
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400

@@ -1,8 +1,6 @@
 """Admin classes for occurrences."""
 
 from admin import ModelAdmin, admin_site
-from admin.searchable_model_admin import SearchableModelAdmin
-from modularhistory.models.taggable_model import TopicFilter
 from occurrences import models
 from occurrences.admin.occurrence_filters import (
     EntityFilter,
@@ -17,9 +15,11 @@ from occurrences.admin.occurrence_inlines import (
     OccurrencesInline,
 )
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
+from search.admin import SearchableModelAdmin
 from sources.admin import CitationsInline
 from sources.admin.filters import HasMultipleCitationsFilter, HasSourceFilter
 from topics.admin import RelatedTopicsInline
+from topics.models.taggable_model import TopicFilter
 
 
 class OccurrenceAdmin(SearchableModelAdmin):
@@ -56,6 +56,9 @@ class OccurrenceAdmin(SearchableModelAdmin):
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields
     search_fields = models.Occurrence.searchable_fields
+
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
+    date_hierarchy = 'date'
 
 
 class OccurrenceChainAdmin(ModelAdmin):

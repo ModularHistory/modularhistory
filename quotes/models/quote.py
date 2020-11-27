@@ -10,6 +10,8 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 
+from entities.models.model_with_related_entities import ModelWithRelatedEntities
+from images.models.model_with_images import ModelWithImages
 from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import HistoricDateTimeField, HTMLField
@@ -18,18 +20,14 @@ from modularhistory.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from modularhistory.models import (
-    ModelWithImages,
-    ModelWithRelatedEntities,
-    ModelWithRelatedQuotes,
-    ModelWithSources,
-    SearchableDatedModel,
-    retrieve_or_compute,
-)
+from modularhistory.models import retrieve_or_compute
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
+from quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from quotes.models.quote_image import QuoteImage
 from quotes.serializers import QuoteSerializer
+from search.models import SearchableDatedModel
+from sources.models.model_with_sources import ModelWithSources
 
 if TYPE_CHECKING:
     from entities.models import Entity
@@ -200,7 +198,7 @@ class Quote(
             f'</blockquote>'
         )
         components = [
-            f'<div class="quote-context">{self.pretext.html}</div>'
+            f'<p class="quote-context">{self.pretext.html}</p>'
             if self.pretext
             else EMPTY_STRING,
             blockquote,

@@ -2,11 +2,8 @@ from typing import List, Optional
 
 from django.db.models import Prefetch, Q
 
-from modularhistory.models.manager import (
-    SearchableModelManager,
-    SearchableModelQuerySet,
-)
 from occurrences.models.occurrence_image import OccurrenceImage
+from search.models.manager import SearchableModelManager, SearchableModelQuerySet
 
 
 class OccurrenceManager(SearchableModelManager):

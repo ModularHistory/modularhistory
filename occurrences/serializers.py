@@ -6,7 +6,7 @@
 
 import serpy
 
-from modularhistory.models.searchable_model import SearchableModelSerializer
+from search.models.searchable_model import SearchableModelSerializer
 
 
 class OccurrenceSerializer(SearchableModelSerializer):

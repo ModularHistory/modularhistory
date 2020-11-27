@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 
-from modularhistory.models import TaggableModel
+from topics.models.taggable_model import TaggableModel
 
 if TYPE_CHECKING:
     pass

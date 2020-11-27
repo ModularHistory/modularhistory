@@ -1,7 +1,8 @@
 from typing import Optional
 
 from modularhistory.fields import ExtraField
-from sources.models.textual_source import TextualSource
+
+from .textual_source import TextualSource
 
 TYPE_MAX_LENGTH: int = 10
 

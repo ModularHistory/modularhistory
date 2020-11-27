@@ -1,6 +1,6 @@
 """Model classes for journals (as sources)."""
 
-from sources.models.piece import SourceWithPageNumbers
+from .piece import SourceWithPageNumbers
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400

@@ -1,7 +1,8 @@
 """Model classes for interviews."""
 
 from modularhistory.fields import ExtraField
-from sources.models.spoken_source import SpokenSource
+
+from .spoken_source import SpokenSource
 
 INTERVIEWERS_MAX_LENGTH: int = 200
 

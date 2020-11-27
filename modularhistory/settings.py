@@ -173,6 +173,7 @@ INSTALLED_APPS = [
     'webpack_loader',  #
     'account.apps.AccountConfig',
     'chat.apps.ChatConfig',
+    'dates.apps.DatesConfig',
     'entities.apps.EntitiesConfig',
     'facts.apps.FactsConfig',
     'home.apps.HomeConfig',

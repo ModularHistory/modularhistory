@@ -5,12 +5,7 @@ from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from gm2m import GM2MField as GenericManyToManyField
 
 from modularhistory.fields import ArrayField, HTMLField
-from modularhistory.models import (
-    Model,
-    ModelWithComputations,
-    ModelWithRelatedQuotes,
-    retrieve_or_compute,
-)
+from modularhistory.models import Model, ModelWithComputations, retrieve_or_compute
 from topics.models.topic_relations import TopicRelation
 
 KEY_MAX_LENGTH: int = 25
@@ -53,7 +48,7 @@ class TopicParentChildRelation(Model):
         return f'{self.parent_topic} > {self.child_topic}'
 
 
-class Topic(ModelWithRelatedQuotes, ModelWithComputations):
+class Topic(ModelWithComputations):
     """A topic."""
 
     key = models.CharField(max_length=KEY_MAX_LENGTH, unique=True)

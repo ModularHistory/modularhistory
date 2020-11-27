@@ -2,18 +2,18 @@
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import CASCADE, ForeignKey
 
-from entities.models import Entity
 from modularhistory.models import Model
 
 
 class QuoteAttribution(Model):
     """An attribution of a quote to an entity."""
 
-    quote = ForeignKey('quotes.Quote', related_name='attributions', on_delete=CASCADE)
-    attributee = ForeignKey(
-        Entity, related_name='quote_attributions', on_delete=CASCADE
+    quote = models.ForeignKey(
+        'quotes.Quote', related_name='attributions', on_delete=models.CASCADE
+    )
+    attributee = models.ForeignKey(
+        'entities.Entity', related_name='quote_attributions', on_delete=models.CASCADE
     )
     position = models.PositiveSmallIntegerField(default=0, blank=True)
 

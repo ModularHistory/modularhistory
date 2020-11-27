@@ -1,15 +1,15 @@
 from django import template
-
+from django.urls import reverse
 from modularhistory.models import Model
+from typing import Dict, Union
 
 register = template.Library()
 
 
 @register.filter()
-def get_admin_url(model_instance: Model) -> str:
+def get_admin_url(model_instance: Union[Dict, Model]) -> str:
     """Return the URL of the model instance's admin page."""
-    if not isinstance(model_instance, Model):
-        raise ValueError(
-            f'{model_instance} (of type "{type(model_instance)}") is not a model instance.'
-        )
+    if isinstance(model_instance, dict):
+        app, model = model_instance['model'].split('.')
+        return reverse(f'admin:{app}_{model}_change', args=[model_instance['pk']])
     return model_instance.get_admin_url()

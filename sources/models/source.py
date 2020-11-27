@@ -11,17 +11,16 @@ from django.utils.safestring import SafeString
 from gm2m import GM2MField as GenericManyToManyField
 from typedmodels.models import TypedModel
 
+from entities.models.model_with_related_entities import ModelWithRelatedEntities
 from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
-from modularhistory.models import (
-    ModelWithRelatedEntities,
-    SearchableDatedModel,
-    retrieve_or_compute,
-)
+from modularhistory.models import retrieve_or_compute
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from modularhistory.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from modularhistory.utils.string import fix_comma_positions
+from search.models import SearchableDatedModel
 from sources.manager import SourceManager
 from sources.models.source_file import SourceFile
+from sources.serializers import SourceSerializer
 
 if TYPE_CHECKING:
     from entities.models import Entity
@@ -131,6 +130,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     objects: SourceManager = SourceManager()
     searchable_fields = [FieldNames.string, FieldNames.description]
+    serializer = SourceSerializer
     extra_field_schema: Dict[str, str] = {}
     inapplicable_fields: List[str] = []
 
@@ -201,7 +201,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
                             entity.name, entity.name_html
                         )
             else:
-                logging.info(f'Returning uncomputed creator string: {attributee_html}')
+                logging.info(f'Returning preset creator string: {attributee_html}')
             return format_html(attributee_html)
         elif not has_attributees:
             return None

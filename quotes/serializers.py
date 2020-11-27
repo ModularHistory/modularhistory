@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import serpy
 
-from modularhistory.models.searchable_model import SearchableModelSerializer
+from search.models.searchable_model import SearchableModelSerializer
 
 if TYPE_CHECKING:
     from quotes.models import Quote

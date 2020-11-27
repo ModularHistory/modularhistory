@@ -8,19 +8,15 @@ from django.db.models import QuerySet
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 
+from entities.models.model_with_related_entities import ModelWithRelatedEntities
 from entities.serializers import EntitySerializer
+from images.models.model_with_images import ModelWithImages
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ArrayField, HistoricDateTimeField, HTMLField
-from modularhistory.models import (
-    ModelWithComputations,
-    ModelWithImages,
-    ModelWithRelatedEntities,
-    ModelWithRelatedQuotes,
-    TaggableModel,
-    TypedModel,
-    retrieve_or_compute,
-)
+from modularhistory.models import ModelWithComputations, TypedModel, retrieve_or_compute
 from modularhistory.structures import HistoricDateTime as DateTime
+from quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
+from topics.models.taggable_model import TaggableModel
 
 if TYPE_CHECKING:
     from entities.models import Categorization

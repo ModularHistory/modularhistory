@@ -1,12 +1,12 @@
 from django.db import models
 
 from modularhistory.fields import HTMLField
-from modularhistory.models import DatedModel, SearchableModel
+from search.models.searchable_dated_model import SearchableDatedModel
 
 PROVIDER_MAX_LENGTH: int = 200
 
 
-class MediaModel(DatedModel, SearchableModel):
+class MediaModel(SearchableDatedModel):
     """Abstract base model for media models (e.g., images and videos)."""
 
     caption = HTMLField(null=True, blank=True)
@@ -22,7 +22,7 @@ class MediaModel(DatedModel, SearchableModel):
 
         abstract = True
 
-    class FieldNames(SearchableModel.FieldNames):
+    class FieldNames(SearchableDatedModel.FieldNames):
         description = 'description'
         caption = 'caption'
         provider = 'provider'

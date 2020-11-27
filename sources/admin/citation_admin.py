@@ -8,7 +8,7 @@ from admin import GenericTabularInline, ModelAdmin, TabularInline, admin_site
 from sources import models
 
 if TYPE_CHECKING:
-    from modularhistory.models import ModelWithSources
+    from sources.models import ModelWithSources
 
 
 class ContentTypeFilter(SimpleListFilter):

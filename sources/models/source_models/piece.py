@@ -1,4 +1,4 @@
-from sources.models.source_with_page_numbers import SourceWithPageNumbers
+from .source_with_page_numbers import SourceWithPageNumbers
 
 TYPE_MAX_LENGTH: int = 10
 

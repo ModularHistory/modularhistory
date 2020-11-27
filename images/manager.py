@@ -2,10 +2,7 @@ from typing import List, Optional
 
 from django.db.models import Q
 
-from modularhistory.models.manager import (
-    SearchableModelManager,
-    SearchableModelQuerySet,
-)
+from search.models.manager import SearchableModelManager, SearchableModelQuerySet
 
 
 class ImageManager(SearchableModelManager):

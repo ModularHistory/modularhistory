@@ -7,18 +7,16 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from images.models import Image
+from images.models.model_with_images import ModelWithImages
 from modularhistory.fields import HistoricDateTimeField, HTMLField
-from modularhistory.models import (
-    ModelWithImages,
-    ModelWithRelatedQuotes,
-    ModelWithSources,
-    SearchableDatedModel,
-)
 from modularhistory.utils.html import soupify
 from occurrences.manager import OccurrenceManager
 from occurrences.models.occurrence_image import OccurrenceImage
 from occurrences.serializers import OccurrenceSerializer
 from quotes.models import quote_sorter_key
+from quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
+from search.models import SearchableDatedModel
+from sources.models.model_with_sources import ModelWithSources
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager

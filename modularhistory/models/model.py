@@ -188,7 +188,11 @@ class Model(DjangoModel):
 
     def serialize(self) -> Dict:
         """Return the serialized model instance (dictionary)."""
-        serialized_instance = self.serializer(self).data
+        try:
+            serialized_instance = self.serializer(self).data
+        except AttributeError as err:
+            logging.error(f'{err}')
+            serialized_instance = ModelSerializer(self).data
         logging.debug(
             f'Serialized {self.__class__.__name__.lower()}:\n'
             f'{pformat(serialized_instance)}'

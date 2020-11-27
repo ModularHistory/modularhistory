@@ -20,11 +20,12 @@ from modularhistory.constants.misc import (
     QUOTE_CT_ID,
     SOURCE_CT_ID,
 )
-from modularhistory.models import Model, SearchableDatedModel
+from modularhistory.models import Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from occurrences.models import Occurrence
 from quotes.models import Quote
 from search.forms import SearchForm
+from search.models import SearchableDatedModel
 from sources.models import Source
 from topics.models import Topic
 
@@ -182,7 +183,7 @@ def _google_dict_api(word: str) -> Dict:
         }
     ]
     """
-    host = f'api.dictionaryapi.dev'
+    host = 'api.dictionaryapi.dev'
     request_url = f'/api/v2/entries/en/{word}'
     connection = client.HTTPSConnection(host)
     connection.request('GET', request_url)

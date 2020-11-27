@@ -1,6 +1,6 @@
 from typing import Optional
 
-from django.db.models import BooleanField
+from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
@@ -16,7 +16,7 @@ CIRCA_PREFIX = 'c. '
 class DatedModel(Model):
     """A model with a date (e.g., a quote or occurrence)."""
 
-    date_is_circa = BooleanField(blank=True, default=False)
+    date_is_circa = models.BooleanField(blank=True, default=False)
     date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
@@ -33,7 +33,7 @@ class DatedModel(Model):
         date_html = self.date_html
         return soupify(date_html).get_text() if date_html else ''
 
-    date_string.admin_order_field = 'date'
+    date_string.admin_order_field = 'date'  # type: ignore
     date_string = property(date_string)  # type: ignore
 
     @property  # type: ignore

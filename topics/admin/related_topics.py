@@ -7,7 +7,7 @@ from modularhistory.constants.strings import NO, YES
 from topics.models import TopicRelation
 
 if TYPE_CHECKING:
-    from modularhistory.models import TaggableModel
+    from topics.models.taggable_model import TaggableModel
 
 
 class RelatedTopicsInline(GenericTabularInline):

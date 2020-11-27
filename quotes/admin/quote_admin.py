@@ -3,8 +3,6 @@
 from django.db.models.query import QuerySet
 
 from admin import admin_site
-from admin.searchable_model_admin import SearchableModelAdmin
-from modularhistory.models.taggable_model import TopicFilter
 from quotes import models
 from quotes.admin.quote_filters import (
     AttributeeCategoryFilter,
@@ -13,12 +11,14 @@ from quotes.admin.quote_filters import (
 )
 from quotes.admin.quote_inlines import AttributeesInline, BitesInline
 from quotes.admin.related_quotes_inline import RelatedQuotesInline
+from search.admin import SearchableModelAdmin
 from sources.admin.citation_admin import CitationsInline
 from sources.admin.filters.simple_filters import (
     HasMultipleCitationsFilter,
     HasSourceFilter,
 )
 from topics.admin import HasTagsFilter, RelatedTopicsInline
+from topics.models.taggable_model import TopicFilter
 
 
 class QuoteAdmin(SearchableModelAdmin):

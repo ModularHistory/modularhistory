@@ -11,7 +11,8 @@ from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ExtraField
 from modularhistory.models import retrieve_or_compute
 from modularhistory.utils.html import soupify
-from sources.models.textual_source import TextualSource
+
+from .textual_source import TextualSource
 
 JSON_FIELD_NAME = 'extra'
 
