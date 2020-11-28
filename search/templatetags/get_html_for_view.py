@@ -42,7 +42,8 @@ def get_html_for_view(
     template = loader.get_template(template_name)
     try:
         response = template.render(context)
-    except ValueError:
+    except Exception as err:
+        logging.error(f'ERROR: {type(err)}: {err}')
         template_directory_name = inflect.engine().plural(model_name)
         template_name = f'{template_directory_name}/_{view_name}.html'
         logging.debug(f'Rendering {template_name} for {model_instance}...')
