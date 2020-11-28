@@ -24,9 +24,29 @@ class PageRange(Model):
         """Return the page range's string representation."""
         return soupify(self.html).get_text()
 
+    def clean(self):
+        """TODO: add docstring."""
+        if self.end_page_number and self.end_page_number < self.page_number:
+            raise ValidationError(
+                'The end page number must be greater than the start page number.'
+            )
+
     @property
     def html(self) -> Optional[SafeString]:
         """Return the page range's HTML representation."""
+        html = self.unprefixed_html
+        if html:
+            end_pn = self.end_page_number or None
+            if end_pn:
+                html = f'pp. {html}'
+            else:
+                html = f'p. {html}'
+            return format_html(html)
+        return None
+
+    @property
+    def unprefixed_html(self) -> Optional[str]:
+        """Return the page range's HTML, without any "p." prefix."""
         citation = self.citation
         if not self.page_number:
             return None
@@ -38,14 +58,7 @@ class PageRange(Model):
             end_pn_html = citation.get_page_number_link(end_pn, end_pn_url) or str(
                 end_pn
             )
-            pn_html = f'pp. {pn_html}–{end_pn_html}'
+            pn_html = f'{pn_html}–{end_pn_html}'
         else:
-            pn_html = f'p. {pn_html}'
-        return format_html(pn_html)
-
-    def clean(self):
-        """TODO: add docstring."""
-        if self.end_page_number and self.end_page_number < self.page_number:
-            raise ValidationError(
-                'The end page number must be greater than the start page number.'
-            )
+            pn_html = f'{pn_html}'
+        return pn_html

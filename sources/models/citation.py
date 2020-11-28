@@ -109,7 +109,6 @@ class Citation(ModelWithComputations):
 
     # TODO: refactor
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the citation's HTML representation."""
         html = f'{self.source.html}'
@@ -185,10 +184,19 @@ class Citation(ModelWithComputations):
     @property
     def page_number_html(self) -> Optional[str]:
         """Return the HTML representation of the citation's page numbers."""
-        page_number_strings = [page_range.html for page_range in self.pages.all()]
-        if page_number_strings:
-            return format_html(', '.join(page_number_strings))
-        return None
+        html = None
+        page_number_strings = [
+            page_range.unprefixed_html for page_range in self.pages.all().iterator()
+        ]
+        n_strings = len(page_number_strings)
+        if n_strings > 1:
+            html = f'pp. {", ".join(page_number_strings)}'
+        elif n_strings:
+            if re.search(r'(?:–|&ndash;)', page_number_strings[0]):
+                html = f'pp. {", ".join(page_number_strings)}'
+            else:
+                html = f'p. {", ".join(page_number_strings)}'
+        return html
 
     @property
     def source_file_page_number(self) -> Optional[int]:
