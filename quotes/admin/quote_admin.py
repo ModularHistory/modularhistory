@@ -34,6 +34,7 @@ class QuoteAdmin(SearchableModelAdmin):
         'date_string',
         'citation_html',
         'tags_string',
+        'slug',
     ]
     list_filter = [
         'verified',

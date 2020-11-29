@@ -66,6 +66,7 @@ class SourceAdmin(SearchableModelAdmin):
         'date_string',
         model.FieldNames.location,
         'admin_source_link',
+        'slug',
         'type',
     ]
     list_filter = [

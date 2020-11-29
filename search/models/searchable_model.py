@@ -54,12 +54,6 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
     objects: 'SearchableModelManager'
     slug_base_field: str = 'key'
 
-    def __init__(self, *args, **kwargs):
-        """Construct the model instance."""
-        super().__init__(*args, **kwargs)
-        if not self.slug:
-            self.slug = self.get_slug()
-
     def clean(self):
         """Prepare the model instance to be saved."""
         super().clean()

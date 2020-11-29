@@ -41,6 +41,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
         'summary',
         'detail_link',
         'date_string',
+        'slug',
     ]
     list_filter = [
         'verified',
