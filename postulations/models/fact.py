@@ -4,9 +4,9 @@ import logging
 import re
 from typing import Optional
 
-from django.db.models import ManyToManyField
+from django.db import models
 from django.urls import reverse
-
+from django.utils.translation import ugettext_lazy as _
 from modularhistory.fields import HTMLField
 from modularhistory.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
@@ -15,13 +15,8 @@ from modularhistory.fields.html_field import (
 )
 from modularhistory.utils.html import escape_quotes
 from modularhistory.utils.string import dedupe_newlines, truncate
-from postulations.models.fact_relation import (
-    EntityFactRelation,
-    OccurrenceFactRelation,
-    TopicFactRelation,
-)
 from topics.serializers import FactSerializer
-from verification.models import VerifiableModel
+from verifications.models import VerifiableModel
 
 fact_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>postulation)'
@@ -43,20 +38,29 @@ class Postulation(VerifiableModel):
 
     summary = HTMLField(unique=True, paragraphed=False)
     elaboration = HTMLField(null=True, blank=True, paragraphed=True)
-    supportive_facts = ManyToManyField(
+    certainty = models.PositiveSmallIntegerField(
+        _("certainty"), choices=DEGREES_OF_CERTAINTY
+    )
+    supportive_facts = models.ManyToManyField(
         'self',
         through='postulations.PostulationSupport',
         related_name='supported_postulations',
         symmetrical=False,
     )
-    related_entities = ManyToManyField(
-        'entities.Entity', through=EntityFactRelation, related_name='postulations'
+    related_entities = models.ManyToManyField(
+        'entities.Entity',
+        through='postulations.EntityFactRelation',
+        related_name='postulations',
     )
-    related_topics = ManyToManyField(
-        'topics.Topic', through=TopicFactRelation, related_name='postulations'
+    related_topics = models.ManyToManyField(
+        'topics.Topic',
+        through='postulations.TopicFactRelation',
+        related_name='postulations',
     )
-    related_occurrences = ManyToManyField(
-        'occurrences.Occurrence', through=OccurrenceFactRelation, related_name='postulations'
+    related_occurrences = models.ManyToManyField(
+        'occurrences.Occurrence',
+        through='postulations.OccurrenceFactRelation',
+        related_name='postulations',
     )
 
     searchable_fields = ['summary', 'elaboration']

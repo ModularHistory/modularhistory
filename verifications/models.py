@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from interactions.models import ContentInteraction
 from modularhistory.models.model import Model
 
 
@@ -11,7 +12,7 @@ class VerifiableModel(Model):
 
     verified = models.BooleanField(_('verified'), default=False)
 
-    verifications = GenericRelation('verification.Verification')
+    verifications = GenericRelation('verifications.Verification')
 
     class Meta:
         """
@@ -23,7 +24,7 @@ class VerifiableModel(Model):
         abstract = True
 
 
-class Verification(Model):
+class Verification(ContentInteraction):
     """A verification of the veracity of a verifiable model instance's content."""
 
     verifier = models.ForeignKey(

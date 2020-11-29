@@ -10,7 +10,7 @@ from account.models import User
 from modularhistory.models import Model
 
 
-class GenericContentInteraction(Model):
+class ContentInteraction(Model):
     """Abstract base model for content interactions."""
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -19,6 +19,14 @@ class GenericContentInteraction(Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        abstract = True
+
+
+class FieldContentInteraction(ContentInteraction):
+    """Abstract base model for field content interactions."""
+
     attribute_name = models.CharField(
         max_length=20,
         help_text='The name of the attribute that maps to the interacted content',
@@ -28,7 +36,7 @@ class GenericContentInteraction(Model):
         abstract = True
 
 
-class Edit(GenericContentInteraction):
+class Edit(FieldContentInteraction):
     """An edit of some content."""
 
     user = models.ForeignKey(User, related_name='edits', on_delete=models.CASCADE)
@@ -44,7 +52,7 @@ class Edit(GenericContentInteraction):
         )
 
 
-class Comment(GenericContentInteraction):
+class Comment(FieldContentInteraction):
     """A comment regarding some content."""
 
     user = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
@@ -59,7 +67,7 @@ class Comment(GenericContentInteraction):
         return f'{self.user}, {self.created_at}: {self.text}'
 
 
-class Highlight(GenericContentInteraction):
+class Highlight(FieldContentInteraction):
     """Highlighted content."""
 
     user = models.ForeignKey(User, related_name='highlights', on_delete=models.CASCADE)

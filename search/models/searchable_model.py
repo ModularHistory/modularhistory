@@ -9,7 +9,7 @@ from django.db.models import BooleanField, UUIDField
 from modularhistory.models.model import ModelSerializer
 from modularhistory.models.model_with_computations import ModelWithComputations
 from topics.models.taggable_model import TaggableModel
-from verification.models import VerifiableModel
+from verifications.models import VerifiableModel
 
 if TYPE_CHECKING:
     from search.models.manager import SearchableModelManager

@@ -7,6 +7,7 @@ from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
 from django.db import models
 from django.db.models import QuerySet
+from django.utils.translation import ugettext_lazy as _
 from social_django.models import UserSocialAuth
 
 from modularhistory.fields.file_field import upload_to
@@ -28,7 +29,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     """A user of ModularHistory."""
 
-    email = models.EmailField('email address', unique=True)
+    email = models.EmailField(_('email address'), unique=True)
     avatar = models.ImageField(
         null=True,
         blank=True,

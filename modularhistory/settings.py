@@ -176,7 +176,7 @@ INSTALLED_APPS = [
     'dates.apps.DatesConfig',
     'entities.apps.EntitiesConfig',
     'home.apps.HomeConfig',
-    'markup.apps.MarkupConfig',
+    'interactions.apps.InteractionsConfig',
     'postulations.apps.PostulationsConfig',
     'search.apps.SearchConfig',
     'images.apps.ImagesConfig',
@@ -186,7 +186,7 @@ INSTALLED_APPS = [
     'sources.apps.SourcesConfig',
     'staticpages.apps.StaticPagesConfig',
     'topics.apps.TopicsConfig',
-    'verification.apps.VerificationConfig',
+    'verifications.apps.VerificationsConfig',
 ]
 if ENABLE_ASGI:
     INSTALLED_APPS = [

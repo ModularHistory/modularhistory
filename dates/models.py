@@ -3,6 +3,7 @@ from typing import Optional
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.models.model import Model
@@ -16,8 +17,8 @@ CIRCA_PREFIX = 'c. '
 class DatedModel(Model):
     """A model with a date (e.g., a quote or occurrence)."""
 
-    date_is_circa = models.BooleanField(blank=True, default=False)
-    date = HistoricDateTimeField(null=True, blank=True)
+    date_is_circa = models.BooleanField(_('date is circa'), blank=True, default=False)
+    date = HistoricDateTimeField(_('date'), null=True, blank=True)
 
     class Meta:
         """
