@@ -5,6 +5,7 @@ from django.db.models import ManyToManyField
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.translation import ugettext_lazy as _
 
 from images.models import Image
 from images.models.model_with_images import ModelWithImages
@@ -32,14 +33,10 @@ class Occurrence(
 ):
     """Something that happened."""
 
-    date = HistoricDateTimeField(null=True, blank=True)
+    date = HistoricDateTimeField(verbose_name=_('Date'), null=True, blank=True)
     end_date = HistoricDateTimeField(null=True, blank=True)
-    summary = HTMLField(
-        verbose_name='Summary', null=True, blank=True, paragraphed=False
-    )
-    description = HTMLField(
-        verbose_name='Description', null=True, blank=True, paragraphed=True
-    )
+    summary = HTMLField(verbose_name=_('Summary'), paragraphed=False)
+    description = HTMLField(verbose_name=_('Description'), paragraphed=True)
     postscript = HTMLField(
         verbose_name='Postscript',
         null=True,
@@ -91,7 +88,7 @@ class Occurrence(
 
     def __str__(self) -> str:
         """Return the string representation of the occurrence."""
-        return self.summary.text or '...'
+        return self.summary.text
 
     def save(self, *args, **kwargs):
         """Save the occurrence to the database."""

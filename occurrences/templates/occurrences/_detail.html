@@ -8,12 +8,7 @@
        href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}">
         <i class="fa fa-edit"></i>
     </a>
-    <h2 class="text-center card-title">
-        {% if request.user.is_superuser %}
-            ...
-        {% endif %}
-        {{ occurrence.date_html|safe }}
-    </h2>
+    <p class="text-center card-title lead">{{ occurrence.date_html|safe }}</p>
     <div class="card-text">
         {% for image in occurrence.serialized_images %}
             {% if image.src_url not in occurrence.description %}
@@ -22,9 +17,7 @@
                 </div>
             {% endif %}
         {% endfor %}
-        <p class="lead">
-            {{ occurrence.summary|with_entity_links }}
-        </p>
+        <h2 class="text-center my-3">{{ occurrence.summary|with_entity_links }}</h2>
         <div>
             {{ occurrence.description|with_entity_links }}
         </div>

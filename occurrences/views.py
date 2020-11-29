@@ -1,7 +1,7 @@
 from typing import Dict
 
 from django.views import generic
-import logging
+
 from modularhistory.constants.misc import IMAGE_CT_ID, QUOTE_CT_ID, SOURCE_CT_ID
 from occurrences.models import Occurrence
 from search.forms import SearchForm

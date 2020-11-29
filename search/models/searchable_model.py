@@ -1,8 +1,9 @@
 """Base classes for models that appear in ModularHistory search results."""
 
+import logging
 import uuid
 from typing import TYPE_CHECKING
-import logging
+
 import serpy
 from autoslug import AutoSlugField
 from django.db import models
@@ -12,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.models.model import ModelSerializer
 from modularhistory.models.model_with_computations import ModelWithComputations
+from modularhistory.utils.html import soupify
 from topics.models.taggable_model import TaggableModel
 from verifications.models import VerifiableModel
 
@@ -36,11 +38,12 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
     )
     slug = AutoSlugField(
         verbose_name=_('slug'),
-        db_index=True,
-        editable=True,
         null=True,
-        populate_from='get_slug',
+        blank=True,
+        editable=True,
         unique=True,
+        db_index=True,
+        populate_from='get_slug',
     )
     hidden = models.BooleanField(
         default=False,
@@ -60,9 +63,9 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
 
     def clean(self):
         """Prepare the model instance to be saved."""
-        super().clean()
         if not self.slug:
             self.slug = self.get_slug()
+        super().clean()
 
     @property
     def absolute_url(self) -> str:
@@ -88,7 +91,10 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
         slug = None
         slug_base_field = getattr(self, 'slug_base_field', None)
         if slug_base_field:
-            slug = slugify(getattr(self, slug_base_field, self.pk))
+            slug_base = str(getattr(self, slug_base_field, self.pk))
+            if '<' in slug_base:
+                slug_base = soupify(slug_base).get_text()
+            slug = slugify(slug_base)
         return slug or self.pk
 
 

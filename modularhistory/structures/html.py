@@ -77,4 +77,6 @@ class HTML:
     @property
     def text(self) -> str:
         """Return the textual content with all HTML tags removed."""
-        return soupify(self.raw_value).get_text() if self.raw_value else ''
+        if self.raw_value:
+            return soupify(self.raw_value).get_text().strip()
+        return ''
