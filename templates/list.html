@@ -63,7 +63,7 @@
                         {% elif display_option == 'rows' or not display_option %}
                             <div class="container results">
                                 {% for object in object_list %}
-                                    <div class="result" data-key="{{ object.key }}">
+                                    <div class="result" data-key="{{ object.slug }}">
                                         {{ object|get_detail_html }}
                                     </div>
                                     <hr style="clear: both" />

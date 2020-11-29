@@ -15,7 +15,7 @@
     {% if quotes|length %}
         {% for quote in quotes %}
             <hr style="clear: both" />
-            <div class="m-2" data-key="{{ quote.key }}" data-href="{% block detail_url %}{% endblock %}">
+            <div class="m-2" data-key="{{ quote.slug }}" data-href="{% block detail_url %}{% endblock %}">
                 {{ quote|get_html_for_view:"detail" }}
             </div>
         {% endfor %}

@@ -61,6 +61,14 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
     objects: 'SearchableModelManager'
     slug_base_field: str = 'key'
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        """Customize model instance creation when loading from the database."""
+        instance: 'SearchableModel' = super().from_db(db, field_names, values)
+        if not instance.slug:
+            instance.slug = instance.get_slug()
+        return instance
+
     def clean(self):
         """Prepare the model instance to be saved."""
         if not self.slug:
@@ -83,7 +91,7 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
             absolute_url = reverse(
                 f'{self.get_meta().app_label}:detail', args=[str(self.pk)]
             )
-        logging.info(f'Absolute URL: {absolute_url}')
+        logging.debug(f'Determined absolute URL: {absolute_url}')
         return absolute_url
 
     def get_slug(self):
@@ -101,6 +109,6 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
-    key = serpy.StrField()
-    tags_html = serpy.Field()
-    absolute_url = serpy.Field()
+    slug = serpy.StrField()
+    tags_html = serpy.StrField()
+    absolute_url = serpy.StrField()

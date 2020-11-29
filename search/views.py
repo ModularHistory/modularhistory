@@ -235,7 +235,7 @@ class SearchResultsView(ListView):
         """Return the context data used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         context['object_list'] = [
-            instance.serialize() for instance in context['object_list']
+            instance.serialize() for instance in context['object_list'] if instance
         ]
         context['count'] = self.results_count or 0
         query = self.request.GET.get(QUERY_KEY)
@@ -356,7 +356,9 @@ def _get_occurrence_results(ct_ids, **search_kwargs):
         occurrence_results = list(Occurrence.objects.search(**search_kwargs).iterator())
     else:
         occurrence_results = []
-    return occurrence_results, [occurrence.pk for occurrence in occurrence_results]
+    return occurrence_results, [
+        occurrence.pk for occurrence in occurrence_results if occurrence
+    ]
 
 
 def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
@@ -371,7 +373,7 @@ def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
         quote_results = list(quote_results.iterator())
     else:
         quote_results = []
-    return quote_results, [quote.pk for quote in quote_results]
+    return quote_results, [quote.pk for quote in quote_results if quote]
 
 
 def _get_image_results(
@@ -418,4 +420,4 @@ def _get_source_results(
         source_results = list(source_results.iterator())
     else:
         source_results = []
-    return source_results, [source.pk for source in source_results]
+    return source_results, [source.pk for source in source_results if source]

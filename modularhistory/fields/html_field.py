@@ -58,7 +58,7 @@ def process(html: str) -> str:
     for match in object_placeholder_regex.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(PlaceholderGroups.MODEL_NAME)
-        logging.info(f'Found {object_type} placeholder: {truncate(placeholder)}')
+        logging.debug(f'Found {object_type} placeholder: {truncate(placeholder)}')
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
             model_cls: Type[Model] = model_classes.get(

@@ -2,7 +2,7 @@
 {% load is_instance %}
 {% load media %}
 
-<div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.key }}"
+<div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.slug }}"
      data-href="{% block detail_url %}{% endblock %}"
      style="{% block card_styles %}{% endblock %}">
     {% block top %}
@@ -26,6 +26,7 @@
                         {% else %}
                             {{ object.date.year }}
                         {% endif %}
+                        {{ object.slug }}
                     </small>
                 </h4>
             {% endif %}
