@@ -2,7 +2,7 @@
 
 import uuid
 from typing import TYPE_CHECKING
-
+import logging
 import serpy
 from autoslug import AutoSlugField
 from django.db import models
@@ -28,10 +28,14 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
     """
 
     key = models.UUIDField(
-        _('key'), primary_key=False, default=uuid.uuid4, editable=False, unique=True
+        verbose_name=_('key'),
+        primary_key=False,
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
     )
     slug = AutoSlugField(
-        _('slug'),
+        verbose_name=_('slug'),
         db_index=True,
         editable=True,
         null=True,
@@ -60,11 +64,24 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
         if not self.slug:
             self.slug = self.get_slug()
 
+    @property
+    def absolute_url(self) -> str:
+        """Return the URL for the model instance detail page."""
+        return self.get_absolute_url()
+
     def get_absolute_url(self):
         """Return the URL for the model instance detail page."""
-        return reverse(
-            f'{self.get_meta().app_label}:detail_slug', args=[str(self.slug)]
-        )
+        absolute_url = ''
+        if self.slug:
+            absolute_url = reverse(
+                f'{self.get_meta().app_label}:detail_slug', args=[str(self.slug)]
+            )
+        else:
+            absolute_url = reverse(
+                f'{self.get_meta().app_label}:detail', args=[str(self.pk)]
+            )
+        logging.info(f'Absolute URL: {absolute_url}')
+        return absolute_url
 
     def get_slug(self):
         """Get a slug for the model instance."""
@@ -80,3 +97,4 @@ class SearchableModelSerializer(ModelSerializer):
 
     key = serpy.StrField()
     tags_html = serpy.Field()
+    absolute_url = serpy.Field()

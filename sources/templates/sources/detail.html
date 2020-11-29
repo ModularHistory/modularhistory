@@ -2,6 +2,8 @@
 
 {% load get_html_for_view %}
 
+{% block canonical_url %}{{ source.get_absolute_url }}{% endblock %}
+
 {% block content %}
     <div class="container">
         {{ source|get_html_for_view:"detail" }}

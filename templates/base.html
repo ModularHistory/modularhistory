@@ -25,11 +25,7 @@
         <meta property="og:title" content="ModularHistory" />
         <meta property="og:description" content="History, modularized." />
 
-        <title>
-            {% block title %}
-                Home
-            {% endblock %} | ModularHistory
-        </title>
+        <title>{% block title %}Home{% endblock %} | ModularHistory</title>
 
         <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}" />
 

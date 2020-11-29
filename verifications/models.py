@@ -28,7 +28,7 @@ class Verification(ContentInteraction):
     """A verification of the veracity of a verifiable model instance's content."""
 
     verifier = models.ForeignKey(
-        'account.User', verbose_name=_('verifier'), on_delete=models.CASCADE
+        to='account.User', verbose_name=_('verifier'), on_delete=models.CASCADE
     )
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
