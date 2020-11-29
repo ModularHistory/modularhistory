@@ -7,6 +7,7 @@ from typing import Optional
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+
 from modularhistory.fields import HTMLField
 from modularhistory.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,

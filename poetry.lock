@@ -610,6 +610,18 @@ python-versions = "*"
 django = "*"
 
 [[package]]
+name = "django-autoslug"
+version = "1.9.8"
+description = "An automated slug field for Django."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+cyrillic = ["pytils (>=0.2)"]
+translitcodec = ["translitcodec (>=0.3)"]
+
+[[package]]
 name = "django-bootstrap-datepicker-plus"
 version = "3.0.5"
 description = "Bootstrap3/Bootstrap4 DatePickerInput, TimePickerInput, DateTimePickerInput, MonthPickerInput, YearPickerInput with date-range-picker functionality for django version 2.1, 2.0, 1.11, 1.10 and 1.8"
@@ -3442,7 +3454,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "a3216d669609b73eb1348f524c0b31431bd95811de922e8900a9f3cab7b7bfa8"
+content-hash = "1d65e24d1ede4331ccf52433768d42cbf818dc390e7073bc4668885a196f4f32"
 
 [metadata.files]
 aenum = [
@@ -3783,6 +3795,10 @@ django-admin-tools = [
 django-appconf = [
     {file = "django-appconf-1.0.4.tar.gz", hash = "sha256:be58deb54a43d77d2e1621fe59f787681376d3cd0b8bd8e4758ef6c3a6453380"},
     {file = "django_appconf-1.0.4-py2.py3-none-any.whl", hash = "sha256:1b1d0e1069c843ebe8ae5aa48ec52403b1440402b320c3e3a206a0907e97bb06"},
+]
+django-autoslug = [
+    {file = "django-autoslug-1.9.8.tar.gz", hash = "sha256:bae66c27d35615f472865b99c4d107f3b3add3d22ee337e84960fc07694abd45"},
+    {file = "django_autoslug-1.9.8-py2.py3-none-any.whl", hash = "sha256:26459eeddec207e307c55777a10fc25d17f4978753695340b16a17ed248a6f70"},
 ]
 django-bootstrap-datepicker-plus = [
     {file = "django-bootstrap-datepicker-plus-3.0.5.tar.gz", hash = "sha256:490058eba99d47f48a7d24fa78581c0e36375bdc7aa9605783eeb170d51fd0df"},

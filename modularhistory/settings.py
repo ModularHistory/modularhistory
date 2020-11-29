@@ -146,6 +146,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
+    'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/

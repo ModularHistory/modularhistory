@@ -2,9 +2,12 @@
 
 import uuid
 from typing import TYPE_CHECKING
-
+from autoslug import AutoSlugField
 import serpy
-from django.db.models import BooleanField, UUIDField
+from django.urls import reverse
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from django.utils.text import slugify
 
 from modularhistory.models.model import ModelSerializer
 from modularhistory.models.model_with_computations import ModelWithComputations
@@ -23,11 +26,21 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
     it must be defined as an abstract model class.
     """
 
-    key = UUIDField(primary_key=False, default=uuid.uuid4, editable=False, unique=True)
-    hidden = BooleanField(
+    key = models.UUIDField(
+        _('key'), primary_key=False, default=uuid.uuid4, editable=False, unique=True
+    )
+    slug = AutoSlugField(
+        _('slug'),
+        db_index=True,
+        editable=True,
+        null=True,
+        populate_from='get_slug',
+        unique=True,
+    )
+    hidden = models.BooleanField(
         default=False,
         blank=True,
-        help_text="Don't let this item appear in search results.",
+        help_text='Hide this item from search results.',
     )
 
     class FieldNames(TaggableModel.FieldNames):
@@ -38,6 +51,33 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
         abstract = True
 
     objects: 'SearchableModelManager'
+    slug_base_field: str = 'key'
+
+    def __init__(self, *args, **kwargs):
+        """Construct the model instance."""
+        super().__init__(*args, **kwargs)
+        if not self.slug:
+            self.slug = self.get_slug()
+
+    def clean(self):
+        """Prepare the model instance to be saved."""
+        super().clean()
+        if not self.slug:
+            self.slug = self.get_slug()
+
+    # def get_absolute_url(self):
+    #     """Return the URL for the model instance detail page."""
+    #     return reverse(
+    #         f'{self.get_meta().app_label}:detail_slug', args=[str(self.slug)]
+    #     )
+
+    def get_slug(self):
+        """Get a slug for the model instance."""
+        slug = None
+        slug_base_field = getattr(self, 'slug_base_field', None)
+        if slug_base_field:
+            slug = slugify(getattr(self, slug_base_field, self.pk))
+        return slug or self.pk
 
 
 class SearchableModelSerializer(ModelSerializer):
