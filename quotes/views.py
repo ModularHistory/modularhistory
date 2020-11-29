@@ -39,6 +39,7 @@ class BaseDetailView(generic.detail.DetailView):
 
     model = Quote
     context_object_name = 'quote'
+    query_pk_and_slug = True
 
 
 class DetailView(BaseDetailView):

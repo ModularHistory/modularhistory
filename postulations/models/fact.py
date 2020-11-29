@@ -66,6 +66,7 @@ class Postulation(VerifiableModel):
 
     searchable_fields = ['summary', 'elaboration']
     serializer = FactSerializer
+    slug_base_field = 'summary'
 
     def __str__(self) -> str:
         """Return the fact's string representation."""

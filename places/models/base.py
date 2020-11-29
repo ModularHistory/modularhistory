@@ -40,6 +40,8 @@ class Place(TypedModel, ModelWithComputations):
         name = 'name'
         location = 'location'
 
+    slug_base_field = 'string'
+
     def __str__(self) -> str:
         """Return the location's string representation."""
         return self.string

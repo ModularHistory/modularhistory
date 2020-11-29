@@ -129,10 +129,12 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         url = 'url'
 
     objects: SourceManager = SourceManager()
-    searchable_fields = [FieldNames.string, FieldNames.description]
-    serializer = SourceSerializer
+
     extra_field_schema: Dict[str, str] = {}
     inapplicable_fields: List[str] = []
+    searchable_fields = [FieldNames.string, FieldNames.description]
+    serializer = SourceSerializer
+    slug_base_field = 'title'
 
     def __str__(self):
         """Return the source's string representation."""

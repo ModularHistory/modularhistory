@@ -72,6 +72,7 @@ class BaseDetailView(generic.detail.DetailView):
 
     model = Entity
     context_object_name = 'entity'
+    query_pk_and_slug = True
 
 
 class DetailView(BaseDetailView):

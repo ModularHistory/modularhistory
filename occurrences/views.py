@@ -37,6 +37,7 @@ class BaseDetailView(generic.detail.DetailView):
 
     model = Occurrence
     context_object_name = 'occurrence'
+    query_pk_and_slug = True
 
     object: Occurrence
 

@@ -21,6 +21,7 @@ from modularhistory.fields.html_field import (
     PlaceholderGroups,
 )
 from modularhistory.models import retrieve_or_compute
+from django.utils.text import slugify
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
 from quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
@@ -164,6 +165,10 @@ class Quote(
     # TODO: Order by `attributee_string` instead of `attributee`
     attributee_html.admin_order_field = 'attributee'
     attributee_html: SafeString = property(attributee_html)  # type: ignore
+
+    def get_slug(self) -> str:
+        """Generate a slug for the quote."""
+        return slugify(self.pk)
 
     @property
     def has_multiple_attributees(self) -> bool:

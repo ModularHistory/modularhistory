@@ -6,7 +6,7 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from modularhistory.fields import ArrayField, HTMLField
 from modularhistory.models import Model, ModelWithComputations, retrieve_or_compute
-from topics.models.topic_relations import TopicRelation
+from topics.models.topic_relation import TopicRelation
 
 KEY_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
@@ -78,6 +78,7 @@ class Topic(ModelWithComputations):
     )
 
     searchable_fields = ['key', 'description', 'aliases']
+    slug_base_field = 'key'
 
     class Meta:
         ordering = ['key']

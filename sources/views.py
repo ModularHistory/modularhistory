@@ -25,6 +25,8 @@ class BaseDetailView(generic.DetailView):
 
     model = Source
     context_object_name = 'source'
+    query_pk_and_slug = True
+
     object: Source
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:

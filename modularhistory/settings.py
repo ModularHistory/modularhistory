@@ -96,7 +96,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
 PREPEND_WWW = IS_PROD
-APPEND_SLASH = IS_PROD
+APPEND_SLASH = True
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = IS_PROD
