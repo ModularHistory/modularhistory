@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ManyToManyField, Q, QuerySet
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.text import slugify
 from gm2m import GM2MField as GenericManyToManyField
 
 from entities.models.model_with_related_entities import ModelWithRelatedEntities
@@ -21,7 +22,6 @@ from modularhistory.fields.html_field import (
     PlaceholderGroups,
 )
 from modularhistory.models import retrieve_or_compute
-from django.utils.text import slugify
 from modularhistory.utils.html import soupify
 from quotes.manager import QuoteManager
 from quotes.models.model_with_related_quotes import ModelWithRelatedQuotes

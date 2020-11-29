@@ -20,7 +20,7 @@
 
         <meta property="og:type" content="website" />
         {# TODO: Use a better image. (This is the image that appears in messaging apps when a link to the website is shared.) #}
-        <meta property="og:image" content="{% static "logo_head_white.png" %}" />
+        <meta property="og:image" content="{% static 'logo_head_white.png' %}" />
         <meta property="og:url" content="https://www.modularhistory.com/" />
         <meta property="og:title" content="ModularHistory" />
         <meta property="og:description" content="History, modularized." />
@@ -31,7 +31,9 @@
             {% endblock %} | ModularHistory
         </title>
 
-        <link rel="icon" href="{% static "favicon.ico" %}" type="image/x-icon" />
+        <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}" />
+
+        <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />

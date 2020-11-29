@@ -2,12 +2,13 @@
 
 import uuid
 from typing import TYPE_CHECKING
-from autoslug import AutoSlugField
+
 import serpy
-from django.urls import reverse
+from autoslug import AutoSlugField
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.models.model import ModelSerializer
 from modularhistory.models.model_with_computations import ModelWithComputations
@@ -65,11 +66,11 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
         if not self.slug:
             self.slug = self.get_slug()
 
-    # def get_absolute_url(self):
-    #     """Return the URL for the model instance detail page."""
-    #     return reverse(
-    #         f'{self.get_meta().app_label}:detail_slug', args=[str(self.slug)]
-    #     )
+    def get_absolute_url(self):
+        """Return the URL for the model instance detail page."""
+        return reverse(
+            f'{self.get_meta().app_label}:detail_slug', args=[str(self.slug)]
+        )
 
     def get_slug(self):
         """Get a slug for the model instance."""

@@ -3,7 +3,7 @@
 from django.db import models
 
 from modularhistory.models import Model
-from topics.models.topics import Topic
+from topics.models.topic import Topic
 
 
 class FactRelation(Model):
