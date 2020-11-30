@@ -9,7 +9,7 @@ from django.db.models.fields.files import FieldFile
 from modularhistory.utils import files
 
 if TYPE_CHECKING:
-    from sources.models import SourceFile, TextualSource
+    from apps.sources.models import SourceFile, TextualSource
 
 
 class TextualSourceFile(FieldFile):

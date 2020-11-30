@@ -172,22 +172,22 @@ INSTALLED_APPS = [
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'webpack_loader',  #
-    'account.apps.AccountConfig',
-    'chat.apps.ChatConfig',
-    'dates.apps.DatesConfig',
-    'entities.apps.EntitiesConfig',
-    'home.apps.HomeConfig',
-    'interactions.apps.InteractionsConfig',
-    'postulations.apps.PostulationsConfig',
-    'search.apps.SearchConfig',
-    'images.apps.ImagesConfig',
-    'occurrences.apps.OccurrencesConfig',
-    'places.apps.LocationsConfig',
-    'quotes.apps.QuotesConfig',
-    'sources.apps.SourcesConfig',
-    'staticpages.apps.StaticPagesConfig',
-    'topics.apps.TopicsConfig',
-    'verifications.apps.VerificationsConfig',
+    'apps.account.apps.AccountConfig',
+    'apps.chat.apps.ChatConfig',
+    'apps.dates.apps.DatesConfig',
+    'apps.entities.apps.EntitiesConfig',
+    'apps.home.apps.HomeConfig',
+    'apps.interactions.apps.InteractionsConfig',
+    'apps.postulations.apps.PostulationsConfig',
+    'apps.search.apps.SearchConfig',
+    'apps.images.apps.ImagesConfig',
+    'apps.occurrences.apps.OccurrencesConfig',
+    'apps.places.apps.LocationsConfig',
+    'apps.quotes.apps.QuotesConfig',
+    'apps.sources.apps.SourcesConfig',
+    'apps.staticpages.apps.StaticPagesConfig',
+    'apps.topics.apps.TopicsConfig',
+    'apps.verifications.apps.VerificationsConfig',
 ]
 if ENABLE_ASGI:
     INSTALLED_APPS = [
@@ -218,7 +218,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
     # Staticpage middleware, based on Django's Flatpage middleware
     # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
-    'staticpages.middleware.StaticPageFallbackMiddleware',
+    'apps.staticpages.middleware.StaticPageFallbackMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     # memory profiler
