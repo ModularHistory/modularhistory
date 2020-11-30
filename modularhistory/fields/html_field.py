@@ -145,9 +145,7 @@ class HTMLField(MceHTMLField):
             (r'<blockquote>', '<blockquote class="blockquote">'),
             (r'<table>', '<table class="table">'),
             # Remove empty divs & paragraphs
-            (r'\n?<div>&nbsp;<\/div>', ''),
-            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
-            (r'<p>&nbsp;<\/p>', ''),
+            (r'\n?<(?:div|p)>&nbsp;<\/(?:div|p)>', ''),
             # fact --> postulation  # TODO
             (r'\[\[ fact: ', '[[ postulation: '),
         )
@@ -160,6 +158,15 @@ class HTMLField(MceHTMLField):
                     f'with `{replacement}` ({type(replacement)} '
                     f'in {raw_html}\n({type(raw_html)})\n{error}'
                 )
+        deletions = (("div", {'id': 'i4c-draggable-container'}),)
+        # Use html.parser to avoid adding <html> and <body> tags
+        soup = soupify(raw_html, features='html.parser')
+        for deletion in deletions:
+            try:
+                soup.find(deletion).decompose()
+            except Exception as err:
+                logging.info(f'{err}')
+        raw_html = soup.prettify()
 
         if model_instance.pk:
             raw_html = model_instance.preprocess_html(raw_html)

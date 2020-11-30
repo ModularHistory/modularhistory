@@ -7,13 +7,13 @@ from modularhistory.utils.string import components_to_string
 NEW_TAB = '_blank'
 
 
-def soupify(html_string: str) -> BeautifulSoup:
+def soupify(html_string: str, features='lxml') -> BeautifulSoup:
     """
     Wrap for the BeautifulSoup constructor.
 
     Specifies `lxml` as the parser.
     """
-    return BeautifulSoup(html_string, features='lxml')
+    return BeautifulSoup(html_string, features=features)
 
 
 def compose_link(text, href, klass: Optional[str] = None, **html_attributes) -> str:
@@ -42,4 +42,4 @@ def escape_quotes(html: str) -> str:
 def prettify(html: str) -> str:
     """Return prettified HTML."""
     # Use 'html.parser' so that <html> and <body> tags aren't added.
-    return BeautifulSoup(html, 'html.parser').prettify()
+    return soupify(html, features='html.parser').prettify()
