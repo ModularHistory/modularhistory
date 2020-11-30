@@ -25,7 +25,7 @@ from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 
 from admin.model_admin import admin_site
-from search.views import SearchResultsView
+from apps.search.views import SearchResultsView
 
 
 def error(request):
@@ -38,38 +38,38 @@ urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
     # Account
-    path('account/', include(('account.urls', 'account'), namespace='account')),
+    path('account/', include(('apps.account.urls', 'account'), namespace='account')),
     # Admin
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
     # Chat
-    path('chat/', include('chat.urls')),
+    path('chat/', include('apps.chat.urls')),
     # Entities
-    path('entities/', include('entities.urls', namespace='entities')),
+    path('entities/', include('apps.entities.urls', namespace='entities')),
     # Postulations
-    path('facts/', include('postulations.urls', namespace='facts')),
-    path('postulations/', include('postulations.urls', namespace='postulations')),
+    path('facts/', include('apps.postulations.urls', namespace='facts')),
+    path('postulations/', include('apps.postulations.urls', namespace='postulations')),
     # Images
-    path('images/', include('images.urls', namespace='images')),
+    path('images/', include('apps.images.urls', namespace='images')),
     # Occurrences
-    path('occurrences/', include('occurrences.urls', namespace='occurrences')),
+    path('occurrences/', include('apps.occurrences.urls', namespace='occurrences')),
     # Places
-    path('places/', include(('places.urls', 'places'), namespace='places')),
-    path('locations/', include(('places.urls', 'places'), namespace='locations')),
+    path('places/', include(('apps.places.urls', 'places'), namespace='places')),
+    path('locations/', include(('apps.places.urls', 'places'), namespace='locations')),
     # Quotes
-    path('quotes/', include('quotes.urls', namespace='quotes')),
+    path('quotes/', include('apps.quotes.urls', namespace='quotes')),
     # Search
-    path('search/', include('search.urls', namespace='search')),
+    path('search/', include('apps.search.urls', namespace='search')),
     re_path(r'search$', SearchResultsView.as_view(), name='search'),
     # Sources
-    path('sources/', include('sources.urls', namespace='sources')),
+    path('sources/', include('apps.sources.urls', namespace='sources')),
     # Topics
-    path('topics/', include('topics.urls', namespace='topics')),
+    path('topics/', include('apps.topics.urls', namespace='topics')),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('api-auth/', include('rest_framework.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),
-    path('', include('home.urls')),
+    path('', include('apps.home.urls')),
     path('error', error),  # error trigger (for testing purposes)
     path(
         'robots.txt',

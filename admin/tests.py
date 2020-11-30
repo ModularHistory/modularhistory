@@ -3,7 +3,7 @@ from django.urls import reverse
 from hypothesis.extra.django import from_model
 from hypothesis.strategies import just
 
-from account.models import User
+from apps.account.models import User
 
 
 @pytest.mark.django_db

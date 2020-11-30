@@ -5,7 +5,7 @@ from django.template import loader
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from search.templatetags.highlight import highlight
+from apps.search.templatetags.highlight import highlight
 
 if TYPE_CHECKING:
     from modularhistory.models import Model

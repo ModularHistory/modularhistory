@@ -35,15 +35,15 @@ class ModelNameSet(Constant):
 
 
 MODEL_CLASS_PATHS = {
-    ModelNameSet.citation: 'sources.models.Citation',
-    ModelNameSet.entity: 'entities.models.Entity',
-    ModelNameSet.image: 'images.models.Image',
-    ModelNameSet.occurrence: 'occurrences.models.Occurrence',
-    ModelNameSet.place: 'places.models.Place',
-    ModelNameSet.quote: 'quotes.models.Quote',
-    ModelNameSet.source: 'sources.models.Source',
-    ModelNameSet.fact: 'postulations.models.Postulation',
-    ModelNameSet.postulation: 'postulations.models.Postulation',
+    ModelNameSet.citation: 'apps.sources.models.Citation',
+    ModelNameSet.entity: 'apps.entities.models.Entity',
+    ModelNameSet.image: 'apps.images.models.Image',
+    ModelNameSet.occurrence: 'apps.occurrences.models.Occurrence',
+    ModelNameSet.place: 'apps.places.models.Place',
+    ModelNameSet.quote: 'apps.quotes.models.Quote',
+    ModelNameSet.source: 'apps.sources.models.Source',
+    ModelNameSet.fact: 'apps.postulations.models.Postulation',
+    ModelNameSet.postulation: 'apps.postulations.models.Postulation',
 }
 
 CONTENT_TYPE_IDS = {
