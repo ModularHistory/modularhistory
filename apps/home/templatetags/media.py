@@ -1,6 +1,6 @@
 from django import template
-
 from django.conf import settings
+
 from modularhistory.constants.misc import Environments
 
 register = template.Library()

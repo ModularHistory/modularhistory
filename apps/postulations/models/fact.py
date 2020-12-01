@@ -5,11 +5,12 @@ import re
 from logging import log
 from typing import Optional
 
+import serpy
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from apps.topics.serializers import FactSerializer
+from apps.sources.models.model_with_sources import ModelWithSources
 from apps.verifications.models import VerifiableModel
 from modularhistory.fields import HTMLField
 from modularhistory.fields.html_field import (
@@ -17,6 +18,7 @@ from modularhistory.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
+from modularhistory.models.model import ModelSerializer
 from modularhistory.utils.html import escape_quotes
 from modularhistory.utils.string import dedupe_newlines, truncate
 
@@ -35,7 +37,15 @@ DEGREES_OF_CERTAINTY = (
 )
 
 
-class Postulation(VerifiableModel):
+class PostulationSerializer(ModelSerializer):
+    """Serializer for postulations."""
+
+    def get_model(self, instance) -> str:  # noqa
+        """Return the model name of serialized postulations."""
+        return 'topics.fact'
+
+
+class Postulation(VerifiableModel, ModelWithSources):
     """A postulation."""
 
     summary = HTMLField(unique=True, paragraphed=False)
@@ -66,7 +76,7 @@ class Postulation(VerifiableModel):
     )
 
     searchable_fields = ['summary', 'elaboration']
-    serializer = FactSerializer
+    serializer = PostulationSerializer
     slug_base_field = 'summary'
 
     def __str__(self) -> str:

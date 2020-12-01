@@ -1,9 +1,9 @@
 from admin import ModelAdmin, StackedInline, TabularInline, admin_site
-from apps.entities.admin.admin_filters import EntityAutocompleteFilter
 from apps.postulations import models
+from apps.sources.admin import CitationsInline
 
 
-class FactEntitiesInline(TabularInline):
+class PostulationEntitiesInline(TabularInline):
     """Inline admin for a fact's related entities."""
 
     model = models.Postulation.related_entities.through
@@ -17,10 +17,10 @@ class OccurrencesInline(TabularInline):
     extra = 0
 
 
-class SupportedFactsInline(StackedInline):
+class SupportedPostulationsInline(StackedInline):
     """Inline admin for a fact's supported postulations."""
 
-    verbose_name = 'supported fact'
+    verbose_name = 'supported postulation'
     verbose_name_plural = 'supported postulations'
     model = models.PostulationSupport
     fk_name = 'supportive_fact'
@@ -37,7 +37,7 @@ class SupportiveFactsInline(StackedInline):
     extra = 0
 
 
-class FactAdmin(ModelAdmin):
+class PostulationAdmin(ModelAdmin):
     """Admin for postulations."""
 
     model = models.Postulation
@@ -46,11 +46,12 @@ class FactAdmin(ModelAdmin):
     search_fields = model.searchable_fields
 
     inlines = [
-        FactEntitiesInline,
+        CitationsInline,
+        PostulationEntitiesInline,
         OccurrencesInline,
-        SupportedFactsInline,
+        SupportedPostulationsInline,
         SupportiveFactsInline,
     ]
 
 
-admin_site.register(models.Postulation, FactAdmin)
+admin_site.register(models.Postulation, PostulationAdmin)

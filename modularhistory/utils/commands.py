@@ -31,7 +31,7 @@ def autoformat(context: Context = CONTEXT, files: Optional[Iterable[str]] = None
     """Autoformat all of ModularHistory's Python code."""
     commands = (
         (
-            'autoflake --imports=django,requests,typing,urllib3 '
+            'autoflake --imports=apps,django,requests,typing,urllib3 '
             '--ignore-init-module-imports --in-place {filename}'
         ),
         ('unify --in-place {filename}'),

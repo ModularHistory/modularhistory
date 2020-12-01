@@ -93,6 +93,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     related = GenericManyToManyField(
         'quotes.Quote',
         'occurrences.Occurrence',
+        'postulations.Postulation',
         through='sources.Citation',
         related_name='sources',
         blank=True,

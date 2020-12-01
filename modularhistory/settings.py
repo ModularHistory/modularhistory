@@ -20,7 +20,7 @@ from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from modularhistory.constants.misc import Environments, PRODUCTION
+from modularhistory.constants.misc import PRODUCTION, Environments
 
 ENABLE_ASGI: bool = False
 
