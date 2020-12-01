@@ -8,6 +8,11 @@
        href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}">
         <i class="fa fa-edit"></i>
     </a>
+    {% if not occurrence.verified %}
+        <span style="display: inline-block; position: absolute; top: 1px; right: 1px; font-weight: bold">
+            UNVERIFIED
+        </span>
+    {% endif %}
     <p class="text-center card-title lead">{{ occurrence.date_html|safe }}</p>
     <div class="card-text">
         {% for image in occurrence.serialized_images %}

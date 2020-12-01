@@ -291,9 +291,10 @@ class SearchResultsView(ListView):
         quote_results, quote_result_ids = _get_quote_results(
             ct_ids, occurrence_result_ids, **search_kwargs
         )
-        image_results = _get_image_results(
-            ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
-        )
+        # TODO
+        # image_results = _get_image_results(
+        #     ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+        # )
         # TODO
         # source_results, source_result_ids = _get_source_results(
         #     ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
@@ -329,7 +330,9 @@ class SearchResultsView(ListView):
 
         ordered_queryset = self.order_queryset(
             # Combine querysets
-            chain(occurrence_results, quote_results, image_results)  # , source_results)
+            chain(
+                occurrence_results, quote_results
+            )  # , image_results)  # , source_results)
         )
 
         self.results_count = len(ordered_queryset)
