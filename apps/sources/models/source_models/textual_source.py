@@ -7,12 +7,15 @@ from modularhistory.fields import ExtraField, HistoricDateTimeField
 
 JSON_FIELD_NAME = 'extra'
 
+STRING = 'string'
+NUMBER = 'number'
+
 
 class TextualSource(Source):
     """Mixin model for textual sources."""
 
     original_edition = ForeignKey(
-        'self',
+        to='self',
         related_name='subsequent_editions',
         blank=True,
         null=True,
@@ -21,6 +24,10 @@ class TextualSource(Source):
     original_publication_date = HistoricDateTimeField(null=True, blank=True)
 
     editors = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
+
+    extra_field_schema = {
+        'editors': STRING,
+    }
 
     @property
     def file_page_number(self) -> Optional[int]:

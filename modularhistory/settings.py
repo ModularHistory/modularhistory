@@ -20,7 +20,7 @@ from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from modularhistory.constants.misc import Environments
+from modularhistory.constants.misc import Environments, PRODUCTION
 
 ENABLE_ASGI: bool = False
 
@@ -458,12 +458,14 @@ SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/3.1/topics/files/
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URLS = {
+    Environments.DEV: '/media/',
+    Environments.PROD: f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/',
+}
+MEDIA_URL = MEDIA_URLS.get(ENVIRONMENT) or '/media/'
 if IS_PROD:
-    MEDIA_URL = f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/'
     DEFAULT_FILE_STORAGE = 'modularhistory.storage.GoogleCloudMediaFileStorage'
     GS_BUCKET_NAME = GS_MEDIA_BUCKET_NAME
-else:
-    MEDIA_URL = '/media/'
 
 ARTIFACTS_URL = (
     f'https://storage.googleapis.com/{GS_ARTIFACTS_BUCKET_NAME}/'

@@ -5,7 +5,13 @@
 <div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.slug }}"
      data-href="{% block detail_url %}{% endblock %}"
      style="{% block card_styles %}{% endblock %}">
-    {% block top %}{% endblock %}
+    {% block top %}
+        {% if not object.verified %}
+            <span style="display: inline-block; position: absolute; top: 1px; right: 1px;">
+                UNVERIFIED
+            </span>
+        {% endif %}
+    {% endblock %}
     {% if not object|is_instance:'images.Image' %}
         {% with image=object.serialized_images|first %}
             <div{% if image %} class="img-bg lazy-bg"
@@ -17,16 +23,12 @@
     {% endif %}
     <div class="card-body" style="background-color: transparent; z-index: 1;">
         {% if not object|is_instance:'images.Image' %}
-            {% if object.year_html or object.date %}
-                <h4 class="card-title text-center">
+            {% if object.date_html %}
+                <p class="card-title text-center my-1">
                     <small>
-                        {% if object.year_html %}
-                            {{ object.year_html }}
-                        {% else %}
-                            {{ object.date.year }}
-                        {% endif %}
+                        {{ object.date_html }}
                     </small>
-                </h4>
+                </p>
             {% endif %}
         {% endif %}
         {% block body %}{% endblock %}

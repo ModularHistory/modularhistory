@@ -13,6 +13,7 @@ class ImageSerializer(SearchableModelSerializer):
     height = serpy.IntField()
     caption_html = serpy.Field()
     provider_string = serpy.Field()
+    bg_img_position = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""

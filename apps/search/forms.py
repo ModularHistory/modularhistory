@@ -28,7 +28,7 @@ class SearchForm(forms.Form):
         self,
         request: HttpRequest,
         query: Optional[str] = None,
-        suppress_unverified: bool = True,
+        suppress_unverified: bool = False,
         order_by_relevance: bool = False,
         excluded_content_types: List[int] = None,
         entities: Optional['QuerySet[Entity]'] = None,
@@ -58,9 +58,9 @@ class SearchForm(forms.Form):
                 self.fields['ordering'].widget.attrs['disabled'] = True
 
         # Filter unverified items
-        quality = 'verified' if suppress_unverified else 'unverified'
+        quality = 'verified' if suppress_unverified else 'all'
         self.fields['quality'] = forms.ChoiceField(
-            choices=(('verified', 'Verified'), ('unverified', 'Unverified')),
+            choices=(('all', 'All'), ('verified', 'Verified')),
             widget=forms.RadioSelect,
             initial=quality,
             required=False,

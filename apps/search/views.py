@@ -225,7 +225,7 @@ class SearchResultsView(ListView):
         super().__init__()
         self.excluded_content_types = None
         self.sort_by_relevance = False
-        self.suppress_unverified = True
+        self.suppress_unverified = False
         self.entities = None
         self.topics = None
         self.places = None
@@ -259,7 +259,7 @@ class SearchResultsView(ListView):
         """Return the list of search result objects."""
         request = self.request
         self.sort_by_relevance = request.GET.get('ordering') == 'relevance'
-        self.suppress_unverified = request.GET.get('quality') != 'unverified'
+        self.suppress_unverified = request.GET.get('quality') == 'verified'
 
         ct_ids = [int(ct_id) for ct_id in (request.GET.getlist('content_types') or [])]
         start_year = request.GET.get('start_year_0', None)
@@ -294,16 +294,17 @@ class SearchResultsView(ListView):
         image_results = _get_image_results(
             ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
         )
-        source_results, source_result_ids = _get_source_results(
-            ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
-        )
+        # TODO
+        # source_results, source_result_ids = _get_source_results(
+        #     ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+        # )
 
         self.entities = Entity.objects.filter(
             pk__in=Subquery(
                 Entity.objects.filter(
                     Q(involved_occurrences__id__in=occurrence_result_ids)
                     | Q(quotes__id__in=quote_result_ids)
-                    | Q(attributed_sources__id__in=source_result_ids)
+                    # | Q(attributed_sources__id__in=source_result_ids)
                 )
                 .order_by('id')
                 .distinct('id')
@@ -328,7 +329,7 @@ class SearchResultsView(ListView):
 
         ordered_queryset = self.order_queryset(
             # Combine querysets
-            chain(occurrence_results, quote_results, image_results, source_results)
+            chain(occurrence_results, quote_results, image_results)  # , source_results)
         )
 
         self.results_count = len(ordered_queryset)
