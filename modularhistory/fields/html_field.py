@@ -174,7 +174,10 @@ class HTMLField(MceHTMLField):
             raw_html = model_instance.preprocess_html(raw_html)
 
         # Update obj placeholders.
-        raw_html = self.update_placeholders(raw_html)
+        try:
+            raw_html = self.update_placeholders(raw_html)
+        except Exception as err:
+            raise ValidationError(f'{err}')
 
         # Add or remove <p> tags if necessary
         raw_html = self.format_html(raw_html)
