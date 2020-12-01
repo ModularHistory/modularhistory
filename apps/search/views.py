@@ -14,6 +14,12 @@ from django.views.generic import ListView
 
 from apps.entities.models import Entity
 from apps.images.models import Image
+from apps.occurrences.models import Occurrence
+from apps.quotes.models import Quote
+from apps.search.forms import SearchForm
+from apps.search.models import SearchableDatedModel
+from apps.sources.models import Source
+from apps.topics.models import Topic
 from modularhistory.constants.misc import (
     IMAGE_CT_ID,
     OCCURRENCE_CT_ID,
@@ -22,12 +28,6 @@ from modularhistory.constants.misc import (
 )
 from modularhistory.models import Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
-from apps.occurrences.models import Occurrence
-from apps.quotes.models import Quote
-from apps.search.forms import SearchForm
-from apps.search.models import SearchableDatedModel
-from apps.sources.models import Source
-from apps.topics.models import Topic
 
 QUERY_KEY = 'query'
 N_RESULTS_PER_PAGE = 10

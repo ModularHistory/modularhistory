@@ -2,8 +2,8 @@
 
 import serpy
 
-from modularhistory.models.model import ModelSerializer
 from apps.search.models.searchable_model import SearchableModelSerializer
+from modularhistory.models.model import ModelSerializer
 
 
 class SourceSerializer(SearchableModelSerializer):

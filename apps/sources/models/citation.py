@@ -12,6 +12,7 @@ from django.db.models import CASCADE, SET_NULL, ForeignKey, PositiveSmallInteger
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
+from apps.sources.serializers import CitationSerializer
 from modularhistory.constants.misc import QUOTE_CT_ID
 from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
@@ -33,7 +34,6 @@ from modularhistory.utils.html import (
     escape_quotes,
     soupify,
 )
-from apps.sources.serializers import CitationSerializer
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager

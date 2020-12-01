@@ -4,8 +4,8 @@ from typing import List, Optional
 
 from django.db.models import Q
 
-from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
+from modularhistory.constants.misc import OCCURRENCE_CT_ID
 
 
 class QuoteManager(SearchableModelManager):

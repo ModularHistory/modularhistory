@@ -1,6 +1,7 @@
 """Model classes for postulations."""
 
 import logging
+from logging import log
 import re
 from typing import Optional
 
@@ -8,6 +9,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
+from apps.topics.serializers import FactSerializer
+from apps.verifications.models import VerifiableModel
 from modularhistory.fields import HTMLField
 from modularhistory.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
@@ -16,8 +19,6 @@ from modularhistory.fields.html_field import (
 )
 from modularhistory.utils.html import escape_quotes
 from modularhistory.utils.string import dedupe_newlines, truncate
-from apps.topics.serializers import FactSerializer
-from apps.verifications.models import VerifiableModel
 
 fact_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>postulation)'
@@ -104,7 +105,7 @@ class Postulation(VerifiableModel):
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
-        fact: 'Postulation' = cls.get_object_from_placeholder(match)
+        fact: 'Postulation' = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         return fact.summary_link
 
     @classmethod
@@ -126,7 +127,9 @@ class Postulation(VerifiableModel):
                 placeholder = placeholder.replace(
                     match.group(PlaceholderGroups.HTML), html
                 )
-            return placeholder
+            else:
+                logging.info('Returning extant placeholder')
+                return placeholder
         else:
             html = cls.get_object_html(match)
             model_name = match.group(PlaceholderGroups.MODEL_NAME)

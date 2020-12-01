@@ -1,8 +1,8 @@
 """Model classes for spoken sources."""
 
-from modularhistory.fields import ExtraField
 from apps.places.models import Venue
 from apps.sources.models.source import Source
+from modularhistory.fields import ExtraField
 
 JSON_FIELD_NAME = 'extra'
 

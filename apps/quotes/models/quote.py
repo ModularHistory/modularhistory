@@ -13,6 +13,12 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import ModelWithImages
+from apps.quotes.manager import QuoteManager
+from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
+from apps.quotes.models.quote_image import QuoteImage
+from apps.quotes.serializers import QuoteSerializer
+from apps.search.models import SearchableDatedModel
+from apps.sources.models.model_with_sources import ModelWithSources
 from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import HistoricDateTimeField, HTMLField
@@ -23,12 +29,6 @@ from modularhistory.fields.html_field import (
 )
 from modularhistory.models import retrieve_or_compute
 from modularhistory.utils.html import soupify
-from apps.quotes.manager import QuoteManager
-from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
-from apps.quotes.models.quote_image import QuoteImage
-from apps.quotes.serializers import QuoteSerializer
-from apps.search.models import SearchableDatedModel
-from apps.sources.models.model_with_sources import ModelWithSources
 
 if TYPE_CHECKING:
     from apps.entities.models import Entity
@@ -262,7 +262,7 @@ class Quote(
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
-        quote = cls.get_object_from_placeholder(match)
+        quote = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         if isinstance(quote, dict):
             body = quote['text']
             footer = quote.get('citation_html') or quote.get('attributee_string')

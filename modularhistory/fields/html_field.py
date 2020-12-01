@@ -11,7 +11,7 @@ from tinymce.models import HTMLField as MceHTMLField
 from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.structures.html import HTML
 from modularhistory.utils.html import soupify
-from modularhistory.utils.string import truncate
+from modularhistory.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
     from modularhistory.models import Model
@@ -38,11 +38,11 @@ START_PATTERN = r'\[\['
 END_PATTERN = r'\]\]'
 TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME}>[a-zA-Z]+?)'
 KEY_GROUP = rf'(?P<{PlaceholderGroups.PK}>[\w\d-]+)'
-HTML_GROUP = rf'(?!{END_PATTERN})(?P<{PlaceholderGroups.HTML}>\S[\s\S]+?)'
+HTML_GROUP = rf'(?!{END_PATTERN})(?P<{PlaceholderGroups.HTML}>[^:\s][\s\S]+?)'
 APPENDAGE_GROUP = rf'(?P<{PlaceholderGroups.APPENDAGE}>[:\ ,]?\ ?{HTML_GROUP})'
 
 OBJECT_PLACEHOLDER_REGEX = rf'{START_PATTERN}\ ?{TYPE_GROUP}:\ ?{KEY_GROUP}{APPENDAGE_GROUP}?\ ?{END_PATTERN}'  # noqa: E501
-logging.debug(f'Object placeholder pattern: {OBJECT_PLACEHOLDER_REGEX}')
+logging.info(f'Object placeholder pattern: {OBJECT_PLACEHOLDER_REGEX}')
 
 object_placeholder_regex = re.compile(OBJECT_PLACEHOLDER_REGEX)
 
@@ -164,9 +164,11 @@ class HTMLField(MceHTMLField):
         for deletion in deletions:
             try:
                 soup.find(deletion).decompose()
-            except Exception as err:
-                logging.info(f'{err}')
-        raw_html = soup.prettify()
+            except AttributeError:  # no match
+                pass
+        raw_html = dedupe_newlines(str(soup))
+
+        logging.info(f'{raw_html}')
 
         if model_instance.pk:
             raw_html = model_instance.preprocess_html(raw_html)

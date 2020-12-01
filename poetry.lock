@@ -581,7 +581,7 @@ django = ">=2.0"
 
 [[package]]
 name = "django-admin-menu"
-version = "1.3"
+version = "1.4"
 description = "A Django admin theme with a horizontal, tabbed navigation bar"
 category = "main"
 optional = false
@@ -634,7 +634,7 @@ django = ">=1.8"
 
 [[package]]
 name = "django-crispy-forms"
-version = "1.9.2"
+version = "1.10.0"
 description = "Best way to have Django DRY forms"
 category = "main"
 optional = false
@@ -1080,7 +1080,7 @@ pipenv = ["pipenv"]
 
 [[package]]
 name = "easy-thumbnails"
-version = "2.7"
+version = "2.7.1"
 description = "Easy thumbnails for Django"
 category = "main"
 optional = false
@@ -1211,15 +1211,16 @@ importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "flake8-debugger"
-version = "3.2.1"
+version = "4.0.0"
 description = "ipdb/pdb statement checker plugin for flake8"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 
 [package.dependencies]
-flake8 = ">=1.5"
+flake8 = ">=3.0"
 pycodestyle = "*"
+six = "*"
 
 [[package]]
 name = "flake8-django"
@@ -3126,7 +3127,7 @@ python-versions = "*"
 
 [[package]]
 name = "stevedore"
-version = "3.2.2"
+version = "3.3.0"
 description = "Manage dynamic plugins for Python applications"
 category = "dev"
 optional = false
@@ -3420,7 +3421,7 @@ python-versions = "*"
 
 [[package]]
 name = "youtube-dl"
-version = "2020.11.26"
+version = "2020.11.29"
 description = "YouTube video downloader"
 category = "main"
 optional = false
@@ -3454,7 +3455,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "1d65e24d1ede4331ccf52433768d42cbf818dc390e7073bc4668885a196f4f32"
+content-hash = "d1121aef50a9dde2b83d167fbc5f4902f818dcb6fd2e655c1702ee3ebf2a5094"
 
 [metadata.files]
 aenum = [
@@ -3785,8 +3786,8 @@ django-admin-autocomplete-filter = [
     {file = "django_admin_autocomplete_filter-0.6.1-py3-none-any.whl", hash = "sha256:5016a8cb9aff7a7e7a796870ac572ac248a17d36339215878df9ba24761ce65f"},
 ]
 django-admin-menu = [
-    {file = "django-admin-menu-1.3.tar.gz", hash = "sha256:7ba131238d0f4d946e1d32ca9c0dc42dbfc09b1f3cb6cf653f90373d404e347d"},
-    {file = "django_admin_menu-1.3-py3-none-any.whl", hash = "sha256:1376ca00c569ccb8a5b4a5576bff98575548d01adf3848eecda7a64056d137a3"},
+    {file = "django-admin-menu-1.4.tar.gz", hash = "sha256:11f34c18fa681196da6d65a62146c03e48d341b791e444586ba7ba0833425c68"},
+    {file = "django_admin_menu-1.4-py3-none-any.whl", hash = "sha256:291ee583258be70480ad6163a8aee5b5d70c483eb59f052fff965e473024b268"},
 ]
 django-admin-tools = [
     {file = "django-admin-tools-0.9.0.tar.gz", hash = "sha256:428d1b6a572ee364c35086d7bec34344cc43105839e5637dbb900b9cabd6adf8"},
@@ -3805,8 +3806,8 @@ django-bootstrap-datepicker-plus = [
     {file = "django_bootstrap_datepicker_plus-3.0.5-py3-none-any.whl", hash = "sha256:a8bc19cc6846f97ff1e6c447f4e0387881d16e8afa1e8bd7a652c19e545c566b"},
 ]
 django-crispy-forms = [
-    {file = "django-crispy-forms-1.9.2.tar.gz", hash = "sha256:f2f1e0fbb458851636447cfb6be1a611b40c8ac9e41a74ba923011378670b43b"},
-    {file = "django_crispy_forms-1.9.2-py3-none-any.whl", hash = "sha256:888bb316db89b60050a42ec35080facb361d823eec38010ccb0702f45642d3b8"},
+    {file = "django-crispy-forms-1.10.0.tar.gz", hash = "sha256:d3f808d20cafe20fd38a49a47e72db1fd519fcf31bef4f47f008619336a3ebff"},
+    {file = "django_crispy_forms-1.10.0-py3-none-any.whl", hash = "sha256:92ed3fdc52c08d21d60adbb9de24e432c590e66e894f43cee0974fc959209976"},
 ]
 django-dbbackup = [
     {file = "django-dbbackup-3.3.0.tar.gz", hash = "sha256:bb109735cae98b64ad084e5b461b7aca2d7b39992f10c9ed9435e3ebb6fb76c8"},
@@ -3939,7 +3940,7 @@ dparse = [
     {file = "dparse-0.5.1.tar.gz", hash = "sha256:a1b5f169102e1c894f9a7d5ccf6f9402a836a5d24be80a986c7ce9eaed78f367"},
 ]
 easy-thumbnails = [
-    {file = "easy-thumbnails-2.7.tar.gz", hash = "sha256:e4e7a0dd4001f56bfd4058428f2c91eafe27d33ef3b8b33ac4e013b159b9ff91"},
+    {file = "easy-thumbnails-2.7.1.tar.gz", hash = "sha256:f862949208d9066cd3d84ffcf9c2dbe9c7344ea6152b741e440f861eca46855c"},
 ]
 eradicate = [
     {file = "eradicate-2.0.0.tar.gz", hash = "sha256:27434596f2c5314cc9b31410c93d8f7e8885747399773cd088d3adea647a60c8"},
@@ -3979,7 +3980,8 @@ flake8-comprehensions = [
     {file = "flake8_comprehensions-3.3.0-py3-none-any.whl", hash = "sha256:c1dd6d8a00e9722619a5c5e0e6c5747f5cf23c089032c86eaf614c14a2e40adb"},
 ]
 flake8-debugger = [
-    {file = "flake8-debugger-3.2.1.tar.gz", hash = "sha256:712d7c1ff69ddf3f0130e94cc88c2519e720760bce45e8c330bfdcb61ab4090d"},
+    {file = "flake8-debugger-4.0.0.tar.gz", hash = "sha256:e43dc777f7db1481db473210101ec2df2bd39a45b149d7218a618e954177eda6"},
+    {file = "flake8_debugger-4.0.0-py3-none-any.whl", hash = "sha256:82e64faa72e18d1bdd0000407502ebb8ecffa7bc027c62b9d4110ce27c091032"},
 ]
 flake8-django = [
     {file = "flake8-django-1.1.1.tar.gz", hash = "sha256:fb4e8f669d3cf44297bb6e1c5d0a358ab0aba373cd4c69268cf2798de6bcbd9b"},
@@ -5055,8 +5057,8 @@ standardjson = [
     {file = "standardjson-0.3.1.tar.gz", hash = "sha256:71b7b0a649d5e3bd343a02737e752c054c218242dcaa739abab98086e537fbab"},
 ]
 stevedore = [
-    {file = "stevedore-3.2.2-py3-none-any.whl", hash = "sha256:5e1ab03eaae06ef6ce23859402de785f08d97780ed774948ef16c4652c41bc62"},
-    {file = "stevedore-3.2.2.tar.gz", hash = "sha256:f845868b3a3a77a2489d226568abe7328b5c2d4f6a011cc759dfa99144a521f0"},
+    {file = "stevedore-3.3.0-py3-none-any.whl", hash = "sha256:50d7b78fbaf0d04cd62411188fa7eedcb03eb7f4c4b37005615ceebe582aa82a"},
+    {file = "stevedore-3.3.0.tar.gz", hash = "sha256:3a5bbd0652bf552748871eaa73a4a8dc2899786bc497a2aa1fcb4dcdb0debeee"},
 ]
 tenacity = [
     {file = "tenacity-5.1.5-py2.py3-none-any.whl", hash = "sha256:3a916e734559f1baa2cab965ee00061540c41db71c3bf25375b81540a19758fc"},
@@ -5247,8 +5249,8 @@ wrapt = [
     {file = "wrapt-1.12.1.tar.gz", hash = "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"},
 ]
 youtube-dl = [
-    {file = "youtube_dl-2020.11.26-py2.py3-none-any.whl", hash = "sha256:be0b605c65adbcda2844806359478fe88101def37c994f19c52fad45232af7cc"},
-    {file = "youtube_dl-2020.11.26.tar.gz", hash = "sha256:3d52d2c969ec9521a086c43f809fd7545708b7ba24d7379fb123b5438ba691e1"},
+    {file = "youtube_dl-2020.11.29-py2.py3-none-any.whl", hash = "sha256:ef2d60d5a963da54585fc80331fba46d15f45c0a89b85dbddc3b13c9cdc84e63"},
+    {file = "youtube_dl-2020.11.29.tar.gz", hash = "sha256:849d2a85ee99e5caafc8d52572bb603c4ae020dfb615a4d51c3bc90787d40df3"},
 ]
 zipp = [
     {file = "zipp-3.4.0-py3-none-any.whl", hash = "sha256:102c24ef8f171fd729d46599845e95c7ab894a4cf45f5de11a44cc7444fb1108"},

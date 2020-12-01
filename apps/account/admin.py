@@ -6,8 +6,8 @@ from django.contrib.auth.models import Group, Permission
 from social_django.admin import AssociationOption, NonceOption, UserSocialAuthOption
 from social_django.models import Association, Nonce, UserSocialAuth
 
-from apps.account.models import User
 from admin import TabularInline, admin_site
+from apps.account.models import User
 
 EMAIL_FIELD = 'email'
 USERNAME_FIELD = 'username'

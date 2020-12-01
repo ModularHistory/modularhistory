@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.models import Model
@@ -29,11 +30,22 @@ class Affiliation(_Engagement):
     """An affiliation of entities."""
 
     entity = ForeignKey(
-        'entities.Entity', related_name='affiliations', on_delete=CASCADE
+        to='entities.Entity',
+        on_delete=CASCADE,
+        related_name='affiliations',
+        verbose_name=_('entity'),
     )
-    affiliated_entity = ForeignKey('entities.Entity', on_delete=CASCADE)
+    affiliated_entity = ForeignKey(
+        to='entities.Entity',
+        on_delete=CASCADE,
+        verbose_name=_('affiliated entity'),
+    )
     roles = ManyToManyField(
-        'Role', related_name='affiliations', through='RoleFulfillment', blank=True
+        to='Role',
+        related_name='affiliations',
+        through='RoleFulfillment',
+        blank=True,
+        verbose_name=_('roles'),
     )
 
     class Meta:

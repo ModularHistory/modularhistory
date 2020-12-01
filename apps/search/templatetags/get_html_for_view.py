@@ -6,8 +6,8 @@ from django.template import Library, loader
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.models import Model
 from apps.search.templatetags.highlight import highlight
+from modularhistory.models import Model
 
 register = Library()
 

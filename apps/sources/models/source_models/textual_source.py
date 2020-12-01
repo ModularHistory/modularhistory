@@ -2,8 +2,8 @@ from typing import Optional
 
 from django.db.models import SET_NULL, ForeignKey
 
-from modularhistory.fields import ExtraField, HistoricDateTimeField
 from apps.sources.models.source import Source
+from modularhistory.fields import ExtraField, HistoricDateTimeField
 
 JSON_FIELD_NAME = 'extra'
 

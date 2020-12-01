@@ -231,21 +231,6 @@ class Model(DjangoModel):
         return object_html
 
     @classmethod
-    def get_object_from_placeholder(
-        cls, match: Match, serialize: bool = False
-    ) -> Union['Model', Dict]:
-        """Given a regex match of a model instance placeholder, return the instance."""
-        if not cls.get_admin_placeholder_regex().match(match.group(0)):
-            raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
-        key = match.group(PlaceholderGroups.PK).strip()
-        logging.debug(f'Retrieving {cls.__name__} {key}...')
-        model_instance: 'Model' = cls.objects.get(pk=key)
-        logging.debug(f'Retrieved {cls.__name__} {key}')
-        if serialize:
-            return model_instance.serialize()
-        return model_instance
-
-    @classmethod
     def get_updated_placeholder(cls, match: Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
         if not match:

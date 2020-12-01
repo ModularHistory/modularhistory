@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from django.db.models import Q
 
-from modularhistory.models.manager import TypedModelManager
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
+from modularhistory.models.manager import TypedModelManager
 
 
 class SourceManager(TypedModelManager, SearchableModelManager):

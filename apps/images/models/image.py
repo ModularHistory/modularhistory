@@ -21,7 +21,6 @@ from modularhistory.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from modularhistory.utils.html import prettify
 from modularhistory.utils.string import components_to_string
 
 # from image_cropping import ImageRatioField
@@ -215,7 +214,7 @@ class Image(MediaModel):
             if preretrieved_html:
                 return preretrieved_html.strip()
         try:
-            image = cls.get_object_from_placeholder(match)
+            image = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         except ValueError as error:  # legacy key
             # Update key if necessary
             key = match.group(PlaceholderGroups.PK).strip()
@@ -235,5 +234,5 @@ class Image(MediaModel):
             image_html = f'<div class="float-right pull-right">{image_html}</div>'
         elif width < CENTER_UPPER_WIDTH_LIMIT:
             image_html = f'<div style="text-align: center">{image_html}</div>'
-        image_html = prettify(image_html).strip()
+        image_html = image_html.strip()
         return image_html

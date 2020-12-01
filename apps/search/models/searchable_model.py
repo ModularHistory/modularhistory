@@ -11,11 +11,11 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
+from apps.topics.models.taggable_model import TaggableModel
+from apps.verifications.models import VerifiableModel
 from modularhistory.models.model import ModelSerializer
 from modularhistory.models.model_with_computations import ModelWithComputations
 from modularhistory.utils.html import soupify
-from apps.topics.models.taggable_model import TaggableModel
-from apps.verifications.models import VerifiableModel
 
 if TYPE_CHECKING:
     from apps.search.models.manager import SearchableModelManager

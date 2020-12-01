@@ -9,8 +9,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.images.models import Image
 from apps.images.models.model_with_images import ModelWithImages
-from modularhistory.fields import HistoricDateTimeField, HTMLField
-from modularhistory.utils.html import soupify
 from apps.occurrences.manager import OccurrenceManager
 from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.occurrences.serializers import OccurrenceSerializer
@@ -18,6 +16,8 @@ from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
+from modularhistory.fields import HistoricDateTimeField, HTMLField
+from modularhistory.utils.html import soupify
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager

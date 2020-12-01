@@ -4,8 +4,8 @@ import re
 from typing import Optional
 
 from admin import GenericTabularInline, TabularInline
-from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from apps.quotes import models
+from modularhistory.constants.misc import OCCURRENCE_CT_ID
 
 
 class AttributeesInline(TabularInline):

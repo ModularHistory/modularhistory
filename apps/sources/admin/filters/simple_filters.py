@@ -4,8 +4,8 @@ from django.db.models import Count, Q
 
 from admin.list_filters import BooleanListFilter
 from admin.list_filters import TypeFilter as BaseTypeFilter
-from modularhistory.constants.strings import EMPTY_STRING, NO, YES
 from apps.sources.models import Source
+from modularhistory.constants.strings import EMPTY_STRING, NO, YES
 
 
 class HasContainerFilter(BooleanListFilter):

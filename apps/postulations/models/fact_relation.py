@@ -2,8 +2,8 @@
 
 from django.db import models
 
-from modularhistory.models import Model
 from apps.topics.models.topic import Topic
+from modularhistory.models import Model
 
 
 class FactRelation(Model):

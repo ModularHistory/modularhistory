@@ -11,12 +11,12 @@ from django.utils.html import format_html
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
+from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
+from apps.topics.models.taggable_model import TaggableModel
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ArrayField, HistoricDateTimeField, HTMLField
 from modularhistory.models import ModelWithComputations, TypedModel, retrieve_or_compute
 from modularhistory.structures import HistoricDateTime as DateTime
-from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
-from apps.topics.models.taggable_model import TaggableModel
 
 if TYPE_CHECKING:
     from apps.entities.models import Categorization

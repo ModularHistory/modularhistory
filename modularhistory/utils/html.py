@@ -3,6 +3,8 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 
 from modularhistory.utils.string import components_to_string
+from html.parser import HTMLParser as BaseHTMLParser
+from html import escape
 
 NEW_TAB = '_blank'
 
@@ -41,5 +43,4 @@ def escape_quotes(html: str) -> str:
 
 def prettify(html: str) -> str:
     """Return prettified HTML."""
-    # Use 'html.parser' so that <html> and <body> tags aren't added.
-    return soupify(html, features='html.parser').prettify()
+    raise NotImplementedError

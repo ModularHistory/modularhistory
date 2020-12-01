@@ -4,9 +4,9 @@ from typing import Dict
 
 from django.views import generic
 
-from modularhistory.constants.misc import IMAGE_CT_ID, OCCURRENCE_CT_ID, SOURCE_CT_ID
 from apps.quotes.models import Quote
 from apps.search.forms import SearchForm
+from modularhistory.constants.misc import IMAGE_CT_ID, OCCURRENCE_CT_ID, SOURCE_CT_ID
 
 
 class ListView(generic.list.ListView):

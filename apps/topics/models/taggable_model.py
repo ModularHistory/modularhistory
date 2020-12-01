@@ -9,8 +9,8 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
-from modularhistory.models import Model, retrieve_or_compute
 from apps.topics.models import Topic
+from modularhistory.models import Model, retrieve_or_compute
 
 
 class TaggableModel(Model):

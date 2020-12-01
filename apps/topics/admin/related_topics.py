@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, Optional
 from django.contrib.admin import SimpleListFilter
 
 from admin import GenericTabularInline
-from modularhistory.constants.strings import NO, YES
 from apps.topics.models import TopicRelation
+from modularhistory.constants.strings import NO, YES
 
 if TYPE_CHECKING:
     from apps.topics.models.taggable_model import TaggableModel

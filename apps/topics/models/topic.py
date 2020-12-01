@@ -4,9 +4,9 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from gm2m import GM2MField as GenericManyToManyField
 
+from apps.topics.models.topic_relation import TopicRelation
 from modularhistory.fields import ArrayField, HTMLField
 from modularhistory.models import Model, ModelWithComputations, retrieve_or_compute
-from apps.topics.models.topic_relation import TopicRelation
 
 KEY_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
