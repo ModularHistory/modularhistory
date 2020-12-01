@@ -10,9 +10,9 @@
         {{ quote.attributee_html }}{% if quote.date_html %}, {{ quote.date_html }}{% endif %}
     </h2>
     <div class="card-text">
-        {% if quote.primary_image %}
+        {% if quote.serialized_images %}
             <div class="img-container" style="max-width: 44%">
-                {{ quote.primary_image|get_html_for_view:"card" }}
+                {{ quote.serialized_images|first|get_html_for_view:"card" }}
             </div>
         {% endif %}
         {% if request.user.is_superuser %}

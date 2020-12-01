@@ -24,15 +24,14 @@
             {% for quote in entity.quotes.all %}
                 <hr style="clear: both" />
                 <div class="m-2" data-key="{{ quote.slug }}" data-href="{% block detail_url %}{% endblock %}">
-                    {% if quote.primary_image %}
+                    {% if quote.serialized_images %}
                         {% if quote.html|length > 1500 or entity.quotes.all|length == 1 %}
                             <div class="img-container">
-                                {{ quote.primary_image|get_html_for_view:"card" }}
+                                {{ quote.serialized_images|first|get_html_for_view:"card" }}
                             </div>
                         {% endif %}
                     {% endif %}
                     {% if quote.date_string %}
-                        <!--Title-->
                         <h4 class="card-title text-center">
                             <small>
                                 {% if quote.date_html %}

@@ -1,5 +1,6 @@
 """Classes for models with related entities."""
 
+import logging
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence
 
 from modularhistory.models import Model, retrieve_or_compute
@@ -31,6 +32,7 @@ class ModelWithImages(Model):
         try:
             return self.serialized_images[0]
         except IndexError:
+            logging.info(f'No image could be retrieved for {self}')
             return None
 
     @property  # type: ignore

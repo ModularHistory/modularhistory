@@ -6,11 +6,6 @@
         {% if occurrence.date %}{{ occurrence.date}}{% else %}{{occurrence.year }}{% endif %}
     </h4>
     <div class="card-text">
-        {% if occurrence.primary_image %}
-            <div style="float:right; max-width:33%;">
-                {{ occurrence.primary_image|get_html_for_view:"card" }}
-            </div>
-        {% endif %}
         <div class="lead">
             {{ occurrence.summary.html }}
         </div>

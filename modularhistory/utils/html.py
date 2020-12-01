@@ -1,10 +1,10 @@
+from html import escape
+from html.parser import HTMLParser as BaseHTMLParser
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
 
 from modularhistory.utils.string import components_to_string
-from html.parser import HTMLParser as BaseHTMLParser
-from html import escape
 
 NEW_TAB = '_blank'
 

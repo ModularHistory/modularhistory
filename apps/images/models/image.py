@@ -8,7 +8,6 @@ from django.db.models import JSONField
 from django.template.loader import render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-
 # from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.files import get_thumbnailer
 

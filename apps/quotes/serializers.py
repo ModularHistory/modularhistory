@@ -20,7 +20,7 @@ class QuoteSerializer(SearchableModelSerializer):
     has_multiple_attributees = serpy.BoolField()
     attributee_html = serpy.Field()
     date_html = serpy.Field()
-    primary_image = serpy.Field()
+    serialized_images = serpy.Field()
     serialized_citations = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa

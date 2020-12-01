@@ -1,8 +1,8 @@
 """Model classes for postulations."""
 
 import logging
-from logging import log
 import re
+from logging import log
 from typing import Optional
 
 from django.db import models

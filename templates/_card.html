@@ -5,10 +5,9 @@
 <div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.slug }}"
      data-href="{% block detail_url %}{% endblock %}"
      style="{% block card_styles %}{% endblock %}">
-    {% block top %}
-    {% endblock %}
+    {% block top %}{% endblock %}
     {% if not object|is_instance:'images.Image' %}
-        {% with image=object.primary_image %}
+        {% with image=object.serialized_images|first %}
             <div{% if image %} class="img-bg lazy-bg"
                  data-img="{% media image.src_url %}"
                  style="background-position: {{ image.bg_img_position }};
@@ -26,7 +25,6 @@
                         {% else %}
                             {{ object.date.year }}
                         {% endif %}
-                        {{ object.slug }}
                     </small>
                 </h4>
             {% endif %}
