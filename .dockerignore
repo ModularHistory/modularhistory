@@ -6,6 +6,9 @@
 setup.sh
 clean_data.py
 
+# Media files
+/media/
+
 # Django
 *.log
 *.pot
