@@ -76,6 +76,13 @@ jobs:
     - name: Set up ModularHistory
       if: ${{ success() }}
       run: ./setup.sh --noninteractive --skip-dev-dependencies
+
+    # Collect static files
+    - name: Collect static files
+      if: ${{ success() }}
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      run: python manage.py collectstatic --noinput
     
     # Bump version and push tag
     - name: Bump version and push tag
@@ -84,6 +91,35 @@ jobs:
       uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+    
+    # Build and push the Docker image
+    - name: Build and push Docker image
+      id: build-image
+      run: |
+        echo "Logging in to GitHub container registry..."
+        echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
+        echo "Pulling latest image..."
+        # docker pull ghcr.io/modularhistory/modularhistory:latest
+        echo "Building new image..."
+        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" --tag ghcr.io/modularhistory/modularhistory:${{ github.sha }} 
+        # --cache-from ghcr.io/modularhistory/modularhistory:latest
+        echo "Pushing new image to the container registry..."
+        docker push ghcr.io/modularhistory/modularhistory:${{ github.sha }}
+
+    - name: Deploy to kfred.dyndns.org
+      run: |
+        mkdir -p ~/.ssh
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
+        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml modularhistory@kfred.dyndns.org:/modularhistory
+        ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'
+          cd /modularhistory
+          source .env
+          echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u iacobfred --password-stdin
+          docker pull ghcr.io/modularhistory/modularhistory:${{ github.sha }}
+          docker-compose up -d nginx
+        ENDSSH
     
     # Setup gcloud environment
     - name: Setup gcloud environment
@@ -104,42 +140,6 @@ jobs:
       run: |
         echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
         envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
-
-    # Collect static files
-    - name: Collect static files
-      if: ${{ success() }}
-      env:
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      run: python manage.py collectstatic --noinput
-    
-    # Build and push the Docker image
-    - name: Build and push Docker image
-      id: build-image
-      run: |
-        echo "Logging in to GitHub container registry..."
-        echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
-        echo "Pulling latest image..."
-        # docker pull ghcr.io/ModularHistory/modularhistory:latest
-        echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" --tag ghcr.io/modularhistory/modularhistory:${{ github.sha }} 
-        # --cache-from ghcr.io/ModularHistory/modularhistory:latest
-        echo "Pushing new image to the container registry..."
-        docker push ghcr.io/ModularHistory/modularhistory:${{ github.sha }}
-
-    - name: Deploy to kfred.dyndns.org
-      run: |
-        mkdir -p ~/.ssh
-        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-        ssh-keyscan github.com >> ~/.ssh/known_hosts
-        ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
-        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml modularhistory@kfred.dyndns.org:/modularhistory
-        ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'
-          cd /modularhistory
-          source .env
-          echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u iacobfred --password-stdin
-          docker pull ghcr.io/ModularHistory/modularhistory:${{ github.sha }}
-          docker-compose up -d web
-        ENDSSH
 
     # Deploy to Google Cloud
     - name: Deploy to Google Cloud
