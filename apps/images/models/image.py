@@ -8,6 +8,7 @@ from django.db.models import JSONField
 from django.template.loader import render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+
 # from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.files import get_thumbnailer
 
@@ -22,7 +23,7 @@ from modularhistory.fields.html_field import (
 )
 from modularhistory.utils.string import components_to_string
 
-# from image_cropping import ImageRatioField
+from image_cropping import ImageRatioField
 
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
@@ -67,13 +68,13 @@ class Image(MediaModel):
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
 
-    # # https://github.com/jonasundderwolf/django-image-cropping
-    # cropping = ImageRatioField(
-    #     IMAGE_FIELD_NAME,
-    #     free_crop=True,
-    #     allow_fullsize=True,
-    #     help_text='Not yet fully implemented.',
-    # )
+    # https://github.com/jonasundderwolf/django-image-cropping
+    cropping = ImageRatioField(
+        IMAGE_FIELD_NAME,
+        free_crop=True,
+        allow_fullsize=True,
+        help_text='Not yet fully implemented.',
+    )
 
     class Meta:
         """

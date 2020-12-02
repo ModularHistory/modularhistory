@@ -666,11 +666,11 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',
     'debug_toolbar.panels.signals.SignalsPanel',
-    # 'debug_toolbar.panels.logging.LoggingPanel',
-    # 'debug_toolbar.panels.redirects.RedirectsPanel',
-    # 'debug_toolbar.panels.profiling.ProfilingPanel',
-    # 'debug_toolbar.panels.settings.SettingsPanel',
-    # 'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.versions.VersionsPanel',
 ]
 
 RAPIDAPI_KEY = config('RAPIDAPI_KEY', default='')
@@ -691,13 +691,12 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
 
-# TODO
-# # http://127.0.0.1:8000/plate/
-# SPAGHETTI_SAUCE = {
-#     'apps': ['sources', 'quotes'],
-#     'show_fields': False,
-#     'exclude': {'account': ['user']},
-# }
+# http://127.0.0.1:8000/plate/
+SPAGHETTI_SAUCE = {
+    'apps': ['sources', 'quotes'],
+    'show_fields': False,
+    'exclude': {'account': ['user']},
+}
 
 # Caching settings
 use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', cast=bool, default=False)
