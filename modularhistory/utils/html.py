@@ -1,5 +1,3 @@
-from html import escape
-from html.parser import HTMLParser as BaseHTMLParser
 from typing import List, Optional
 
 from bs4 import BeautifulSoup

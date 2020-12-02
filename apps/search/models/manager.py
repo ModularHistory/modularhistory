@@ -1,6 +1,5 @@
 """Manager classes for ModularHistory's models."""
 
-import logging
 from typing import Any, Dict, List, Optional
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector

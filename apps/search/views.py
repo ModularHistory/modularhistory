@@ -109,7 +109,7 @@ def _words_api(word: str) -> Dict:
         'x-rapidapi-key': settings.RAPIDAPI_KEY,
         'x-rapidapi-host': host,
     }
-    connection = client.HTTPSConnection(host)
+    connection = client.HTTPSConnection(host)  # noqa: S309
     connection.request('GET', request_url, headers=headers)
     logging.debug(f'Made Words API request to {request_url}...')
     data = json.loads(connection.getresponse().read().decode('utf-8'))

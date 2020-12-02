@@ -2,10 +2,8 @@
 
 import logging
 import re
-from logging import log
 from typing import Optional
 
-import serpy
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
