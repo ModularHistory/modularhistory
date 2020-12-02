@@ -105,18 +105,15 @@ jobs:
         # --cache-from ghcr.io/modularhistory/modularhistory:latest
         echo "Pushing new image to the container registry..."
         docker push ghcr.io/modularhistory/modularhistory:${{ github.sha }}
-
-    - name: Deploy to kfred.dyndns.org
-      run: |
         mkdir -p ~/.ssh
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
-        ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
+        ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"
         scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml Dockerfile modularhistory@kfred.dyndns.org:/modularhistory
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'
           cd /modularhistory
           source .env
-          echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u iacobfred --password-stdin
+          echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
           docker pull ghcr.io/modularhistory/modularhistory:${{ github.sha }}
           docker-compose up -d nginx
         ENDSSH

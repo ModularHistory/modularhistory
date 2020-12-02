@@ -36,7 +36,7 @@ services:
         ipv4_address: 172.17.0.5
   
   modularhistory:
-    build: .
+    build: ghcr.io/modularhistory/modularhistory
     container_name: modularhistory
     env_file: .env
     environment:

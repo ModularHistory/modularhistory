@@ -54,6 +54,7 @@ backups/
 .mypy_cache/
 .nox/
 .pytest_cache/
+.selenium/
 .tox/
 htmlcov/
 .coverage

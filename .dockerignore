@@ -43,14 +43,13 @@ artifacts/
 backups/
 
 # Testing / linting / coverage reports
-tests/
-tests.py
 .cache
 .coverage_html/
 .hypothesis/
 .mypy_cache/
 .nox/
 .pytest_cache/
+.selenium/
 .tox/
 htmlcov/
 .coverage

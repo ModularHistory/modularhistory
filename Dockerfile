@@ -1,9 +1,6 @@
 FROM python:3.7-buster
 
-ARG ENVIRONMENT=production
-
 ENV \
-  ENVIRONMENT=${ENVIRONMENT} \
   PYTHONUNBUFFERED=1 \
   PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
@@ -22,8 +19,7 @@ WORKDIR /modularhistory
 # Install project dependencies
 COPY poetry.lock pyproject.toml /modularhistory/
 RUN poetry config virtualenvs.create false && \
-  poetry install $(test "$ENVIRONMENT" = production && echo "--no-dev") \
-  --no-interaction --no-ansi
+  poetry install --no-dev --no-interaction --no-ansi
 
 # Add source code
 COPY . /modularhistory

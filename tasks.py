@@ -91,27 +91,6 @@ def commit(context):
 
 
 @task
-def deploy(context):
-    """Deploy ModularHistory."""
-    # TODO
-    is_implemented = False
-    if is_implemented:
-        context.run('python manage.py collectstatic')
-        app_file = 'gc_app.yaml'
-        env_file = 'gc_env.yaml'
-        perm_env_file = 'gc_env.yaml.perm'
-        temp_env_file = 'gc_env.yaml.tmp'
-        # TODO: load secrets to env
-        context.run(
-            f'cp {env_file} {perm_env_file} && envsubst < {env_file} > {temp_env_file} '
-            f'&& mv {temp_env_file} {env_file} && gcloud app deploy {app_file}'
-        )
-        context.run(f'mv {perm_env_file} {env_file}')
-    else:
-        raise NotImplementedError
-
-
-@task
 def flake8(context, *args):
     """Run flake8 linter."""
     lint_with_flake8(interactive=True)
@@ -240,4 +219,5 @@ def test(context, docker=False):
             'docker build -t modularhistory/modularhistory . && docker-compose up'
         )
     context.run(command)
+    context.run('rm -r archived_logs && mv latest_logs .selenium')
     context.run('coverage combine')
