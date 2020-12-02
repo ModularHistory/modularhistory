@@ -109,6 +109,8 @@ jobs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"
+        pwd
+        ls
         # TODO: echo secrets into an .env file and scp it, too
         scp -o StrictHostKeyChecking=no -P 2200 -r ./docker-compose.yml Dockerfile modularhistory@kfred.dyndns.org:/modularhistory
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'

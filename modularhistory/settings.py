@@ -735,11 +735,6 @@ Q_CLUSTER = {
     # }
 }
 
-# # Celery settings
-# CELERY_RESULT_BACKEND = 'django-db'
-# CELERY_CACHE_BACKEND = 'django-cache'
-# CELERY_BROKER_URL = 'amqp://localhost'
-
 VUE_FRONTEND_DIR = os.path.join(BASE_DIR, 'client')
 
 WEBPACK_LOADER = {
