@@ -58,6 +58,7 @@ jobs:
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_FILE }}
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      CR_PAT: ${{ secrets.CR_PAT }}
     
     steps:
     # Check out master
@@ -112,12 +113,16 @@ jobs:
       run: python manage.py collectstatic --noinput
     
     # Build and push the Docker image
-    - name: Build and push image to ACR
+    - name: Build and push Docker image
       id: build-image
       run: |
-        echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u iacobfred --password-stdin
+        echo "Logging in to GitHub container registry..."
+        echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
+        echo "Pulling latest image..."
         docker pull ghcr.io/ModularHistory/modularhistory:latest
-        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" --tag ghcr.io/ModularHistory/modularhistory:${{ github.sha }} --cache-from ghcr.io/ModularHistory/modularhistory:latest
+        echo "Building new image..."
+        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" --tag ghcr.io/modularhistory/modularhistory:${{ github.sha }} --cache-from ghcr.io/ModularHistory/modularhistory:latest
+        echo "Pushing new image to the container registry..."
         docker push ghcr.io/ModularHistory/modularhistory:${{ github.sha }}
 
     - name: Deploy to kfred.dyndns.org

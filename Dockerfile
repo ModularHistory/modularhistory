@@ -2,13 +2,6 @@ FROM python:3.7-buster
 
 ARG ENVIRONMENT=production
 
-RUN apt-get update && apt-get install -y vim nginx
-
-COPY nginx.default /etc/nginx/sites-available/default
-
-RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
-  ln -sf /dev/stderr /var/log/nginx/error.log
-
 ENV \
   ENVIRONMENT=${ENVIRONMENT} \
   PYTHONUNBUFFERED=1 \
