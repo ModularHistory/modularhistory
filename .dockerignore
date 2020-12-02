@@ -2,20 +2,16 @@
 .git
 .gitignore
 
-# Ungathered static files
-static/
-
-# Media files
-media/
-
 # User scripts
+setup.sh
 clean_data.py
 
-# Environment & credentials
-.env
-*credentials.json
-.credentials/
-.secrets/
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
 
 # Legacy dependency management
 requirements.txt
@@ -28,18 +24,6 @@ venv/
 # Artifacts
 .artifacts/
 artifacts/
-
-# Django
-/media/
-/static/
-*.log
-*.pot
-*.pyc
-__pycache__
-db.sqlite3
-
-# Node JS
-node_modules/
 
 # Python
 *.py[cod]
@@ -56,6 +40,8 @@ node_modules/
 backups/
 
 # Testing / linting / coverage reports
+tests/
+tests.py
 .cache
 .coverage_html/
 .hypothesis/
@@ -84,7 +70,7 @@ wheels/
 *.spec
 
 # Node JS
-node_modules
+node_modules/
 /dist
 .env.local
 .env.*.local
@@ -98,26 +84,8 @@ yarn-error.log*
 *.sln
 *.sw?
 
-# Exceptions (explicitly included)
-!/static/
-!.credentials/
-!.secrets/
-!*credentials.json
-
 # GitHub
 .github/
 README.md
 LICENSE.txt
 SECURITY.md
-
-# Tests
-tests/
-tests.py
-
-# User scripts
-setup.sh
-
-# PyCharm / IntelliJ
-.idea
-.idea/
-.DS_Store

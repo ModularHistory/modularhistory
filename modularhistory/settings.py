@@ -35,12 +35,13 @@ USE_PROD_DB: bool = config('USE_PROD_DB', default=IS_PROD, cast=bool)
 TESTING: bool = 'test' in sys.argv
 
 # Environment
+
 if IS_PROD:
     ENVIRONMENT = Environments.PROD
 elif os.environ.get('GITHUB_WORKFLOW'):
     ENVIRONMENT = Environments.GITHUB_TEST
 else:
-    ENVIRONMENT = Environments.DEV
+    ENVIRONMENT = config('ENVIRONMENT', default=Environments.DEV)
 
 SERVER_LOCATION = 'unknown'  # TODO
 GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
@@ -112,10 +113,14 @@ CSRF_COOKIE_SECURE = IS_PROD
 SECURE_REFERRER_POLICY = 'same-origin'
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-allowed-hosts
-ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS',
-    default='localhost, 127.0.0.1',
-    cast=lambda hosts: [string.strip() for string in hosts.split(',')],
+ALLOWED_HOSTS = (
+    ['*']
+    if ENVIRONMENT == Environments.DEV
+    else config(
+        'ALLOWED_HOSTS',
+        default='localhost, 127.0.0.1',
+        cast=lambda hosts: [string.strip() for string in hosts.split(',')],
+    )
 )
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-internal-ips
@@ -163,6 +168,7 @@ INSTALLED_APPS = [
     # 'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'massadmin',  # https://github.com/burke-software/django-mass-edit
+    'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
@@ -705,30 +711,30 @@ if ENVIRONMENT == Environments.DEV:
             }
         }
     else:
+        # TODO: https://github.com/django-pymemcache/django-pymemcache
         CACHES = {
             'default': {
                 'BACKEND': 'djpymemcache.backend.PyMemcacheCache',
                 'LOCATION': [
                     '127.0.0.1:11211',
                 ],
-                # TODO: https://github.com/django-pymemcache/django-pymemcache
             },
         }
 
-    # https://django-q.readthedocs.io/en/latest/configure.html
-    Q_CLUSTER = {
-        # 'name': 'MongoDB',
-        # 'workers': 8,
-        # 'timeout': 60,
-        # 'retry': 70,
-        # 'queue_limit': 100,
-        'orm': 'default'
-        # TODO
-        # 'mongo': {
-        #     'host': '127.0.0.1',
-        #     'port': 27017
-        # }
-    }
+# https://django-q.readthedocs.io/en/latest/configure.html
+Q_CLUSTER = {
+    # 'name': 'MongoDB',
+    # 'workers': 8,
+    # 'timeout': 60,
+    # 'retry': 70,
+    # 'queue_limit': 100,
+    'orm': 'default'
+    # TODO
+    # 'mongo': {
+    #     'host': '127.0.0.1',
+    #     'port': 27017
+    # }
+}
 
 # # Celery settings
 # CELERY_RESULT_BACKEND = 'django-db'

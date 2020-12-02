@@ -230,7 +230,7 @@ class Image(MediaModel):
             raise TypeError(f'k{image} is not an image or dictionary.')
         image_html = render_to_string('images/_card.html', context={IMAGE_KEY: image})
         if width < FLOAT_UPPER_WIDTH_LIMIT:
-            image_html = f'<div class="float-right pull-right">{image_html}</div>'
+            image_html = f'<div class="float-right pull-right mx-3">{image_html}</div>'
         elif width < CENTER_UPPER_WIDTH_LIMIT:
             image_html = f'<div style="text-align: center">{image_html}</div>'
         image_html = image_html.strip()

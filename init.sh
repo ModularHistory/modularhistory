@@ -1,4 +1,6 @@
 #!/bin/bash
 
-set -e
-gunicorn -b 0.0.0.0:8000 modularhistory.wsgi:application --access-logfile '-' --error-logfile '-'
+python manage.py collectstatic --noinput
+python manage.py migrate
+(gunicorn modularhistory.wsgi --user www-data --bind 0.0.0.0:8010 --workers 9) & nginx -g "daemon off;"
+# (daphne modularhistory.asgi --user www-data --bind 0.0.0.0:8000) & nginx -g "daemon off;"

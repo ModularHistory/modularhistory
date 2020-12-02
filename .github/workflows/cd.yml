@@ -10,17 +10,19 @@ on:
       - '.gcloudignore'
       - '.github/**'
       - '.idea/**'
+      - '.vscode/**'
       - '**.txt'
       - '**.md'
-      - 'setup.**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     strategy:
       max-parallel: 3
       matrix:
         python-version: [3.7]
+    
     services:
       postgres:
         image: postgres:12
@@ -31,6 +33,7 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    
     env:
       ADMINS: ${{ secrets.ADMINS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -54,20 +57,25 @@ jobs:
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_FILE }}
+      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+    
     steps:
     # Check out master
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+    
     # Set up Python
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    
     # Set up ModularHistory
     - name: Set up ModularHistory
       if: ${{ success() }}
       run: ./setup.sh --noninteractive --skip-dev-dependencies
+    
     # Bump version and push tag
     - name: Bump version and push tag
       id: version
@@ -75,6 +83,7 @@ jobs:
       uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+    
     # Setup gcloud environment
     - name: Setup gcloud environment
       if: ${{ success() }}
@@ -83,25 +92,54 @@ jobs:
         project_id: modularhistory
         service_account_key: ${{ secrets.GCP_CREDENTIALS }}
         export_default_credentials: true
+
     # Print gcloud info
     - name: Print gcloud info
       if: ${{ success() }}
       run: gcloud info
+
     # Inject environment vars
     - name: Inject environment vars
       run: |
         echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
         envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
+
     # Collect static files
     - name: Collect static files
       if: ${{ success() }}
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: python manage.py collectstatic --noinput
+    
+    # Build and push the Docker image
+    - name: Build and push image to ACR
+      id: build-image
+      run: |
+        echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u iacobfred --password-stdin
+        docker pull ghcr.io/ModularHistory/modularhistory:latest
+        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" --tag ghcr.io/ModularHistory/modularhistory:${{ github.sha }} --cache-from ghcr.io/ModularHistory/modularhistory:latest
+        docker push ghcr.io/ModularHistory/modularhistory:${{ github.sha }}
+
+    - name: Deploy to kfred.dyndns.org
+      run: |
+        mkdir -p ~/.ssh
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
+        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml modularhistory@kfred.dyndns.org:/modularhistory
+        ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'
+          cd /modularhistory
+          source .env
+          echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u iacobfred --password-stdin
+          docker pull ghcr.io/ModularHistory/modularhistory:${{ github.sha }}
+          docker-compose up -d web
+        ENDSSH
+
     # Deploy to Google Cloud
     - name: Deploy to Google Cloud
       if: ${{ success() }}
       run: gcloud app deploy gc_app.yaml
+    
     # Create Sentry release
     - name: Create Sentry release
       if: ${{ success() }}

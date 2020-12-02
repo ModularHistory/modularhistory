@@ -58,8 +58,8 @@ python-versions = "*"
 
 [[package]]
 name = "appnope"
-version = "0.1.0"
-description = "Disable App Nap on OS X 10.9"
+version = "0.1.2"
+description = "Disable App Nap on macOS >= 10.9"
 category = "dev"
 optional = false
 python-versions = "*"
@@ -553,7 +553,7 @@ python-versions = "*"
 
 [[package]]
 name = "django"
-version = "3.1.3"
+version = "3.1.4"
 description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
@@ -1024,7 +1024,7 @@ tests = ["ddt (>=1.2.2,<2)", "pytest (<6)"]
 
 [[package]]
 name = "docker-image-size-limit"
-version = "0.3.0"
+version = "0.4.0"
 description = ""
 category = "dev"
 optional = false
@@ -1877,7 +1877,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "libcst"
-version = "0.3.14"
+version = "0.3.15"
 description = "A concrete syntax tree with AST-like properties for Python 3.5, 3.6, 3.7 and 3.8 programs."
 category = "main"
 optional = false
@@ -1917,12 +1917,39 @@ htmlsoup = ["beautifulsoup4"]
 source = ["Cython (>=0.29.7)"]
 
 [[package]]
+name = "markdown"
+version = "3.3.3"
+description = "Python implementation of Markdown."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
+
+[package.extras]
+testing = ["coverage", "pyyaml"]
+
+[[package]]
 name = "markupsafe"
 version = "1.1.1"
 description = "Safely add untrusted strings to HTML/XML markup."
 category = "dev"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+
+[[package]]
+name = "martor"
+version = "1.5.7"
+description = "Django Markdown Editor"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = "*"
+Markdown = "*"
+requests = "*"
 
 [[package]]
 name = "matplotlib"
@@ -3421,7 +3448,7 @@ python-versions = "*"
 
 [[package]]
 name = "youtube-dl"
-version = "2020.11.29"
+version = "2020.12.2"
 description = "YouTube video downloader"
 category = "main"
 optional = false
@@ -3455,7 +3482,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "d1121aef50a9dde2b83d167fbc5f4902f818dcb6fd2e655c1702ee3ebf2a5094"
+content-hash = "362146a267200ce9c56ec16183ddccd0acf16de0b5a458a0cf31c78508aec411"
 
 [metadata.files]
 aenum = [
@@ -3484,8 +3511,8 @@ appdirs = [
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
 ]
 appnope = [
-    {file = "appnope-0.1.0-py2.py3-none-any.whl", hash = "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0"},
-    {file = "appnope-0.1.0.tar.gz", hash = "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"},
+    {file = "appnope-0.1.2-py2.py3-none-any.whl", hash = "sha256:93aa393e9d6c54c5cd570ccadd8edad61ea0c4b9ea7a01409020c9aa019eb442"},
+    {file = "appnope-0.1.2.tar.gz", hash = "sha256:dd83cd4b5b460958838f6eb3000c660b1f9caf2a5b1de4264e941512f603258a"},
 ]
 argcomplete = [
     {file = "argcomplete-1.12.2-py2.py3-none-any.whl", hash = "sha256:17f01a9b9b9ece3e6b07058eae737ad6e10de8b4e149105f84614783913aba71"},
@@ -3778,8 +3805,8 @@ distro = [
     {file = "distro-1.5.0.tar.gz", hash = "sha256:0e58756ae38fbd8fc3020d54badb8eae17c5b9dcbed388b17bb55b8a5928df92"},
 ]
 django = [
-    {file = "Django-3.1.3-py3-none-any.whl", hash = "sha256:14a4b7cd77297fba516fc0d92444cc2e2e388aa9de32d7a68d4a83d58f5a4927"},
-    {file = "Django-3.1.3.tar.gz", hash = "sha256:14b87775ffedab2ef6299b73343d1b4b41e5d4e2aa58c6581f114dbec01e3f8f"},
+    {file = "Django-3.1.4-py3-none-any.whl", hash = "sha256:5c866205f15e7a7123f1eec6ab939d22d5bde1416635cab259684af66d8e48a2"},
+    {file = "Django-3.1.4.tar.gz", hash = "sha256:edb10b5c45e7e9c0fb1dc00b76ec7449aca258a39ffd613dbd078c51d19c9f03"},
 ]
 django-admin-autocomplete-filter = [
     {file = "django-admin-autocomplete-filter-0.6.1.tar.gz", hash = "sha256:0358594110e5e498306388a9e4a0a2b57dde3abd302f9945337396003345af04"},
@@ -3922,8 +3949,8 @@ docker-compose = [
     {file = "docker_compose-1.27.4-py2.py3-none-any.whl", hash = "sha256:84ca2edad226435e3a378ea24ca2ca4e1a77cc7c8de057e2812124c6dcb55147"},
 ]
 docker-image-size-limit = [
-    {file = "docker-image-size-limit-0.3.0.tar.gz", hash = "sha256:3ddf8a1164dcc505b89150a9150b4f788e40272599e5b52e75dcc37d9aa06a25"},
-    {file = "docker_image_size_limit-0.3.0-py3-none-any.whl", hash = "sha256:67126fce8acb66ff45d0952eb54511cad0c5bdf7cdb22720a487f04ee3da8b32"},
+    {file = "docker-image-size-limit-0.4.0.tar.gz", hash = "sha256:5a82d12a8f1bd9924873987191f9f198b004dd253ed5a29fcee5e4f7270e69ea"},
+    {file = "docker_image_size_limit-0.4.0-py3-none-any.whl", hash = "sha256:9833b8ceccc847abae0263b307ac6e40377cf1ad0bf5439a92728814c6c1bd67"},
 ]
 dockerpty = [
     {file = "dockerpty-0.4.1.tar.gz", hash = "sha256:69a9d69d573a0daa31bcd1c0774eeed5c15c295fe719c61aca550ed1393156ce"},
@@ -4291,8 +4318,8 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win_amd64.whl", hash = "sha256:59f79fef100b09564bc2df42ea2d8d21a64fdcda64979c0fa3db7bdaabaf6239"},
 ]
 libcst = [
-    {file = "libcst-0.3.14-py3-none-any.whl", hash = "sha256:f6250eaf4dadeb55943739fddb7fdfdfa118201e90c15f9ccd20679877b404ae"},
-    {file = "libcst-0.3.14.tar.gz", hash = "sha256:2ce363a6c46ac0100f6b0f72f6a4dd2116e1e1d84259e229d580d30a6d086d84"},
+    {file = "libcst-0.3.15-py3-none-any.whl", hash = "sha256:786757e9eb05f0b3349d279eb27c9a371f24e849f0cc7be119c1e6b958cd85ed"},
+    {file = "libcst-0.3.15.tar.gz", hash = "sha256:73e94ac2e7a78960ddca4d4e5250dc2e02e7ba85b29e7b2ac1b1d2bce90b4cee"},
 ]
 libsass = [
     {file = "libsass-0.20.1-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:4a246e4b88fd279abef8b669206228c92534d96ddcd0770d7012088c408dff23"},
@@ -4348,6 +4375,10 @@ lxml = [
     {file = "lxml-4.6.2-cp39-cp39-win_amd64.whl", hash = "sha256:535332fe9d00c3cd455bd3dd7d4bacab86e2d564bdf7606079160fa6251caacf"},
     {file = "lxml-4.6.2.tar.gz", hash = "sha256:cd11c7e8d21af997ee8079037fff88f16fda188a9776eb4b81c7e4c9c0a7d7fc"},
 ]
+markdown = [
+    {file = "Markdown-3.3.3-py3-none-any.whl", hash = "sha256:c109c15b7dc20a9ac454c9e6025927d44460b85bd039da028d85e2b6d0bcc328"},
+    {file = "Markdown-3.3.3.tar.gz", hash = "sha256:5d9f2b5ca24bc4c7a390d22323ca4bad200368612b5aaa7796babf971d2b2f18"},
+]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
     {file = "MarkupSafe-1.1.1-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:e249096428b3ae81b08327a63a485ad0878de3fb939049038579ac0ef61e17e7"},
@@ -4382,6 +4413,9 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1-cp38-cp38-win32.whl", hash = "sha256:596510de112c685489095da617b5bcbbac7dd6384aeebeda4df6025d0256a81b"},
     {file = "MarkupSafe-1.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:e8313f01ba26fbbe36c7be1966a7b7424942f670f38e666995b88d012765b9be"},
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
+]
+martor = [
+    {file = "martor-1.5.7.tar.gz", hash = "sha256:686b09dff5e334d6da9ef090f79b5720e66a76fa6ddc6c98c3c2345f6259278c"},
 ]
 matplotlib = [
     {file = "matplotlib-3.3.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:b2a5e1f637a92bb6f3526cc54cc8af0401112e81ce5cba6368a1b7908f9e18bc"},
@@ -5249,8 +5283,8 @@ wrapt = [
     {file = "wrapt-1.12.1.tar.gz", hash = "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"},
 ]
 youtube-dl = [
-    {file = "youtube_dl-2020.11.29-py2.py3-none-any.whl", hash = "sha256:ef2d60d5a963da54585fc80331fba46d15f45c0a89b85dbddc3b13c9cdc84e63"},
-    {file = "youtube_dl-2020.11.29.tar.gz", hash = "sha256:849d2a85ee99e5caafc8d52572bb603c4ae020dfb615a4d51c3bc90787d40df3"},
+    {file = "youtube_dl-2020.12.2-py2.py3-none-any.whl", hash = "sha256:daa514c0d36af478fe249ea93ca63ae3aaa60ac5f82aa3d5514bce9ba7ed8451"},
+    {file = "youtube_dl-2020.12.2.tar.gz", hash = "sha256:bc82acb0b59b25b822fad85bef0cbe78e5754ca532e3bd6899fe06386e2b8e7c"},
 ]
 zipp = [
     {file = "zipp-3.4.0-py3-none-any.whl", hash = "sha256:102c24ef8f171fd729d46599845e95c7ab894a4cf45f5de11a44cc7444fb1108"},
