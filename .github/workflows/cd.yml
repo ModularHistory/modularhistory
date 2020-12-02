@@ -101,7 +101,7 @@ jobs:
         echo "Pulling latest image..."
         # docker pull ghcr.io/modularhistory/modularhistory:latest
         echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f  "Dockerfile" --tag ghcr.io/modularhistory/modularhistory:${{ github.sha }} 
+        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" --tag ghcr.io/modularhistory/modularhistory:${{ github.sha }} 
         # --cache-from ghcr.io/modularhistory/modularhistory:latest
         echo "Pushing new image to the container registry..."
         docker push ghcr.io/modularhistory/modularhistory:${{ github.sha }}
@@ -112,7 +112,7 @@ jobs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
-        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml modularhistory@kfred.dyndns.org:/modularhistory
+        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml Dockerfile modularhistory@kfred.dyndns.org:/modularhistory
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'
           cd /modularhistory
           source .env
