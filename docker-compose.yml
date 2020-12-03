@@ -22,7 +22,7 @@ services:
       - -m 64
   
   modularhistory:
-    build: ghcr.io/modularhistory/modularhistory
+    build: .
     container_name: modularhistory
     env_file: .env
     environment:

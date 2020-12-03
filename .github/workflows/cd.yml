@@ -97,6 +97,7 @@ jobs:
       run: |
         echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
         envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
+        envsubst < env.yaml > env.yaml.tmp && mv env.yaml.tmp env.yaml
         while read assign; do echo "$assign"; done < <(gsed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' env.yaml) > .env
     
     # Build and push the Docker image
@@ -106,10 +107,9 @@ jobs:
         echo "Logging in to GitHub container registry..."
         echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
         echo "Pulling latest image..."
-        # docker pull ghcr.io/modularhistory/modularhistory:latest
+        docker pull ghcr.io/modularhistory/modularhistory:latest
         echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" --tag ghcr.io/modularhistory/modularhistory:${{ github.sha }} 
-        # --cache-from ghcr.io/modularhistory/modularhistory:latest
+        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" --tag ghcr.io/modularhistory/modularhistory:${{ github.sha }} --cache-from ghcr.io/modularhistory/modularhistory:latest
         echo "Pushing new image to the container registry..."
         docker push ghcr.io/modularhistory/modularhistory:${{ github.sha }}
         mkdir -p ~/.ssh
@@ -120,9 +120,10 @@ jobs:
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'
           cd ~/modularhistory
           source .env
+          echo "CR_PAT=$CR_PAT" >> .env
           echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
           docker pull ghcr.io/modularhistory/modularhistory:${{ github.sha }}
-          docker-compose up -d nginx
+          # docker-compose up -d nginx
         ENDSSH
     
     # Setup gcloud environment
