@@ -150,13 +150,12 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.forms',
-    'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
+    'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_replicated',  # https://github.com/yandex/django_replicated
-    # 'django_spaghetti',  # https://github.com/LegoStormtroopr/django-spaghetti-and-meatballs  # TODO
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_q',  # https://django-q.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html

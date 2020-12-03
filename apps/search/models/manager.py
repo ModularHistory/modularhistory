@@ -56,7 +56,7 @@ class SearchableModelQuerySet(QuerySet):
 class SearchableModelManager(Manager):
     """Manager for searchable models."""
 
-    def get_queryset(self) -> SearchableModelQuerySet:
+    def get_queryset(self) -> 'SearchableModelQuerySet':
         """Override get_queryset to use SearchableModelQuerySet."""
         return SearchableModelQuerySet(self.model, using=self._db)
 
@@ -70,7 +70,7 @@ class SearchableModelManager(Manager):
         rank: bool = False,
         suppress_unverified: bool = True,
         suppress_hidden: bool = True,
-    ) -> SearchableModelQuerySet:
+    ) -> 'SearchableModelQuerySet':
         """Return a queryset of search results."""
         qs = self.get_queryset().prefetch_related('tags__topic')
         if suppress_unverified:

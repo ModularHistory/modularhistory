@@ -1,6 +1,5 @@
 """Classes for models with related entities."""
 
-import logging
 import re
 from typing import TYPE_CHECKING, Dict, List, Optional
 

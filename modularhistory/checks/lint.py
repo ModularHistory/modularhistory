@@ -17,6 +17,7 @@ from modularhistory.linters.mypy import mypy
 
 
 def print_result(task):
+    """Print the task result."""
     print(task.result)
 
 

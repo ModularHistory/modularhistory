@@ -127,6 +127,8 @@ def _words_api(word: str) -> Dict:
 
 def _google_dict_api(word: str) -> Dict:
     """
+    Return a response from Google Dictionary API.
+
     Example response:
     [
         {
@@ -182,6 +184,7 @@ def _google_dict_api(word: str) -> Dict:
             ]
         }
     ]
+
     """
     host = 'api.dictionaryapi.dev'
     request_url = f'/api/v2/entries/en/{word}'

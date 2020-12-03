@@ -13,7 +13,6 @@ from typing import (
     Pattern,
     Tuple,
     Type,
-    Union,
 )
 
 import serpy

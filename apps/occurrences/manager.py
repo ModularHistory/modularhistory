@@ -19,7 +19,7 @@ class OccurrenceManager(SearchableModelManager):
         rank: bool = False,
         suppress_unverified: bool = True,
         suppress_hidden: bool = True,
-    ) -> SearchableModelQuerySet:
+    ) -> 'SearchableModelQuerySet':
         """Return search results from apps.occurrences."""
         qs = (
             super()

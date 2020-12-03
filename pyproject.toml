@@ -8,11 +8,7 @@ skip-string-normalization = true
 
 [tool.coverage.run]
 # https://coverage.readthedocs.io/en/latest/config.html#run
-omit = [
-    ".venv/",
-    ".nox/",
-    ".hypothesis/",
-]
+omit = [".venv/", ".nox/", ".hypothesis/"]
 parallel = true
 
 [tool.coverage.html]
@@ -23,11 +19,11 @@ directory = ".coverage_html"
 # https://github.com/timothycrosley/isort/wiki/isort-Settings
 atomic = true
 #default_section = "FIRSTPARTY"
-include_trailing_comma = true
-line_length = 88
-multi_line_output = 3  # vertical hanging indent
-skip_gitignore = true  # ignore files listed in .gitignore
-use_parentheses = true
+include_trailing_comma = true 
+line_length = 88 
+multi_line_output = 3 # vertical hanging indent
+skip_gitignore = true # ignore files listed in .gitignore
+use_parentheses = true 
 
 [tool.poetry]
 name = "modularhistory"
@@ -69,8 +65,7 @@ django-select2 = "==7.4.2"
 django-settings-export = "==1.2.1"
 django-simple-menu = "^1.2"
 django-social-share = "^2.1"
-# django-spaghetti-and-meatballs = "^0.3.1"
-django-storages = {extras = ["google"], version = "^1.10"}
+django-storages = { extras = ["google"], version = "^1.10" }
 django-tinymce = "^3.1"
 django-typed-models = "^0.10.0"
 django-webpack-loader = "^0.7.0"
@@ -110,7 +105,7 @@ youtube-dl = "^2020.7.28"
 
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"
-coverage = {extras = ["toml"], version = "^5.3"}
+coverage = { extras = ["toml"], version = "^5.3" }
 darglint = "^1.5.5"
 django-pymemcache = "^1.0.0"
 django-stubs = ">=1.7"
@@ -135,7 +130,7 @@ flake8-quotes = "^3.2.0"
 flake8-rst-docstrings = "^0.0.14"
 flake8-spellcheck = "^0.20"
 flake8-string-format = "^0.3.0"
-hypothesis = {extras = ["django"], version = "^5.39"}
+hypothesis = { extras = ["django"], version = "^5.39" }
 isort = "^5.6.4"
 nox = "^2020.8.22"
 pep8-naming = "^0.11.1"
@@ -156,10 +151,7 @@ autoflake = "^1.4"
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra --ds='modularhistory.settings' --capture=no --ignore conftest.py -p no:cacheprovider --disable-warnings"
-norecursedirs = [
-    "*env",
-    ".nox",
-]
+norecursedirs = ["*env", ".nox"]
 python_files = [
     "tests.py",
     "*_tests.py",
@@ -167,15 +159,8 @@ python_files = [
     "*_test.py",
     "*_suite.py",
 ]
-python_classes = [
-    "Test*",
-    "*Test",
-    "*Tests",
-    "*Suite"
-]
-python_functions = [
-    "test_*",
-]
+python_classes = ["Test*", "*Test", "*Tests", "*Suite"]
+python_functions = ["test_*"]
 filterwarnings = [
     "ignore::pytest.PytestWarning",
     "ignore:.*U.*mode is deprecated:DeprecationWarning",

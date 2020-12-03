@@ -5,7 +5,6 @@ from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Iterable, Optional, TypeVar
 
-from django.core.management import call_command
 from django.db import transaction
 from invoke.context import Context
 
