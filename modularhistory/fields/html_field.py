@@ -54,14 +54,14 @@ def process(html: str) -> str:
     This involves replacing model instance placeholders with their HTML.
     """
     logging.debug(f'Processing HTML: {truncate(html)}')
-    model_classes: Dict[str, Type[Model]] = {}
+    model_classes: Dict[str, Type['Model']] = {}
     for match in object_placeholder_regex.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(PlaceholderGroups.MODEL_NAME)
         logging.debug(f'Found {object_type} placeholder: {truncate(placeholder)}')
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
-            model_cls: Type[Model] = model_classes.get(
+            model_cls: Type['Model'] = model_classes.get(
                 model_cls_str, import_string(model_cls_str)
             )
             if model_cls_str not in model_classes:

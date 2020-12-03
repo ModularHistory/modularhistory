@@ -7,7 +7,8 @@ from typing import IO, Any, List, Optional, Tuple
 import requests
 from django.conf import settings
 from django.core.exceptions import SuspiciousFileOperation
-from django.core.files.storage import File, Storage
+from django.core.files import File
+from django.core.files.storage import Storage
 from django.utils.crypto import get_random_string
 from mega import Mega
 from mega.mega import (

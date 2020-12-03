@@ -3,17 +3,7 @@
 import logging
 import re
 from pprint import pformat
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Match,
-    Optional,
-    Pattern,
-    Tuple,
-    Type,
-)
+from typing import Any, ClassVar, Dict, List, Match, Optional, Pattern, Tuple, Type
 
 import serpy
 from aenum import Constant
@@ -263,5 +253,5 @@ class ModelSerializer(serpy.Serializer):
 
     def get_model(self, instance: Model) -> str:  # noqa
         """Return the model name of the instance."""
-        model_cls: Type[Model] = instance.__class__
+        model_cls: Type['Model'] = instance.__class__
         return f'{model_cls.get_meta().app_label}.{model_cls.__name__.lower()}'

@@ -67,7 +67,7 @@ class ModelAdmin(NestedModelAdmin):
         )
 
     def get_readonly_fields(
-        self, request: HttpRequest, model_instance: Optional[Model] = None
+        self, request: HttpRequest, model_instance: Optional['Model'] = None
     ) -> List[str]:
         """Add additional readonly fields."""
         default_readonly_fields = ('computations',)

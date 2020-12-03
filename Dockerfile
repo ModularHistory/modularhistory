@@ -1,5 +1,7 @@
 FROM python:3.7-buster
 
+LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
+
 ENV \
   PYTHONUNBUFFERED=1 \
   PYTHONFAULTHANDLER=1 \

@@ -59,6 +59,7 @@ jobs:
       GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_FILE }}
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       CR_PAT: ${{ secrets.CR_PAT }}
+      IMAGE_NAME: ghcr.io/modularhistory/modularhistory
     
     steps:
     # Check out master
@@ -106,12 +107,13 @@ jobs:
       run: |
         echo "Logging in to GitHub container registry..."
         echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
-        echo "Pulling latest image..."
-        docker pull ghcr.io/modularhistory/modularhistory:latest
+        echo "Pulling $IMAGE_NAME:latest..."
+        # docker pull $IMAGE_NAME:latest
         echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" --tag ghcr.io/modularhistory/modularhistory:${{ github.sha }} --cache-from ghcr.io/modularhistory/modularhistory:latest
+        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest
+        # --cache-from $IMAGE_NAME:latest
         echo "Pushing new image to the container registry..."
-        docker push ghcr.io/modularhistory/modularhistory:${{ github.sha }}
+        docker push $IMAGE_NAME --all-tags
         mkdir -p ~/.ssh
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts

@@ -720,19 +720,19 @@ if ENVIRONMENT == Environments.DEV:
         }
 
 # https://django-q.readthedocs.io/en/latest/configure.html
-Q_CLUSTER = {
-    # 'name': 'MongoDB',
-    # 'workers': 8,
-    # 'timeout': 60,
-    # 'retry': 70,
-    # 'queue_limit': 100,
-    'orm': 'default'
-    # TODO
-    # 'mongo': {
-    #     'host': '127.0.0.1',
-    #     'port': 27017
-    # }
-}
+if ENVIRONMENT == Environments.DEV:
+    Q_CLUSTER = {
+        'name': 'MongoDB',
+        'workers': 8,
+        'timeout': 60,
+        'retry': 70,
+        'queue_limit': 100,
+        # TODO
+        'mongo': {'host': '127.0.0.1', 'port': 27017},
+    }
+else:
+    Q_CLUSTER = {'orm': 'default'}
+
 
 VUE_FRONTEND_DIR = os.path.join(BASE_DIR, 'client')
 

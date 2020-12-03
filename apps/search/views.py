@@ -258,7 +258,7 @@ class SearchResultsView(ListView):
         context['search_form'] = search_form
         return context
 
-    def get_object_list(self) -> Union['QuerySet[Model]', List[Model]]:
+    def get_object_list(self) -> Union['QuerySet[Model]', List['Model']]:
         """Return the list of search result objects."""
         request = self.request
         self.sort_by_relevance = request.GET.get('ordering') == 'relevance'

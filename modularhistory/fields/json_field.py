@@ -20,7 +20,7 @@ class JSONField(BaseJSONField):
     """
 
     schema: Optional[Union[str, Dict]]
-    model: Type[Model]
+    model: Type['Model']
 
     def __init__(self, *args, schema=None, **kwargs):
         """Override `__init__`."""
@@ -97,7 +97,7 @@ class ExtraField:
         self.blank = blank
         self.help_text = help_text
 
-    def __get__(self, instance: Model, owner: Type[Model] = None) -> Optional[Any]:
+    def __get__(self, instance: Model, owner: Type['Model'] = None) -> Optional[Any]:
         """See https://docs.python.org/3/reference/datamodel.html#object.__get__."""
         if instance is None:
             return self
@@ -127,11 +127,11 @@ class ExtraField:
         # Update the JSON field
         setattr(instance, self.json_field_name, json_value)
 
-    def __set_name__(self, owner: Type[Model], name: str):
+    def __set_name__(self, owner: Type['Model'], name: str):
         """See https://docs.python.org/3/reference/datamodel.html#object.__set_name__."""
         self.name = name
 
-    def __delete__(self, instance: Model):
+    def __delete__(self, instance: 'Model'):
         """See https://docs.python.org/3/reference/datamodel.html#object.__delete__."""
         json_value = self.get_json_field_value(instance)
         # If the value is null, remove the key from the JSON
