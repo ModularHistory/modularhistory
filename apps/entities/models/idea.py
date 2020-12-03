@@ -1,7 +1,6 @@
 """Model classes for ideas."""
 
 from django.db import models
-from django.db.models import CASCADE, ForeignKey, ManyToManyField
 
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model
@@ -14,7 +13,9 @@ class Idea(Model):
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     description = HTMLField(null=True, blank=True, paragraphed=True)
-    promoters = ManyToManyField('entities.Entity', related_name='ideas', blank=True)
+    promoters = models.ManyToManyField(
+        to='entities.Entity', related_name='ideas', blank=True
+    )
 
     def __str__(self):
         """Return the idea's string representation."""
@@ -24,10 +25,12 @@ class Idea(Model):
 class EntityIdea(Model):
     """An association or attribution of an idea to an entity."""
 
-    entity = ForeignKey(
-        'entities.Entity', on_delete=CASCADE, related_name='entity_ideas'
+    entity = models.ForeignKey(
+        to='entities.Entity', on_delete=models.CASCADE, related_name='entity_ideas'
     )
-    idea = ForeignKey('entities.Idea', on_delete=CASCADE, related_name='entity_ideas')
+    idea = models.ForeignKey(
+        to='entities.Idea', on_delete=models.CASCADE, related_name='entity_ideas'
+    )
 
     class Meta:
         """

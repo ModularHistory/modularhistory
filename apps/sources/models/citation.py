@@ -8,7 +8,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import CASCADE, SET_NULL, ForeignKey, PositiveSmallIntegerField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
@@ -23,10 +22,7 @@ from modularhistory.fields.html_field import (
 from modularhistory.fields.html_field import (
     PlaceholderGroups as DefaultPlaceholderGroups,
 )
-from modularhistory.models.model_with_computations import (
-    ModelWithComputations,
-    retrieve_or_compute,
-)
+from modularhistory.models.model_with_computations import ModelWithComputations
 from modularhistory.utils import pdf
 from modularhistory.utils.html import (
     components_to_html,
@@ -81,15 +77,15 @@ class Citation(ModelWithComputations):
         null=True,
         blank=True,
     )
-    source = ForeignKey(
-        'sources.Source', related_name='citations', on_delete=SET_NULL, null=True
+    source = models.ForeignKey(
+        'sources.Source', related_name='citations', on_delete=models.SET_NULL, null=True
     )
-    content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     pages: 'RelatedManager[PageRange]'
-    position = PositiveSmallIntegerField(
+    position = models.PositiveSmallIntegerField(
         null=True,
         blank=True,  # TODO: add cleaning logic
         help_text='Determines the order of references.',

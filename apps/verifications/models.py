@@ -10,7 +10,7 @@ from modularhistory.models.model import Model
 class VerifiableModel(Model):
     """An item that can, hopefully, be researched and verified."""
 
-    verified = models.BooleanField(_('verified'), default=False)
+    verified = models.BooleanField(verbose_name=_('verified'), default=False)
 
     verifications = GenericRelation('verifications.Verification')
 
@@ -28,12 +28,15 @@ class Verification(ContentInteraction):
     """A verification of the veracity of a verifiable model instance's content."""
 
     verifier = models.ForeignKey(
-        to='account.User', verbose_name=_('verifier'), on_delete=models.CASCADE
+        to='account.User',
+        on_delete=models.CASCADE,
+        related_name='verifications',
+        verbose_name=_('verifier'),
     )
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    verified_item = GenericForeignKey('content_type', 'object_id')
+    verified_item = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     def __str__(self) -> str:
         """Return the string representation of the verification."""

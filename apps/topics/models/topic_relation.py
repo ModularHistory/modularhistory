@@ -29,10 +29,10 @@ class TopicRelation(Model):
         ordering = ['topic']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the topic relation's string representation."""
         return str(self.topic)
 
     @property
     def topic_pk(self) -> str:
-        """TODO: write docstring."""
+        """Return the relation's topic's primary key."""
         return str(self.topic.id)

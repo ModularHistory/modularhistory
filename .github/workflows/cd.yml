@@ -100,6 +100,7 @@ jobs:
         envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
         envsubst < env.yaml > env.yaml.tmp && mv env.yaml.tmp env.yaml
         while read assign; do echo "$assign"; done < <(gsed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' env.yaml) > .env
+        cat .env
     
     # Build and push the Docker image
     - name: Build and push image
@@ -108,10 +109,9 @@ jobs:
         echo "Logging in to GitHub container registry..."
         echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
         echo "Pulling $IMAGE_NAME:latest..."
-        # docker pull $IMAGE_NAME:latest
+        docker pull $IMAGE_NAME:latest
         echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:$SHA
-        # --cache-from $IMAGE_NAME:latest
+        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
         docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
         echo "Pushing new image to the container registry..."
         docker push $IMAGE_NAME:$SHA
@@ -121,9 +121,7 @@ jobs:
     - name: Deploy image to server
       id: deploy-image
       run: |
-        echo "Creating .ssh dir..."
         mkdir -p ~/.ssh
-        echo "Adding GitHub to known hosts..."
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"

@@ -2,7 +2,7 @@
 
 from typing import List
 
-from django.db.models import CASCADE, ForeignKey
+from django.db import models
 
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model
@@ -14,7 +14,9 @@ class OccurrenceChain(Model):
     """A chain of related occurrences."""
 
     description = HTMLField(null=True, unique=True, paragraphed=True)
-    parent_chain = ForeignKey('self', on_delete=CASCADE, related_name='sub_chains')
+    parent_chain = models.ForeignKey(
+        'self', on_delete=models.CASCADE, related_name='sub_chains'
+    )
 
     def __str__(self):
         """Return the string representation of the occurrence chain."""
@@ -24,11 +26,15 @@ class OccurrenceChain(Model):
 class OccurrenceChainInclusion(Model):
     """An inclusion of an occurrence in an occurrence chain."""
 
-    chain = ForeignKey(
-        OccurrenceChain, on_delete=CASCADE, related_name='occurrence_inclusions'
+    chain = models.ForeignKey(
+        to='occurrences.OccurrenceChain',
+        on_delete=models.CASCADE,
+        related_name='occurrence_inclusions',
     )
-    occurrence = ForeignKey(
-        'occurrences.Occurrence', on_delete=CASCADE, related_name='chain_inclusions'
+    occurrence = models.ForeignKey(
+        to='occurrences.Occurrence',
+        on_delete=models.CASCADE,
+        related_name='chain_inclusions',
     )
 
     class Meta:

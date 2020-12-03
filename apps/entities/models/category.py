@@ -3,7 +3,6 @@
 from typing import Tuple
 
 from django.db import models
-from django.db.models import CASCADE, ForeignKey
 from django.db.models.functions import Lower
 
 from modularhistory.fields import ArrayField, HistoricDateTimeField
@@ -28,8 +27,12 @@ class Category(Model):
     aliases = ArrayField(
         models.CharField(max_length=NAME_MAX_LENGTH), null=True, blank=True
     )
-    parent = ForeignKey(
-        'self', related_name='children', null=True, blank=True, on_delete=CASCADE
+    parent = models.ForeignKey(
+        to='self',
+        related_name='children',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
     )
     weight = models.PositiveSmallIntegerField(default=1, blank=True)
 
@@ -51,13 +54,13 @@ class Category(Model):
 class Categorization(Model):
     """A categorization of an entity."""
 
-    entity = ForeignKey(
-        'entities.Entity', related_name='categorizations', on_delete=CASCADE
+    entity = models.ForeignKey(
+        to='entities.Entity', related_name='categorizations', on_delete=models.CASCADE
     )
-    category = ForeignKey(
-        Category,
+    category = models.ForeignKey(
+        to=Category,
         related_name='categorizations',
-        on_delete=CASCADE,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )

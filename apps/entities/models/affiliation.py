@@ -1,7 +1,6 @@
 """Model classes for entity engagements, roles, affiliations, etc."""
 
 from django.db import models
-from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.fields import HistoricDateTimeField, HTMLField
@@ -29,18 +28,18 @@ class _Engagement(Model):
 class Affiliation(_Engagement):
     """An affiliation of entities."""
 
-    entity = ForeignKey(
+    entity = models.ForeignKey(
         to='entities.Entity',
-        on_delete=CASCADE,
+        on_delete=models.CASCADE,
         related_name='affiliations',
         verbose_name=_('entity'),
     )
-    affiliated_entity = ForeignKey(
+    affiliated_entity = models.ForeignKey(
         to='entities.Entity',
-        on_delete=CASCADE,
+        on_delete=models.CASCADE,
         verbose_name=_('affiliated entity'),
     )
-    roles = ManyToManyField(
+    roles = models.ManyToManyField(
         to='Role',
         related_name='affiliations',
         through='RoleFulfillment',
@@ -67,7 +66,9 @@ class Role(Model):
 
     name = models.CharField(max_length=MAX_NAME_LENGTH, unique=True)
     description = HTMLField(null=True, blank=True)
-    organization = ForeignKey('Entity', related_name='roles', on_delete=CASCADE)
+    organization = models.ForeignKey(
+        to='entities.Entity', related_name='roles', on_delete=models.CASCADE
+    )
 
     def __str__(self) -> str:
         """Return the role's string representation."""
@@ -77,10 +78,14 @@ class Role(Model):
 class RoleFulfillment(_Engagement):
     """Fulfillment of a role by an entity."""
 
-    affiliation = ForeignKey(
-        Affiliation, related_name='role_fulfillments', on_delete=CASCADE
+    affiliation = models.ForeignKey(
+        to='entities.Affiliation',
+        related_name='role_fulfillments',
+        on_delete=models.CASCADE,
     )
-    role = ForeignKey(Role, related_name='fulfillments', on_delete=CASCADE)
+    role = models.ForeignKey(
+        to='entities.Role', related_name='fulfillments', on_delete=models.CASCADE
+    )
 
     class Meta:
         """

@@ -3,7 +3,6 @@
 from typing import List, Tuple
 
 from django.db import models
-from django.db.models import CASCADE, SET_NULL, ForeignKey
 
 from apps.account.models import User
 from modularhistory.constants.misc import CONTENT_TYPE_IDS
@@ -23,15 +22,19 @@ ORDERING_OPTIONS = (('date', 'Date'), ('relevance', 'Relevance'))
 class UserSearch(Model):
     """An instance of a search by a user."""
 
-    user = ForeignKey(
-        User, related_name='searches', null=True, blank=True, on_delete=SET_NULL
+    user = models.ForeignKey(
+        to=User,
+        related_name='searches',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
-    search = ForeignKey(
-        'search.Search',
+    search = models.ForeignKey(
+        to='search.Search',
         related_name='user_searches',
         null=False,
         blank=False,
-        on_delete=CASCADE,
+        on_delete=models.CASCADE,
     )
     datetime = models.DateTimeField(auto_now_add=True)
 

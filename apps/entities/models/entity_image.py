@@ -1,4 +1,4 @@
-from django.db.models import CASCADE, ForeignKey
+from django.db import models
 
 from modularhistory.models import Model
 
@@ -10,11 +10,11 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 1200
 class EntityImage(Model):
     """An association of an image with an entity."""
 
-    entity = ForeignKey(
-        'entities.Entity', related_name='image_relations', on_delete=CASCADE
+    entity = models.ForeignKey(
+        'entities.Entity', related_name='image_relations', on_delete=models.CASCADE
     )
-    image = ForeignKey(
-        'images.Image', related_name='entity_relations', on_delete=CASCADE
+    image = models.ForeignKey(
+        'images.Image', related_name='entity_relations', on_delete=models.CASCADE
     )
 
     class Meta:

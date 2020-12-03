@@ -3,7 +3,6 @@
 from typing import TYPE_CHECKING
 
 from django.db import models
-from django.db.models import CASCADE, ForeignKey
 
 from apps.topics.models.taggable_model import TaggableModel
 
@@ -14,6 +13,8 @@ if TYPE_CHECKING:
 class QuoteBite(TaggableModel):
     """A piece of a larger quote."""
 
-    quote = ForeignKey('quotes.Quote', on_delete=CASCADE, related_name='bites')
+    quote = models.ForeignKey(
+        to='quotes.Quote', on_delete=models.CASCADE, related_name='bites'
+    )
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()
