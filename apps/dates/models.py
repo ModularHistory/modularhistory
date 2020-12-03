@@ -23,7 +23,7 @@ class DatedModel(Model):
         default=False,
         help_text='whether the date is estimated/imprecise',
     )
-    date = HistoricDateTimeField(_('date'), null=True)
+    date = HistoricDateTimeField(verbose_name=_('date'), null=True)
 
     class Meta:
         """

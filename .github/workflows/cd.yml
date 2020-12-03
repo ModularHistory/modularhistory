@@ -119,7 +119,7 @@ jobs:
 
     # Deploy to kfred.dyndns.org
     - name: Build and push Docker image
-      id: build-image
+      id: deploy-image
       run: |
         echo "Creating .ssh dir..."
         mkdir -p ~/.ssh

@@ -33,8 +33,8 @@ class Occurrence(
 ):
     """Something that happened."""
 
-    date = HistoricDateTimeField(verbose_name=_('Date'), null=True, blank=True)
-    end_date = HistoricDateTimeField(null=True, blank=True)
+    date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
+    end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
     summary = HTMLField(verbose_name=_('Summary'), paragraphed=False)
     description = HTMLField(verbose_name=_('Description'), paragraphed=True)
     postscript = HTMLField(
