@@ -18,7 +18,7 @@ class DatedModel(Model):
     """A model with a date (e.g., a quote or occurrence)."""
 
     date_is_circa = models.BooleanField(
-        _('date is circa'),
+        verbose_name=_('date is circa'),
         blank=True,
         default=False,
         help_text='whether the date is estimated/imprecise',

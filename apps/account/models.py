@@ -29,8 +29,9 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     """A user of ModularHistory."""
 
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(verbose_name=_('email address'), unique=True)
     avatar = models.ImageField(
+        verbose_name=_('avatar'),
         null=True,
         blank=True,
         upload_to=upload_to('account/avatars'),
