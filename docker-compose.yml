@@ -46,9 +46,6 @@ services:
       - media:/modularhistory/media
     depends_on:
       - modularhistory
-    networks:
-      modularhistory_default:
-        ipv4_address: 172.17.0.5
   
   dev:
     build: .
@@ -68,11 +65,3 @@ volumes:
   postgres_data:
   static:
   media:
-
-networks:
-  home:
-    driver: bridge
-    ipam:
-     config:
-       - subnet: 172.17.0.0/16
-         gateway: 10.5.0.1

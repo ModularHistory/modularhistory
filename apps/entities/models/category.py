@@ -23,7 +23,10 @@ class Category(Model):
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     part_of_speech = models.CharField(
-        max_length=9, choices=PARTS_OF_SPEECH, default='adj'
+        verbose_name=_('part of speech'),
+        max_length=9,
+        choices=PARTS_OF_SPEECH,
+        default='adj',
     )
     aliases = ArrayField(
         models.CharField(max_length=NAME_MAX_LENGTH),

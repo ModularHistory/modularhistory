@@ -21,6 +21,7 @@ from modularhistory.fields.html_field import (
     PlaceholderGroups,
 )
 from modularhistory.utils.string import components_to_string
+from django.utils.translation import ugettext_lazy as _
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
 CENTER_UPPER_WIDTH_LIMIT: int = 500
@@ -52,6 +53,7 @@ class Image(MediaModel):
     """An image."""
 
     image = models.ImageField(
+        verbose_name=_('image'),
         upload_to=upload_to('images/'),
         height_field='height',
         width_field='width',
@@ -60,7 +62,7 @@ class Image(MediaModel):
     image_type = models.CharField(
         max_length=TYPE_NAME_MAX_LENGTH, choices=IMAGE_TYPES, default=IMAGE_TYPES[0][0]
     )
-    links = JSONField(default=dict, blank=True)
+    urls = JSONField(default=dict, blank=True)
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
 

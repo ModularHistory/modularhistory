@@ -132,8 +132,10 @@ jobs:
           docker login ghcr.io -u iacobfred -p $CR_PAT
           echo "Pulling modularhistory image to $SERVER..."
           docker pull "$IMAGE_NAME:$SHA"
+          echo "" && echo "Stopping webserver..."
           docker-compose down
           docker system prune -f
+          echo "" && echo "Starting webserver..."
           docker-compose up -d nginx
         ENDSSH
     

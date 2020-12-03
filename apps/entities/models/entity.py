@@ -4,10 +4,9 @@ from typing import TYPE_CHECKING, List, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import QuerySet
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
-
+from django.utils.translation import ugettext_lazy as _
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
@@ -20,6 +19,7 @@ from modularhistory.structures import HistoricDateTime as DateTime
 
 if TYPE_CHECKING:
     from apps.entities.models import Categorization
+    from django.db.models import QuerySet
 
 NAME_MAX_LENGTH: int = 100
 
@@ -42,30 +42,35 @@ class Entity(
 ):
     """An entity."""
 
-    name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
+    name = models.CharField(
+        verbose_name=_('name'), max_length=NAME_MAX_LENGTH, unique=True
+    )
     unabbreviated_name = models.CharField(
         max_length=NAME_MAX_LENGTH, unique=True, null=True, blank=True
     )
     aliases = ArrayField(
-        models.CharField(max_length=NAME_MAX_LENGTH), null=True, blank=True
+        models.CharField(max_length=NAME_MAX_LENGTH),
+        verbose_name=_('aliases'),
+        null=True,
+        blank=True,
     )
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
     description = HTMLField(null=True, blank=True, paragraphed=True)
     categories = models.ManyToManyField(
-        'entities.Category',
+        to='entities.Category',
         through='entities.Categorization',
         related_name='entities',
         blank=True,
     )
     images = models.ManyToManyField(
-        'images.Image',
+        to='images.Image',
         through='entities.EntityImage',
         related_name='entities',
         blank=True,
     )
     affiliated_entities = models.ManyToManyField(
-        'self', through='entities.Affiliation', blank=True
+        to='self', through='entities.Affiliation', blank=True
     )
 
     class Meta:
