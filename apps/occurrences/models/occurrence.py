@@ -35,8 +35,8 @@ class Occurrence(
 
     date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
     end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
-    summary = HTMLField(verbose_name=_('Summary'), paragraphed=False)
-    description = HTMLField(verbose_name=_('Description'), paragraphed=True)
+    summary = HTMLField(verbose_name=_('summary'), paragraphed=False)
+    description = HTMLField(verbose_name=_('description'), paragraphed=True)
     postscript = HTMLField(
         verbose_name='Postscript',
         null=True,
@@ -45,13 +45,13 @@ class Occurrence(
         help_text='Content to be displayed below all related data',
     )
     locations = ManyToManyField(
-        'places.Place',
+        to='places.Place',
         through='occurrences.OccurrenceLocation',
         related_name='occurrences',
         blank=True,
     )
     images = ManyToManyField(
-        Image,
+        to='images.Image',
         through='occurrences.OccurrenceImage',
         related_name='occurrences',
         blank=True,

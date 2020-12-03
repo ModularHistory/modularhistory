@@ -60,6 +60,8 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       CR_PAT: ${{ secrets.CR_PAT }}
       IMAGE_NAME: ghcr.io/modularhistory/modularhistory
+      SHA: ${{ github.sha }}
+      SERVER: kfred.dyndns.org
     
     steps:
     # Check out master
@@ -81,8 +83,6 @@ jobs:
     # Collect static files
     - name: Collect static files
       if: ${{ success() }}
-      env:
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: python manage.py collectstatic --noinput
     
     # Bump version and push tag
@@ -102,7 +102,7 @@ jobs:
         while read assign; do echo "$assign"; done < <(gsed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' env.yaml) > .env
     
     # Build and push the Docker image
-    - name: Build and push Docker image
+    - name: Build and push image
       id: build-image
       run: |
         echo "Logging in to GitHub container registry..."
@@ -110,15 +110,15 @@ jobs:
         echo "Pulling $IMAGE_NAME:latest..."
         # docker pull $IMAGE_NAME:latest
         echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:${{ github.sha }}
+        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:$SHA
         # --cache-from $IMAGE_NAME:latest
-        docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
+        docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
         echo "Pushing new image to the container registry..."
-        docker push $IMAGE_NAME:${{ github.sha }}
+        docker push $IMAGE_NAME:$SHA
         docker push $IMAGE_NAME:latest
 
-    # Deploy to kfred.dyndns.org
-    - name: Build and push Docker image
+    # Deploy to server
+    - name: Deploy image to server
       id: deploy-image
       run: |
         echo "Creating .ssh dir..."
@@ -127,17 +127,17 @@ jobs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"
-        echo "Transferring files to kfred.dyndns.org..."
-        scp -o StrictHostKeyChecking=no -P 2200 -r .env ./docker-compose.yml modularhistory@kfred.dyndns.org:~/modularhistory
-        echo "Starting SSH session with kfred.dyndns.org..."
-        ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'
+        echo "Transferring files to $SERVER..."
+        scp -o StrictHostKeyChecking=no -P 2200 -r .env ./docker-compose.yml modularhistory@$SERVER:~/modularhistory
+        echo "Starting SSH session with $SERVER..."
+        ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
           cd ~/modularhistory && source .env
-          echo "CR_PAT=$CR_PAT"
-          echo "CR_PAT=$CR_PAT" >> .env
           docker login ghcr.io -u iacobfred -p $CR_PAT
-          echo "Pulling modularhistory image to kfred.dyndns.org..."
-          docker pull "$IMAGE_NAME:${{ github.sha }}"
-          # docker-compose up -d nginx
+          echo "Pulling modularhistory image to $SERVER..."
+          docker pull "$IMAGE_NAME:$SHA"
+          docker-compose down
+          docker system prune -f
+          docker-compose up -d nginx
         ENDSSH
     
     # Setup gcloud environment

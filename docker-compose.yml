@@ -22,7 +22,7 @@ services:
       - -m 64
   
   modularhistory:
-    build: .
+    image: "modularhistory:$SHA"
     container_name: modularhistory
     env_file: .env
     environment:
