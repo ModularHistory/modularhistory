@@ -4,6 +4,7 @@ from typing import Tuple
 
 from django.db import models
 from django.db.models.functions import Lower
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.fields import ArrayField, HistoricDateTimeField
 from modularhistory.models import Model
@@ -25,7 +26,10 @@ class Category(Model):
         max_length=9, choices=PARTS_OF_SPEECH, default='adj'
     )
     aliases = ArrayField(
-        models.CharField(max_length=NAME_MAX_LENGTH), null=True, blank=True
+        models.CharField(max_length=NAME_MAX_LENGTH),
+        verbose_name=_('aliases'),
+        null=True,
+        blank=True,
     )
     parent = models.ForeignKey(
         to='self',
@@ -55,7 +59,10 @@ class Categorization(Model):
     """A categorization of an entity."""
 
     entity = models.ForeignKey(
-        to='entities.Entity', related_name='categorizations', on_delete=models.CASCADE
+        to='entities.Entity',
+        related_name='categorizations',
+        on_delete=models.CASCADE,
+        verbose_name=_('entity'),
     )
     category = models.ForeignKey(
         to=Category,
@@ -63,9 +70,10 @@ class Categorization(Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        verbose_name=_('category'),
     )
-    date = HistoricDateTimeField(null=True, blank=True)
-    end_date = HistoricDateTimeField(null=True, blank=True)
+    date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
+    end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
 
     class Meta:
         """

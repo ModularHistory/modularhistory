@@ -67,7 +67,10 @@ class Role(Model):
     name = models.CharField(max_length=MAX_NAME_LENGTH, unique=True)
     description = HTMLField(null=True, blank=True)
     organization = models.ForeignKey(
-        to='entities.Entity', related_name='roles', on_delete=models.CASCADE
+        to='entities.Entity',
+        related_name='roles',
+        on_delete=models.CASCADE,
+        verbose_name=_('organization'),
     )
 
     def __str__(self) -> str:
@@ -82,9 +85,13 @@ class RoleFulfillment(_Engagement):
         to='entities.Affiliation',
         related_name='role_fulfillments',
         on_delete=models.CASCADE,
+        verbose_name=_('affiliation'),
     )
     role = models.ForeignKey(
-        to='entities.Role', related_name='fulfillments', on_delete=models.CASCADE
+        to='entities.Role',
+        related_name='fulfillments',
+        on_delete=models.CASCADE,
+        verbose_name=_('role'),
     )
 
     class Meta:
