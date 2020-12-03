@@ -49,7 +49,9 @@ class ModelWithRelatedEntities(Model):
             for entity in entities:
                 aliases = entity.get('aliases') or []
                 for name in set([entity['name']] + aliases):
-                    opening_tag = f'<span class="entity-name" data-entity-id="{entity["pk"]}">'
+                    opening_tag = (
+                        f'<span class="entity-name" data-entity-id="{entity["pk"]}">'
+                    )
                     closing_tag = '</span>'
                     html = re.sub(
                         # match instances not in quotations

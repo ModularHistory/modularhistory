@@ -1,12 +1,9 @@
 from typing import TYPE_CHECKING, Type
 
-from admin.model_admin import ModelAdmin, admin_site
-from apps.dates import models
-from apps.entities.views import EntityCategorySearchView, EntitySearchView
-from apps.topics.views import TagSearchView
+from admin.model_admin import ModelAdmin
 
 if TYPE_CHECKING:
-    from dates.models import DatedModel
+    from apps.dates.models import DatedModel
 
 
 class DatedModelAdmin(ModelAdmin):

@@ -97,7 +97,7 @@ jobs:
       run: |
         echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
         envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
-        while read assign; do echo "$assign"; done < <(gsed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' gc_env.yaml) > .env
+        while read assign; do echo "$assign"; done < <(gsed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' env.yaml) > .env
     
     # Build and push the Docker image
     - name: Build and push Docker image

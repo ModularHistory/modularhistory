@@ -21,20 +21,6 @@ services:
       - memcached
       - -m 64
   
-  nginx:
-    image: nginx
-    volumes: ./nginx.conf:/etc/nginx/conf.d/default.conf
-    ports:
-      - 1337:80
-    volumes:
-      - static:/modularhistory/static
-      - media:/modularhistory/media
-    depends_on:
-      - modularhistory
-    networks:
-      modularhistory_default:
-        ipv4_address: 172.17.0.5
-  
   modularhistory:
     build: ghcr.io/modularhistory/modularhistory
     container_name: modularhistory
@@ -49,6 +35,20 @@ services:
     depends_on:
       - db
       - cache
+  
+  nginx:
+    image: nginx
+    volumes: ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 1337:80
+    volumes:
+      - static:/modularhistory/static
+      - media:/modularhistory/media
+    depends_on:
+      - modularhistory
+    networks:
+      modularhistory_default:
+        ipv4_address: 172.17.0.5
   
   dev:
     build: .
