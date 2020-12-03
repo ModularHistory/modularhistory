@@ -108,12 +108,12 @@ jobs:
         echo "Logging in to GitHub container registry..."
         echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
         echo "Pulling $IMAGE_NAME:latest..."
-        # docker pull $IMAGE_NAME:latest
+        docker pull $IMAGE_NAME:latest
         echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest
-        # --cache-from $IMAGE_NAME:latest
+        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest --cache-from $IMAGE_NAME:latest
         echo "Pushing new image to the container registry..."
-        docker push $IMAGE_NAME --all-tags
+        docker push $IMAGE_NAME:${{ github.sha }}
+        docker push $IMAGE_NAME:latest
         mkdir -p ~/.ssh
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
@@ -124,7 +124,7 @@ jobs:
           source .env
           echo "CR_PAT=$CR_PAT" >> .env
           echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
-          docker pull ghcr.io/modularhistory/modularhistory:${{ github.sha }}
+          docker pull $IMAGE_NAME:${{ github.sha }}
           # docker-compose up -d nginx
         ENDSSH
     

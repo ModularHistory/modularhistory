@@ -119,7 +119,7 @@ class HTMLField(MceHTMLField):
 
     def __init__(
         self,
-        *args,
+        *,
         paragraphed: Optional[bool] = None,
         processor: Optional[Callable] = None,
         **kwargs,
@@ -127,7 +127,7 @@ class HTMLField(MceHTMLField):
         """Construct an HTML field instance."""
         self.processor = processor or process
         self.paragraphed = paragraphed
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
     def clean(self, html_value, model_instance: 'Model') -> HTML:
         """Return a cleaned, ready-to-save instance of HTML."""

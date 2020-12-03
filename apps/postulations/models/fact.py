@@ -46,29 +46,31 @@ class PostulationSerializer(ModelSerializer):
 class Postulation(VerifiableModel, ModelWithSources):
     """A postulation."""
 
-    summary = HTMLField(unique=True, paragraphed=False)
-    elaboration = HTMLField(null=True, blank=True, paragraphed=True)
+    summary = HTMLField(verbose_name=_('statement'), unique=True, paragraphed=False)
+    elaboration = HTMLField(
+        verbose_name=_('elaboration'), null=True, blank=True, paragraphed=True
+    )
     certainty = models.PositiveSmallIntegerField(
-        _("certainty"), choices=DEGREES_OF_CERTAINTY
+        verbose_name=_('certainty'), choices=DEGREES_OF_CERTAINTY
     )
     supportive_facts = models.ManyToManyField(
-        'self',
+        to='self',
         through='postulations.PostulationSupport',
         related_name='supported_postulations',
         symmetrical=False,
     )
     related_entities = models.ManyToManyField(
-        'entities.Entity',
+        to='entities.Entity',
         through='postulations.EntityFactRelation',
         related_name='postulations',
     )
     related_topics = models.ManyToManyField(
-        'topics.Topic',
+        to='topics.Topic',
         through='postulations.TopicFactRelation',
         related_name='postulations',
     )
     related_occurrences = models.ManyToManyField(
-        'occurrences.Occurrence',
+        to='occurrences.Occurrence',
         through='postulations.OccurrenceFactRelation',
         related_name='postulations',
     )
