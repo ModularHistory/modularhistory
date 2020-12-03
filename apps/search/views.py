@@ -294,14 +294,16 @@ class SearchResultsView(ListView):
         quote_results, quote_result_ids = _get_quote_results(
             ct_ids, occurrence_result_ids, **search_kwargs
         )
+
         # TODO
-        # image_results = _get_image_results(
-        #     ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
-        # )
-        # TODO
-        # source_results, source_result_ids = _get_source_results(
-        #     ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
-        # )
+        fixed = False
+        if fixed:
+            image_results = _get_image_results(
+                ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+            )
+            source_results, source_result_ids = _get_source_results(
+                ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+            )
 
         self.entities = Entity.objects.filter(
             pk__in=Subquery(

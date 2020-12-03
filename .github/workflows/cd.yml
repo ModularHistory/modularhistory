@@ -110,8 +110,9 @@ jobs:
         echo "Pulling $IMAGE_NAME:latest..."
         # docker pull $IMAGE_NAME:latest
         echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:${{ github.sha }} -t $IMAGE_NAME:latest
+        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:${{ github.sha }}
         # --cache-from $IMAGE_NAME:latest
+        docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
         echo "Pushing new image to the container registry..."
         docker push $IMAGE_NAME:${{ github.sha }}
         docker push $IMAGE_NAME:latest
