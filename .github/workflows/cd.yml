@@ -91,6 +91,13 @@ jobs:
       uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    # Inject environment vars
+    - name: Inject environment vars
+      run: |
+        echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
+        envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
+        while read assign; do echo "$assign"; done < <(gsed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' gc_env.yaml) > .env
     
     # Build and push the Docker image
     - name: Build and push Docker image
@@ -109,12 +116,9 @@ jobs:
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"
-        pwd
-        ls
-        # TODO: echo secrets into an .env file and scp it, too
-        scp -o StrictHostKeyChecking=no -P 2200 -r ./docker-compose.yml Dockerfile modularhistory@kfred.dyndns.org:/modularhistory
+        scp -o StrictHostKeyChecking=no -P 2200 -r .env ./docker-compose.yml modularhistory@kfred.dyndns.org:~/modularhistory
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@kfred.dyndns.org << 'ENDSSH'
-          cd /modularhistory
+          cd ~/modularhistory
           source .env
           echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
           docker pull ghcr.io/modularhistory/modularhistory:${{ github.sha }}
@@ -134,12 +138,6 @@ jobs:
     - name: Print gcloud info
       if: ${{ success() }}
       run: gcloud info
-
-    # Inject environment vars
-    - name: Inject environment vars
-      run: |
-        echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
-        envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
 
     # Deploy to Google Cloud
     - name: Deploy to Google Cloud

@@ -43,5 +43,5 @@ class SearchForm(forms.Form):
                 css_class='form-control',
                 style='width: 20rem; max-width: 100%;',
             ),
-            HTML(f'<button class="btn btn-primary" type="submit">Search</button>'),
+            HTML('<button class="btn btn-primary" type="submit">Search</button>'),
         )
