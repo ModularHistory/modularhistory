@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
 from modularhistory.fields import HTMLField
@@ -18,9 +19,15 @@ PUBLICATION_TYPES = (
 class Publication(TypedModel, Model):
     """A publication, such as a newspaper, magazine, journal, or website."""
 
-    name = models.CharField(max_length=100, null=True, blank=True, unique=True)
-    aliases = models.CharField(max_length=100, null=True, blank=True)
-    description = HTMLField(null=True, blank=True, paragraphed=True)
+    name = models.CharField(
+        verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
+    )
+    aliases = models.CharField(
+        verbose_name=_('aliases'), max_length=100, null=True, blank=True
+    )
+    description = HTMLField(
+        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+    )
 
     class Meta:
         ordering = ['name']
