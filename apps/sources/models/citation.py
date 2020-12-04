@@ -78,9 +78,12 @@ class Citation(ModelWithComputations):
         blank=True,
     )
     source = models.ForeignKey(
-        'sources.Source', related_name='citations', on_delete=models.SET_NULL, null=True
+        to='sources.Source',
+        related_name='citations',
+        on_delete=models.SET_NULL,
+        null=True,
     )
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 

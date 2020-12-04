@@ -22,7 +22,7 @@ services:
       - -m 64
   
   modularhistory:
-    image: "modularhistory:$SHA"
+    image: "$IMAGE_NAME:$SHA"
     container_name: modularhistory
     env_file: .env
     environment:
@@ -46,9 +46,6 @@ services:
       - media:/modularhistory/media
     depends_on:
       - modularhistory
-    networks:
-      nginx_default:
-        ipv4_address: 172.17.0.5
   
   dev:
     build: .

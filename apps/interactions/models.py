@@ -6,8 +6,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from apps.account.models import User
-from modularhistory.models import Model
+from modularhistory.models.model import Model
 
 
 class ContentInteraction(Model):
@@ -16,7 +15,7 @@ class ContentInteraction(Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
@@ -39,7 +38,9 @@ class FieldContentInteraction(ContentInteraction):
 class Edit(FieldContentInteraction):
     """An edit of some content."""
 
-    user = models.ForeignKey(User, related_name='edits', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        to='account.User', related_name='edits', on_delete=models.CASCADE
+    )
 
     before = models.TextField(blank=False)
     after = models.TextField(blank=False)
@@ -55,7 +56,9 @@ class Edit(FieldContentInteraction):
 class Comment(FieldContentInteraction):
     """A comment regarding some content."""
 
-    user = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        to='account.User', related_name='comments', on_delete=models.CASCADE
+    )
 
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()
@@ -70,7 +73,9 @@ class Comment(FieldContentInteraction):
 class Highlight(FieldContentInteraction):
     """Highlighted content."""
 
-    user = models.ForeignKey(User, related_name='highlights', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        to='account.User', related_name='highlights', on_delete=models.CASCADE
+    )
 
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()
