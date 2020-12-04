@@ -3,7 +3,7 @@
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from gm2m import GM2MField as GenericManyToManyField
-
+from django.utils.translation import ugettext_lazy as _
 from apps.topics.models.topic_relation import TopicRelation
 from modularhistory.fields import ArrayField, HTMLField
 from modularhistory.models import Model, ModelWithComputations, retrieve_or_compute
@@ -52,7 +52,12 @@ class Topic(ModelWithComputations):
     """A topic."""
 
     key = models.CharField(max_length=KEY_MAX_LENGTH, unique=True)
-    aliases = ArrayField(models.CharField(max_length=100), null=True, blank=True)
+    aliases = ArrayField(
+        models.CharField(max_length=100),
+        verbose_name=_('aliases'),
+        null=True,
+        blank=True,
+    )
     description = HTMLField(null=True, blank=True, paragraphed=True)
     parent_topics = ManyToManyField(
         'self',
