@@ -130,7 +130,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
           cd ~/modularhistory && source .env
           docker login ghcr.io -u iacobfred -p $CR_PAT
-          echo "Pulling modularhistory image to $SERVER..."
+          echo "Pulling $IMAGE_NAME:$SHA to $SERVER..."
           docker pull "$IMAGE_NAME:$SHA"
           echo "" && echo "Stopping webserver..."
           docker-compose down

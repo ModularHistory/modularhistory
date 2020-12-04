@@ -3,7 +3,7 @@
 import logging
 import re
 from typing import TYPE_CHECKING, Dict, List, Optional, Union
-
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.html import format_html
@@ -52,9 +52,11 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,
         unique=True,
     )
-    title = models.CharField(max_length=MAX_TITLE_LENGTH, null=True, blank=True)
+    title = models.CharField(
+        verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
+    )
     attributees = models.ManyToManyField(
-        'entities.Entity',
+        to='entities.Entity',
         through='SourceAttribution',
         related_name='attributed_sources',
         blank=True,  # Some sources may not have attributees.
@@ -69,10 +71,10 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     date = HistoricDateTimeField(null=True, blank=True)
     publication_date = HistoricDateTimeField(null=True, blank=True)
     location = models.ForeignKey(
-        'places.Place', null=True, blank=True, on_delete=models.SET_NULL
+        to='places.Place', null=True, blank=True, on_delete=models.SET_NULL
     )
     db_file = models.ForeignKey(
-        SourceFile,
+        to=SourceFile,
         related_name='sources',
         null=True,
         blank=True,
@@ -83,7 +85,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         max_length=MAX_CREATOR_STRING_LENGTH, null=True, blank=True
     )
     containers = models.ManyToManyField(
-        'self',
+        to='self',
         through='sources.SourceContainment',
         through_fields=('source', 'container'),
         related_name='contained_sources',
@@ -100,7 +102,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     )
     # TODO: make many to many
     collection = models.ForeignKey(
-        'sources.Collection',
+        to='sources.Collection',
         related_name='documents',
         null=True,
         blank=True,

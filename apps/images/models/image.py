@@ -7,6 +7,7 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.translation import ugettext_lazy as _
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
 
@@ -21,7 +22,6 @@ from modularhistory.fields.html_field import (
     PlaceholderGroups,
 )
 from modularhistory.utils.string import components_to_string
-from django.utils.translation import ugettext_lazy as _
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
 CENTER_UPPER_WIDTH_LIMIT: int = 500

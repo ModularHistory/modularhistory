@@ -7,6 +7,7 @@ from django.db import models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
@@ -18,8 +19,9 @@ from modularhistory.models import ModelWithComputations, TypedModel, retrieve_or
 from modularhistory.structures import HistoricDateTime as DateTime
 
 if TYPE_CHECKING:
-    from apps.entities.models import Categorization
     from django.db.models import QuerySet
+
+    from apps.entities.models import Categorization
 
 NAME_MAX_LENGTH: int = 100
 

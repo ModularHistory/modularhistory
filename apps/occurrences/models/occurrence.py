@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db.models import ManyToManyField
+from django.db import models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -44,26 +44,26 @@ class Occurrence(
         paragraphed=True,
         help_text='Content to be displayed below all related data',
     )
-    locations = ManyToManyField(
+    locations = models.ManyToManyField(
         to='places.Place',
         through='occurrences.OccurrenceLocation',
         related_name='occurrences',
         blank=True,
     )
-    images = ManyToManyField(
+    images = models.ManyToManyField(
         to='images.Image',
         through='occurrences.OccurrenceImage',
         related_name='occurrences',
         blank=True,
     )
     image_relations: 'Manager'
-    involved_entities = ManyToManyField(
+    involved_entities = models.ManyToManyField(
         'entities.Entity',
         through='occurrences.OccurrenceEntityInvolvement',
         related_name='involved_occurrences',
         blank=True,
     )
-    chains = ManyToManyField(
+    chains = models.ManyToManyField(
         'occurrences.OccurrenceChain',
         through='occurrences.OccurrenceChainInclusion',
         related_name='occurrences',

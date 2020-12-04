@@ -46,6 +46,9 @@ services:
       - media:/modularhistory/media
     depends_on:
       - modularhistory
+    networks:
+      nginx_default:
+        ipv4_address: 172.17.0.5
   
   dev:
     build: .

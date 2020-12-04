@@ -5,7 +5,7 @@ import re
 from typing import TYPE_CHECKING, List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db.models import ManyToManyField, Q, QuerySet
+from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.text import slugify
@@ -31,7 +31,10 @@ from modularhistory.models import retrieve_or_compute
 from modularhistory.utils.html import soupify
 
 if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
     from apps.entities.models import Entity
+
 
 BITE_MAX_LENGTH: int = 400
 
@@ -49,25 +52,25 @@ class Quote(
 ):
     """A quote."""
 
-    text = HTMLField(verbose_name='Text', paragraphed=True)
-    bite = HTMLField(verbose_name='Bite', null=True, blank=True)
+    text = HTMLField(verbose_name='text', paragraphed=True)
+    bite = HTMLField(verbose_name='bite', null=True, blank=True)
     pretext = HTMLField(
-        verbose_name='Pretext',
+        verbose_name='pretext',
         null=True,
         blank=True,
         paragraphed=False,
         help_text='Content to be displayed before the quote',
     )
     context = HTMLField(
-        verbose_name='Context',
+        verbose_name='context',
         null=True,
         blank=True,
         paragraphed=True,
         help_text='Content to be displayed after the quote',
     )
     date = HistoricDateTimeField(null=True)
-    attributees = ManyToManyField(
-        'entities.Entity',
+    attributees = models.ManyToManyField(
+        to='entities.Entity',
         through='quotes.QuoteAttribution',
         related_name='quotes',
         blank=True,
@@ -80,7 +83,7 @@ class Quote(
         related_name='related_quotes',
         blank=True,
     )
-    images = ManyToManyField(
+    images = models.ManyToManyField(
         'images.Image', through='quotes.QuoteImage', related_name='quotes', blank=True
     )
 
@@ -229,13 +232,13 @@ class Quote(
             return None
 
     @property
-    def related_occurrences(self) -> QuerySet:
+    def related_occurrences(self) -> 'QuerySet':
         """Return a queryset of the quote's related occurrences."""
         # TODO: refactor
         from apps.occurrences.models import Occurrence
 
         occurrence_ids = self.relations.filter(
-            Q(content_type_id=OCCURRENCE_CT_ID)
+            models.Q(content_type_id=OCCURRENCE_CT_ID)
         ).values_list('id', flat=True)
         return Occurrence.objects.filter(id__in=occurrence_ids)
 
