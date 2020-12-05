@@ -21,7 +21,7 @@ services:
   
   nginx:
     image: nginx
-    volumes: ./nginx.conf:/etc/nginx/conf.d/default.conf
+    volumes: ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
     ports:
       - 1337:80
     volumes:

@@ -17,7 +17,7 @@ class SpokenSource(Source):
     )
 
     def __html__(self) -> str:
-        """TODO: write docstring."""
+        """Return the source's HTML representation."""
         type_label = str(self.type_label)
         delivery_string = f'{type_label}'
         audience, location, date = self.audience, self.location, self.date
@@ -61,6 +61,12 @@ class Speech(SpokenSource):
     type_label = 'speech'
 
     class Meta:
+        """
+        Meta options for the Speech model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Speeches'
 
 
@@ -70,6 +76,12 @@ class Address(SpokenSource):
     type_label = 'address'
 
     class Meta:
+        """
+        Meta options for the Address model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Addresses'
 
 
@@ -79,6 +91,12 @@ class Discourse(SpokenSource):
     type_label = 'discourse'
 
     class Meta:
+        """
+        Meta options for the Discourse model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Discourses'
 
 
@@ -88,6 +106,12 @@ class Lecture(SpokenSource):
     type_label = 'lecture'
 
     class Meta:
+        """
+        Meta options for the Lecture model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Lectures'
 
 
@@ -97,6 +121,12 @@ class Sermon(SpokenSource):
     type_label = 'sermon'
 
     class Meta:
+        """
+        Meta options for the Sermon model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Sermons'
 
 
@@ -106,4 +136,10 @@ class Statement(SpokenSource):
     type_label = 'statement'
 
     class Meta:
+        """
+        Meta options for the Statement model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         verbose_name_plural = 'Statements'

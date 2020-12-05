@@ -12,6 +12,11 @@ class JournalEntry(SourceWithPageNumbers):
     """A journal entry (as a source)."""
 
     class Meta:
+        """
+        Meta options for the JournalEntry model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         verbose_name_plural = 'Journal entries'
 
     def __html__(self) -> str:

@@ -23,12 +23,12 @@ class EntityFactRelation(FactRelation):
     """Relation of a fact to an entity."""
 
     entity = models.ForeignKey(
-        'entities.Entity',
+        to='entities.Entity',
         related_name='entity_fact_relations',
         on_delete=models.CASCADE,
     )
     fact = models.ForeignKey(
-        'postulations.Postulation',
+        to='postulations.Postulation',
         related_name='fact_entity_relations',
         on_delete=models.CASCADE,
     )
@@ -47,10 +47,10 @@ class TopicFactRelation(FactRelation):
     """A relation of a fact to a topic."""
 
     topic = models.ForeignKey(
-        Topic, related_name='topic_fact_relations', on_delete=models.CASCADE
+        to=Topic, related_name='topic_fact_relations', on_delete=models.CASCADE
     )
     fact = models.ForeignKey(
-        'postulations.Postulation',
+        to='postulations.Postulation',
         related_name='fact_topic_relations',
         on_delete=models.CASCADE,
     )
@@ -69,12 +69,12 @@ class OccurrenceFactRelation(FactRelation):
     """A relation of a fact to an occurrence."""
 
     occurrence = models.ForeignKey(
-        'occurrences.Occurrence',
+        to='occurrences.Occurrence',
         related_name='occurrence_fact_relations',
         on_delete=models.CASCADE,
     )
     fact = models.ForeignKey(
-        'postulations.Postulation',
+        to='postulations.Postulation',
         related_name='fact_occurrence_relations',
         on_delete=models.CASCADE,
     )

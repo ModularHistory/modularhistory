@@ -55,6 +55,11 @@ class Search(Model):
     end_year = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
+        """
+        Meta options for Search.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         verbose_name_plural = 'Searches'
 
     def __str__(self) -> str:

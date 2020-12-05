@@ -19,7 +19,7 @@ class QuoteAttribution(Model):
 
     class Meta:
         """
-        Meta options.
+        Meta options for QuoteAttribution.
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """

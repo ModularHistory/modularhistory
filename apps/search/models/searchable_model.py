@@ -56,6 +56,11 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
         hidden = 'hidden'
 
     class Meta:
+        """
+        Meta options for SearchableModel.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         abstract = True
 
     objects: 'SearchableModelManager'

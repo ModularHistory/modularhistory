@@ -88,6 +88,11 @@ class Quote(
     )
 
     class Meta:
+        """
+        Meta options for Quote.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         unique_together = ['date', 'bite']
         ordering = ['date']
 
