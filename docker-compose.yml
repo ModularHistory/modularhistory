@@ -18,15 +18,6 @@ services:
     entrypoint:
       - memcached
       - -m 64
-  
-  nginx:
-    image: nginx
-    ports:
-      - 1337:80
-    volumes:
-      - static:/modularhistory/static
-      - media:/modularhistory/media
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
 
   
   modularhistory:
@@ -43,7 +34,17 @@ services:
     depends_on:
       - db
       - cache
-      - nginx
+  
+  nginx:
+    image: nginx
+    ports:
+      - 1337:80
+    volumes:
+      - static:/modularhistory/static
+      - media:/modularhistory/media
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+    depends_on:
+      - modularhistory
   
   dev:
     build: .

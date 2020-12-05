@@ -150,7 +150,7 @@ jobs:
           echo "Pulling images to $SERVER..."
           docker-compose pull
           echo "" && echo "Starting webserver..."
-          docker-compose --verbose up -d modularhistory
+          docker-compose up -d nginx
         ENDSSH
     
     # Setup gcloud environment

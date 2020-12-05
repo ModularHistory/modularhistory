@@ -36,10 +36,16 @@ class EntityIdea(Model):
     """An association or attribution of an idea to an entity."""
 
     entity = models.ForeignKey(
-        to='entities.Entity', on_delete=models.CASCADE, related_name='entity_ideas'
+        to='entities.Entity',
+        on_delete=models.CASCADE,
+        related_name='entity_ideas',
+        verbose_name=_('entity'),
     )
     idea = models.ForeignKey(
-        to='entities.Idea', on_delete=models.CASCADE, related_name='entity_ideas'
+        to='entities.Idea',
+        on_delete=models.CASCADE,
+        related_name='entity_ideas',
+        verbose_name=_('idea'),
     )
 
     class Meta:
