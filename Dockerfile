@@ -25,12 +25,11 @@ RUN poetry config virtualenvs.create false && \
 
 # Add source code
 COPY . /modularhistory
-RUN chown -R www-data:www-data /modularhistory
 
 EXPOSE 8000
 STOPSIGNAL SIGTERM
 COPY init.sh /usr/local/bin/
-RUN chmod u+x /usr/local/bin/init.sh
+RUN chmod u+x /usr/local/bin/init.sh && chown -R www-data:www-data /modularhistory
 
 # Change to non-root user
 USER www-data

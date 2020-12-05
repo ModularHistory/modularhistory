@@ -60,7 +60,7 @@ class Topic(ModelWithComputations):
     )
     description = HTMLField(null=True, blank=True, paragraphed=True)
     parent_topics = ManyToManyField(
-        'self',
+        to='self',
         through=TopicParentChildRelation,
         through_fields=('child_topic', 'parent_topic'),
         symmetrical=False,
@@ -68,7 +68,7 @@ class Topic(ModelWithComputations):
         blank=True,
     )
     related_topics = ManyToManyField(
-        'self',
+        to='self',
         through=TopicTopicRelation,
         symmetrical=True,
         related_name='topics_related',

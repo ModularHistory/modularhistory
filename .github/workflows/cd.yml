@@ -100,21 +100,51 @@ jobs:
         envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
         envsubst < env.yaml > env.yaml.tmp && mv env.yaml.tmp env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' env.yaml) > .env
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # # Log in to DockerHub
+    # - name: Login to DockerHub
+    #   uses: docker/login-action@v1 
+    #   with:
+    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    # Log in to GitHub Container Registry
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1 
+      with:
+        registry: ghcr.io
+        username: iacobfred
+        password: $CR_PAT
     
     # Build and push the Docker image
     - name: Build and push image
-      id: build-image
       run: |
         echo "Logging in to GitHub container registry..."
         echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
         echo "Pulling $IMAGE_NAME:latest..."
         docker pull $IMAGE_NAME:latest
         echo "Building new image..."
-        docker build "$GITHUB_WORKSPACE/" -f "Dockerfile" -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
+        docker build . -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
         docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
         echo "Pushing new image to the container registry..."
         docker push $IMAGE_NAME:$SHA
         docker push $IMAGE_NAME:latest
+      # uses: docker/build-push-action@v2
+      # with:
+      #   context: .
+      #   file: ./Dockerfile
+      #   push: true
+      #   tags: |
+      #     $IMAGE_NAME:$SHA
+      #     $IMAGE_NAME:latest
+      #   cache-from: type=registry,ref=$IMAGE_NAME:latest
+      #   cache-to: type=inline
 
     # Deploy to server
     - name: Deploy image to server
@@ -129,14 +159,12 @@ jobs:
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
           cd ~/modularhistory && source .env
-          docker login ghcr.io -u iacobfred -p $CR_PAT
-          echo "Pulling $IMAGE_NAME:$SHA to $SERVER..."
-          docker pull "$IMAGE_NAME:$SHA"
-          echo "" && echo "Stopping webserver..."
-          docker-compose down
           docker system prune -f
+          docker login ghcr.io -u iacobfred -p $CR_PAT
+          echo "Pulling images to $SERVER..."
+          docker-compose pull
           echo "" && echo "Starting webserver..."
-          docker-compose up -d nginx
+          docker-compose up -d modularhistory
         ENDSSH
     
     # Setup gcloud environment
