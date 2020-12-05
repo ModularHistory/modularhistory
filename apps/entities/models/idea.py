@@ -49,8 +49,8 @@ class EntityIdea(Model):
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
 
-        verbose_name = _('entity idea')
         unique_together = ['entity', 'idea']
+        verbose_name = _('entity idea')
 
     def __str__(self):
         """Return the string representation of the entity–idea association."""
