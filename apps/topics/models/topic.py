@@ -16,10 +16,10 @@ class TopicTopicRelation(Model):
     """A relationship between equivalent or closely related topics."""
 
     from_topic = ForeignKey(
-        'topics.Topic', related_name='topics_related_to', on_delete=CASCADE
+        to='topics.Topic', on_delete=CASCADE, related_name='topics_related_to'
     )
     to_topic = ForeignKey(
-        'topics.Topic', related_name='topics_related_from', on_delete=CASCADE
+        to='topics.Topic', on_delete=CASCADE, related_name='topics_related_from'
     )
 
     class Meta:
@@ -34,10 +34,10 @@ class TopicParentChildRelation(Model):
     """A relationship between a parent topic and child topic."""
 
     parent_topic = ForeignKey(
-        'topics.Topic', related_name='child_relations', on_delete=CASCADE
+        to='topics.Topic', on_delete=CASCADE, related_name='child_relations'
     )
     child_topic = ForeignKey(
-        'topics.Topic', related_name='parent_relations', on_delete=CASCADE
+        to='topics.Topic', on_delete=CASCADE, related_name='parent_relations'
     )
 
     class Meta:

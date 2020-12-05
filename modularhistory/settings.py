@@ -283,10 +283,10 @@ if RUNNING_IN_GC:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME', default='modularhistory'),
             'HOST': config('DB_HOST'),
-            'USER': config('DB_USER'),
-            'PASSWORD': config('DB_PASSWORD'),
+            'NAME': config('POSTGRES_DB', default='modularhistory'),
+            'USER': config('POSTGRES_USER'),
+            'PASSWORD': config('POSTGRES_PASSWORD'),
         }
     }
 elif ENVIRONMENT == Environments.GITHUB_TEST:
@@ -316,9 +316,9 @@ else:  # development, etc.
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME', default='modularhistory'),
-            'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD', default='postgres'),
+            'NAME': config('POSTGRES_DB', default='modularhistory'),
+            'USER': config('POSTGRES_USER', default='postgres'),
+            'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
             'HOST': config('DB_HOST', default='localhost'),
         },
         # 'mongo': {

@@ -8,9 +8,9 @@ env_variables:
     GC_QUEUE: modularhistory-queue
     GC_REGION: us-central1
     DB_HOST: /cloudsql/modularhistory:us-central1:modularhistory-instance
-    DB_NAME: ${DB_NAME}
-    DB_USER: ${DB_USER}
-    DB_PASSWORD: ${DB_PASSWORD}
+    POSTGRES_DB: ${DB_NAME}
+    POSTGRES_USER: ${DB_USER}
+    POSTGRES_PASSWORD: ${DB_PASSWORD}
     SOCIAL_AUTH_TWITTER_KEY: ${SOCIAL_AUTH_TWITTER_KEY}
     SOCIAL_AUTH_TWITTER_SECRET: ${SOCIAL_AUTH_TWITTER_SECRET}
     SOCIAL_AUTH_FACEBOOK_KEY: ${SOCIAL_AUTH_FACEBOOK_KEY}
