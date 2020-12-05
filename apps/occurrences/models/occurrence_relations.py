@@ -24,6 +24,11 @@ class OccurrenceLocation(Model):
     importance = models.IntegerField(choices=IMPORTANCE_OPTIONS, default=1)
 
     class Meta:
+        """
+        Meta options for OccurrenceLocation.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         unique_together = ['occurrence', 'location']
 
     def __str__(self):
@@ -49,6 +54,11 @@ class OccurrenceQuoteRelation(Model):
     )  # TODO: add cleaning logic
 
     class Meta:
+        """
+        Meta options for OccurrenceQuoteRelation.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         unique_together = ['occurrence', 'quote']
         ordering = ['position', 'quote']
 
@@ -74,6 +84,11 @@ class OccurrenceEntityInvolvement(Model):
     importance = models.PositiveSmallIntegerField(choices=IMPORTANCE_OPTIONS, default=1)
 
     class Meta:
+        """
+        Meta options for OccurrenceEntityInvolvement.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         unique_together = ['occurrence', 'entity']
 
     def __str__(self) -> str:

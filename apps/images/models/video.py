@@ -19,7 +19,7 @@ class Video(MediaModel):
 
     class Meta:
         """
-        Meta options for the Video model.
+        Meta options for Video.
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """

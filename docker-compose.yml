@@ -27,9 +27,6 @@ services:
     volumes:
       - static:/modularhistory/static
       - media:/modularhistory/media
-    networks:
-      default:
-        ipv4_address: 10.5.0.5
 
   
   modularhistory:

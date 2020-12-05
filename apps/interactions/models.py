@@ -21,6 +21,11 @@ class ContentInteraction(Model):
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     class Meta:
+        """
+        Meta options for ContentInteraction.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         abstract = True
 
 
@@ -34,6 +39,11 @@ class FieldContentInteraction(ContentInteraction):
     )
 
     class Meta:
+        """
+        Meta options for FieldContentInteraction.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         abstract = True
 
 

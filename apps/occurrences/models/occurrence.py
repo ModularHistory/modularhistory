@@ -70,6 +70,11 @@ class Occurrence(
     )
 
     class Meta:
+        """
+        Meta options for the Category model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         unique_together = ['summary', 'date']
         ordering = ['-date']
 

@@ -158,7 +158,6 @@ class Image(MediaModel):
                         get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
                     )
             except Exception as error:
-                # TODO: Send email to admins about the error. Figure out why.
                 logging.error(
                     f'Attempt to retrieve cropped_image_url for image {self.pk} '
                     f'({self.image.file}, associated with {self}) resulted in '

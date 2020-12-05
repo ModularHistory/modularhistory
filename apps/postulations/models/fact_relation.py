@@ -10,6 +10,12 @@ class FactRelation(Model):
     """A relation of a fact to some other model."""
 
     class Meta:
+        """
+        Meta options for FactRelation.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         abstract = True
 
 
@@ -28,6 +34,12 @@ class EntityFactRelation(FactRelation):
     )
 
     class Meta:
+        """
+        Meta options for EntityFactRelation.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = ['fact', 'entity']
 
 
@@ -44,6 +56,12 @@ class TopicFactRelation(FactRelation):
     )
 
     class Meta:
+        """
+        Meta options for TopicFactRelation.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = ['topic', 'fact']
 
 
@@ -62,4 +80,10 @@ class OccurrenceFactRelation(FactRelation):
     )
 
     class Meta:
+        """
+        Meta options for OccurrenceFactRelation.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
         unique_together = ['fact', 'occurrence']
