@@ -58,21 +58,25 @@ class Postulation(VerifiableModel, ModelWithSources):
         through='postulations.PostulationSupport',
         related_name='supported_postulations',
         symmetrical=False,
+        verbose_name=_('supportive facts'),
     )
     related_entities = models.ManyToManyField(
         to='entities.Entity',
         through='postulations.EntityFactRelation',
         related_name='postulations',
+        verbose_name=_('related entities'),
     )
     related_topics = models.ManyToManyField(
         to='topics.Topic',
         through='postulations.TopicFactRelation',
         related_name='postulations',
+        verbose_name=_('related topics'),
     )
     related_occurrences = models.ManyToManyField(
         to='occurrences.Occurrence',
         through='postulations.OccurrenceFactRelation',
         related_name='postulations',
+        verbose_name=_('related occurrences'),
     )
 
     searchable_fields = ['summary', 'elaboration']
