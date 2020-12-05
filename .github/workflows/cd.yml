@@ -89,7 +89,7 @@ jobs:
     - name: Bump version and push tag
       id: version
       if: ${{ success() }}
-      uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
+      uses: mathieudutour/github-tag-action@v5.1  # https://github.com/marketplace/actions/github-tag
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
