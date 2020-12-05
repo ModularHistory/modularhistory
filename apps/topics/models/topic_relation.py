@@ -4,7 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
-
+from django.utils.translation import ugettext_lazy as _
 from modularhistory.models import Model
 
 MAX_WEIGHT = 1000
@@ -15,7 +15,10 @@ class TopicRelation(Model):
     """A relation to a topic (by any other model)."""
 
     topic = ForeignKey(
-        'topics.Topic', related_name='topic_relations', on_delete=CASCADE
+        to='topics.Topic',
+        on_delete=CASCADE,
+        related_name='topic_relations',
+        verbose_name=_('topic'),
     )
     content_type = models.ForeignKey(ContentType, on_delete=CASCADE)
     object_id = models.PositiveIntegerField()
