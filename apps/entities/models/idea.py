@@ -1,6 +1,7 @@
 """Model classes for ideas."""
 
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.fields import HTMLField
 from modularhistory.models import Model
@@ -16,6 +17,15 @@ class Idea(Model):
     promoters = models.ManyToManyField(
         to='entities.Entity', related_name='ideas', blank=True
     )
+
+    class Meta:
+        """
+        Meta options for the Idea model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
+        verbose_name = _('idea')
 
     def __str__(self):
         """Return the idea's string representation."""
@@ -39,6 +49,7 @@ class EntityIdea(Model):
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
 
+        verbose_name = _('entity idea')
         unique_together = ['entity', 'idea']
 
     def __str__(self):
