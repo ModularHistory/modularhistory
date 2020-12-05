@@ -88,7 +88,7 @@ class GroupAdmin(TypedEntityAdmin):
 
 
 class OrganizationAdmin(TypedEntityAdmin):
-    """TODO: add docstring."""
+    """Admin for organizations."""
 
     model = models.Person
     form = OrganizationForm

@@ -1,9 +1,5 @@
 """Serializers for the occurrences app."""
 
-# TODO: https://medium.com/better-programming/how-to-use-drf-serializers-effectively-dc58edc73998
-# TODO: https://www.valentinog.com/blog/drf/
-# https://github.com/clarkduvall/serpy
-
 import serpy
 
 from apps.search.models.searchable_model import SearchableModelSerializer
