@@ -28,9 +28,9 @@ COPY . /modularhistory
 
 EXPOSE 8000
 STOPSIGNAL SIGTERM
-RUN chmod u+x /modularhistory/init.sh && chown -R modularhistory:modularhistory /modularhistory
+RUN chmod u+x /modularhistory/init.sh && chown -R www-data:www-data /modularhistory
 
 # Change to non-root user
-USER modularhistory
+USER www-data
 
 CMD ["/modularhistory/init.sh"]
