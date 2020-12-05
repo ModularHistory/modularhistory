@@ -4,6 +4,7 @@ from typing import List, Tuple
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
 from apps.account.models import User
 from modularhistory.constants.misc import CONTENT_TYPE_IDS
 from modularhistory.fields import HistoricDateTimeField

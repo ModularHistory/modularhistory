@@ -5,6 +5,7 @@ from difflib import ndiff
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.models.model import Model
 
@@ -27,6 +28,7 @@ class FieldContentInteraction(ContentInteraction):
     """Abstract base model for field content interactions."""
 
     attribute_name = models.CharField(
+        verbose_name=_('attribute name'),
         max_length=20,
         help_text='The name of the attribute that maps to the interacted content',
     )

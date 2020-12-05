@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.translation import ugettext_lazy as _
+
 from modularhistory.models import Model
 
 MAX_WEIGHT = 1000
