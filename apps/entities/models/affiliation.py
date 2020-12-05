@@ -73,6 +73,15 @@ class Role(Model):
         verbose_name=_('organization'),
     )
 
+    class Meta:
+        """
+        Meta options for the Role model.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
+
+        verbose_name = _('role')
+
     def __str__(self) -> str:
         """Return the role's string representation."""
         return self.name
@@ -102,3 +111,4 @@ class RoleFulfillment(_Engagement):
         """
 
         unique_together = ['affiliation', 'role', 'start_date']
+        verbose_name = _('role fulfillment')
