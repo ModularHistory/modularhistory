@@ -1,13 +1,6 @@
 version: "3.8"
 
 services:
-  certbot:
-    image: certbot/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-
   dev:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -25,8 +18,6 @@ services:
   db:
     image: postgres
     env_file: .env
-    # environment:
-    #   - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - "5432:5432"
     restart: "always"
@@ -51,22 +42,21 @@ services:
       - media:/modularhistory/media
   
   nginx:
-    image: nginx
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    image: staticfloat/nginx-certbot
     depends_on:
-      - certbot
       - modularhistory
     ports:
       - "80:80"
       - "443:443"
-    restart: "always"
+    environment:
+      CERTBOT_EMAIL: modularhistory@gmail.com
+    restart: "unless-stopped"
     volumes:
-      - ./config/nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
+      - ./config/nginx/conf.d:/etc/nginx/user.conf.d:ro
+      - letsencrypt:/etc/letsencrypt
       - static:/modularhistory/static
       - media:/modularhistory/media
-      - nginx_logs:/var/log/nginx/
+      - logs:/var/log/
   
   redis:
     image: redis
@@ -78,9 +68,8 @@ services:
 
 volumes: 
   postgres_data:
-  nginx_logs:
+  logs:
   redis:
-  # certbot:
-  # letsencrypt:
+  letsencrypt:
   static:
   media:
