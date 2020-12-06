@@ -38,7 +38,7 @@ class Occurrence(
     summary = HTMLField(verbose_name=_('summary'), paragraphed=False)
     description = HTMLField(verbose_name=_('description'), paragraphed=True)
     postscript = HTMLField(
-        verbose_name='Postscript',
+        verbose_name=_('postscript'),
         null=True,
         blank=True,
         paragraphed=True,
@@ -58,13 +58,13 @@ class Occurrence(
     )
     image_relations: 'Manager'
     involved_entities = models.ManyToManyField(
-        'entities.Entity',
+        to='entities.Entity',
         through='occurrences.OccurrenceEntityInvolvement',
         related_name='involved_occurrences',
         blank=True,
     )
     chains = models.ManyToManyField(
-        'occurrences.OccurrenceChain',
+        to='occurrences.OccurrenceChain',
         through='occurrences.OccurrenceChainInclusion',
         related_name='occurrences',
     )
@@ -75,6 +75,7 @@ class Occurrence(
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         unique_together = ['summary', 'date']
         ordering = ['-date']
 

@@ -12,7 +12,9 @@ from modularhistory.utils.html import soupify
 class PageRange(Model):
     """TODO: add docstring."""
 
-    citation = ForeignKey('sources.Citation', on_delete=CASCADE, related_name='pages')
+    citation = ForeignKey(
+        to='sources.Citation', on_delete=CASCADE, related_name='pages'
+    )
     page_number = PositiveSmallIntegerField()
     end_page_number = PositiveSmallIntegerField(null=True, blank=True)
 
@@ -25,7 +27,7 @@ class PageRange(Model):
         return soupify(self.html).get_text()
 
     def clean(self):
-        """TODO: add docstring."""
+        """Prepare the page range to be saved."""
         if self.end_page_number and self.end_page_number < self.page_number:
             raise ValidationError(
                 'The end page number must be greater than the start page number.'

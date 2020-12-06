@@ -18,9 +18,11 @@ IMPORTANCE_OPTIONS = (
 class OccurrenceLocation(Model):
     """A place being a site of an occurrence."""
 
-    occurrence = models.ForeignKey('occurrences.Occurrence', on_delete=models.CASCADE)
+    occurrence = models.ForeignKey(
+        to='occurrences.Occurrence', on_delete=models.CASCADE
+    )
     location = models.ForeignKey(
-        'places.Place', related_name='location_occurrences', on_delete=models.CASCADE
+        to='places.Place', related_name='location_occurrences', on_delete=models.CASCADE
     )
     importance = models.IntegerField(choices=IMPORTANCE_OPTIONS, default=1)
 
@@ -77,7 +79,7 @@ class OccurrenceQuoteRelation(PositionedRelation):
 class OccurrenceEntityInvolvement(Model):
     """An involvement of an entity in an occurrence."""
 
-    occurrence = models.ForeignKey('occurrences.Occurrence', on_delete=models.CASCADE)
+    occurrence = models.ForeignKey(to='occurrences.Occurrence', on_delete=models.CASCADE)
     entity = models.ForeignKey(
         'entities.Entity',
         related_name='occurrence_involvements',

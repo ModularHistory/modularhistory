@@ -351,7 +351,7 @@ python-versions = "~=3.5"
 
 [[package]]
 name = "certifi"
-version = "2020.11.8"
+version = "2020.12.5"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -814,18 +814,6 @@ python-versions = "*"
 django = ">=1.8"
 six = ">=1.10.0"
 standardjson = ">=0.3.1"
-
-[[package]]
-name = "django-pymemcache"
-version = "1.0.0"
-description = "Django cache backend based on Pinterest's pymemcache client."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-Django = ">=2.2"
-pymemcache = "*"
 
 [[package]]
 name = "django-q"
@@ -2573,17 +2561,6 @@ mccabe = ">=0.6,<0.7"
 toml = ">=0.7.1"
 
 [[package]]
-name = "pymemcache"
-version = "3.4.0"
-description = "A comprehensive, fast, pure Python memcached client"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-six = "*"
-
-[[package]]
 name = "pympler"
 version = "0.9"
 description = "A development tool to measure, monitor and analyze the memory behavior of Python objects."
@@ -3626,7 +3603,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "6e04736274aee4175fc05d38ebc48336b4aada1fd23f4bf0f53067dcf870263d"
+content-hash = "fa145e0729ce9dca748c04bea4ff1a31ff74f205491b89e18204ec564209fb40"
 
 [metadata.files]
 aenum = [
@@ -3788,8 +3765,8 @@ cachetools = [
     {file = "cachetools-4.1.1.tar.gz", hash = "sha256:bbaa39c3dede00175df2dc2b03d0cf18dd2d32a7de7beb68072d13043c9edb20"},
 ]
 certifi = [
-    {file = "certifi-2020.11.8-py2.py3-none-any.whl", hash = "sha256:1f422849db327d534e3d0c5f02a263458c3955ec0aae4ff09b95f195c59f4edd"},
-    {file = "certifi-2020.11.8.tar.gz", hash = "sha256:f05def092c44fbf25834a51509ef6e631dc19765ab8a57b4e7ab85531f0a9cf4"},
+    {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
+    {file = "certifi-2020.12.5.tar.gz", hash = "sha256:1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c"},
 ]
 cffi = [
     {file = "cffi-1.14.3-2-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:3eeeb0405fd145e714f7633a5173318bd88d8bbfc3dd0a5751f8c4f70ae629bc"},
@@ -4032,10 +4009,6 @@ django-picklefield = [
 django-prettyjson = [
     {file = "django-prettyjson-0.4.1.tar.gz", hash = "sha256:b758a5f3c073db93e17485b4eb9cb19e9838f6e5d6cb91096d795e015e28d3bd"},
     {file = "django_prettyjson-0.4.1-py2.py3-none-any.whl", hash = "sha256:f9f4d73899947f17a67f61b57216612373195937fa936ba9335549fe878b3355"},
-]
-django-pymemcache = [
-    {file = "django-pymemcache-1.0.0.tar.gz", hash = "sha256:e2a9185dff1fc77c11c462f21cc4d8353683e354b85409639eaf77c9b373ffd8"},
-    {file = "django_pymemcache-1.0.0-py3-none-any.whl", hash = "sha256:53734eed5940350569f5cd90644dfe97755bb08f42c97d72bb149ab0c667dbdc"},
 ]
 django-q = [
     {file = "django-q-1.3.4.tar.gz", hash = "sha256:523d54dcf1b66152c1b658f914f00ed3b518a3432a9decd4898738ca8dbbe10f"},
@@ -5055,10 +5028,6 @@ pyjwt = [
 pylint = [
     {file = "pylint-2.6.0-py3-none-any.whl", hash = "sha256:bfe68f020f8a0fece830a22dd4d5dddb4ecc6137db04face4c3420a46a52239f"},
     {file = "pylint-2.6.0.tar.gz", hash = "sha256:bb4a908c9dadbc3aac18860550e870f58e1a02c9f2c204fdf5693d73be061210"},
-]
-pymemcache = [
-    {file = "pymemcache-3.4.0-py2.py3-none-any.whl", hash = "sha256:f7d81053122b5c5217cd15393c0184cd6d8032c4f018ae92ce6dcdf50399f954"},
-    {file = "pymemcache-3.4.0.tar.gz", hash = "sha256:47882ab1c7e5e1dea67df8aa9faf410ce82e606fd5f29501273a60ff61d7cc99"},
 ]
 pympler = [
     {file = "Pympler-0.9.tar.gz", hash = "sha256:f2cbe7df622117af890249f2dea884eb702108a12d729d264b7c5983a6e06e47"},
