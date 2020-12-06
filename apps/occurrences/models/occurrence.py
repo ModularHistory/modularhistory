@@ -49,12 +49,14 @@ class Occurrence(
         through='occurrences.OccurrenceLocation',
         related_name='occurrences',
         blank=True,
+        verbose_name=_('locations'),
     )
     images = models.ManyToManyField(
         to='images.Image',
         through='occurrences.OccurrenceImage',
         related_name='occurrences',
         blank=True,
+        verbose_name=_('images'),
     )
     image_relations: 'Manager'
     involved_entities = models.ManyToManyField(
