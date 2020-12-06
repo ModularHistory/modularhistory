@@ -64,6 +64,7 @@ class Occurrence(
         through='occurrences.OccurrenceEntityInvolvement',
         related_name='involved_occurrences',
         blank=True,
+        verbose_name=_('involved entities'),
     )
     chains = models.ManyToManyField(
         to='occurrences.OccurrenceChain',

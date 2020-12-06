@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.models import ModelWithComputations, TypedModel, retrieve_or_compute
 
@@ -24,10 +25,18 @@ class Place(TypedModel, ModelWithComputations):
     """Where something has happened."""
 
     name = models.CharField(
-        null=True, blank=True, max_length=NAME_MAX_LENGTH, unique=True
+        verbose_name=_('name'),
+        null=True,
+        blank=True,
+        max_length=NAME_MAX_LENGTH,
+        unique=True,
     )
     location = models.ForeignKey(
-        'self', related_name='places', blank=True, null=True, on_delete=models.PROTECT
+        to='self',
+        related_name='places',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
     )
     preposition = models.CharField(
         max_length=2, choices=PREPOSITION_CHOICES, default='in'

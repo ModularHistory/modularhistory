@@ -5,8 +5,8 @@ services:
     image: certbot/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
-      - letsencrypt:/etc/letsencrypt
-      - certbot:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
 
   dev:
     build: .
@@ -62,8 +62,8 @@ services:
     restart: "always"
     volumes:
       - ./config/nginx/conf.d:/etc/nginx/conf.d
-      - ./config/certbot/conf:/etc/letsencrypt
-      - ./config/certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
       - static:/modularhistory/static
       - media:/modularhistory/media
       - nginx_logs:/var/log/nginx/
@@ -80,7 +80,7 @@ volumes:
   postgres_data:
   nginx_logs:
   redis:
-  certbot:
-  letsencrypt:
+  # certbot:
+  # letsencrypt:
   static:
   media:
