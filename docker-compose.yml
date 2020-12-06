@@ -30,7 +30,6 @@ services:
   
   modularhistory:
     image: "$IMAGE_NAME:$SHA"
-    # container_name: modularhistory
     depends_on:
       - db
       - redis
@@ -59,7 +58,7 @@ services:
     image: redis
     ports:
       - "6379:6379"
-    restart: always
+    restart: "always"
     volumes:
       - "redis:/data"
 
