@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.html import format_html
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.models import Model, PositionedRelation
 
@@ -29,6 +30,7 @@ class OccurrenceLocation(Model):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         unique_together = ['occurrence', 'location']
 
     def __str__(self):
@@ -40,14 +42,16 @@ class OccurrenceQuoteRelation(PositionedRelation):
     """An involvement of an entity in an occurrence."""
 
     occurrence = models.ForeignKey(
-        'occurrences.Occurrence',
+        to='occurrences.Occurrence',
         related_name='occurrence_quote_relations',
         on_delete=models.CASCADE,
+        verbose_name=_('occurrence'),
     )
     quote = models.ForeignKey(
-        'quotes.Quote',
+        to='quotes.Quote',
         related_name='quote_occurrence_relations',
         on_delete=models.CASCADE,
+        verbose_name=_('quote'),
     )
 
     class Meta:
@@ -56,6 +60,7 @@ class OccurrenceQuoteRelation(PositionedRelation):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         unique_together = ['occurrence', 'quote']
         ordering = ['position', 'quote']
 
@@ -86,6 +91,7 @@ class OccurrenceEntityInvolvement(Model):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         unique_together = ['occurrence', 'entity']
 
     def __str__(self) -> str:

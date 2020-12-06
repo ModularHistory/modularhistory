@@ -3,6 +3,7 @@
 from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+
 from modularhistory.models.positioned_relation import PositionedRelation
 
 

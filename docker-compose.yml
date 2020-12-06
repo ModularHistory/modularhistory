@@ -44,7 +44,6 @@ services:
     volumes:
       - static:/modularhistory/static
       - media:/modularhistory/media
-      - .:/modularhistory
   
   db:
     image: postgres
