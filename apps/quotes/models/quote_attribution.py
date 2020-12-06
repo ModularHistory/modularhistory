@@ -10,10 +10,12 @@ class QuoteAttribution(PositionedRelation):
     """An attribution of a quote to an entity."""
 
     quote = models.ForeignKey(
-        'quotes.Quote', related_name='attributions', on_delete=models.CASCADE
+        to='quotes.Quote', on_delete=models.CASCADE, related_name='attributions'
     )
     attributee = models.ForeignKey(
-        'entities.Entity', related_name='quote_attributions', on_delete=models.CASCADE
+        to='entities.Entity',
+        on_delete=models.CASCADE,
+        related_name='quote_attributions',
     )
 
     class Meta:
