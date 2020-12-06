@@ -40,22 +40,20 @@ services:
     volumes:
       - static:/modularhistory/static
       - media:/modularhistory/media
-  
+
   nginx:
-    image: staticfloat/nginx-certbot
+    image: nginx
     depends_on:
       - modularhistory
     ports:
       - "80:80"
       - "443:443"
-    environment:
-      CERTBOT_EMAIL: modularhistory@gmail.com
     restart: "unless-stopped"
     volumes:
-      - ./config/nginx/conf.d:/etc/nginx/user.conf.d:ro
-      - letsencrypt:/etc/letsencrypt
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
       - static:/modularhistory/static
       - media:/modularhistory/media
+      - letsencrypt:/etc/letsencrypt
       - logs:/var/log/
   
   redis:

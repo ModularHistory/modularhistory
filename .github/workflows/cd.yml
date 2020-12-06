@@ -69,29 +69,29 @@ jobs:
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
     
-    # Set up Python
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+    # # Set up Python
+    # - name: Set up Python ${{ matrix.python-version }}
+    #   uses: actions/setup-python@v2
+    #   with:
+    #     python-version: ${{ matrix.python-version }}
     
-    # Set up ModularHistory
-    - name: Set up ModularHistory
-      if: ${{ success() }}
-      run: ./setup.sh --noninteractive --skip-dev-dependencies
+    # # Set up ModularHistory
+    # - name: Set up ModularHistory
+    #   if: ${{ success() }}
+    #   run: ./setup.sh --noninteractive --skip-dev-dependencies
 
-    # Collect static files
-    - name: Collect static files
-      if: ${{ success() }}
-      run: python manage.py collectstatic --noinput
+    # # Collect static files
+    # - name: Collect static files
+    #   if: ${{ success() }}
+    #   run: python manage.py collectstatic --noinput
     
-    # Bump version and push tag
-    - name: Bump version and push tag
-      id: version
-      if: ${{ success() }}
-      uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+    # # Bump version and push tag
+    # - name: Bump version and push tag
+    #   id: version
+    #   if: ${{ success() }}
+    #   uses: mathieudutour/github-tag-action@v4.5  # https://github.com/marketplace/actions/github-tag
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
     # Inject environment vars
     - name: Inject environment vars
@@ -153,32 +153,32 @@ jobs:
           docker-compose up -d nginx
         ENDSSH
     
-    # Setup gcloud environment
-    - name: Setup gcloud environment
-      if: ${{ success() }}
-      uses: google-github-actions/setup-gcloud@master  # https://github.com/google-github-actions/setup-gcloud
-      with:
-        project_id: modularhistory
-        service_account_key: ${{ secrets.GCP_CREDENTIALS }}
-        export_default_credentials: true
+    # # Setup gcloud environment
+    # - name: Setup gcloud environment
+    #   if: ${{ success() }}
+    #   uses: google-github-actions/setup-gcloud@master  # https://github.com/google-github-actions/setup-gcloud
+    #   with:
+    #     project_id: modularhistory
+    #     service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+    #     export_default_credentials: true
 
-    # Print gcloud info
-    - name: Print gcloud info
-      if: ${{ success() }}
-      run: gcloud info
+    # # Print gcloud info
+    # - name: Print gcloud info
+    #   if: ${{ success() }}
+    #   run: gcloud info
 
-    # Deploy to Google Cloud
-    - name: Deploy to Google Cloud
-      if: ${{ success() }}
-      run: gcloud app deploy gc_app.yaml
+    # # Deploy to Google Cloud
+    # - name: Deploy to Google Cloud
+    #   if: ${{ success() }}
+    #   run: gcloud app deploy gc_app.yaml
     
-    # Create Sentry release
-    - name: Create Sentry release
-      if: ${{ success() }}
-      uses: getsentry/action-release@v1.0.0
-      env:
-        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-      with:
-        environment: production
+    # # Create Sentry release
+    # - name: Create Sentry release
+    #   if: ${{ success() }}
+    #   uses: getsentry/action-release@v1.0.0
+    #   env:
+    #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    #     SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+    #     SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+    #   with:
+    #     environment: production
