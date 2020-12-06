@@ -208,8 +208,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
-    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
+    # # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    
     # # TODO: enable cache
     # # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     # 'django.middleware.cache.UpdateCacheMiddleware',
