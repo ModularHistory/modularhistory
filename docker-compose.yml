@@ -3,67 +3,69 @@ version: "3.8"
 services:
   dev:
     build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+      - redis
     env_file: .env
     environment:
       - DB_HOST=db
-    volumes:
-      - .:/modularhistory
     ports:
       - "8000:8000"
-    depends_on:
-      - db
-      - cache
-    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/modularhistory
   
   nginx:
     image: nginx
+    depends_on:
+      - modularhistory
+    ports:
+      - "80:80"
+    restart: "on-failure"
     volumes:
       - ./config/nginx/conf.d:/etc/nginx/conf.d
       - static:/modularhistory/static
       - media:/modularhistory/media
       - nginx_logs:/var/log/nginx/
-    ports:
-      - "80:80"
-    depends_on:
-      - modularhistory
-    restart: "on-failure"
   
   modularhistory:
     image: "$IMAGE_NAME:$SHA"
     # container_name: modularhistory
+    depends_on:
+      - db
+      - redis
     env_file: .env
     environment:
       - DB_HOST=db
+    expose:
+      - "8000"
+    restart: "on-failure"
     volumes:
       - static:/modularhistory/static
       - media:/modularhistory/media
-    expose:
-      - "8000"
-    depends_on:
-      - db
-      - cache
-    restart: "on-failure"
   
   db:
     image: postgres
     env_file: .env
     # environment:
     #   - POSTGRES_HOST_AUTH_METHOD=trust
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
     ports:
       - "5432:5432"
+    restart: "always"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
   
-  cache:
-    image: memcached
+  redis:
+    image: redis
     ports:
-      - "11211:11211"
-    entrypoint:
-      - memcached
-      - -m 64
+      - "6379:6379"
+    restart: always
+    volumes:
+      - "redis:/data"
 
 volumes: 
   postgres_data:
   nginx_logs:
+  redis:
   static:
   media:

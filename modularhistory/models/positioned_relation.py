@@ -2,10 +2,9 @@
 
 from typing import List, Type
 
+from django.db import models
 from django.db.models import Model as DjangoModel
 from typedmodels.models import TypedModel as BaseTypedModel
-
-from django.db import models
 
 FieldList = List[str]
 

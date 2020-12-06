@@ -127,9 +127,18 @@ ALLOWED_HOSTS = (
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
 INTERNAL_IPS = ['127.0.0.1']
 
-if ENABLE_ASGI:
+if not RUNNING_IN_GC:
     # https://channels.readthedocs.io/en/latest/
-    ASGI_APPLICATION = 'modularhistory.routing.application'
+    ASGI_APPLICATION = 'modularhistory.asgi.application'
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [('127.0.0.1', 6379)],
+                'symmetric_encryption_keys': [SECRET_KEY],
+            },
+        },
+    }
 
 INSTALLED_APPS = [
     # admin_menu come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
@@ -153,6 +162,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
+    'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_replicated',  # https://github.com/yandex/django_replicated
@@ -194,10 +204,6 @@ INSTALLED_APPS = [
     'apps.topics.apps.TopicsConfig',
     'apps.verifications.apps.VerificationsConfig',
 ]
-if ENABLE_ASGI:
-    INSTALLED_APPS = [
-        'channels',  # https://channels.readthedocs.io/en/latest/index.html
-    ] + INSTALLED_APPS
 
 MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
@@ -690,49 +696,49 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
 
-# http://127.0.0.1:8000/plate/
-SPAGHETTI_SAUCE = {
-    'apps': ['sources', 'quotes'],
-    'show_fields': False,
-    'exclude': {'account': ['user']},
-}
-
 # Caching settings
 use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', cast=bool, default=False)
 Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
+
+REDIS_HOST = None
 if ENVIRONMENT == Environments.DEV:
-    if use_dummy_cache_in_dev_environment:
-        CACHES = {
-            'default': {
-                'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-            }
+    REDIS_HOST = 'localhost'
+elif IS_PROD and not RUNNING_IN_GC:
+    REDIS_HOST = 'redis'
+# https://github.com/jazzband/django-redis
+if ENVIRONMENT == Environments.DEV and use_dummy_cache_in_dev_environment:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         }
-    else:
-        # TODO: https://github.com/django-pymemcache/django-pymemcache
-        CACHES = {
-            'default': {
-                'BACKEND': 'djpymemcache.backend.PyMemcacheCache',
-                'LOCATION': [
-                    '127.0.0.1:11211',
-                ],
+    }
+elif REDIS_HOST:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': f'redis://{REDIS_HOST}:6379/1',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             },
         }
+    }
+    # https://github.com/jazzband/django-redis
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
 
 # https://django-q.readthedocs.io/en/latest/configure.html
-if ENVIRONMENT == Environments.DEV:
+if REDIS_HOST:
     Q_CLUSTER = {
-        'name': 'MongoDB',
-        'workers': 8,
-        'timeout': 60,
-        'retry': 70,
-        'queue_limit': 100,
-        # TODO
-        'mongo': {'host': '127.0.0.1', 'port': 27017},
+        'cpu_affinity': 1,
+        'label': 'Django Q',
+        'redis': {
+            'host': REDIS_HOST,
+            'port': 6379,
+        },
     }
 else:
     Q_CLUSTER = {'orm': 'default'}
-
 
 VUE_FRONTEND_DIR = os.path.join(BASE_DIR, 'client')
 
