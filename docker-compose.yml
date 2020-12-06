@@ -29,8 +29,8 @@ services:
       - nginx_logs:/var/log/nginx/
   
   modularhistory:
-    build: .
-    # image: "$IMAGE_NAME:$SHA"
+    # build: .
+    image: "$IMAGE_NAME:$SHA"
     depends_on:
       - db
       - redis
@@ -40,7 +40,7 @@ services:
       - DB_HOST=db
     expose:
       - "8000"
-    # restart: "on-failure"
+    restart: "on-failure"
     volumes:
       - static:/modularhistory/static
       - media:/modularhistory/media

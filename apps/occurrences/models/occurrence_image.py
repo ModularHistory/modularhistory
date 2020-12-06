@@ -1,9 +1,8 @@
 """Occurrence images."""
 
 from django.db import models
-from django.db.models import CASCADE
 from django.utils.html import format_html
-
+from django.utils.translation import ugettext_lazy as _
 from modularhistory.models.positioned_relation import PositionedRelation
 
 
@@ -11,10 +10,16 @@ class OccurrenceImage(PositionedRelation):
     """An association of an image with an occurrence."""
 
     occurrence = models.ForeignKey(
-        'occurrences.Occurrence', related_name='image_relations', on_delete=CASCADE
+        to='occurrences.Occurrence',
+        related_name='image_relations',
+        on_delete=models.CASCADE,
+        verbose_name=_('occurrence'),
     )
     image = models.ForeignKey(
-        'images.Image', related_name='occurrence_relations', on_delete=models.PROTECT
+        to='images.Image',
+        related_name='occurrence_relations',
+        on_delete=models.PROTECT,
+        verbose_name=_('image'),
     )
     is_positioned = models.BooleanField(blank=True, default=False)
 
@@ -24,6 +29,7 @@ class OccurrenceImage(PositionedRelation):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         unique_together = ['occurrence', 'image']
         ordering = ['position']
 
