@@ -21,7 +21,7 @@ services:
       - modularhistory
     ports:
       - "80:80"
-    restart: "on-failure"
+    restart: "always"
     volumes:
       - ./config/nginx/conf.d:/etc/nginx/conf.d
       - static:/modularhistory/static
@@ -29,19 +29,22 @@ services:
       - nginx_logs:/var/log/nginx/
   
   modularhistory:
-    image: "$IMAGE_NAME:$SHA"
+    build: .
+    # image: "$IMAGE_NAME:$SHA"
     depends_on:
       - db
       - redis
     env_file: .env
     environment:
+      - DJANGO_SETTINGS_MODULE=modularhistory.settings
       - DB_HOST=db
     expose:
       - "8000"
-    restart: "on-failure"
+    # restart: "on-failure"
     volumes:
       - static:/modularhistory/static
       - media:/modularhistory/media
+      - .:/modularhistory
   
   db:
     image: postgres
