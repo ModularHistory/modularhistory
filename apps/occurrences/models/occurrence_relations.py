@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.html import format_html
 
-from modularhistory.models import Model
+from modularhistory.models import Model, PositionedRelation
 
 IMPORTANCE_OPTIONS = (
     (1, 'Primary'),
@@ -36,7 +36,7 @@ class OccurrenceLocation(Model):
         return f'{self.location} : {self.occurrence}'
 
 
-class OccurrenceQuoteRelation(Model):
+class OccurrenceQuoteRelation(PositionedRelation):
     """An involvement of an entity in an occurrence."""
 
     occurrence = models.ForeignKey(
@@ -49,9 +49,6 @@ class OccurrenceQuoteRelation(Model):
         related_name='quote_occurrence_relations',
         on_delete=models.CASCADE,
     )
-    position = models.PositiveSmallIntegerField(
-        null=True, blank=True
-    )  # TODO: add cleaning logic
 
     class Meta:
         """

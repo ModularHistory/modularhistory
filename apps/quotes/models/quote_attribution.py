@@ -3,10 +3,10 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from modularhistory.models import Model
+from modularhistory.models.positioned_relation import PositionedRelation
 
 
-class QuoteAttribution(Model):
+class QuoteAttribution(PositionedRelation):
     """An attribution of a quote to an entity."""
 
     quote = models.ForeignKey(
@@ -15,7 +15,6 @@ class QuoteAttribution(Model):
     attributee = models.ForeignKey(
         'entities.Entity', related_name='quote_attributions', on_delete=models.CASCADE
     )
-    position = models.PositiveSmallIntegerField(default=0, blank=True)
 
     class Meta:
         """

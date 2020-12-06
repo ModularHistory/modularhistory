@@ -5,7 +5,7 @@ from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 
 from apps.sources.serializers import ContainmentSerializer
-from modularhistory.models import Model
+from modularhistory.models.positioned_relation import PositionedRelation
 
 PHRASE_MAX_LENGTH: int = 12
 CONTAINMENT_PHRASES = (
@@ -20,7 +20,7 @@ CONTAINMENT_PHRASES = (
 )
 
 
-class SourceContainment(Model):
+class SourceContainment(PositionedRelation):
     """A source containment."""
 
     source = ForeignKey(
@@ -37,9 +37,6 @@ class SourceContainment(Model):
     )
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)
     end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
-    position = models.PositiveSmallIntegerField(
-        null=True, blank=True
-    )  # TODO: add cleaning logic
     phrase = models.CharField(
         max_length=PHRASE_MAX_LENGTH,
         choices=CONTAINMENT_PHRASES,

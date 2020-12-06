@@ -22,7 +22,7 @@ from modularhistory.fields.html_field import (
 from modularhistory.fields.html_field import (
     PlaceholderGroups as DefaultPlaceholderGroups,
 )
-from modularhistory.models.model_with_computations import ModelWithComputations
+from modularhistory.models.positioned_relation import PositionedRelation
 from modularhistory.utils import pdf
 from modularhistory.utils.html import (
     components_to_html,
@@ -67,7 +67,7 @@ CITATION_PHRASE_OPTIONS = (
 CITATION_PHRASE_MAX_LENGTH: int = 25
 
 
-class Citation(ModelWithComputations):
+class Citation(PositionedRelation):
     """A reference to a source (from any other model)."""
 
     citation_phrase = models.CharField(
@@ -88,11 +88,6 @@ class Citation(ModelWithComputations):
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     pages: 'RelatedManager[PageRange]'
-    position = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,  # TODO: add cleaning logic
-        help_text='Determines the order of references.',
-    )
 
     class Meta:
         unique_together = ['source', 'content_type', 'object_id', 'position']

@@ -1,6 +1,49 @@
 version: "3.8"
 
 services:
+  dev:
+    build: .
+    env_file: .env
+    environment:
+      - DB_HOST=db
+    volumes:
+      - .:/modularhistory
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - cache
+    command: python manage.py runserver 0.0.0.0:8000
+  
+  nginx:
+    image: nginx
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - static:/modularhistory/static
+      - media:/modularhistory/media
+      - nginx_logs:/var/log/nginx/
+    ports:
+      - "80:80"
+    depends_on:
+      - modularhistory
+    restart: "on-failure"
+  
+  modularhistory:
+    image: "$IMAGE_NAME:$SHA"
+    # container_name: modularhistory
+    env_file: .env
+    environment:
+      - DB_HOST=db
+    volumes:
+      - static:/modularhistory/static
+      - media:/modularhistory/media
+    expose:
+      - "8000"
+    depends_on:
+      - db
+      - cache
+    restart: "on-failure"
+  
   db:
     image: postgres
     env_file: .env
@@ -19,48 +62,8 @@ services:
       - memcached
       - -m 64
 
-  
-  modularhistory:
-    image: "$IMAGE_NAME:$SHA"
-    # container_name: modularhistory
-    env_file: .env
-    environment:
-      - DB_HOST=db
-    volumes:
-      - static:/modularhistory/static
-      - media:/modularhistory/media
-    expose:
-      - "8000"
-    depends_on:
-      - db
-      - cache
-  
-  nginx:
-    image: nginx
-    ports:
-      - 1337:80
-    volumes:
-      - static:/modularhistory/static
-      - media:/modularhistory/media
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-    depends_on:
-      - modularhistory
-  
-  dev:
-    build: .
-    env_file: .env
-    environment:
-      - DB_HOST=db
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/modularhistory
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-      - cache
-
 volumes: 
   postgres_data:
+  nginx_logs:
   static:
   media:

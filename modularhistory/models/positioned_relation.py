@@ -19,7 +19,12 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 class PositionedRelation(DjangoModel):
     """An m2m intermediate relation sortable by position."""
 
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    position = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
 
     class Meta:
+        """
+        Meta options for PositionedRelation.
+
+        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        """
         abstract = True

@@ -2,10 +2,10 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.models import Model
+from modularhistory.models.positioned_relation import PositionedRelation
 
 
-class SourceAttribution(Model):
+class SourceAttribution(PositionedRelation):
     """An entity (e.g., a writer or organization) to which a source is attributed."""
 
     source = ForeignKey(
@@ -18,9 +18,6 @@ class SourceAttribution(Model):
     attributee = ForeignKey(
         to='entities.Entity', on_delete=CASCADE, related_name='source_attributions'
     )
-    position = models.PositiveSmallIntegerField(
-        null=True, blank=True
-    )  # TODO: add cleaning logic
 
     def __str__(self) -> str:
         """TODO: write docstring."""

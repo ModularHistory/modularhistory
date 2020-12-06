@@ -98,8 +98,8 @@ jobs:
       run: |
         echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
         envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
-        envsubst < env.yaml > env.yaml.tmp && mv env.yaml.tmp env.yaml
-        while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' env.yaml) > .env
+        envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
+        while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
 
     # # Log in to DockerHub
     # - name: Login to DockerHub
@@ -141,7 +141,7 @@ jobs:
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"
         echo "Transferring files to $SERVER..."
-        scp -o StrictHostKeyChecking=no -P 2200 -r .env ./docker-compose.yml ./nginx.conf modularhistory@$SERVER:~/modularhistory
+        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./config modularhistory@$SERVER:~/modularhistory
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
           cd ~/modularhistory && source .env
@@ -170,7 +170,7 @@ jobs:
     # Deploy to Google Cloud
     - name: Deploy to Google Cloud
       if: ${{ success() }}
-      run: gcloud app deploy gc_app.yaml
+      run: gcloud app deploy config/gc_app.yaml
     
     # Create Sentry release
     - name: Create Sentry release

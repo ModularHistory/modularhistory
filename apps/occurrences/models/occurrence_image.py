@@ -4,10 +4,10 @@ from django.db import models
 from django.db.models import CASCADE
 from django.utils.html import format_html
 
-from modularhistory.models import Model
+from modularhistory.models.positioned_relation import PositionedRelation
 
 
-class OccurrenceImage(Model):
+class OccurrenceImage(PositionedRelation):
     """An association of an image with an occurrence."""
 
     occurrence = models.ForeignKey(
@@ -17,9 +17,6 @@ class OccurrenceImage(Model):
         'images.Image', related_name='occurrence_relations', on_delete=models.PROTECT
     )
     is_positioned = models.BooleanField(blank=True, default=False)
-    position = models.PositiveSmallIntegerField(
-        null=True, blank=True, help_text='Set to 0 if the image is positioned manually.'
-    )
 
     class Meta:
         """
@@ -28,7 +25,7 @@ class OccurrenceImage(Model):
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
         unique_together = ['occurrence', 'image']
-        ordering = ['position', 'image']
+        ordering = ['position']
 
     def __str__(self) -> str:
         """Return the string representation of the occurrence–image relation."""
