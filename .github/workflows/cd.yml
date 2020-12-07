@@ -40,6 +40,7 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      POSTGRES_HOST: db
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}

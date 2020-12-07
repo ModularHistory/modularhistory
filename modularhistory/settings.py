@@ -49,10 +49,8 @@ ADMINS = (
     config(
         'ADMINS',
         cast=lambda admins: [
-            tuple(name_and_email.split(','))
-            for name_and_email in admins.replace(', ', ',')
-            .replace('; ', ';')
-            .split(';')
+            tuple(entry.split(','))
+            for entry in admins.replace(', ', ',').replace('; ', ';').split(';')
         ],
     )
     if config('ADMINS', default=None)
@@ -284,17 +282,7 @@ REST_FRAMEWORK = {
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-if RUNNING_IN_GC:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'HOST': config('DB_HOST'),
-            'NAME': config('POSTGRES_DB', default='modularhistory'),
-            'USER': config('POSTGRES_USER'),
-            'PASSWORD': config('POSTGRES_PASSWORD'),
-        }
-    }
-elif ENVIRONMENT == Environments.GITHUB_TEST:
+if ENVIRONMENT == Environments.GITHUB_TEST:
     DATABASES = {
         'default': {
             'NAME': 'postgres',
@@ -305,15 +293,15 @@ elif ENVIRONMENT == Environments.GITHUB_TEST:
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
-else:  # development, etc.
+else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
+            'HOST': config('POSTGRES_HOST', default='localhost'),
             'NAME': config('POSTGRES_DB', default='modularhistory'),
             'USER': config('POSTGRES_USER', default='postgres'),
             'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
-            'HOST': config('DB_HOST', default='localhost'),
-        },
+        }
         # 'mongo': {
         #     'ENGINE' : 'django_mongodb_engine',
         #     'NAME' : 'default'
