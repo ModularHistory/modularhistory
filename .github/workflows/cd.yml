@@ -9,6 +9,7 @@ on:
       - '.gitignore'
       - '.gcloudignore'
       - '.github/**'
+      - '!.github/cd.yml'
       - '.idea/**'
       - '.vscode/**'
       - '**.txt'
