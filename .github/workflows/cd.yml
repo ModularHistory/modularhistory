@@ -39,8 +39,8 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      POSTGRES_DB: ${{ secrets.DB_NAME }}
-      POSTGRES_USER: ${{ secrets.DB_USER }}
+      POSTGRES_DB: modularhistory
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
       SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
       SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
@@ -113,24 +113,12 @@ jobs:
       run: |
         echo "Logging in to GitHub container registry..."
         echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
-        echo "Pulling $IMAGE_NAME:latest..."
-        docker pull $IMAGE_NAME:latest
-        echo "Building new image..."
+        echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
+        echo "Building $IMAGE_NAME:$SHA..."
         docker build . -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
         docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
-        echo "Pushing new image to the container registry..."
-        docker push $IMAGE_NAME:$SHA
-        docker push $IMAGE_NAME:latest
-      # uses: docker/build-push-action@v2
-      # with:
-      #   context: .
-      #   file: ./Dockerfile
-      #   push: true
-      #   tags: |
-      #     $IMAGE_NAME:$SHA
-      #     $IMAGE_NAME:latest
-      #   cache-from: type=registry,ref=$IMAGE_NAME:latest
-      #   cache-to: type=inline
+        echo "Pushing new image ($IMAGE_NAME:$SHA) to the registry..."
+        docker push $IMAGE_NAME:$SHA && docker push $IMAGE_NAME:latest
 
     # Deploy to server
     - name: Deploy image to server
@@ -144,41 +132,25 @@ jobs:
         scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./config modularhistory@$SERVER:~/modularhistory
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
-          cd ~/modularhistory && source .env
-          docker system prune -f
+          cd ~/modularhistory && set -a; source .env; set +a
+          echo "" && echo "Logging in to the container registry..."
           docker login ghcr.io -u iacobfred -p $CR_PAT
-          echo "Pulling images to $SERVER..."
+          echo "" && echo "Pulling images to $SERVER..."
           docker-compose pull
-          echo "" && echo "Starting webserver..."
+          docker image inspect $IMAGE_NAME:$SHA >/dev/null 2>&1 && echo "Successfully pulled $IMAGE_NAME:$SHA" || echo "ERROR: Did not retrieve $IMAGE_NAME:$SHA."
+          echo "" && echo "Restarting webserver..."
+          docker-compose down nginx && docker-compose down modularhistory
           docker-compose up -d nginx
+          docker system prune -f
         ENDSSH
     
-    # # Setup gcloud environment
-    # - name: Setup gcloud environment
-    #   if: ${{ success() }}
-    #   uses: google-github-actions/setup-gcloud@master  # https://github.com/google-github-actions/setup-gcloud
-    #   with:
-    #     project_id: modularhistory
-    #     service_account_key: ${{ secrets.GCP_CREDENTIALS }}
-    #     export_default_credentials: true
-
-    # # Print gcloud info
-    # - name: Print gcloud info
-    #   if: ${{ success() }}
-    #   run: gcloud info
-
-    # # Deploy to Google Cloud
-    # - name: Deploy to Google Cloud
-    #   if: ${{ success() }}
-    #   run: gcloud app deploy gc_app.yaml
-    
-    # # Create Sentry release
-    # - name: Create Sentry release
-    #   if: ${{ success() }}
-    #   uses: getsentry/action-release@v1.0.0
-    #   env:
-    #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-    #     SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-    #     SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-    #   with:
-    #     environment: production
+    # Create Sentry release
+    - name: Create Sentry release
+      if: ${{ success() }}
+      uses: getsentry/action-release@v1.0.0
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      with:
+        environment: production

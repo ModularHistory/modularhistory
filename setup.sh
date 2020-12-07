@@ -211,15 +211,15 @@ if [[ "$interactive" == true ]]; then
     exit 1
   }
 
-  # Make sure Memcached is installed
+  # Make sure Redis is installed
   {
-    memcached_version=$(memcached -V) && echo "Using $memcached_version..."
+    redis_version=$(redis -V) && echo "Using $redis_version..."
   } || {
     if [[ "$os" == "$MAC_OS" ]]; then
-      brew install memcached && brew services start memcached
+      brew install redis && brew services start redis
     elif [[ "$os" == "$LINUX" ]]; then
-      apt-get install memcached libmemcached-tools -y
-      systemctl start memcached && systemctl enable memcached
+      apt-get install redis -y
+      systemctl start redis && systemctl enable redis
     fi
   }
 
@@ -322,21 +322,6 @@ if [[ ! "$skip_dependencies" == true ]]; then
       exit 1
     }
   fi
-fi
-
-# TODO: remove lock command after https://github.com/python-poetry/poetry/issues/3023 is fixed
-poetry lock
-
-# Create requirements.txt (for deployments to Google Cloud)
-echo "Exporting requirements.txt..."
-rm requirements.txt &>/dev/null
-poetry export --without-hashes -f requirements.txt > requirements.txt
-if [[ ! "$skip_dependencies" == true ]]; then
-  # Install requirements from requirements.txt (only to ensure requirements.txt is valid)
-  pip install -r requirements.txt || {
-    error "Unable to install requirements from requirements.txt."
-    exit 1
-  }
 fi
 
 # Grant the db user access to create databases (so that tests can be run, etc.)

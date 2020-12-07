@@ -208,31 +208,31 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
-    # # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
-    # # TODO: enable cache
-    # # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
-    # 'django.middleware.cache.UpdateCacheMiddleware',
-    # Set the site attribute on every request obj, so request.site returns the current site:
+    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # Update cache:
+    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    'django.middleware.cache.UpdateCacheMiddleware',
+    # Set the site attribute on the request, so request.site returns the current site:
     # 'django.contrib.sites.middleware.CurrentSiteMiddleware',
     # https://docs.djangoproject.com/en/3.1/topics/http/sessions/
     'django.contrib.sessions.middleware.SessionMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
     'django.middleware.common.CommonMiddleware',
-    # # TODO: enable cache
-    # # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
-    # 'django.middleware.cache.FetchFromCacheMiddleware',
+    # Fetch from cache:
+    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    # Staticpage middleware, based on Django's Flatpage middleware
+    # Staticpage middleware (based on Django's Flatpage middleware):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
     'apps.staticpages.middleware.StaticPageFallbackMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    # memory profiler
+    # Memory profiler
     'modularhistory.middleware.PymplerMiddleware',
 ]
 

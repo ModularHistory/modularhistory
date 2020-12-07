@@ -36,7 +36,7 @@ services:
       - DB_HOST=db
     expose:
       - "8000"
-    restart: "on-failure"
+    restart: "unless-stopped"
     volumes:
       - static:/modularhistory/static
       - media:/modularhistory/media
