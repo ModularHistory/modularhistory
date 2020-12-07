@@ -70,6 +70,7 @@ class Occurrence(
         to='occurrences.OccurrenceChain',
         through='occurrences.OccurrenceChainInclusion',
         related_name='occurrences',
+        verbose_name=_('chains'),
     )
 
     class Meta:
