@@ -1415,7 +1415,6 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 [package.dependencies]
 google-auth = ">=1.21.1,<2.0dev"
 googleapis-common-protos = ">=1.6.0,<2.0dev"
-grpcio = {version = ">=1.29.0,<2.0dev", optional = true, markers = "extra == \"grpc\""}
 protobuf = ">=3.12.0"
 pytz = "*"
 requests = ">=2.18.0,<3.0.0dev"
@@ -1488,20 +1487,6 @@ six = ">=1.12.0"
 grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 
 [[package]]
-name = "google-cloud-secret-manager"
-version = "2.0.0"
-description = "Secret Manager API API client library"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-google-api-core = {version = ">=1.22.2,<2.0.0dev", extras = ["grpc"]}
-grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
-libcst = ">=0.2.5"
-proto-plus = ">=1.4.0"
-
-[[package]]
 name = "google-cloud-storage"
 version = "1.33.0"
 description = "Google Cloud Storage API client library"
@@ -1514,20 +1499,6 @@ google-auth = ">=1.11.0,<2.0dev"
 google-cloud-core = ">=1.4.1,<2.0dev"
 google-resumable-media = ">=1.0.0,<2.0dev"
 requests = ">=2.18.0,<3.0.0dev"
-
-[[package]]
-name = "google-cloud-tasks"
-version = "2.0.0"
-description = "Cloud Tasks API API client library"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-google-api-core = {version = ">=1.22.0,<2.0.0dev", extras = ["grpc"]}
-grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
-libcst = ">=0.2.5"
-proto-plus = ">=0.4.0"
 
 [[package]]
 name = "google-crc32c"
@@ -1568,7 +1539,6 @@ optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
 [package.dependencies]
-grpcio = {version = ">=1.0.0", optional = true, markers = "extra == \"grpc\""}
 protobuf = ">=3.6.0"
 
 [package.extras]
@@ -1586,32 +1556,6 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 dev = ["tox (>=3)", "flake8", "pep8-naming", "wheel", "twine"]
 docs = ["sphinx (>=1.8)", "sphinx-rtd-theme"]
 test = ["mock (>=3)", "pytest (>=4)", "pytest-mock (>=2)", "pytest-cov"]
-
-[[package]]
-name = "grpc-google-iam-v1"
-version = "0.12.3"
-description = "GRPC library for the google-iam-v1 service"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-googleapis-common-protos = {version = ">=1.5.2,<2.0.0dev", extras = ["grpc"]}
-grpcio = ">=1.0.0,<2.0.0dev"
-
-[[package]]
-name = "grpcio"
-version = "1.34.0"
-description = "HTTP/2-based RPC framework"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-six = ">=1.5.2"
-
-[package.extras]
-protobuf = ["grpcio-tools (>=1.34.0)"]
 
 [[package]]
 name = "gunicorn"
@@ -1942,22 +1886,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
-name = "libcst"
-version = "0.3.15"
-description = "A concrete syntax tree with AST-like properties for Python 3.5, 3.6, 3.7 and 3.8 programs."
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-pyyaml = ">=5.2"
-typing-extensions = ">=3.7.4.2"
-typing-inspect = ">=0.4.0"
-
-[package.extras]
-dev = ["black (==20.8b1)", "codecov (>=2.1.4)", "coverage (>=4.5.4)", "fixit (==0.1.1)", "flake8 (>=3.7.8)", "hypothesis (>=4.36.0)", "hypothesmith (>=0.0.4)", "isort (==5.5.3)", "jupyter (>=1.0.0)", "nbsphinx (>=0.4.2)", "pyre-check (==0.0.41)", "sphinx-rtd-theme (>=0.4.3)", "prompt-toolkit (>=2.0.9)", "tox (>=3.18.1)"]
-
-[[package]]
 name = "libsass"
 version = "0.20.1"
 description = "Sass for Python: A straightforward binding of libsass for Python."
@@ -2110,7 +2038,7 @@ dmypy = ["psutil (>=4.0)"]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -2380,20 +2308,6 @@ python-versions = ">=3.6.1"
 
 [package.dependencies]
 wcwidth = "*"
-
-[[package]]
-name = "proto-plus"
-version = "1.11.0"
-description = "Beautiful, Pythonic protocol buffers."
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-protobuf = ">=3.12.0"
-
-[package.extras]
-testing = ["google-api-core[grpc] (>=1.22.2)"]
 
 [[package]]
 name = "protobuf"
@@ -3360,18 +3274,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "typing-inspect"
-version = "0.6.0"
-description = "Runtime inspection utilities for typing module."
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-mypy-extensions = ">=0.3.0"
-typing-extensions = ">=3.7.4"
-
-[[package]]
 name = "unify"
 version = "0.5"
 description = "Modifies strings to all use the same (single/double) quote where possible."
@@ -3444,7 +3346,7 @@ python-versions = "*"
 
 [[package]]
 name = "virtualenv"
-version = "20.2.1"
+version = "20.2.2"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
@@ -3603,7 +3505,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "fa145e0729ce9dca748c04bea4ff1a31ff74f205491b89e18204ec564209fb40"
+content-hash = "95a04ea5659ad36bcf9712dbcbee0e6e04e11e804221a105349e4a4ed993a34a"
 
 [metadata.files]
 aenum = [
@@ -4213,17 +4115,9 @@ google-cloud-core = [
     {file = "google-cloud-core-1.4.4.tar.gz", hash = "sha256:5bf32a3476412bbbf37660d73c46a7217a0db7913d4f4db6490b56d7a93f1d86"},
     {file = "google_cloud_core-1.4.4-py2.py3-none-any.whl", hash = "sha256:1445266e70e3ea068915259bfa9db2736076d01ac4c60b919c11ef75ba831adf"},
 ]
-google-cloud-secret-manager = [
-    {file = "google-cloud-secret-manager-2.0.0.tar.gz", hash = "sha256:c2b0c93b559c3b6eb2dc75f7ab33d49fad8fe954f6094ac2b14323ce053058f0"},
-    {file = "google_cloud_secret_manager-2.0.0-py2.py3-none-any.whl", hash = "sha256:6062135031d8d6a3a6a9b0858b0c53efb55cd08807416391aa080b15ff07e550"},
-]
 google-cloud-storage = [
     {file = "google-cloud-storage-1.33.0.tar.gz", hash = "sha256:900ba027bdee6b97f21cd22d1db3d1a6233ede5de2db4754db860438bdad72d2"},
     {file = "google_cloud_storage-1.33.0-py2.py3-none-any.whl", hash = "sha256:a63b280a225e385fe0f9b606523e5812f37715614cdc646c51dac75cac880d95"},
-]
-google-cloud-tasks = [
-    {file = "google-cloud-tasks-2.0.0.tar.gz", hash = "sha256:a9dd004057fc441eee8c18bb2dc3bb20ba7b85f353d66894c61e42aeb8764e76"},
-    {file = "google_cloud_tasks-2.0.0-py2.py3-none-any.whl", hash = "sha256:a20531f4aa877a995d4ec8138fc0a23881351c7f075c3179c49c0f67e4467f29"},
 ]
 google-crc32c = [
     {file = "google-crc32c-1.0.0.tar.gz", hash = "sha256:9439b960b6ecd847557675d130fc3626d762bf535da595c20a6949a705fb3eae"},
@@ -4256,57 +4150,6 @@ googleapis-common-protos = [
 graphviz = [
     {file = "graphviz-0.15-py2.py3-none-any.whl", hash = "sha256:403b55553b235875fa521023a06d9c29b46f3a956f960d4e0a5b956bca9eb9ce"},
     {file = "graphviz-0.15.zip", hash = "sha256:2b85f105024e229ec330fe5067abbe9aa0d7708921a585ecc2bf56000bf5e027"},
-]
-grpc-google-iam-v1 = [
-    {file = "grpc-google-iam-v1-0.12.3.tar.gz", hash = "sha256:0bfb5b56f648f457021a91c0df0db4934b6e0c300bd0f2de2333383fe958aa72"},
-]
-grpcio = [
-    {file = "grpcio-1.34.0-cp27-cp27m-macosx_10_10_x86_64.whl", hash = "sha256:e2ffa46db9103706640c74886ac23ed18d1487a8523cc128da239e1d5a4e3301"},
-    {file = "grpcio-1.34.0-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:843436e69c37eb45b0285fa42f7acc06d147f2e9c1d515b0f901e94d40107e79"},
-    {file = "grpcio-1.34.0-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:a403ed4d8fcc441a2c2ec9ede838b0ae5f9da996d950cf2ff9f82242b496e0a7"},
-    {file = "grpcio-1.34.0-cp27-cp27m-win32.whl", hash = "sha256:dc45f5750ce50f34f20a0607efae5c797d01681a44465b8287bebef1e9847d5b"},
-    {file = "grpcio-1.34.0-cp27-cp27m-win_amd64.whl", hash = "sha256:2fd4a80f267aa258f5a74df5fe243eff80299a4f5b356c1da53f6f5793bbbf4b"},
-    {file = "grpcio-1.34.0-cp27-cp27mu-linux_armv7l.whl", hash = "sha256:f2e4d64675351a058f9cb35fe390ca0956bd2926171bfb7c87596a1ee10ff6ba"},
-    {file = "grpcio-1.34.0-cp27-cp27mu-manylinux2010_i686.whl", hash = "sha256:4a2c85cd4a67c36fe12535fe32eb336635843d1eb31d3fa301444e60a8df9c90"},
-    {file = "grpcio-1.34.0-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:32ad56f6d3d7e699f9a0d62719f2de9092e79f444d875d70f58cf7f8bb19684c"},
-    {file = "grpcio-1.34.0-cp35-cp35m-linux_armv7l.whl", hash = "sha256:e69ac6fc9096bbb43f5276655661db746233cd320808e0d302198eb43dc7bd04"},
-    {file = "grpcio-1.34.0-cp35-cp35m-macosx_10_10_intel.whl", hash = "sha256:5b105adb44486fb594b8d8142b5d4fbe50cb125c77ac7d270f5d0277ce5c554a"},
-    {file = "grpcio-1.34.0-cp35-cp35m-manylinux2010_i686.whl", hash = "sha256:923a3b18badc3749c4d715216934f62f46a818790e325ece6184d07e7d6c7f73"},
-    {file = "grpcio-1.34.0-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:9579f22222ac89ceee64c1101cced6434d9f6b12078b43ece0f9d8ebdb657f73"},
-    {file = "grpcio-1.34.0-cp35-cp35m-manylinux2014_i686.whl", hash = "sha256:dfa098a6ff8d1b68ed7bd655150ee91f57c29042c093ff51113176aded3f0071"},
-    {file = "grpcio-1.34.0-cp35-cp35m-manylinux2014_x86_64.whl", hash = "sha256:32fbc78d558d9468a4b16f79f4130daec8e431bc7a3b1775b0e98f09a7ab45a2"},
-    {file = "grpcio-1.34.0-cp35-cp35m-win32.whl", hash = "sha256:205eda06d8aeffc87a1e29ff1f090546adf0b6e766378cc4c13686534397fdb4"},
-    {file = "grpcio-1.34.0-cp35-cp35m-win_amd64.whl", hash = "sha256:2ea864ae3d3abc99d3988d1d27dee3f6350b60149ccf810a89cd9a9d02a675d6"},
-    {file = "grpcio-1.34.0-cp36-cp36m-linux_armv7l.whl", hash = "sha256:5d8108b240fd5b8a0483f95ab2651fe2d633311faae93a12938ea06cf61a5efd"},
-    {file = "grpcio-1.34.0-cp36-cp36m-macosx_10_10_x86_64.whl", hash = "sha256:bda0f52eb1279a7119526df2ef33ea2808691120daf9effaf60ca0c07f76058a"},
-    {file = "grpcio-1.34.0-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:c89b6a3eca8eae10eea78896ccfdc9d04aa2f7b2ee96de20246e5c96494c68f5"},
-    {file = "grpcio-1.34.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:fa834f4c70b9df83d5af610097747c224513d59af1f03e8c06bca9a7d81fd1a3"},
-    {file = "grpcio-1.34.0-cp36-cp36m-manylinux2014_i686.whl", hash = "sha256:20606ec7c265f81c5a0226f69842dc8dde66d921968ab9448e59d440cf98bebf"},
-    {file = "grpcio-1.34.0-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:72b6a89aabf937d706946230f5aa13bdf7d2a42874810fa54436c647577b543e"},
-    {file = "grpcio-1.34.0-cp36-cp36m-win32.whl", hash = "sha256:49da07ae43c552280b8b4c70617f9b589588404c2545d6eba2c55179b3d836af"},
-    {file = "grpcio-1.34.0-cp36-cp36m-win_amd64.whl", hash = "sha256:beef6be49ada569edf3b73fd4eb57d6c2af7e10c0c82a210dbe51de7c4a1ed53"},
-    {file = "grpcio-1.34.0-cp37-cp37m-macosx_10_10_x86_64.whl", hash = "sha256:8d92e884f6d67b9a2a4514631d3c9836281044caedb5fd34d4ce2bbec138c87d"},
-    {file = "grpcio-1.34.0-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:e238a554f29d90b0e7fca15e8119b9a7c5f88faacbf9b982751ad54d639b57f8"},
-    {file = "grpcio-1.34.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:98b0b6e44c451093354a38b620e6e0df958b0710abd6a0ddd84da84424bce003"},
-    {file = "grpcio-1.34.0-cp37-cp37m-manylinux2014_i686.whl", hash = "sha256:bbd3522f821fb5d01049db214fb9f949a8b2d92761c2780a20ff73818efd5360"},
-    {file = "grpcio-1.34.0-cp37-cp37m-manylinux2014_x86_64.whl", hash = "sha256:2f54046ca2a81ff45ec8f6d3d7447ad562adb067c3640c35354e440fd771b625"},
-    {file = "grpcio-1.34.0-cp37-cp37m-win32.whl", hash = "sha256:50c4f10e7deff96d197bc6d1988c2a5a0bc6252bbd31d7fb374ce8923f937e7a"},
-    {file = "grpcio-1.34.0-cp37-cp37m-win_amd64.whl", hash = "sha256:6fafdba42c26bbdf78948c09a93a8b3a8a509c66c6b4324bc1fb360bf4e82b9d"},
-    {file = "grpcio-1.34.0-cp38-cp38-macosx_10_10_x86_64.whl", hash = "sha256:bd7634f8c49c8467fec5fd9e0d1abb205b0aa61670ff0113ef835ca6548aad3d"},
-    {file = "grpcio-1.34.0-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:69127393fc3513da228bc3908914df2284923e0eacf8d73f21ad387317450317"},
-    {file = "grpcio-1.34.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:5e8e6035d4f9ab856ab437e381e652b31dfd42443d2243d45bdf4b90adaf3559"},
-    {file = "grpcio-1.34.0-cp38-cp38-manylinux2014_i686.whl", hash = "sha256:95de4ad9ae39590668e3330d414253f672aedd46cc107d7f71b4a2268f3d6066"},
-    {file = "grpcio-1.34.0-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:a1024006fe61ee7e43e7099faf08f4508ea0c944a1558e8d715a5b4556937ace"},
-    {file = "grpcio-1.34.0-cp38-cp38-win32.whl", hash = "sha256:dea35dcf09aee91552cb4b3e250efdbcb79564b5b5517246bcbead8d5871e291"},
-    {file = "grpcio-1.34.0-cp38-cp38-win_amd64.whl", hash = "sha256:e95bda60c584b3deb5c37babb44d4300cf4bf3a6c43198a244ddcaddca3fde3a"},
-    {file = "grpcio-1.34.0-cp39-cp39-macosx_10_10_x86_64.whl", hash = "sha256:c88ce184973fe2035ffa176eb08cd492db090505e6b1ddc68b5cc1e0b01a07a0"},
-    {file = "grpcio-1.34.0-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:57a30f9df0f5342e4dad384e7023b9f88742c325838da977828c37f49eb8940a"},
-    {file = "grpcio-1.34.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:924d5e8b18942ebea1260e60be7e2bde2a3587ea386190b442790f84180bf372"},
-    {file = "grpcio-1.34.0-cp39-cp39-manylinux2014_i686.whl", hash = "sha256:43fafebcc2e81d012f7147a0ddf9be69864c40fc4edd9844937eba0020508297"},
-    {file = "grpcio-1.34.0-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:9550b7c9d2f11579b484accc6183e02ebe33ce80a0ff15f5c28895df6b3d3108"},
-    {file = "grpcio-1.34.0-cp39-cp39-win32.whl", hash = "sha256:d16f7f5a10bf24640fa639974d409c220e587b3e2fa2620af00d43ba36dafc2c"},
-    {file = "grpcio-1.34.0-cp39-cp39-win_amd64.whl", hash = "sha256:25958bd7c6773e6de79781cc0d6f19d0c82332984dd07ef238889e93485d5afc"},
-    {file = "grpcio-1.34.0.tar.gz", hash = "sha256:f98f746cacbaa681de0bcd90d7aa77b440e3e1327a9988f6a2b580d54e27d4c3"},
 ]
 gunicorn = [
     {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
@@ -4517,10 +4360,6 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:a6ae12d08c0bf9909ce12385803a543bfe99b95fe01e752536a60af2b7797c62"},
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win32.whl", hash = "sha256:5541cada25cd173702dbd99f8e22434105456314462326f06dba3e180f203dfd"},
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win_amd64.whl", hash = "sha256:59f79fef100b09564bc2df42ea2d8d21a64fdcda64979c0fa3db7bdaabaf6239"},
-]
-libcst = [
-    {file = "libcst-0.3.15-py3-none-any.whl", hash = "sha256:786757e9eb05f0b3349d279eb27c9a371f24e849f0cc7be119c1e6b958cd85ed"},
-    {file = "libcst-0.3.15.tar.gz", hash = "sha256:73e94ac2e7a78960ddca4d4e5250dc2e02e7ba85b29e7b2ac1b1d2bce90b4cee"},
 ]
 libsass = [
     {file = "libsass-0.20.1-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:4a246e4b88fd279abef8b669206228c92534d96ddcd0770d7012088c408dff23"},
@@ -4858,9 +4697,6 @@ pluggy = [
 prompt-toolkit = [
     {file = "prompt_toolkit-3.0.8-py3-none-any.whl", hash = "sha256:7debb9a521e0b1ee7d2fe96ee4bd60ef03c6492784de0547337ca4433e46aa63"},
     {file = "prompt_toolkit-3.0.8.tar.gz", hash = "sha256:25c95d2ac813909f813c93fde734b6e44406d1477a9faef7c915ff37d39c0a8c"},
-]
-proto-plus = [
-    {file = "proto-plus-1.11.0.tar.gz", hash = "sha256:416a0f13987789333cd8760a0ee998f8eccd6d7165ee9f283d64ca2de3e8774d"},
 ]
 protobuf = [
     {file = "protobuf-3.14.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:629b03fd3caae7f815b0c66b41273f6b1900a579e2ccb41ef4493a4f5fb84f3a"},
@@ -5435,11 +5271,6 @@ typing-extensions = [
     {file = "typing_extensions-3.7.4.3-py3-none-any.whl", hash = "sha256:7cb407020f00f7bfc3cb3e7881628838e69d8f3fcab2f64742a5e76b2f841918"},
     {file = "typing_extensions-3.7.4.3.tar.gz", hash = "sha256:99d4073b617d30288f569d3f13d2bd7548c3a7e4c8de87db09a9d29bb3a4a60c"},
 ]
-typing-inspect = [
-    {file = "typing_inspect-0.6.0-py2-none-any.whl", hash = "sha256:de08f50a22955ddec353876df7b2545994d6df08a2f45d54ac8c05e530372ca0"},
-    {file = "typing_inspect-0.6.0-py3-none-any.whl", hash = "sha256:3b98390df4d999a28cf5b35d8b333425af5da2ece8a4ea9e98f71e7591347b4f"},
-    {file = "typing_inspect-0.6.0.tar.gz", hash = "sha256:8f1b1dd25908dbfd81d3bebc218011531e7ab614ba6e5bf7826d887c834afab7"},
-]
 unify = [
     {file = "unify-0.5.tar.gz", hash = "sha256:8ddce812b2457212b7598fe574c9e6eb3ad69710f445391338270c7f8a71723c"},
 ]
@@ -5470,8 +5301,8 @@ uvloop = [
     {file = "uvloop-0.14.0.tar.gz", hash = "sha256:123ac9c0c7dd71464f58f1b4ee0bbd81285d96cdda8bc3519281b8973e3a461e"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.2.1-py2.py3-none-any.whl", hash = "sha256:07cff122e9d343140366055f31be4dcd61fd598c69d11cd33a9d9c8df4546dd7"},
-    {file = "virtualenv-20.2.1.tar.gz", hash = "sha256:e0aac7525e880a429764cefd3aaaff54afb5d9f25c82627563603f5d7de5a6e5"},
+    {file = "virtualenv-20.2.2-py2.py3-none-any.whl", hash = "sha256:54b05fc737ea9c9ee9f8340f579e5da5b09fb64fd010ab5757eb90268616907c"},
+    {file = "virtualenv-20.2.2.tar.gz", hash = "sha256:b7a8ec323ee02fb2312f098b6b4c9de99559b462775bc8fe3627a73706603c1b"},
 ]
 virtualenv-clone = [
     {file = "virtualenv-clone-0.5.4.tar.gz", hash = "sha256:665e48dd54c84b98b71a657acb49104c54e7652bce9c1c4f6c6976ed4c827a29"},

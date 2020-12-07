@@ -9,7 +9,7 @@ services:
       - redis
     env_file: .env
     environment:
-      - DB_HOST=db
+      - POSTGRES_HOST=db
     ports:
       - "8000:8000"
     volumes:
@@ -32,7 +32,7 @@ services:
     env_file: .env
     environment:
       - DJANGO_SETTINGS_MODULE=modularhistory.settings
-      - DB_HOST=db
+      - POSTGRES_HOST=db
     expose:
       - "8000"
     healthcheck:
