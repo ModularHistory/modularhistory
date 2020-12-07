@@ -23,7 +23,7 @@ services:
     restart: "always"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./config/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
   
   modularhistory:
     image: "$IMAGE_NAME:$SHA"
