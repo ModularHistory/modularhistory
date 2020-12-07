@@ -124,8 +124,7 @@ ALLOWED_HOSTS = (
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
 INTERNAL_IPS = ['127.0.0.1']
 
-if not RUNNING_IN_GC:
-    pass
+if ENABLE_ASGI:
     # https://channels.readthedocs.io/en/latest/
     ASGI_APPLICATION = 'modularhistory.asgi.application'
     # CHANNEL_LAYERS = {
@@ -423,13 +422,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Google Cloud Storage bucket names
-# https://django-storages.readthedocs.io/en/latest/backends/gcloud.html
-GS_MEDIA_BUCKET_NAME = 'modularhistory-media'
-GS_LOCATION = 'media'  # Bucket subdirectory in which to store files. (Defaults to the bucket root.)
-GS_STATIC_BUCKET_NAME = 'modularhistory-static'
-GS_ARTIFACTS_BUCKET_NAME = 'modularhistory-artifacts'
-
+# Mega credentials
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
@@ -444,25 +437,11 @@ SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 # Media files (images, etc. uploaded by users)
 # https://docs.djangoproject.com/en/3.1/topics/files/
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URLS = {
-    Environments.DEV: '/media/',
-    Environments.PROD: f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/',
-}
-MEDIA_URL = MEDIA_URLS.get(ENVIRONMENT) or '/media/'
-if IS_PROD:
-    DEFAULT_FILE_STORAGE = 'modularhistory.storage.GoogleCloudMediaFileStorage'
-    GS_BUCKET_NAME = GS_MEDIA_BUCKET_NAME
+MEDIA_URL = '/media/'
 
-ARTIFACTS_URL = (
-    f'https://storage.googleapis.com/{GS_ARTIFACTS_BUCKET_NAME}/'
-    if IS_PROD
-    else '/artifacts/'
-)
+ARTIFACTS_URL = '/artifacts/'
 ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
-if IS_PROD:
-    ARTIFACTS_STORAGE = 'modularhistory.storage.GoogleCloudArtifactsStorage'
-else:
-    ARTIFACTS_STORAGE = 'modularhistory.storage.LocalArtifactsStorage'
+ARTIFACTS_STORAGE = 'modularhistory.storage.LocalArtifactsStorage'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -679,8 +658,9 @@ CACHES: Dict[str, Cache]
 REDIS_HOST = None
 if ENVIRONMENT == Environments.DEV:
     REDIS_HOST = 'localhost'
-elif IS_PROD and not RUNNING_IN_GC:
+else:
     REDIS_HOST = 'redis'
+
 # https://github.com/jazzband/django-redis
 if ENVIRONMENT == Environments.DEV and use_dummy_cache_in_dev_environment:
     CACHES = {
