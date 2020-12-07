@@ -79,7 +79,9 @@ class OccurrenceQuoteRelation(PositionedRelation):
 class OccurrenceEntityInvolvement(Model):
     """An involvement of an entity in an occurrence."""
 
-    occurrence = models.ForeignKey(to='occurrences.Occurrence', on_delete=models.CASCADE)
+    occurrence = models.ForeignKey(
+        to='occurrences.Occurrence', on_delete=models.CASCADE
+    )
     entity = models.ForeignKey(
         'entities.Entity',
         related_name='occurrence_involvements',

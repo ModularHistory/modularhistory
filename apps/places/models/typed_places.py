@@ -40,6 +40,7 @@ class Venue(Place):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         constraints = [
             models.CheckConstraint(
                 check=models.Q(
@@ -59,6 +60,7 @@ class City(Place):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         verbose_name_plural = 'Cities'
 
 
@@ -71,6 +73,7 @@ class County(Place):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         verbose_name_plural = 'Counties'
 
 
@@ -83,6 +86,7 @@ class State(Place):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         verbose_name_plural = 'States'
 
 
@@ -95,6 +99,7 @@ class Region(Place):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         verbose_name_plural = 'Regions'
 
 
@@ -107,6 +112,7 @@ class Country(Place):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         verbose_name_plural = 'Countries'
 
 
@@ -119,4 +125,5 @@ class Continent(Place):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         verbose_name_plural = 'Continents'

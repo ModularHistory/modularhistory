@@ -60,6 +60,7 @@ class Search(Model):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         verbose_name_plural = 'Searches'
 
     def __str__(self) -> str:

@@ -61,6 +61,7 @@ class SearchableModel(TaggableModel, ModelWithComputations, VerifiableModel):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         abstract = True
 
     objects: 'SearchableModelManager'

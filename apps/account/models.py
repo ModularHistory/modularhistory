@@ -19,8 +19,6 @@ AVATAR_HEIGHT: int = AVATAR_WIDTH
 
 class UserManager(BaseUserManager):
     """Manager for users."""
-    
-    pass
 
 
 class User(AbstractUser):

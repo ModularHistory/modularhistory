@@ -26,6 +26,7 @@ class ContentInteraction(Model):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         abstract = True
 
 
@@ -44,6 +45,7 @@ class FieldContentInteraction(ContentInteraction):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         abstract = True
 
 

@@ -22,6 +22,7 @@ class QuoteRelation(PositionedRelation):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         unique_together = ['quote', 'content_type', 'object_id', 'position']
         ordering = ['position', 'quote']
 

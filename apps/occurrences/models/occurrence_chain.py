@@ -43,6 +43,7 @@ class OccurrenceChainInclusion(Model):
 
         See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         """
+
         unique_together: List[str] = ['chain', 'occurrence']
 
     def __str__(self):
