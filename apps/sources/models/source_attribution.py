@@ -21,5 +21,5 @@ class SourceAttribution(PositionedRelation):
     )
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the source attribution."""
         return self.attributee.unabbreviated_name or f'{self.attributee}'

@@ -30,18 +30,18 @@ GC_QUEUE: Optional[str] = config('GC_QUEUE', default=None)
 GC_REGION: Optional[str] = config('GC_REGION', default=None)
 
 RUNNING_IN_GC: Optional[bool] = bool(os.getenv('GAE_APPLICATION', None))
-IS_PROD = RUNNING_IN_GC
-USE_PROD_DB: bool = config('USE_PROD_DB', default=IS_PROD, cast=bool)
-TESTING: bool = 'test' in sys.argv
 
 # Environment
-
-if IS_PROD:
+if os.getenv('ENVIRONMENT') == Environments.PROD:
     ENVIRONMENT = Environments.PROD
 elif os.environ.get('GITHUB_WORKFLOW'):
     ENVIRONMENT = Environments.GITHUB_TEST
 else:
     ENVIRONMENT = config('ENVIRONMENT', default=Environments.DEV)
+
+IS_PROD = ENVIRONMENT == Environments.PROD
+USE_PROD_DB: bool = config('USE_PROD_DB', default=IS_PROD, cast=bool)
+TESTING: bool = 'test' in sys.argv
 
 SERVER_LOCATION = 'unknown'  # TODO
 GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
@@ -96,11 +96,11 @@ DEBUG = ENVIRONMENT == Environments.DEV
 SECRET_KEY = config('SECRET_KEY')
 
 # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
-PREPEND_WWW = IS_PROD
+PREPEND_WWW = False
 APPEND_SLASH = True
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = IS_PROD
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
