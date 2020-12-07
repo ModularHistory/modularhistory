@@ -19,11 +19,8 @@ AVATAR_HEIGHT: int = AVATAR_WIDTH
 
 class UserManager(BaseUserManager):
     """Manager for users."""
-
-    @classmethod
-    def locked(cls) -> 'QuerySet[User]':
-        """Return a queryset of users with locked accounts."""
-        return User.objects.filter(locked=True)
+    
+    pass
 
 
 class User(AbstractUser):
@@ -38,7 +35,6 @@ class User(AbstractUser):
     )
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, auto_now=True)
-    locked = models.BooleanField('Lock the account', default=False)
     force_password_change = models.BooleanField(
         'Prompt user to change password upon first login', default=False
     )
@@ -54,16 +50,6 @@ class User(AbstractUser):
     def social_auths(self) -> 'QuerySet[UserSocialAuth]':
         """Wrap the reverse attribute of the UserSocialAuth–User relation."""
         return self.social_auth
-
-    def lock(self):
-        """Lock the user account."""
-        self.locked = True
-        self.save()
-
-    def unlock(self):
-        """Unlock the user account."""
-        self.locked = False
-        self.save()
 
     def update_avatar(self, url):
         """Update the user's avatar with the image located at the given URL."""

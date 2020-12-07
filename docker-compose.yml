@@ -44,6 +44,9 @@ services:
     image: nginx
     depends_on:
       - modularhistory
+    networks:
+      - default:
+          ipv4_address: 172.27.0.5
     ports:
       - "80:80"
       - "443:443"
@@ -62,6 +65,13 @@ services:
     restart: "always"
     volumes:
       - "redis:/data"
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.27.0.0/24
 
 volumes: 
   postgres_data:
