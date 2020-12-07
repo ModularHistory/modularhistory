@@ -40,7 +40,6 @@ else:
     ENVIRONMENT = config('ENVIRONMENT', default=Environments.DEV)
 
 IS_PROD = ENVIRONMENT == Environments.PROD
-USE_PROD_DB: bool = config('USE_PROD_DB', default=IS_PROD, cast=bool)
 TESTING: bool = 'test' in sys.argv
 
 SERVER_LOCATION = 'unknown'  # TODO
@@ -306,18 +305,6 @@ elif ENVIRONMENT == Environments.GITHUB_TEST:
             'ENGINE': 'django.db.backends.postgresql',
         }
     }
-elif USE_PROD_DB:
-    DATABASES = {
-        'default': {
-            'NAME': config('PROD_DB_NAME', default='modularhistory'),
-            'USER': config('PROD_DB_USER'),
-            'PASSWORD': config('PROD_DB_PASSWORD'),
-            'HOST': config('PROD_DB_HOST'),
-            'PORT': config('PROD_DB_PORT'),
-            'ENGINE': 'django.db.backends.postgresql',
-        },
-    }
-    print('WARNING: Using production database!  Tread carefully!')
 else:  # development, etc.
     DATABASES = {
         'default': {
