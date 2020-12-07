@@ -53,7 +53,7 @@ services:
       - "443:443"
     restart: "unless-stopped"
     volumes:
-      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt/live:/etc/letsencrypt/live
+      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
       - ./config/nginx/conf.d:/etc/nginx/conf.d
       - static:/modularhistory/static
       - media:/modularhistory/media
