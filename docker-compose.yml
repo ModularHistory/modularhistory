@@ -16,17 +16,16 @@ services:
       - .:/modularhistory
   
   db:
-    image: postgres
     env_file: .env
+    image: postgres
     ports:
       - "5432:5432"
     restart: "always"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      - ./config/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./config/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
   
   modularhistory:
-    image: "$IMAGE_NAME:$SHA"
     depends_on:
       - db
       - redis
@@ -36,15 +35,20 @@ services:
       - DB_HOST=db
     expose:
       - "8000"
+    healthcheck:
+      disable: true
+    image: "$IMAGE_NAME:$SHA"
     restart: "unless-stopped"
     volumes:
       - static:/modularhistory/static
       - media:/modularhistory/media
 
   nginx:
-    image: nginx
     depends_on:
       - modularhistory
+    healthcheck:
+      disable: true
+    image: nginx
     networks:
       default:
         ipv4_address: 172.27.0.5
