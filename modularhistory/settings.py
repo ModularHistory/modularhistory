@@ -19,6 +19,7 @@ from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 
 from modularhistory.constants.misc import PRODUCTION, Environments
 
@@ -57,12 +58,11 @@ ADMINS = (
     else []
 )
 
-ENABLE_CELERY = False
-
 # Initialize the Sentry SDK for error reporting.
 if ENVIRONMENT != Environments.DEV:
     integrations: List[Integration] = [
         DjangoIntegration(),
+        RedisIntegration(),
     ]
     sentry_sdk.init(
         # https://docs.sentry.io/platforms/python/configuration/options/#dsn
