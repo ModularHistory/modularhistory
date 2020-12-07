@@ -2,7 +2,7 @@
 
 from django.core.exceptions import ValidationError
 from django.db import models
-
+from django.utils.translation import ugettext_lazy as _
 from modularhistory.models.positioned_relation import PositionedRelation
 
 
@@ -10,12 +10,16 @@ class QuoteAttribution(PositionedRelation):
     """An attribution of a quote to an entity."""
 
     quote = models.ForeignKey(
-        to='quotes.Quote', on_delete=models.CASCADE, related_name='attributions'
+        to='quotes.Quote',
+        on_delete=models.CASCADE,
+        related_name='attributions',
+        verbose_name=_('quote'),
     )
     attributee = models.ForeignKey(
         to='entities.Entity',
         on_delete=models.CASCADE,
         related_name='quote_attributions',
+        verbose_name=_('attributee'),
     )
 
     class Meta:
