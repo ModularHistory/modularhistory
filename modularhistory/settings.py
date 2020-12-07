@@ -100,7 +100,7 @@ PREPEND_WWW = IS_PROD
 APPEND_SLASH = True
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
-SECURE_SSL_REDIRECT = IS_PROD
+SECURE_SSL_REDIRECT = False
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
