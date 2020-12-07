@@ -30,7 +30,7 @@ COPY . /modularhistory
 EXPOSE 8000
 
 # Change ownership
-RUN chmod u+x /modularhistory/init.sh && chmod +x /modularhistory/init-letsencrypt.sh && chown -R www-data:www-data /modularhistory
+RUN chmod u+x /modularhistory/init.sh && chown -R www-data:www-data /modularhistory
 
 # Change to non-root user
 USER www-data
