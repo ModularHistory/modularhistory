@@ -128,17 +128,18 @@ ALLOWED_HOSTS = (
 INTERNAL_IPS = ['127.0.0.1']
 
 if not RUNNING_IN_GC:
+    pass
     # https://channels.readthedocs.io/en/latest/
     ASGI_APPLICATION = 'modularhistory.asgi.application'
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                'hosts': [('127.0.0.1', 6379)],
-                'symmetric_encryption_keys': [SECRET_KEY],
-            },
-        },
-    }
+    # CHANNEL_LAYERS = {
+    #     'default': {
+    #         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+    #         'CONFIG': {
+    #             'hosts': [('127.0.0.1', 6379)],
+    #             'symmetric_encryption_keys': [SECRET_KEY],
+    #         },
+    #     },
+    # }
 
 INSTALLED_APPS = [
     # admin_menu come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
@@ -162,7 +163,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
-    'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    # 'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_replicated',  # https://github.com/yandex/django_replicated
@@ -188,7 +189,6 @@ INSTALLED_APPS = [
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'webpack_loader',  #
     'apps.account.apps.AccountConfig',
-    'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
     'apps.home.apps.HomeConfig',
@@ -208,10 +208,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
-
     # # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
-    
     # # TODO: enable cache
     # # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     # 'django.middleware.cache.UpdateCacheMiddleware',
