@@ -23,6 +23,7 @@ services:
     restart: "always"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
   
   modularhistory:
     image: "$IMAGE_NAME:$SHA"
@@ -56,8 +57,6 @@ services:
       - ./config/nginx/conf.d:/etc/nginx/conf.d
       - static:/modularhistory/static
       - media:/modularhistory/media
-      - letsencrypt:/etc/letsencrypt
-      - logs:/var/log/
   
   redis:
     image: redis
@@ -76,8 +75,6 @@ networks:
 
 volumes: 
   postgres_data:
-  logs:
   redis:
-  letsencrypt:
   static:
   media:
