@@ -45,8 +45,8 @@ services:
     depends_on:
       - modularhistory
     networks:
-      - default:
-          ipv4_address: "172.27.0.5"
+      default:
+        ipv4_address: 172.27.0.5
     ports:
       - "80:80"
       - "443:443"
@@ -71,7 +71,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: "172.27.0.0/24"
+        - subnet: 172.27.0.0/24
 
 volumes: 
   postgres_data:
