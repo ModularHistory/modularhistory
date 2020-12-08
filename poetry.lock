@@ -712,6 +712,18 @@ Django = ">=2.2"
 sqlparse = ">=0.2.0"
 
 [[package]]
+name = "django-defender"
+version = "0.8.0"
+description = "redis based Django app that locks out users after too many failed login attempts."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=1.8,<3.2"
+redis = "<3.6"
+
+[[package]]
 name = "django-extra-views"
 version = "0.13.0"
 description = "Extra class-based views for Django"
@@ -3453,7 +3465,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "ae7253b2ff1606cdf4abceabd0eea0d0266ad9ecc959be6a05ed94318ace8715"
+content-hash = "c31ea60cfaf94b7742d9b29e3c1dff9b899780827c133235286195a2984dea3e"
 
 [metadata.files]
 aenum = [
@@ -3828,6 +3840,10 @@ django-dbbackup = [
 django-debug-toolbar = [
     {file = "django-debug-toolbar-3.2.tar.gz", hash = "sha256:84e2607d900dbd571df0a2acf380b47c088efb787dce9805aefeb407341961d2"},
     {file = "django_debug_toolbar-3.2-py3-none-any.whl", hash = "sha256:9e5a25d0c965f7e686f6a8ba23613ca9ca30184daa26487706d4829f5cfb697a"},
+]
+django-defender = [
+    {file = "django-defender-0.8.0.tar.gz", hash = "sha256:81e657b9f697ce0136511666706439d48ad24ff8646ae9fcad88fdc3df6313dc"},
+    {file = "django_defender-0.8.0-py3-none-any.whl", hash = "sha256:18169c0e04b905dcee4acfdcb5ba8ab7294036367b7db1969c1f8069cd015685"},
 ]
 django-extra-views = [
     {file = "django-extra-views-0.13.0.tar.gz", hash = "sha256:3c88f1e6714ec174142b6e76605fa1d5d1615c6ae2eb00568c095da778cc1245"},

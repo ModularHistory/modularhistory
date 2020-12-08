@@ -168,6 +168,7 @@ INSTALLED_APPS = [
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
+    'defender',  # https://github.com/jazzband/django-defender  # TODO
     'django_q',  # https://django-q.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
