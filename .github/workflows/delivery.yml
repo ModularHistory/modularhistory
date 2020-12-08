@@ -110,7 +110,7 @@ jobs:
           set -a; source .env; set +a
           echo "" && echo "Logging in to the container registry..."
           docker login ghcr.io -u iacobfred -p $CR_PAT
-          echo "" && echo "Pulling images to $SERVER..."
+          echo "Pulling images to $SERVER..."
           docker-compose pull
           docker image inspect $IMAGE_NAME:${{ github.sha }} >/dev/null 2>&1 && echo "Successfully pulled modularhistory:${{ github.sha }}" || echo "ERROR: Did not retrieve modularhistory:${{ github.sha }}."
           echo "" && echo "Restarting webserver..."
