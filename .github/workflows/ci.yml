@@ -22,18 +22,29 @@ jobs:
         python-version: [ 3.7 ]
     services:
       postgres:
-        image: postgres:12
+        image: postgres
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
       redis:
         image: redis
         ports:
           - 6379:6379
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       ADMINS: ${{ secrets.ADMINS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
