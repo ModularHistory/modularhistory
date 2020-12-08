@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, List, Optional
 
+from concurrency.fields import IntegerVersionField
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.template.defaultfilters import truncatechars_html
@@ -44,6 +45,8 @@ class Occurrence(
         paragraphed=True,
         help_text='Content to be displayed below all related data',
     )
+    version = IntegerVersionField()
+
     locations = models.ManyToManyField(
         to='places.Place',
         through='occurrences.OccurrenceLocation',

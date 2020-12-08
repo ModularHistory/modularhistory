@@ -1,6 +1,6 @@
 [[package]]
 name = "aenum"
-version = "2.2.4"
+version = "2.2.5"
 description = "Advanced Enumerations (compatible with Python's stdlib Enum), NamedTuples, and NamedConstants"
 category = "main"
 optional = false
@@ -669,6 +669,14 @@ python-versions = ">=3"
 
 [package.dependencies]
 django = ">=1.8"
+
+[[package]]
+name = "django-concurrency"
+version = "2.2"
+description = "Optimistic lock implementation for Django. Prevents users from doing concurrent editing."
+category = "main"
+optional = false
+python-versions = ">=3.5"
 
 [[package]]
 name = "django-crispy-forms"
@@ -3445,13 +3453,13 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "8074f7dd3067d202d6754d5800fe5748667bdb738d501930b55b9ad6a345821f"
+content-hash = "ae7253b2ff1606cdf4abceabd0eea0d0266ad9ecc959be6a05ed94318ace8715"
 
 [metadata.files]
 aenum = [
-    {file = "aenum-2.2.4-py2-none-any.whl", hash = "sha256:85adabd63183d283250bf7acd9fa23c7e45b1c8d1efbb84b233160f3c438dc18"},
-    {file = "aenum-2.2.4-py3-none-any.whl", hash = "sha256:bcb4fd350d36af336b6b5898e5d89f76344621d9c1b2de69c81acf1d3e6b1145"},
-    {file = "aenum-2.2.4.tar.gz", hash = "sha256:81828d1fbe20b6b188d75b21a0fa936d7d929d839ef843ef385d9c2a97082864"},
+    {file = "aenum-2.2.5-py2-none-any.whl", hash = "sha256:05fb177d6be1f7cace01c19495e32bade76df78177b3abb396a4dde1216597aa"},
+    {file = "aenum-2.2.5-py3-none-any.whl", hash = "sha256:dbbb7720a7c9dd07df8f942c6012896cc80fff60d510826fa045834c724478bb"},
+    {file = "aenum-2.2.5.tar.gz", hash = "sha256:f22878aadae5e8f75d26516bf9f8a700c586d37276caec6d7c4178e235d1351a"},
 ]
 aioredis = [
     {file = "aioredis-1.3.1-py3-none-any.whl", hash = "sha256:b61808d7e97b7cd5a92ed574937a079c9387fdadd22bfbfa7ad2fd319ecc26e3"},
@@ -3806,6 +3814,9 @@ django-autoslug = [
 django-bootstrap-datepicker-plus = [
     {file = "django-bootstrap-datepicker-plus-3.0.5.tar.gz", hash = "sha256:490058eba99d47f48a7d24fa78581c0e36375bdc7aa9605783eeb170d51fd0df"},
     {file = "django_bootstrap_datepicker_plus-3.0.5-py3-none-any.whl", hash = "sha256:a8bc19cc6846f97ff1e6c447f4e0387881d16e8afa1e8bd7a652c19e545c566b"},
+]
+django-concurrency = [
+    {file = "django-concurrency-2.2.tar.gz", hash = "sha256:655d7222b38dc840071285c96b94d59a52065c15e246ebeb5abd6c563a401cc8"},
 ]
 django-crispy-forms = [
     {file = "django-crispy-forms-1.10.0.tar.gz", hash = "sha256:d3f808d20cafe20fd38a49a47e72db1fd519fcf31bef4f47f008619336a3ebff"},

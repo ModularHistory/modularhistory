@@ -17,6 +17,7 @@ from typing import Any, Callable, TypeVar
 
 import django
 from pympler import tracker
+
 from modularhistory import settings
 from modularhistory.constants.strings import NEGATIVE, SPACE
 from modularhistory.linters import flake8 as lint_with_flake8

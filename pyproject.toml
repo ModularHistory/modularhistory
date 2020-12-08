@@ -102,6 +102,7 @@ social-auth-app-django = "==4.0.0"
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
+django-concurrency = "^2.2"
 
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"

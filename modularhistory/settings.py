@@ -163,6 +163,7 @@ INSTALLED_APPS = [
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     # 'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    'concurrency',  # https://github.com/saxix/django-concurrency
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_replicated',  # https://github.com/yandex/django_replicated
