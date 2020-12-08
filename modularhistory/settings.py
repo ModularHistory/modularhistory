@@ -212,8 +212,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    # https://github.com/Dunedan/django-lockdown#using-the-middleware
-    'lockdown.middleware.LockdownMiddleware',  # TODO: Remove!
     # Update cache:
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.UpdateCacheMiddleware',

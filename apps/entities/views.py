@@ -4,6 +4,7 @@ from django.views import generic
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
+from lockdown.decorators import lockdown
 
 from apps.entities.models import Category, Entity  # , Person, Organization
 from apps.entities.serializers import EntitySerializer
@@ -75,6 +76,7 @@ class BaseDetailView(generic.detail.DetailView):
     query_pk_and_slug = True
 
 
+@lockdown
 class DetailView(BaseDetailView):
     """View depicting details of a specific entity."""
 
