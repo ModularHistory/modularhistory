@@ -27,7 +27,7 @@ class TopicTopicRelation(Model):
         unique_together = ['from_topic', 'to_topic']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the string representation of the relation."""
         return f'{self.from_topic} ~ {self.to_topic}'
 
 
