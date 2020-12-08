@@ -105,6 +105,8 @@ jobs:
         scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./config modularhistory@$SERVER:~/
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
+          echo "Working dir:" && pwd && echo "" && ls
+          echo "" && echo "Setting environment variables..."
           set -a; source .env; set +a
           echo "" && echo "Logging in to the container registry..."
           docker login ghcr.io -u iacobfred -p $CR_PAT
