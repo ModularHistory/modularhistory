@@ -72,25 +72,29 @@ jobs:
 
     # Inject environment vars
     - name: Inject environment vars
+      if: ${{ success() }}
       run: |
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
     
     # Build and push the Docker image
     - name: Build and push image
+      if: ${{ success() }}
       run: |
-        echo "Logging in to GitHub container registry..."
+        echo "" && echo "Logging in to GitHub container registry..."
         echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
-        echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
-        echo "Building $IMAGE_NAME:$SHA..."
-        docker build . -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
-        docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
-        echo "Pushing new image ($IMAGE_NAME:$SHA) to the registry..."
-        docker push $IMAGE_NAME:$SHA && docker push $IMAGE_NAME:latest
+        echo "" && echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
+        echo "" && echo "Building $IMAGE_NAME:${{ github.sha }}..."
+        docker build . -t $IMAGE_NAME:${{ github.sha }} --cache-from $IMAGE_NAME:latest
+        docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
+        echo "" && echo "Pushing new image ($IMAGE_NAME:${{ github.sha }}) to the registry..."
+        docker push $IMAGE_NAME:${{ github.sha }} && docker push $IMAGE_NAME:latest
+        echo "" && echo "Proceeding..."
 
     # Deploy to server
     - name: Deploy image to server
       id: deploy-image
+      if: ${{ success() }}
       run: |
         mkdir -p ~/.ssh
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
@@ -105,7 +109,7 @@ jobs:
           docker login ghcr.io -u iacobfred -p $CR_PAT
           echo "" && echo "Pulling images to $SERVER..."
           docker-compose pull
-          docker image inspect $IMAGE_NAME:$SHA >/dev/null 2>&1 && echo "Successfully pulled $IMAGE_NAME:$SHA" || echo "ERROR: Did not retrieve $IMAGE_NAME:$SHA."
+          docker image inspect $IMAGE_NAME:${{ github.sha }} >/dev/null 2>&1 && echo "Successfully pulled modularhistory:${{ github.sha }}" || echo "ERROR: Did not retrieve modularhistory:${{ github.sha }}."
           echo "" && echo "Restarting webserver..."
           docker-compose down
           docker-compose up -d modularhistory
