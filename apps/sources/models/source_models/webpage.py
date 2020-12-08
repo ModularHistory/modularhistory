@@ -7,10 +7,11 @@ from .textual_source import TextualSource
 JSON_FIELD_NAME = 'extra'
 
 
+# TODO: Creat WebSite model
+
+
 class WebPage(TextualSource):
     """A web page (as a source)."""
-
-    # TODO: Creat WebSite model
 
     website_title = ExtraField(
         json_field_name=JSON_FIELD_NAME,
