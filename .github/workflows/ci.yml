@@ -54,21 +54,43 @@ jobs:
     steps:
     # Check out master
     - uses: actions/checkout@v2
+
     # Set up Python
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    
     # Set up ModularHistory
     - name: Set up ModularHistory
       if: ${{ success() }}
       run: ./setup.sh --noninteractive
+    
     # Run tests
     - name: Start selenoid
       uses: Xotabu4/selenoid-github-action@v1  # https://github.com/marketplace/actions/start-selenoid-server
     - name: Run tests
       if: ${{ success() }}
       run: invoke test
+
+    # Inject environment vars
+    - name: Inject environment vars
+      run: |
+        echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
+        envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
+        envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
+        while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
+    
+    # Build and push the Docker image
+    - name: Build Docker image
+      run: |
+        echo "Logging in to GitHub container registry..."
+        echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
+        echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
+        echo "Building $IMAGE_NAME:$SHA..."
+        docker build . -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
+        docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
+        docker run $IMAGE_NAME:$SHA
   
   analyze:
     name: Analyze
