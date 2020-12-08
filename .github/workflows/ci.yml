@@ -50,9 +50,10 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      POSTGRES_HOST: db
+      POSTGRES_DB: modularhistory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
       SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
       SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
       SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
@@ -67,6 +68,9 @@ jobs:
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+      IMAGE_NAME: ghcr.io/modularhistory/modularhistory
+      SHA: ${{ github.sha }}
+      CR_PAT: ${{ secrets.CR_PAT }}
     steps:
     # Check out master
     - uses: actions/checkout@v2
@@ -92,8 +96,6 @@ jobs:
     # Inject environment vars
     - name: Inject environment vars
       run: |
-        echo "${{ secrets.GCP_CREDENTIALS }}" > ${{ secrets.GCP_CREDENTIALS_FILE }}
-        envsubst < gc_env.yaml > gc_env.yaml.tmp && mv gc_env.yaml.tmp gc_env.yaml
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
     
