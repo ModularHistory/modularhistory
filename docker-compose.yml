@@ -33,34 +33,39 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=modularhistory.settings
       - POSTGRES_HOST=db
-    expose:
-      - "8000"
+    # expose:
+    #   - "8000"
     healthcheck:
       disable: true
     image: "$IMAGE_NAME:$SHA"
-    restart: "unless-stopped"
-    volumes:
-      - static:/modularhistory/static
-      - media:/modularhistory/media
-
-  nginx:
-    depends_on:
-      - modularhistory
-    healthcheck:
-      disable: true
-    image: nginx
     networks:
       default:
-        ipv4_address: 172.27.0.5
+        ipv4_address: 172.27.0.6
     ports:
-      - "80:80"
-      - "443:443"
+      - "8000:8000"
     restart: "unless-stopped"
     volumes:
-      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
-      - ./config/nginx/conf.d:/etc/nginx/conf.d
-      - static:/modularhistory/static
-      - media:/modularhistory/media
+      - ./static:/modularhistory/static
+      - ./media:/modularhistory/media
+
+  # nginx:
+  #   depends_on:
+  #     - modularhistory
+  #   healthcheck:
+  #     disable: true
+  #   image: nginx
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.27.0.5
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   restart: "unless-stopped"
+  #   volumes:
+  #     - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
+  #     - ./config/nginx/conf.d:/etc/nginx/conf.d
+  #     - static:/modularhistory/static
+  #     - media:/modularhistory/media
   
   redis:
     image: redis
@@ -80,5 +85,5 @@ networks:
 volumes: 
   postgres_data:
   redis:
-  static:
-  media:
+  # static:
+  # media:
