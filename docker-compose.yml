@@ -26,6 +26,7 @@ services:
       - ./config/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
   
   modularhistory:
+    build: .
     command: >
       sh -c "python manage.py findstatic styles/base.css &&
              python manage.py collectstatic --noinput &&
@@ -40,13 +41,14 @@ services:
       - POSTGRES_HOST=db
     healthcheck:
       disable: true
-    image: "$IMAGE_NAME:$SHA"
+    # image: "$IMAGE_NAME:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.6
     ports:
       - "8000:8000"
     restart: "unless-stopped"
+    user: www-data
     volumes:
       - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
       - ./static:/modularhistory/static

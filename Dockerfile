@@ -2,6 +2,9 @@ FROM python:3.7-buster
 
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
+ARG USER_ID
+ARG GROUP_ID
+
 ENV \
   PYTHONUNBUFFERED=1 \
   PYTHONFAULTHANDLER=1 \
@@ -24,13 +27,20 @@ RUN poetry config virtualenvs.create false && \
   poetry install --no-dev --no-interaction --no-ansi
 
 # Add source code
-COPY . /modularhistory
+COPY . /
+
+# Collect static files
+RUN python manage.py collectstatic --no-input
 
 # Expose port 8000
 EXPOSE 8000
 
-# Grant ownership to www-data
+# # Create non-root user
+# RUN addgroup --gid $GROUP_ID modularhistory
+# RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID modularhistory
+
+# Grant ownership to non-root user
 RUN chown -R www-data:www-data /modularhistory
 
-# Change user from root to www-data
+# Switch from root to non-root user
 USER www-data
