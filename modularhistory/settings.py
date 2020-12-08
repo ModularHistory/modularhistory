@@ -163,10 +163,12 @@ INSTALLED_APPS = [
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     # 'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    'concurrency',  # https://github.com/saxix/django-concurrency
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
+    'defender',  # https://github.com/jazzband/django-defender  # TODO
     'django_q',  # https://django-q.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
@@ -659,7 +661,7 @@ Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 
 REDIS_HOST = None
-if ENVIRONMENT == Environments.DEV:
+if ENVIRONMENT in (Environments.DEV, Environments.GITHUB_TEST):
     REDIS_HOST = 'localhost'
 else:
     REDIS_HOST = 'redis'
