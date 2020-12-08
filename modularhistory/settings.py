@@ -659,7 +659,7 @@ Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 
 REDIS_HOST = None
-if ENVIRONMENT == Environments.DEV:
+if ENVIRONMENT in (Environments.DEV, Environments.GITHUB_TEST):
     REDIS_HOST = 'localhost'
 else:
     REDIS_HOST = 'redis'
