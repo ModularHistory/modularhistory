@@ -178,6 +178,7 @@ INSTALLED_APPS = [
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     # 'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
+    'lockdown',  # https://github.com/Dunedan/django-lockdown
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
@@ -188,7 +189,7 @@ INSTALLED_APPS = [
     'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
-    'webpack_loader',  #
+    'webpack_loader',  # https://github.com/owais/django-webpack-loader
     'apps.account.apps.AccountConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',

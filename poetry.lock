@@ -786,6 +786,17 @@ async = ["django-celery (>=3.0)"]
 async_rq = ["django-rq (>=0.6.0)"]
 
 [[package]]
+name = "django-lockdown"
+version = "3.0.0"
+description = "Lock down a Django site or individual views, with configurable preview authorization"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=1.11"
+
+[[package]]
 name = "django-mass-edit"
 version = "3.2.0"
 description = "Make bulk changes in the Django admin interface"
@@ -3465,7 +3476,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "c31ea60cfaf94b7742d9b29e3c1dff9b899780827c133235286195a2984dea3e"
+content-hash = "74bf477e266e3b4655eafa8261c8ac11798e1a24599eecaf94f26be5197ed749"
 
 [metadata.files]
 aenum = [
@@ -3862,6 +3873,10 @@ django-image-cropping = [
 django-imagekit = [
     {file = "django-imagekit-4.0.2.tar.gz", hash = "sha256:6ec0afb77cdf52cd453c9fc2c10ef350d111edfd6ce53c5977aa8a0e22cee00c"},
     {file = "django_imagekit-4.0.2-py2.py3-none-any.whl", hash = "sha256:304c3379f6a5cac387e47ace11195a603ad3cb01e3e951b45489824d25b00359"},
+]
+django-lockdown = [
+    {file = "django-lockdown-3.0.0.tar.gz", hash = "sha256:348b8b74d39f851591d55fdad3ded3c14120f50a8151abfea13ae315d967596c"},
+    {file = "django_lockdown-3.0.0-py2.py3-none-any.whl", hash = "sha256:fd4d09ca4cd98b6cc2b39270976a63adbf3ff0624c8ef9a730b9ce84942bb30e"},
 ]
 django-mass-edit = [
     {file = "django-mass-edit-3.2.0.tar.gz", hash = "sha256:4646b2d76a9e0cd289ab260c7b8efb7bc58fd0a7223e4871c4e1aa3ceee4a290"},

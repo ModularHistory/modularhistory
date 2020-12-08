@@ -1,6 +1,6 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-name: Continuous Delivery
+name: Delivery
 
 on:
   push:
@@ -107,7 +107,8 @@ jobs:
           docker-compose pull
           docker image inspect $IMAGE_NAME:$SHA >/dev/null 2>&1 && echo "Successfully pulled $IMAGE_NAME:$SHA" || echo "ERROR: Did not retrieve $IMAGE_NAME:$SHA."
           echo "" && echo "Restarting webserver..."
-          docker-compose down modularhistory && docker-compose up -d modularhistory
+          docker-compose down
+          docker-compose up -d modularhistory
           docker system prune -f
         ENDSSH
     
