@@ -188,7 +188,7 @@ INSTALLED_APPS = [
     'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
-    'webpack_loader',  #
+    'webpack_loader',  # https://github.com/owais/django-webpack-loader
     'apps.account.apps.AccountConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
