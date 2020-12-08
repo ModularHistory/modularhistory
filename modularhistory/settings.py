@@ -178,6 +178,7 @@ INSTALLED_APPS = [
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     # 'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
+    'lockdown',  # https://github.com/Dunedan/django-lockdown
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
