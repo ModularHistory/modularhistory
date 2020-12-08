@@ -98,7 +98,6 @@ APPEND_SLASH = True
 
 # https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-print(f'>>> SECURE_PROXY_SSL_HEADER: {SECURE_PROXY_SSL_HEADER}')
 
 # https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = False

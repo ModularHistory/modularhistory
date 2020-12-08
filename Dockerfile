@@ -29,10 +29,8 @@ COPY . /modularhistory
 # Expose port 8000
 EXPOSE 8000
 
-# Change ownership
-RUN chmod u+x /modularhistory/init.sh && chown -R www-data:www-data /modularhistory
+# Grant ownership to www-data
+RUN chown -R www-data:www-data /modularhistory
 
-# Change to non-root user
+# Change user from root to www-data
 USER www-data
-
-CMD ["/modularhistory/init.sh"]

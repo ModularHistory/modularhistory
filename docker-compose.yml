@@ -26,6 +26,11 @@ services:
       - ./config/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
   
   modularhistory:
+    command: >
+      sh -c "python manage.py findstatic styles/base.css &&
+             python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             gunicorn modularhistory.wsgi --user www-data --bind 0.0.0.0:8000 --workers 9 --max-requests 100 --max-requests-jitter 50"
     depends_on:
       - db
       - redis
@@ -33,8 +38,6 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=modularhistory.settings
       - POSTGRES_HOST=db
-    # expose:
-    #   - "8000"
     healthcheck:
       disable: true
     image: "$IMAGE_NAME:$SHA"
