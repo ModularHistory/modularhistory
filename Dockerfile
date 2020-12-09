@@ -35,7 +35,7 @@ RUN python manage.py collectstatic --no-input
 # Expose port 8000
 EXPOSE 8000
 
-RUN chmod +x config/wait-for-it.sh
+RUN chmod +x /modularhistory/config/wait-for-it.sh
 
 # # Create non-root user
 # RUN addgroup --gid $GROUP_ID modularhistory
