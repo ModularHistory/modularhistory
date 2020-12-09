@@ -24,13 +24,17 @@ class WebPage(TextualSource):
         blank=True,
     )
 
+    # extra_field_schema = {
+    #     'editors': STRING,
+    # }
+
     def __html__(self) -> str:
-        """TODO: write docstring."""
+        """Return the source's HTML representation."""
         components = [
-            self.attributee_html,
+            self.attributee_html or '',
             f'"{self.linked_title}"',
             f'<i>{self.website_title}</i>',
-            self.organization_name,
+            self.organization_name or '',
             self.date.string if self.date else '',
             f'retrieved from <a target="_blank" href="{self.url}">{self.url}</a>',
         ]

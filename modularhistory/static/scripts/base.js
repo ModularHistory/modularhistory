@@ -15,7 +15,12 @@ function initializeListeners(element=null) {
             event.preventDefault();
             href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
             if (open_in_modal) {
-                $(target_modal).find('.modal-body').html(`
+                /*
+                    Evade XSS attacks by using $.find(target_modal) rather than
+                    $(target_modal), as target_modal could be manipulated to
+                    contain arbitrary JS.
+                */
+                $.find(target_modal).find('.modal-body').html(`
                     <div class="embed-responsive embed-responsive-210by297">
                         <iframe class="embed-responsive-item" src="${href}" allowfullscreen></iframe>
                     </div>
