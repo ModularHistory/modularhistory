@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: '22 3 * * 4'
 
+env:
+  IMAGE_NAME: ghcr.io/modularhistory/modularhistory
+
 jobs:
   test:
     name: Test
@@ -68,7 +71,7 @@ jobs:
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      IMAGE_NAME: ghcr.io/modularhistory/modularhistory
+      IMAGE_NAME: ${{ env.IMAGE_NAME }}
       SHA: ${{ github.sha }}
       CR_PAT: ${{ secrets.CR_PAT }}
     steps:
@@ -140,6 +143,20 @@ jobs:
         docker build . -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
         docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
         docker run $IMAGE_NAME:$SHA
+    - name: Run Snyk to check Docker image for vulnerabilities
+      # Snyk can be used to break the build when it detects vulnerabilities.
+      # In this case, we want to upload the issues to GitHub Code Scanning.
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+        args: --file=Dockerfile
+    - name: Upload result to GitHub Code Scanning
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: snyk.sarif
   
   analyze:
     name: CodeQL Analysis
