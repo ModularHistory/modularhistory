@@ -25,13 +25,6 @@ from modularhistory.constants.misc import PRODUCTION, Environments
 
 ENABLE_ASGI: bool = False
 
-# Google Cloud settings
-GC_PROJECT: Optional[str] = config('GC_PROJECT', default=None)
-GC_QUEUE: Optional[str] = config('GC_QUEUE', default=None)
-GC_REGION: Optional[str] = config('GC_REGION', default=None)
-
-RUNNING_IN_GC: Optional[bool] = bool(os.getenv('GAE_APPLICATION', None))
-
 # Environment
 if os.getenv('ENVIRONMENT') == Environments.PROD:
     ENVIRONMENT = Environments.PROD
@@ -39,9 +32,11 @@ elif os.environ.get('GITHUB_WORKFLOW'):
     ENVIRONMENT = Environments.GITHUB_TEST
 else:
     ENVIRONMENT = config('ENVIRONMENT', default=Environments.DEV)
+logging.info(f'Environment: {ENVIRONMENT}')
 
 IS_PROD = ENVIRONMENT == Environments.PROD
 TESTING: bool = 'test' in sys.argv
+VERSION = config('SHA', default='')
 
 SERVER_LOCATION = 'unknown'  # TODO
 GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
@@ -72,7 +67,7 @@ if ENVIRONMENT != Environments.DEV:
         # https://docs.sentry.io/platforms/python/configuration/integrations/
         integrations=integrations,
         # https://docs.sentry.io/platforms/python/configuration/releases/
-        release='modularhistory@version',  # TODO: use git hash for version
+        release=f'modularhistory@{VERSION}',
         # Associate users to errors (using django.contrib.auth) by sending PII data:
         # https://docs.sentry.io/platforms/python/configuration/options/#send-default-pii
         send_default_pii=True,
