@@ -723,4 +723,4 @@ WEBPACK_LOADER = {
 DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
 
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
-    from modularhistory import checks  # noqa: F401
+    from config import checks  # noqa: F401
