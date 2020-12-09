@@ -123,10 +123,6 @@ ALLOWED_HOSTS = (
     )
 )
 
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-internal-ips
-# https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
-INTERNAL_IPS = ['127.0.0.1']
-
 if ENABLE_ASGI:
     # https://channels.readthedocs.io/en/latest/
     ASGI_APPLICATION = 'modularhistory.asgi.application'
@@ -210,43 +206,35 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
-
-    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#enabling-middleware
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-
     # Update cache:
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.UpdateCacheMiddleware',
-
-    # Set the site attribute on the request, so request.site returns the current site:
+    # Set the `site` attribute on the request, so request.site returns the current site:
     # 'django.contrib.sites.middleware.CurrentSiteMiddleware',
     # https://docs.djangoproject.com/en/3.1/topics/http/sessions/
     'django.contrib.sessions.middleware.SessionMiddleware',
-
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
     'django.middleware.common.CommonMiddleware',
-
     # Fetch from cache:
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.FetchFromCacheMiddleware',
-
     'django.middleware.csrf.CsrfViewMiddleware',
+    # Add the `user` attribute to the request:
+    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.contrib.auth.middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-
+    # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
     'defender.middleware.FailedLoginMiddleware',
-
+    # https://django-debug-toolbar.readthedocs.io/en/latest/
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-
     # Staticpage middleware (based on Django's Flatpage middleware):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
     'apps.staticpages.middleware.StaticPageFallbackMiddleware',
-
     # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-
     # Memory profiler
     'modularhistory.middleware.PymplerMiddleware',
 ]
@@ -630,10 +618,15 @@ SETTINGS_EXPORT = [
     'ENABLE_PATREON',
 ]
 
-# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
-DEBUG_TOOLBAR_CONFIG = {'SHOW_COLLAPSED': True}
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-internal-ips
+# https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
+INTERNAL_IPS = ['127.0.0.1']
 
-# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-panels
+# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_COLLAPSED': True,
+    'SHOW_TOOLBAR_CALLBACK': 'config.debug_toolbar.show_toolbar',
+}
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.timer.TimerPanel',
     'debug_toolbar.panels.request.RequestPanel',
