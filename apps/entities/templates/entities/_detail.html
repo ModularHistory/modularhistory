@@ -2,7 +2,7 @@
 {% load get_html_for_view %}
 
 <div class="container my-4">
-    <a class="edit-object-button float-right pull-right" target="_blank" href="{{ entity|get_admin_url }}">
+    <a class="edit-object-button float-right pull-right" target="_blank" rel="noopener noreferrer" href="{{ entity|get_admin_url }}">
         <i class="fa fa-edit"></i>
     </a>
     <h1>{{ entity }}</h1>
