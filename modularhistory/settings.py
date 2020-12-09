@@ -53,27 +53,25 @@ ADMINS = (
     else []
 )
 
-# Initialize the Sentry SDK for error reporting.
-if ENVIRONMENT != Environments.DEV:
-    integrations: List[Integration] = [
+# Initialize the Sentry SDK for error reporting
+sentry_sdk.init(
+    # https://docs.sentry.io/platforms/python/configuration/options/#dsn
+    dsn='https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835',
+    # https://docs.sentry.io/platforms/python/configuration/environments/
+    environment=ENVIRONMENT,
+    # https://docs.sentry.io/platforms/python/configuration/integrations/
+    integrations=[
         DjangoIntegration(),
         RedisIntegration(),
-    ]
-    sentry_sdk.init(
-        # https://docs.sentry.io/platforms/python/configuration/options/#dsn
-        dsn='https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835',
-        # https://docs.sentry.io/platforms/python/configuration/environments/
-        environment=ENVIRONMENT,
-        # https://docs.sentry.io/platforms/python/configuration/integrations/
-        integrations=integrations,
-        # https://docs.sentry.io/platforms/python/configuration/releases/
-        release=f'modularhistory@{VERSION}',
-        # Associate users to errors (using django.contrib.auth) by sending PII data:
-        # https://docs.sentry.io/platforms/python/configuration/options/#send-default-pii
-        send_default_pii=True,
-        # https://docs.sentry.io/platforms/python/performance/
-        traces_sample_rate=0.5,
-    )
+    ],
+    # https://docs.sentry.io/platforms/python/configuration/releases/
+    release=f'modularhistory@{VERSION}',
+    # Associate users to errors (using django.contrib.auth):
+    # https://docs.sentry.io/platforms/python/configuration/options/#send-default-pii
+    send_default_pii=True,
+    # https://docs.sentry.io/platforms/python/performance/
+    traces_sample_rate=0.5,
+)
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
