@@ -17,18 +17,23 @@ services:
   
   db:
     env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     image: postgres
     ports:
       - "5432:5432"
     restart: "always"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      - ./config/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   
   modularhistory:
     command: >
-      sh -c "python manage.py findstatic styles/base.css &&
-             python manage.py collectstatic --noinput &&
+      sh -c "config/wait-for-it.sh db:5432 -- python manage.py findstatic styles/base.css &&
+             python manage.py collectstatic --noinput && sleep 45 &&
              python manage.py migrate &&
              gunicorn modularhistory.wsgi --user www-data --bind 0.0.0.0:8000 --workers 9 --max-requests 100 --max-requests-jitter 50"
     depends_on:
@@ -52,25 +57,6 @@ services:
       - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
       - ./static:/modularhistory/static
       - ./media:/modularhistory/media
-
-  # nginx:
-  #   depends_on:
-  #     - modularhistory
-  #   healthcheck:
-  #     disable: true
-  #   image: nginx
-  #   networks:
-  #     default:
-  #       ipv4_address: 172.27.0.5
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   restart: "unless-stopped"
-  #   volumes:
-  #     - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
-  #     - ./config/nginx/conf.d:/etc/nginx/conf.d
-  #     - static:/modularhistory/static
-  #     - media:/modularhistory/media
   
   redis:
     image: redis
@@ -90,5 +76,3 @@ networks:
 volumes: 
   postgres_data:
   redis:
-  # static:
-  # media:
