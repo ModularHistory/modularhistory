@@ -3,7 +3,7 @@
 from typing import List, Type
 
 from django.db import models
-from django.db.models import Model as DjangoModel
+from .model import Model
 from typedmodels.models import TypedModel as BaseTypedModel
 
 FieldList = List[str]
@@ -15,7 +15,7 @@ TypedModel: Type[BaseTypedModel] = BaseTypedModel
 # TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
 
 
-class PositionedRelation(DjangoModel):
+class PositionedRelation(Model):
     """An m2m intermediate relation sortable by position."""
 
     position = models.PositiveSmallIntegerField(null=True, blank=True, default=0)

@@ -40,6 +40,7 @@ urlpatterns = [
     # Account
     path('account/', include(('apps.account.urls', 'account'), namespace='account')),
     # Admin
+    path('admin/defender/', include('defender.urls')),  # defender admin
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
     # Entities

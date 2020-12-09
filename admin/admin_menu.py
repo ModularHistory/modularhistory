@@ -51,10 +51,11 @@ class AdminMenu(Menu):
             items.AppList(
                 title='Applications',
                 exclude=[
-                    'django.contrib.*',
-                    'social_django.*',
+                    'defender.*',
                     'django_celery_*',
+                    'django.contrib.*',
                     'django_q.*',
+                    'social_django.*',
                 ],
             ),
         ] + self._menu_items
