@@ -10,6 +10,25 @@ on:
 
 env:
   IMAGE_NAME: ghcr.io/modularhistory/modularhistory
+  SHA: ${{ github.sha }}
+  ADMINS: ${{ secrets.ADMINS }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+  SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+  SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+  SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+  SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
+  SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+  ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+  X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
+  MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+  MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
 
 jobs:
   test:
@@ -49,45 +68,21 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      ADMINS: ${{ secrets.ADMINS }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       POSTGRES_HOST: db
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
-      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
-      SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
-      SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
-      SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
-      SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
-      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
-      X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
-      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      SHA: ${{ github.sha }}
-      CR_PAT: ${{ secrets.CR_PAT }}
     steps:
     # Check out master
     - uses: actions/checkout@v2
-
     # Set up Python
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    
     # Set up ModularHistory
     - name: Set up ModularHistory
       if: ${{ success() }}
       run: ./setup.sh --noninteractive
-    
     # Run tests
     - name: Start selenoid
       uses: Xotabu4/selenoid-github-action@v1  # https://github.com/marketplace/actions/start-selenoid-server
@@ -99,30 +94,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     env:
-      ADMINS: ${{ secrets.ADMINS }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       POSTGRES_HOST: db
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
-      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
-      SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
-      SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
-      SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
-      SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
-      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
-      X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
-      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      SHA: ${{ github.sha }}
-      CR_PAT: ${{ secrets.CR_PAT }}
     steps:
     # Check out master
     - uses: actions/checkout@v2
