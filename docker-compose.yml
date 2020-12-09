@@ -33,7 +33,7 @@ services:
   modularhistory:
     command: >
       sh -c "config/wait-for-it.sh db:5432 -- python manage.py findstatic styles/base.css &&
-             python manage.py collectstatic --noinput &&
+             python manage.py collectstatic --noinput && sleep 45 &&
              python manage.py migrate &&
              gunicorn modularhistory.wsgi --user www-data --bind 0.0.0.0:8000 --workers 9 --max-requests 100 --max-requests-jitter 50"
     depends_on:
