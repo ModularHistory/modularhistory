@@ -48,7 +48,7 @@
                     {% if backend.auth %}
                         <p>Connected
                             {% if backend.handle %}
-                                as <a href="https://{{ backend.domain }}/{{ backend.handle }}" target="_blank">
+                                as <a href="https://{{ backend.domain }}/{{ backend.handle }}" target="_blank" rel="noopener noreferrer">
                                     {{ backend.handle }}</a>
                             {% elif request.user.email %}
                                 as {{ request.user.email }}

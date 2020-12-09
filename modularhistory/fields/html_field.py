@@ -168,7 +168,7 @@ class HTMLField(MceHTMLField):
                 pass
         raw_html = dedupe_newlines(str(soup))
 
-        logging.info(f'{raw_html}')
+        logging.debug(f'{raw_html}')
 
         if model_instance.pk:
             raw_html = model_instance.preprocess_html(raw_html)

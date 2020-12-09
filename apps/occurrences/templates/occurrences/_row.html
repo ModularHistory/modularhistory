@@ -16,5 +16,5 @@
             {{ quote|get_html_for_view:"card" }}
         {% endfor %}
     {% endif %}
-    <a class="edit-object-button" target="_blank" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>
+    <a class="edit-object-button" target="_blank" rel="noopener noreferrer" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>
 {% endblock %}
