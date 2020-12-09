@@ -46,10 +46,7 @@
                 {% for backend in social_auth_backends %}
                     <h4>{{ backend.name }}</h4>
                     {% if backend.auth %}
-                        <p>Connected
-                            {% if backend.handle %}
-                                as <a href="https://{{ backend.domain }}/{{ backend.handle }}" target="_blank" rel="noopener noreferrer">
-                                    {{ backend.handle }}</a>
+                        <p>Connected{% if backend.handle %} as <a href="https://{{ backend.domain }}/{{ backend.handle }}" target="_blank" rel="noopener noreferrer">{{ backend.handle }}</a>
                             {% elif request.user.email %}
                                 as {{ request.user.email }}
                             {% endif %}
