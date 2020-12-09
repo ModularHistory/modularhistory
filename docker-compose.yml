@@ -23,7 +23,7 @@ services:
     restart: "always"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      - ./config/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   
   modularhistory:
     command: >
@@ -52,25 +52,6 @@ services:
       - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
       - ./static:/modularhistory/static
       - ./media:/modularhistory/media
-
-  # nginx:
-  #   depends_on:
-  #     - modularhistory
-  #   healthcheck:
-  #     disable: true
-  #   image: nginx
-  #   networks:
-  #     default:
-  #       ipv4_address: 172.27.0.5
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   restart: "unless-stopped"
-  #   volumes:
-  #     - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
-  #     - ./config/nginx/conf.d:/etc/nginx/conf.d
-  #     - static:/modularhistory/static
-  #     - media:/modularhistory/media
   
   redis:
     image: redis
@@ -90,5 +71,3 @@ networks:
 volumes: 
   postgres_data:
   redis:
-  # static:
-  # media:
