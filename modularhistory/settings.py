@@ -56,6 +56,7 @@ ADMINS = (
 
 # Initialize the Sentry SDK for error reporting
 SENTRY_DSN = config('SENTRY_DSN', default=None)
+
 if SENTRY_DSN:
     sentry_sdk.init(
         # https://docs.sentry.io/platforms/python/configuration/options/#dsn
