@@ -67,7 +67,6 @@ services:
       - ./static:/modularhistory/static
       - ./media:/modularhistory/media
       - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
-      - /etc/resolv.conf:/etc/resolv.conf
   
   redis:
     image: redis

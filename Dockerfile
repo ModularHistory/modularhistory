@@ -36,12 +36,8 @@ EXPOSE 8000
 
 RUN chmod +x /modularhistory/config/wait-for-it.sh
 
-# # Create non-root user
-# RUN addgroup --gid $GROUP_ID modularhistory
-# RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID modularhistory
-
 # Grant ownership to non-root user
-RUN chown -R www-data:www-data /modularhistory
+RUN chown -R www-data:www-data /modularhistory && chmod g+w -R /modularhistory/media
 
 # Switch from root to non-root user
 USER www-data
