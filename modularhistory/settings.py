@@ -665,6 +665,7 @@ if ENVIRONMENT in (Environments.DEV, Environments.GITHUB_TEST):
     REDIS_HOST = 'localhost'
 else:
     REDIS_HOST = 'redis'
+REDIS_BASE_URL = f'redis://{REDIS_HOST}:6379'
 
 # https://github.com/jazzband/django-redis
 if ENVIRONMENT == Environments.DEV and use_dummy_cache_in_dev_environment:
@@ -677,7 +678,7 @@ elif REDIS_HOST:
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': f'redis://{REDIS_HOST}:6379/1',
+            'LOCATION': f'{REDIS_BASE_URL}/0',
             'OPTIONS': {
                 'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             },
@@ -688,17 +689,16 @@ elif REDIS_HOST:
     SESSION_CACHE_ALIAS = "default"
 
 # https://django-q.readthedocs.io/en/latest/configure.html
-if REDIS_HOST:
-    Q_CLUSTER = {
-        'cpu_affinity': 1,
-        'label': 'Django Q',
-        'redis': {
-            'host': REDIS_HOST,
-            'port': 6379,
-        },
-    }
-else:
-    Q_CLUSTER = {'orm': 'default'}
+Q_CLUSTER = {
+    'cpu_affinity': 1,
+    'label': 'Django Q',
+    'redis': f'{REDIS_BASE_URL}/0',
+}
+
+# https://github.com/jazzband/django-defender
+DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
+if IS_PROD:
+    DEFENDER_BEHIND_REVERSE_PROXY = True
 
 VUE_FRONTEND_DIR = os.path.join(BASE_DIR, 'client')
 
