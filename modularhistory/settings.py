@@ -77,6 +77,7 @@ if SENTRY_DSN:
         # https://docs.sentry.io/platforms/python/guides/django/configuration/options/#http-proxy
         http_proxy=None,
     )
+    print(f'HTTP_PROXY: {os.environ.get("HTTP_PROXY")}')
 
     if ENABLE_ASGI:
         from modularhistory.asgi import application
