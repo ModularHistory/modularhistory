@@ -12,13 +12,13 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
+from modularhistory.constants.misc import Environments
 import os
 from typing import Any, Callable, TypeVar
 
 import django
 from pympler import tracker
 
-from modularhistory import settings
 from modularhistory.constants.strings import NEGATIVE, SPACE
 from modularhistory.linters import flake8 as lint_with_flake8
 from modularhistory.linters import mypy as lint_with_mypy
@@ -28,6 +28,8 @@ from monkeypatch import fix_annotations
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
+
+from django.conf import settings  # noqa: E402
 
 if fix_annotations():
     import invoke
@@ -204,7 +206,6 @@ def squash_migrations(context, dry: bool = True):
 @task
 def test(context, docker=False):
     """Run tests."""
-    input('Make sure the dev server is running, then hit Enter/Return.')
     pytest_args = [
         '-v',
         '-n 3',
@@ -213,6 +214,8 @@ def test(context, docker=False):
         # '--hypothesis-show-statistics',
     ]
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
+    if settings.ENVIRONMENT == Environments.DEV:
+        input('Make sure the dev server is running, then hit Enter/Return.')
     print(command)
     if docker:
         context.run(
