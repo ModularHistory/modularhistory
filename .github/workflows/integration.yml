@@ -5,6 +5,8 @@ name: Integration
 on:
   pull_request:
     branches: [ master ]
+  push:
+    branches: [ master ]
   schedule:
     - cron: '22 3 * * 4'
 
