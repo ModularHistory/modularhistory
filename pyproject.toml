@@ -58,6 +58,7 @@ django-filter = "==2.4.0"
 django-gm2m = "^1.1"
 django-imagekit = "^4.0.2"
 django-image-cropping = "^1.5"
+django-lockdown = "^3.0.0"
 django-mass-edit = "^3.2"
 django-nested-admin = "^3.3"
 django-prettyjson = "^0.4"
@@ -100,11 +101,11 @@ scp = "^0.13"
 sentry-sdk = "^0.19"
 serpy = "^0.3.1"
 sigfig = "==1.1.8"
-social-auth-app-django = "==4.0.0"
+social-auth-app-django = "^4.0"
+Twisted = { extras = ["tls", "http2"], version = "^20.3" }
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
-django-lockdown = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 binaryornot = "^0.4"

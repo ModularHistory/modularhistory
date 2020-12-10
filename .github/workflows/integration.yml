@@ -16,7 +16,7 @@ env:
   ADMINS: ${{ secrets.ADMINS }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
   ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-  SENTRY_SDN: ${{ secrets.SENTRY_SDN }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
   SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
