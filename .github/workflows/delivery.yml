@@ -15,6 +15,7 @@ on:
       - '**.md'
 
 env:
+  ENVIRONMENT: prod
   IMAGE_NAME: ghcr.io/modularhistory/modularhistory
   SHA: ${{ github.sha }}
 

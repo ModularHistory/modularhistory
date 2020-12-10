@@ -2,8 +2,7 @@ FROM python:3.7-buster
 
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
-ARG USER_ID
-ARG GROUP_ID
+RUN apt-get update && apt-get install -y vim dnsutils
 
 ENV \
   PYTHONUNBUFFERED=1 \
@@ -43,8 +42,6 @@ RUN chmod +x /modularhistory/config/wait-for-it.sh
 
 # Grant ownership to non-root user
 RUN chown -R www-data:www-data /modularhistory
-
-RUN apt-get update && apt-get install -y vim dnsutils
 
 # Switch from root to non-root user
 USER www-data
