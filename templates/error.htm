@@ -1,25 +1,12 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    {#  Attribution should not be removed until this page  #}
-    {#  is sufficiently different from the original template  #}
-    <!-- This page was made by Colorlib (https://colorlib.com)
-         Please visit our website for more awesome templates, themes and tools. -->
-    <div id="HTTP-error">
-        <div class="HTTP-error">
-            <div class="HTTP-error-content">
-                <h1>Error</h1>
-                <h2>
-                    {% block message %}
-                        An error was encountered.
-                    {% endblock %}
-                </h2>
-            </div>
-        </div>
-    </div>
-{% endblock content %}
-
-{% block styles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Your Business</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--# if expr="$status = 502" -->
+      <meta http-equiv="refresh" content="5">
+    <!--# endif -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat:200,400,700" rel="stylesheet">
     <style>
         * {
@@ -32,12 +19,12 @@
             margin: 0;
         }
 
-        #HTTP-error {
+        #error {
             position: relative;
             height: 60vh;
         }
 
-        #HTTP-error .HTTP-error {
+        #error .error {
             position: absolute;
             left: 50%;
             top: 50%;
@@ -46,21 +33,21 @@
                     transform: translate(-50%, -50%);
         }
 
-        .HTTP-error {
+        .error {
             max-width: 520px;
             width: 100%;
             line-height: 1.4;
             text-align: center;
         }
 
-        .HTTP-error .HTTP-error-content {
+        .error .error-content {
             position: relative;
             height: 200px;
             margin: 0px auto 20px;
             z-index: -1;
         }
 
-        .HTTP-error .HTTP-error-content h1 {
+        .error .error-content h1 {
             font-family: 'Montserrat', sans-serif;
             font-size: 200px;
             font-weight: 200;
@@ -75,7 +62,7 @@
                     transform: translate(-50%, -50%);
         }
 
-        .HTTP-error .HTTP-error-content h2 {
+        .error .error-content h2 {
             font-family: 'Montserrat', sans-serif;
             font-size: 28px;
             font-weight: 400;
@@ -91,7 +78,7 @@
             right: 0;
         }
 
-        .HTTP-error a {
+        .error a {
             font-family: 'Montserrat', sans-serif;
             display: inline-block;
             font-weight: 700;
@@ -105,32 +92,48 @@
             transition: 0.2s all;
         }
 
-        .HTTP-error a:hover {
+        .error a:hover {
             color: #2c4473;
             background: #211b19;
         }
 
         @media only screen and (max-width: 767px) {
-            .HTTP-error .HTTP-error-content h1 {
+            .error .error-content h1 {
                 font-size: 148px;
             }
         }
 
         @media only screen and (max-width: 480px) {
-            .HTTP-error .HTTP-error-content {
+            .error .error-content {
                 height: 148px;
                 margin: 0px auto 10px;
             }
-            .HTTP-error .HTTP-error-content h1 {
+            .error .error-content h1 {
                 font-size: 86px;
             }
-            .HTTP-error .HTTP-error-content h2 {
+            .error .error-content h2 {
                 font-size: 16px;
             }
-            .HTTP-error a {
+            .error a {
                 padding: 7px 15px;
                 font-size: 14px;
             }
         }
     </style>
-{% endblock styles %}
+</head>
+<body>
+    <div id="error">
+        <div class="error">
+            <div class="error-content">
+                <!--# if expr="$status = 502" -->
+                    <h1>ModularHistory is being updated</h1>
+                    <p>You will be redirected in a few seconds...</p>
+                    <!--# else -->
+                    <h1><!--# echo var="status" default="" --></h1>
+                    <h2><!--# echo var="status_text" default="An error occurred" --></h2>
+                <!--# endif -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
