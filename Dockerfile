@@ -15,7 +15,7 @@ ENV \
 RUN pip install poetry
 
 # Create necessary directories
-RUN mkdir -p -- /modularhistory/static /modularhistory/media
+RUN mkdir -p -- /modularhistory/static /modularhistory/media /modularhistory/.backups
 
 # Set the working directory
 WORKDIR /modularhistory
@@ -23,7 +23,7 @@ WORKDIR /modularhistory
 # Install project dependencies
 COPY poetry.lock pyproject.toml /modularhistory/
 RUN poetry config virtualenvs.create false && \
-  poetry install --no-dev --no-interaction --no-ansi
+    poetry install --no-dev --no-interaction --no-ansi
 
 # Add source code
 COPY . /modularhistory/
@@ -34,10 +34,11 @@ RUN python manage.py collectstatic --no-input
 # Expose port 8000
 EXPOSE 8000
 
-RUN chmod +x /modularhistory/config/wait-for-it.sh
-
 # Grant ownership to non-root user
-RUN chown -R www-data:www-data /modularhistory && chmod g+w -R /modularhistory/media
+RUN chown -R www-data:www-data /modularhistory && \
+    chmod g+w -R /modularhistory/media && \
+    chmod g+w -R /modularhistory/.backups && \
+    chmod +x /modularhistory/config/wait-for-it.sh
 
 # Switch from root to non-root user
 USER www-data
