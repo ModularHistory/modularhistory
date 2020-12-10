@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - '.gitignore'
       - '.github/**'
+      - '!.github/delivery.yml'
       - '.idea/**'
       - '.vscode/**'
       - '**.txt'
