@@ -51,7 +51,7 @@ function initializeListeners(element=null) {
             let word = selection && selection.toString();
             if (word) {
                 console.log(`Requesting definitions for "${word}"...`);
-                let pattern = `([ >";])${word}([.,;:&<])`;
+                let pattern = `([ >";])${word}([\\.,;:&<])`;
                 let request = {
                     "url": `/search/words/${word}`,
                     "crossDomain": false,

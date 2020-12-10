@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import logging
 import os
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import sentry_sdk
 from decouple import config
@@ -34,13 +34,15 @@ else:
 print(f'Environment: {ENVIRONMENT}')
 
 IS_PROD = ENVIRONMENT == Environments.PROD
+IS_DEV = ENVIRONMENT in (Environments.DEV, Environments.DEV_DOCKER)
+DOCKERIZED = ENVIRONMENT in (Environments.PROD, Environments.DEV_DOCKER)
 TESTING: bool = 'test' in sys.argv
 VERSION = config('SHA', default='')
 ENABLE_ASGI: bool = ENVIRONMENT == Environments.DEV
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
 # DEBUG must be False in production (for security)
-DEBUG = ENVIRONMENT == Environments.DEV
+DEBUG = IS_DEV
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,7 +61,7 @@ APPEND_SLASH = True
 # https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-csrf-cookie-secure
@@ -68,14 +70,10 @@ CSRF_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/middleware/#referrer-policy
 SECURE_REFERRER_POLICY = 'same-origin'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
-ALLOWED_HOSTS = (
-    ['*']
-    if ENVIRONMENT == Environments.DEV
-    else config(
-        'ALLOWED_HOSTS',
-        default='localhost, 127.0.0.1',
-        cast=lambda hosts: [string.strip() for string in hosts.split(',')],
-    )
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='localhost, 127.0.0.1, 0.0.0.0',
+    cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
 
 SERVER_LOCATION = 'unknown'  # TODO
@@ -93,41 +91,12 @@ ADMINS = (
     else []
 )
 
-# Initialize the Sentry SDK for error reporting
-SENTRY_DSN = config('SENTRY_DSN', default=None)
-
-if SENTRY_DSN:
-    sentry_sdk.init(
-        # https://docs.sentry.io/platforms/python/configuration/options/#dsn
-        dsn=SENTRY_DSN,
-        # https://docs.sentry.io/platforms/python/configuration/environments/
-        environment=ENVIRONMENT,
-        # https://docs.sentry.io/platforms/python/configuration/integrations/
-        integrations=[
-            DjangoIntegration(),
-            RedisIntegration(),
-        ],
-        # https://docs.sentry.io/platforms/python/configuration/releases/
-        release=f'modularhistory@{VERSION}',
-        # Associate users to errors (using django.contrib.auth):
-        # https://docs.sentry.io/platforms/python/configuration/options/#send-default-pii
-        send_default_pii=True,
-        # https://docs.sentry.io/platforms/python/performance/
-        traces_sample_rate=0.5,
-    )
-
-    # if ENABLE_ASGI:
-    #     from modularhistory.asgi import application
-
-    #     # https://docs.sentry.io/platforms/python/guides/asgi/
-    #     application = SentryAsgiMiddleware(application)
-
 REDIS_HOST = None
-if ENVIRONMENT in (Environments.DEV, Environments.GITHUB_TEST):
-    REDIS_HOST = 'localhost'
-else:
+if DOCKERIZED:
     REDIS_HOST = 'redis'
-REDIS_BASE_URL = f'redis://{REDIS_HOST}:6379'
+else:
+    REDIS_HOST = 'localhost'
+REDIS_BASE_URL = REDIS_URL = f'redis://{REDIS_HOST}:6379'
 
 if ENABLE_ASGI:
     # https://channels.readthedocs.io/en/latest/
@@ -164,7 +133,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
-    'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    # 'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
@@ -178,6 +147,13 @@ INSTALLED_APPS = [
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
+    'health_check',  # https://github.com/KristianOellegaard/django-health-check
+    'health_check.db',
+    'health_check.cache',
+    'health_check.contrib.migrations',
+    'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
+    'health_check.contrib.redis',
+    'health_check.storage',
     # 'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'lockdown',  # https://github.com/Dunedan/django-lockdown
@@ -244,6 +220,34 @@ MIDDLEWARE = [
     # Memory profiler
     'modularhistory.middleware.PymplerMiddleware',
 ]
+
+# Initialize the Sentry SDK for error reporting
+SENTRY_DSN = config('SENTRY_DSN', default=None)
+if SENTRY_DSN:
+    sentry_sdk.init(
+        # https://docs.sentry.io/platforms/python/configuration/options/#dsn
+        dsn=SENTRY_DSN,
+        # https://docs.sentry.io/platforms/python/configuration/environments/
+        environment=ENVIRONMENT,
+        # https://docs.sentry.io/platforms/python/configuration/integrations/
+        integrations=[
+            DjangoIntegration(),
+            RedisIntegration(),
+        ],
+        # https://docs.sentry.io/platforms/python/configuration/releases/
+        release=f'modularhistory@{VERSION}',
+        # Associate users to errors (using django.contrib.auth):
+        # https://docs.sentry.io/platforms/python/configuration/options/#send-default-pii
+        send_default_pii=True,
+        # https://docs.sentry.io/platforms/python/performance/
+        traces_sample_rate=0.5,
+    )
+
+    # if ENABLE_ASGI:
+    #     from modularhistory.asgi import application
+
+    #     # https://docs.sentry.io/platforms/python/guides/asgi/
+    #     application = SentryAsgiMiddleware(application)
 
 ROOT_URLCONF = 'modularhistory.urls'
 
@@ -669,12 +673,12 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
 
 # Caching settings
-use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', cast=bool, default=False)
+use_dummy_cache = config('DUMMY_CACHE', cast=bool, default=False)
 Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 
 # https://github.com/jazzband/django-redis
-if ENVIRONMENT == Environments.DEV and use_dummy_cache_in_dev_environment:
+if ENVIRONMENT == Environments.DEV and use_dummy_cache:
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
