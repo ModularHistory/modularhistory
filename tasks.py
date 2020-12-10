@@ -204,7 +204,7 @@ def squash_migrations(context, dry: bool = True):
 @task
 def test(context, docker=False):
     """Run tests."""
-    commands.escape_prod_db()
+    input('Make sure the dev server is running, then hit Enter/Return.')
     pytest_args = [
         '-v',
         '-n 3',
