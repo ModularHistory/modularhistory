@@ -42,6 +42,7 @@ jobs:
       ADMINS: ${{ secrets.ADMINS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+      SENTRY_SDN: ${{ secrets.SENTRY_SDN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       POSTGRES_HOST: db
       POSTGRES_DB: modularhistory
