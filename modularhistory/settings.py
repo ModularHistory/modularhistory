@@ -20,6 +20,7 @@ from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from modularhistory.constants.misc import PRODUCTION, Environments
 
@@ -54,24 +55,34 @@ ADMINS = (
 )
 
 # Initialize the Sentry SDK for error reporting
-sentry_sdk.init(
-    # https://docs.sentry.io/platforms/python/configuration/options/#dsn
-    dsn='https://eff106fa1aeb493d8220b83e802bb9de@o431037.ingest.sentry.io/5380835',
-    # https://docs.sentry.io/platforms/python/configuration/environments/
-    environment=ENVIRONMENT,
-    # https://docs.sentry.io/platforms/python/configuration/integrations/
-    integrations=[
-        DjangoIntegration(),
-        RedisIntegration(),
-    ],
-    # https://docs.sentry.io/platforms/python/configuration/releases/
-    release=f'modularhistory@{VERSION}',
-    # Associate users to errors (using django.contrib.auth):
-    # https://docs.sentry.io/platforms/python/configuration/options/#send-default-pii
-    send_default_pii=True,
-    # https://docs.sentry.io/platforms/python/performance/
-    traces_sample_rate=0.5,
-)
+SENTRY_DSN = config('SENTRY_DSN', default=None)
+if SENTRY_DSN:
+    sentry_sdk.init(
+        # https://docs.sentry.io/platforms/python/configuration/options/#dsn
+        dsn=SENTRY_DSN,
+        # https://docs.sentry.io/platforms/python/configuration/environments/
+        environment=ENVIRONMENT,
+        # https://docs.sentry.io/platforms/python/configuration/integrations/
+        integrations=[
+            DjangoIntegration(),
+            RedisIntegration(),
+        ],
+        # https://docs.sentry.io/platforms/python/configuration/releases/
+        release=f'modularhistory@{VERSION}',
+        # Associate users to errors (using django.contrib.auth):
+        # https://docs.sentry.io/platforms/python/configuration/options/#send-default-pii
+        send_default_pii=True,
+        # https://docs.sentry.io/platforms/python/performance/
+        traces_sample_rate=0.5,
+        # https://docs.sentry.io/platforms/python/guides/django/configuration/options/#http-proxy
+        http_proxy=None,
+    )
+
+    if ENABLE_ASGI:
+        from modularhistory.asgi import application
+
+        # https://docs.sentry.io/platforms/python/guides/asgi/
+        application = SentryAsgiMiddleware(application)
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
