@@ -17,6 +17,7 @@ on:
 
 env:
   IMAGE_NAME: ghcr.io/modularhistory/modularhistory
+  SHA: ${{ github.sha }}
 
 jobs:
   deploy:
@@ -63,8 +64,6 @@ jobs:
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       CR_PAT: ${{ secrets.CR_PAT }}
-      IMAGE_NAME: ${{ env.IMAGE_NAME }}
-      SHA: ${{ github.sha }}
       SERVER: kfred.dyndns.org
     
     steps:
