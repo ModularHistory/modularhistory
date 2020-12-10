@@ -2,10 +2,10 @@
 Django settings for modularhistory.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/3.0/topics/settings/
+https://docs.djangoproject.com/en/3.1/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/3.0/ref/settings/
+https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import logging
@@ -24,20 +24,59 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from modularhistory.constants.misc import PRODUCTION, Environments
 
-ENABLE_ASGI: bool = False
+en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
 # Environment
-if os.getenv('ENVIRONMENT') == Environments.PROD:
-    ENVIRONMENT = Environments.PROD
-elif os.environ.get('GITHUB_WORKFLOW'):
+if os.environ.get('GITHUB_WORKFLOW'):
     ENVIRONMENT = Environments.GITHUB_TEST
 else:
     ENVIRONMENT = config('ENVIRONMENT', default=Environments.DEV)
-logging.info(f'Environment: {ENVIRONMENT}')
+print(f'Environment: {ENVIRONMENT}')
 
 IS_PROD = ENVIRONMENT == Environments.PROD
 TESTING: bool = 'test' in sys.argv
 VERSION = config('SHA', default='')
+ENABLE_ASGI: bool = ENVIRONMENT == Environments.DEV
+
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
+# DEBUG must be False in production (for security)
+DEBUG = ENVIRONMENT == Environments.DEV
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-secret-key
+SECRET_KEY = config('SECRET_KEY')
+
+# --- URL MODIFICATION SETTINGS ---
+# Do not prepend `www.` to `modularhistory.com`; in production,
+# the Nginx reverse proxy chops off the `www.` from all incoming requests.
+# https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
+PREPEND_WWW = False
+APPEND_SLASH = True
+
+# --- SECURITY SETTINGS ---
+# https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
+SECURE_SSL_REDIRECT = False
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
+SESSION_COOKIE_SECURE = IS_PROD
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-csrf-cookie-secure
+CSRF_COOKIE_SECURE = IS_PROD
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-referrer-policy
+# https://docs.djangoproject.com/en/3.1/ref/middleware/#referrer-policy
+SECURE_REFERRER_POLICY = 'same-origin'
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
+ALLOWED_HOSTS = (
+    ['*']
+    if ENVIRONMENT == Environments.DEV
+    else config(
+        'ALLOWED_HOSTS',
+        default='localhost, 127.0.0.1',
+        cast=lambda hosts: [string.strip() for string in hosts.split(',')],
+    )
+)
 
 SERVER_LOCATION = 'unknown'  # TODO
 GOOGLE_MAPS_API_KEY = 'undefined'  # TODO
@@ -77,67 +116,31 @@ if SENTRY_DSN:
         traces_sample_rate=0.5,
     )
 
-    if ENABLE_ASGI:
-        from modularhistory.asgi import application
+    # if ENABLE_ASGI:
+    #     from modularhistory.asgi import application
 
-        # https://docs.sentry.io/platforms/python/guides/asgi/
-        application = SentryAsgiMiddleware(application)
+    #     # https://docs.sentry.io/platforms/python/guides/asgi/
+    #     application = SentryAsgiMiddleware(application)
 
-en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-debug
-# DEBUG must be False in production (for security)
-DEBUG = ENVIRONMENT == Environments.DEV
-
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-secret-key
-SECRET_KEY = config('SECRET_KEY')
-
-# https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
-PREPEND_WWW = False
-APPEND_SLASH = True
-
-# https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-ssl-redirect
-SECURE_SSL_REDIRECT = False
-
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-session-cookie-samesite
-SESSION_COOKIE_SECURE = IS_PROD
-
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-csrf-cookie-secure
-CSRF_COOKIE_SECURE = IS_PROD
-
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-secure-referrer-policy
-# https://docs.djangoproject.com/en/3.0/ref/middleware/#referrer-policy
-SECURE_REFERRER_POLICY = 'same-origin'
-
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-allowed-hosts
-ALLOWED_HOSTS = (
-    ['*']
-    if ENVIRONMENT == Environments.DEV
-    else config(
-        'ALLOWED_HOSTS',
-        default='localhost, 127.0.0.1',
-        cast=lambda hosts: [string.strip() for string in hosts.split(',')],
-    )
-)
+REDIS_HOST = None
+if ENVIRONMENT in (Environments.DEV, Environments.GITHUB_TEST):
+    REDIS_HOST = 'localhost'
+else:
+    REDIS_HOST = 'redis'
+REDIS_BASE_URL = f'redis://{REDIS_HOST}:6379'
 
 if ENABLE_ASGI:
     # https://channels.readthedocs.io/en/latest/
     ASGI_APPLICATION = 'modularhistory.asgi.application'
-    # CHANNEL_LAYERS = {
-    #     'default': {
-    #         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-    #         'CONFIG': {
-    #             'hosts': [('127.0.0.1', 6379)],
-    #             'symmetric_encryption_keys': [SECRET_KEY],
-    #         },
-    #     },
-    # }
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [(REDIS_HOST, 6379)],
+                'symmetric_encryption_keys': [SECRET_KEY],
+            },
+        },
+    }
 
 INSTALLED_APPS = [
     # admin_menu come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
@@ -161,7 +164,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
-    # 'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
@@ -259,7 +262,7 @@ TEMPLATES = [
                 'social_django.context_processors.login_redirect',
                 'django_settings_export.settings_export',
             ],
-            # https://docs.djangoproject.com/en/3.0/ref/templates/api/#loader-types
+            # https://docs.djangoproject.com/en/3.1/ref/templates/api/#loader-types
             'loaders': [
                 (
                     'django.template.loaders.cached.Loader',
@@ -290,7 +293,7 @@ REST_FRAMEWORK = {
 }
 
 # Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 if ENVIRONMENT == Environments.GITHUB_TEST:
     DATABASES = {
         'default': {
@@ -403,7 +406,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH_KEY', default='
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH_SECRET', default='')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email']
 
-# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -420,7 +423,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
+# https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -649,11 +652,11 @@ DEBUG_TOOLBAR_PANELS = [
 
 RAPIDAPI_KEY = config('RAPIDAPI_KEY', default='')
 
-# https://docs.djangoproject.com/en/3.0/ref/contrib/sites/
+# https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
 SITE_ID = 1
 
-# https://docs.djangoproject.com/en/3.0/topics/email/
-# https://docs.djangoproject.com/en/3.0/ref/settings#s-email-backend
+# https://docs.djangoproject.com/en/3.1/topics/email/
+# https://docs.djangoproject.com/en/3.1/ref/settings#s-email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='localhost')
 try:
@@ -669,13 +672,6 @@ EMAIL_USE_TLS = True
 use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', cast=bool, default=False)
 Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
-
-REDIS_HOST = None
-if ENVIRONMENT in (Environments.DEV, Environments.GITHUB_TEST):
-    REDIS_HOST = 'localhost'
-else:
-    REDIS_HOST = 'redis'
-REDIS_BASE_URL = f'redis://{REDIS_HOST}:6379'
 
 # https://github.com/jazzband/django-redis
 if ENVIRONMENT == Environments.DEV and use_dummy_cache_in_dev_environment:
