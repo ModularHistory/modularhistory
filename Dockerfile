@@ -34,7 +34,7 @@ RUN python manage.py collectstatic --no-input
 # Expose port 8000
 EXPOSE 8000
 
-# Grant ownership to non-root user
+# Grant necessary permissions to non-root user
 RUN chown -R www-data:www-data /modularhistory && \
     chmod g+w -R /modularhistory/media && \
     chmod g+w -R /modularhistory/.backups && \

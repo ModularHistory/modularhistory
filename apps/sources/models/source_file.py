@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from os.path import join
 from typing import Optional
-
+from apps.home.templatetags.media import media as fix_url
 from django.core.exceptions import ValidationError
 from django.core.files.storage import Storage, default_storage
 from django.core.files.uploadedfile import UploadedFile
@@ -117,4 +117,4 @@ class SourceFile(Model):
         url = self.file.url
         if url.endswith('epub'):
             url = f'/sources/epub{url}'
-        return url
+        return fix_url(url)
