@@ -1,18 +1,19 @@
 const mobile_width = 660;
 
-function initializeListeners(element=null) {
+function initializeListeners(element = null) {
     let scope = element ? element : document;
     console.log(`Initializing listeners for ${scope}.`);
-    $(scope).find('.display-source').unbind('click').on('click', function(event) {
+    $(scope).find('.display-source').unbind('click').on('click', function (event) {
         console.log('Displaying source.');
-        let href = $( this ).attr('href');
+        let href = $(this).attr('href');
         let open_in_modal = false;
         let target_modal = null;
         if (open_in_modal) {
-            target_modal = $( this ).attr('data-target');
+            target_modal = $(this).attr('data-target');
         }
         if (href.includes('.pdf')) {
             event.preventDefault();
+            // TODO
             href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
             if (open_in_modal) {
                 /*
@@ -39,7 +40,7 @@ function initializeListeners(element=null) {
 
     $(scope).on()
 
-    $(scope).dblclick(function(event) {
+    $(scope).dblclick(function (event) {
         let selection = window.getSelection();
         let node = selection.getRangeAt(0).commonAncestorContainer;
         if (node.nodeType !== 1) {
@@ -88,17 +89,17 @@ function setGetParam(key, value) {
         params.set(key, value);
         let newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + params.toString();
         console.log(newUrl);
-        window.history.pushState({path:newUrl},'', newUrl);
+        window.history.pushState({ path: newUrl }, '', newUrl);
     }
 }
 
-function lazyLoadImages(element=null) {
+function lazyLoadImages(element = null) {
     let scope = element ? element : document;
     console.log(`Lazy-loading images in ${scope}.`);
     let lazyImages = [].slice.call(scope.querySelectorAll("img.lazy,.lazy-bg"));
     if ("IntersectionObserver" in window) {
-        let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
-            entries.forEach(function(entry) {
+        let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
+            entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
                     let lazyElement = entry.target;
                     let url;
@@ -133,17 +134,17 @@ function lazyLoadImages(element=null) {
         }, {
             rootMargin: "0px 0px 999px 0px"
         });
-        lazyImages.forEach(function(lazyImage) {
+        lazyImages.forEach(function (lazyImage) {
             lazyImageObserver.observe(lazyImage);
         });
     } else {
         // Fall back to a more compatible method of lazy-loading images
         let active = false;
-        const lazyLoad = function() {
+        const lazyLoad = function () {
             if (active === false) {
                 active = true;
-                setTimeout(function() {
-                    lazyImages.forEach(function(lazyImage) {
+                setTimeout(function () {
+                    lazyImages.forEach(function (lazyImage) {
                         let loadImage = (
                             (lazyImage.getBoundingClientRect().top <= window.innerHeight
                                 && lazyImage.getBoundingClientRect().bottom >= 0)
@@ -154,7 +155,7 @@ function lazyLoadImages(element=null) {
                             lazyImage.srcset = lazyImage.dataset.srcset;
                             lazyImage.classList.remove("lazy");
 
-                            lazyImages = lazyImages.filter(function(image) {
+                            lazyImages = lazyImages.filter(function (image) {
                                 return image !== lazyImage;
                             });
 
@@ -179,8 +180,8 @@ function lazyLoadImages(element=null) {
 function scrollSpy() {
     let modules = [].slice.call(document.querySelectorAll(".result[data-key]"));
     if ("IntersectionObserver" in window) {
-        let moduleObserver = new IntersectionObserver(function(entries, observer) {
-            entries.forEach(function(entry) {
+        let moduleObserver = new IntersectionObserver(function (entries, observer) {
+            entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
                     let module = entry.target;
                     let key = module.dataset.key;
@@ -191,13 +192,13 @@ function scrollSpy() {
             // when the top of the module is 60% from the bottom of the window
             rootMargin: "0px 0px -60% 0px"
         });
-        modules.forEach(function(module) {
+        modules.forEach(function (module) {
             moduleObserver.observe(module);
         });
     }
 }
 
-$(function() {
+$(function () {
     console.log('base.js');
 
     let searchParams = new URLSearchParams(window.location.search);
@@ -220,10 +221,10 @@ $(function() {
     if (serp_container[0]) {
         let display_option_selector = '.display-options .display-option';
         let searchParams = new URLSearchParams(window.location.search);
-        $(display_option_selector).on('click', function() {
+        $(display_option_selector).on('click', function () {
             let input = $(this).find('input');
             if (!input.is(':checked')) {
-                $(`${display_option_selector} input:checked`).each(function() {
+                $(`${display_option_selector} input:checked`).each(function () {
                     let previously_selected_option = $(this);
                     // TODO: Confirm this works as expected, and clean it up
                     previously_selected_option.prop('checked', false);
@@ -266,20 +267,20 @@ $(function() {
                 }
                 // Initial load of view-detail
                 let detail_href = active_result.attr('data-href') + 'part';
-                $('.view-detail').load(detail_href, function() {
+                $('.view-detail').load(detail_href, function () {
                     initializeListeners(this);
                     lazyLoadImages(this);
                 });
             }
 
             // Load view-detail when a card is clicked
-            $(result_card_selector).on('click', function() {
+            $(result_card_selector).on('click', function () {
                 console.log('Result card was clicked; setting new active result.');
                 $(`${result_selector}.active`).removeClass('active');
-                $( this ).addClass('active');
-                let detail_href = $( this ).attr('data-href') + 'part';
-                let key = $( this ).attr('data-key');
-                $('.view-detail').load(detail_href, function() {
+                $(this).addClass('active');
+                let detail_href = $(this).attr('data-href') + 'part';
+                let key = $(this).attr('data-key');
+                $('.view-detail').load(detail_href, function () {
                     if ($(window).width() <= mobile_width) {
                         console.log('Mobile width detected.');
                         let content = $(this).html();
@@ -290,7 +291,7 @@ $(function() {
                         let iframe_width;
                         let iframe_height;
                         let aspect_ratio;
-                        modal_body.find('iframe').each(function() {
+                        modal_body.find('iframe').each(function () {
                             iframe = $(this);
                             iframe_width = iframe.attr('width');
                             iframe_height = iframe.attr('height');
@@ -324,7 +325,7 @@ $(function() {
             toggle.style.left = '0';  // TODO: make this safer; use stylesheet rather than JS
         }
         // Toggle button
-        toggle.addEventListener('click', function() {
+        toggle.addEventListener('click', function () {
             if (slider.classList.contains('closed')) {
                 openSlider();
             } else if (slider.classList.contains('open')) {
@@ -334,7 +335,7 @@ $(function() {
     }
 
     // Enable hiding admin controls
-    $('.hide-admin-controls').click(function(event) {
+    $('.hide-admin-controls').click(function (event) {
         // $('.edit-obj-button').hide();
         event.preventDefault();
         $('head').append(`<style>.edit-object-button {display: none}</style>`);
