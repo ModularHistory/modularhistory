@@ -35,15 +35,24 @@ class Affidavit(DocumentSource):
     ]
 
     def clean(self):
-        """TODO: add docstring."""
+        """Prepare the source to be saved."""
         super().clean()
         if not self.location:
             raise ValidationError('Affidavit needs a certification location.')
 
     def __html__(self) -> str:
-        """TODO: add docstring."""
+        """Return the source's HTML representation."""
+        if self.location:
+            affidavit_string = (
+                f'affidavit sworn {self.date_html} at {self.location.string} '
+                f'before {self.certifier}'
+            )
+        else:
+            affidavit_string = (
+                f'affidavit sworn {self.date_html} before {self.certifier}'
+            )
         components = [
             self.attributee_html,
-            f'affidavit sworn {self.date_html} at {self.location.string} before {self.certifier}',
+            affidavit_string,
         ]
         return self.components_to_html(components)
