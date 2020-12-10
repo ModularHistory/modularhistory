@@ -3,15 +3,22 @@ version: "3.8"
 services:
   dev:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8080
     depends_on:
       - db
       - redis
     env_file: .env
     environment:
+      - ENVIRONMENT=dev_docker
       - POSTGRES_HOST=db
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ht/ || exit 1"]
+      timeout: 7s
+      interval: 15s
+      retries: 2
+      start_period: 10s
     ports:
-      - "8000:8000"
+      - "8080:8080"
     volumes:
       - .:/modularhistory
   
@@ -43,7 +50,11 @@ services:
       - DJANGO_SETTINGS_MODULE=modularhistory.settings
       - POSTGRES_HOST=db
     healthcheck:
-      disable: true
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/ht/ || exit 1"]
+      timeout: 7s
+      interval: 15s
+      retries: 2
+      start_period: 10s
     image: "$IMAGE_NAME:$SHA"
     networks:
       default:

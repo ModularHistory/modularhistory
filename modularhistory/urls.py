@@ -74,6 +74,9 @@ urlpatterns = [
         'robots.txt',
         TemplateView.as_view(template_name='robots.txt', content_type='text/plain'),
     ),
+    # Health check: https://github.com/KristianOellegaard/django-health-check
+    path('ht/', include('health_check.urls')),
+    # Debug toolbar: https://django-debug-toolbar.readthedocs.io/en/latest/
     path('__debug__', include(debug_toolbar.urls)),
     # TODO: enable Vue templates
     # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')

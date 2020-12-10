@@ -294,17 +294,6 @@ colorama = ["colorama (>=0.4.3)"]
 d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
-name = "blackfire"
-version = "1.5.3"
-description = "Blackfire Python SDK"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-psutil = "5.6.5"
-
-[[package]]
 name = "blessed"
 version = "1.17.12"
 description = "Easy, practical library for making terminal apps, by providing an elegant, well-documented interface to Colors, Keyboard input, and screen Positioning capabilities."
@@ -758,6 +747,17 @@ python-versions = "*"
 Django = ">=2.2"
 
 [[package]]
+name = "django-health-check"
+version = "3.16.1"
+description = "Run checks on services like databases, queue servers, celery processes, etc."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+django = ">=1.11"
+
+[[package]]
 name = "django-image-cropping"
 version = "1.5.0"
 description = "A reusable app for cropping images easily and non-destructively in Django"
@@ -986,7 +986,7 @@ typing-extensions = "*"
 
 [[package]]
 name = "django-tinymce"
-version = "3.1.0"
+version = "3.2.0"
 description = "A Django application that contains a widget to render a form field as a TinyMCE editor."
 category = "main"
 optional = false
@@ -2330,14 +2330,14 @@ six = ">=1.9"
 
 [[package]]
 name = "psutil"
-version = "5.6.5"
+version = "5.7.3"
 description = "Cross-platform lib for process and system monitoring in Python."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
-enum = ["enum34"]
+test = ["ipaddress", "mock", "unittest2", "enum34", "pywin32", "wmi"]
 
 [[package]]
 name = "psycopg2-binary"
@@ -3515,7 +3515,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "2deb388e4593499e22321395452fbd8cf539b15562a9b1eb2bb99b6daa519500"
+content-hash = "b34d8447dc0fa083ebc07e46882d7c9541ca8e95618afb5590f8113c3fbbc200"
 
 [metadata.files]
 aenum = [
@@ -3618,43 +3618,6 @@ binaryornot = [
 ]
 black = [
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
-]
-blackfire = [
-    {file = "blackfire-1.5.3-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:a64beecc43e0d6bb26c6531a3314a123d7da2de9297c3bf1a912e494e0493b46"},
-    {file = "blackfire-1.5.3-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:a311263b3961e9b38a01e30d1080275c3ad4a0091a1a81e6b697c08f62f2006b"},
-    {file = "blackfire-1.5.3-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:a11bf186fe7b138baa68067828fb050f5c43c6d11f5bafc1721448c1902ce591"},
-    {file = "blackfire-1.5.3-cp27-cp27m-win32.whl", hash = "sha256:9754cf3cdfd98ff8f1b064f02c10a8728482cffce57e2c8dd34d1daa0564a285"},
-    {file = "blackfire-1.5.3-cp27-cp27m-win_amd64.whl", hash = "sha256:5128309c48035f2eeb1c658f77fc259fe8d1e423deddbdc407567dab187da21e"},
-    {file = "blackfire-1.5.3-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:7867d1c1b80eefe02260c3f762b22d5fa2baeffe08bebd633cfc0d57fcc6c6ff"},
-    {file = "blackfire-1.5.3-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:c41ec59fa489067ff80e752c3dfd9504e5118f134f78277e0aec07efda97fad4"},
-    {file = "blackfire-1.5.3-cp33-cp33m-macosx_10_14_x86_64.whl", hash = "sha256:62836a065fb65d5adb8be23c6a98c98d75b1d6f100bc4b082a98fe2dc1a06ea7"},
-    {file = "blackfire-1.5.3-cp33-cp33m-win32.whl", hash = "sha256:13f4178e5e9a1d4ad42fe28fc1ddba381d602d9a90e8c87ed9636548fc57123e"},
-    {file = "blackfire-1.5.3-cp34-cp34m-macosx_10_14_x86_64.whl", hash = "sha256:b4bea6565ff1cbe7cfbdeae41cff7f85ce024d6970a77b3e1f99f4764428d89b"},
-    {file = "blackfire-1.5.3-cp34-cp34m-win32.whl", hash = "sha256:1b77e4fcefb5d1e2b2a5ae21ad4bf8eb7330b16a8813a2f9216162034e901bb8"},
-    {file = "blackfire-1.5.3-cp35-cp35m-macosx_10_14_x86_64.whl", hash = "sha256:52341123467a4661991267fd2e42aafbf800df946ddaf0ae1a14d9c7498db300"},
-    {file = "blackfire-1.5.3-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:2506f967fb6e5ae0f7e31099421a757475f83a1ad682c86fde64eb6865324e1f"},
-    {file = "blackfire-1.5.3-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:43e446ed906c20f38d44b12d042f5457cbcc7cdd8c7055b0b93d05dd816fd785"},
-    {file = "blackfire-1.5.3-cp35-cp35m-win32.whl", hash = "sha256:5626d00472e8fa25075223b68b46e125144aacb8bb09b2e1033de25d7db41af8"},
-    {file = "blackfire-1.5.3-cp35-cp35m-win_amd64.whl", hash = "sha256:cab718160bf055e42e9e4c0730491d13c6c0eba90719c0fc82f05fe64674d67d"},
-    {file = "blackfire-1.5.3-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:8b3e582ab4a1b35d321374f9a55fc8fa20cfb08a629e08886009e398a80a0abe"},
-    {file = "blackfire-1.5.3-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:3a8cbacfb47082bb34d14ead8d9a7901adbb281a740f5585ffc55495862a6df9"},
-    {file = "blackfire-1.5.3-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:d55617a6ee3ccbbd7ecaeb24a328a94f71cf926068158497c5afacaf3f737430"},
-    {file = "blackfire-1.5.3-cp36-cp36m-win32.whl", hash = "sha256:7cec3ae24636aaf7560c8b74808890c556753ab124f20442bf2a9d0eb0dd4c8f"},
-    {file = "blackfire-1.5.3-cp36-cp36m-win_amd64.whl", hash = "sha256:8e5e104f43476e434b76a8d6eea106c90fd8a6b9801549e7277ba3269ffb9a2c"},
-    {file = "blackfire-1.5.3-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:d313ff3161a5ac9f6a0c255144378c4644b05200e5db7051e0160ee77ca0a89f"},
-    {file = "blackfire-1.5.3-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:c28e55d4d60eaff39908626ac0292f4259475d981769b791abaeae616c9e04b6"},
-    {file = "blackfire-1.5.3-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:00f06275a13df59dd1fba42865b5ca56d9fd36c8ca741db9a8417d53b1a3b1bd"},
-    {file = "blackfire-1.5.3-cp37-cp37m-win32.whl", hash = "sha256:c097656ce291e498f75da7a98d24ed092e47a8d04024daf4d35756d52a6a501b"},
-    {file = "blackfire-1.5.3-cp37-cp37m-win_amd64.whl", hash = "sha256:df183dba9fdeca9efd5c75a81851c8c8f26cbc547564dd2adb6706a5c40450c6"},
-    {file = "blackfire-1.5.3-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:f3616ead395af1e0983204dbac8a3313a8b4081ca8d71371a9ecd99ea9e3f336"},
-    {file = "blackfire-1.5.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:2a2324d7e7dc9bee63fb46fbe53ee4f147e4e78158a565220f48183128774895"},
-    {file = "blackfire-1.5.3-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:f27b7f4fc217e9e3fcc85d4853a704887263b2bedd6a8eda557b9398883fdf7b"},
-    {file = "blackfire-1.5.3-cp38-cp38-win32.whl", hash = "sha256:113f73828a8fc8b2a2c6d894353da54713d28f95264aae81cf2c54c78adb0cf7"},
-    {file = "blackfire-1.5.3-cp38-cp38-win_amd64.whl", hash = "sha256:ef67c7ac7b0bbe2753d59572171ec0b7bca0a7d2ce383398d7c5113610a1a123"},
-    {file = "blackfire-1.5.3-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:8fa4e51d7d85db1057a049eab12dda2525900bdd43fb60ecff7d23e9a22e6dda"},
-    {file = "blackfire-1.5.3-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:1f83036c15d9d76a7d416bd81f1b906f1e08009e3cfb70b875c9bb17ba9dcfdc"},
-    {file = "blackfire-1.5.3-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:ede5e1c71d3c2e760453638b28bdb4f16196603ca00e33e5c8060bd823135a0a"},
-    {file = "blackfire-1.5.3-cp39-cp39-win_amd64.whl", hash = "sha256:53acce85845db4a45212683b21394f133f21e7ef6c37dacec2215a60f5705bc6"},
 ]
 blessed = [
     {file = "blessed-1.17.12-py2.py3-none-any.whl", hash = "sha256:0a74a8d3f0366db600d061273df77d44f0db07daade7bb7a4d49c8bc22ed9f74"},
@@ -3905,6 +3868,10 @@ django-filter = [
 django-gm2m = [
     {file = "django-gm2m-1.1.1.tar.gz", hash = "sha256:5aa629264f6b3706f9ec933296fcf5ea77e2afccd05d5055fe20de655d8b01cb"},
 ]
+django-health-check = [
+    {file = "django-health-check-3.16.1.tar.gz", hash = "sha256:2cb3944e313e435bdf299288e109f398b6c08b610e09cc90d7f5f6a2bcf469fc"},
+    {file = "django_health_check-3.16.1-py2.py3-none-any.whl", hash = "sha256:8b0835f04ebaeb0d12498a5ef47dd22196237c3987ff28bcce9ed28b5a169d5e"},
+]
 django-image-cropping = [
     {file = "django-image-cropping-1.5.0.tar.gz", hash = "sha256:59744e8df88db7e46e37b526fc715fdde665d9efa345922745f50411a6dadb3f"},
     {file = "django_image_cropping-1.5.0-py3-none-any.whl", hash = "sha256:81dbcabb6421c5a1e88fac9d96f336d6109a23dcb8fa6c678329d3688c9973c4"},
@@ -3974,8 +3941,8 @@ django-stubs = [
     {file = "django_stubs-1.7.0-py3-none-any.whl", hash = "sha256:30a7d99c694acf79c5d93d69a5a8e4b54d2a8c11dd672aa869006789e2189fa6"},
 ]
 django-tinymce = [
-    {file = "django-tinymce-3.1.0.tar.gz", hash = "sha256:d3a641ec0d10db05dacab7bf9b11e9c8114d017ad1a9132ba18b10ab6bff1934"},
-    {file = "django_tinymce-3.1.0-py2.py3-none-any.whl", hash = "sha256:47db20515d159c69e3b8c69dca73adfb4e60010335250514d9f6fce6dc98c85c"},
+    {file = "django-tinymce-3.2.0.tar.gz", hash = "sha256:e6e8a658ed53cd293de1f62787f98bfab8fd4226aba505c9848e45eca69731c9"},
+    {file = "django_tinymce-3.2.0-py3-none-any.whl", hash = "sha256:4f7626d5b8ac819c1268331de06ce1a6de69a8e88e14c4cdc8bcfe383f2b0adf"},
 ]
 django-typed-models = [
     {file = "django-typed-models-0.10.0.tar.gz", hash = "sha256:0682c87e5887124d4990f851d73e172103828e8b48ad2ce53ae039b1498cedb6"},
@@ -4724,17 +4691,17 @@ protobuf = [
     {file = "protobuf-3.14.0.tar.gz", hash = "sha256:1d63eb389347293d8915fb47bee0951c7b5dab522a4a60118b9a18f33e21f8ce"},
 ]
 psutil = [
-    {file = "psutil-5.6.5-cp27-none-win32.whl", hash = "sha256:145e0f3ab9138165f9e156c307100905fd5d9b7227504b8a9d3417351052dc3d"},
-    {file = "psutil-5.6.5-cp27-none-win_amd64.whl", hash = "sha256:3feea46fbd634a93437b718518d15b5dd49599dfb59a30c739e201cc79bb759d"},
-    {file = "psutil-5.6.5-cp35-cp35m-win32.whl", hash = "sha256:348ad4179938c965a27d29cbda4a81a1b2c778ecd330a221aadc7bd33681afbd"},
-    {file = "psutil-5.6.5-cp35-cp35m-win_amd64.whl", hash = "sha256:474e10a92eeb4100c276d4cc67687adeb9d280bbca01031a3e41fb35dfc1d131"},
-    {file = "psutil-5.6.5-cp36-cp36m-win32.whl", hash = "sha256:e3f5f9278867e95970854e92d0f5fe53af742a7fc4f2eba986943345bcaed05d"},
-    {file = "psutil-5.6.5-cp36-cp36m-win_amd64.whl", hash = "sha256:dfb8c5c78579c226841908b539c2374da54da648ee5a837a731aa6a105a54c00"},
-    {file = "psutil-5.6.5-cp37-cp37m-win32.whl", hash = "sha256:021d361439586a0fd8e64f8392eb7da27135db980f249329f1a347b9de99c695"},
-    {file = "psutil-5.6.5-cp37-cp37m-win_amd64.whl", hash = "sha256:e9649bb8fc5cea1f7723af53e4212056a6f984ee31784c10632607f472dec5ee"},
-    {file = "psutil-5.6.5-cp38-cp38-win32.whl", hash = "sha256:47aeb4280e80f27878caae4b572b29f0ec7967554b701ba33cd3720b17ba1b07"},
-    {file = "psutil-5.6.5-cp38-cp38-win_amd64.whl", hash = "sha256:73a7e002781bc42fd014dfebb3fc0e45f8d92a4fb9da18baea6fb279fbc1d966"},
-    {file = "psutil-5.6.5.tar.gz", hash = "sha256:d051532ac944f1be0179e0506f6889833cf96e466262523e57a871de65a15147"},
+    {file = "psutil-5.7.3-cp27-none-win32.whl", hash = "sha256:1cd6a0c9fb35ece2ccf2d1dd733c1e165b342604c67454fd56a4c12e0a106787"},
+    {file = "psutil-5.7.3-cp27-none-win_amd64.whl", hash = "sha256:e02c31b2990dcd2431f4524b93491941df39f99619b0d312dfe1d4d530b08b4b"},
+    {file = "psutil-5.7.3-cp35-cp35m-win32.whl", hash = "sha256:56c85120fa173a5d2ad1d15a0c6e0ae62b388bfb956bb036ac231fbdaf9e4c22"},
+    {file = "psutil-5.7.3-cp35-cp35m-win_amd64.whl", hash = "sha256:fa38ac15dbf161ab1e941ff4ce39abd64b53fec5ddf60c23290daed2bc7d1157"},
+    {file = "psutil-5.7.3-cp36-cp36m-win32.whl", hash = "sha256:01bc82813fbc3ea304914581954979e637bcc7084e59ac904d870d6eb8bb2bc7"},
+    {file = "psutil-5.7.3-cp36-cp36m-win_amd64.whl", hash = "sha256:6a3e1fd2800ca45083d976b5478a2402dd62afdfb719b30ca46cd28bb25a2eb4"},
+    {file = "psutil-5.7.3-cp37-cp37m-win32.whl", hash = "sha256:fbcac492cb082fa38d88587d75feb90785d05d7e12d4565cbf1ecc727aff71b7"},
+    {file = "psutil-5.7.3-cp37-cp37m-win_amd64.whl", hash = "sha256:5d9106ff5ec2712e2f659ebbd112967f44e7d33f40ba40530c485cc5904360b8"},
+    {file = "psutil-5.7.3-cp38-cp38-win32.whl", hash = "sha256:ade6af32eb80a536eff162d799e31b7ef92ddcda707c27bbd077238065018df4"},
+    {file = "psutil-5.7.3-cp38-cp38-win_amd64.whl", hash = "sha256:2cb55ef9591b03ef0104bedf67cc4edb38a3edf015cf8cf24007b99cb8497542"},
+    {file = "psutil-5.7.3.tar.gz", hash = "sha256:af73f7bcebdc538eda9cc81d19db1db7bf26f103f91081d780bbacfcb620dee2"},
 ]
 psycopg2-binary = [
     {file = "psycopg2-binary-2.8.6.tar.gz", hash = "sha256:11b9c0ebce097180129e422379b824ae21c8f2a6596b159c7659e2e5a00e1aa0"},
