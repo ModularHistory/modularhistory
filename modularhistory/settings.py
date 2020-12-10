@@ -74,10 +74,7 @@ if SENTRY_DSN:
         send_default_pii=True,
         # https://docs.sentry.io/platforms/python/performance/
         traces_sample_rate=0.5,
-        # https://docs.sentry.io/platforms/python/guides/django/configuration/options/#http-proxy
-        http_proxy=None,
     )
-    print(f'HTTP_PROXY: {os.environ.get("HTTP_PROXY")}')
 
     if ENABLE_ASGI:
         from modularhistory.asgi import application

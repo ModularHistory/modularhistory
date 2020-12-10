@@ -44,5 +44,7 @@ RUN chmod +x /modularhistory/config/wait-for-it.sh
 # Grant ownership to non-root user
 RUN chown -R www-data:www-data /modularhistory
 
+RUN apt install vim dnsutils net-tools
+
 # Switch from root to non-root user
 USER www-data
