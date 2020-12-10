@@ -3,7 +3,7 @@ version: "3.8"
 services:
   dev:
     build: .
-    command: python manage.py runserver 0.0.0.0:$PORT
+    command: python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
       - redis
@@ -11,9 +11,8 @@ services:
     environment:
       - ENVIRONMENT=dev_docker
       - POSTGRES_HOST=db
-      - PORT = 8000
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:$PORT/ht/ || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:8000/ht/ || exit 1"]
       timeout: 7s
       interval: 15s
       retries: 2
@@ -65,9 +64,10 @@ services:
     restart: "unless-stopped"
     user: www-data
     volumes:
-      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
       - ./static:/modularhistory/static
       - ./media:/modularhistory/media
+      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
+      - /etc/resolv.conf:/etc/resolv.conf
   
   redis:
     image: redis
