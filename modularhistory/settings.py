@@ -133,7 +133,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
-    'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    # 'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
@@ -673,12 +673,12 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = True
 
 # Caching settings
-use_dummy_cache_in_dev_environment = config('USE_DUMMY_CACHE', cast=bool, default=False)
+use_dummy_cache = config('DUMMY_CACHE', cast=bool, default=False)
 Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 
 # https://github.com/jazzband/django-redis
-if ENVIRONMENT == Environments.DEV and use_dummy_cache_in_dev_environment:
+if ENVIRONMENT == Environments.DEV and use_dummy_cache:
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
