@@ -43,6 +43,10 @@ class OccurrenceAdmin(SearchableModelAdmin):
         'date_string',
         'slug',
     ]
+    list_editable = [
+        'slug',
+        'summary',
+    ]
     list_filter = [
         'verified',
         HasDateFilter,
