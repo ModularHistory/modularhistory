@@ -26,6 +26,7 @@ from django.views.generic import TemplateView
 
 from admin.model_admin import admin_site
 from apps.search.views import SearchResultsView
+from modularhistory import errors
 
 
 def error(request):
@@ -69,7 +70,6 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path('select2/', include('django_select2.urls')),
     path('', include('apps.home.urls')),
-    path('error', error),  # error trigger (for testing purposes)
     path(
         'robots.txt',
         TemplateView.as_view(template_name='robots.txt', content_type='text/plain'),
@@ -78,8 +78,18 @@ urlpatterns = [
     path('ht/', include('health_check.urls')),
     # Debug toolbar: https://django-debug-toolbar.readthedocs.io/en/latest/
     path('__debug__', include(debug_toolbar.urls)),
+    path('error', error),  # exception trigger (for testing purposes)
+    path('errors/400', errors.bad_request),  # 400 trigger (for testing purposes)
+    path('errors/403', errors.permission_denied),  # 403 trigger (for testing purposes)
+    path('errors/404', errors.not_found),  # 404 trigger (for testing purposes)
+    path('errors/500', errors.error),  # 500 trigger (for testing purposes)
     # TODO: enable Vue templates
     # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler400 = 'modularhistory.errors.bad_request'
+handler403 = 'modularhistory.errors.permission_denied'
+handler404 = 'modularhistory.errors.not_found'
+handler500 = 'modularhistory.errors.error'

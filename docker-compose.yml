@@ -5,8 +5,9 @@ services:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     depends_on:
-      - db
+      - postgres
       - redis
+      - mongo
     env_file: .env
     environment:
       - ENVIRONMENT=dev_docker
@@ -21,8 +22,14 @@ services:
       - "8080:8080"
     volumes:
       - .:/modularhistory
+
+  # mongo:
+  #   env_file: .env
+  #   image: mongo
+  #   ports:
+  #     - "27017:27017"
   
-  db:
+  postgres:
     env_file: .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -85,5 +92,6 @@ networks:
         - subnet: 172.27.0.0/24
 
 volumes: 
+  mongo_data:
   postgres_data:
   redis:

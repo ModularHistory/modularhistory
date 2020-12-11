@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load modal %}
+{% load global_elements %}
 {% load sass_tags %}
 
 <html lang="en" xml:lang="en">
@@ -28,21 +29,19 @@
         <title>{% block title %}Home{% endblock %} | ModularHistory</title>
 
         <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}" />
-
         <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+        <!-- Latest compiled and minified Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+        <!-- Material Design Bootstrap CSS -->
+        <link rel="stylesheet" href='{% static "libraries/mdb/css/mdb.min.css" %}' type="text/css" />
 
         <!-- ## jQuery UI CSS
         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"> -->
         <!-- ## jQuery DataTables CSS
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" /> -->
-
-        <!-- Latest compiled and minified Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
-        <!-- Material Design Bootstrap CSS -->
-        <link rel="stylesheet" href='{% static "libraries/mdb/css/mdb.min.css" %}' type="text/css" />
 
         <!--<link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>-->
 
@@ -102,89 +101,11 @@
         <!-- Google Tag Manager (noscript) -->
         <noscript>
             <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
-                          height="0" width="0" style="display:none;visibility:hidden"></iframe>
+                    height="0" width="0" style="display:none;visibility:hidden"></iframe>
         </noscript>
 
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark" id="global-nav" style="min-height: 4rem">
-            <!-- Logo -->
-            <a class="navbar-brand" href="/">
-                <img src='{% static "logo_head_white.png" %}' alt="Logo" style="height: 2.5rem">
-                ModularHistory
-            </a>
+        {% global_navbar user %}
 
-            <!-- Non-collapsible links -->
-            <div class="d-flex ml-auto order-1 order-sm-2">
-                <ul class="navbar-nav">
-                    <li class="nav-item avatar dropdown">
-                        <a class="nav-link p-0 dropdown-toggle" id="accountDropdown" data-toggle="dropdown">
-                            {% if request.user.is_authenticated %}
-                                {% if user.avatar %}
-                                    <img src="{{ user.avatar.url }}" class="rounded-circle z-depth-0"
-                                         alt="{{ user }}" height="35" />
-                                {% else %}
-                                    <i class="fas fa-user"></i>
-                                {% endif %}
-                            {% else %}
-                                <i class="fas fa-user"></i>
-                            {% endif %}
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="accountDropdown">
-                            {% if request.user.is_authenticated %}
-                                <a class="dropdown-item" href="{% url 'account:profile' %}">Profile</a>
-                                <a class="dropdown-item" href="{% url 'account:settings' %}">Settings</a>
-                                {% if request.user.is_superuser %}
-                                    <a href="/admin/" class="dropdown-item" >Administrate</a>
-                                    <a href="" class="dropdown-item hide-admin-controls">Hide admin controls</a>
-                                {% endif %}
-                                <a href="{% url 'account:logout' %}" class="dropdown-item">
-                                    <span class="glyphicon glyphicon-log-out"></span> Logout
-                                </a>
-                            {% else %}
-                                <a href="{% url 'account:register' %}" class="dropdown-item">Create an account</a>
-                                <a href="{% url 'account:login' %}" class="dropdown-item">Login</a>
-                            {% endif %}
-                        </div>
-                    </li>
-                </ul>
-                <!-- Toggler/collapser button -->
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-
-            <!-- Collapsible links -->
-            <div class="collapse navbar-collapse order-2 order-sm-1" id="collapsibleNavbar">
-                <ul class="navbar-nav">
-                    {% block main_menu %}
-                        {% with menu_items=settings.MENU_ITEMS %}
-                            {% for title, app in menu_items %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/{{ app }}/">{{ title }}</a>
-                                </li>
-                            {% endfor %}
-                        {% endwith %}
-
-{#                        <!-- Dropdown -->#}
-{#                        <li class="nav-item dropdown active">#}
-{#                            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}
-{#                                History#}
-{#                            </a>#}
-{#                            <div class="dropdown-menu">#}
-{#                                {% for title, app in settings.MENU_ITEMS %}#}
-{#                                    <a class="dropdown-item" href="/{{ app }}/">{{ title }}</a>#}
-{#                                    <!--<li class="nav-item ${'active' if False else ''}">-->#}
-{#                                    <!--<a class="nav-link" href="/${ app }/">${ title }</a>-->#}
-{#                                    <!--</li>-->#}
-{#                                {% endfor %}#}
-{#                            </div>#}
-{#                        </li>#}
-                    {% endblock %}
-                </ul>
-                <ul class="navbar-nav ml-auto nav-flex-icons justify-content-end">
-
-                </ul>
-            </div>
-        </nav>
         <div class="main-content">
             {% block breadcrumb %}
                 {% if breadcrumb_items %}
@@ -195,49 +116,12 @@
                     </ol>
                 {% endif %}
             {% endblock %}
-            {% block content %}
-                ...
-            {% endblock %}
+
+            {% block content %}{% endblock %}
         </div>
 
         {% block footer %}
-            <!-- Footer -->
-            <footer id="footer" class="page-footer font-small unique-color-dark pt-4">
-
-                <!-- Footer Elements -->
-                <div class="container-fluid">
-                    <!-- Call to action -->
-                    <ul class="list-unstyled list-inline text-center py-2">
-                        {% if settings.ENABLE_PATREON %}
-                            <li class="list-inline-item">
-                                <a href="https://www.patreon.com/modularhistory" class="btn btn-outline-white">Support on Patreon</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-
-                    <div class="row">
-                        <div class="col-md-12 col-lg-12 text-center">
-                            <div class="footer-links mb-1" style="background-color: rgba(0,0,0,0.2);">
-                                <!-- Copyright -->
-                                <span class="text-center py-3 mx-5">
-                                    &copy; 2020 ModularHistory, Inc.
-                                </span>
-                                <!-- Copyright -->
-                                <a href="/about">About ModularHistory</a>
-                                <a href="/privacy">Privacy Policy</a>
-                                <a href="/terms">Terms of Use</a>
-                                <ul class="list-social list-unstyled list-inline mx-5" style="display: inline-block">
-                                    <li style="display: inline-block"><a href="https://twitter.com/modularhistory" rel="nofollow noopener" target="_blank" aria-label="Twitter"><span class="fab fa-twitter"></span></a></li>
-                                    <li style="display: inline-block"><a href="https://www.facebook.com/modularhistory" rel="nofollow noopener" target="_blank" aria-label="Facebook"><span class="fab fa-facebook-f"></span></a></li>
-                                    <li style="display: inline-block"><a href="https://www.pinterest.com/modularhistory" rel="nofollow noopener" target="_blank" aria-label="Pinterest"><span class="fab fa-pinterest"></span></a></li>
-                                    <li style="display: inline-block"><a href="https://www.youtube.com/c/modularhistory" rel="nofollow noopener" target="_blank" aria-label="YouTube"><span class="fab fa-youtube-f"></span></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-            <!-- Footer -->
+            {% global_footer %}
         {% endblock %}
 
         {% modal %}

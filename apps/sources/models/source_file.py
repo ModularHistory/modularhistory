@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from os.path import join
 from typing import Optional
-from apps.home.templatetags.media import media as fix_url
+
 from django.core.exceptions import ValidationError
 from django.core.files.storage import Storage, default_storage
 from django.core.files.uploadedfile import UploadedFile
@@ -14,6 +14,7 @@ from django.utils.safestring import SafeString
 
 from modularhistory.fields.file_field import SourceFileField, upload_to
 from modularhistory.models import Model
+from modularhistory.templatetags.media import media as fix_url
 
 
 class SourceFile(Model):

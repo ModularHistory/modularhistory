@@ -1,4 +1,4 @@
-{% load get_admin_url %}
+{% load model_urls %}
 {% load static %}
 {% load get_html_for_view %}
 {% load with_entity_links %}
@@ -45,7 +45,4 @@
             {% endfor %}
         </ol>
     </footer>
-    {% if request.user.is_superuser %}
-        <a class="edit-object-button float-right" target="_blank" rel="noopener noreferrer" href="{{ occurrence|get_admin_url }}"><i class="fa fa-edit"></i></a>
-    {% endif %}
 </div>
