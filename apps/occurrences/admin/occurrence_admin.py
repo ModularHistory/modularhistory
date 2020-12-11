@@ -60,7 +60,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
     list_per_page = 10
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields
-    search_fields = models.Occurrence.searchable_fields
+    search_fields = model.searchable_fields
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
     date_hierarchy = 'date'

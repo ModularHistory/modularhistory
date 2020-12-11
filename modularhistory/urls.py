@@ -65,11 +65,15 @@ urlpatterns = [
     path('sources/', include('apps.sources.urls', namespace='sources')),
     # Topics
     path('topics/', include('apps.topics.urls', namespace='topics')),
-    path('oauth/', include('social_django.urls', namespace='social')),
+    # Third-party apps
     path('api-auth/', include('rest_framework.urls')),
-    path('tinymce/', include('tinymce.urls')),
+    path('martor/', include('martor.urls')),
+    path('oauth/', include('social_django.urls', namespace='social')),
     path('select2/', include('django_select2.urls')),
+    path('tinymce/', include('tinymce.urls')),
+    # Home
     path('', include('apps.home.urls')),
+    # robots.txt
     path(
         'robots.txt',
         TemplateView.as_view(template_name='robots.txt', content_type='text/plain'),
@@ -78,11 +82,12 @@ urlpatterns = [
     path('ht/', include('health_check.urls')),
     # Debug toolbar: https://django-debug-toolbar.readthedocs.io/en/latest/
     path('__debug__', include(debug_toolbar.urls)),
-    path('error', error),  # exception trigger (for testing purposes)
-    path('errors/400', errors.bad_request),  # 400 trigger (for testing purposes)
-    path('errors/403', errors.permission_denied),  # 403 trigger (for testing purposes)
-    path('errors/404', errors.not_found),  # 404 trigger (for testing purposes)
-    path('errors/500', errors.error),  # 500 trigger (for testing purposes)
+    # Errors (for debugging)
+    path('error', error),  # exception trigger
+    path('errors/400', errors.bad_request),  # 400 trigger
+    path('errors/403', errors.permission_denied),  # 403 trigger
+    path('errors/404', errors.not_found),  # 404 trigger
+    path('errors/500', errors.error),  # 500 trigger
     # TODO: enable Vue templates
     # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
 ]
