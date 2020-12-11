@@ -1,5 +1,3 @@
-"""Template filter for checking model object types."""
-
 from typing import Dict, Union
 
 from django import template
@@ -10,6 +8,12 @@ from modularhistory.constants.misc import MODEL_CLASS_PATHS
 from modularhistory.models import Model
 
 register = template.Library()
+
+
+@register.filter()
+def class_name(instance) -> str:
+    """Return the instance's class name."""
+    return instance.__class__.__name__
 
 
 @register.filter()

@@ -1,5 +1,5 @@
-{% load get_admin_url %}
-{% load is_instance %}
+{% load model_urls %}
+{% load content_types %}
 {% load media %}
 
 <div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.slug }}"

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load global_elements %}
+
+{% block styles %}
+    <link href="{% static 'styles/error.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div id="error">
+        <div class="error">
+            <div class="error-content">
+                <h1>{{ status }}</h1>
+                <h2>{{ status_text }}</h2>
+            </div>
+        </div>
+    </div>
+{% endblock %}

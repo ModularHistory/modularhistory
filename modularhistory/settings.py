@@ -18,9 +18,9 @@ from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from sentry_sdk.integrations import Integration
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from modularhistory.constants.misc import PRODUCTION, Environments
 
@@ -279,6 +279,11 @@ TEMPLATES = [
                 ),
             ],
             'libraries': {
+                'content_types': 'modularhistory.templatetags.content_types',
+                'global_elements': 'modularhistory.templatetags.global_elements',
+                'media': 'modularhistory.templatetags.media',
+                'modal': 'modularhistory.templatetags.modal',
+                'model_urls': 'modularhistory.templatetags.model_urls',
                 # https://stackoverflow.com/questions/41376480/django-template-exceptions-templatesyntaxerror-static-is-not-a-registered-tag
                 'staticfiles': 'django.templatetags.static',
             },
