@@ -14,6 +14,13 @@ body {
   height: 60vh;
 }
 
+.error {
+  max-width: 520px;
+  width: 100%;
+  line-height: 1.4;
+  text-align: center;
+}
+
 #error .error {
   position: absolute;
   left: 50%;
@@ -23,17 +30,10 @@ body {
   -webkit-transform: translate(-50%, -50%);
 }
 
-.error {
-  max-width: 520px;
-  width: 100%;
-  line-height: 1.4;
-  text-align: center;
-}
-
 .error .error-content {
   position: relative;
   height: 200px;
-  margin: 0px auto 20px;
+  margin: 0 auto 20px;
   z-index: -1;
 }
 
@@ -41,7 +41,7 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-size: 200px;
   font-weight: 200;
-  margin: 0px;
+  margin: 0;
   color: #211b19;
   text-transform: uppercase;
   position: absolute;
@@ -63,7 +63,7 @@ body {
   margin: auto;
   display: inline-block;
   position: absolute;
-  bottom: 0px;
+  bottom: 0;
   left: 0;
   right: 0;
 }
@@ -96,7 +96,7 @@ body {
 @media only screen and (max-width: 480px) {
   .error .error-content {
     height: 148px;
-    margin: 0px auto 10px;
+    margin: 0 auto 10px;
   }
   .error .error-content h1 {
     font-size: 86px;
