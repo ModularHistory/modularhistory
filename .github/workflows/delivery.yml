@@ -45,7 +45,6 @@ jobs:
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      POSTGRES_HOST: db
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
