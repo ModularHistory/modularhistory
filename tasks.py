@@ -13,13 +13,15 @@ See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
 import os
-from typing import Any, Callable, Optional, TypeVar
 from glob import iglob
+from typing import Any, Callable, Optional, TypeVar
+
 import django
-from pympler import tracker
-from paramiko import SSHClient
-from scp import SCPClient
 from decouple import config
+from paramiko import SSHClient
+from pympler import tracker
+from scp import SCPClient
+
 from modularhistory.constants.misc import Environments
 from modularhistory.constants.strings import NEGATIVE, SPACE
 from modularhistory.linters import flake8 as lint_with_flake8
