@@ -558,28 +558,25 @@ MARTOR_ALTERNATIVE_JQUERY_JS_FILE = "jquery/dist/jquery.min.js"  # default None
 # TODO: https://django-tinymce.readthedocs.io/en/latest/installation.html#prerequisites
 TINYMCE_JS_URL = 'https://cloud.tinymce.com/stable/tinymce.min.js'
 TINYMCE_JS_ROOT = 'https://cloud.tinymce.com/stable/'
+TINYMCE_COMPRESSOR = IS_PROD
+TINYMCE_SPELLCHECKER = True
 TINYMCE_DEFAULT_CONFIG = {
     'width': '100%',
+    'max_height': 1000,
     'cleanup_on_startup': True,
     'custom_undo_redo_levels': 20,
     'selector': 'textarea.tinymce',
     'theme': 'modern',
     'plugins': (
         'autolink, autoresize, autosave, blockquote, '
-        # 'casechange, '  # Premium
         'charmap, code, contextmenu, emoticons, '
-        # 'formatpainter, '  # Premium
         'fullscreen, hr, image, link, lists, media, paste, preview, '
         'searchreplace, spellchecker, textcolor, visualblocks, visualchars, wordcount'
     ),
+    'autoresize_bottom_margin': 1,
     'toolbar1': (
-        'bold italic | blockquote '
-        # 'formatpainter | '
-        'alignleft aligncenter alignright alignjustify | indent outdent | '
-        'bullist numlist | visualblocks visualchars | '
-        # 'charmap hr '
-        'nonbreaking anchor | image media link | code | smallcaps highlight | '
-        'spellchecker preview | undo redo'
+        'bold italic | blockquote | indent outdent | bullist numlist | '
+        'visualblocks visualchars | nonbreaking anchor | code | spellchecker preview'
     ),
     'contextmenu': (
         'formats | blockquote | highlight smallcaps | link media image '
@@ -588,8 +585,9 @@ TINYMCE_DEFAULT_CONFIG = {
     'menubar': True,
     'statusbar': True,
     'branding': False,
-    'setup': (
-        '''
+    # fmt: off
+    # After upgrading to v5, add `.ui.registry` before `.addMenuItem` and `addButton`
+    'setup': ' '.join(('''
         function (editor) {
             editor.addMenuItem('highlight', {
                 text: 'Highlight text',
@@ -652,10 +650,17 @@ TINYMCE_DEFAULT_CONFIG = {
                 }
             });
         }
-    '''
-    ),
+    ''').split()),
+    # fmt: on
 }
-TINYMCE_SPELLCHECKER = True
+TINYMCE_EXTRA_MEDIA = {
+    'css': {
+        'all': [
+            ['/static/styles/mce.css'],
+        ],
+    },
+    'js': ['/static/scripts/mce.js'],
+}
 
 # https://github.com/jonasundderwolf/django-image-cropping
 THUMBNAIL_PROCESSORS = (

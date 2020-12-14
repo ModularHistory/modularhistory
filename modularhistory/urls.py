@@ -21,6 +21,8 @@ import logging
 import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib.staticfiles.views import serve
 from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 
@@ -88,11 +90,15 @@ urlpatterns = [
     path('errors/403', errors.permission_denied),  # 403 trigger
     path('errors/404', errors.not_found),  # 404 trigger
     path('errors/500', errors.error),  # 500 trigger
+    re_path(r'^(?P<path>favicon.ico)$', serve),
     # TODO: enable Vue templates
     # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# https://docs.djangoproject.com/en/3.1/ref/contrib/staticfiles/#django.contrib.staticfiles.urls.staticfiles_urlpatterns
+urlpatterns += staticfiles_urlpatterns()
 
 handler400 = 'modularhistory.errors.bad_request'
 handler403 = 'modularhistory.errors.permission_denied'

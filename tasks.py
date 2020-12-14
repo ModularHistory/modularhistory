@@ -13,10 +13,14 @@ See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
 import os
-from typing import Any, Callable, TypeVar
+from glob import iglob
+from typing import Any, Callable, Optional, TypeVar
 
 import django
+from decouple import config
+from paramiko import SSHClient
 from pympler import tracker
+from scp import SCPClient
 
 from modularhistory.constants.misc import Environments
 from modularhistory.constants.strings import NEGATIVE, SPACE
@@ -35,6 +39,11 @@ if fix_annotations():
     import invoke
 
 TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
+
+SERVER: Optional[str] = config('SERVER', default=None)
+SERVER_SSH_PORT: Optional[int] = config('SERVER_SSH_PORT', default=22)
+SERVER_USERNAME: Optional[str] = config('SERVER_USERNAME', default=None)
+SERVER_PASSWORD: Optional[str] = config('SERVER_PASSWORD', default=None)
 
 
 def task(task_function: TaskFunction) -> TaskFunction:
@@ -132,6 +141,44 @@ def generate_artifacts(context):
     ).generate(text)
     word_cloud.to_file(os.path.join(settings.BASE_DIR, 'static', 'topic_cloud.png'))
     print('Done.')
+
+
+@task
+def get_db_backup(context):
+    """Get latest db backup from server."""
+    if SERVER:
+        ssh = SSHClient()
+        ssh.load_system_host_keys()
+        ssh.connect(
+            SERVER,
+            port=SERVER_SSH_PORT,
+            username=SERVER_USERNAME,
+            password=SERVER_PASSWORD,
+        )
+        with SCPClient(ssh.get_transport()) as scp:
+            scp.get('.backups/', './', recursive=True)
+        latest_backup = max(iglob('.backups/*sql'), key=os.path.getctime)
+        print(latest_backup)
+        context.run(f'cp {latest_backup} .backups/init.sql')
+    else:
+        raise EnvironmentError('Necessary environment variables are not set.')
+
+
+@task
+def initialize_dev_db(context):
+    """Initialize the dev db."""
+    init_file = '.backups/init.sql'
+    if os.path.exists(init_file):
+        if os.path.isfile(init_file):
+            context.run('docker-compose down')
+            if input('Remove existing database and reinitialize? [Y/n] ' != NEGATIVE):
+                context.run('docker volume rm modularhistory_postgres_data')
+            context.run('docker-compose up postgres')
+        else:
+            context.run(f'rm -r {init_file}')
+    raise EnvironmentError(
+        f'There is no {init_file} file. Try running `invoke get-db-backup` first.'
+    )
 
 
 @task
