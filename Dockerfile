@@ -3,25 +3,27 @@ FROM python:3.7-buster
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
 # Add PostgreSQL repo
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list
+RUN wget --quiet https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
+  apt-key add ACCC4CF8.asc && \
+  sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+
 # Install packages
 RUN apt-get update && apt-get install -y \
-    dnsutils \
-    gnupg2 \
-    libenchant-dev \
-    postgresql-client-common \
-    postgresql-client-13 \
-    vim
+  dnsutils \
+  gnupg2 \
+  libenchant-dev \
+  postgresql-client-common \
+  postgresql-client-13 \
+  vim
 
 # Set environment vars
 ENV \
-    PYTHONUNBUFFERED=1 \
-    PYTHONFAULTHANDLER=1 \
-    PYTHONHASHSEED=random \
-    PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100
+  PYTHONUNBUFFERED=1 \
+  PYTHONFAULTHANDLER=1 \
+  PYTHONHASHSEED=random \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100
 
 RUN pip install poetry
 
@@ -34,7 +36,7 @@ WORKDIR /modularhistory
 # Install project dependencies
 COPY poetry.lock pyproject.toml /modularhistory/
 RUN poetry config virtualenvs.create false && \
-    poetry install --no-dev --no-interaction --no-ansi
+  poetry install --no-dev --no-interaction --no-ansi
 
 # Add source code
 COPY . /modularhistory/
@@ -44,9 +46,9 @@ RUN python manage.py collectstatic --no-input
 
 # Grant necessary permissions to non-root user
 RUN chown -R www-data:www-data /modularhistory && \
-    chmod g+w -R /modularhistory/media && \
-    chmod g+w -R /modularhistory/.backups && \
-    chmod +x /modularhistory/config/wait-for-it.sh
+  chmod g+w -R /modularhistory/media && \
+  chmod g+w -R /modularhistory/.backups && \
+  chmod +x /modularhistory/config/wait-for-it.sh
 
 # Expose port 8000
 EXPOSE 8000
