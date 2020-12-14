@@ -62,7 +62,6 @@ class ModelAdmin(NestedModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jQuery
             '//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',  # Bootstrap
             '//cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js',  # EPub.JS
-            'scripts/mce.js',
             'scripts/base.js',
         )
 

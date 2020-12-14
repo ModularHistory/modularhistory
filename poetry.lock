@@ -1648,7 +1648,7 @@ idna = ">=2.5"
 
 [[package]]
 name = "hypothesis"
-version = "5.43.2"
+version = "5.43.3"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -2429,6 +2429,14 @@ python-versions = "*"
 google-api-python-client = ">=1.2"
 oauth2client = ">=4.0.0"
 PyYAML = ">=3.0"
+
+[[package]]
+name = "pyenchant"
+version = "3.2.0"
+description = "Python bindings for the Enchant spellchecking system"
+category = "main"
+optional = false
+python-versions = ">=3.5"
 
 [[package]]
 name = "pyflakes"
@@ -3515,7 +3523,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "b34d8447dc0fa083ebc07e46882d7c9541ca8e95618afb5590f8113c3fbbc200"
+content-hash = "4b2b397fd4e983cd5053b6e4c47920f43291231eaedfdd6f094b159cf385809d"
 
 [metadata.files]
 aenum = [
@@ -4210,8 +4218,8 @@ hyperlink = [
     {file = "hyperlink-20.0.1.tar.gz", hash = "sha256:47fcc7cd339c6cb2444463ec3277bdcfe142c8b1daf2160bdd52248deec815af"},
 ]
 hypothesis = [
-    {file = "hypothesis-5.43.2-py3-none-any.whl", hash = "sha256:fc5f08445c581df1f378970493f03d27e874576daa7497916479d0dcea03a244"},
-    {file = "hypothesis-5.43.2.tar.gz", hash = "sha256:b8d03dbbda4bcb86f74f8bb31d7d3697fffe0447894d7c003746b5d768dd25be"},
+    {file = "hypothesis-5.43.3-py3-none-any.whl", hash = "sha256:f0d968ca06be596d7e9aced33d6132060042f9695ad63ff4d862851b59a3eb6e"},
+    {file = "hypothesis-5.43.3.tar.gz", hash = "sha256:d97ba7ae2cfe7096b0c045fdb611ee9850ccdd6050a9b36cb96812242062c2cc"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -4816,6 +4824,12 @@ pydocstyle = [
 pydrive = [
     {file = "PyDrive-1.3.1-py2-none-any.whl", hash = "sha256:5b94e971430722eb5c40a090f21df46b32e51399d747c1511796f63f902d1095"},
     {file = "PyDrive-1.3.1.tar.gz", hash = "sha256:83890dcc2278081c6e3f6a8da1f8083e25de0bcc8eb7c91374908c5549a20787"},
+]
+pyenchant = [
+    {file = "pyenchant-3.2.0-py3-none-any.whl", hash = "sha256:5f5fbf99283136ad0e56660343ec4f16713981e340984ce9487de756fce022c6"},
+    {file = "pyenchant-3.2.0-py3-none-win32.whl", hash = "sha256:f649f36fa90cb950d10b1a70bca50be7799ec759aa478353f08dcef579c097ee"},
+    {file = "pyenchant-3.2.0-py3-none-win_amd64.whl", hash = "sha256:f22cc6e342d4e6a027296c59ae8ad4d5b2f281da1ecbe0e839a9e5f5d243b33d"},
+    {file = "pyenchant-3.2.0.tar.gz", hash = "sha256:6b97e9a9f132fa7c9029a6635d821ccad67d4980e68186d02c765b4256b6f152"},
 ]
 pyflakes = [
     {file = "pyflakes-2.2.0-py2.py3-none-any.whl", hash = "sha256:0d94e0e05a19e57a99444b6ddcf9a6eb2e5c68d3ca1e98e90707af8152c90a92"},

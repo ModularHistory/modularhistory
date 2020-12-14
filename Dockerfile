@@ -2,7 +2,12 @@ FROM python:3.7-buster
 
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
-RUN apt-get update && apt-get install -y vim dnsutils postgresql-client-common
+RUN apt-get update && apt-get install -y \
+    vim \
+    dnsutils \
+    libenchant-dev \
+    postgresql-client-common \
+    postgresql-client
 
 ENV \
   PYTHONUNBUFFERED=1 \

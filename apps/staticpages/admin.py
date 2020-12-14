@@ -18,8 +18,8 @@ class StaticPageForm(FlatpageForm):
         model = StaticPage
         fields = '__all__'
 
-    class Media:
-        js = ('scripts/mce.js',)
+    # class Media:
+    #     js = ('scripts/mce.js',)
 
 
 class StaticPageAdmin(FlatPageAdmin):

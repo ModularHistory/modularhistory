@@ -8,9 +8,11 @@ function adjustMceHeight(iframe) {
     return new_iframe_height;
 }
 
-$(window).on('load', function() {
+const autoresize_plugin_is_enabled = true;
+
+$(window).on('load', function () {
     $('.mce-branding,.mce-notification').hide();
-    $('.mce-tinymce.mce-container.mce-panel').not('[data-inline-type="tabular"] *').each(function() {
+    $('.mce-tinymce.mce-container.mce-panel').not('[data-inline-type="tabular"] *').each(function () {
         let iframe = $(this).find('iframe');
         iframe.contents().find('head').append(`
             <noscript>
@@ -19,11 +21,11 @@ $(window).on('load', function() {
             </noscript>
         `);
         // Include MCE styles
-        $.when($.get("/static/styles/mce.css")).done(function(response) {
+        $.when($.get("/static/styles/mce.css")).done(function (response) {
             iframe.contents().find('style').append(`<style>${response}</style>`);
         });
         // Include Bootstrap styles
-        $.when($.get("https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css")).done(function(response) {
+        $.when($.get("https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css")).done(function (response) {
             iframe.contents().find('head.style').append(`${response}`);
         });
         iframe.contents().find('#tinymce').on('input change keyup', (e) => {
@@ -33,9 +35,12 @@ $(window).on('load', function() {
         form_row.prepend('<div class="label"></div>');
         let label_wrapper = form_row.find('.label');
         form_row.find('label').appendTo(label_wrapper);
-        iframe.contents().find('img.lazy').each(function() {
+        iframe.contents().find('img.lazy').each(function () {
             $(this).attr('src', this.dataset.src);
         });
+        if (!autoresize_plugin_is_enabled) {
+            adjustMceHeight(iframe);
+        }
     });
     // $('.add-row a').click(function() {
     //     let iframe = $( this ).closest('fieldset').find('iframe');
