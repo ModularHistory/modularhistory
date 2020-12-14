@@ -218,7 +218,7 @@ MIDDLEWARE = [
     # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     # Memory profiler
-    'modularhistory.middleware.PymplerMiddleware',
+    # 'modularhistory.middleware.PymplerMiddleware',  # TODO
 ]
 
 # Initialize the Sentry SDK for error reporting
