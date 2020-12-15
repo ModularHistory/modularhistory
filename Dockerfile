@@ -8,13 +8,9 @@ RUN wget --quiet https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
   sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
 
 # Install packages
-RUN apt-get update && apt-get install -y \
-  dnsutils \
-  gnupg2 \
-  libenchant-dev \
-  postgresql-client-common \
-  postgresql-client-13 \
-  vim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  dnsutils gnupg2 libenchant-dev postgresql-client-common postgresql-client-13 vim && \
+  apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set environment vars
 ENV \
@@ -25,7 +21,7 @@ ENV \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100
 
-RUN pip install poetry
+RUN pip install "poetry>=1.0.5"
 
 # Create required directories
 RUN mkdir -p -- /modularhistory/static /modularhistory/media /modularhistory/.backups

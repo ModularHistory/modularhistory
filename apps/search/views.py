@@ -188,7 +188,7 @@ def _google_dict_api(word: str) -> Dict:
     """
     host = 'api.dictionaryapi.dev'
     request_url = f'/api/v2/entries/en/{word}'
-    connection = client.HTTPSConnection(host)
+    connection = client.HTTPSConnection(host)  # noqa: S309
     connection.request('GET', request_url)
     data = json.loads(connection.getresponse().read().decode('utf-8'))
     logging.info(f'Received response from Google Dictionary API: {pformat(data)}')
