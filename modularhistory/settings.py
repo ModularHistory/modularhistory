@@ -655,9 +655,7 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 TINYMCE_EXTRA_MEDIA = {
     'css': {
-        'all': [
-            ['/static/styles/mce.css'],
-        ],
+        'all': ['/static/styles/mce.css'],
     },
     'js': ['/static/scripts/mce.js'],
 }
