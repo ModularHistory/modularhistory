@@ -8,7 +8,7 @@ from apps.staticpages.models import StaticPage
 
 
 class StaticPageForm(FlatpageForm):
-    """TODO: add docstring."""
+    """Form for adding/editing static pages."""
 
     content = forms.CharField(  # noqa: WPS110
         widget=TinyMCE(attrs={'cols': 80, 'rows': 30})
@@ -20,7 +20,7 @@ class StaticPageForm(FlatpageForm):
 
 
 class StaticPageAdmin(FlatPageAdmin):
-    """TODO: add docstring."""
+    """Admin for static pages."""
 
     form = StaticPageForm
     fieldsets = (
