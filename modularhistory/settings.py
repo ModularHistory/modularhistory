@@ -133,7 +133,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
-    # 'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
@@ -168,6 +168,7 @@ INSTALLED_APPS = [
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'webpack_loader',  # https://github.com/owais/django-webpack-loader
     'apps.account.apps.AccountConfig',
+    'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
     'apps.home.apps.HomeConfig',

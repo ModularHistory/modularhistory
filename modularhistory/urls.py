@@ -46,6 +46,8 @@ urlpatterns = [
     path('admin/defender/', include('defender.urls')),  # defender admin
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
+    # Chat
+    path('chat/', include('apps.chat.urls', namespace='chat')),
     # Entities
     path('entities/', include('apps.entities.urls', namespace='entities')),
     # Postulations
