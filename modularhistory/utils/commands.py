@@ -10,12 +10,8 @@ from invoke.context import Context
 
 from modularhistory.constants.misc import (
     APPS_WITH_MIGRATIONS,
-    LOCAL,
     MAX_MIGRATION_COUNT,
     MIGRATIONS_DIRNAME,
-    PROD_DB_ENV_VAR,
-    PROD_DB_ENV_VAR_VALUES,
-    PRODUCTION,
     SQUASHED_MIGRATIONS_DIRNAME,
 )
 from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
@@ -44,7 +40,7 @@ def autoformat(context: Context = CONTEXT, files: Optional[Iterable[str]] = None
             context.run(command.format(filename=filename))
 
 
-def clear_migration_history(context: Context = CONTEXT, environment: str = LOCAL):
+def clear_migration_history(context: Context = CONTEXT):
     """."""
     with transaction.atomic():
         for app in APPS_WITH_MIGRATIONS:
@@ -53,10 +49,7 @@ def clear_migration_history(context: Context = CONTEXT, environment: str = LOCAL
             )
             if n_migrations > MAX_MIGRATION_COUNT:
                 # Fake reverting all migrations.
-                set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
-                print(
-                    f'\n Clearing migration history for the {app} app in {environment} ...'
-                )
+                print(f'\n Clearing migration history for the {app} app...')
                 revert_to_migration_zero(context, app)
             else:
                 print(
@@ -65,14 +58,6 @@ def clear_migration_history(context: Context = CONTEXT, environment: str = LOCAL
     # Remove old migration files.
     if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
         remove_migrations(context)
-
-
-def escape_prod_db():
-    """Remove the env var that specifies whether to use the production database."""
-    try:
-        del os.environ[PROD_DB_ENV_VAR]
-    except KeyError:
-        pass
 
 
 def makemigrations(context: Context = CONTEXT, noninteractive: bool = False):
@@ -87,12 +72,9 @@ def makemigrations(context: Context = CONTEXT, noninteractive: bool = False):
         context.run('python manage.py makemigrations')
 
 
-def migrate(
-    context: Context = CONTEXT, *args, environment=LOCAL, noninteractive: bool = False
-):
+def migrate(context: Context = CONTEXT, *args, noninteractive: bool = False):
     """Safely run db migrations."""
     interactive = not noninteractive
-    set_prod_db_env_var(PROD_DB_ENV_VAR_VALUES.get(environment))
     if interactive and input('Create db backup? [Y/n] ') != NEGATIVE:
         context.run('python manage.py dbbackup')
     print('Running migrations...')
@@ -204,23 +186,12 @@ def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
     print()
 
 
-def set_prod_db_env_var(env_var_value: str):
-    """Set the env var that specifies whether to use the production database."""
-    os.environ[PROD_DB_ENV_VAR] = env_var_value
-
-
 def squash_migrations(context: Context = CONTEXT, dry: bool = True):
     """
     Squash migrations.
 
     See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
     """
-    escape_prod_db()
-    # By default, only squash migrations in dev environment
-    prod_db_env_var_values = (
-        [(LOCAL, '')] if dry else [(LOCAL, ''), (PRODUCTION, 'True')]
-    )
-
     # Create a db backup
     if dry and input('Create db backup? [Y/n] ') != NEGATIVE:
         context.run('python manage.py dbbackup')
@@ -228,16 +199,13 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
     # Make sure models fit the current db schema
     context.run('python manage.py makemigrations')
     if input('Run db migrations? [Y/n] ') != NEGATIVE:
-        for environment, _prod_db_env_var_value in prod_db_env_var_values:
-            migrate(context, environment=environment, noninteractive=True)
+        migrate(context, noninteractive=True)
 
     # Clear the migrations history for each app
     context.run('')
     for pyc in iglob('**/migrations/*.pyc'):
         os.remove(pyc)
-    for environment, _prod_db_env_var_value in prod_db_env_var_values:
-        clear_migration_history(context, environment=environment)
-    escape_prod_db()
+    clear_migration_history(context)
 
     # Regenerate migration files.
     makemigrations(context, noninteractive=True)
@@ -245,23 +213,21 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
         return
 
     # Fake the migrations.
-    for environment, _ in prod_db_env_var_values:  # noqa: WPS441
-        print(f'\n Running fake migrations for {environment} db...')  # noqa: WPS441
-        migrate(
-            context,
-            '--fake-initial',
-            environment=environment,  # noqa: WPS441
-            noninteractive=True,
-        )
-    escape_prod_db()
+    print()
+    print('Running fake migrations...')  # noqa: WPS441
+    migrate(
+        context,
+        '--fake-initial',
+        noninteractive=True,
+    )
 
     if dry:
         input(
             'Completed dry run of squashing migrations.\n'
             'Take a minute to test the app locally, then press any key '
-            'to proceed to squash migrations in production environment.'
+            'to proceed to squash migrations for real.'
         )
         context.run('python manage.py dbrestore --database="default" --noinput')
         restore_squashed_migrations(context)
-        if input('Squash migrations for real (in production db)? [Y/n] ') != NEGATIVE:
+        if input('Squash migrations for real? [Y/n] ') != NEGATIVE:
             squash_migrations(context, dry=False)

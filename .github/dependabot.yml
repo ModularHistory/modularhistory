@@ -5,3 +5,18 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  # Maintain JS dependencies
+  - package-ecosystem: "npm"
+    directory: "/client/"
+    schedule:
+      interval: "daily"
+  # Maintain Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+  # Maintain Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"

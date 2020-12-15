@@ -63,7 +63,7 @@ class Image(MediaModel):
         max_length=TYPE_NAME_MAX_LENGTH, choices=IMAGE_TYPES, default=IMAGE_TYPES[0][0]
     )
     urls = JSONField(default=dict, blank=True)
-    width = models.PositiveSmallIntegerField(null=True, blank=True)
+    width = models.PositiveSmallIntegerField(null=True, blank=True)  # TODO: remove null
     height = models.PositiveSmallIntegerField(null=True, blank=True)
 
     # https://github.com/jonasundderwolf/django-image-cropping
@@ -129,7 +129,7 @@ class Image(MediaModel):
     @property
     def aspect_ratio(self) -> float:
         """Return the image's aspect ratio as a float."""
-        return self.width / self.height
+        return self.width / self.height  # type: ignore
 
     @property
     def caption_html(self) -> str:
@@ -198,7 +198,10 @@ class Image(MediaModel):
         # If the image is tall and narrow, it's like to be of a person or figurine;
         # try to to avoid cutting off heads.
         multiplier = 1.2
-        return 'center 10%' if self.height > (self.width * multiplier) else 'center'
+        if self.width and self.height:
+            if self.height > (self.width * multiplier):
+                return 'center 10%'
+        return 'center'
 
     @classmethod
     def get_object_html(

@@ -165,19 +165,22 @@ def get_db_backup(context):
 
 
 @task
-def initialize_dev_db(context):
-    """Initialize the dev db."""
+def seed(context):
+    """Seed the dev database and media directory."""
     init_file = '.backups/init.sql'
-    if os.path.exists(init_file):
-        if os.path.isfile(init_file):
-            context.run('docker-compose down')
-            if input('Remove existing database and reinitialize? [Y/n] ' != NEGATIVE):
+    if input('Remove existing database and reinitialize? [Y/n] ') != NEGATIVE:
+        if os.path.exists(init_file):
+            if os.path.isfile(init_file):
+                context.run('docker-compose down')
                 context.run('docker volume rm modularhistory_postgres_data')
-            context.run('docker-compose up postgres')
-        else:
-            context.run(f'rm -r {init_file}')
-    raise EnvironmentError(
-        f'There is no {init_file} file. Try running `invoke get-db-backup` first.'
+                context.run('docker-compose up postgres')
+            else:
+                context.run(f'rm -r {init_file}')
+        raise EnvironmentError(
+            f'There is no {init_file} file. Try running `invoke get-db-backup` first.'
+        )
+    context.run(
+        f'rsync -au -e "ssh -p {SERVER_SSH_PORT}" {SERVER_USERNAME}@{SERVER}:media/ ./media/'
     )
 
 
