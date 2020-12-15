@@ -51,14 +51,11 @@
     <div class="collapse navbar-collapse order-2 order-sm-1" id="collapsibleNavbar">
         <ul class="navbar-nav">
             {% block main_menu %}
-                {% with menu_items=settings.MENU_ITEMS %}
-                    {% for title, app in menu_items %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/{{ app }}/">{{ title }}</a>
-                        </li>
-                    {% endfor %}
-                {% endwith %}
-
+                {% for title, app in menu_items %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/{{ app }}/">{{ title }}</a>
+                    </li>
+                {% endfor %}
 {#                        <!-- Dropdown -->#}
 {#                        <li class="nav-item dropdown active">#}
 {#                            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">#}

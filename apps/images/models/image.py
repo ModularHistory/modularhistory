@@ -60,17 +60,24 @@ class Image(MediaModel):
         null=True,
     )
     image_type = models.CharField(
-        max_length=TYPE_NAME_MAX_LENGTH, choices=IMAGE_TYPES, default=IMAGE_TYPES[0][0]
+        verbose_name=_('image type'),
+        max_length=TYPE_NAME_MAX_LENGTH,
+        choices=IMAGE_TYPES,
+        default=IMAGE_TYPES[0][0],
     )
     urls = JSONField(default=dict, blank=True)
-    width = models.PositiveSmallIntegerField(null=True, blank=True)  # TODO: remove null
-    height = models.PositiveSmallIntegerField(null=True, blank=True)
-
+    width = models.PositiveSmallIntegerField(
+        verbose_name=_('width'), null=True, blank=True  # TODO: remove null
+    )
+    height = models.PositiveSmallIntegerField(
+        verbose_name=_('height'), null=True, blank=True
+    )
     # https://github.com/jonasundderwolf/django-image-cropping
     cropping = ImageRatioField(
         IMAGE_FIELD_NAME,
         free_crop=True,
         allow_fullsize=True,
+        verbose_name=_('cropping'),
         help_text='Not yet fully implemented.',
     )
 

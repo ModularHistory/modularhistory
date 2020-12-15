@@ -154,7 +154,6 @@ INSTALLED_APPS = [
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
     'health_check.storage',
-    # 'imagekit',  # https://github.com/matthewwithanm/django-imagekit
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'lockdown',  # https://github.com/Dunedan/django-lockdown
     'massadmin',  # https://github.com/burke-software/django-mass-edit
@@ -655,9 +654,7 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 TINYMCE_EXTRA_MEDIA = {
     'css': {
-        'all': [
-            ['/static/styles/mce.css'],
-        ],
+        'all': ['/static/styles/mce.css'],
     },
     'js': ['/static/scripts/mce.js'],
 }
@@ -666,6 +663,8 @@ TINYMCE_EXTRA_MEDIA = {
 THUMBNAIL_PROCESSORS = (
     'image_cropping.thumbnail_processors.crop_corners',
 ) + ThumbnailSettings.THUMBNAIL_PROCESSORS
+# https://github.com/jonasundderwolf/django-image-cropping#custom-jquery
+IMAGE_CROPPING_JQUERY_URL = None
 
 # https://pypi.org/project/django-bootstrap-datepicker-plus/
 BOOTSTRAP4 = {'include_jquery': False}
@@ -684,9 +683,9 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
 
 MENU_ITEMS = [
-    # ['Occurrences', 'occurrences'],
+    ['Occurrences', 'occurrences'],
     # ['People', 'entities'],
-    # ['Quotes', 'quotes'],
+    ['Quotes', 'quotes'],
     ['About', 'about'],
 ]
 

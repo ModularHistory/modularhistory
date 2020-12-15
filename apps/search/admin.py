@@ -21,13 +21,6 @@ class SearchableModelAdmin(ModelAdmin):
     exclude = ['computations']
     readonly_fields = ['pretty_computations']
 
-    # def get_prepopulated_fields(
-    #     self, request: HttpRequest, obj: Optional['SearchableModel']
-    # ) -> Dict[str, Tuple[str]]:
-    #     prepopulated_fields = super().get_prepopulated_fields(request, obj)
-    #     prepopulated_fields['slug'] = (obj.slug_base_field,)
-    #     return prepopulated_fields
-
     def get_search_results(
         self, request: HttpRequest, queryset: QuerySet, search_term: str
     ) -> Tuple[QuerySet, bool]:
