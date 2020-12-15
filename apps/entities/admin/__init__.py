@@ -1,4 +1,4 @@
 from .affiliations import AffiliationAdmin, RoleAdmin
 from .categories import CategoryAdmin
-from .entities import EntityAdmin, GroupAdmin, OrganizationAdmin, PersonAdmin
+from .entity_admin import EntityAdmin, GroupAdmin, OrganizationAdmin, PersonAdmin
 from .ideas import IdeaAdmin
