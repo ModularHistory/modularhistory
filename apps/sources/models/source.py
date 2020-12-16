@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -426,7 +426,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         return format_html(html)
 
     @staticmethod
-    def components_to_html(components: List[str]):
+    def components_to_html(components: Sequence[Optional[str]]):
         """Combine a list of HTML components into an HTML string."""
         return components_to_html(components, delimiter=COMPONENT_DELIMITER)
 

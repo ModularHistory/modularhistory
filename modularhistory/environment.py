@@ -1,6 +1,8 @@
-from decouple import config
-from modularhistory.constants.misc import Environments
 import os
+
+from decouple import config
+
+from modularhistory.constants.misc import Environments
 
 VERSION = config('SHA', default='')
 

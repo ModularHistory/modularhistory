@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional, Sequence
 
 from bs4 import BeautifulSoup
 
@@ -29,7 +29,7 @@ def compose_link(text, href, klass: Optional[str] = None, **html_attributes) -> 
     return f'<a href="{href}" {attributes}>{text}</a>'
 
 
-def components_to_html(components: List[str], delimiter=', ') -> str:
+def components_to_html(components: Sequence[Optional[str]], delimiter=', ') -> str:
     """Combine a list of HTML components into an HTML string."""
     return components_to_string(components, delimiter=delimiter)
 

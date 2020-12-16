@@ -9,6 +9,7 @@ class EntitySerializer(ModelSerializer):
     """Serializer for entities."""
 
     name = serpy.Field()
+    serialized_images = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""

@@ -1,10 +1,9 @@
 """Model classes for articles."""
 
-from typing import List
+from typing import List, Optional
 
 from django.core.exceptions import ValidationError
 
-from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ExtraField
 
 from .piece import SourceWithPageNumbers
@@ -46,16 +45,16 @@ class Article(SourceWithPageNumbers):
             ... TODO
         """
         attributee_html = self.attributee_html
-        title = self.linked_title.replace('"', "'") if self.title else EMPTY_STRING
+        title = self.linked_title.replace('"', "'") if self.linked_title else ''
         publication_html = (
-            self.publication.html if self.publication else EMPTY_STRING
+            self.publication.html if self.publication else ''
         )  # TODO: make required
-        volume = f'vol. {self.volume}' if self.volume else EMPTY_STRING
-        number = f'no. {self.number}' if self.number else EMPTY_STRING
-        date = self.date.string if self.date else EMPTY_STRING
-        components: List[str] = [
+        volume = f'vol. {self.volume}' if self.volume else ''
+        number = f'no. {self.number}' if self.number else ''
+        date = self.date.string if self.date else ''
+        components: List[Optional[str]] = [
             attributee_html,
-            f'"{title}"' if title else EMPTY_STRING,
+            f'"{title}"' if title else '',
             publication_html,
             volume,
             number,

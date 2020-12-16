@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Optional, Union
 
 from django import template
@@ -23,9 +24,11 @@ def get_detail_url(instance: Union[Model, Dict]) -> Optional[str]:
     if isinstance(instance, Model):
         app_label = instance.get_meta().app_label
         pk = instance.pk
-    elif isinstance(instance, dict):
-        app_label, _ = instance['model'].split('.')
-        pk = instance['pk']
     else:
-        return None
+        try:
+            app_label, _ = instance['model'].split('.')
+            pk = instance['pk']
+        except (TypeError, KeyError) as err:
+            logging.error(f'{err}')
+            return None
     return reverse(f'{app_label}:detail', args=[pk])

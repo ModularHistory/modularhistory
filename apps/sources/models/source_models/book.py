@@ -189,6 +189,7 @@ class SectionSource(TextualSource):
                     container_html = container_html.replace(
                         f'{self.attributee_html}, ', EMPTY_STRING
                     )
+        attributee_string: Optional[str]
         if self.attributee_html:
             attributee_string = self.attributee_html
         elif self.container:

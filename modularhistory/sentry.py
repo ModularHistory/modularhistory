@@ -6,10 +6,13 @@ It should be imported ONCE (and only once) by either settings.py or asgi.py.
 
 import sentry_sdk
 from decouple import config
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware  # type: ignore # noqa: F401
+from sentry_sdk.integrations.asgi import (  # type: ignore # noqa: F401
+    SentryAsgiMiddleware,
+)
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from modularhistory.environment import VERSION, ENVIRONMENT
+
+from modularhistory.environment import ENVIRONMENT, VERSION
 
 # Initialize the Sentry SDK for error reporting
 SENTRY_DSN = config('SENTRY_DSN')

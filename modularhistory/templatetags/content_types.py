@@ -1,5 +1,6 @@
-from typing import Dict, Union
 import logging
+from typing import Dict, Optional, Union
+
 from django import template
 from django.apps import apps
 from django.utils.module_loading import import_string
@@ -28,7 +29,7 @@ def is_instance(instance: Union[Dict, Model], arg: str) -> bool:
     module_name, model_name = arg.split('.')
     model_instance = instance
     model_name = model_name.lower()
-    model_cls_path: str = MODEL_CLASS_PATHS.get(model_name)
+    model_cls_path: Optional[str] = MODEL_CLASS_PATHS.get(model_name)
     if model_cls_path:
         model_class = import_string(model_cls_path)
         return isinstance(model_instance, model_class)

@@ -31,10 +31,10 @@ class WebPage(TextualSource):
     def __html__(self) -> str:
         """Return the source's HTML representation."""
         components = [
-            self.attributee_html or '',
+            self.attributee_html,
             f'"{self.linked_title}"',
             f'<i>{self.website_title}</i>',
-            self.organization_name or '',
+            self.organization_name,
             self.date.string if self.date else '',
             f'retrieved from <a target="_blank" href="{self.url}">{self.url}</a>',
         ]

@@ -93,8 +93,6 @@ urlpatterns = [
     path('errors/404', errors.not_found),  # 404 trigger
     path('errors/500', errors.error),  # 500 trigger
     re_path(r'^(?P<path>favicon.ico)$', serve),
-    # TODO: enable Vue templates
-    # re_path(r'^.*$', TemplateView.as_view(template_name='index.html'), name='index')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

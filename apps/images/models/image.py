@@ -178,7 +178,7 @@ class Image(MediaModel):
         """Image credit string (e.g., "Image provided by NASA") displayed in caption."""
         if (not self.provider) or self.provider in self.caption.text:
             return None
-        provision_phrase = 'provided'
+        provision_phrase: Optional[str] = 'provided'
         if self.image_type == 'painting':
             provision_phrase = None
         components = [

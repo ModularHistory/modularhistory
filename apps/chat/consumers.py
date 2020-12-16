@@ -7,9 +7,9 @@ https://channels.readthedocs.io/en/stable/topics/consumers.html
 """
 
 import json
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-
 
 # https://channels.readthedocs.io/en/stable/tutorial/part_2.html
 

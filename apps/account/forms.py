@@ -1,6 +1,6 @@
-import magic
 import logging
 
+import magic
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Field, Layout, Submit
 from django import forms

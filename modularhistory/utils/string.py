@@ -1,4 +1,4 @@
-from typing import List
+from typing import Optional, Sequence
 
 
 def fix_comma_positions(string: str) -> str:
@@ -6,8 +6,8 @@ def fix_comma_positions(string: str) -> str:
     return string.replace('",', ',"')
 
 
-def components_to_string(components: List[str], delimiter=', '):
-    """Combine a list of HTML components into an HTML string."""
+def components_to_string(components: Sequence[Optional[str]], delimiter=', '):
+    """Combine a sequence of HTML components into an HTML string."""
     # Remove blank values
     components = [component for component in components if component]
     # Join components; rearrange commas and double quotes
