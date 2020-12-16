@@ -1,4 +1,4 @@
-# import magic
+import magic
 import logging
 
 from crispy_forms.helper import FormHelper
@@ -233,11 +233,8 @@ class PictureForm(forms.Form):
         """Prepare the picture to be saved."""
         picture = self.cleaned_data.get('picture', False)
         picture.file.seek(0)
-        # TODO: install python-magic
-        magic = None
-        if magic:
-            mime = magic.from_buffer(picture.file.getvalue(), mime=True)
-            logging.debug(f'Picture mime type is {mime}.')
-            if mime not in ('image/png', 'image/jpeg', 'image/jpg'):
-                raise forms.ValidationError('The file type must be JPG or PNG.')
+        mime = magic.from_buffer(picture.file.getvalue(), mime=True)
+        logging.debug(f'Picture mime type is {mime}.')
+        if mime not in ('image/png', 'image/jpeg', 'image/jpg'):
+            raise forms.ValidationError('The file type must be JPG or PNG.')
         return picture
