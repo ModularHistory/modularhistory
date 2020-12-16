@@ -1,12 +1,16 @@
 ModularHistory
 ==============
 
-.. image:: https://api.codacy.com/project/badge/Grade/ad70d1d95baa4be4a9df602361f76b8b
-    :alt: Codacy Badge
-    :target: https://app.codacy.com/gh/ModularHistory/modularhistory?utm_source=github.com&utm_medium=referral&utm_content=ModularHistory/modularhistory&utm_campaign=Badge_Grade_Settings
-   
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+|integration| |coverage| |black|
+
+.. |integration| image:: https://github.com/modularhistory/modularhistory/workflows/Integration/badge.svg
+
+.. |coverage| image:: https://cdn.rawgit.com/samael500/coverage-badge/master/media/15.svg
+    :alt: 15%
+    
+.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
+
 
 https://www.modularhistory.com
 
