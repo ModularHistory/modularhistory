@@ -1,13 +1,9 @@
 """
-This is a synchronous WebSocket consumer that accepts all connections, 
-receives messages from its client, and echos those messages back to the same client. 
-For now it does not broadcast messages to other clients in the same room.
+Consumers for the chat app.
 
-Channels also supports writing asynchronous consumers for greater performance. 
-However any asynchronous consumer must be careful to avoid directly performing 
-blocking operations, such as accessing a Django model. See the Consumers reference 
-for more information about writing asynchronous consumers:
-    https://channels.readthedocs.io/en/stable/topics/consumers.html
+Consumers are used to structure code as a series of functions to be called
+whenever an event happens, rather than requiring you to write an event loop.
+https://channels.readthedocs.io/en/stable/topics/consumers.html
 """
 
 import json
@@ -19,25 +15,25 @@ from channels.generic.websocket import WebsocketConsumer
 
 
 class ChatConsumer(WebsocketConsumer):
-    def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'chat_%s' % self.room_name
+    """Websocket consumer for chats."""
 
-        # Join room group
+    def connect(self):
+        """Join room group."""
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_group_name = f'chat_{self.room_name}'
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name, self.channel_name
         )
-
         self.accept()
 
     def disconnect(self, close_code):
-        # Leave room group
+        """Leave room group."""
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name, self.channel_name
         )
 
-    # Receive message from WebSocket
     def receive(self, text_data):
+        """Receive message from WebSocket."""
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
@@ -46,8 +42,8 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name, {'type': 'chat_message', 'message': message}
         )
 
-    # Receive message from room group
     def chat_message(self, event):
+        """Receive message from room group."""
         message = event['message']
 
         # Send message to WebSocket
