@@ -3,7 +3,7 @@ ModularHistory
 
 |integration| |coverage| |black|
 
-.. |integration| image:: https://github.com/modularhistory/modularhistory/workflows/Integration/badge.svg
+.. |integration| image:: https://github.com/modularhistory/modularhistory/workflows/integration/badge.svg
 
 .. |coverage| image:: https://raw.githubusercontent.com/modularhistory/modularhistory/master/modularhistory/static/coverage.svg
     
