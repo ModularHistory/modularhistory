@@ -156,6 +156,7 @@ seleniumbase = "^1.50.4"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
+coverage-badge = "^1.0.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
