@@ -5,8 +5,7 @@ ModularHistory
 
 .. |integration| image:: https://github.com/modularhistory/modularhistory/workflows/Integration/badge.svg
 
-.. |coverage| image:: https://cdn.rawgit.com/samael500/coverage-badge/master/media/15.svg
-    :alt: 15%
+.. |coverage| image:: https://raw.githubusercontent.com/modularhistory/modularhistory/master/modularhistory/static/coverage.svg
     
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
