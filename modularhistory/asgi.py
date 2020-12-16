@@ -8,20 +8,23 @@ https://docs.djangoproject.com/en/3.0/howto/deployment/asgi/
 """
 
 import os
-from apps.chat import routing
 from django.core.asgi import get_asgi_application
-from channels.auth import AuthMiddlewareStack
-from modularhistory.sentry import SentryAsgiMiddleware
 
-from channels.routing import ProtocolTypeRouter, URLRouter
-
+# Fetch Django ASGI application early to ensure AppRegistry is populated.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
+django_asgi_app = get_asgi_application()
+
+from apps.chat import routing  # noqa: E402
+from channels.auth import AuthMiddlewareStack  # noqa: E402
+from modularhistory.sentry import SentryAsgiMiddleware  # noqa: E402
+
+from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
 
 
 application = SentryAsgiMiddleware(
     ProtocolTypeRouter(
         {
-            'http': get_asgi_application(),
+            'http': django_asgi_app,
             'websocket': AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns))
             # Just HTTP for now. (We can add other protocols later.)
         }
