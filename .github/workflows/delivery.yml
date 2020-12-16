@@ -11,8 +11,9 @@ on:
       - '!.github/delivery.yml'
       - '.idea/**'
       - '.vscode/**'
-      - '**.txt'
       - '**.md'
+      - '**.rst'
+      - '**.txt'
 
 env:
   ENVIRONMENT: prod
