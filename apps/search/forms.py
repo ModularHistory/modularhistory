@@ -30,7 +30,7 @@ class SearchForm(forms.Form):
         query: Optional[str] = None,
         suppress_unverified: bool = False,
         order_by_relevance: bool = False,
-        excluded_content_types: List[int] = None,
+        excluded_content_types: Optional[List[int]] = None,
         entities: Optional['QuerySet[Entity]'] = None,
         topics: Optional['QuerySet[Topic]'] = None,
         collapse_refinements: bool = False,

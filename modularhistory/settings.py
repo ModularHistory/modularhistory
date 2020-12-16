@@ -22,23 +22,16 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-from modularhistory.constants.misc import PRODUCTION, Environments
+from modularhistory.constants.misc import Environments
+from modularhistory.environment import ENVIRONMENT
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
-
-# Environment
-if os.environ.get('GITHUB_WORKFLOW'):
-    ENVIRONMENT = Environments.GITHUB_TEST
-else:
-    ENVIRONMENT = config('ENVIRONMENT', default=Environments.DEV)
-print(f'Environment: {ENVIRONMENT}')
 
 IS_PROD = ENVIRONMENT == Environments.PROD
 IS_DEV = ENVIRONMENT in (Environments.DEV, Environments.DEV_DOCKER)
 DOCKERIZED = ENVIRONMENT in (Environments.PROD, Environments.DEV_DOCKER)
 TESTING: bool = 'test' in sys.argv
-VERSION = config('SHA', default='')
-ENABLE_ASGI: bool = ENVIRONMENT == Environments.DEV
+ENABLE_ASGI: bool = True  # ENVIRONMENT == Environments.DEV
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
 # DEBUG must be False in production (for security)
@@ -133,7 +126,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
-    # 'channels',  # https://channels.readthedocs.io/en/latest/index.html
+    'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
@@ -168,6 +161,7 @@ INSTALLED_APPS = [
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'webpack_loader',  # https://github.com/owais/django-webpack-loader
     'apps.account.apps.AccountConfig',
+    'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
     'apps.home.apps.HomeConfig',
@@ -220,33 +214,9 @@ MIDDLEWARE = [
     # 'modularhistory.middleware.PymplerMiddleware',  # TODO
 ]
 
-# Initialize the Sentry SDK for error reporting
-SENTRY_DSN = config('SENTRY_DSN', default=None)
-if SENTRY_DSN:
-    sentry_sdk.init(
-        # https://docs.sentry.io/platforms/python/configuration/options/#dsn
-        dsn=SENTRY_DSN,
-        # https://docs.sentry.io/platforms/python/configuration/environments/
-        environment=ENVIRONMENT,
-        # https://docs.sentry.io/platforms/python/configuration/integrations/
-        integrations=[
-            DjangoIntegration(),
-            RedisIntegration(),
-        ],
-        # https://docs.sentry.io/platforms/python/configuration/releases/
-        release=f'modularhistory@{VERSION}',
-        # Associate users to errors (using django.contrib.auth):
-        # https://docs.sentry.io/platforms/python/configuration/options/#send-default-pii
-        send_default_pii=True,
-        # https://docs.sentry.io/platforms/python/performance/
-        traces_sample_rate=0.5,
-    )
-
-    # if ENABLE_ASGI:
-    #     from modularhistory.asgi import application
-
-    #     # https://docs.sentry.io/platforms/python/guides/asgi/
-    #     application = SentryAsgiMiddleware(application)
+if not ENABLE_ASGI:
+    # Initialize the Sentry SDK for error reporting
+    from modularhistory import sentry  # type: ignore # noqa
 
 ROOT_URLCONF = 'modularhistory.urls'
 

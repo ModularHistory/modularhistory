@@ -9,8 +9,14 @@ RUN wget --quiet https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
 
 # Install packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  dnsutils gnupg2 libenchant-dev postgresql-client-common postgresql-client-13 vim && \
-  apt-get clean && rm -rf /var/lib/apt/lists/*
+  dnsutils \
+  gnupg2 \
+  libenchant-dev \
+  libmagic1 \
+  postgresql-client-common \
+  postgresql-client-13 \
+  vim \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set environment vars
 ENV \

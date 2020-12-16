@@ -1,3 +1,4 @@
+ASGI
 asgiref
 attributee
 attributees
@@ -38,6 +39,7 @@ prepopulated
 pylint
 querysets
 RST
+SDK
 select2
 Select2Widget
 sorl
