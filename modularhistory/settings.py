@@ -31,7 +31,6 @@ IS_PROD = ENVIRONMENT == Environments.PROD
 IS_DEV = ENVIRONMENT in (Environments.DEV, Environments.DEV_DOCKER)
 DOCKERIZED = ENVIRONMENT in (Environments.PROD, Environments.DEV_DOCKER)
 TESTING: bool = 'test' in sys.argv
-ENABLE_ASGI: bool = True  # ENVIRONMENT == Environments.DEV
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
 # DEBUG must be False in production (for security)
@@ -62,6 +61,7 @@ CSRF_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-referrer-policy
 # https://docs.djangoproject.com/en/3.1/ref/middleware/#referrer-policy
 SECURE_REFERRER_POLICY = 'same-origin'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
@@ -91,18 +91,18 @@ else:
     REDIS_HOST = 'localhost'
 REDIS_BASE_URL = REDIS_URL = f'redis://{REDIS_HOST}:6379'
 
-if ENABLE_ASGI:
-    # https://channels.readthedocs.io/en/latest/
-    ASGI_APPLICATION = 'modularhistory.asgi.application'
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                'hosts': [(REDIS_HOST, 6379)],
-                'symmetric_encryption_keys': [SECRET_KEY],
-            },
+# https://channels.readthedocs.io/en/latest/
+ASGI_APPLICATION = 'modularhistory.asgi.application'
+WSGI_APPLICATION = 'modularhistory.wsgi.application'  # unused
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(REDIS_HOST, 6379)],
+            'symmetric_encryption_keys': [SECRET_KEY],
         },
-    }
+    },
+}
 
 INSTALLED_APPS = [
     # admin_menu come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
@@ -151,6 +151,7 @@ INSTALLED_APPS = [
     'lockdown',  # https://github.com/Dunedan/django-lockdown
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
+    'meta',  # https://django-meta.readthedocs.io/en/latest/
     'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
@@ -214,10 +215,6 @@ MIDDLEWARE = [
     # 'modularhistory.middleware.PymplerMiddleware',  # TODO
 ]
 
-if not ENABLE_ASGI:
-    # Initialize the Sentry SDK for error reporting
-    from modularhistory import sentry  # type: ignore # noqa
-
 ROOT_URLCONF = 'modularhistory.urls'
 
 TEMPLATES = [
@@ -262,8 +259,6 @@ TEMPLATES = [
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
-WSGI_APPLICATION = 'modularhistory.wsgi.application'
-
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -272,35 +267,20 @@ REST_FRAMEWORK = {
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-if ENVIRONMENT == Environments.GITHUB_TEST:
-    DATABASES = {
-        'default': {
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': 'localhost',
-            'PORT': 5432,
-            'ENGINE': 'django.db.backends.postgresql',
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'HOST': config('POSTGRES_HOST', default='localhost'),
-            'NAME': config('POSTGRES_DB', default='modularhistory'),
-            'USER': config('POSTGRES_USER', default='postgres'),
-            'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
-        }
-        # 'mongo': {
-        #     'ENGINE' : 'django_mongodb_engine',
-        #     'NAME' : 'default'
-        # }
-    }
-
-# https://django-dbbackup.readthedocs.io/en/master/
-DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '.backups/')}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('POSTGRES_DB', default='modularhistory'),
+        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'USER': config('POSTGRES_USER', default='postgres'),
+        'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
+        'PORT': 5432,
+    },
+    # 'mongo': {
+    #     'ENGINE' : 'django_mongodb_engine',
+    #     'NAME' : 'default'
+    # }
+}
 
 AUTH_USER_MODEL = 'account.User'
 LOGIN_URL = 'account/login'
@@ -402,16 +382,28 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
+
+# Meta tags
+META_SITE_PROTOCOL = 'https'
+META_SITE_DOMAIN = 'modularhistory.com'
+META_SITE_TYPE = 'website'
+META_SITE_NAME = 'ModularHistory'
+META_USE_OG_PROPERTIES = True
+META_USE_TWITTER_PROPERTIES = True
+META_USE_TITLE_TAG = True
+META_DEFAULT_IMAGE = '/static/logo_head_white.png'
+META_DEFAULT_DESCRIPTION = (
+    'History, modularized. Browse occurrences, quotes, sources, and more.'
+)
+# https://django-meta.readthedocs.io/en/latest/settings.html#meta-default-keywords
+META_DEFAULT_KEYWORDS = ['history']
+# https://django-meta.readthedocs.io/en/latest/settings.html#meta-include-keywords
+META_INCLUDE_KEYWORDS = ['history']
 
 # Mega credentials
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
@@ -434,7 +426,9 @@ ARTIFACTS_URL = '/artifacts/'
 ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
 ARTIFACTS_STORAGE = 'modularhistory.storage.LocalArtifactsStorage'
 
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+# https://django-dbbackup.readthedocs.io/en/master/
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '.backups/')}
 
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
@@ -750,20 +744,6 @@ DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
 if IS_PROD:
     DEFENDER_BEHIND_REVERSE_PROXY = True
 
-VUE_FRONTEND_DIR = os.path.join(BASE_DIR, 'client')
-
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'vue/',  # must end with slash
-        'STATS_FILE': os.path.join(VUE_FRONTEND_DIR, 'webpack-stats.json'),
-        'POLL_INTERVAL': 0.1,
-        'TIMEOUT': None,
-        'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
-    }
-}
-
 DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
-
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
     from config import checks  # noqa: F401

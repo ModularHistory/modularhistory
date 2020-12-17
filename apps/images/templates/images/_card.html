@@ -14,8 +14,6 @@
     {% endwith %}
 {% endblock %}
 
-{% block detail_url %}{% url 'images:detail' image.pk %}{% endblock %}
-
 {% block top %}
     <div class="view overlay" style="max-width: {{ image.width }}px; max-height: {{ image.height }}px;">
         <img class="card-img-top lazy"

@@ -16,7 +16,7 @@ class ModelWithImages(Model):
     """
     A model that has one or more associated images.
 
-    Ideally, this class would be a mixin, but do to Django's model magic,
+    Ideally, this class would be a mixin, but due to Django's model magic,
     it must be defined as an abstract model class.
     """
 

@@ -4,6 +4,7 @@
 {% load content_types %}
 {% load crispy_forms_tags %}
 {% load with_entity_links %}
+{% load model_urls %}
 
 {% block styles %}
     {{ search_form.media.css }}
@@ -50,7 +51,10 @@
                             <div class="two-pane-container">
                                 <div class="results result-cards">
                                     {% for object in object_list %}
-                                        {{ object|get_card_html }}
+                                        <a href="{{ object.absolute_url }}" class="result 2pane-result" 
+                                           data-href="{{ object|get_detail_url }}" data-key="{{ object.slug }}">
+                                            {{ object|get_card_html }}
+                                        </a>
                                     {% endfor %}
                                 </div>
                                 <div class="card view-detail sticky">

@@ -816,6 +816,20 @@ python-versions = "*"
 django = "*"
 
 [[package]]
+name = "django-meta"
+version = "2.0.0"
+description = "Pluggable app for handling webpage meta tags and OpenGraph properties"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+six = "*"
+
+[package.extras]
+docs = ["django (<3.1)"]
+
+[[package]]
 name = "django-nested-admin"
 version = "3.3.2"
 description = "Django admin classes that allow for nested inlines"
@@ -3539,7 +3553,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "1b44b28069a4b320764ff03a0210859433936e3aae360e001a0026da1fbfb70c"
+content-hash = "f6916ee2257079679453224e8f2dc6bf01bb4a9d44573ab7a8419fa334db8182"
 
 [metadata.files]
 aenum = [
@@ -3915,6 +3929,10 @@ django-lockdown = [
 django-mass-edit = [
     {file = "django-mass-edit-3.2.0.tar.gz", hash = "sha256:4646b2d76a9e0cd289ab260c7b8efb7bc58fd0a7223e4871c4e1aa3ceee4a290"},
     {file = "django_mass_edit-3.2.0-py3-none-any.whl", hash = "sha256:a72b525f12071ac20b29541d6038ef68f4e4b21ca590909cd0033f1b0b3c5420"},
+]
+django-meta = [
+    {file = "django-meta-2.0.0.tar.gz", hash = "sha256:3d69068b1c9e8369427fe0843f4cb6974c24c27dc87750cd915db487ee475fce"},
+    {file = "django_meta-2.0.0-py2.py3-none-any.whl", hash = "sha256:25010157000fa2f1d1ed46e8739f43cfe00e40af199d913b230e52133b650da5"},
 ]
 django-nested-admin = [
     {file = "django-nested-admin-3.3.2.tar.gz", hash = "sha256:7ec58af67107e6d7b2d0fd4fe03629eff8f7957c4aef5033c4700da1bd2d7870"},

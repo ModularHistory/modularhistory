@@ -51,7 +51,7 @@
     <div class="collapse navbar-collapse order-2 order-sm-1" id="collapsibleNavbar">
         <ul class="navbar-nav">
             {% block main_menu %}
-                {% for title, app in menu_items %}
+                {% for title, app in settings.MENU_ITEMS %}
                     <li class="nav-item">
                         <a class="nav-link" href="/{{ app }}/">{{ title }}</a>
                     </li>

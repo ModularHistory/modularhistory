@@ -2,9 +2,7 @@
 {% load content_types %}
 {% load media %}
 
-<div class="card m-2 {% block card_class %}{% endblock %}" data-key="{{ object.slug }}"
-     data-href="{% block detail_url %}{% endblock %}"
-     style="{% block card_styles %}{% endblock %}">
+<div class="card m-2 {% block card_class %}{% endblock %}" style="{% block card_styles %}{% endblock %}">
     {% block top %}
         {% if not object.verified %}
             <span style="display: inline-block; position: absolute; top: 1px; right: 1px;">

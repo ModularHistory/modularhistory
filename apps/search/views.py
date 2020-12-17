@@ -7,6 +7,7 @@ from itertools import chain
 from pprint import pformat
 from typing import Any, Dict, List, Optional, Union
 
+from meta.views import Meta
 from django.conf import settings
 from django.db.models import Q, QuerySet, Subquery
 from django.http import JsonResponse
@@ -256,6 +257,13 @@ class SearchResultsView(ListView):
             initial=initial_data,
         )
         context['search_form'] = search_form
+        title = f'{query or "Historical"} occurrences, quotes, sources, and more | ModularHistory'
+        context['meta'] = Meta(
+            title=title,
+            description=(
+                f'{title}, filterable by topic, date, entity, and content type.'
+            ),
+        )
         return context
 
     def get_object_list(self) -> Union['QuerySet[Model]', List['Model']]:

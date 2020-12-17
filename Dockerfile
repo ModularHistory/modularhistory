@@ -49,6 +49,7 @@ RUN python manage.py collectstatic --no-input
 # Grant necessary permissions to non-root user
 RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/media && \
+  chmod g+w -R /modularhistory/static && \
   chmod g+w -R /modularhistory/.backups && \
   chmod +x /modularhistory/config/wait-for-it.sh
 

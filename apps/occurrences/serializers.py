@@ -13,6 +13,7 @@ class OccurrenceSerializer(SearchableModelSerializer):
     description = serpy.MethodField()
     postscript = serpy.MethodField()
     serialized_images = serpy.Field()
+    primary_image = serpy.Field()
     serialized_citations = serpy.Field()
     tags_html = serpy.Field()
 

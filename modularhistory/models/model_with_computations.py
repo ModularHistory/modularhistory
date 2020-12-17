@@ -14,7 +14,7 @@ class ModelWithComputations(Model):
     """
     A model with computed fields to be stored in JSON (to reduce db queries).
 
-    Ideally, this class would be a mixin, but do to Django's model magic,
+    Ideally, this class would be a mixin, but due to Django's model magic,
     it must be defined as an abstract model class.
     """
 

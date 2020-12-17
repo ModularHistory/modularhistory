@@ -1,8 +1,9 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from django.db.models.query import QuerySet
 from django.views import generic
 from django.views.generic import TemplateView
+from meta.views import Meta
 
 from apps.quotes.models import Quote
 from apps.sources.models import Source
@@ -30,10 +31,11 @@ class BaseDetailView(generic.DetailView):
     object: Source
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
-        """TODO: add docstring."""
+        """Return context data used to render the detail page."""
         context = super().get_context_data(**kwargs)
         containers = [self.object] + list(self.object.contained_sources.all())
         context['quotes'] = Quote.objects.filter(sources__in=containers)
+        context['source'] = self.object.serialize()
         return context
 
 
@@ -41,6 +43,16 @@ class DetailView(BaseDetailView):
     """Displays details for a specific source."""
 
     template_name = 'sources/detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        source = self.object
+        context['meta'] = Meta(
+            title=source.title,
+            description=f'Quotes from and information regarding {source.full_string}',
+            keywords=source.tag_keys,
+        )
+        return context
 
 
 class DetailPartView(BaseDetailView):

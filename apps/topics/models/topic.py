@@ -7,7 +7,12 @@ from gm2m import GM2MField as GenericManyToManyField
 
 from apps.topics.models.topic_relation import TopicRelation
 from modularhistory.fields import ArrayField, HTMLField
-from modularhistory.models import Model, ModelWithComputations, retrieve_or_compute
+from modularhistory.models import (
+    Model,
+    ModelWithComputations,
+    SluggedModel,
+    retrieve_or_compute,
+)
 
 KEY_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
@@ -49,7 +54,7 @@ class TopicParentChildRelation(Model):
         return f'{self.parent_topic} > {self.child_topic}'
 
 
-class Topic(ModelWithComputations):
+class Topic(SluggedModel, ModelWithComputations):
     """A topic."""
 
     key = models.CharField(max_length=KEY_MAX_LENGTH, unique=True)

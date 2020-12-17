@@ -245,8 +245,7 @@ $(function () {
                 window.location.href = url.href;
             }
         });
-        let result_card_selector = '.results > .card';
-        let result_selector = `${result_card_selector}, .results > .result`;
+        let result_selector = `.results > .result`;
         let active_result = $(result_selector).first();
         if (active_result[0]) {
             if (searchParams.has('key')) {
@@ -274,7 +273,8 @@ $(function () {
             }
 
             // Load view-detail when a card is clicked
-            $(result_card_selector).on('click', function () {
+            $(`${result_selector}.2pane-result`).on('click', function (event) {
+                event.preventDefault();
                 console.log('Result card was clicked; setting new active result.');
                 $(`${result_selector}.active`).removeClass('active');
                 $(this).addClass('active');

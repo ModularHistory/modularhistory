@@ -2,6 +2,8 @@
 
 {% load get_html_for_view %}
 
+{% block canonical_url %}{{ entity.absolute_url }}{% endblock %}
+
 {% block content %}
     <div class="container">
         {{ entity|get_html_for_view:"detail" }}

@@ -13,4 +13,4 @@ def global_footer():
 @register.inclusion_tag('_navbar.html')
 def global_navbar(user):
     """Load global navbar HTML into a template."""
-    return {'user': user, 'menu_items': settings.MENU_ITEMS}
+    return {'user': user, 'settings': settings}

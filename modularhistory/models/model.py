@@ -100,16 +100,6 @@ class Model(DjangoModel):
         return ContentType.objects.get_for_model(self)
 
     @property
-    def detail_link(self) -> SafeString:
-        """Return a link to the model instance's detail page."""
-        return self.get_detail_link()
-
-    @property
-    def detail_url(self) -> str:
-        """Return the URL of the model instance's detail page."""
-        return reverse(f'{self.get_meta().app_label}:detail', args=[self.pk])
-
-    @property
     def natural_key_fields(self) -> Optional[List]:
         """Return the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
@@ -140,11 +130,6 @@ class Model(DjangoModel):
             f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
             args=[self.pk],
         )
-
-    def get_detail_link(self, content: Optional[str] = None) -> SafeString:
-        """Return a link to the model instance's detail page."""
-        content = content or '<i class="fas fa-info-circle"></i>'
-        return format_html(f'<a href="{self.detail_url}" target="_blank">{content}</a>')
 
     def get_html_for_view(
         self,

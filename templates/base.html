@@ -14,42 +14,22 @@
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-P68V7DK');</script>
         <!-- End Google Tag Manager -->
-
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta http-equiv="Content-Language" content="en">
-
-        <meta property="og:type" content="website" />
-        {# TODO: Use a better image. (This is the image that appears in messaging apps when a link to the website is shared.) #}
-        <meta property="og:image" content="{% static 'logo_head_white.png' %}" />
-        <meta property="og:url" content="https://www.modularhistory.com/" />
-        <meta property="og:title" content="ModularHistory" />
-        <meta property="og:description" content="History, modularized." />
-
-        <title>{% block title %}Home{% endblock %} | ModularHistory</title>
-
-        <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}" />
-        <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
-
+        
+        {% include '_meta.html' %}
+        
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
         <!-- Latest compiled and minified Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
         <!-- Material Design Bootstrap CSS -->
         <link rel="stylesheet" href='{% static "libraries/mdb/css/mdb.min.css" %}' type="text/css" />
-
-        <!-- ## jQuery UI CSS
-        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"> -->
-        <!-- ## jQuery DataTables CSS
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" /> -->
-
-        <!--<link href='http://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>-->
-
         <!-- ModularHistory styles -->
         <link rel="stylesheet"
               href="{% if settings.ENVIRONMENT == 'dev' %}{% sass_src 'styles/base.scss' %}{% else %}{% static 'styles/base.css' %}{% endif %}"
               type="text/css" />
-
+        {% if request.user.is_superuser %}
+            <style>.edit-object-button {display: inline;}</style>
+        {% endif %}
         {# Inheriting templates can add <link rel="stylesheet"> and/or <style> elements with the styles block. #}
         {% block styles %}{% endblock %}
 
@@ -61,12 +41,10 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
         <!-- Material Design Bootstrap core JavaScript -->
         <script type="text/javascript" src='{% static "libraries/mdb/js/mdb.min.js" %}'></script>
-
         <!-- PDF.js -->
         <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js" defer></script>
         <!-- Epub.js -->
         <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js" defer></script>
-
 {#        ## emulate tab#}
 {#        <script src="${ STATIC_URL }home/scripts/emulatetab.joelpurra.js"></script>#}
 {#        ## plus/enter as tab#}
@@ -89,12 +67,6 @@
 {#        ## jQuery dataTables#}
 {#        <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js" defer></script>#}
 {#        <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js" defer></script>#}
-
-        {% if request.user.is_superuser %}
-            <style>
-                .edit-object-button {display: inline;}
-            </style>
-        {% endif %}
         <script type="text/javascript" src='{% static "scripts/base.js" %}' defer></script>
     </head>
     <body>
@@ -104,7 +76,7 @@
                     height="0" width="0" style="display:none;visibility:hidden"></iframe>
         </noscript>
 
-        {% global_navbar user %}
+        {% include "_navbar.html" %}
 
         <div class="main-content">
             {% block breadcrumb %}
@@ -121,7 +93,7 @@
         </div>
 
         {% block footer %}
-            {% global_footer %}
+            {% include "_footer.html" %}
         {% endblock %}
 
         {% modal %}

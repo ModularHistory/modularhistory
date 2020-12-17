@@ -7,8 +7,6 @@
     {% endwith %}
 {% endblock %}
 
-{% block detail_url %}{{ postulation|get_detail_url }}{% endblock %}
-
 {% block body %}
     <h4 class="card-title">
         <a href="/postulations/{{ postulation.pk }}/">{{ postulation.summary }}</a>

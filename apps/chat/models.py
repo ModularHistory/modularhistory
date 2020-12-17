@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from modularhistory.utils.string import truncate
 
 from modularhistory.models.model import Model
+from modularhistory.utils.string import truncate
 
 
 class Chat(Model):

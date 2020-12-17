@@ -10,6 +10,8 @@ class SourceSerializer(SearchableModelSerializer):
     """Serializer for sources."""
 
     html = serpy.Field()
+    title = serpy.StrField()
+    full_string = serpy.StrField()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
