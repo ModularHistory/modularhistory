@@ -73,9 +73,10 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      POSTGRES_HOST: db
-      POSTGRES_DB: modularhistory
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     steps:
     # Check out master
     - uses: actions/checkout@v2
@@ -99,7 +100,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     env:
-      POSTGRES_HOST: db
+      POSTGRES_HOST: postgres
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
