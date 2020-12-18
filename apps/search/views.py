@@ -7,11 +7,11 @@ from itertools import chain
 from pprint import pformat
 from typing import Any, Dict, List, Optional, Union
 
-from meta.views import Meta
 from django.conf import settings
 from django.db.models import Q, QuerySet, Subquery
 from django.http import JsonResponse
 from django.views.generic import ListView
+from meta.views import Meta
 
 from apps.entities.models import Entity
 from apps.images.models import Image
