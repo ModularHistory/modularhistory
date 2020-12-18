@@ -258,7 +258,7 @@ def test(context, docker=False):
     """Run tests."""
     pytest_args = [
         '-v',
-        '-n 3',
+        '-n 7',
         # '-x',
         '--maxfail=2',
         # '--hypothesis-show-statistics',
@@ -272,5 +272,4 @@ def test(context, docker=False):
             'docker build -t modularhistory/modularhistory . && docker-compose up'
         )
     context.run(command)
-    context.run('rm -r archived_logs && mv latest_logs .selenium')
-    context.run('coverage combine')
+    context.run('coverage combine; rm -r archived_logs; mv latest_logs .selenium')
