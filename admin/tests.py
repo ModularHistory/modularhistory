@@ -1,9 +1,11 @@
+import string
+
 import pytest
 from django.urls import reverse
 from hypothesis import given
 from hypothesis.extra.django import from_model
 from hypothesis.strategies import just, text
-import string
+
 from apps.account.models import User
 from modularhistory.tests import TestSuite
 

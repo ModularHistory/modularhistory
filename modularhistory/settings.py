@@ -23,9 +23,11 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from modularhistory.constants.misc import Environments
-from modularhistory.environment import ENVIRONMENT
+from modularhistory.environment import environment
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
+
+ENVIRONMENT = environment
 
 IS_PROD = ENVIRONMENT == Environments.PROD
 IS_DEV = ENVIRONMENT in (Environments.DEV, Environments.DEV_DOCKER)

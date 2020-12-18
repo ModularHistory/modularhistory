@@ -15,11 +15,11 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from modularhistory.constants.misc import Environments
-from modularhistory.environment import ENVIRONMENT, VERSION
+from modularhistory.environment import VERSION, environment
 
 SEND_EVENTS = (
     config('SEND_SENTRY_EVENTS', cast=bool, default=False)
-    if ENVIRONMENT == Environments.DEV
+    if environment == Environments.DEV
     else True
 )
 
@@ -37,7 +37,7 @@ sentry_sdk.init(
     # https://docs.sentry.io/platforms/python/configuration/options/#dsn
     dsn=SENTRY_DSN,
     # https://docs.sentry.io/platforms/python/configuration/environments/
-    environment=ENVIRONMENT,
+    environment=environment,
     # https://docs.sentry.io/platforms/python/configuration/integrations/
     integrations=[
         DjangoIntegration(),

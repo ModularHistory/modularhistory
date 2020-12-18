@@ -4,7 +4,7 @@ from hypothesis.strategies import just
 from seleniumbase import BaseCase as SeleniumTestSuite
 
 from modularhistory.constants.misc import Environments
-from modularhistory.environment import ENVIRONMENT
+from modularhistory.environment import environment
 from modularhistory.fields import HTMLField
 from modularhistory.structures import HTML
 
@@ -19,4 +19,4 @@ BASE_URL = {
 class TestSuite(HypothesisTestSuite, SeleniumTestSuite):
     """Test suite for the homepage."""
 
-    base_url = BASE_URL.get(ENVIRONMENT)
+    base_url = BASE_URL.get(environment)
