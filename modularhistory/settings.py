@@ -13,14 +13,9 @@ import os
 import sys
 from typing import Any, Dict
 
-import sentry_sdk
 from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
-from sentry_sdk.integrations import Integration
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
 
 from modularhistory.constants.misc import Environments
 from modularhistory.environment import environment
