@@ -1,18 +1,17 @@
 import string
 
-import pytest
+# import pytest
 from django.urls import reverse
 from hypothesis.extra.django import from_model
 from hypothesis.strategies import just, text
 
 from apps.account.models import User
-from modularhistory.tests import TestSuite
+from modularhistory.tests import UserInterfaceTestSuite
 
 VALID_PASSWORD_CHARACTERS = string.ascii_letters + string.digits + '!@#$%^&*()-_=+.,'
 
 
-@pytest.mark.django_db
-class AdminTestSuite(TestSuite):
+class AdminTestSuite(UserInterfaceTestSuite):
     """Test suite for the homepage."""
 
     def test_admin_site(self):

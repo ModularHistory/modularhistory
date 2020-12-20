@@ -119,6 +119,7 @@ youtube-dl = "^2020.7.28"
 autoflake = "^1.4"
 binaryornot = "^0.4"
 coverage = { extras = ["toml"], version = "^5.3" }
+coverage-badge = "^1.0"
 darglint = "^1.5.5"
 django-stubs = ">=1.7"
 django-webtest = "^1.9.7"
@@ -156,7 +157,6 @@ seleniumbase = "^1.50.4"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
-coverage-badge = "^1.0.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

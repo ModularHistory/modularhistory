@@ -1,19 +1,15 @@
 """Tests for the occurrences app."""
 
-import pytest
 from django.urls import reverse
-
-from modularhistory.constants.misc import ResponseCodes
-
-EXPECTED_N_SQL_QUERIES = 15
+from modularhistory.tests import TestSuite
+from django.test import Client
 
 
-@pytest.mark.django_db
-def test_search(django_app, django_assert_max_num_queries):
-    """Test that the occurrences page loads successfully."""
-    page = django_app.get(reverse('occurrences:index'))
-    assert page.status_code == ResponseCodes.SUCCESS
-    page.mustcontain('<body>')
-    assert 'form' in page
-    with django_assert_max_num_queries(EXPECTED_N_SQL_QUERIES):
-        django_app.get(reverse('occurrences:index'))
+class OccurrencesTestSuite(TestSuite):
+    """Tests for the occurrences app."""
+
+    def test_occurrences(self):
+        """Verify pages have 200 status."""
+        client = Client()
+        response = client.get(reverse('occurrences:index'))
+        assert response.status_code == 200

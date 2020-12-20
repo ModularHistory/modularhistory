@@ -1,4 +1,4 @@
-from hypothesis.extra.django import TestCase as HypothesisTestSuite
+from hypothesis.extra.django import TestCase as DjangoHypothesisTestSuite
 from hypothesis.extra.django import register_field_strategy
 from hypothesis.strategies import just
 from seleniumbase import BaseCase as SeleniumTestSuite
@@ -16,7 +16,13 @@ BASE_URL = {
 }
 
 
-class TestSuite(HypothesisTestSuite, SeleniumTestSuite):
+class TestSuite(DjangoHypothesisTestSuite):
     """Test suite for the homepage."""
 
     base_url = BASE_URL.get(environment)
+
+
+class UserInterfaceTestSuite(TestSuite, SeleniumTestSuite):
+    """Base class for UI test suites."""
+
+    pass
