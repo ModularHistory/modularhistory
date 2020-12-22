@@ -1,12 +1,15 @@
 """Tests for the account app."""
+import pytest
 from django.test import Client
 from django.urls import reverse
-from modularhistory.tests import TestSuite, UserInterfaceTestSuite
+
+from modularhistory.tests import TestSuite
 
 unauthenticated_endpoints = ('login', 'register')
 authenticated_endpoints = ('password_change', 'password_reset', 'profile', 'settings')
 
 
+@pytest.mark.django_db
 class AdminTestSuite(TestSuite):
     """Tests for the admin app."""
 

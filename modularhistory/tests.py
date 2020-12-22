@@ -16,10 +16,16 @@ BASE_URL = {
 }
 
 
-class TestSuite(DjangoHypothesisTestSuite):
-    """Test suite for the homepage."""
+class TestSuite:
+    """Base class for test suites."""
 
     base_url = BASE_URL.get(environment)
+
+
+class HypothesisTestSuite(DjangoHypothesisTestSuite):
+    """Base class for test suites containing Hypothesis tests."""
+
+    pass
 
 
 class UserInterfaceTestSuite(TestSuite, SeleniumTestSuite):

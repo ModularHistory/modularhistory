@@ -1,11 +1,13 @@
 """Tests for the entities app."""
 
-from django.urls import reverse
-from modularhistory.tests import TestSuite
-from modularhistory.constants.misc import ResponseCodes
+import pytest
 from django.test import Client
+from django.urls import reverse
+
+from modularhistory.tests import TestSuite
 
 
+@pytest.mark.django_db
 class EntitiesTestSuite(TestSuite):
     """Tests for the admin app."""
 

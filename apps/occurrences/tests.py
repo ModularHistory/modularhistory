@@ -1,9 +1,13 @@
 """Tests for the occurrences app."""
 
-from django.urls import reverse
-from modularhistory.tests import TestSuite
+import pytest
 from django.test import Client
+from django.urls import reverse
 
+from modularhistory.tests import TestSuite
+
+
+@pytest.mark.django_db
 
 class OccurrencesTestSuite(TestSuite):
     """Tests for the occurrences app."""
