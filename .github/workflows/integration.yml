@@ -57,21 +57,13 @@ jobs:
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       redis:
         image: redis
         ports:
           - 6379:6379
         # Set health checks to wait until redis has started
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       POSTGRES_HOST: postgres
       POSTGRES_DB: postgres
@@ -91,6 +83,7 @@ jobs:
       run: ./setup.sh --noninteractive
     # Run tests
     - name: Start selenoid
+      if: ${{ success() }}
       uses: Xotabu4/selenoid-github-action@v1  # https://github.com/marketplace/actions/start-selenoid-server
     - name: Run tests
       if: ${{ success() }}

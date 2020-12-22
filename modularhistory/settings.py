@@ -267,8 +267,8 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', default='modularhistory'),
         'HOST': config('POSTGRES_HOST', default='localhost'),
+        'NAME': config('POSTGRES_DB', default='modularhistory'),
         'USER': config('POSTGRES_USER', default='postgres'),
         'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
         'PORT': 5432,

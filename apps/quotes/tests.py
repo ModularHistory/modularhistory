@@ -11,7 +11,7 @@ from modularhistory.tests import TestSuite
 class QuotesTestSuite(TestSuite):
     """Tests for the quotes app."""
 
-    def test_entities(self):
+    def test_quotes(self):
         """Verify pages have 200 status."""
         client = Client()
         response = client.get(reverse('quotes:index'))
