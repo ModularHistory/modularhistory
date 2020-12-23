@@ -101,6 +101,7 @@ jobs:
     # - name: Install Dependencies
     #   run: poetry install
     #   if: steps.cache.outputs.cache-hit != 'true'
+    # Set up ModularHistory
     - name: Set up ModularHistory
       if: ${{ success() }}
       run: ./setup.sh --noninteractive
@@ -116,10 +117,7 @@ jobs:
       run: |
         echo "def test_pytest(): pass" > nothing.py
         pytest nothing.py
-    # Set up ModularHistory
-    - name: Start dev server
-      if: ${{ success() }}
-      run: python manage.py runserver
+    # Run tests
     - name: Run tests
       if: ${{ success() }}
       run: invoke test
