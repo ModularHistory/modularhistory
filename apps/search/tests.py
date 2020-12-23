@@ -11,15 +11,15 @@ EXPECTED_N_SQL_QUERIES = 15
 class SearchTestSuite(UserInterfaceTestSuite):
     """Test suite for the homepage."""
 
-    def test_empty_search(self):
+    def test_empty_search(self, live_server):
         """Test opening the homepage."""
-        self.open(f'{self.base_url}{reverse("search")}')
-        self.assert_element('body')
-        self.assert_element('form')
+        self.client.open(f'{self.base_url}{reverse("search")}')
+        self.client.assert_element('body')
+        self.client.assert_element('form')
 
     @parameterized.expand(['conservatism', 'liberalism'])
     def test_search_with_query(self, query: str):
         """Test that the search page loads successfully with queries."""
-        self.open(f'{self.base_url}{reverse("search")}?query={query}')
-        self.assert_element('body')
-        self.assert_element('form')
+        self.client.open(f'{self.base_url}{reverse("search")}?query={query}')
+        self.client.assert_element('body')
+        self.client.assert_element('form')

@@ -12,7 +12,6 @@ VALID_PASSWORD_CHARACTERS = string.ascii_letters + string.digits + '!@#$%^&*()-_
 
 
 @pytest.mark.django_db
-
 class AdminTestSuite(UserInterfaceTestSuite):
     """Test suite for the homepage."""
 
@@ -28,14 +27,14 @@ class AdminTestSuite(UserInterfaceTestSuite):
         ).example()
         user.set_password(password)
         user.save()
-        self.wait(10)
-        self.open(f'{self.base_url}{reverse("account:login")}')
-        self.assert_element('body')
-        self.assert_element('form')
-        self.wait(10)
-        self.type('#id_username', user.username)
-        self.type('#id_password', password)
-        self.click('#submit-id-submit')
-        self.wait(10)
-        self.open(f'{self.base_url}/admin/')
-        self.assert_element('body')
+        self.client.wait(10)
+        self.client.open(f'{self.base_url}{reverse("account:login")}')
+        self.client.assert_element('body')
+        self.client.assert_element('form')
+        self.client.wait(10)
+        self.client.type('#id_username', user.username)
+        self.client.type('#id_password', password)
+        self.client.click('#submit-id-submit')
+        self.client.wait(10)
+        self.client.open(f'{self.base_url}/admin/')
+        self.client.assert_element('body')

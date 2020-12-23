@@ -86,6 +86,21 @@ jobs:
       run: |
         sudo apt install google-chrome-stable
         sudo apt-get install firefox
+    # - name: Cache Poetry virtualenv
+    #   uses: actions/cache@v1
+    #   id: cache
+    #   with:
+    #     path: ~/.virtualenvs
+    #     key: poetry-${{ hashFiles('**/poetry.lock') }}
+    #     restore-keys: |
+    #       poetry-${{ hashFiles('**/poetry.lock') }}
+    # - name: Set Poetry config
+    #   run: |
+    #     poetry config settings.virtualenvs.in-project false
+    #     poetry config settings.virtualenvs.path ~/.virtualenvs
+    # - name: Install Dependencies
+    #   run: poetry install
+    #   if: steps.cache.outputs.cache-hit != 'true'
     - name: Set up ModularHistory
       if: ${{ success() }}
       run: ./setup.sh --noninteractive
@@ -101,10 +116,6 @@ jobs:
       run: |
         echo "def test_pytest(): pass" > nothing.py
         pytest nothing.py
-    # # Run tests
-    # - name: Start selenoid
-    #   if: ${{ success() }}
-    #   uses: Xotabu4/selenoid-github-action@v1  # https://github.com/marketplace/actions/start-selenoid-server
     # Set up ModularHistory
     - name: Start dev server
       if: ${{ success() }}

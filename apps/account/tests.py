@@ -19,11 +19,3 @@ class AdminTestSuite(TestSuite):
         for endpoint in unauthenticated_endpoints:
             response = client.get(reverse(f'account:{endpoint}'))
             assert response.status_code == 200
-
-
-# class AdminUserInterfaceTestSuite(UserInterfaceTestSuite):
-#     """UI tests for the admin app."""
-
-#     def test_authenticated_endpoints(self):
-#         """Verify pages have 200 status."""
-#         client = Client()
