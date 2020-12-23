@@ -7,6 +7,7 @@ from modularhistory.tests import UserInterfaceTestSuite
 EXPECTED_N_SQL_QUERIES = 15
 
 
+@pytest.mark.django_db
 class SearchTestSuite(UserInterfaceTestSuite):
     """Test suite for the homepage."""
 

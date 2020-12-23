@@ -10,19 +10,18 @@ from modularhistory.structures import HTML
 
 register_field_strategy(HTMLField, just(HTML('lorem ipsum')))
 
-BASE_URL = {
-    Environments.DEV: 'http://127.0.0.1:8000',
-    Environments.GITHUB_TEST: ' http://localhost:4444/wd/hub',
+BASE_URLS = {
+    Environments.DEV: 'http://localhost:8000',
 }
 
 
 class TestSuite:
     """Base class for test suites."""
 
-    base_url = BASE_URL.get(environment)
+    base_url = BASE_URLS.get(environment) or BASE_URLS[Environments.DEV]
 
 
-class HypothesisTestSuite(DjangoHypothesisTestSuite):
+class HypothesisTestSuite(TestSuite, DjangoHypothesisTestSuite):
     """Base class for test suites containing Hypothesis tests."""
 
     pass
