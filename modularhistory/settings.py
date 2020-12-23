@@ -13,19 +13,16 @@ import os
 import sys
 from typing import Any, Dict
 
-import sentry_sdk
 from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
-from sentry_sdk.integrations import Integration
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
 
 from modularhistory.constants.misc import Environments
-from modularhistory.environment import ENVIRONMENT
+from modularhistory.environment import environment
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
+
+ENVIRONMENT = environment
 
 IS_PROD = ENVIRONMENT == Environments.PROD
 IS_DEV = ENVIRONMENT in (Environments.DEV, Environments.DEV_DOCKER)
@@ -270,8 +267,8 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', default='modularhistory'),
         'HOST': config('POSTGRES_HOST', default='localhost'),
+        'NAME': config('POSTGRES_DB', default='modularhistory'),
         'USER': config('POSTGRES_USER', default='postgres'),
         'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
         'PORT': 5432,

@@ -7,6 +7,6 @@ from modularhistory.constants.misc import Environments
 VERSION = config('SHA', default='')
 
 if os.environ.get('GITHUB_WORKFLOW'):
-    ENVIRONMENT = Environments.GITHUB_TEST
+    environment = Environments.GITHUB_TEST
 else:
-    ENVIRONMENT = config('ENVIRONMENT', default=Environments.DEV)
+    environment = config('ENVIRONMENT', default=Environments.DEV)

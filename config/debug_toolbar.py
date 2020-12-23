@@ -11,6 +11,8 @@ https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
 from django.conf import settings
 from django.http import HttpRequest
 
+from modularhistory.constants.misc import Environments
+
 
 def show_toolbar(request: HttpRequest) -> bool:
     """Determine whether to display the debug toolbar."""
@@ -19,7 +21,10 @@ def show_toolbar(request: HttpRequest) -> bool:
         and request.META.get('REMOTE_ADDR', None) in settings.INTERNAL_IPS,
         request.user.is_superuser,
     )
-    disqualifiers = (settings.TESTING,)
+    disqualifiers = (
+        settings.TESTING,
+        settings.ENVIRONMENT == Environments.DEV_DOCKER,
+    )
     if any(conditions) and not any(disqualifiers):
         return True
     return False

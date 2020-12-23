@@ -19,7 +19,6 @@ from typing import Any, Callable, Optional, TypeVar
 import django
 from decouple import config
 from paramiko import SSHClient
-from pympler import tracker
 from scp import SCPClient
 
 from modularhistory.constants.misc import Environments
@@ -220,14 +219,6 @@ def nox(context, *args):
     nox_cmd = SPACE.join(['nox', *args])
     context.run(nox_cmd)
     context.run('rm -r modularhistory.egg-info')
-
-
-@task
-def pympler(context):
-    """Run memory profiler interactively."""
-    memory_tracker = tracker.SummaryTracker()
-    while input('Get memory diff? ') != NEGATIVE:
-        memory_tracker.print_diff()
 
 
 @task

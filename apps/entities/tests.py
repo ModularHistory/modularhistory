@@ -1,21 +1,21 @@
 """Tests for the entities app."""
 
 import pytest
+from django.test import Client
 from django.urls import reverse
 
-from modularhistory.constants.misc import ResponseCodes
-
-EXPECTED_N_SQL_QUERIES = 15
+from modularhistory.tests import TestSuite
 
 
 @pytest.mark.django_db
-def test_entities(django_app, django_assert_max_num_queries):
-    """Test that the entities page loads successfully."""
-    page = django_app.get(reverse('entities:index'))
-    assert page.status_code == ResponseCodes.SUCCESS
-    page.mustcontain('<body>')
-    with django_assert_max_num_queries(EXPECTED_N_SQL_QUERIES):
-        django_app.get(reverse('entities:index'))
+class EntitiesTestSuite(TestSuite):
+    """Tests for the admin app."""
+
+    def test_entities(self):
+        """Verify pages have 200 status."""
+        client = Client()
+        response = client.get(reverse('entities:index'))
+        assert response.status_code == 200
 
 
 # TODO: test that name_html matches regex in html_field
