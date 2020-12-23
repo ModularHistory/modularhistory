@@ -86,6 +86,9 @@ jobs:
       run: |
         sudo apt install google-chrome-stable
         sudo apt-get install firefox
+    - name: Set up ModularHistory
+      if: ${{ success() }}
+      run: ./setup.sh --noninteractive
     - name: Check the console scripts interface
       run: |
         seleniumbase
@@ -103,9 +106,6 @@ jobs:
     #   if: ${{ success() }}
     #   uses: Xotabu4/selenoid-github-action@v1  # https://github.com/marketplace/actions/start-selenoid-server
     # Set up ModularHistory
-    - name: Set up ModularHistory
-      if: ${{ success() }}
-      run: ./setup.sh --noninteractive
     - name: Start dev server
       if: ${{ success() }}
       run: python manage.py runserver
