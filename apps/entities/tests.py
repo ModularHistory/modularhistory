@@ -14,7 +14,7 @@ class EntitiesTestSuite(TestSuite):
     def test_entities(self):
         """Verify pages have 200 status."""
         client = Client()
-        response = client.get(reverse(f'entities:index'))
+        response = client.get(reverse('entities:index'))
         assert response.status_code == 200
 
 
