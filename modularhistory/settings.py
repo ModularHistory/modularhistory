@@ -518,7 +518,7 @@ MARTOR_ALTERNATIVE_JQUERY_JS_FILE = "jquery/dist/jquery.min.js"  # default None
 # TODO: https://django-tinymce.readthedocs.io/en/latest/installation.html#prerequisites
 TINYMCE_JS_URL = 'https://cloud.tinymce.com/stable/tinymce.min.js'
 TINYMCE_JS_ROOT = 'https://cloud.tinymce.com/stable/'
-TINYMCE_COMPRESSOR = IS_PROD
+TINYMCE_COMPRESSOR = False
 TINYMCE_SPELLCHECKER = True
 TINYMCE_DEFAULT_CONFIG = {
     'width': '100%',
