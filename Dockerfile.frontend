@@ -1,0 +1,28 @@
+FROM node:14.15.3-buster
+
+# LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
+
+# Create required directories
+RUN mkdir -p -- /modularhistory/static /modularhistory/media
+
+# Set the working directory
+WORKDIR /modularhistory
+
+# Install project dependencies
+COPY frontend/package*.json /modularhistory/frontend/
+RUN npm ci
+
+# Add source code
+COPY . /modularhistory/
+
+# Grant necessary permissions to non-root user
+RUN chown -R www-data:www-data /modularhistory && \
+  chmod g+w -R /modularhistory/media && \
+  chmod g+w -R /modularhistory/static && \
+  chmod +x /modularhistory/config/wait-for-it.sh
+
+# Expose port 3000
+EXPOSE 3000
+
+# Switch from root to non-root user
+USER www-data

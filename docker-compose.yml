@@ -2,7 +2,23 @@ version: "3.8"
 
 services:
   dev:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    depends_on:
+      - dev-backend
+    command: sh -c "cd /modularhistory/frontend && next dev"
+    depends_on:
+      - dev-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/modularhistory
+  
+  dev-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - postgres
