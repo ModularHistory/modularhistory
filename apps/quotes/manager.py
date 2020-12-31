@@ -4,9 +4,8 @@ from typing import List, Optional
 
 from django.db.models import Q
 
-from modularhistory.constants.content_types import get_ct_id, ContentTypes
-
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
+from modularhistory.constants.content_types import ContentTypes, get_ct_id
 
 
 class QuoteManager(SearchableModelManager):

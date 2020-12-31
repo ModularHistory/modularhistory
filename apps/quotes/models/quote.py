@@ -19,6 +19,7 @@ from apps.quotes.models.quote_image import QuoteImage
 from apps.quotes.serializers import QuoteSerializer
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
+from modularhistory.constants.content_types import ContentTypes, get_ct_id
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.fields.html_field import (
@@ -28,8 +29,6 @@ from modularhistory.fields.html_field import (
 )
 from modularhistory.models import retrieve_or_compute
 from modularhistory.utils.html import soupify
-from modularhistory.constants.content_types import get_ct_id, ContentTypes
-
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

@@ -10,9 +10,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from modularhistory.constants.content_types import get_ct_id, ContentTypes
 
 from apps.sources.serializers import CitationSerializer
+from modularhistory.constants.content_types import ContentTypes, get_ct_id
 from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
     END_PATTERN,

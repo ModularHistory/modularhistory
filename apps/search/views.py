@@ -6,7 +6,6 @@ from http import client
 from itertools import chain
 from pprint import pformat
 from typing import Any, Dict, List, Optional, Union
-from modularhistory.constants.content_types import get_ct_id, ContentTypes
 
 from django.conf import settings
 from django.db.models import Q, QuerySet, Subquery
@@ -22,8 +21,7 @@ from apps.search.forms import SearchForm
 from apps.search.models import SearchableDatedModel
 from apps.sources.models import Source
 from apps.topics.models import Topic
-from modularhistory.constants.content_types import ModelNameSet
-
+from modularhistory.constants.content_types import ContentTypes, get_ct_id
 from modularhistory.models import Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
 
@@ -366,7 +364,7 @@ class SearchResultsView(ListView):
 
 
 def _get_occurrence_results(content_types, **search_kwargs):
-    if ModelNameSet.occurrence in content_types or not content_types:
+    if ContentTypes.occurrence in content_types or not content_types:
         occurrence_results = list(Occurrence.objects.search(**search_kwargs).iterator())
     else:
         occurrence_results = []
@@ -376,7 +374,7 @@ def _get_occurrence_results(content_types, **search_kwargs):
 
 
 def _get_quote_results(content_types, occurrence_result_ids, **search_kwargs):
-    if ModelNameSet.quote in content_types or not content_types:
+    if ContentTypes.quote in content_types or not content_types:
         quote_results = Quote.objects.search(**search_kwargs)  # type: ignore
         if occurrence_result_ids:
             # TODO: refactor
@@ -393,7 +391,7 @@ def _get_quote_results(content_types, occurrence_result_ids, **search_kwargs):
 def _get_image_results(
     content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
-    if ModelNameSet.image in content_types or not content_types:
+    if ContentTypes.image in content_types or not content_types:
         image_results = Image.objects.search(**search_kwargs).filter(  # type: ignore
             entities=None
         )
@@ -415,7 +413,7 @@ def _get_image_results(
 def _get_source_results(
     content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
-    if ModelNameSet.source in content_types or not content_types:
+    if ContentTypes.source in content_types or not content_types:
         source_results = Source.objects.search(**search_kwargs)  # type: ignore
 
         # TODO: This was broken by conversion to generic relations with quotes & occurrences

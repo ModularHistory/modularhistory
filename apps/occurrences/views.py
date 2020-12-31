@@ -5,7 +5,7 @@ from meta.views import Meta
 
 from apps.occurrences.models import Occurrence
 from apps.search.forms import SearchForm
-from modularhistory.constants.content_types import ModelNameSet
+from modularhistory.constants.content_types import ContentTypes
 
 
 class ListView(generic.list.ListView):
@@ -26,9 +26,9 @@ class ListView(generic.list.ListView):
         context['search_form'] = SearchForm(
             request=self.request,
             excluded_content_types=[
-                ModelNameSet.quote,
-                ModelNameSet.image,
-                ModelNameSet.source,
+                ContentTypes.quote,
+                ContentTypes.image,
+                ContentTypes.source,
             ],
         )
         context['meta'] = Meta(
