@@ -12,7 +12,6 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.sources.serializers import CitationSerializer
-from modularhistory.constants.content_type_ids import QUOTE_CT_ID
 from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
     END_PATTERN,
@@ -116,6 +115,9 @@ class Citation(PositionedRelation):
             else:
                 html = f'{html}, {page_string}'
         if self.pk and self.source.attributees.exists():
+            # TODO
+            from modularhistory.constants.content_type_ids import QUOTE_CT_ID
+
             if self.content_type_id == QUOTE_CT_ID:
                 quote: Quote = self.content_object  # type: ignore
                 if quote.ordered_attributees != self.source.ordered_attributees:

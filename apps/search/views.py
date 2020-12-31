@@ -23,10 +23,7 @@ from apps.search.models import SearchableDatedModel
 from apps.sources.models import Source
 from apps.topics.models import Topic
 from modularhistory.constants.content_types import ModelNameSet
-from modularhistory.constants.content_type_ids import (
-    OCCURRENCE_CT_ID,
-    QUOTE_CT_ID,
-)
+
 from modularhistory.models import Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
 
@@ -324,6 +321,12 @@ class SearchResultsView(ListView):
                 .distinct('id')
                 .values('pk')
             )
+        )
+
+        # TODO
+        from modularhistory.constants.content_type_ids import (
+            OCCURRENCE_CT_ID,
+            QUOTE_CT_ID,
         )
 
         self.topics = (
