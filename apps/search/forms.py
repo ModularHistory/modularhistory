@@ -30,7 +30,7 @@ class SearchForm(forms.Form):
         query: Optional[str] = None,
         suppress_unverified: bool = False,
         order_by_relevance: bool = False,
-        excluded_content_types: Optional[List[int]] = None,
+        excluded_content_types: Optional[List[str]] = None,
         entities: Optional['QuerySet[Entity]'] = None,
         topics: Optional['QuerySet[Topic]'] = None,
         collapse_refinements: bool = False,
@@ -70,7 +70,9 @@ class SearchForm(forms.Form):
 
         # TODO: optimize
         initial_content_types = [
-            pk for pk, name in CONTENT_TYPE_OPTIONS if pk not in excluded_content_types
+            model
+            for model, _name in CONTENT_TYPE_OPTIONS
+            if model not in excluded_content_types
         ]
         self.fields['content_types'] = forms.MultipleChoiceField(
             choices=CONTENT_TYPE_OPTIONS,

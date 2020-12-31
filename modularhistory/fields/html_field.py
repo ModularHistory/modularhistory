@@ -8,7 +8,7 @@ from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
 
-from modularhistory.constants.misc import MODEL_CLASS_PATHS
+from modularhistory.constants.content_types import MODEL_CLASS_PATHS
 from modularhistory.structures.html import HTML
 from modularhistory.utils.html import soupify
 from modularhistory.utils.string import dedupe_newlines, truncate

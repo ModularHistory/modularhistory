@@ -6,15 +6,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.account.models import User
-from modularhistory.constants.misc import CONTENT_TYPE_IDS
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.models import Model
 
-CONTENT_TYPE_OPTIONS: List[Tuple[int, str]] = [
-    (CONTENT_TYPE_IDS['occurrence'], 'Occurrences'),
-    (CONTENT_TYPE_IDS['quote'], 'Quotes'),
-    (CONTENT_TYPE_IDS['image'], 'Images'),
-    (CONTENT_TYPE_IDS['source'], 'Sources'),
+CONTENT_TYPE_OPTIONS: List[Tuple[str, str]] = [
+    ('occurrences.occurrence', 'Occurrences'),
+    ('quotes.quote', 'Quotes'),
+    ('images.image', 'Images'),
+    ('sources.source', 'Sources'),
 ]
 
 ORDERING_OPTIONS = (('date', 'Date'), ('relevance', 'Relevance'))

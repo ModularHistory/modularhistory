@@ -21,7 +21,7 @@ from decouple import config
 from paramiko import SSHClient
 from scp import SCPClient
 
-from modularhistory.constants.misc import Environments
+from modularhistory.constants.environments import Environments
 from modularhistory.constants.strings import NEGATIVE, SPACE
 from modularhistory.linters import flake8 as lint_with_flake8
 from modularhistory.linters import mypy as lint_with_mypy

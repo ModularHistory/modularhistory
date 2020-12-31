@@ -19,9 +19,9 @@ from channels.auth import AuthMiddlewareStack  # noqa: E402
 from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
 
 from apps.chat import routing  # noqa: E402
-from modularhistory.sentry import SentryAsgiMiddleware  # noqa: E402
+from modularhistory.sentry import SentryMiddleware  # noqa: E402
 
-application = SentryAsgiMiddleware(
+application = SentryMiddleware(
     ProtocolTypeRouter(
         {
             'http': django_asgi_app,

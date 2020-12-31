@@ -8,6 +8,7 @@ from pprint import pformat
 from typing import Any, Dict, List, Optional, Union
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q, QuerySet, Subquery
 from django.http import JsonResponse
 from django.views.generic import ListView
@@ -16,22 +17,25 @@ from meta.views import Meta
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.occurrences.models import Occurrence
+from apps.quotes.manager import OCCURRENCE_CT_ID
 from apps.quotes.models import Quote
 from apps.search.forms import SearchForm
 from apps.search.models import SearchableDatedModel
 from apps.sources.models import Source
+from apps.sources.models.citation import QUOTE_CT_ID
 from apps.topics.models import Topic
-from modularhistory.constants.misc import (
-    IMAGE_CT_ID,
-    OCCURRENCE_CT_ID,
-    QUOTE_CT_ID,
-    SOURCE_CT_ID,
-)
+from modularhistory.constants.content_types import ModelNameSet
 from modularhistory.models import Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
 
 QUERY_KEY = 'query'
 N_RESULTS_PER_PAGE = 10
+
+
+QUOTE_CT_ID = ContentType.objects.get_by_natural_key(app_label='quotes', model='quote')
+OCCURRENCE_CT_ID = ContentType.objects.get_by_natural_key(
+    app_label='occurrences', model='occurrence'
+)
 
 
 def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDateTime:
@@ -216,7 +220,7 @@ class SearchResultsView(ListView):
     template_name = 'search/search_results.html'
     paginate_by = N_RESULTS_PER_PAGE
 
-    excluded_content_types: Optional[List[int]]
+    excluded_content_types: Optional[List[str]]
     sort_by_relevance: bool
     suppress_unverified: bool
     entities: Optional[QuerySet]
@@ -272,7 +276,7 @@ class SearchResultsView(ListView):
         self.sort_by_relevance = request.GET.get('ordering') == 'relevance'
         self.suppress_unverified = request.GET.get('quality') == 'verified'
 
-        ct_ids = [int(ct_id) for ct_id in (request.GET.getlist('content_types') or [])]
+        content_types = request.GET.getlist('content_types') or []
         start_year = request.GET.get('start_year_0', None)
         year_type = request.GET.get('start_year_1', None)
         if start_year and year_type:
@@ -297,20 +301,20 @@ class SearchResultsView(ListView):
         }
 
         occurrence_results, occurrence_result_ids = _get_occurrence_results(
-            ct_ids, **search_kwargs
+            content_types, **search_kwargs
         )
         quote_results, quote_result_ids = _get_quote_results(
-            ct_ids, occurrence_result_ids, **search_kwargs
+            content_types, occurrence_result_ids, **search_kwargs
         )
 
         # TODO
         fixed = False
         if fixed:
             image_results = _get_image_results(
-                ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+                content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
             )
             source_results, source_result_ids = _get_source_results(
-                ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+                content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
             )
 
         self.entities = Entity.objects.filter(
@@ -368,8 +372,8 @@ class SearchResultsView(ListView):
         return self.get_object_list()
 
 
-def _get_occurrence_results(ct_ids, **search_kwargs):
-    if OCCURRENCE_CT_ID in ct_ids or not ct_ids:
+def _get_occurrence_results(content_types, **search_kwargs):
+    if ModelNameSet.occurrence in content_types or not content_types:
         occurrence_results = list(Occurrence.objects.search(**search_kwargs).iterator())
     else:
         occurrence_results = []
@@ -378,8 +382,8 @@ def _get_occurrence_results(ct_ids, **search_kwargs):
     ]
 
 
-def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
-    if QUOTE_CT_ID in ct_ids or not ct_ids:
+def _get_quote_results(content_types, occurrence_result_ids, **search_kwargs):
+    if ModelNameSet.quote in content_types or not content_types:
         quote_results = Quote.objects.search(**search_kwargs)  # type: ignore
         if occurrence_result_ids:
             # TODO: refactor
@@ -394,9 +398,9 @@ def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
 
 
 def _get_image_results(
-    ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+    content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
-    if IMAGE_CT_ID in ct_ids or not ct_ids:
+    if ModelNameSet.image in content_types or not content_types:
         image_results = Image.objects.search(**search_kwargs).filter(  # type: ignore
             entities=None
         )
@@ -416,9 +420,9 @@ def _get_image_results(
 
 
 def _get_source_results(
-    ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+    content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
-    if SOURCE_CT_ID in ct_ids or not ct_ids:
+    if ModelNameSet.source in content_types or not content_types:
         source_results = Source.objects.search(**search_kwargs)  # type: ignore
 
         # TODO: This was broken by conversion to generic relations with quotes & occurrences

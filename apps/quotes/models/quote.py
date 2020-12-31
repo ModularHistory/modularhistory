@@ -4,6 +4,7 @@ import logging
 import re
 from typing import TYPE_CHECKING, List, Optional
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.html import format_html
@@ -19,7 +20,6 @@ from apps.quotes.models.quote_image import QuoteImage
 from apps.quotes.serializers import QuoteSerializer
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
-from modularhistory.constants.misc import OCCURRENCE_CT_ID
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.fields.html_field import (
@@ -36,6 +36,9 @@ if TYPE_CHECKING:
     from apps.entities.models import Entity
 
 
+OCCURRENCE_CT_ID = ContentType.objects.get_by_natural_key(
+    'occurrences', model='occurrence'
+)
 BITE_MAX_LENGTH: int = 400
 
 quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(

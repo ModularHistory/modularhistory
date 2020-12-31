@@ -5,7 +5,7 @@ from django import template
 from django.apps import apps
 from django.utils.module_loading import import_string
 
-from modularhistory.constants.misc import MODEL_CLASS_PATHS
+from modularhistory.constants.content_types import MODEL_CLASS_PATHS
 from modularhistory.models import Model
 
 register = template.Library()

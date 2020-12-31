@@ -1,12 +1,11 @@
+import pytest
 from hypothesis.extra.django import TestCase as DjangoHypothesisTestSuite
 from hypothesis.extra.django import register_field_strategy
 from hypothesis.strategies import just
-from django.test import LiveServerTestCase as LiveServerTestSuite
-from modularhistory.constants.misc import Environments
-from modularhistory.environment import environment
+
+from modularhistory.constants.environments import Environments
 from modularhistory.fields import HTMLField
 from modularhistory.structures import HTML
-import pytest
 
 register_field_strategy(HTMLField, just(HTML('lorem ipsum')))
 
