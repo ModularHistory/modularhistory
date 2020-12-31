@@ -3,14 +3,9 @@
 import re
 from typing import Optional
 
-from django.contrib.contenttypes.models import ContentType
-
 from admin import GenericTabularInline, TabularInline
 from apps.quotes import models
-
-OCCURRENCE_CT_ID = ContentType.objects.get_by_natural_key(
-    'occurrences', model='occurrence'
-)
+from modularhistory.constants.content_types import OCCURRENCE_CT_ID
 
 
 class AttributeesInline(TabularInline):

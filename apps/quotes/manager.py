@@ -2,14 +2,10 @@
 
 from typing import List, Optional
 
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
-
-OCCURRENCE_CT_ID = ContentType.objects.get_by_natural_key(
-    app_label='occurrences', model='occurrence'
-)
+from modularhistory.constants.content_types import OCCURRENCE_CT_ID
 
 
 class QuoteManager(SearchableModelManager):

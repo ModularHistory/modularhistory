@@ -17,25 +17,21 @@ from meta.views import Meta
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.occurrences.models import Occurrence
-from apps.quotes.manager import OCCURRENCE_CT_ID
 from apps.quotes.models import Quote
 from apps.search.forms import SearchForm
 from apps.search.models import SearchableDatedModel
 from apps.sources.models import Source
-from apps.sources.models.citation import QUOTE_CT_ID
 from apps.topics.models import Topic
-from modularhistory.constants.content_types import ModelNameSet
+from modularhistory.constants.content_types import (
+    OCCURRENCE_CT_ID,
+    QUOTE_CT_ID,
+    ModelNameSet,
+)
 from modularhistory.models import Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
 
 QUERY_KEY = 'query'
 N_RESULTS_PER_PAGE = 10
-
-
-QUOTE_CT_ID = ContentType.objects.get_by_natural_key(app_label='quotes', model='quote')
-OCCURRENCE_CT_ID = ContentType.objects.get_by_natural_key(
-    app_label='occurrences', model='occurrence'
-)
 
 
 def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDateTime:
