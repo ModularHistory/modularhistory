@@ -6,6 +6,7 @@ from http import client
 from itertools import chain
 from pprint import pformat
 from typing import Any, Dict, List, Optional, Union
+from modularhistory.constants.content_types import get_ct_id, ContentTypes
 
 from django.conf import settings
 from django.db.models import Q, QuerySet, Subquery
@@ -322,20 +323,14 @@ class SearchResultsView(ListView):
             )
         )
 
-        # TODO
-        from modularhistory.constants.content_type_ids import (
-            OCCURRENCE_CT_ID,
-            QUOTE_CT_ID,
-        )
-
         self.topics = (
             Topic.objects.filter(
                 Q(
-                    topic_relations__content_type_id=QUOTE_CT_ID,
+                    topic_relations__content_type_id=get_ct_id(ContentTypes.quote),
                     topic_relations__object_id__in=quote_result_ids,
                 )
                 | Q(
-                    topic_relations__content_type_id=OCCURRENCE_CT_ID,
+                    topic_relations__content_type_id=get_ct_id(ContentTypes.occurrence),
                     topic_relations__object_id__in=occurrence_result_ids,
                 )
             )
@@ -386,7 +381,7 @@ def _get_quote_results(content_types, occurrence_result_ids, **search_kwargs):
         if occurrence_result_ids:
             # TODO: refactor
             quote_results = quote_results.exclude(
-                Q(relations__content_type_id=OCCURRENCE_CT_ID)
+                Q(relations__content_type_id=get_ct_id(ContentTypes.occurrence))
                 & Q(relations__object_id__in=occurrence_result_ids)
             )
         quote_results = list(quote_results.iterator())

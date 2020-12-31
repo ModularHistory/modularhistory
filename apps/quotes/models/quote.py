@@ -28,6 +28,8 @@ from modularhistory.fields.html_field import (
 )
 from modularhistory.models import retrieve_or_compute
 from modularhistory.utils.html import soupify
+from modularhistory.constants.content_types import get_ct_id, ContentTypes
+
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -240,10 +242,9 @@ class Quote(
         """Return a queryset of the quote's related occurrences."""
         # TODO: refactor
         from apps.occurrences.models import Occurrence
-        from modularhistory.constants.content_type_ids import OCCURRENCE_CT_ID
 
         occurrence_ids = self.relations.filter(
-            models.Q(content_type_id=OCCURRENCE_CT_ID)
+            models.Q(content_type_id=get_ct_id(ContentTypes.occurrence))
         ).values_list('id', flat=True)
         return Occurrence.objects.filter(id__in=occurrence_ids)
 
