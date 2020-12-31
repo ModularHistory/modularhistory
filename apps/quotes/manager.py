@@ -5,7 +5,7 @@ from typing import List, Optional
 from django.db.models import Q
 
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
-from modularhistory.constants.content_types import OCCURRENCE_CT_ID
+from modularhistory.constants.content_type_ids import OCCURRENCE_CT_ID
 
 
 class QuoteManager(SearchableModelManager):

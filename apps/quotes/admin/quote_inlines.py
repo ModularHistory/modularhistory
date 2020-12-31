@@ -5,7 +5,7 @@ from typing import Optional
 
 from admin import GenericTabularInline, TabularInline
 from apps.quotes import models
-from modularhistory.constants.content_types import OCCURRENCE_CT_ID
+from modularhistory.constants.content_type_ids import OCCURRENCE_CT_ID
 
 
 class AttributeesInline(TabularInline):

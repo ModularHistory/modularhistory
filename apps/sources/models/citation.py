@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.sources.serializers import CitationSerializer
-from modularhistory.constants.content_types import QUOTE_CT_ID
+from modularhistory.constants.content_type_ids import QUOTE_CT_ID
 from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
     END_PATTERN,

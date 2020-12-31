@@ -1,7 +1,6 @@
 """Constants usable throughout the ModularHistory application."""
 
 from aenum import Constant
-from django.contrib.contenttypes.models import ContentType
 
 
 class ModelNameSet(Constant):
@@ -30,9 +29,3 @@ MODEL_CLASS_PATHS = {
     ModelNameSet.fact: 'apps.postulations.models.Postulation',
     ModelNameSet.postulation: 'apps.postulations.models.Postulation',
 }
-
-
-OCCURRENCE_CT_ID = ContentType.objects.get_by_natural_key(
-    app_label='occurrences', model='occurrence'
-)
-QUOTE_CT_ID = ContentType.objects.get_by_natural_key(app_label='quotes', model='quote')
