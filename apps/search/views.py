@@ -8,7 +8,6 @@ from pprint import pformat
 from typing import Any, Dict, List, Optional, Union
 
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q, QuerySet, Subquery
 from django.http import JsonResponse
 from django.views.generic import ListView
