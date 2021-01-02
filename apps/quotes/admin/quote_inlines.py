@@ -5,7 +5,7 @@ from typing import Optional
 
 from admin import GenericTabularInline, TabularInline
 from apps.quotes import models
-from modularhistory.constants.misc import OCCURRENCE_CT_ID
+from modularhistory.constants.content_types import ContentTypes, get_ct_id
 
 
 class AttributeesInline(TabularInline):
@@ -43,7 +43,7 @@ class OccurrencesInline(GenericTabularInline):
     def get_queryset(self, request):
         """Return the filtered queryset."""
         pk = re.search(r'/(\d+)/', request.path).group(1)
-        ct_id = OCCURRENCE_CT_ID
+        ct_id = get_ct_id(ContentTypes.occurrence)
         return models.QuoteRelation.objects.filter(quote_id=pk, content_type_id=ct_id)
 
     def get_extra(self, request, model_instance=None, **kwargs):

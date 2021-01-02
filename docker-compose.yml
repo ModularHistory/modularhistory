@@ -12,6 +12,7 @@ services:
       - dev-backend
     ports:
       - "3000:3000"
+      - "49153:49153"
     volumes:
       - .:/modularhistory
   

@@ -8,13 +8,10 @@ import logging
 
 import sentry_sdk
 from decouple import config
-from sentry_sdk.integrations.asgi import (  # noqa: F401; type: ignore
-    SentryAsgiMiddleware,
-)
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-from modularhistory.constants.misc import Environments
+from modularhistory.constants.environments import Environments
 from modularhistory.environment import VERSION, environment
 
 SEND_EVENTS = (
@@ -50,4 +47,10 @@ sentry_sdk.init(
     send_default_pii=True,
     # https://docs.sentry.io/platforms/python/performance/
     traces_sample_rate=0.5,
+)
+
+# SentryAsgiMiddleware is imported and aliased so that it can be imported
+# from this module (also initializing Sentry) by asgi.py as `SentryMiddleware`
+from sentry_sdk.integrations.asgi import (  # noqa: F401, E402; type: ignore
+    SentryAsgiMiddleware as SentryMiddleware,
 )

@@ -17,7 +17,7 @@ from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 
-from modularhistory.constants.misc import Environments
+from modularhistory.constants.environments import Environments
 from modularhistory.environment import environment
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'

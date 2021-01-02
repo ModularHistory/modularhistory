@@ -7,7 +7,7 @@ from meta.views import Meta
 
 from apps.quotes.models import Quote
 from apps.search.forms import SearchForm
-from modularhistory.constants.misc import IMAGE_CT_ID, OCCURRENCE_CT_ID, SOURCE_CT_ID
+from modularhistory.constants.content_types import ContentTypes
 
 
 class ListView(generic.list.ListView):
@@ -30,7 +30,11 @@ class ListView(generic.list.ListView):
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
-            excluded_content_types=[OCCURRENCE_CT_ID, IMAGE_CT_ID, SOURCE_CT_ID],
+            excluded_content_types=[
+                ContentTypes.occurrence,
+                ContentTypes.image,
+                ContentTypes.source,
+            ],
         )
         context['meta'] = Meta(
             title='Quotes',

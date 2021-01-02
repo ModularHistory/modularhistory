@@ -12,7 +12,7 @@ from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
 from admin.admin_site import admin_site
-from modularhistory.constants.misc import Environments
+from modularhistory.constants.environments import Environments
 from modularhistory.fields import HistoricDateTimeField, JSONField
 from modularhistory.forms import HistoricDateWidget
 from modularhistory.models import Model

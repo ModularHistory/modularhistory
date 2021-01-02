@@ -21,12 +21,7 @@ from apps.search.forms import SearchForm
 from apps.search.models import SearchableDatedModel
 from apps.sources.models import Source
 from apps.topics.models import Topic
-from modularhistory.constants.misc import (
-    IMAGE_CT_ID,
-    OCCURRENCE_CT_ID,
-    QUOTE_CT_ID,
-    SOURCE_CT_ID,
-)
+from modularhistory.constants.content_types import ContentTypes, get_ct_id
 from modularhistory.models import Model
 from modularhistory.structures.historic_datetime import HistoricDateTime
 
@@ -216,7 +211,7 @@ class SearchResultsView(ListView):
     template_name = 'search/search_results.html'
     paginate_by = N_RESULTS_PER_PAGE
 
-    excluded_content_types: Optional[List[int]]
+    excluded_content_types: Optional[List[str]]
     sort_by_relevance: bool
     suppress_unverified: bool
     entities: Optional[QuerySet]
@@ -272,7 +267,7 @@ class SearchResultsView(ListView):
         self.sort_by_relevance = request.GET.get('ordering') == 'relevance'
         self.suppress_unverified = request.GET.get('quality') == 'verified'
 
-        ct_ids = [int(ct_id) for ct_id in (request.GET.getlist('content_types') or [])]
+        content_types = request.GET.getlist('content_types') or []
         start_year = request.GET.get('start_year_0', None)
         year_type = request.GET.get('start_year_1', None)
         if start_year and year_type:
@@ -297,20 +292,20 @@ class SearchResultsView(ListView):
         }
 
         occurrence_results, occurrence_result_ids = _get_occurrence_results(
-            ct_ids, **search_kwargs
+            content_types, **search_kwargs
         )
         quote_results, quote_result_ids = _get_quote_results(
-            ct_ids, occurrence_result_ids, **search_kwargs
+            content_types, occurrence_result_ids, **search_kwargs
         )
 
         # TODO
         fixed = False
         if fixed:
             image_results = _get_image_results(
-                ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+                content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
             )
             source_results, source_result_ids = _get_source_results(
-                ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+                content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
             )
 
         self.entities = Entity.objects.filter(
@@ -329,11 +324,11 @@ class SearchResultsView(ListView):
         self.topics = (
             Topic.objects.filter(
                 Q(
-                    topic_relations__content_type_id=QUOTE_CT_ID,
+                    topic_relations__content_type_id=get_ct_id(ContentTypes.quote),
                     topic_relations__object_id__in=quote_result_ids,
                 )
                 | Q(
-                    topic_relations__content_type_id=OCCURRENCE_CT_ID,
+                    topic_relations__content_type_id=get_ct_id(ContentTypes.occurrence),
                     topic_relations__object_id__in=occurrence_result_ids,
                 )
             )
@@ -368,8 +363,8 @@ class SearchResultsView(ListView):
         return self.get_object_list()
 
 
-def _get_occurrence_results(ct_ids, **search_kwargs):
-    if OCCURRENCE_CT_ID in ct_ids or not ct_ids:
+def _get_occurrence_results(content_types, **search_kwargs):
+    if ContentTypes.occurrence in content_types or not content_types:
         occurrence_results = list(Occurrence.objects.search(**search_kwargs).iterator())
     else:
         occurrence_results = []
@@ -378,13 +373,13 @@ def _get_occurrence_results(ct_ids, **search_kwargs):
     ]
 
 
-def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
-    if QUOTE_CT_ID in ct_ids or not ct_ids:
+def _get_quote_results(content_types, occurrence_result_ids, **search_kwargs):
+    if ContentTypes.quote in content_types or not content_types:
         quote_results = Quote.objects.search(**search_kwargs)  # type: ignore
         if occurrence_result_ids:
             # TODO: refactor
             quote_results = quote_results.exclude(
-                Q(relations__content_type_id=OCCURRENCE_CT_ID)
+                Q(relations__content_type_id=get_ct_id(ContentTypes.occurrence))
                 & Q(relations__object_id__in=occurrence_result_ids)
             )
         quote_results = list(quote_results.iterator())
@@ -394,9 +389,9 @@ def _get_quote_results(ct_ids, occurrence_result_ids, **search_kwargs):
 
 
 def _get_image_results(
-    ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+    content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
-    if IMAGE_CT_ID in ct_ids or not ct_ids:
+    if ContentTypes.image in content_types or not content_types:
         image_results = Image.objects.search(**search_kwargs).filter(  # type: ignore
             entities=None
         )
@@ -416,9 +411,9 @@ def _get_image_results(
 
 
 def _get_source_results(
-    ct_ids, occurrence_result_ids, quote_result_ids, **search_kwargs
+    content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
-    if SOURCE_CT_ID in ct_ids or not ct_ids:
+    if ContentTypes.source in content_types or not content_types:
         source_results = Source.objects.search(**search_kwargs)  # type: ignore
 
         # TODO: This was broken by conversion to generic relations with quotes & occurrences

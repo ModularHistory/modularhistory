@@ -5,7 +5,7 @@ from typing import List, Optional
 from django.db.models import Q
 
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
-from modularhistory.constants.misc import OCCURRENCE_CT_ID
+from modularhistory.constants.content_types import ContentTypes, get_ct_id
 
 
 class QuoteManager(SearchableModelManager):
@@ -35,10 +35,11 @@ class QuoteManager(SearchableModelManager):
         )
         # Limit to specified entities
         if entity_ids:
+
             qs = qs.filter(
                 Q(attributees__id__in=entity_ids)
                 | Q(
-                    relations__content_type_id=OCCURRENCE_CT_ID,
+                    relations__content_type_id=get_ct_id(ContentTypes.occurrence),
                     relations__object_id__in=entity_ids,
                 )
             )

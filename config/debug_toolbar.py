@@ -11,7 +11,7 @@ https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
 from django.conf import settings
 from django.http import HttpRequest
 
-from modularhistory.constants.misc import Environments
+from modularhistory.constants.environments import Environments
 
 
 def show_toolbar(request: HttpRequest) -> bool:
