@@ -281,6 +281,8 @@ class HTMLField(MceHTMLField):
             (r'5610f0f6-8bba-4647-9642-e0a623c266d9', '261'),
             (r'e93eda83-560d-4a8a-8eac-8c28798b52ff', '262'),
             (r'ed35a437-15a0-4c03-9661-903db39fe216', '91'),
+            # Fix media URLs
+            (r'https:\S+/media/', '/media/'),
             # Remove empty divs & paragraphs
             (r'\n?<div>&nbsp;<\/div>', ''),
             (r'<div>&nbsp;<\/div>', ''),
@@ -288,7 +290,10 @@ class HTMLField(MceHTMLField):
             (r'<p>&nbsp;<\/p>', ''),
         )
         for pattern, replacement in replacements:
-            html_value = re.sub(pattern, replacement, html_value)
+            html_value, n_replacements = re.subn(pattern, replacement, html_value)
+            if n_replacements:
+                # Log an error so that we know the replacement is still necessary.
+                logging.error(f'Matches for r"{pattern}" were found and replaced.')
         return HTML(html_value, processor=self.processor)
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
