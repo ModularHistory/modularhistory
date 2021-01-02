@@ -23,8 +23,11 @@ SEND_EVENTS = (
 
 def filter(event, hint):
     """Filter events to be sent to Sentry."""
-    logging.info(f'Sentry sees: {hint}')
-    return event if SEND_EVENTS else None
+    if SEND_EVENTS:
+        logging.info(f'Sending Sentry event: {hint}')
+        return event
+    logging.info(f'Intercepted Sentry event: {hint.get("log_record") or hint}')
+    return None
 
 
 # Initialize the Sentry SDK for error reporting

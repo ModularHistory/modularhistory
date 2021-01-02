@@ -19,9 +19,8 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/static && \
   chmod +x /modularhistory/config/wait-for-it.sh
 
-# Expose ports
+# Expose port
 EXPOSE 3000
-EXPOSE 49153
 
 # Switch from root to non-root user
 USER www-data
