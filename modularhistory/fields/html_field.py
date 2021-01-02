@@ -87,7 +87,7 @@ def process(html: str) -> str:
             else:
                 logging.error(
                     f'ERROR: {model_cls.get_admin_placeholder_regex()} '
-                    f'did not match {truncate(placeholder)}'
+                    f'did not match {placeholder}'
                 )
         else:
             logging.error(f'ERROR: Unable to get model class string for {object_type}')
