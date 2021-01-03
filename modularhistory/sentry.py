@@ -20,13 +20,21 @@ SEND_EVENTS = (
     else True
 )
 
+IGNORED_PATTERNS = ("No application configured for scope type 'lifespan'",)
+
 
 def filter(event, hint):
     """Filter events to be sent to Sentry."""
+    error = str(hint)
     if SEND_EVENTS:
-        logging.info(f'Sending Sentry event: {hint}')
-        return event
-    logging.info(f'Intercepted Sentry event: {hint.get("log_record") or hint}')
+        for pattern in IGNORED_PATTERNS:
+            if pattern in error:
+                logging.info('Ignoring Sentry event: {error}')
+        else:
+            logging.info(f'Sending Sentry event: {error}')
+            return event
+    else:
+        logging.info(f'Intercepted Sentry event: {hint.get("log_record") or hint}')
     return None
 
 
