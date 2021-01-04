@@ -29,6 +29,7 @@ from django.views.generic import TemplateView
 from admin.model_admin import admin_site
 from apps.search.views import SearchResultsView
 from modularhistory import errors
+from .views import serve_from_react
 
 
 def error(request):
@@ -38,6 +39,7 @@ def error(request):
 
 
 urlpatterns = [
+    re_path('_next/.*', serve_from_react),
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
     # Account

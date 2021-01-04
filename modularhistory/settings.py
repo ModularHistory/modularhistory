@@ -125,6 +125,7 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
+    'corsheaders',  # https://github.com/adamchainz/django-cors-headers
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_replicated',  # https://github.com/yandex/django_replicated
@@ -177,6 +178,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # CORS middleware "should be placed as high as possible"
+    'corsheaders.middleware.CorsMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
     # Update cache:
@@ -673,7 +676,7 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.request.RequestPanel',
     'debug_toolbar.panels.headers.HeadersPanel',
     'debug_toolbar.panels.sql.SQLPanel',
-    'pympler.panels.MemoryPanel',
+    # 'pympler.panels.MemoryPanel',
     'debug_toolbar.panels.staticfiles.StaticFilesPanel',
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',
@@ -744,3 +747,11 @@ if IS_PROD:
 DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
     from config import checks  # noqa: F401
+
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:3000'
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = [
+    'localhost',
+]
