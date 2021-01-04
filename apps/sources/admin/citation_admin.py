@@ -72,14 +72,6 @@ class PagesInline(TabularInline):
     verbose_name_plural = 'pages'
     exclude = ['computations']
 
-    def get_extra(
-        self, request, model_instance: Optional[models.Citation] = None, **kwargs
-    ):
-        """Return the number of extra/blank rows to include."""
-        if model_instance and model_instance.pages.count():
-            return 0
-        return 1
-
 
 class CitationsInline(GenericTabularInline):
     """Inline admin for citations."""

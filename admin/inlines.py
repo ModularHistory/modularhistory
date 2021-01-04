@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional, TYPE_CHECKING
 
 from nested_admin.nested import (
     NestedGenericStackedInline,
@@ -8,6 +8,9 @@ from nested_admin.nested import (
 )
 
 from admin.model_admin import FORM_FIELD_OVERRIDES
+
+if TYPE_CHECKING:
+    from modularhistory.models import Model
 
 
 class GenericTabularInline(NestedGenericTabularInline):
@@ -37,6 +40,12 @@ class TabularInline(NestedTabularInline):
     """Inline admin with fields laid out horizontally."""
 
     formfield_overrides = FORM_FIELD_OVERRIDES
+
+    def get_extra(self, request, model_instance: Optional['Model'] = None, **kwargs):
+        """Return the number of extra/blank rows to display."""
+        if len(self.get_queryset(request)):
+            return 0
+        return 1
 
     def get_fields(self, request, model_instance=None) -> List[str]:
         """Return reordered fields to be displayed in the admin."""

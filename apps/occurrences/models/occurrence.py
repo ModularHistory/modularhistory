@@ -142,22 +142,8 @@ class Occurrence(
         """Careful!  These are occurrence-images, not images."""
         return self.image_relations.all().select_related('image')
 
-    @property
-    def entity_images(self) -> Optional[List[Image]]:
-        """TODO: write docstring."""
-        try:
-            images = []
-            for entity in self.involved_entities.all():
-                if entity.images.exists():
-                    if self.date:
-                        image = entity.images.get_closest_to_datetime(self.date)
-                        images.append(image)
-            return images
-        except (ObjectDoesNotExist, AttributeError):
-            return None
-
     def get_context(self):
-        """TODO: add docstring."""
+        """Return context for rendering the occurrence's detail template."""
         quotes = [
             quote_relation.quote
             for quote_relation in self.quote_relations.all()

@@ -14,13 +14,6 @@ class AttributeesInline(TabularInline):
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def get_extra(self, request, model_instance: Optional[Source] = None, **kwargs):
-        """TODO: add docstring."""
-        if model_instance:
-            if model_instance.attributees.count():
-                return 0
-        return 1
-
 
 class ContainersInline(TabularInline):
     """Inline admin for a source's containers."""
