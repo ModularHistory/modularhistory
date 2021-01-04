@@ -7,7 +7,7 @@ from meta.views import Meta
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-
+from modularhistory.views import AsyncAPIViewMixin
 from apps.entities.models import Category, Entity  # , Person, Organization
 from apps.entities.serializers import EntitySerializer
 
@@ -20,7 +20,7 @@ class EntityViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class EntityListAPIView(ListAPIView):
+class EntityListAPIView(AsyncAPIViewMixin, ListAPIView):
     """API view for listing entities."""
 
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
