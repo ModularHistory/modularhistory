@@ -4,7 +4,8 @@ const env = dotenv.config({path: '../.env'});
 if (env.error) throw env.error;
 
 // Add 'HOSTNAME' to environment
-if (!env.parsed['HOSTNAME']) {
+if (!('HOSTNAME' in env.parsed)) {
+
   env.parsed['HOSTNAME'] = (
     env.parsed['ENVIRONMENT'] === "dev"
       ? "http://localhost:8000"
