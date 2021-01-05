@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
 if [ "$ENVIRONMENT" = prod ]; then
     python manage.py collectstatic --no-input &&

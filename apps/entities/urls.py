@@ -9,8 +9,7 @@ router.register(r'entities', views.EntityViewSet)
 app_name = 'entities'
 
 urlpatterns = [
-    # path('', views.IndexView.as_view(), name='index'),
-    path('', views.react_view, name='index'),
+    path('', views.IndexView.as_view(), name='index'),
     path('api/', views.EntityListAPIView.as_view()),
     path('<int:pk>/part', views.DetailPartView.as_view(), name='detail'),
     path('<int:pk>/', views.DetailView.as_view(), name='detail'),
