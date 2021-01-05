@@ -53,8 +53,8 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/.backups && \
   chmod +x /modularhistory/config/wait-for-it.sh
 
-# Expose port 8000
-EXPOSE 8000
+# Expose port 8001
+EXPOSE 8001
 
 # Switch from root to non-root user
 USER www-data

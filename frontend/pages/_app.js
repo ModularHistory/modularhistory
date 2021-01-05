@@ -1,6 +1,5 @@
-import Head from 'next/head'
-import '../../modularhistory/static/styles/base.scss'
-import 'mdbreact/dist/css/mdb.css'
+import Head from 'next/head';
+import '../../modularhistory/static/styles/base.scss';
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -29,4 +28,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default MyApp
+export default MyApp;

@@ -13,7 +13,7 @@ from apps.entities.serializers import EntitySerializer
 
 import logging
 import aiohttp
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import html
 
 
@@ -25,7 +25,7 @@ class EntityViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class EntityListAPIView(AsyncAPIViewMixin, ListAPIView):
+class EntityListAPIView(ListAPIView):
     """API view for listing entities."""
 
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
@@ -108,20 +108,3 @@ class DetailPartView(BaseDetailView):
     """Partial view depicting details of a specific entity."""
 
     template_name = 'entities/_detail.html'
-
-
-async def react_view(request):
-    try:
-        timeout = aiohttp.ClientTimeout(total=15)
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.get(f"http://dev:3000{request.get_full_path()}") as response:
-                logging.info("Status:", response.status)
-                logging.info("Content-type:", response.headers['content-type'])
-
-                return HttpResponse(f"<pre>{await response.text()}</pre>")
-
-    except Exception as e:
-        logging.error("log error test", exc_info=e)
-        return HttpResponse(f"<pre>{html.escape(type(e))}</pre>")
-
-
