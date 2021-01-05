@@ -2,46 +2,44 @@ version: "3.8"
 
 services:
   dev:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    command: npx next dev
     depends_on:
-      - dev-backend
+      - react
+    image: nginx
     ports:
-      - "3000:3000"
+      - "8000:80"
     volumes:
+      - ./config/nginx:/etc/nginx/conf.d
       - .:/modularhistory
   
-  dev-backend:
+  dev_backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    command: sh -c "python manage.py migrate &&
-                    python manage.py runserver 0.0.0.0:8000"
+    command: sh init.sh
     depends_on:
       - postgres
       - redis
       - mongo
     env_file: .env
     environment:
-      - ENVIRONMENT=dev_docker
+      - DOCKERIZED=True
       - POSTGRES_HOST=postgres
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:8000/ht/ || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:8001/ht/ || exit 1"]
       timeout: 7s
       interval: 15s
       retries: 2
       start_period: 10s
+    networks:
+      default:
+        ipv4_address: 172.27.0.6
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       - .:/modularhistory
   
   modularhistory:
-    command: >
-      sh -c "python manage.py collectstatic --no-input && config/wait-for-it.sh postgres:5432 -- python manage.py migrate && python manage.py cleanup_django_defender &&
-             gunicorn modularhistory.asgi:application --user www-data --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker --workers 9 --max-requests 100 --max-requests-jitter 50"
+    command: sh init.sh
     depends_on:
       - postgres
       - redis
@@ -60,7 +58,7 @@ services:
       default:
         ipv4_address: 172.27.0.6
     ports:
-      - "8000:8000"
+      - "8001:8001"
     restart: "unless-stopped"
     user: www-data
     volumes:
@@ -92,6 +90,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - .backups/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  react:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    command: npm run dev
+    depends_on:
+      - dev_backend
+    networks:
+      default:
+        ipv4_address: 172.27.0.7
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/modularhistory
   
   redis:
     image: redis

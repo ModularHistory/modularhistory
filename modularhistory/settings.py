@@ -25,8 +25,8 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 ENVIRONMENT = environment
 
 IS_PROD = ENVIRONMENT == Environments.PROD
-IS_DEV = ENVIRONMENT in (Environments.DEV, Environments.DEV_DOCKER)
-DOCKERIZED = ENVIRONMENT in (Environments.PROD, Environments.DEV_DOCKER)
+IS_DEV = ENVIRONMENT == Environments.DEV
+DOCKERIZED = config('DOCKERIZED', cast=bool, default=IS_PROD)
 TESTING: bool = 'test' in sys.argv
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
@@ -744,7 +744,7 @@ DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
 if IS_PROD:
     DEFENDER_BEHIND_REVERSE_PROXY = True
 
-DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
+DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
     from config import checks  # noqa: F401
 

@@ -9,7 +9,6 @@ class Environments(Constant):
     PROD = 'prod'
     GITHUB_TEST = 'test'
     DEV = 'dev'
-    DEV_DOCKER = 'dev_docker'
 
 
 LOCAL = 'local'
