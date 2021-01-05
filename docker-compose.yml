@@ -19,7 +19,7 @@ services:
     command: sh init.sh
     depends_on:
       - postgres
-      - redis
+      - redis-commander
       - mongo
     env_file: .env
     environment:
@@ -117,6 +117,20 @@ services:
     restart: "always"
     volumes:
       - "data:/data"
+
+  redis-commander:
+    container_name: redis-commander
+    depends_on:
+      - redis
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      # - HTTP_USER=www-data
+      # - HTTP_PASSWORD=
+    ports:
+      - "8081:8081"
 
 networks:
   default:

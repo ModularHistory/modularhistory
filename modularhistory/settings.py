@@ -140,7 +140,7 @@ INSTALLED_APPS = [
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.db',
-    'health_check.cache',
+    # 'health_check.cache',  # TODO
     'health_check.contrib.migrations',
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
