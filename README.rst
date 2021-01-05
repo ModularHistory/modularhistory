@@ -21,9 +21,8 @@ Installation
 Prerequisites
 ~~~~~~~~~~~~~
 
-OS: MacOS or Ubuntu
-
-(ModularHistory cannot be run on Windows.)
+- Docker (https://docs.docker.com/get-docker/)
+- Docker Compose (https://docs.docker.com/compose/install/)
 
 Cloning
 ~~~~~~~
@@ -34,14 +33,34 @@ Clone ModularHistory to your local machine::
 
 Setup
 ~~~~~
+With Docker
+########
 
 Enter the cloned project directory::
 
-    shell script cd modularhistory
+    cd modularhistory
+    
+Start up the application in development mode::
 
-Execute the setup script (which installs all dependencies)::
+    docker-compose up -d dev
+    
+Watch the logs::
 
-    shell script ./setup.sh
+    docker-compose logs -f
+
+
+Without Docker
+########
+
+NOTE: ModularHistory can only be run without Docker on MacOS or Linux operating systems.
+
+Enter the cloned project directory::
+
+    cd modularhistory
+
+Execute the setup script (which should install all dependencies)::
+
+    ./setup.sh
 
 Run tests::
 
