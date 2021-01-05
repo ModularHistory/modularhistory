@@ -14,7 +14,7 @@ services:
   dev_backend:
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: Dockerfile.django
     command: sh init.sh
     depends_on:
       - postgres
@@ -94,7 +94,7 @@ services:
   react:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile.react
     command: npm run dev
     depends_on:
       - dev_backend
