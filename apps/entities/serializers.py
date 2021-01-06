@@ -17,7 +17,10 @@ class EntitySerializer(ModelSerializer):
     serialized_images = serpy.Field()
 
     def get_description(self, instance) -> str:
-        return instance.description.html
+        if instance.description:
+            return instance.description.html
+        else:
+            return ""
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
