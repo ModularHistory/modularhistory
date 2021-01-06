@@ -1,7 +1,7 @@
-import Head from 'next/head'
-import Navbar from './navbar'
-import Footer from './footer'
-import Modal from './modal'
+import Head from 'next/head';
+import Navbar from './navbar';
+import Footer from './footer';
+import Modal from './modal';
 import {useRouter} from "next/router";
 
 
