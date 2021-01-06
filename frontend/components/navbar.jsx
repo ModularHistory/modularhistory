@@ -1,12 +1,34 @@
+import Link from "next/link";
+
+const globalMenuItems = [
+  {title: "Occurrences", path: '/occurrences/', reactive: false},
+  {title: "Quotes", path: '/quotes/', reactive: false},
+  {title: "Entities", path: '/entities/', reactive: true},
+  {title: "About", path: '/about/', reactive: false},
+];
+
+function MenuItem({title, path, reactive}) {
+  return (
+    <li className="nav-item">
+      {reactive
+        ? <Link href={path}>
+          <a className="nav-link">{title}</a>
+        </Link>
+        : <a className="nav-link" href={path}>{title}</a>
+      }
+    </li>
+  );
+}
+
 export default function Navbar({user, menuItems}) {
   user = user || {isAuthenticated: false};
-  menuItems = menuItems || [];
+  menuItems = menuItems || globalMenuItems;
 
   return (
     <nav className="navbar navbar-expand-sm bg-dark navbar-dark" id="global-nav" style={{minHeight: "4rem"}}>
       {/* Logo */}
       <a className="navbar-brand" href="/">
-        <img src="logo_head_white.png" alt="Logo" style={{height: "2.5rem"}} />
+        <img src="/static/logo_head_white.png" alt="Logo" style={{height: "2.5rem"}}/>
         ModularHistory
       </a>
 
@@ -19,7 +41,7 @@ export default function Navbar({user, menuItems}) {
                 ? <img src={user.avatar.url}
                        className="rounded-circle z-depth-0"
                        alt={user.fullName} height="35"/>
-                : <i className="fas fa-user" />
+                : <i className="fas fa-user"/>
               }
             </a>
             <div className="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="accountDropdown">
@@ -32,7 +54,7 @@ export default function Navbar({user, menuItems}) {
                     <a href="" className="dropdown-item hide-admin-controls">Hide admin controls</a>
                   </>}
                   <a href="/account/logout" className="dropdown-item">
-                    <span className="glyphicon glyphicon-log-out" /> Logout
+                    <span className="glyphicon glyphicon-log-out"/> Logout
                   </a>
                 </>
                 : <>
@@ -45,18 +67,14 @@ export default function Navbar({user, menuItems}) {
         </ul>
         {/* Toggler/collapser button */}
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-          <span className="navbar-toggler-icon"></span>
+          <span className="navbar-toggler-icon"/>
         </button>
       </div>
 
       {/* Collapsible links */}
       <div className="collapse navbar-collapse order-2 order-sm-1" id="collapsibleNavbar">
         <ul className="navbar-nav">
-          {menuItems.map(([title, app]) => (
-            <li className="nav-item">
-              <a className="nav-link" href={`/${app}/`}>{title}</a>
-            </li>
-          ))}
+          {menuItems.map((item) => <MenuItem key={item.title} {...item}/>)}
         </ul>
         <ul className="navbar-nav ml-auto nav-flex-icons justify-content-end">
         </ul>
