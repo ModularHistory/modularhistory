@@ -1,7 +1,6 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from modularhistory.views import AsyncAPIViewMixin
 from apps.entities.models import Entity
 from apps.entities.serializers import EntitySerializer
 
@@ -14,7 +13,7 @@ class EntityViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class EntityListAPIView(AsyncAPIViewMixin, ListAPIView):
+class EntityListAPIView(ListAPIView):
     """API view for listing entities."""
 
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore

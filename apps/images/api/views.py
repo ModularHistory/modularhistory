@@ -1,7 +1,6 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from modularhistory.views import AsyncAPIViewMixin
 from apps.images.serializers import ImageSerializer
 
 from apps.images.models import Image
@@ -15,7 +14,7 @@ class ImageViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class ImageListAPIView(AsyncAPIViewMixin, ListAPIView):
+class ImageListAPIView(ListAPIView):
     """API view for listing images."""
 
     queryset = Image.objects.all()

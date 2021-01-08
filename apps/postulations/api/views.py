@@ -1,7 +1,6 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from modularhistory.views import AsyncAPIViewMixin
 from apps.postulations.serializers import PostulationSerializer
 
 from apps.postulations.models import Postulation
@@ -15,7 +14,7 @@ class PostulationViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class PostulationListAPIView(AsyncAPIViewMixin, ListAPIView):
+class PostulationListAPIView(ListAPIView):
     """API view for listing postulations."""
 
     queryset = Postulation.objects.all()

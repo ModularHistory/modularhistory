@@ -1,7 +1,6 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from modularhistory.views import AsyncAPIViewMixin
 from apps.occurrences.serializers import OccurrenceSerializer
 
 from apps.occurrences.models import Occurrence
@@ -15,7 +14,7 @@ class OccurrenceViewSet(ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class OccurrenceListAPIView(AsyncAPIViewMixin, ListAPIView):
+class OccurrenceListAPIView(ListAPIView):
     """API view for listing occurrences."""
 
     queryset = Occurrence.objects.all()
