@@ -1,4 +1,4 @@
-"""Serializers for the entities app."""
+"""Serializers for the postulations app."""
 
 import serpy
 

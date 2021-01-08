@@ -1,10 +1,8 @@
-from admin_auto_filters.views import AutocompleteJsonView
-from django.db.models import Q
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 from modularhistory.views import AsyncAPIViewMixin
-from apps.entities.models import Category, Entity  # , Person, Organization
+from apps.entities.models import Entity
 from apps.entities.serializers import EntitySerializer
 
 
