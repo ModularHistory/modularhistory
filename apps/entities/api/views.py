@@ -21,33 +21,3 @@ class EntityListAPIView(AsyncAPIViewMixin, ListAPIView):
 
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
     serializer_class = EntitySerializer
-
-
-class EntitySearchView(AutocompleteJsonView):
-    """Used by autocomplete widget in admin."""
-
-    def get_queryset(self):
-        """Return the filtered queryset."""
-        queryset = Entity.objects.all()
-        term = self.term
-        if term:
-            queryset = queryset.filter(
-                Q(name__icontains=term)
-                | Q(unabbreviated_name__icontains=term)
-                | Q(aliases__icontains=term)
-            )
-        return queryset
-
-
-class EntityCategorySearchView(AutocompleteJsonView):
-    """Used by autocomplete widget in admin."""
-
-    def get_queryset(self):
-        """Return the filtered queryset."""
-        queryset = Category.objects.all()
-        term = self.term
-        if term:
-            queryset = queryset.filter(
-                Q(name__icontains=term) | Q(aliases__icontains=term)
-            )
-        return queryset
