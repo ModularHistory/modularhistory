@@ -1,3 +1,4 @@
+import {forwardRef} from 'react';
 import Head from "next/head";
 import Link from "next/link";
 import axios from "axios";
@@ -16,65 +17,76 @@ import Layout from "../../components/layout";
 
 import {useRouter} from "next/router";
 import {useState} from "react";
+import {useTheme} from '@material-ui/core/styles';
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-function PaginationLink({href, ...childProps}) {
+const PaginationLink = forwardRef(({href, ...childProps}, ref) => (
+  <Link href={href}>
+    <a ref={ref} {...childProps}/>
+  </Link>
+));
+
+function usePageState(...args) {
+  const [state, setState] = useState(...args);
+  return [state, (e) => setState(Number(e.target.dataset.index))];
+}
+
+// TODO: convert to generic version
+function EntitiesPagination({count, ...childProps}) {
+  // TODO: integrate route events to make page selection responsive
+  //       https://nextjs.org/docs/api-reference/next/router#routerevents
+  const router = useRouter();
+  const theme = useTheme();
+
+  const sibCount = 1 + ['sm', 'md'].map((size) =>
+    useMediaQuery(theme.breakpoints.up(size))
+  ).reduce((sum, current) => sum + current);
+
+  const [pageNum, setPageNum] = usePageState(
+    Number(router.query['page'] || 1)
+  );
+
   return (
-    <Link href={href}>
-      <a {...childProps}/>
-    </Link>
+    <Pagination
+      count={count} page={pageNum} siblingCount={sibCount} onChange={setPageNum}
+      variant="outlined" shape="rounded" size={sibCount > 2 ? 'large' : undefined}
+      renderItem={(item) => (
+        <PaginationItem
+          {...item} component={PaginationLink} data-index={item.page}
+          href={item.page > 1 ? `/entities?page=${item.page}` : router.pathname}
+        />
+      )} {...childProps}
+    />
   );
 }
 
 export default function Entities({entitiesData}) {
   const entities = entitiesData['results'];
-  const router = useRouter();
-  const isLastPage = entitiesData['next'] === null;
-  const pageNum = Number(router.query['page'] || 1);
-
-  const [pageCount,] = useState(() => (
-    isLastPage
-      ? pageNum
-      : Math.ceil(entitiesData['count'] / entities.length)
-  ));
-
-  const pagination = (
-    <Pagination
-      count={pageCount} page={pageNum}
-      variant="outlined" shape="rounded"
-      renderItem={(item) => (
-        <PaginationItem
-          {...item} component={PaginationLink}
-          href={item.page !== 1 ? `?page=${item.page}` : router.pathname}
-        />
-      )}
-    />
-  );
 
   const entityCards = entities.map(entity => (
     <Grid item key={entity['pk']}
-          xs={10} sm={4} md={3}>
-      <Card>
-        <CardHeader title={entity['name']}/>
-        {entity['serialized_images'].length > 0 &&
-        <CardMedia
-          component={'img'}
-          src={entity['serialized_images'][0]['src_url']}
-        />
-        }
-        <CardContent
-          dangerouslySetInnerHTML={{__html: entity.description}}
-        />
-      </Card>
+          xs={6} sm={4} md={3}>
+      <a href={`entities/${entity['pk']}`}>
+        <Card>
+          <CardHeader title={entity['name']}/>
+          {entity['serialized_images'].length > 0 &&
+          <CardMedia
+            style={{height: 0, paddingTop: '100%'}}
+            image={entity['serialized_images'][0]['src_url']}
+          />}
+          <CardContent
+            dangerouslySetInnerHTML={{__html: entity['description']}}
+          />
+        </Card>
+      </a>
     </Grid>
   ));
 
   return (
     <Layout title={"Entities"}>
       <Container>
+        <EntitiesPagination count={entitiesData['total_pages']}/>
         <Grid container spacing={2}>
-          <Grid item xs={10}>
-            {pagination}
-          </Grid>
           {entityCards}
         </Grid>
       </Container>
@@ -86,17 +98,20 @@ export default function Entities({entitiesData}) {
 
 export async function getServerSideProps(context) {
   const q = context.query;
-  console.log(`requesting entities from DRF (page=${q['page']})`);
-  const entitiesReq = await axios.get(
+  let entitiesData = [];
+
+  await axios.get(
     "http://drf:8001/entities/api/" +
     ('page' in q ? `?page=${q['page']}` : "")
-  );
-  console.log("received entities from DRF");
-  // TODO: catch errors
+  ).then((response) => {
+    entitiesData = response.data;
+  }).catch((error) => {
+    console.error(error);
+  });
 
   return {
     props: {
-      entitiesData: entitiesReq.data,
+      entitiesData: entitiesData,
     },
   };
 }

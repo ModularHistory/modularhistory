@@ -21,7 +21,7 @@ export default function Layout({title, canonical_url, children}) {
       </div>
 
       <Footer />
-      <Modal />
+      {/*<Modal />*/}
       {/* Removed scripts template tag.
           Can be added to Head with defer attribute */}
     </>
