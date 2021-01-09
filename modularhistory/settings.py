@@ -276,9 +276,13 @@ DATABASES = {
         'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
         'PORT': 5432,
     },
+    # TODO: https://github.com/nesdis/djongo
     # 'mongo': {
-    #     'ENGINE' : 'django_mongodb_engine',
-    #     'NAME' : 'default'
+    #     'ENGINE' : 'djongo',
+    #     'NAME' : 'default',
+    #     'CLIENT': {
+    #        'host': 'your-db-host',
+    #     }
     # }
 }
 

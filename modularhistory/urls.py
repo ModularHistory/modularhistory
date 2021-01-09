@@ -38,6 +38,9 @@ def error(request):
     raise Exception('Raising an exception for testing purposes.')
 
 
+_api = 'apps.{}.api.urls'.format  # noqa: P103
+
+# fmt: off
 urlpatterns = [
     re_path('_next/.*', serve_from_react),
     path('admin_tools/', include('admin_tools.urls')),
@@ -51,25 +54,34 @@ urlpatterns = [
     # Chat
     path('chat/', include('apps.chat.urls', namespace='chat')),
     # Entities
+    path('api/entities/', include(_api('entities'), namespace='entities_api')),
     path('entities/', include('apps.entities.urls', namespace='entities')),
     # Postulations
+    path('api/postulations/', include(_api('postulations'), namespace='postulations_api')),
     path('facts/', include('apps.postulations.urls', namespace='facts')),
     path('postulations/', include('apps.postulations.urls', namespace='postulations')),
     # Images
+    path('api/images/', include(_api('images'), namespace='images_api')),
     path('images/', include('apps.images.urls', namespace='images')),
     # Occurrences
+    path('api/occurrences/', include(_api('occurrences'), namespace='occurrences_api')),
     path('occurrences/', include('apps.occurrences.urls', namespace='occurrences')),
     # Places
+    path('api/places/', include(_api('places'), namespace='places_api')),
     path('places/', include(('apps.places.urls', 'places'), namespace='places')),
     path('locations/', include(('apps.places.urls', 'places'), namespace='locations')),
     # Quotes
+    path('api/quotes/', include(_api('quotes'), namespace='quotes_api')),
     path('quotes/', include('apps.quotes.urls', namespace='quotes')),
     # Search
+    path('api/search/', include(_api('search'), namespace='search_api')),
     path('search/', include('apps.search.urls', namespace='search')),
     re_path(r'search$', SearchResultsView.as_view(), name='search'),
     # Sources
+    path('api/sources/', include(_api('sources'), namespace='sources_api')),
     path('sources/', include('apps.sources.urls', namespace='sources')),
     # Topics
+    path('api/topics/', include(_api('topics'), namespace='topics_api')),
     path('topics/', include('apps.topics.urls', namespace='topics')),
     # Third-party apps
     path('api-auth/', include('rest_framework.urls')),
@@ -80,10 +92,7 @@ urlpatterns = [
     # Home
     path('', include('apps.home.urls')),
     # robots.txt
-    path(
-        'robots.txt',
-        TemplateView.as_view(template_name='robots.txt', content_type='text/plain'),
-    ),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     # Health check: https://github.com/KristianOellegaard/django-health-check
     path('ht/', include('health_check.urls')),
     # Debug toolbar: https://django-debug-toolbar.readthedocs.io/en/latest/
@@ -96,6 +105,7 @@ urlpatterns = [
     path('errors/500', errors.error),  # 500 trigger
     re_path(r'^(?P<path>favicon.ico)$', serve),
 ]
+# fmt: on
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
