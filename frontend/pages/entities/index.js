@@ -101,7 +101,7 @@ export async function getServerSideProps(context) {
   let entitiesData = [];
 
   await axios.get(
-    "http://drf:8001/entities/api/" +
+    "http://drf:8001/api/entities" +
     ('page' in q ? `?page=${q['page']}` : "")
   ).then((response) => {
     entitiesData = response.data;
