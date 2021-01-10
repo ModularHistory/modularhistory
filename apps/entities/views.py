@@ -48,7 +48,6 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        print('skjdfklsdjfljsljfljlsdjljf')
         return Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
 
 

@@ -61,7 +61,7 @@ function EntitiesPagination({count, ...childProps}) {
 }
 
 export default function Entities({entitiesData}) {
-  const entities = entitiesData['results'];
+  const entities = entitiesData['results'] || [];
 
   const entityCards = entities.map((entity) => (
     <Grid item key={entity['pk']}
@@ -98,10 +98,10 @@ export default function Entities({entitiesData}) {
 
 export async function getServerSideProps(context) {
   const q = context.query;
-  let entitiesData = [];
+  let entitiesData = {};
 
   await axios.get(
-    "http://drf:8001/api/entities" +
+    "http://drf:8001/api/entities/" +
     ('page' in q ? `?page=${q['page']}` : "")
   ).then((response) => {
     entitiesData = response.data;

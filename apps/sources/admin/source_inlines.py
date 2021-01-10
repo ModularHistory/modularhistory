@@ -1,5 +1,3 @@
-from typing import Optional
-
 from admin import GenericTabularInline, TabularInline
 from apps.sources import models
 from apps.sources.models import Source
