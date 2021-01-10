@@ -3,21 +3,21 @@ import Head from "next/head";
 import Link from "next/link";
 import axios from "axios";
 
-import Container from "@material-ui/core/Container"
-import Grid from "@material-ui/core/Grid"
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 
-import Pagination from "@material-ui/lab/Pagination"
-import PaginationItem from '@material-ui/lab/PaginationItem';
+import Pagination from "@material-ui/lab/Pagination";
+import PaginationItem from "@material-ui/lab/PaginationItem";
 
 import Layout from "../../components/layout";
 
 import {useRouter} from "next/router";
 import {useState} from "react";
-import {useTheme} from '@material-ui/core/styles';
+import {useTheme} from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const PaginationLink = forwardRef(({href, ...childProps}, ref) => (
@@ -63,7 +63,7 @@ function EntitiesPagination({count, ...childProps}) {
 export default function Entities({entitiesData}) {
   const entities = entitiesData['results'];
 
-  const entityCards = entities.map(entity => (
+  const entityCards = entities.map((entity) => (
     <Grid item key={entity['pk']}
           xs={6} sm={4} md={3}>
       <a href={`entities/${entity['pk']}`}>
@@ -106,12 +106,12 @@ export async function getServerSideProps(context) {
   ).then((response) => {
     entitiesData = response.data;
   }).catch((error) => {
-    console.error(error);
+    // console.error(error);
   });
 
   return {
     props: {
-      entitiesData: entitiesData,
+      entitiesData,
     },
   };
 }

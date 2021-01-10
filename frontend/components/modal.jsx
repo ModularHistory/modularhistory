@@ -20,5 +20,5 @@ export default function Modal() {
         {/* /.Content */}
       </div>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 // https://nextjs.org/docs/advanced-features/custom-document
 
-import Document, { Html, Head, Main, NextScript } from 'next/document'
+import Document, { Html, Head, Main, NextScript } from "next/document"
 
 
 class MyDocument extends Document {

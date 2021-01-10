@@ -37,31 +37,34 @@ export default function Navbar({user, menuItems}) {
         <ul className="navbar-nav">
           <li className="nav-item avatar dropdown">
             <a className="nav-link p-0 dropdown-toggle" id="accountDropdown" data-toggle="dropdown">
-              {user.isAuthenticated && user.avatar
-                ? <img src={user.avatar.url}
-                       className="rounded-circle z-depth-0"
-                       alt={user.fullName} height="35"/>
-                : <i className="fas fa-user"/>
-              }
+              <i className="fas fa-user"/>
+              {/*{user.isAuthenticated && user.avatar*/}
+              {/*  ? <img src={user.avatar.url}*/}
+              {/*         className="rounded-circle z-depth-0"*/}
+              {/*         alt={user.fullName} height="35"/>*/}
+              {/*  : <i className="fas fa-user"/>*/}
+              {/*}*/}
             </a>
             <div className="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="accountDropdown">
-              {user.isAuthenticated
-                ? <>
-                  <a className="dropdown-item" href="/account/profile">Profile</a>
-                  <a className="dropdown-item" href="/account/setting">Settings</a>
-                  {user.isSuperUser && <>
-                    <a href="/admin/" className="dropdown-item">Administrate</a>
-                    <a href="" className="dropdown-item hide-admin-controls">Hide admin controls</a>
-                  </>}
-                  <a href="/account/logout" className="dropdown-item">
-                    <span className="glyphicon glyphicon-log-out"/> Logout
-                  </a>
-                </>
-                : <>
-                  <a href="/account/register" className="dropdown-item">Create an account</a>
-                  <a href="/account/login" className="dropdown-item">Login</a>
-                </>
-              }
+              <a href="/account/register" className="dropdown-item">Create an account</a>
+              <a href="/account/login" className="dropdown-item">Login</a>
+              {/*{user.isAuthenticated*/}
+              {/*  ? <>*/}
+              {/*    <a className="dropdown-item" href="/account/profile">Profile</a>*/}
+              {/*    <a className="dropdown-item" href="/account/setting">Settings</a>*/}
+              {/*    {user.isSuperUser && <>*/}
+              {/*      <a href="/admin/" className="dropdown-item">Administrate</a>*/}
+              {/*      <a href="" className="dropdown-item hide-admin-controls">Hide admin controls</a>*/}
+              {/*    </>}*/}
+              {/*    <a href="/account/logout" className="dropdown-item">*/}
+              {/*      <span className="glyphicon glyphicon-log-out"/> Logout*/}
+              {/*    </a>*/}
+              {/*  </>*/}
+              {/*  : <>*/}
+              {/*    <a href="/account/register" className="dropdown-item">Create an account</a>*/}
+              {/*    <a href="/account/login" className="dropdown-item">Login</a>*/}
+              {/*  </>*/}
+              {/*}*/}
             </div>
           </li>
         </ul>
@@ -80,5 +83,5 @@ export default function Navbar({user, menuItems}) {
         </ul>
       </div>
     </nav>
-  )
+  );
 }

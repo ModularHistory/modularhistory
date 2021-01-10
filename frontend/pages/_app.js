@@ -1,5 +1,5 @@
-import Head from 'next/head';
-import '../../modularhistory/static/styles/base.scss';
+import Head from "next/head";
+import "../../modularhistory/static/styles/base.scss";
 
 function MyApp({ Component, pageProps }) {
   return (
