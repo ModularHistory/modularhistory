@@ -1,13 +1,14 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from concurrency.fields import IntegerVersionField
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
+from apps.images.models import Image
 from apps.images.models.model_with_images import ModelWithImages
 from apps.occurrences.manager import OccurrenceManager
 from apps.occurrences.models.occurrence_image import OccurrenceImage
