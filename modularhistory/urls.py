@@ -44,6 +44,7 @@ urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
     # Account
+    path('api/account/', include(_api('account'), namespace='account_api')),
     path('account/', include(('apps.account.urls', 'account'), namespace='account')),
     # Admin
     path('admin/defender/', include('defender.urls')),  # defender admin
