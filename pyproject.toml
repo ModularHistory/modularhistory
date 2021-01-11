@@ -37,6 +37,7 @@ repository = "https://github.com/ModularHistory/modularhistory"
 [tool.poetry.dependencies]
 python = "^3.7"
 aenum = "^2.2.4"
+aiohttp = { extras = ["speedups"], version = "^3.7.3" }
 beautifulsoup4 = "==4.9.3"
 channels = "^3.0"
 channels-redis = "^3.2.0"
@@ -117,7 +118,6 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
-aiohttp = { extras = ["speedups"], version = "^3.7.3" }
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"

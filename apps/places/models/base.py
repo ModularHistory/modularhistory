@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
+from django.core.exceptions import ValidationError
 from modularhistory.models import ModelWithComputations, TypedModel, retrieve_or_compute
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
@@ -54,6 +54,15 @@ class Place(TypedModel, ModelWithComputations):
     def __str__(self) -> str:
         """Return the location's string representation."""
         return self.string
+
+    def save(self):
+        """Save the place to the database."""
+        if self.type == 'places.place' or not self.type:
+            raise ValidationError('Place must have a type.')
+        else:
+            # Prevent a RuntimeError when saving a new place
+            self.recast(self.type)
+        super().save()
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='string')

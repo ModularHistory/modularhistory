@@ -7,7 +7,7 @@ INTERNAL_IPS = ['127.0.0.1']
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
 DEBUG_TOOLBAR_CONFIG = {
     'SHOW_COLLAPSED': True,
-    'SHOW_TOOLBAR_CALLBACK': 'config.debug_toolbar.show_toolbar',
+    'SHOW_TOOLBAR_CALLBACK': 'modularhistory.config._debug_toolbar.show_toolbar',
 }
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.timer.TimerPanel',

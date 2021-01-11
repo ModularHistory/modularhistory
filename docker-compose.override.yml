@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:  
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    volumes:
+      - .:/modularhistory
+  
+  react:
+    build:
+      context: .
+      dockerfile: Dockerfile.react
+    command: npm run dev
+    volumes:
+      - .:/modularhistory

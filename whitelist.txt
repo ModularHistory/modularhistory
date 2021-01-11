@@ -38,6 +38,7 @@ parsable
 prefetched
 prepopulated
 pylint
+pympler
 querysets
 RST
 SDK

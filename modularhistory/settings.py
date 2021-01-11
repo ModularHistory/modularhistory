@@ -463,7 +463,7 @@ if IS_PROD:
 
 DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
-    from config import checks  # noqa: F401
+    from . import checks  # noqa: F401
 
 # TODO: research CORS settings
 # CORS_ALLOWED_ORIGINS = [
@@ -477,4 +477,5 @@ if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
 # ]
 
 # https://github.com/sobolevn/django-split-settings
-include('config/*.py')
+# Include all settings modules with names not beginning with an underscore.
+include('config/[!_]*.py')

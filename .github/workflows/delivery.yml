@@ -91,7 +91,7 @@ jobs:
         echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
         echo "" && echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
         echo "" && echo "Building $IMAGE_NAME:${{ github.sha }}..."
-        docker build . -f Dockerfile.backend -t $IMAGE_NAME:${{ github.sha }} --cache-from $IMAGE_NAME:latest
+        docker build . -f Dockerfile.django -t $IMAGE_NAME:${{ github.sha }} --cache-from $IMAGE_NAME:latest
         docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
         echo "" && echo "Pushing new image ($IMAGE_NAME:${{ github.sha }}) to the registry..."
         docker push $IMAGE_NAME:${{ github.sha }} && docker push $IMAGE_NAME:latest
@@ -121,7 +121,7 @@ jobs:
           docker image inspect $IMAGE_NAME:${{ github.sha }} >/dev/null 2>&1 && echo "Successfully pulled modularhistory:${{ github.sha }}" || echo "ERROR: Did not retrieve modularhistory:${{ github.sha }}."
           echo "" && echo "Restarting webserver..."
           docker-compose down
-          docker-compose up -d modularhistory
+          docker-compose up -d django
           docker system prune -f
         ENDSSH
     

@@ -3,7 +3,7 @@ version: "3.8"
 services:
   dev:
     depends_on:
-      - dev_backend
+      - django
       - react
     image: nginx
     ports:
@@ -12,44 +12,20 @@ services:
       - ./config/nginx:/etc/nginx/conf.d
       - .:/modularhistory
   
-  dev_backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.django
-    command: sh init.sh
-    depends_on:
-      - postgres
-      - redis-commander
-      - mongo
-    env_file: .env
-    environment:
-      - DOCKERIZED=True
-      - POSTGRES_HOST=postgres
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:8001/ht/ || exit 1"]
-      timeout: 7s
-      interval: 15s
-      retries: 2
-      start_period: 10s
-    networks:
-      default:
-        ipv4_address: 172.27.0.6
-    ports:
-      - "8001:8001"
-    volumes:
-      - .:/modularhistory
-  
-  modularhistory:
+  django:
     command: sh init.sh
     depends_on:
       - postgres
       - redis
+      - redis-commander
+      - mongo
     env_file: .env
     environment:
       - DJANGO_SETTINGS_MODULE=modularhistory.settings
+      - DOCKERIZED=True
       - POSTGRES_HOST=postgres
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:8000/ht/ || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:8001/ht/ || exit 1"]
       timeout: 7s
       interval: 15s
       retries: 2
@@ -99,9 +75,9 @@ services:
       dockerfile: Dockerfile.react
     command: npm run dev
     depends_on:
-      - dev_backend
+      - django
     links:
-      - dev_backend:drf
+      - django:drf
     networks:
       default:
         ipv4_address: 172.27.0.7
@@ -140,6 +116,6 @@ networks:
         - subnet: 172.27.0.0/24
 
 volumes:
-  # `data` is used by redis and mongodb
+  # `data` is used by both redis and mongodb
   data:
   postgres_data:
