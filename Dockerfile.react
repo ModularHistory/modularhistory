@@ -13,11 +13,13 @@ RUN npm ci
 # Add source code
 COPY . /modularhistory/
 
+# Build
+RUN npm run build
+
 # Grant necessary permissions to non-root user
 RUN chown -R www-data:www-data /modularhistory && \
-  chmod g+w -R /modularhistory/media && \
-  chmod g+w -R /modularhistory/static && \
-  chmod +x /modularhistory/config/wait-for-it.sh
+  chmod +x /modularhistory/config/wait-for-it.sh && \
+  chmod g+w -R /modularhistory/frontend/.next/
 
 # Expose port
 EXPOSE 3000

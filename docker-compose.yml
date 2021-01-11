@@ -73,11 +73,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.react
-    command: npm run dev
+    command: npm run start
     depends_on:
       - django
-    links:
-      - django:drf
     networks:
       default:
         ipv4_address: 172.27.0.7
