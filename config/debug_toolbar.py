@@ -23,7 +23,8 @@ def show_toolbar(request: HttpRequest) -> bool:
     )
     disqualifiers = (
         settings.TESTING,
-        settings.ENVIRONMENT == Environments.DEV_DOCKER,
+        # disable toolbar in Dockerized dev environment to avoid errors; TODO: fix?
+        settings.ENVIRONMENT == Environments.DEV and settings.DOCKERIZED,
     )
     if any(conditions) and not any(disqualifiers):
         return True

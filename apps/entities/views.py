@@ -4,6 +4,7 @@ from admin_auto_filters.views import AutocompleteJsonView
 from django.db.models import Q
 from django.views import generic
 from meta.views import Meta
+
 from apps.entities.models import Category, Entity  # , Person, Organization
 
 

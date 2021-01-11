@@ -145,7 +145,7 @@ jobs:
         echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
         echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
         echo "Building $IMAGE_NAME:$SHA..."
-        docker build . -f Dockerfile.backend -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
+        docker build . -f Dockerfile.django -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
         docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
         docker run $IMAGE_NAME:$SHA
     - name: Run Snyk to check Docker image for vulnerabilities
@@ -157,7 +157,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
         image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
-        args: --file=Dockerfile.backend
+        args: --file=Dockerfile.django
   
   analyze:
     name: CodeQL Analysis

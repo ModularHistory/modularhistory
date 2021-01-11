@@ -16,6 +16,7 @@ decrypt
 dedupe
 discoverable
 divs
+Dockerized
 entrypoint
 flatpage
 formatpainter

@@ -16,7 +16,7 @@ from modularhistory.environment import VERSION, environment
 
 SEND_EVENTS = (
     config('SEND_SENTRY_EVENTS', cast=bool, default=False)
-    if environment in (Environments.DEV, Environments.DEV_DOCKER)
+    if environment == Environments.DEV
     else True
 )
 

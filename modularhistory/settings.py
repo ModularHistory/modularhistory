@@ -26,8 +26,8 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 ENVIRONMENT = environment
 
 IS_PROD = ENVIRONMENT == Environments.PROD
-IS_DEV = ENVIRONMENT in (Environments.DEV, Environments.DEV_DOCKER)
-DOCKERIZED = ENVIRONMENT in (Environments.PROD, Environments.DEV_DOCKER)
+IS_DEV = ENVIRONMENT == Environments.DEV
+DOCKERIZED = config('DOCKERIZED', cast=bool, default=IS_PROD)
 TESTING: bool = 'test' in sys.argv
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
@@ -126,6 +126,7 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
+    'corsheaders',  # https://github.com/adamchainz/django-cors-headers
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_replicated',  # https://github.com/yandex/django_replicated
@@ -140,7 +141,7 @@ INSTALLED_APPS = [
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.db',
-    'health_check.cache',
+    # 'health_check.cache',  # TODO
     'health_check.contrib.migrations',
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
@@ -178,6 +179,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # CORS middleware "should be placed as high as possible"
+    'corsheaders.middleware.CorsMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
     # Update cache:
@@ -697,7 +700,7 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.request.RequestPanel',
     'debug_toolbar.panels.headers.HeadersPanel',
     'debug_toolbar.panels.sql.SQLPanel',
-    'pympler.panels.MemoryPanel',
+    # 'pympler.panels.MemoryPanel',
     'debug_toolbar.panels.staticfiles.StaticFilesPanel',
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',
@@ -765,6 +768,17 @@ DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
 if IS_PROD:
     DEFENDER_BEHIND_REVERSE_PROXY = True
 
-DISABLE_CHECKS = config('DISABLE_CHECKS', default=False, cast=bool)
+DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
     from config import checks  # noqa: F401
+
+# TODO: research CORS settings
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://react:3000",
+# ]
+#
+# CSRF_TRUSTED_ORIGINS = [
+#     "localhost",
+#     "react",
+# ]

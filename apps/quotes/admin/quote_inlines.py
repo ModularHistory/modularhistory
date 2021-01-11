@@ -1,7 +1,6 @@
 """Admin for the quotes app."""
 
 import re
-from typing import Optional
 
 from admin import GenericTabularInline, TabularInline
 from apps.quotes import models
