@@ -17,6 +17,7 @@ from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from datetime import timedelta
+from split_settings.tools import include
 
 from modularhistory.constants.environments import Environments
 from modularhistory.environment import environment
@@ -296,113 +297,18 @@ DATABASES = {
         'PASSWORD': config('POSTGRES_PASSWORD', default='postgres'),
         'PORT': 5432,
     },
-    # TODO: https://github.com/nesdis/djongo
-    # 'mongo': {
-    #     'ENGINE' : 'djongo',
-    #     'NAME' : 'default',
-    #     'CLIENT': {
-    #        'host': 'your-db-host',
-    #     }
-    # }
 }
 
-AUTH_USER_MODEL = 'account.User'
-LOGIN_URL = 'account/login'
-LOGOUT_URL = 'account/logout'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-
-# https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
-SOCIAL_AUTH_USER_MODEL = AUTH_USER_MODEL
-SOCIAL_AUTH_USER_FIELDS = ['email', 'username']
-# https://python-social-auth.readthedocs.io/en/latest/configuration/django.html#authentication-backends
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.open_id.OpenIdAuth',
-    'social_core.backends.google.GoogleOpenId',
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.google.GoogleOAuth',
-    'social_core.backends.twitter.TwitterOAuth',
-    'social_core.backends.facebook.FacebookOAuth2',
-    'social_core.backends.github.GithubOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-)
-# https://python-social-auth.readthedocs.io/en/latest/pipeline.html
-SOCIAL_AUTH_PIPELINE = (
-    # Get the information we can about the user and return it in a simple
-    # format to create the user instance later. In some cases the details are
-    # already part of the auth response from the provider, but sometimes this
-    # could hit a provider API.
-    'social_core.pipeline.social_auth.social_details',
-    # Get the social UID from whatever service we're authing thru. The UID is
-    # the unique identifier of the given user in the provider.
-    'social_core.pipeline.social_auth.social_uid',
-    # Verify that the current auth process is valid within the current project.
-    # This is where emails and domains whitelists are applied (if defined).
-    'social_core.pipeline.social_auth.auth_allowed',
-    # Check if the current social-account is already associated in the site.
-    'social_core.pipeline.social_auth.social_user',
-    # Get the user's email address, if it wasn't automatically obtained
-    'account.social_auth.get_user_email',
-    # Make up a username for this person.
-    # Append a random string at the end if there's any collision.
-    'social_core.pipeline.user.get_username',
-    # Associate the current details with a user account having a similar email address.
-    # Note: Default settings would disable this.
-    'social_core.pipeline.social_auth.associate_by_email',
-    # Create a user account if we haven't found one yet.
-    'social_core.pipeline.user.create_user',
-    # Create the record that associates the social account with the user.
-    'social_core.pipeline.social_auth.associate_user',
-    # Populate the extra_data field in the social record with the values
-    # specified by settings (and the default ones like access_token, etc).
-    'social_core.pipeline.social_auth.load_extra_data',
-    # Update the user record with any changed info from the auth service.
-    'social_core.pipeline.user.user_details',
-    # Get the user's profile picture
-    'account.social_auth.get_user_avatar',
-)
-SOCIAL_AUTH_POSTGRES_JSONFIELD = True
-SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
-SOCIAL_AUTH_LOGIN_ERROR_URL = '/account/settings'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_RAISE_EXCEPTIONS = False
-# Fields to populate `search_fields` in admin to search for related users
-SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'last_name', 'email']
-# Permissions to request
-SOCIAL_AUTH_SCOPE = ['email']
-# Twitter auth settings
-SOCIAL_AUTH_TWITTER_KEY = config('SOCIAL_AUTH_TWITTER_KEY', default='')
-SOCIAL_AUTH_TWITTER_SECRET = config('SOCIAL_AUTH_TWITTER_SECRET', default='')
-SOCIAL_AUTH_TWITTER_SCOPE = SOCIAL_AUTH_SCOPE
-# Facebook auth settings
-SOCIAL_AUTH_FACEBOOK_KEY = config('SOCIAL_AUTH_FACEBOOK_KEY', default='')
-SOCIAL_AUTH_FACEBOOK_SECRET = config('SOCIAL_AUTH_FACEBOOK_SECRET', default='')
-SOCIAL_AUTH_FACEBOOK_SCOPE = SOCIAL_AUTH_SCOPE
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {'fields': 'id, name, email'}
-# GitHub auth settings
-SOCIAL_AUTH_GITHUB_KEY = config('SOCIAL_AUTH_GITHUB_KEY', default='')
-SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET', default='')
-SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
-# Google auth settings
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH_KEY', default='')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH_SECRET', default='')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email']
-
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+# TODO: https://github.com/nesdis/djongo
+ENABLE_MONGO = False
+if ENABLE_MONGO:
+    DATABASES['mongo'] = {
+        'ENGINE': 'djongo',
+        'NAME': 'default',
+        'CLIENT': {
+            'host': 'your-db-host',
+        },
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -480,173 +386,6 @@ if DEBUG:
         },
     }
 
-# https://github.com/agusmakmun/django-markdown-editor
-MARTOR_THEME = 'bootstrap'
-MARTOR_ENABLE_CONFIGS = {
-    'emoji': 'true',  # to enable/disable emoji icons.
-    'imgur': 'true',  # to enable/disable imgur/custom uploader.
-    'mention': 'false',  # to enable/disable mention
-    'jquery': 'true',  # to include/revoke jquery (require for admin default django)
-    'living': 'false',  # to enable/disable live updates in preview
-    'spellcheck': 'false',  # to enable/disable spellcheck in form textareas
-    'hljs': 'true',  # to enable/disable hljs highlighting in preview
-}
-MARTOR_TOOLBAR_BUTTONS = [
-    'bold',
-    'italic',
-    'horizontal',
-    'heading',
-    'pre-code',
-    'blockquote',
-    'unordered-list',
-    'ordered-list',
-    'link',
-    'image-link',
-    'image-upload',
-    'emoji',
-    'direct-mention',
-    'toggle-maximize',
-    'help',
-]
-MARTOR_ENABLE_LABEL = True  # default is False
-MARTOR_IMGUR_CLIENT_ID = config('IMGUR_CLIENT_ID')
-MARTOR_IMGUR_API_KEY = config('IMGUR_CLIENT_SECRET')
-# Markdown extensions (default)
-MARTOR_MARKDOWN_EXTENSIONS = [
-    'markdown.extensions.extra',
-    'markdown.extensions.nl2br',
-    'markdown.extensions.smarty',
-    'markdown.extensions.fenced_code',
-    # Custom markdown extensions.
-    'martor.extensions.urlize',
-    'martor.extensions.del_ins',  # ~~strikethrough~~ and ++underscores++
-    'martor.extensions.mention',  # to parse markdown mention
-    'martor.extensions.emoji',  # to parse markdown emoji
-    'martor.extensions.mdx_video',  # to parse embed/iframe video
-    'martor.extensions.escape_html',  # to handle the XSS vulnerabilities
-]
-# Markdown extension configs:
-# MARTOR_MARKDOWN_EXTENSION_CONFIGS = {}
-# Markdown urls:
-MARTOR_UPLOAD_URL = '/martor/uploader/'  # default
-MARTOR_SEARCH_USERS_URL = '/martor/search-user/'  # default
-# Markdown extensions:
-# webfx emojis: 'https://www.webfx.com/tools/emoji-cheat-sheet/graphics/emojis/'
-# Default from GitHub:
-MARTOR_MARKDOWN_BASE_EMOJI_URL = 'https://github.githubassets.com/images/icons/emoji/'
-MARTOR_MARKDOWN_BASE_MENTION_URL = 'https://modularhistory.com/author/'
-# If you need to use your own themed "bootstrap" or "semantic ui" dependency
-# replace the values with the file in your static files dir
-MARTOR_ALTERNATIVE_JS_FILE_THEME = "semantic-themed/semantic.min.js"  # default None
-MARTOR_ALTERNATIVE_CSS_FILE_THEME = "semantic-themed/semantic.min.css"  # default None
-MARTOR_ALTERNATIVE_JQUERY_JS_FILE = "jquery/dist/jquery.min.js"  # default None
-
-# https://django-tinymce.readthedocs.io/en/latest/usage.html
-# TODO: https://django-tinymce.readthedocs.io/en/latest/installation.html#prerequisites
-TINYMCE_JS_URL = 'https://cloud.tinymce.com/stable/tinymce.min.js'
-TINYMCE_JS_ROOT = 'https://cloud.tinymce.com/stable/'
-TINYMCE_COMPRESSOR = False
-TINYMCE_SPELLCHECKER = True
-TINYMCE_DEFAULT_CONFIG = {
-    'width': '100%',
-    'max_height': 1000,
-    'cleanup_on_startup': True,
-    'custom_undo_redo_levels': 20,
-    'selector': 'textarea.tinymce',
-    'theme': 'modern',
-    'plugins': (
-        'autolink, autoresize, autosave, blockquote, '
-        'charmap, code, contextmenu, emoticons, '
-        'fullscreen, hr, image, link, lists, media, paste, preview, '
-        'searchreplace, spellchecker, textcolor, visualblocks, visualchars, wordcount'
-    ),
-    'autoresize_bottom_margin': 1,
-    'toolbar1': (
-        'bold italic | blockquote | indent outdent | bullist numlist | '
-        'visualblocks visualchars | nonbreaking anchor | code | spellchecker preview'
-    ),
-    'contextmenu': (
-        'formats | blockquote | highlight smallcaps | link media image '
-        'charmap hr | code | pastetext'
-    ),
-    'menubar': True,
-    'statusbar': True,
-    'branding': False,
-    # fmt: off
-    # After upgrading to v5, add `.ui.registry` before `.addMenuItem` and `addButton`
-    'setup': ' '.join(('''
-        function (editor) {
-            editor.addMenuItem('highlight', {
-                text: 'Highlight text',
-                icon: false,
-                onclick : function() {
-                    editor.focus();
-                    let content = editor.selection.getContent();
-                    if (content.length) {
-                        content = content.replace("<mark>", "").replace("</mark>", "");
-                        editor.selection.setContent(
-                            "<mark>" + editor.selection.getContent() + '</mark>'
-                        );
-                    }
-                }
-            });
-            editor.addMenuItem('smallcaps', {
-                text: 'Small caps',
-                icon: false,
-                onclick : function() {
-                    editor.focus();
-                    let content = editor.selection.getContent();
-                    if (content.length) {
-                        let opening_tag = '<span style="font-variant: small-caps">';
-                        let closing_tag = '</span>';
-                        content = content.replace(opening_tag, '').replace(closing_tag, '');
-                        editor.selection.setContent(
-                            opening_tag + editor.selection.getContent() + closing_tag
-                        );
-                    }
-                }
-            });
-            editor.addButton('highlight', {
-                text: 'Highlight text',
-                icon: false,
-                onclick : function() {
-                    editor.focus();
-                    let content = editor.selection.getContent();
-                    if (content.length) {
-                        content = content.replace("<mark>", "").replace("</mark>", "");
-                        editor.selection.setContent(
-                            "<mark>" + editor.selection.getContent() + '</mark>'
-                        );
-                    }
-                }
-            });
-            editor.addButton('smallcaps', {
-                text: 'Small caps',
-                icon: false,
-                onclick : function() {
-                    editor.focus();
-                    let content = editor.selection.getContent();
-                    if (content.length) {
-                        let opening_tag = '<span style="font-variant: small-caps">';
-                        let closing_tag = '</span>';
-                        content = content.replace(opening_tag, '').replace(closing_tag, '');
-                        editor.selection.setContent(
-                            opening_tag + editor.selection.getContent() + closing_tag
-                        );
-                    }
-                }
-            });
-        }
-    ''').split()),
-    # fmt: on
-}
-TINYMCE_EXTRA_MEDIA = {
-    'css': {
-        'all': ['/static/styles/mce.css'],
-    },
-    'js': ['/static/scripts/mce.js'],
-}
-
 # https://github.com/jonasundderwolf/django-image-cropping
 THUMBNAIL_PROCESSORS = (
     'image_cropping.thumbnail_processors.crop_corners',
@@ -656,13 +395,6 @@ IMAGE_CROPPING_JQUERY_URL = None
 
 # https://pypi.org/project/django-bootstrap-datepicker-plus/
 BOOTSTRAP4 = {'include_jquery': False}
-
-# https://github.com/cdrx/django-admin-menu
-ADMIN_LOGO = 'logo_head_white.png'
-
-# https://django-admin-tools.readthedocs.io/en/latest/customization.html
-ADMIN_TOOLS_MENU = 'admin.admin_menu.AdminMenu'
-ADMIN_TOOLS_THEMING_CSS = 'styles/admin.css'
 
 # https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -686,49 +418,10 @@ SETTINGS_EXPORT = [
     'ENABLE_PATREON',
 ]
 
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-internal-ips
-# https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
-INTERNAL_IPS = ['127.0.0.1']
-
-# https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
-DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_COLLAPSED': True,
-    'SHOW_TOOLBAR_CALLBACK': 'config.debug_toolbar.show_toolbar',
-}
-DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.timer.TimerPanel',
-    'debug_toolbar.panels.request.RequestPanel',
-    'debug_toolbar.panels.headers.HeadersPanel',
-    'debug_toolbar.panels.sql.SQLPanel',
-    # 'pympler.panels.MemoryPanel',
-    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-    'debug_toolbar.panels.templates.TemplatesPanel',
-    'debug_toolbar.panels.cache.CachePanel',
-    'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.logging.LoggingPanel',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
-    'debug_toolbar.panels.profiling.ProfilingPanel',
-    'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.versions.VersionsPanel',
-]
-
 RAPIDAPI_KEY = config('RAPIDAPI_KEY', default='')
 
 # https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
 SITE_ID = 1
-
-# https://docs.djangoproject.com/en/3.1/topics/email/
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-email-backend
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST', default='localhost')
-try:
-    EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
-except Exception as error:
-    logging.error(f'{error}')
-    EMAIL_PORT = 587
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-EMAIL_USE_TLS = True
 
 # Caching settings
 use_dummy_cache = config('DUMMY_CACHE', cast=bool, default=False)
@@ -782,3 +475,6 @@ if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
 #     "localhost",
 #     "react",
 # ]
+
+# https://github.com/sobolevn/django-split-settings
+include('config/*.py')
