@@ -8,9 +8,6 @@ clean_data.py
 .secrets/
 .devcontainer/
 
-# Legacy dependency management
-requirements.txt
-
 # Virtual Python environment
 env/
 venv/
@@ -37,10 +34,11 @@ node_modules/
 *.py[cod]
 *$py.class
 
-# PyCharm / IntelliJ
+# PyCharm / IntelliJ / Visual Studio Code
 .idea
 .idea/
 .DS_Store
+.vscode
 
 # Backup files
 *.bak
@@ -84,7 +82,6 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.vscode
 *.suo
 *.ntvs*
 *.njsproj

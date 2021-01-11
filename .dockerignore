@@ -5,15 +5,16 @@
 # Media files
 /media/
 
+# Docker
+Dockerfile.*
+docker-compose.*
+
 # Django
 *.log
 *.pot
 *.pyc
 __pycache__
 db.sqlite3
-
-# Legacy dependency management
-requirements.txt
 
 # Virtual Python environment
 env/
@@ -28,10 +29,11 @@ artifacts/
 *.py[cod]
 *$py.class
 
-# PyCharm / IntelliJ
+# PyCharm / IntelliJ / Visual Studio Code
 .idea
 .idea/
 .DS_Store
+.vscode
 
 # Backup files
 *.bak
@@ -75,7 +77,6 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.vscode
 *.suo
 *.ntvs*
 *.njsproj
