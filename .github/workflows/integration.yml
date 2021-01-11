@@ -11,7 +11,7 @@ on:
     - cron: '0 9 * * *'
 
 env:
-  IMAGE_NAME: ghcr.io/modularhistory/modularhistory
+  IMAGE_PREFIX: ghcr.io/modularhistory/
   SHA: ${{ github.sha }}
   ADMINS: ${{ secrets.ADMINS }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -143,15 +143,20 @@ jobs:
       run: |
         echo "Logging in to GitHub container registry..."
         echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-        echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
-        echo "Building $IMAGE_NAME:$SHA..."
-        args=()
-        { docker inspect "${IMAGE_NAME}:latest" && cached=true } | cached=false
-        [[ $cached == true ]] && args+=(--cache-from "${IMAGE_NAME}:latest")
-        docker build . -f Dockerfile.django -t "${IMAGE_NAME}:$SHA" "${args[@]}"
-        docker build . -f Dockerfile.react -t "${IMAGE_NAME}_react:$SHA"
-        docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
-        docker run $IMAGE_NAME:$SHA
+        for image_name in django react
+        do
+          image="${IMAGE_PREFIX}${image_name}"
+          echo "Pulling ${image}:latest..."
+          docker pull ${image}:latest
+          echo "Building ${image}:${SHA}..."
+          args=()
+          { docker inspect "${image}:latest" && cached=true } | cached=false
+          [[ $cached == true ]] && args+=(--cache-from "${image}:latest")
+          docker build . -f Dockerfile.django -t "${image}:${SHA}" "${args[@]}"
+          docker build . -f Dockerfile.react -t "${image}:${SHA}"
+          docker tag ${image}:${SHA} ${image}:latest
+          docker run ${image}:${SHA}
+        done
     - name: Run Snyk to check Docker image for vulnerabilities
       # Snyk can be used to break the build when it detects vulnerabilities.
       # In this case, we want to upload the issues to GitHub Code Scanning.
