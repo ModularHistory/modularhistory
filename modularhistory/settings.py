@@ -772,10 +772,13 @@ DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
     from config import checks  # noqa: F401
 
+# TODO: research CORS settings
 # CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:3000'
+#     "http://localhost:3000",
+#     "http://react:3000",
 # ]
-CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = [
-    'localhost',
-]
+#
+# CSRF_TRUSTED_ORIGINS = [
+#     "localhost",
+#     "react",
+# ]
