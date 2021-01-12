@@ -86,16 +86,7 @@ jobs:
     # Build and push the Docker image
     - name: Build and push image
       if: ${{ success() }}
-      run: |
-        echo "" && echo "Logging in to GitHub container registry..."
-        echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
-        echo "" && echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
-        echo "" && echo "Building $IMAGE_NAME:${{ github.sha }}..."
-        docker build . -f Dockerfile.django -t $IMAGE_NAME:${{ github.sha }} --cache-from $IMAGE_NAME:latest
-        docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
-        echo "" && echo "Pushing new image ($IMAGE_NAME:${{ github.sha }}) to the registry..."
-        docker push $IMAGE_NAME:${{ github.sha }} && docker push $IMAGE_NAME:latest
-        echo "" && echo "Proceeding..."
+      run: invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --push
 
     # Deploy to server
     - name: Deploy image to server

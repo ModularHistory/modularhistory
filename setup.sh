@@ -116,8 +116,10 @@ if [[ "$os_name" == Darwin* ]]; then
   os='MacOS'
 elif [[ "$os_name" == Linux* ]]; then
   os='Linux'
+elif [[ "$os_name" == Windows* ]]; then
+  os='Windows'
 else
-  error "Detected unsupported operating system. (ModularHistory can only be set up on a Linux or MacOS machine.)"
+  error "Detected unknown operating system."
   exit 1
 fi
 echo "Detected $os."
@@ -188,41 +190,6 @@ pip --version &>/dev/null || {
 }
 
 if [[ "$interactive" == true ]]; then
-  # Make sure that Postgres is installed
-  psql -V &>/dev/null || {
-    echo "Installing PostgreSQL..."
-    if [[ "$os" == "$MAC_OS" ]]; then
-      brew install postgres &&
-        initdb /usr/local/var/postgres
-      brew services start postgresql &&
-        brew services list
-    elif [[ "$os" == "$LINUX" ]]; then
-      sudo apt-get install wget ca-certificates
-      wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-      sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
-      sudo apt-get update
-      sudo apt-get install postgresql postgresql-contrib
-    fi
-  }
-  {
-    psql_version=$(psql -V) && echo "Using $psql_version..."
-  } || {
-    error "Could not detect PostgreSQL installation. Install PostgreSQL (>=12.3) and rerun this script."
-    exit 1
-  }
-
-  # Make sure Redis is installed
-  {
-    redis_version=$(redis -V) && echo "Using $redis_version..."
-  } || {
-    if [[ "$os" == "$MAC_OS" ]]; then
-      brew install redis && brew services start redis
-    elif [[ "$os" == "$LINUX" ]]; then
-      apt-get install redis -y
-      systemctl start redis && systemctl enable redis
-    fi
-  }
-
   # Ensure that virtualenv is installed
   {
     venv_version=$(virtualenv --version) && echo "Using $venv_version..."
