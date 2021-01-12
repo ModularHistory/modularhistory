@@ -24,12 +24,10 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     strategy:
       max-parallel: 3
       matrix:
         python-version: [3.7]
-    
     services:
       postgres:
         image: postgres:12
@@ -40,7 +38,6 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    
     env:
       ADMINS: ${{ secrets.ADMINS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -69,25 +66,26 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       CR_PAT: ${{ secrets.CR_PAT }}
       SERVER: kfred.dyndns.org
-    
     steps:
     # Check out master
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
-
+    # Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
     # Inject environment vars
     - name: Inject environment vars
       if: ${{ success() }}
       run: |
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
-    
     # Build and push the Docker image
     - name: Build and push image
       if: ${{ success() }}
       run: invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --push
-
     # Deploy to server
     - name: Deploy image to server
       id: deploy-image
@@ -118,7 +116,6 @@ jobs:
           docker-compose up -d django
           docker system prune -f
         ENDSSH
-    
     # Create Sentry release
     - name: Create Sentry release
       if: ${{ success() }}

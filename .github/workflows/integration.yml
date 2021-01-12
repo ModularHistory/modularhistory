@@ -125,6 +125,14 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [
+          #macos-latest,  # TODO
+          ubuntu-latest
+        ]
+        python-version: [ 3.7 ]
     env:
       POSTGRES_HOST: postgres
       POSTGRES_DB: modularhistory
@@ -133,22 +141,23 @@ jobs:
     steps:
     # Check out master
     - uses: actions/checkout@v2
-
+    # Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
     # Inject environment vars
     - name: Inject environment vars
       run: |
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
-
     # Set up ModularHistory (so Invoke can be used)
     - name: Set up ModularHistory
       if: ${{ success() }}
       run: ./setup.sh --noninteractive
-
     # Build and push the Docker image
     - name: Build Docker image
       run: invoke build --github-actor $GITHUB_ACTOR --access-token $CR_PAT --sha $SHA
-
     # Check for vulnerabilities
     - name: Run Snyk to check Docker image for vulnerabilities
       # Snyk can be used to break the build when it detects vulnerabilities.
