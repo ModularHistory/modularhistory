@@ -131,6 +131,7 @@ jobs:
           echo "" && echo "Restarting webserver..."
           docker-compose down
           docker-compose up -d django
+          docker-compose up -d react
           docker system prune -f
         ENDSSH
     - name: Create Sentry release
