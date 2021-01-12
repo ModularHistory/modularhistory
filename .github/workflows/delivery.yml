@@ -127,7 +127,8 @@ jobs:
           docker login ghcr.io -u iacobfred -p $CR_PAT
           echo "Pulling images to $SERVER..."
           docker-compose pull
-          docker image inspect $IMAGE_NAME:${{ github.sha }} >/dev/null 2>&1 && echo "Successfully pulled modularhistory:${{ github.sha }}" || echo "ERROR: Did not retrieve modularhistory:${{ github.sha }}."
+          docker image inspect ghcr.io/modularhistory/django:${{ github.sha }}
+          docker image inspect ghcr.io/modularhistory/react:${{ github.sha }}
           echo "" && echo "Restarting webserver..."
           docker-compose down
           docker-compose up -d django

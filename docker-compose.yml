@@ -30,7 +30,7 @@ services:
       interval: 15s
       retries: 2
       start_period: 10s
-    image: "$IMAGE_NAME:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.6
@@ -70,12 +70,10 @@ services:
       - .backups/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   react:
-    build:
-      context: .
-      dockerfile: Dockerfile.react
     command: npm run start
     depends_on:
       - django
+    image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.7
