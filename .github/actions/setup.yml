@@ -1,6 +1,10 @@
 name: 'Setup'
 description: 'Greet someone'
 inputs:
+  fetch-depth:
+    description: 'Git fetch depth'
+    required: false
+    default: 0
   os:
     description: 'Operating system'
     required: true
@@ -12,6 +16,8 @@ runs:
   steps: 
     - name: Check out main branch
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v2
       with:

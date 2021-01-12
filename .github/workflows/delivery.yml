@@ -24,10 +24,6 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 3
-      matrix:
-        python-version: [3.7]
     services:
       postgres:
         image: postgres:12
@@ -67,13 +63,10 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       SERVER: kfred.dyndns.org
     steps:
-    - name: Check out main branch
-      uses: actions/checkout@v2
+    - uses: ../actions/setup
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
+        os: ${{ runner.os }}
         python-version: 3.7
     - name: Inject environment vars
       if: ${{ success() }}

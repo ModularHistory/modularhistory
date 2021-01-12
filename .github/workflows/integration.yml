@@ -74,7 +74,7 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    - uses: ./.github/actions/setup
+    - uses: ../actions/setup
       with:
         os: ${{ runner.os }}
         python-version: ${{ matrix.python-version }}
@@ -108,7 +108,7 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
     steps:
-    - uses: ./.github/actions/setup
+    - uses: ../actions/setup
     - name: Inject environment vars
       run: |
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
