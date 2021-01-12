@@ -1,3 +1,6 @@
+# BROKEN. This composite action cannot be used until `uses` is supported:
+# https://github.com/actions/runner/issues/646
+
 name: 'Setup'
 description: 'Set up Python and install dependencies'
 inputs:
@@ -10,8 +13,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    ##### TODO: Move to composite action when possible #####
-    ##### https://github.com/actions/runner/issues/646 #####
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -37,5 +38,3 @@ runs:
     - name: Install dependencies
       run: poetry install
       if: steps.cache.outputs.cache-hit != 'true'
-    ########################################################
-    ########################################################

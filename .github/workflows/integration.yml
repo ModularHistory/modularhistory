@@ -12,7 +12,6 @@ on:
 
 env:
   CR_PAT: ${{ secrets.CR_PAT }}
-  IMAGE_PREFIX: ghcr.io/modularhistory/
   SHA: ${{ github.sha }}
   ADMINS: ${{ secrets.ADMINS }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
