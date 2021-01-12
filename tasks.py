@@ -83,7 +83,7 @@ def build(context, github_actor: str, access_token: str, sha: str, push: bool = 
         context.run(f'docker run -d {image}:{sha}')
         if push:
             print(f'Pushing new image ({image}:{sha}) to the container registry..."')
-            context.run(f'docker push {image}:{sha} && docker push ${image}:latest')
+            context.run(f'docker push {image}:{sha} && docker push {image}:latest')
 
 
 @task
