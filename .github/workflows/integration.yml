@@ -74,7 +74,9 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    - uses: ../actions/setup
+    - name: Check out main branch
+      uses: actions/checkout@v2
+    - uses: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
         python-version: ${{ matrix.python-version }}
@@ -108,7 +110,9 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
     steps:
-    - uses: ../actions/setup
+    - name: Check out main branch
+      uses: actions/checkout@v2
+    - uses: ./.github/actions/setup
     - name: Inject environment vars
       run: |
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml

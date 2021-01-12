@@ -13,11 +13,7 @@ inputs:
     required: true
 runs:
   using: "composite"
-  steps: 
-    - name: Check out main branch
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: ${{ inputs.fetch-depth }}
+  steps:
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v2
       with:

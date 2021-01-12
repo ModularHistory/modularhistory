@@ -63,9 +63,11 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       SERVER: kfred.dyndns.org
     steps:
-    - uses: ../actions/setup
+    - name: Check out main branch
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+    - uses: ./.github/actions/setup
         os: ${{ runner.os }}
         python-version: 3.7
     - name: Inject environment vars
