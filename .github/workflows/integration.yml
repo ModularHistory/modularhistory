@@ -74,34 +74,10 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+    - uses: ./.github/actions/setup
       with:
+        os: ${{ runner.os }}
         python-version: ${{ matrix.python-version }}
-    - name: Install Chrome and Firefox
-      run: |
-        sudo apt install google-chrome-stable
-        sudo apt-get install firefox
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.1
-      with:
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-    - name: Cache Python virtual environment
-      uses: actions/cache@v2
-      id: cache
-      with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install dependencies
-      run: poetry install
-      if: steps.cache.outputs.cache-hit != 'true'
-    - name: Activate Python virtual environment
-      run: source .venv/bin/activate
     - name: Check the console scripts interface
       run: |
         poetry run seleniumbase
@@ -112,9 +88,8 @@ jobs:
         poetry run seleniumbase install geckodriver
     - name: Make sure pytest is working
       run: |
-        source .venv/bin/activate
         echo "def test_pytest(): pass" > nothing.py
-        pytest nothing.py
+        poetry run pytest nothing.py
     - name: Run tests
       if: ${{ success() }}
       run: poetry run invoke test
@@ -133,28 +108,13 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
     steps:
-    - name: Check out main branch
-      uses: actions/checkout@v2
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+    - uses: ./.github/actions/setup
     - name: Inject environment vars
       run: |
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
-    # Set up ModularHistory (so Invoke can be used)
-    - name: Set up ModularHistory
-      if: ${{ success() }}
-      run: ./setup.sh --noninteractive
-    # Build and push the Docker image
     - name: Build Docker image
-      run: invoke build --github-actor $GITHUB_ACTOR --access-token $CR_PAT --sha $SHA
-    # Check for vulnerabilities
+      run: poetry run invoke build --github-actor $GITHUB_ACTOR --access-token $CR_PAT --sha $SHA
     - name: Run Snyk to check Docker image for vulnerabilities
       # Snyk can be used to break the build when it detects vulnerabilities.
       # In this case, we want to upload the issues to GitHub Code Scanning.
