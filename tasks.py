@@ -71,11 +71,11 @@ def build(context, github_actor: str, access_token: str, sha: str, push: bool = 
     for image_name in ('django', 'react'):
         image = f'ghcr.io/modularhistory/{image_name}'
         print(f'Pulling {image}:latest...')
-        context.run(f'docker pull {image}:latest')
-        print(f'Building {image}:{sha}')
-        cached = context.run(f'docker inspect {image}:latest', warn=True).exited == 0
+        context.run(f'docker pull {image}:latest', warn=True)
+        print(f'Building {image}:{sha}...')
+        extant = context.run(f'docker inspect {image}:latest', warn=True).exited == 0
         build_command = f'docker build . -f Dockerfile.{image_name} -t {image}:{sha}'
-        if cached:
+        if extant:
             build_command = f'{build_command} --cache-from {image}:latest'
         context.run(f'docker tag {image}:{sha} ${image}:latest')
         context.run(f'docker run -d {image}:{sha}')
