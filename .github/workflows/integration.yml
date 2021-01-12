@@ -183,7 +183,7 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+        image: ghcr.io/modularhistory/django:${{ github.sha }}
         args: --file=Dockerfile.django
   
   analyze:
