@@ -77,6 +77,8 @@ def build(context, github_actor: str, access_token: str, sha: str, push: bool = 
         build_command = f'docker build . -f Dockerfile.{image_name} -t {image}:{sha}'
         if extant:
             build_command = f'{build_command} --cache-from {image}:latest'
+        print(build_command)
+        context.run(build_command)
         context.run(f'docker tag {image}:{sha} ${image}:latest')
         context.run(f'docker run -d {image}:{sha}')
         if push:
