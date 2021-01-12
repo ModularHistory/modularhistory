@@ -11,6 +11,7 @@ on:
     - cron: '0 9 * * *'
 
 env:
+  CR_PAT: ${{ secrets.CR_PAT }}
   IMAGE_PREFIX: ghcr.io/modularhistory/
   SHA: ${{ github.sha }}
   ADMINS: ${{ secrets.ADMINS }}
@@ -174,7 +175,7 @@ jobs:
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
     - name: Build Docker image
-      run: poetry run invoke build --github-actor $GITHUB_ACTOR --access-token $CR_PAT --sha $SHA
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA
     - name: Run Snyk to check Docker image for vulnerabilities
       # Snyk can be used to break the build when it detects vulnerabilities.
       # In this case, we want to upload the issues to GitHub Code Scanning.
