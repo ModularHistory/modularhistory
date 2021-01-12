@@ -1,10 +1,6 @@
 name: 'Setup'
-description: 'Greet someone'
+description: 'Set up Python and install dependencies'
 inputs:
-  fetch-depth:
-    description: 'Git fetch depth'
-    required: false
-    default: 1
   os:
     description: 'Operating system'
     required: true
@@ -14,6 +10,8 @@ inputs:
 runs:
   using: "composite"
   steps:
+    ##### TODO: Move to composite action when possible #####
+    ##### https://github.com/actions/runner/issues/646 #####
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -22,10 +20,7 @@ runs:
       run: |
         sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-    - name: Install Chrome and Firefox
-      run: |
-        sudo apt install google-chrome-stable
-        sudo apt-get install firefox
+      shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.1.1
       with:
@@ -42,3 +37,5 @@ runs:
     - name: Install dependencies
       run: poetry install
       if: steps.cache.outputs.cache-hit != 'true'
+    ########################################################
+    ########################################################
