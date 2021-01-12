@@ -104,19 +104,20 @@ jobs:
       run: source .venv/bin/activate
     - name: Check the console scripts interface
       run: |
-        seleniumbase
-        sbase
+        poetry run seleniumbase
+        poetry run sbase
     - name: Install chromedriver and geckodriver (Firefox Webdriver)
       run: |
-        seleniumbase install chromedriver
-        seleniumbase install geckodriver
+        poetry run seleniumbase install chromedriver
+        poetry run seleniumbase install geckodriver
     - name: Make sure pytest is working
       run: |
+        source .venv/bin/activate
         echo "def test_pytest(): pass" > nothing.py
         pytest nothing.py
     - name: Run tests
       if: ${{ success() }}
-      run: invoke test
+      run: poetry run invoke test
 
   build:
     name: Build
