@@ -102,7 +102,7 @@ jobs:
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
     - name: Build and push Docker images
       if: ${{ success() }}
-      run: invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --push
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --push
     - name: Deploy images to server
       id: deploy-image
       if: ${{ success() }}
