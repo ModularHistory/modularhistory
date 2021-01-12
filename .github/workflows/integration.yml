@@ -100,6 +100,8 @@ jobs:
     - name: Install dependencies
       run: poetry install
       if: steps.cache.outputs.cache-hit != 'true'
+    - name: Activate Python virtual environment
+      run: source .venv/bin/activate
     - name: Check the console scripts interface
       run: |
         seleniumbase

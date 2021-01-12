@@ -80,12 +80,10 @@ jobs:
       run: |
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
-    # Build and push the Docker image
-    - name: Build and push image
+    - name: Build and push Docker images
       if: ${{ success() }}
       run: invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --push
-    # Deploy to server
-    - name: Deploy image to server
+    - name: Deploy images to server
       id: deploy-image
       if: ${{ success() }}
       run: |
@@ -114,7 +112,6 @@ jobs:
           docker-compose up -d django
           docker system prune -f
         ENDSSH
-    # Create Sentry release
     - name: Create Sentry release
       if: ${{ success() }}
       uses: getsentry/action-release@v1
