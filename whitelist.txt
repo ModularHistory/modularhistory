@@ -25,7 +25,9 @@ hacky
 href
 http
 https
+iframe
 inferable
+jquery
 js
 jsonstore
 mixins
@@ -46,13 +48,16 @@ select2
 Select2Widget
 sorl
 StaticPageFallbackMiddleware
+strikethrough
 subdirectory
 tracemalloc
 uncomment
 unparsed
 unpositioned
+uploader
 v2
 Vue
+XSS
 YBP
 0
 1

@@ -404,7 +404,7 @@ CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
 
 MENU_ITEMS = [
     ['Occurrences', 'occurrences'],
-    # ['People', 'entities'],
+    # ['Entities', 'entities'],
     ['Quotes', 'quotes'],
     ['About', 'about'],
 ]
