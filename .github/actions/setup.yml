@@ -4,7 +4,7 @@ inputs:
   fetch-depth:
     description: 'Git fetch depth'
     required: false
-    default: 0
+    default: 1
   os:
     description: 'Operating system'
     required: true
@@ -17,7 +17,7 @@ runs:
     - name: Check out main branch
       uses: actions/checkout@v2
       with:
-        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+        fetch-depth: ${{ inputs.fetch-depth }}
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v2
       with:
