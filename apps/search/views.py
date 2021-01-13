@@ -62,41 +62,41 @@ def _words_api(word: str) -> Dict:
 
     Example response from Words API:
     {
-        'word': 'opinion',
-        'definitions': [
-            {
-                'definition': "the reason for a court's judgment",
-                'partOfSpeech': 'noun'
-            },
-            {
-                'definition': 'the legal document stating the reasons for a judicial decision',
-                'partOfSpeech': 'noun'
-            },
-            {
-                'definition': 'a personal belief not founded on proof or certainty',
-                'partOfSpeech': 'noun'
-            }
-        ]
+      'word': 'opinion',
+      'definitions': [
+        {
+          'definition': "the reason for a court's judgment",
+          'partOfSpeech': 'noun'
+        },
+        {
+          'definition': 'the legal document stating the reasons for a judicial decision',
+          'partOfSpeech': 'noun'
+        },
+        {
+          'definition': 'a personal belief not founded on proof or certainty',
+          'partOfSpeech': 'noun'
+        }
+      ]
     }
 
     Example return value:
     {
-        'word': 'opinion',
-        'meanings': {
-            'noun': {
-                'definitions': [
-                    {
-                        'definition': "the reason for a court's judgment"
-                    },
-                    {
-                        'definition': 'the legal document stating the reasons for a judicial decision'
-                    },
-                    {
-                        'definition': 'a personal belief not founded on proof or certainty'
-                    }
-                ]
+      'word': 'opinion',
+      'meanings': {
+        'noun': {
+          'definitions': [
+            {
+              'definition': "the reason for a court's judgment"
+            },
+            {
+              'definition': 'the legal document stating the reasons for a judicial decision'
+            },
+            {
+              'definition': 'a personal belief not founded on proof or certainty'
             }
+          ]
         }
+      }
     }
     """
     host = 'wordsapiv1.p.rapidapi.com'
@@ -231,7 +231,7 @@ class SearchResultsView(ListView):
         self.results_count = 0
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """Return the context data used to render the view."""
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         context['object_list'] = [
             instance.serialize() for instance in context['object_list'] if instance

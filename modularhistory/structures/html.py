@@ -37,7 +37,7 @@ class HTML:
         try:
             return format_html(self.raw_value)
         except ValueError as e:
-            logging.error(f'>>> {e}: {truncate(self.raw_value)}')
+            logging.error(f'{e}: {truncate(self.raw_value)}')
             return mark_safe(self.raw_value)
 
     # for BeautifulSoup

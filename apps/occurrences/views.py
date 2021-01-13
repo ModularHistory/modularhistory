@@ -21,7 +21,7 @@ class ListView(generic.list.ListView):
         return [occurrence.serialize() for occurrence in Occurrence.objects.iterator()]
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """Return the context data used to render the list view."""
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
@@ -50,7 +50,7 @@ class BaseDetailView(generic.detail.DetailView):
     object: Occurrence
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """Return the context data used to render the view."""
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         occurrence = self.object
         context_data = {**context, **occurrence.get_context()}  # TODO
@@ -64,6 +64,7 @@ class DetailView(BaseDetailView):
     template_name = 'occurrences/detail.html'
 
     def get_context_data(self, **kwargs):
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(**kwargs)
         occurrence = self.object
         image: Optional[Dict[str, Any]] = occurrence.primary_image

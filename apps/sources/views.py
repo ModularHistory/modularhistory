@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from django.db.models.query import QuerySet
 from django.views import generic
@@ -31,7 +31,7 @@ class BaseDetailView(generic.DetailView):
     object: Source
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
-        """Return context data used to render the detail page."""
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(**kwargs)
         containers = [self.object] + list(self.object.contained_sources.all())
         context['quotes'] = Quote.objects.filter(sources__in=containers)
@@ -45,6 +45,7 @@ class DetailView(BaseDetailView):
     template_name = 'sources/detail.html'
 
     def get_context_data(self, **kwargs):
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(**kwargs)
         source = self.object
         context['meta'] = Meta(
@@ -67,7 +68,7 @@ class EPubView(TemplateView):
     template_name = 'sources/_epub_viewer.html'
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
-        """TODO: add docstring."""
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(**kwargs)
         epub_path = self.kwargs['path']
         context['path'] = epub_path

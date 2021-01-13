@@ -22,6 +22,7 @@ flatpage
 formatpainter
 gunicorn
 hacky
+hljs
 href
 http
 https
@@ -51,6 +52,7 @@ sorl
 StaticPageFallbackMiddleware
 strikethrough
 subdirectory
+textareas
 tracemalloc
 UI
 uncomment
@@ -58,6 +60,9 @@ unparsed
 unpositioned
 uploader
 v2
+v3
+v4
+v5
 Vue
 XSS
 YBP

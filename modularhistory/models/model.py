@@ -11,7 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
-from django.utils.html import SafeString, format_html
+from django.utils.html import SafeString
 from rest_framework.serializers import Serializer
 from typedmodels.models import TypedModel as BaseTypedModel
 

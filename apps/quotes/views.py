@@ -26,7 +26,7 @@ class ListView(generic.list.ListView):
         ]
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """Return the context data used to render the view."""
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         context['search_form'] = SearchForm(
             request=self.request,
@@ -56,7 +56,7 @@ class BaseDetailView(generic.detail.DetailView):
     object: Quote
 
     def get_context_data(self, *args, **kwargs) -> Dict:
-        """Return the context data used to render the view."""
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(*args, **kwargs)
         context['quote'] = self.object.serialize()
         return context
@@ -68,6 +68,7 @@ class DetailView(BaseDetailView):
     template_name = 'quotes/detail.html'
 
     def get_context_data(self, **kwargs):
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(**kwargs)
         quote: Quote = self.object
         image: Optional[Dict[str, Any]] = quote.primary_image

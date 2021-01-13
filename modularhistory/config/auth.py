@@ -45,8 +45,7 @@ SOCIAL_AUTH_PIPELINE = (
     # already part of the auth response from the provider, but sometimes this
     # could hit a provider API.
     'social_core.pipeline.social_auth.social_details',
-    # Get the social UID from whatever service we're authing thru. The UID is
-    # the unique identifier of the given user in the provider.
+    # Get the social UID (unique identifier of the user) from the auth provider.
     'social_core.pipeline.social_auth.social_uid',
     # Verify that the current auth process is valid within the current project.
     # This is where emails and domains whitelists are applied (if defined).
