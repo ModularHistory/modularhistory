@@ -56,13 +56,13 @@ MARTOR_UPLOAD_URL = '/martor/uploader/'  # default
 MARTOR_SEARCH_USERS_URL = '/martor/search-user/'  # default
 
 # Markdown extensions:
-# webfx emojis: 'https://www.webfx.com/tools/emoji-cheat-sheet/graphics/emojis/'
+# WebFX emojis: https://www.webfx.com/tools/emoji-cheat-sheet/graphics/emojis/
 # Default from GitHub:
 MARTOR_MARKDOWN_BASE_EMOJI_URL = 'https://github.githubassets.com/images/icons/emoji/'
 MARTOR_MARKDOWN_BASE_MENTION_URL = 'https://modularhistory.com/author/'
 
-# If you need to use your own themed "bootstrap" or "semantic ui" dependency
-# replace the values with the file in your static files dir
+# If you need to use your own themed Bootstrap or Semantic UI dependency,
+# replace the values with the file in your static files dir.
 MARTOR_ALTERNATIVE_JS_FILE_THEME = "semantic-themed/semantic.min.js"  # default None
 MARTOR_ALTERNATIVE_CSS_FILE_THEME = "semantic-themed/semantic.min.css"  # default None
 MARTOR_ALTERNATIVE_JQUERY_JS_FILE = "jquery/dist/jquery.min.js"  # default None

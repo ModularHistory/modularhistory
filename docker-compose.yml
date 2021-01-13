@@ -9,7 +9,7 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - ./config/nginx:/etc/nginx/conf.d
+      - ./config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
   
   django:
@@ -73,6 +73,7 @@ services:
     command: npm run start
     depends_on:
       - django
+    env_file: .env
     image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:

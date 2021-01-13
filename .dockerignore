@@ -71,6 +71,7 @@ wheels/
 
 # Node JS
 node_modules/
+**/node_modules/
 /dist
 .env.local
 .env.*.local
