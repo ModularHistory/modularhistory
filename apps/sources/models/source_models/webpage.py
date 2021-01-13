@@ -1,13 +1,10 @@
 """Model classes for web pages."""
 
 from modularhistory.fields import ExtraField
-
+from django.core.exceptions import ValidationError
 from .textual_source import TextualSource
 
 JSON_FIELD_NAME = 'extra'
-
-
-# TODO: Creat WebSite model
 
 
 class WebPage(TextualSource):
@@ -24,9 +21,22 @@ class WebPage(TextualSource):
         blank=True,
     )
 
-    # extra_field_schema = {
-    #     'editors': STRING,
-    # }
+    class FieldNames(TextualSource.FieldNames):
+        website = 'publication'
+
+    inapplicable_fields = [
+        FieldNames.collection,
+    ]
+    searchable_fields = [FieldNames.string, f'{FieldNames.website}__name']
+
+    def clean(self):
+        """Prepare the article to be saved."""
+        super().clean()
+        if self.publication:
+            if self.publication.type != 'sources.website':
+                raise ValidationError('Web page publisher must be a website.')
+        else:
+            raise ValidationError('Web page must have an associated website.')
 
     def __html__(self) -> str:
         """Return the source's HTML representation."""
