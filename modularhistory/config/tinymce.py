@@ -22,7 +22,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'autoresize_bottom_margin': 1,
     'toolbar1': (
         'bold italic | blockquote | indent outdent | bullist numlist | '
-        'visualblocks visualchars | nonbreaking anchor | code | spellchecker preview'
+        'visualblocks visualchars | charmap | code | spellchecker preview'
     ),
     'contextmenu': (
         'formats | blockquote | highlight smallcaps | link media image '
