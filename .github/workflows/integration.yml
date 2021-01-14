@@ -11,7 +11,7 @@ on:
     - cron: '0 9 * * *'
 
 env:
-  IMAGE_NAME: ghcr.io/modularhistory/modularhistory
+  CR_PAT: ${{ secrets.CR_PAT }}
   SHA: ${{ github.sha }}
   ADMINS: ${{ secrets.ADMINS }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -74,80 +74,107 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    # Check out master
     - uses: actions/checkout@v2
-    # Set up Python
+    ##### TODO: Move to composite action when possible #####
+    ##### https://github.com/actions/runner/issues/646 #####
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    # Install browsers
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install dependencies
+      run: poetry install
+      if: steps.cache.outputs.cache-hit != 'true'
+    ########################################################
+    ########################################################
     - name: Install Chrome and Firefox
       run: |
         sudo apt install google-chrome-stable
         sudo apt-get install firefox
-    # - name: Cache Poetry virtualenv
-    #   uses: actions/cache@v1
-    #   id: cache
-    #   with:
-    #     path: ~/.virtualenvs
-    #     key: poetry-${{ hashFiles('**/poetry.lock') }}
-    #     restore-keys: |
-    #       poetry-${{ hashFiles('**/poetry.lock') }}
-    # - name: Set Poetry config
-    #   run: |
-    #     poetry config settings.virtualenvs.in-project false
-    #     poetry config settings.virtualenvs.path ~/.virtualenvs
-    # - name: Install Dependencies
-    #   run: poetry install
-    #   if: steps.cache.outputs.cache-hit != 'true'
-    # Set up ModularHistory
-    - name: Set up ModularHistory
-      if: ${{ success() }}
-      run: ./setup.sh --noninteractive
     - name: Check the console scripts interface
       run: |
-        seleniumbase
-        sbase
+        poetry run seleniumbase
+        poetry run sbase
     - name: Install chromedriver and geckodriver (Firefox Webdriver)
       run: |
-        seleniumbase install chromedriver
-        seleniumbase install geckodriver
+        poetry run seleniumbase install chromedriver
+        poetry run seleniumbase install geckodriver
     - name: Make sure pytest is working
       run: |
         echo "def test_pytest(): pass" > nothing.py
-        pytest nothing.py
-    # Run tests
+        poetry run pytest nothing.py
     - name: Run tests
       if: ${{ success() }}
-      run: invoke test
+      run: poetry run invoke test
 
   build:
     name: Build
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ 3.7 ]
     env:
       POSTGRES_HOST: postgres
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
     steps:
-    # Check out master
-    - uses: actions/checkout@v2
-    # Inject environment vars
+    - name: Check out main branch
+      uses: actions/checkout@v2
+    ##### TODO: Move to composite action when possible #####
+    ##### https://github.com/actions/runner/issues/646 #####
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install dependencies
+      run: poetry install
+      if: steps.cache.outputs.cache-hit != 'true'
+    ########################################################
+    ########################################################
     - name: Inject environment vars
       run: |
         envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
         while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
-    # Build and push the Docker image
     - name: Build Docker image
-      run: |
-        echo "Logging in to GitHub container registry..."
-        echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-        echo "Pulling $IMAGE_NAME:latest..."; docker pull $IMAGE_NAME:latest
-        echo "Building $IMAGE_NAME:$SHA..."
-        docker build . -f Dockerfile.django -t $IMAGE_NAME:$SHA --cache-from $IMAGE_NAME:latest
-        docker tag $IMAGE_NAME:$SHA $IMAGE_NAME:latest
-        docker run $IMAGE_NAME:$SHA
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA
     - name: Run Snyk to check Docker image for vulnerabilities
       # Snyk can be used to break the build when it detects vulnerabilities.
       # In this case, we want to upload the issues to GitHub Code Scanning.
@@ -156,7 +183,7 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+        image: ghcr.io/modularhistory/django:${{ github.sha }}
         args: --file=Dockerfile.django
   
   analyze:

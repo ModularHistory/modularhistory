@@ -230,14 +230,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         return None
 
     @property
-    def container(self) -> Optional['Source']:
-        """Return the source's primary container, if it has one."""
-        try:
-            return self.containment.container
-        except (ObjectDoesNotExist, AttributeError):
-            return None
-
-    @property
     def containment(self) -> Optional['SourceContainment']:
         """Return the source's primary containment."""
         try:
@@ -262,7 +254,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         if self.db_file:
             return self.db_file
         # TODO: save container file as source file?
-        return self.container.db_file if self.container else None
+        return self.containment.container.db_file if self.containment else None
 
     @source_file.setter
     def source_file(self, value):
@@ -434,8 +426,8 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         """Get the source's date."""  # TODO: prefetch container?
         if self.date:
             return self.date
-        elif self.container and self.container.date:
-            return self.container.date
+        elif self.containment and self.containment.container.date:
+            return self.containment.container.date
         return None
 
     def __html__(self) -> str:

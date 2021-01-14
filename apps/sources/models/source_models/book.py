@@ -182,18 +182,19 @@ class SectionSource(TextualSource):
     def __html__(self) -> str:
         """Return the section/chapter's HTML representation."""
         container_html = None
-        if self.container:
-            container_html = f'{self.container.html}'
+        if self.containment:
+            container = self.containment.container
+            container_html = f'{container.html}'
             if self.attributee_html:
-                if self.attributee_html == self.container.attributee_html:
+                if self.attributee_html == container.attributee_html:
                     container_html = container_html.replace(
                         f'{self.attributee_html}, ', EMPTY_STRING
                     )
         attributee_string: Optional[str]
         if self.attributee_html:
             attributee_string = self.attributee_html
-        elif self.container:
-            attributee_string = self.container.attributee_html
+        elif self.containment:
+            attributee_string = self.containment.container.attributee_html
         else:
             attributee_string = None
         components = [

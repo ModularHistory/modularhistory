@@ -67,6 +67,7 @@ class DetailView(BaseDetailView):
     template_name = 'entities/detail.html'
 
     def get_context_data(self, **kwargs):
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(**kwargs)
         entity = self.object
         image: Optional[Dict[str, Any]] = entity.primary_image

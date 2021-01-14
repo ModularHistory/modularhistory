@@ -32,6 +32,7 @@ class UserInterfaceTestSuite(TestSuite):
     base_url: str
 
     @pytest.fixture(autouse=True)
-    def setup_ui_test(self, live_server, sb):
+    def _setup_ui_test(self, live_server, sb):
+        """Set necessary test attributes and attach the Selenium client."""
         self.base_url = live_server.url
         self.client = sb

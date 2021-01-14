@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 
-const env = dotenv.config({path: '../.env'});
+const env = dotenv.config({ path: '../.env' });
 if (env.error) {
   throw env.error;
 }
@@ -17,6 +17,8 @@ if (!('HOSTNAME' in env.parsed)) {
 }
 
 module.exports = {
+  // Delegate static file compression to Nginx in production
+  compress: env.parsed['ENVIRONMENT'] === "prod" ? false : true,
   env: env.parsed,
   webpackDevMiddleware: (config) => {
     // Solve compiling problem within Docker

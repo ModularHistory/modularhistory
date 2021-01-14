@@ -8,7 +8,6 @@ from modularhistory.tests import TestSuite
 
 
 @pytest.mark.django_db
-
 class OccurrencesTestSuite(TestSuite):
     """Tests for the occurrences app."""
 

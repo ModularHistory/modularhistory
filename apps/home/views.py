@@ -11,7 +11,7 @@ class HomePageView(TemplateView):
     template_name = 'home/index.html'
 
     def get_context_data(self, **kwargs) -> Dict:
-        """Return the context data used in rendering the homepage."""
+        """Return the context dictionary used to render the view."""
         context = super().get_context_data(**kwargs)
         search_form = SearchForm(request=self.request)
         context['search_form'] = search_form

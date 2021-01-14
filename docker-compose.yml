@@ -3,26 +3,25 @@ version: "3.8"
 services:
   dev:
     depends_on:
-      - dev_backend
+      - django
       - react
     image: nginx
     ports:
       - "8000:80"
     volumes:
-      - ./config/nginx:/etc/nginx/conf.d
+      - ./config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
   
-  dev_backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.django
+  django:
     command: sh init.sh
     depends_on:
       - postgres
+      - redis
       - redis-commander
       - mongo
     env_file: .env
     environment:
+      - DJANGO_SETTINGS_MODULE=modularhistory.settings
       - DOCKERIZED=True
       - POSTGRES_HOST=postgres
     healthcheck:
@@ -31,30 +30,7 @@ services:
       interval: 15s
       retries: 2
       start_period: 10s
-    networks:
-      default:
-        ipv4_address: 172.27.0.6
-    ports:
-      - "8001:8001"
-    volumes:
-      - .:/modularhistory
-  
-  modularhistory:
-    command: sh init.sh
-    depends_on:
-      - postgres
-      - redis
-    env_file: .env
-    environment:
-      - DJANGO_SETTINGS_MODULE=modularhistory.settings
-      - POSTGRES_HOST=postgres
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:8000/ht/ || exit 1"]
-      timeout: 7s
-      interval: 15s
-      retries: 2
-      start_period: 10s
-    image: "$IMAGE_NAME:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.6
@@ -94,14 +70,11 @@ services:
       - .backups/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   react:
-    build:
-      context: .
-      dockerfile: Dockerfile.react
-    command: npm run dev
+    command: npm run start
     depends_on:
-      - dev_backend
-    links:
-      - dev_backend:drf
+      - django
+    env_file: .env
+    image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.7
@@ -140,6 +113,6 @@ networks:
         - subnet: 172.27.0.0/24
 
 volumes:
-  # `data` is used by redis and mongodb
+  # `data` is used by both redis and mongodb
   data:
   postgres_data:

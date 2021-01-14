@@ -147,8 +147,12 @@ class Citation(PositionedRelation):
                     f'<i class="fas fa-search"></i>'
                     f'</a>'
                 )
-            elif self.source.url or self.source.container and self.source.container.url:
-                link = self.source.url if self.source.url else self.source.container.url
+            elif (
+                self.source.url
+                or self.source.containment
+                and self.source.containment.container.url
+            ):
+                link = self.source.url or self.source.containment.container.url
                 if self.page_number:
                     if 'www.sacred-texts.com' in link:
                         link = f'{link}#page_{self.page_number}'

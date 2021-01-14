@@ -58,6 +58,35 @@ def autoformat(context):
 
 
 @task
+def build(context, github_actor: str, access_token: str, sha: str, push: bool = False):
+    """Build the Docker images used by ModularHistory."""
+    if not access_token:
+        access_token = config('CR_PAT', default=None)
+    if not all([github_actor, access_token, sha]):
+        raise ValueError
+    print('Logging in to GitHub container registry...')
+    context.run(
+        f'echo {access_token} | docker login ghcr.io -u {github_actor} --password-stdin'
+    )
+    for image_name in ('django', 'react'):
+        image = f'ghcr.io/modularhistory/{image_name}'
+        print(f'Pulling {image}:latest...')
+        context.run(f'docker pull {image}:latest', warn=True)
+        print(f'Building {image}:{sha}...')
+        extant = context.run(f'docker inspect {image}:latest', warn=True).exited == 0
+        build_command = f'docker build . -f Dockerfile.{image_name} -t {image}:{sha}'
+        if extant:
+            build_command = f'{build_command} --cache-from {image}:latest'
+        print(build_command)
+        context.run(build_command)
+        context.run(f'docker tag {image}:{sha} {image}:latest')
+        context.run(f'docker run -d {image}:{sha}')
+        if push:
+            print(f'Pushing new image ({image}:{sha}) to the container registry..."')
+            context.run(f'docker push {image}:{sha} && docker push {image}:latest')
+
+
+@task
 def commit(context):
     """Commit and (optionally) push code changes."""
     # Check that the branch is correct

@@ -90,7 +90,9 @@ class LinterOptions:
 
     def is_excluded_path(self, path: str) -> bool:
         """Return whether the path is to be excluded from linting."""
-        return linting.match(self.exclude, path)
+        if self.exclude:
+            return linting.match(self.exclude, path)
+        return False
 
     def is_included_path(self, path: str) -> bool:
         """Return whether the path is to be included in linting."""
@@ -101,8 +103,7 @@ class LinterOptions:
         return any(
             [
                 linting.match(self.error_filters, message),
-                self.ignore is ALL,
-                error_code in self.ignore,
+                self.ignore is ALL or error_code in self.ignore,
                 self.error_is_ignored_in_file(filename=filename, error_code=error_code),
             ]
         )

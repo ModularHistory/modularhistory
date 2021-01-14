@@ -50,11 +50,11 @@ class MyPyOptions(LinterOptions):
     per_file_ignores: Optional[List[PerFileIgnore]] = None
 
     # messages:
-    error_filters: List[Pattern] = None
-    warning_filters: List[Pattern] = None
+    error_filters: List[Pattern] = []
+    warning_filters: List[Pattern] = []
 
     # global-only options:
-    args: List[str] = None
+    args: List[str] = []
     color: bool = True
     show_ignored: bool = False
     daemon: bool = False

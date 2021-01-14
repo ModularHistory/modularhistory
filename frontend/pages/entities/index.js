@@ -1,28 +1,26 @@
-import {forwardRef} from 'react';
-import Head from "next/head";
-import Link from "next/link";
-import axios from "axios";
-
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
-import CardContent from "@material-ui/core/CardContent";
-
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Pagination from "@material-ui/lab/Pagination";
 import PaginationItem from "@material-ui/lab/PaginationItem";
-
+import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { forwardRef, useState } from 'react';
 import Layout from "../../components/layout";
 
-import {useRouter} from "next/router";
-import {useState} from "react";
-import {useTheme} from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-const PaginationLink = forwardRef(({href, ...childProps}, ref) => (
+
+
+
+const PaginationLink = forwardRef(({ href, ...childProps }, ref) => (
   <Link href={href}>
-    <a ref={ref} {...childProps}/>
+    <a ref={ref} {...childProps} />
   </Link>
 ));
 
@@ -32,7 +30,7 @@ function usePageState(...args) {
 }
 
 // TODO: convert to generic version
-function EntitiesPagination({count, ...childProps}) {
+function EntitiesPagination({ count, ...childProps }) {
   // TODO: integrate route events to make page selection responsive
   //       https://nextjs.org/docs/api-reference/next/router#routerevents
   const router = useRouter();
@@ -60,22 +58,22 @@ function EntitiesPagination({count, ...childProps}) {
   );
 }
 
-export default function Entities({entitiesData}) {
+export default function Entities({ entitiesData }) {
   const entities = entitiesData['results'] || [];
 
   const entityCards = entities.map((entity) => (
     <Grid item key={entity['pk']}
-          xs={6} sm={4} md={3}>
+      xs={6} sm={4} md={3}>
       <a href={`entities/${entity['pk']}`}>
         <Card>
-          <CardHeader title={entity['name']}/>
+          <CardHeader title={entity['name']} />
           {entity['serialized_images'].length > 0 &&
-          <CardMedia
-            style={{height: 0, paddingTop: '100%'}}
-            image={entity['serialized_images'][0]['src_url']}
-          />}
+            <CardMedia
+              style={{ height: 0, paddingTop: '100%' }}
+              image={entity['serialized_images'][0]['src_url']}
+            />}
           <CardContent
-            dangerouslySetInnerHTML={{__html: entity['description']}}
+            dangerouslySetInnerHTML={{ __html: entity['description'] }}
           />
         </Card>
       </a>
@@ -85,7 +83,7 @@ export default function Entities({entitiesData}) {
   return (
     <Layout title={"Entities"}>
       <Container>
-        <EntitiesPagination count={entitiesData['total_pages']}/>
+        <EntitiesPagination count={entitiesData['total_pages']} />
         <Grid container spacing={2}>
           {entityCards}
         </Grid>
@@ -101,7 +99,7 @@ export async function getServerSideProps(context) {
   let entitiesData = {};
 
   await axios.get(
-    "http://drf:8001/api/entities/" +
+    "http://django:8001/api/entities/" +
     ('page' in q ? `?page=${q['page']}` : "")
   ).then((response) => {
     entitiesData = response.data;

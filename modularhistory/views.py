@@ -1,4 +1,3 @@
-import requests
 import asyncio
 from asgiref.sync import sync_to_async
 
@@ -66,8 +65,3 @@ class JSONResponseMixin:
         # objects -- such as Django model instances or querysets
         # -- can be serialized as JSON.
         return context
-
-
-def serve_from_react(request):
-    # proxy requests starting with _next/
-    return requests.get(f"http://dev:3000{request.get_full_path()}")

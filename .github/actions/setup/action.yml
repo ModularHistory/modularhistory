@@ -1,0 +1,40 @@
+# BROKEN. This composite action cannot be used until `uses` is supported:
+# https://github.com/actions/runner/issues/646
+
+name: 'Setup'
+description: 'Set up Python and install dependencies'
+inputs:
+  os:
+    description: 'Operating system'
+    required: true
+  python-version:
+    description: 'Python version'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ inputs.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install dependencies
+      run: poetry install
+      if: steps.cache.outputs.cache-hit != 'true'
