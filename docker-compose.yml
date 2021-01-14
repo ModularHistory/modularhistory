@@ -79,8 +79,6 @@ services:
         ipv4_address: 172.27.0.7
     ports:
       - "3000:3000"
-    volumes:
-      - .:/modularhistory
   
   redis:
     image: redis
