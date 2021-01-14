@@ -94,10 +94,11 @@ class SettingsView(LoginRequiredMixin, View):
 
 def get_user_handle_from_auth(auth: Optional[UserSocialAuth]) -> Optional[str]:
     """Given a social auth object, return the user's social media handle/username."""
-    provider = auth.provider
-    if provider == 'twitter':
-        return auth.extra_data['access_token']['screen_name']
-    elif provider == 'facebook':
-        return auth.extra_data['id']
-    # TODO: handle other backends
+    if auth:
+        provider = auth.provider
+        if provider == 'twitter':
+            return auth.extra_data['access_token']['screen_name']
+        elif provider == 'facebook':
+            return auth.extra_data['id']
+        # TODO: handle other backends
     return None

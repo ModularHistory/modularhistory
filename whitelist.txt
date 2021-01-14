@@ -11,6 +11,7 @@ BCE
 certifier
 charmap
 ContentType
+CORS
 CsrfViewMiddleware
 decrypt
 dedupe
@@ -64,6 +65,7 @@ v3
 v4
 v5
 Vue
+webserver
 XSS
 YBP
 0

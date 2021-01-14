@@ -8,7 +8,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-import logging
 import os
 import sys
 from datetime import timedelta
@@ -318,23 +317,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# Meta tags
-META_SITE_PROTOCOL = 'https'
-META_SITE_DOMAIN = 'modularhistory.com'
-META_SITE_TYPE = 'website'
-META_SITE_NAME = 'ModularHistory'
-META_USE_OG_PROPERTIES = True
-META_USE_TWITTER_PROPERTIES = True
-META_USE_TITLE_TAG = True
-META_DEFAULT_IMAGE = '/static/logo_head_white.png'
-META_DEFAULT_DESCRIPTION = (
-    'History, modularized. Browse occurrences, quotes, sources, and more.'
-)
-# https://django-meta.readthedocs.io/en/latest/settings.html#meta-default-keywords
-META_DEFAULT_KEYWORDS = ['history']
-# https://django-meta.readthedocs.io/en/latest/settings.html#meta-include-keywords
-META_INCLUDE_KEYWORDS = ['history']
-
 # Mega credentials
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
@@ -404,7 +386,7 @@ CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
 
 MENU_ITEMS = [
     ['Occurrences', 'occurrences'],
-    # ['Entities', 'entities'],
+    ['Entities', 'entities'],
     ['Quotes', 'quotes'],
     ['About', 'about'],
 ]
@@ -464,17 +446,6 @@ if IS_PROD:
 DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
     from . import checks  # noqa: F401
-
-# TODO: research CORS settings
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://react:3000",
-# ]
-#
-# CSRF_TRUSTED_ORIGINS = [
-#     "localhost",
-#     "react",
-# ]
 
 # https://github.com/sobolevn/django-split-settings
 # Include all settings modules with names not beginning with an underscore.

@@ -41,7 +41,7 @@ def _get_avatar_url_from_backend(
     )
     for backend_name, backend_type in backends:
         if name == backend_name or isinstance(backend, backend_type):
-            auth_data_interface_cls = auth_data_interfaces.get(backend_name)
+            auth_data_interface_cls = auth_data_interfaces[backend_name]
             auth_data_interface = auth_data_interface_cls(response, user, **kwargs)
             url = auth_data_interface.get_profile_pic_url()
             break
