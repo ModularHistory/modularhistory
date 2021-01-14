@@ -126,12 +126,12 @@ jobs:
           docker login ghcr.io -u iacobfred -p $CR_PAT
           echo "Pulling images to $SERVER..."
           docker-compose pull
-          docker image inspect ghcr.io/modularhistory/django:${{ github.sha }}
-          docker image inspect ghcr.io/modularhistory/react:${{ github.sha }}
           echo "" && echo "Restarting webserver..."
           docker-compose down
           docker-compose up -d django
           docker-compose up -d react
+          echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
+          docker image prune -a -f
           docker system prune -f
         ENDSSH
     - name: Create Sentry release
