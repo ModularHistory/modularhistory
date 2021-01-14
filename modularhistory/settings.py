@@ -11,12 +11,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import logging
 import os
 import sys
+from datetime import timedelta
 from typing import Any, Dict
 
 from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
-from datetime import timedelta
 from split_settings.tools import include
 
 from modularhistory.constants.environments import Environments

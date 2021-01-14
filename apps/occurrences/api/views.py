@@ -1,9 +1,9 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from apps.occurrences.serializers import OccurrenceSerializer
 
 from apps.occurrences.models import Occurrence
+from apps.occurrences.serializers import OccurrenceSerializer
 
 
 class OccurrenceViewSet(ModelViewSet):

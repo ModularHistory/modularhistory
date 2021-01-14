@@ -1,6 +1,7 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
+
 from apps.entities.models import Entity
 from apps.entities.serializers import EntitySerializer
 

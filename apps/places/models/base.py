@@ -1,6 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
+
 from modularhistory.models import ModelWithComputations, TypedModel, retrieve_or_compute
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))

@@ -1,7 +1,9 @@
 """Model classes for web pages."""
 
-from modularhistory.fields import ExtraField
 from django.core.exceptions import ValidationError
+
+from modularhistory.fields import ExtraField
+
 from .textual_source import TextualSource
 
 JSON_FIELD_NAME = 'extra'

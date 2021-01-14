@@ -1,9 +1,9 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from apps.sources.serializers import SourceSerializer
 
 from apps.sources.models import Source
+from apps.sources.serializers import SourceSerializer
 
 
 class SourceViewSet(ModelViewSet):

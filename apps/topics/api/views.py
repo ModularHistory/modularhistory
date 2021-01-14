@@ -1,9 +1,9 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from apps.topics.serializers import TopicSerializer
 
 from apps.topics.models import Topic
+from apps.topics.serializers import TopicSerializer
 
 
 class TopicViewSet(ModelViewSet):

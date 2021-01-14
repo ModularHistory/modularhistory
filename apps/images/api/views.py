@@ -1,9 +1,9 @@
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from apps.images.serializers import ImageSerializer
 
 from apps.images.models import Image
+from apps.images.serializers import ImageSerializer
 
 
 class ImageViewSet(ModelViewSet):

@@ -2,7 +2,6 @@ from django.urls import path
 
 from apps.entities import views
 
-
 app_name = 'entities'
 
 urlpatterns = [
