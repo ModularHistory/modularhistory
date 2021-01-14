@@ -29,7 +29,15 @@ const Login: React.FunctionComponent = (): React.ReactElement => {
         }
     };
 
-    if (!loading && isAuthenticated) Router.push("/");
+    if (!loading && isAuthenticated) Router.push("/entities");
+
+    if (isAuthenticated) {
+        return (
+            <Layout title="Login" canonicalUrl="/login/">
+                <p>You are already logged in.</p>
+            </Layout>
+        );
+    };
 
     return (
         <Layout title="Login" canonicalUrl="/login/">

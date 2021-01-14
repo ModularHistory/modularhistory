@@ -43,12 +43,14 @@ const fetchNewToken = (): Promise<Response> => {
 
 async function fetchUser(token: string): Promise<Response> {
   const url = makeUrl("/me/")
-  return fetch(url, {
+  const params = {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+  }
+  console.log('Fetching user with params: ', params);
+  return fetch(url, params);
 }
 
 type AuthContextProps = {
@@ -104,12 +106,15 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactNode =
   }, []);
 
   const initUser = async (token: string): Promise<void> => {
+    console.log('initUser');
     const response = await fetchUser(token);
     const user = await response.json();
+    console.log('User: ', user);
     setUser(user);
   }
 
   const refreshToken = async (): Promise<string> => {
+    console.log('refreshToken');
     setLoading(true);
     const resp = await fetchNewToken();
     if (!resp.ok) {
@@ -126,6 +131,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactNode =
   }
 
   const handleNewToken = (data: TokenResponse): void => {
+    console.log('handleNewToken');
     setAccessToken(data.access);
     const expiryInt = data.access_expires * 1000;
     setAccessTokenExpiry(expiryInt);

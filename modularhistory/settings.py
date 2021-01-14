@@ -284,7 +284,9 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
-JWT_COOKIE_SAMESITE = True
+JWT_COOKIE_NAME = 'jwt_token'
+JWT_COOKIE_SAMESITE = 'strict' if IS_PROD else 'none'
+JWT_COOKIE_SECURE = IS_PROD
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases

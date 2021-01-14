@@ -1,7 +1,7 @@
 """API views for the account app."""
 
 import datetime as dt
-
+import logging
 from django.conf import settings
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -13,6 +13,9 @@ from rest_framework_simplejwt.tokens import RefreshToken as RefreshTokenModel
 from rest_framework_simplejwt.views import TokenViewBase
 
 from apps.account.api import serializers
+
+
+print(settings.ALLOWED_HOSTS)
 
 
 class Me(generics.RetrieveAPIView):
@@ -52,6 +55,9 @@ class TokenViewWithCookie(TokenViewBase):
             samesite=settings.JWT_COOKIE_SAMESITE,
         )
 
+        print(response)
+        print(f'>>> Successfully set cookie from {self.__class__}')
+
         return response
 
 
@@ -65,6 +71,11 @@ class RefreshToken(TokenViewWithCookie):
     """View for refreshing an auth token."""
 
     serializer_class = serializers.TokenRefreshSerializer
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request=request, *args, **kwargs)
+        logging.info(f'>>>>>>>> {response}')
+        return response
 
 
 class Logout(APIView):

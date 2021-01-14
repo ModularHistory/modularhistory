@@ -1,5 +1,6 @@
 import Head from "next/head";
 import "../../modularhistory/static/styles/base.scss";
+import { AuthProvider } from "../auth";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -21,9 +22,11 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <noscript>
         <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
-                height="0" width="0" style={{display: 'none', visibility: 'hidden'}} />
+          height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} />
       </noscript>
-      <Component {...pageProps} />
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
     </>
   );
 }

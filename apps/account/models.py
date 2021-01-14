@@ -42,6 +42,11 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         """Return a string representation of the user."""
+        return self.name
+
+    @property
+    def name(self) -> str:
+        """Return the user's name."""
         return self.get_full_name()
 
     @property
