@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 
+const API_BASE = "/api/account";
+
 interface User {
   id: string;
   email: string;
@@ -12,8 +14,12 @@ interface TokenResponse {
   access_expires: number;
 }
 
+const makeUrl = (endpoint: string): string => {
+  return API_BASE + endpoint;
+}
+
 const fetchToken = (username: string, password: string): Promise<Response> => {
-  const url = "/api/account/token/";
+  const url = makeUrl("/token/obtain/");
   return fetch(url, {
     method: "POST",
     body: JSON.stringify({ username, password }),
