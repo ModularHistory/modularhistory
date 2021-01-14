@@ -1,9 +1,12 @@
 from django.urls import path
-from rest_framework_simplejwt import views as jwt
+
+from . import views
 
 app_name = 'account'
 
 urlpatterns = [
-    path('token/obtain/', jwt.TokenObtainPairView.as_view(), name='token_create'),
-    path('token/refresh/', jwt.TokenRefreshView.as_view(), name='token_refresh'),
+    path('me/', views.Me.as_view(), name='me'),
+    path('token/obtain/', views.Login.as_view(), name='token'),
+    path('token/refresh/', views.RefreshToken.as_view(), name='token-refresh'),
+    path('logout/', views.Logout.as_view(), name='logout'),
 ]
