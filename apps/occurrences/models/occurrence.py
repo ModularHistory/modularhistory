@@ -83,7 +83,7 @@ class Occurrence(
         """
 
         unique_together = ['summary', 'date']
-        ordering = ['-date']
+        ordering = ['date']
 
     objects: OccurrenceManager = OccurrenceManager()  # type: ignore
     searchable_fields = [
