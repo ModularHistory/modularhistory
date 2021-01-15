@@ -30,7 +30,6 @@ def autoformat(context: Context = CONTEXT, files: Optional[Iterable[str]] = None
             '--ignore-init-module-imports --in-place {filename}'
         ),
         ('unify --in-place {filename}'),
-        ('isort {filename}'),
         ('black {filename}'),
     )
     file_names = files or iglob('[!.]**/*.py', recursive=True)
@@ -38,6 +37,12 @@ def autoformat(context: Context = CONTEXT, files: Optional[Iterable[str]] = None
         print(f'Formatting {filename}...')
         for command in commands:
             context.run(command.format(filename=filename))
+    context.run('isort .')
+
+
+def back_up_db(context: Context = CONTEXT):
+    """Create a database backup file."""
+    context.run('python manage.py dbbackup --no-input')
 
 
 def clear_migration_history(context: Context = CONTEXT):
