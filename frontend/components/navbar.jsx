@@ -39,18 +39,14 @@ export default function Navbar({ menuItems }) {
         <ul className="navbar-nav">
           <li className="nav-item avatar dropdown">
             <a className="nav-link p-0 dropdown-toggle" id="accountDropdown" data-toggle="dropdown">
-              <i className="fas fa-user" />
-
               {user && user['avatar']
-                ? <img src={user.avatar.url}
+                ? <img src={user.avatar}
                   className="rounded-circle z-depth-0"
                   alt={user.name} height="35" />
                 : <i className="fas fa-user" />
               }
             </a>
             <div className="dropdown-menu dropdown-menu-right dropdown-default" aria-labelledby="accountDropdown">
-              <a href="/account/register" className="dropdown-item">Create an account</a>
-              <a href="/account/login" className="dropdown-item">Login</a>
               {user
                 ? <>
                   <a className="dropdown-item" href="/account/profile">Profile</a>

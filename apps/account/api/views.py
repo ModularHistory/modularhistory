@@ -11,9 +11,10 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.settings import api_settings as jwt_settings
 from rest_framework_simplejwt.tokens import RefreshToken as RefreshTokenModel
 from rest_framework_simplejwt.views import TokenViewBase
-
+from apps.account.models import User
 from apps.account.api import serializers
-
+from pprint import pprint
+import json
 
 print(settings.ALLOWED_HOSTS)
 
@@ -53,10 +54,7 @@ class TokenViewWithCookie(TokenViewBase):
             secure=settings.JWT_COOKIE_SECURE,
             httponly=True,
             samesite=settings.JWT_COOKIE_SAMESITE,
-        )
-
-        print(response)
-        print(f'>>> Successfully set cookie from {self.__class__}')
+        )  # TODO: make sure this works; remove cookie setting from JS
 
         return response
 
@@ -66,6 +64,11 @@ class Login(TokenViewWithCookie):
 
     serializer_class = serializers.TokenObtainPairSerializer
 
+    def post(self, request, *args, **kwargs):
+        credentials = json.loads(request.body.decode('utf-8'))
+        username, password = credentials.get('username'), credentials.get('password')
+        return super().post(request=request, *args, **kwargs)
+
 
 class RefreshToken(TokenViewWithCookie):
     """View for refreshing an auth token."""
@@ -74,7 +77,6 @@ class RefreshToken(TokenViewWithCookie):
 
     def post(self, request, *args, **kwargs):
         response = super().post(request=request, *args, **kwargs)
-        logging.info(f'>>>>>>>> {response}')
         return response
 
 

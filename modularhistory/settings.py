@@ -277,8 +277,7 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     # Whatever value is set for AUTH_HEADER_TYPES must be reflected in React’s headers.
-    # Here, it is set as "JWT" but could alternatively be set as “Bearer”, etc.
-    'AUTH_HEADER_TYPES': ('JWT',),
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
@@ -394,7 +393,7 @@ MENU_ITEMS = [
     ['About', 'about'],
 ]
 
-ENABLE_PATREON = True
+ENABLE_PATREON = False
 
 SETTINGS_EXPORT = [
     # 'Environment',  # TODO: Can't be exported as a class/enum

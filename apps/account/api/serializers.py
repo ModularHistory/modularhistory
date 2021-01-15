@@ -5,25 +5,38 @@ from rest_framework import serializers
 from rest_framework_simplejwt import serializers as jwt_serializers
 from rest_framework_simplejwt.settings import api_settings as jwt_settings
 from rest_framework_simplejwt.tokens import RefreshToken
-from pprint import pprint
 from apps.account import models
+import serpy
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serpy.Serializer):
     """Serializer for users."""
 
-    class Meta:
-        model = models.User
-        fields = (
-            'id',
-            'username',
-            'avatar',
-            'name',
-            'email',
-            'is_active',
-            'date_joined',
-            'last_login',
-        )
+    id = serpy.Field()
+    username = serpy.Field()
+    avatar = serpy.Field(attr='avatar.url')
+    name = serpy.Field()
+    email = serpy.Field()
+    # 'is_active',
+    # 'date_joined',
+    # 'last_login',
+
+
+# class UserSerializer(serializers.ModelSerializer):
+#     """Serializer for users."""
+
+#     class Meta:
+#         model = models.User
+#         fields = (
+#             'id',
+#             'username',
+#             'avatar',
+#             'name',
+#             'email',
+#             'is_active',
+#             'date_joined',
+#             'last_login',
+#         )
 
 
 class TokenObtainPairSerializer(jwt_serializers.TokenObtainPairSerializer):
@@ -55,9 +68,6 @@ class TokenRefreshSerializer(serializers.Serializer):
 
     def get_token_from_cookie(self):
         request = self.context["request"]
-        print(f'>>>>> Looking for {settings.JWT_COOKIE_NAME} in cookies:')
-        pprint(request.COOKIES)
-        return request.COOKIES.get(settings.JWT_COOKIE_NAME)
 
     def validate(self, attrs):
         token = self.get_token_from_cookie()

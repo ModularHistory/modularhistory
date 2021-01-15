@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.django
     image: ghcr.io/modularhistory/django:latest
+    user: root
     volumes:
       - .:/modularhistory
   
@@ -15,5 +16,6 @@ services:
       dockerfile: Dockerfile.react
     command: npm run dev
     image: ghcr.io/modularhistory/react:latest
+    user: root
     volumes:
       - .:/modularhistory

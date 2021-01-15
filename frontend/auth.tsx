@@ -49,7 +49,6 @@ async function fetchUser(token: string): Promise<Response> {
       Authorization: `Bearer ${token}`,
     },
   }
-  console.log('Fetching user with params: ', params);
   return fetch(url, params);
 }
 
@@ -106,7 +105,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactNode =
   }, []);
 
   const initUser = async (token: string): Promise<void> => {
-    console.log('initUser');
     const response = await fetchUser(token);
     const user = await response.json();
     console.log('User: ', user);
@@ -116,12 +114,12 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactNode =
   const refreshToken = async (): Promise<string> => {
     console.log('refreshToken');
     setLoading(true);
-    const resp = await fetchNewToken();
-    if (!resp.ok) {
+    const response = await fetchNewToken();
+    if (!response.ok) {
       setNotAuthenticated();
       return;
     }
-    const tokenData = await resp.json();
+    const tokenData = await response.json();
     handleNewToken(tokenData);
     if (user === null) {
       console.log("No user loaded so loading from refreshed token");
@@ -133,6 +131,8 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactNode =
   const handleNewToken = (data: TokenResponse): void => {
     console.log('handleNewToken');
     setAccessToken(data.access);
+    // console.log(data);
+    document.cookie = `jwt_token=${data.refresh}`;  // TODO
     const expiryInt = data.access_expires * 1000;
     setAccessTokenExpiry(expiryInt);
     setIsAuthenticated(true);
