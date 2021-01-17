@@ -4,7 +4,7 @@ name: delivery
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths-ignore:
       - '.gitignore'
       - '.github/**'
@@ -118,22 +118,23 @@ jobs:
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
           echo "Working dir:" && pwd && echo "" && ls
-          echo "" && echo "Updating Nginx config..."
-          lxc file push prod.conf webserver/etc/nginx/sites-available/default
-          lxc exec webserver -- service nginx restart
           echo "" && echo "Setting environment variables..."
           set -a; source .env; set +a
           echo "" && echo "Logging in to the container registry..."
           docker login ghcr.io -u iacobfred -p $CR_PAT
           echo "Pulling images to $SERVER..."
           docker-compose pull
-          echo "" && echo "Restarting webserver..."
+          echo "" && echo "Restarting server..."
           docker-compose down
           docker-compose up -d django
           docker-compose up -d react
           echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
           docker image prune -a -f
           docker system prune -f
+          echo "" && echo "Updating Nginx config..."
+          lxc file push prod.conf webserver/etc/nginx/sites-available/default
+          lxc exec webserver -- service nginx restart
+          echo "" &&  "Done."
         ENDSSH
     - name: Create Sentry release
       if: ${{ success() }}

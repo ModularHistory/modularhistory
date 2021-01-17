@@ -4,9 +4,9 @@ name: integration
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   push:
-    branches: [ master ]
+    branches: [ main ]
   schedule:
     - cron: '0 9 * * *'
 

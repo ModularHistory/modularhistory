@@ -30,7 +30,6 @@ SOCIAL_AUTH_USER_FIELDS = ['email', 'username']
 # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html#authentication-backends
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.open_id.OpenIdAuth',
-    'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.google.GoogleOAuth',
     'social_core.backends.twitter.TwitterOAuth',

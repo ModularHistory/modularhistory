@@ -1,23 +1,103 @@
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+// import Typography from '@material-ui/core/Typography';
 import Link from "next/link";
-import { useAuth } from "../auth";
+import React from 'react';
+
+// TODO: use App Bar component: https://material-ui.com/components/app-bar/
 
 const globalMenuItems = [
+  {
+    title: "About", children: [
+      { title: "About Us", path: '/about/', reactive: false },
+      { title: "Manifesto", path: '/manifesto/', reactive: false }
+    ]
+  },
   { title: "Occurrences", path: '/occurrences/', reactive: false },
   { title: "Quotes", path: '/quotes/', reactive: false },
   { title: "Entities", path: '/entities/', reactive: true },
-  { title: "About", path: '/about/', reactive: false },
 ];
 
-function MenuItem({ title, path, reactive }) {
+function WrappedMenuItem({ title, path, reactive, ...childProps }) {
   return (
-    <li className="nav-item">
+    <MenuItem {...childProps}>
       {reactive
-        ? <Link href={path}>
+        ?
+        <Link href={path}>
           <a className="nav-link">{title}</a>
         </Link>
-        : <a className="nav-link" href={path}>{title}</a>
+        :
+        <a className="nav-link" href={path}>{title}</a>
       }
-    </li>
+    </MenuItem>
+  );
+}
+
+function MenuDropdown({ title, children }) {
+
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = React.useRef(open);
+  React.useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current.focus();
+    }
+
+    prevOpen.current = open;
+  }, [open]);
+
+  return (
+    <>
+      <MenuItem
+        ref={anchorRef}
+        aria-controls={open ? 'menu-list-grow' : undefined}
+        aria-haspopup="true"
+        onClick={handleToggle}
+      >
+        <a className="nav-link">{title}</a>
+      </MenuItem>
+      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={handleClose}>
+                <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown} className="bg-dark">
+                  {children.map((item) => <WrappedMenuItem key={item.title} onClick={handleClose} {...item} />)}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </>
   );
 }
 
@@ -76,7 +156,9 @@ export default function Navbar({ menuItems }) {
       {/* Collapsible links */}
       <div className="collapse navbar-collapse order-2 order-sm-1" id="collapsibleNavbar">
         <ul className="navbar-nav">
-          {menuItems.map((item) => <MenuItem key={item.title} {...item} />)}
+          {menuItems.map((item) => (
+            item.children ? <MenuDropdown key={item.title} {...item} /> : <WrappedMenuItem key={item.title} {...item} />
+          ))}
         </ul>
         <ul className="navbar-nav ml-auto nav-flex-icons justify-content-end">
         </ul>
