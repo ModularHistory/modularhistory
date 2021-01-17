@@ -1,34 +1,115 @@
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+// import Typography from '@material-ui/core/Typography';
 import Link from "next/link";
+import React from 'react';
+
+// TODO: use App Bar component: https://material-ui.com/components/app-bar/
 
 const globalMenuItems = [
-  {title: "Occurrences", path: '/occurrences/', reactive: false},
-  {title: "Quotes", path: '/quotes/', reactive: false},
-  {title: "Entities", path: '/entities/', reactive: true},
-  {title: "About", path: '/about/', reactive: false},
+  {
+    title: "About", children: [
+      { title: "About Us", path: '/about/', reactive: false },
+      { title: "Manifesto", path: '/manifesto/', reactive: false }
+    ]
+  },
+  { title: "Occurrences", path: '/occurrences/', reactive: false },
+  { title: "Quotes", path: '/quotes/', reactive: false },
+  { title: "Entities", path: '/entities/', reactive: true },
 ];
 
-function MenuItem({title, path, reactive}) {
+function WrappedMenuItem({ title, path, reactive, ...childProps }) {
   return (
-    <li className="nav-item">
+    <MenuItem {...childProps}>
       {reactive
-        ? <Link href={path}>
+        ?
+        <Link href={path}>
           <a className="nav-link">{title}</a>
         </Link>
-        : <a className="nav-link" href={path}>{title}</a>
+        :
+        <a className="nav-link" href={path}>{title}</a>
       }
-    </li>
+    </MenuItem>
   );
 }
 
-export default function Navbar({user, menuItems}) {
-  user = user || {isAuthenticated: false};
+function MenuDropdown({ title, children }) {
+
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = React.useRef(open);
+  React.useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current.focus();
+    }
+
+    prevOpen.current = open;
+  }, [open]);
+
+  return (
+    <>
+      <MenuItem
+        ref={anchorRef}
+        aria-controls={open ? 'menu-list-grow' : undefined}
+        aria-haspopup="true"
+        onClick={handleToggle}
+      >
+        <a className="nav-link">{title}</a>
+      </MenuItem>
+      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={handleClose}>
+                <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown} className="bg-dark">
+                  {children.map((item) => <WrappedMenuItem key={item.title} onClick={handleClose} {...item} />)}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </>
+  );
+}
+
+export default function Navbar({ user, menuItems }) {
+  user = user || { isAuthenticated: false };
   menuItems = menuItems || globalMenuItems;
 
   return (
-    <nav className="navbar navbar-expand-sm bg-dark navbar-dark" id="global-nav" style={{minHeight: "4rem"}}>
+    <nav className="navbar navbar-expand-sm bg-dark navbar-dark" id="global-nav" style={{ minHeight: "4rem" }}>
       {/* Logo */}
       <a className="navbar-brand" href="/">
-        <img src="/static/logo_head_white.png" alt="Logo" style={{height: "2.5rem"}}/>
+        <img src="/static/logo_head_white.png" alt="Logo" style={{ height: "2.5rem" }} />
         ModularHistory
       </a>
 
@@ -37,7 +118,7 @@ export default function Navbar({user, menuItems}) {
         <ul className="navbar-nav">
           <li className="nav-item avatar dropdown">
             <a className="nav-link p-0 dropdown-toggle" id="accountDropdown" data-toggle="dropdown">
-              <i className="fas fa-user"/>
+              <i className="fas fa-user" />
               {/*{user.isAuthenticated && user.avatar*/}
               {/*  ? <img src={user.avatar.url}*/}
               {/*         className="rounded-circle z-depth-0"*/}
@@ -70,14 +151,16 @@ export default function Navbar({user, menuItems}) {
         </ul>
         {/* Toggler/collapser button */}
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-          <span className="navbar-toggler-icon"/>
+          <span className="navbar-toggler-icon" />
         </button>
       </div>
 
       {/* Collapsible links */}
       <div className="collapse navbar-collapse order-2 order-sm-1" id="collapsibleNavbar">
         <ul className="navbar-nav">
-          {menuItems.map((item) => <MenuItem key={item.title} {...item}/>)}
+          {menuItems.map((item) => (
+            item.children ? <MenuDropdown key={item.title} {...item} /> : <WrappedMenuItem key={item.title} {...item} />
+          ))}
         </ul>
         <ul className="navbar-nav ml-auto nav-flex-icons justify-content-end">
         </ul>

@@ -17,4 +17,5 @@ class StaticPage(AbstractFlatPage):
     meta_description = models.TextField(max_length=META_DESCRIPTION_MAX_LENGTH)
 
     class Meta:
+        verbose_name = 'static page'
         ordering = ['url']

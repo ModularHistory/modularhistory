@@ -103,8 +103,6 @@ CHANNEL_LAYERS = {
 }
 
 INSTALLED_APPS = [
-    # admin_menu come before django.contrib.admin; see https://github.com/cdrx/django-admin-menu
-    # 'admin_menu',  # This breaks mass_edit; TODO: test locally and fix it
     # admin_tools and its modules must come before django.contrib.admin
     'admin_tools',  # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
     'admin_tools.menu',
@@ -151,6 +149,7 @@ INSTALLED_APPS = [
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'meta',  # https://django-meta.readthedocs.io/en/latest/
+    # 'menu',
     'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
@@ -385,10 +384,9 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
 
 MENU_ITEMS = [
-    ['Occurrences', 'occurrences'],
-    ['Entities', 'entities'],
-    ['Quotes', 'quotes'],
-    ['About', 'about'],
+    ['Occurrences', '/occurrences/'],
+    ['Entities', '/entities/'],
+    ['Quotes', '/quotes/'],
 ]
 
 ENABLE_PATREON = True
