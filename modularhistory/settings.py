@@ -385,8 +385,8 @@ CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
 
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],
-    ['Entities', '/entities/'],
     ['Quotes', '/quotes/'],
+    ['Entities', '/entities/'],
 ]
 
 ENABLE_PATREON = True

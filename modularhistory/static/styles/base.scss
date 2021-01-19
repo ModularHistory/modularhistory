@@ -36,6 +36,25 @@ body {
     margin-top: auto;
     margin-bottom: auto;
   }
+  &.navbar-dark.bg-dark {
+    .nav-item a, .nav-link {
+      color: rgba(255,255,255,.6);
+      &.active {
+        color: white;
+      }
+    }
+    .dropdown-menu.show {
+      background-color: #343a40;
+      border-top: none;
+      a.dropdown-item {
+        color: rgba(255,255,255,.6) !important;
+        &:hover {
+          color: white !important;
+          background-color: #343a40;
+        }
+      }
+    }
+  }
 }
 
 .tooltip-inner {
