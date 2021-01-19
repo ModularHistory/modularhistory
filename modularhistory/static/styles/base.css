@@ -413,6 +413,18 @@ body {
   #global-nav .avatar {
     margin-top: auto;
     margin-bottom: auto; }
+  #global-nav.navbar-dark.bg-dark .nav-item a, #global-nav.navbar-dark.bg-dark .nav-link {
+    color: rgba(255, 255, 255, 0.6); }
+    #global-nav.navbar-dark.bg-dark .nav-item a.active, #global-nav.navbar-dark.bg-dark .nav-link.active {
+      color: white; }
+  #global-nav.navbar-dark.bg-dark .dropdown-menu.show {
+    background-color: #343a40;
+    border-top: none; }
+    #global-nav.navbar-dark.bg-dark .dropdown-menu.show a.dropdown-item {
+      color: rgba(255, 255, 255, 0.6) !important; }
+      #global-nav.navbar-dark.bg-dark .dropdown-menu.show a.dropdown-item:hover {
+        color: white !important;
+        background-color: #343a40; }
 
 .tooltip-inner {
   max-width: 90%; }
