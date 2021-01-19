@@ -26,10 +26,6 @@ const globalMenuItems = [
 function WrappedNavLink({ title, path, reactive, ...childProps }) {
   const router = useRouter();
   const active = router.pathname === path;
-  console.log("Testing");
-  console.log(router.pathname);
-  console.log(path);
-  console.log(active);
   if (reactive) {
     return (
       <Link href={path}>
