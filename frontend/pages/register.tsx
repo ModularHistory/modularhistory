@@ -1,8 +1,9 @@
+import React from "react";
 import Layout from "../components/layout";
 
 const Register = (): React.ReactElement => {
     return (
-        <Layout title="Create an account" canonicalUrl="/register/">
+        <Layout title="Create an account">
             <h1 className="text-xl pt-3 pb-5">Signup page goes here</h1>
         </Layout>
     );

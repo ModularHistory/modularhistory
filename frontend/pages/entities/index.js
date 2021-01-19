@@ -15,9 +15,6 @@ import { forwardRef, useState } from 'react';
 import Layout from "../../components/layout";
 
 
-
-
-
 const PaginationLink = forwardRef(({ href, ...childProps }, ref) => (
   <Link href={href}>
     <a ref={ref} {...childProps} />

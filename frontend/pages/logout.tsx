@@ -7,7 +7,6 @@ const Logout = (): React.ReactElement => {
     // const { isAuthenticated, logout } = useAuth();
     const { loading, isAuthenticated, logout } = useAuth();
 
-
     useEffect(() => {
         logout();
     }, []);
@@ -15,8 +14,8 @@ const Logout = (): React.ReactElement => {
     if (isAuthenticated) return null;
     if (!loading) Router.push("/entities");
     return (
-        <Layout title="Logout" canonicalUrl="/logout/">
-            <h1 className="text-xl pt-3 pb-5">You've been logged out</h1>
+        <Layout title="Logout">
+            <h1 className="text-xl pt-3 pb-5">You have been logged out</h1>
         </Layout>
     )
 }

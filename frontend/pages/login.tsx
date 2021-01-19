@@ -1,7 +1,7 @@
 import Container from '@material-ui/core/Container';
 import Link from "next/link";
 import Router from "next/router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../auth";
 import Layout from "../components/layout";
 
@@ -33,14 +33,14 @@ const Login: React.FunctionComponent = (): React.ReactElement => {
 
     if (isAuthenticated) {
         return (
-            <Layout title="Login" canonicalUrl="/login/">
+            <Layout title="Login">
                 <p>You are already logged in.</p>
             </Layout>
         );
-    };
+    }
 
     return (
-        <Layout title="Login" canonicalUrl="/login/">
+        <Layout title="Login">
             <Container>
                 <form className="w-full max-w-sm pt-4" onSubmit={handleSubmit}>
                     <div className="md:flex md:items-center mb-6">

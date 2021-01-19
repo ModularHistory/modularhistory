@@ -1,21 +1,21 @@
 import Head from "next/head";
-import Navbar from "./navbar";
-import Footer from "./footer";
 // import Modal from "./modal";
-import {useRouter} from "next/router";
+// import { useRouter } from "next/router";
+import React from 'react';
+import Footer from "./footer";
+import GlobalNavbar from "./navbar";
 
 
-export default function Layout({title, canonicalUrl, children}) {
-  const router = useRouter();
+export default function Layout({title, children}) {
+  // const router = useRouter();
 
   return (
     <>
       <Head>
         <title>{title || "Home"} | ModularHistory</title>
-        <link rel="canonical" href={canonicalUrl || router.pathname} />
       </Head>
 
-      <Navbar />
+      <GlobalNavbar />
 
       <div className="main-content">
         {children}
