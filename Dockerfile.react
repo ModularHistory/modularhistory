@@ -1,4 +1,4 @@
-FROM node:14.15.3-buster
+FROM node:15.6.0-buster
 
 # LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
