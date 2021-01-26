@@ -165,14 +165,6 @@ if [[ "$interactive" == true ]]; then
       pyenv install "$pyversion"
     fi
   done < .python-version
-
-  # Install gettext (for envsubst)
-  if [[ "$os" == "$MAC_OS" ]]; then
-    brew install gettext
-    brew link --force gettext
-  elif [[ "$os" == "$LINUX" ]]; then
-    apt-get install envsubst
-  fi
 fi
 
 # Make sure correct version of Python is used

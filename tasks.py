@@ -13,9 +13,10 @@ See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
 import os
+import re
 from glob import iglob
 from typing import Any, Callable, Optional, TypeVar
-
+from dotenv import load_dotenv
 import django
 from decouple import config
 from paramiko import SSHClient
@@ -293,3 +294,44 @@ def test(context, docker=False):
         )
     context.run(command)
     context.run('coverage combine; rm -r archived_logs; mv latest_logs .selenium')
+
+
+@task
+def write_env_file(context, dry: bool = False):
+    """Write a .env file."""
+    destination_file = '.env'
+    dry_destination_file = '.env.tmp'
+    template_file = 'config/env.yaml'
+    temporary_file = 'env.yaml.tmp'
+    if dry and os.path.exists(destination_file):
+        load_dotenv(dotenv_path=destination_file)
+    elif os.path.exists(destination_file):
+        print(f'{destination_file} already exists.')
+        return
+    # Write temporary YAML file containing env vars
+    envsubst = context.run('envsubst -V &>/dev/null && echo ""', warn=True).exited == 0
+    if envsubst:
+        context.run(f'envsubst < {template_file} > {temporary_file}')
+    else:
+        with open(template_file, 'r') as base:
+            content_after = content_before = base.read()
+            for match in re.finditer(r'\$\{?(.+?)\}?', content_before):
+                env_var = match.group(1)
+                print(env_var)
+                env_var_value = os.getenv(env_var)
+                content_after = content_before.replace(
+                    match.group(0), env_var_value or ''
+                )
+        with open(temporary_file, 'w') as base:
+            base.write(content_after)
+    destination_file = dry_destination_file if dry else destination_file
+    # Write env file based on temporary YAML file
+    context.run(
+        'while read assign; do echo "$assign"; done < <(sed -nr '
+        r"'/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' "
+        f'{temporary_file}) > {destination_file}'
+    )
+    # Remove temporary YAML file
+    os.remove(temporary_file)
+    if dry:
+        context.run(f'cat {destination_file} && rm {destination_file}')

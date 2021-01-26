@@ -398,7 +398,7 @@ SETTINGS_EXPORT = [
     'ENABLE_PATREON',
 ]
 
-RAPIDAPI_KEY = config('RAPIDAPI_KEY', default='')
+RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default='')
 
 # https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
 SITE_ID = 1

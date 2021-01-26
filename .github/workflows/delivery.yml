@@ -98,9 +98,7 @@ jobs:
     ########################################################
     - name: Inject environment vars
       if: ${{ success() }}
-      run: |
-        envsubst < config/env.yaml > env.yaml.tmp && mv env.yaml.tmp config/env.yaml
-        while read assign; do echo "$assign"; done < <(sed -nr '/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' config/env.yaml) > .env
+      run: poetry run invoke write-env-file
     - name: Build and push Docker images
       if: ${{ success() }}
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --push
