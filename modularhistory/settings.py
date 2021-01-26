@@ -51,9 +51,11 @@ APPEND_SLASH = True
 # https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
-SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy
+SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy in prod.
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
+# https://docs.djangoproject.com/en/3.1/ref/settings/#session-cookie-samesite
+SESSION_COOKIE_SAMESITE = 'Lax' if IS_PROD else 'None'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-csrf-cookie-secure
 CSRF_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-referrer-policy
@@ -261,6 +263,7 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'modularhistory.pagination.PageNumberPagination',
@@ -283,7 +286,7 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 JWT_COOKIE_NAME = 'jwt_token'
-JWT_COOKIE_SAMESITE = 'strict' if IS_PROD else 'none'
+JWT_COOKIE_SAMESITE = 'Strict' if IS_PROD else 'None'
 JWT_COOKIE_SECURE = IS_PROD
 
 # Database

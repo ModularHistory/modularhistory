@@ -15,6 +15,8 @@ services:
       context: .
       dockerfile: Dockerfile.react
     command: npm run dev
+    environment:
+      - NEXTAUTH_URL=http://dev
     image: ghcr.io/modularhistory/react:latest
     user: root
     volumes:

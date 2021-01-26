@@ -5,7 +5,6 @@ from rest_framework import serializers
 from rest_framework_simplejwt import serializers as jwt_serializers
 from rest_framework_simplejwt.settings import api_settings as jwt_settings
 from rest_framework_simplejwt.tokens import RefreshToken
-from apps.account import models
 import serpy
 
 
@@ -17,27 +16,10 @@ class UserSerializer(serpy.Serializer):
     avatar = serpy.Field(attr='avatar.url')
     name = serpy.Field()
     email = serpy.Field()
+    is_superuser = serpy.BoolField()
     # 'is_active',
     # 'date_joined',
     # 'last_login',
-
-
-# class UserSerializer(serializers.ModelSerializer):
-#     """Serializer for users."""
-
-#     class Meta:
-#         model = models.User
-#         fields = (
-#             'id',
-#             'username',
-#             'avatar',
-#             'name',
-#             'email',
-#             'is_active',
-#             'date_joined',
-#             'last_login',
-#         )
-
 
 class TokenObtainPairSerializer(jwt_serializers.TokenObtainPairSerializer):
     @classmethod

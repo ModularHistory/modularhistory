@@ -90,13 +90,12 @@ export default function Entities({ entitiesData }) {
   );
 }
 
-
 export async function getServerSideProps(context) {
   const q = context.query;
   let entitiesData = {};
 
   await axios.get(
-    "http://django:8001/api/entities/" +
+    "http://django:8000/api/entities/" +
     ('page' in q ? `?page=${q['page']}` : "")
   ).then((response) => {
     entitiesData = response.data;

@@ -28,6 +28,7 @@ from django.views.generic import TemplateView
 
 from admin.model_admin import admin_site
 from apps.search.views import SearchResultsView
+from apps.account.api.views import set_csrf_token
 from modularhistory import errors
 
 
@@ -45,6 +46,7 @@ urlpatterns = [
     path('_nested_admin/', include('nested_admin.urls')),
     # Account
     path('api/account/', include(_api('account'), namespace='account_api')),
+    path('api/csrf/set', set_csrf_token),
     path('account/', include(('apps.account.urls', 'account'), namespace='account')),
     # Admin
     path('admin/defender/', include('defender.urls')),  # defender admin

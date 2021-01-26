@@ -3,6 +3,12 @@
 import datetime as dt
 import logging
 from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.views.decorators.http import require_POST
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
+
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -49,7 +55,7 @@ class TokenViewWithCookie(TokenViewBase):
 
         response.set_cookie(
             settings.JWT_COOKIE_NAME,
-            serializer.validated_data['refresh'],
+            value=serializer.validated_data['refresh'],
             expires=expiration,
             secure=settings.JWT_COOKIE_SECURE,
             httponly=True,
@@ -76,6 +82,7 @@ class RefreshToken(TokenViewWithCookie):
     serializer_class = serializers.TokenRefreshSerializer
 
     def post(self, request, *args, **kwargs):
+        """Make the post request to refresh the auth token."""
         response = super().post(request=request, *args, **kwargs)
         return response
 
@@ -91,3 +98,30 @@ class Logout(APIView):
         refresh.blacklist()
         response.delete_cookie(settings.JWT_COOKIE_NAME)
         return response
+
+
+@ensure_csrf_cookie
+def set_csrf_token(request):
+    """Ensure the CSRF cookie is set correctly."""
+    return JsonResponse({"details": "CSRF cookie set"})
+
+
+@require_POST
+def log_in(request):
+    """Log in with session-based auth."""
+    data = json.loads(request.body)
+    username = data.get('username')
+    password = data.get('password')
+    if username is None or password is None:
+        return JsonResponse(
+            {"errors": {"__all__": "Please enter both username and password"}},
+            status=400,
+        )
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return JsonResponse({"user": serializers.UserSerializer(user)})
+    return JsonResponse(
+        {"detail": "Invalid credentials"},
+        status=400,
+    )

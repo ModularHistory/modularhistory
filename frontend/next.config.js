@@ -9,7 +9,7 @@ if (env.error) {
 if (!('HOSTNAME' in env.parsed)) {
   env.parsed['HOSTNAME'] = (
     env.parsed['ENVIRONMENT'] === "dev"
-      ? "http://localhost:8000"
+      ? "http://127.0.0.1"
       : "https://modularhistory"
   );
 } else {

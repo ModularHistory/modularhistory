@@ -1,10 +1,10 @@
+import { signIn, signOut, useSession } from 'next-auth/client';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { useAuth } from '../auth';
 
 // import Typography from '@material-ui/core/Typography';
 
@@ -30,20 +30,24 @@ function WrappedNavLink({ title, path, reactive, ...childProps }) {
   if (reactive) {
     return (
       <Link href={path}>
-        <Nav.Link className={active ? "active" : ""}>{title}</Nav.Link>
+        <Nav.Link className={active ? "active" : ""} {...childProps}>
+          {title}
+        </Nav.Link>
       </Link>
     );
   } else {
     return (
-      <Nav.Link href={path} className={active ? "active" : ""}>{title}</Nav.Link>
+      <Nav.Link href={path} className={active ? "active" : ""} {...childProps}>
+        {title}
+      </Nav.Link>
     );
   }
 }
 
 function WrappedNavDropdown({ title, children, ...childProps }) {
   return (
-    <NavDropdown title={title} {...childProps} renderMenuOnMount>
-      {children.map((item) => <NavDropdown.Item key={item.title} href={item.path}>{item.title}</NavDropdown.Item>)}
+    <NavDropdown renderMenuOnMount title={title} {...childProps}>
+      {children.map((item) => <NavDropdown.Item key={item.path} href={item.path}>{item.title}</NavDropdown.Item>)}
     </NavDropdown>
   )
 }
@@ -51,11 +55,12 @@ function WrappedNavDropdown({ title, children, ...childProps }) {
 export default function GlobalNavbar({ menuItems }) {
   menuItems = menuItems || globalMenuItems;
 
-  const { user, isAuthenticated } = useAuth();
+  const [ session, loading ] = useSession();
+
   let accountDropdownIcon;
-  if (user && user['avatar']) {
+  if (session && session.user['avatar']) {
     accountDropdownIcon = (
-      <img src={user.avatar} className="rounded-circle z-depth-0" alt={user.name} height="35" />
+      <img src={session.user.avatar} className="rounded-circle z-depth-0" alt={session.user.name} height="35" />
     );
   } else {
     accountDropdownIcon = (
@@ -82,25 +87,25 @@ export default function GlobalNavbar({ menuItems }) {
         </Nav>
         <Nav>
           <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
-            {user
+            {session
               ? 
               <>
                 <NavDropdown.Item href="/account/profile">Profile</NavDropdown.Item>
                 <NavDropdown.Item href="/account/setting">Settings</NavDropdown.Item>
-                {user.isSuperUser && 
+                {session.user.isSuperUser && 
                 <>
                   <NavDropdown.Item href="/admin/">Administrate</NavDropdown.Item>
                   <NavDropdown.Item href="" className="hide-admin-controls">Hide admin controls</NavDropdown.Item>
                 </>
                 }
-                <NavDropdown.Item href="/account/logout">
+                <NavDropdown.Item onClick={signOut}>
                   <span className="glyphicon glyphicon-log-out" /> Logout
                 </NavDropdown.Item>
               </>
               : 
               <>
                 <NavDropdown.Item href="/account/register">Create an account</NavDropdown.Item>
-                <NavDropdown.Item href="/account/login">Log in</NavDropdown.Item>
+                <NavDropdown.Item onClick={signIn}>Log in</NavDropdown.Item>
               </>
             }
           </NavDropdown>

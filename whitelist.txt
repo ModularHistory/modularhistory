@@ -39,6 +39,7 @@ monkeypatch
 mp3
 mypy
 nbsp
+Nginx
 parsable
 prefetched
 prepopulated

@@ -1,9 +1,16 @@
+import axios from 'axios';
+import { Provider } from 'next-auth/client';
 import Head from "next/head";
-import React from 'react';
+import React, { useEffect } from 'react';
 import "../../modularhistory/static/styles/base.scss";
-import { AuthProvider } from "../auth";
+
 
 function MyApp({ Component, pageProps }) {
+  useEffect(() => {
+    // Get CSRF cookie
+    const url = ('/api/csrf/set');
+    axios.get(url).then(console.log);
+  }, []);
   return (
     <>
       <Head>
@@ -25,9 +32,9 @@ function MyApp({ Component, pageProps }) {
         <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
           height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} />
       </noscript>
-      <AuthProvider>
+      <Provider session={pageProps.session}>
         <Component {...pageProps} />
-      </AuthProvider>
+      </Provider>
     </>
   );
 }
