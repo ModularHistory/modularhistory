@@ -27,7 +27,6 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
       SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
       SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
@@ -56,11 +55,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-      shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.1.1
       with:

@@ -13,8 +13,10 @@ See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
 import os
+import json
 import re
 from glob import iglob
+import zipfile
 from typing import Any, Callable, List, Optional, TypeVar
 from dotenv import load_dotenv
 import django
@@ -194,14 +196,25 @@ def get_db_backup(context):
         raise EnvironmentError('Necessary environment variables are not set.')
 
 
+def pat_is_valid(context, username: str, pat: str) -> bool:
+    """Return a bool reflecting whether the PAT is valid."""
+    pat_validity_check = (
+        f'curl -u {username}:{pat} '
+        '-s -o /dev/null -I -w "%{http_code}" '
+        f'https://api.github.com/user'
+    )
+    return '200' in context.run(pat_validity_check, hide='out').stdout
+
+
 @task
 def get_env_file(context, dev: bool = False, dry: bool = False):
     """Get a .env file for dev environment."""
-    base_url = 'https://api.github.com'
+    workflow = 'setup.yml'
     owner = 'modularhistory'
     repo = 'modularhistory'
-    workflow = 'setup.yml'
     pat_file = '.github/.pat'
+    api_base_url = 'https://api.github.com'
+    repo_actions_base_url = f'{api_base_url}/repos/{owner}/{repo}/actions'
     username = input('Enter your GitHub username/email: ')
     if os.path.exists(pat_file):
         print('Reading personal access token...')
@@ -209,22 +222,44 @@ def get_env_file(context, dev: bool = False, dry: bool = False):
             pat = personal_access_token.read()
     else:
         pat = input('Enter your Personal Access Token: ')
-    # print(f'curl -u {username}:{pat} {base_url}/user')
-    # context.run(f'curl -u {username}:{pat} {base_url}/user')
-    # input('Press the Enter to continue.')
+        while not pat_is_valid(context, username, pat):
+            print('Invalid GitHub credentials.')
+            username = input('Enter your GitHub username/email: ')
+            pat = input('Enter your Personal Access Token: ')
+        with open(pat_file, 'w') as credentials_file:
+            credentials_file.write(pat)
+    signature = f'{username}:{pat}'
+    default_request_args = f'-u {signature} -H "Accept: application/vnd.github.v3+json"'
+    request_for_artifacts = (
+        f'curl {default_request_args} {repo_actions_base_url}/artifacts'
+    )
+    artifacts = extant_artifacts = context.run(request_for_artifacts, hide='out').stdout
     print('Dispatching workflow...')
     context.run(
-        f'curl -X POST -u {username}:{pat} '
-        f'-H "Accept: application/vnd.github.v3+json" '
-        f'{base_url}/repos/{owner}/{repo}/actions/workflows/{workflow}/dispatches '
+        f'curl -X POST {default_request_args} '
+        f'{repo_actions_base_url}/workflows/{workflow}/dispatches '
         '-d \'{"ref":"main"}\''
     )
-    input('Press Enter to continue.')
-    print('Retrieving artifact info...')
+    print('Waiting for the .env file...')
+    while artifacts == extant_artifacts:
+        context.run('sleep 15')
+        artifacts = context.run(request_for_artifacts, hide='out').stdout
+    artifact = json.loads(artifacts[artifacts.index('{') :])['artifacts'][0]
+    archive_download_url = artifact['archive_download_url']
+    print(f'Extracted artifact download URL: {archive_download_url}')
+    zip_file = 'env-file.zip'
     context.run(
-        'curl -H "Accept: application/vnd.github.v3+json" '
-        f'{base_url}/repos/{owner}/{repo}/actions/artifacts/env-file'
+        f'curl -u {signature} -L {archive_download_url} --output {zip_file} '
+        f'&& sleep 3 && echo "Downloaded {zip_file}"'
     )
+    try:
+        with zipfile.ZipFile(zip_file, 'r') as archive:
+            if os.path.exists('.env'):
+                context.run('mv .env .env.prior')
+            archive.extractall()
+        context.run(f'rm {zip_file}')
+    except zipfile.BadZipFile as err:
+        print(f'Could not extract .env from {zip_file} due to error: {err}')
 
 
 @task
