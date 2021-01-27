@@ -7,6 +7,14 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
+    paths-ignore:
+      - '.gitignore'
+      - '.github/**'
+      - '!.github/integration.yml'
+      - '.idea/**'
+      - '.vscode/**'
+      - '**.md'
+      - '**.rst'
   schedule:
     - cron: '0 9 * * *'
 

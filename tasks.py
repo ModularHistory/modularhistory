@@ -200,7 +200,7 @@ def get_env_file(context, dev: bool = False, dry: bool = False):
     base_url = 'https://api.github.com'
     owner = 'modularhistory'
     repo = 'modularhistory'
-    workflow_id = 'setup'
+    workflow = 'setup.yml'
     pat_file = '.github/.pat'
     username = input('Enter your GitHub username/email: ')
     if os.path.exists(pat_file):
@@ -216,7 +216,7 @@ def get_env_file(context, dev: bool = False, dry: bool = False):
     context.run(
         f'curl -X POST -u {username}:{pat} '
         f'-H "Accept: application/vnd.github.v3+json" '
-        f'{base_url}/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches '
+        f'{base_url}/repos/{owner}/{repo}/actions/workflows/{workflow}/dispatches '
         '-d \'{"ref":"main"}\''
     )
     input('Press Enter to continue.')
