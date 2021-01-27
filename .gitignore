@@ -4,6 +4,7 @@ clean_data.py
 # Environment & credentials
 .env
 *credentials.json
+.pat
 .credentials/
 .secrets/
 .devcontainer/

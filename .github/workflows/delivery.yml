@@ -62,6 +62,7 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       CR_PAT: ${{ secrets.CR_PAT }}
       SERVER: kfred.dyndns.org
+    environment: prod
     steps:
     - name: Check out main branch
       uses: actions/checkout@v2

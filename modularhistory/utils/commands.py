@@ -4,7 +4,7 @@ import os
 from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Iterable, Optional, TypeVar
-
+import re
 from django.db import transaction
 from invoke.context import Context
 
@@ -63,6 +63,17 @@ def clear_migration_history(context: Context = CONTEXT):
     # Remove old migration files.
     if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
         remove_migrations(context)
+
+
+def envsubst(input_file) -> str:
+    """Python implementation of envsubst."""
+    with open(input_file, 'r') as base:
+        content_after = content_before = base.read()
+        for match in re.finditer(r'\$\{?(.+?)\}?', content_before):
+            env_var = match.group(1)
+            env_var_value = os.getenv(env_var)
+            content_after = content_before.replace(match.group(0), env_var_value or '')
+    return content_after
 
 
 def makemigrations(context: Context = CONTEXT, noninteractive: bool = False):

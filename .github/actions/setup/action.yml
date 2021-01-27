@@ -23,6 +23,7 @@ runs:
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
     - name: Install and configure Poetry
+      # https://github.com/snok/install-poetry
       uses: snok/install-poetry@v1.1.1
       with:
         virtualenvs-create: true

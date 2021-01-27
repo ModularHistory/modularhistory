@@ -15,11 +15,12 @@ See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 import os
 import re
 from glob import iglob
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, List, Optional, TypeVar
 from dotenv import load_dotenv
 import django
 from decouple import config
 from paramiko import SSHClient
+from requests import post
 from scp import SCPClient
 
 from modularhistory.constants.environments import Environments
@@ -194,22 +195,35 @@ def get_db_backup(context):
 
 
 @task
-def seed(context):
-    """Seed the dev database and media directory."""
-    init_file = '.backups/init.sql'
-    if input('Remove existing database and reinitialize? [Y/n] ') != NEGATIVE:
-        if os.path.exists(init_file):
-            if os.path.isfile(init_file):
-                context.run('docker-compose down')
-                context.run('docker volume rm modularhistory_postgres_data')
-                context.run('docker-compose up postgres')
-            else:
-                context.run(f'rm -r {init_file}')
-        raise EnvironmentError(
-            f'There is no {init_file} file. Try running `invoke get-db-backup` first.'
-        )
+def get_env_file(context, dev: bool = False, dry: bool = False):
+    """Get a .env file for dev environment."""
+    base_url = 'https://api.github.com'
+    owner = 'modularhistory'
+    repo = 'modularhistory'
+    workflow_id = 'setup'
+    pat_file = '.github/.pat'
+    username = input('Enter your GitHub username/email: ')
+    if os.path.exists(pat_file):
+        print('Reading personal access token...')
+        with open(pat_file, 'r') as personal_access_token:
+            pat = personal_access_token.read()
+    else:
+        pat = input('Enter your Personal Access Token: ')
+    # print(f'curl -u {username}:{pat} {base_url}/user')
+    # context.run(f'curl -u {username}:{pat} {base_url}/user')
+    # input('Press the Enter to continue.')
+    print('Dispatching workflow...')
     context.run(
-        f'rsync -au -e "ssh -p {SERVER_SSH_PORT}" {SERVER_USERNAME}@{SERVER}:media/ ./media/'
+        f'curl -X POST -u {username}:{pat} '
+        f'-H "Accept: application/vnd.github.v3+json" '
+        f'{base_url}/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches '
+        '-d \'{"ref":"main"}\''
+    )
+    input('Press Enter to continue.')
+    print('Retrieving artifact info...')
+    context.run(
+        'curl -H "Accept: application/vnd.github.v3+json" '
+        f'{base_url}/repos/{owner}/{repo}/actions/artifacts/env-file'
     )
 
 
@@ -258,6 +272,26 @@ def restore_squashed_migrations(context):
 
 
 @task
+def seed(context):
+    """Seed the dev database and media directory."""
+    init_file = '.backups/init.sql'
+    if input('Remove existing database and reinitialize? [Y/n] ') != NEGATIVE:
+        if os.path.exists(init_file):
+            if os.path.isfile(init_file):
+                context.run('docker-compose down')
+                context.run('docker volume rm modularhistory_postgres_data')
+                context.run('docker-compose up postgres')
+            else:
+                context.run(f'rm -r {init_file}')
+        raise EnvironmentError(
+            f'There is no {init_file} file. Try running `invoke get-db-backup` first.'
+        )
+    context.run(
+        f'rsync -au -e "ssh -p {SERVER_SSH_PORT}" {SERVER_USERNAME}@{SERVER}:media/ ./media/'
+    )
+
+
+@task
 def setup(context, noninteractive: bool = False):
     """Install all dependencies; set up the ModularHistory application."""
     args = [relativize('setup.sh')]
@@ -297,41 +331,41 @@ def test(context, docker=False):
 
 
 @task
-def write_env_file(context, dry: bool = False):
+def write_env_file(context, dev: bool = False, dry: bool = False):
     """Write a .env file."""
     destination_file = '.env'
     dry_destination_file = '.env.tmp'
-    template_file = 'config/env.yaml'
-    temporary_file = 'env.yaml.tmp'
+    config_dir = os.path.abspath('config')
+    template_file = os.path.join(config_dir, 'env.yaml')
+    dev_overrides_file = os.path.join(config_dir, 'env.dev.yaml')
     if dry and os.path.exists(destination_file):
         load_dotenv(dotenv_path=destination_file)
     elif os.path.exists(destination_file):
         print(f'{destination_file} already exists.')
         return
-    # Write temporary YAML file containing env vars
     envsubst = context.run('envsubst -V &>/dev/null && echo ""', warn=True).exited == 0
-    if envsubst:
-        context.run(f'envsubst < {template_file} > {temporary_file}')
-    else:
-        with open(template_file, 'r') as base:
-            content_after = content_before = base.read()
-            for match in re.finditer(r'\$\{?(.+?)\}?', content_before):
-                env_var = match.group(1)
-                print(env_var)
-                env_var_value = os.getenv(env_var)
-                content_after = content_before.replace(
-                    match.group(0), env_var_value or ''
-                )
-        with open(temporary_file, 'w') as base:
-            base.write(content_after)
+    # Write temporary YAML file
+    vars = (
+        context.run(f'envsubst < {template_file}', hide='out').stdout
+        if envsubst
+        else commands.envsubst(template_file)
+    ).splitlines()
+    if dev:
+        vars += (
+            context.run(f'envsubst < {dev_overrides_file}', hide='out').stdout
+            if envsubst
+            else commands.envsubst(dev_overrides_file)
+        ).splitlines()
+    env_vars = {}
+    for line in vars:
+        match = re.match(r'([A-Z_]+): (.*)', line.strip())
+        if not match:
+            continue
+        var_name, var_value = match.group(1), match.group(2)
+        env_vars[var_name] = var_value
     destination_file = dry_destination_file if dry else destination_file
-    # Write env file based on temporary YAML file
-    context.run(
-        'while read assign; do echo "$assign"; done < <(sed -nr '
-        r"'/env_variables:/,$ s/  ([A-Z_]+): (.*)/\1=\2/ p' "
-        f'{temporary_file}) > {destination_file}'
-    )
-    # Remove temporary YAML file
-    os.remove(temporary_file)
+    with open(destination_file, 'w') as env_file:
+        for var_name, var_value in env_vars.items():
+            env_file.write(f'{var_name}={var_value}\n')
     if dry:
         context.run(f'cat {destination_file} && rm {destination_file}')

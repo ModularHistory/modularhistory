@@ -6,9 +6,6 @@ NC='\033[0m' # No Color
 MAC_OS="MacOS"
 LINUX="Linux"
 
-VIRTUAL_ENV_PATTERN='*env'
-PREFERRED_VENV_NAME='.venv'
-
 function error() {
   # shellcheck disable=SC2059
   printf "${RED}$1${NC}" && echo ""
@@ -99,11 +96,6 @@ done
 
 shift $((OPTIND - 1))
 
-if [[ "${USE_PROD_DB}" == 'True' ]]; then
-  error "Cannot run setup script while connected to production database."
-  exit 1
-fi
-
 if [[ "$noninteractive" == true ]]; then
   interactive=false
 else
@@ -124,48 +116,46 @@ else
 fi
 echo "Detected $os."
 
+# Update package managers
+echo "Checking package manager..."
+if [[ "$os" == "$MAC_OS" ]]; then
+  # Install/update Homebrew
+  brew help &>/dev/null || {
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  }
+  echo "Updating packages..."
+  brew update
+  brew tap homebrew/services
+elif [[ "$os" == "$LINUX" ]]; then
+  # Update/upgrade apt-get
+  apt-get update -y && apt-get upgrade -y
+fi
+
 # Enter the project
 cd "$(dirname "$0")" && echo "Running in $(pwd)..." || exit 1
 
 # Create a directory for db backups
 mkdir .backups &>/dev/null
 
-if [[ "$interactive" == true ]]; then
-  # Update package managers
-  echo "Checking package manager..."
+# Make sure pyenv is installed
+echo "Checking for pyenv..."
+pyenv --version &>/dev/null || {
   if [[ "$os" == "$MAC_OS" ]]; then
-    # Install/update Homebrew
-    brew help &>/dev/null || {
-      echo "Installing Homebrew..."
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-    }
-    echo "Updating packages..."
-    brew update
-    brew tap homebrew/services
+    brew install pyenv
+    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >>~/.bash_profile
   elif [[ "$os" == "$LINUX" ]]; then
-    # Update/upgrade apt-get
-    apt-get update -y && apt-get upgrade -y
+    error "Please install and configure pyenv (https://github.com/pyenv/pyenv), then rerun this script."
+    exit 1
   fi
-
-  # Make sure pyenv is installed
-  echo "Checking for pyenv..."
-  pyenv --version &>/dev/null || {
-    if [[ "$os" == "$MAC_OS" ]]; then
-      brew install pyenv
-      echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >>~/.bash_profile
-    elif [[ "$os" == "$LINUX" ]]; then
-      error "Please install and configure pyenv (https://github.com/pyenv/pyenv), then rerun this script."
-      exit 1
-    fi
-  }
-  echo "Using $(pyenv --version)..."
-  echo "Installing required Python versions..."
-  while IFS= read -r pyversion; do
-    if [[ -n $pyversion ]]; then
-      pyenv install "$pyversion"
-    fi
-  done < .python-version
-fi
+}
+echo "Using $(pyenv --version)..."
+echo "Installing required Python versions..."
+while IFS= read -r pyversion; do
+  if [[ -n $pyversion ]]; then
+    pyenv install "$pyversion"
+  fi
+done < .python-version
 
 # Make sure correct version of Python is used
 echo "Checking Python version..."
@@ -181,69 +171,10 @@ pip --version &>/dev/null || {
   exit 1
 }
 
-if [[ "$interactive" == true ]]; then
-  # Ensure that virtualenv is installed
-  {
-    venv_version=$(virtualenv --version) && echo "Using $venv_version..."
-  } || {
-    echo "Installing virtualenv..."
-    pip install -U virtualenv
-  } || {
-    error "Could not install virtualenv."
-    exit 1
-  }
-
-  # Activate virtual Python environment
-  echo "Activating virtual Python environment..."
-  in_venv=0
-  num=$(find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -exec echo x \; | wc -l | tr -d '[:space:]')
-  if [[ "$num" -gt 0 ]]; then
-    # Attempt to activate existing virtual environment
-    find . -name "$VIRTUAL_ENV_PATTERN" -type d -maxdepth 1 -print0 |
-      while IFS= read -r -d '' path; do
-        echo "Inspecting $path..." &&
-        activation_path="$path/bin/activate" &&
-        ls "$activation_path" &>/dev/null &&
-        echo "Found $activation_path" &&
-        source "$activation_path" &&
-        break
-      done
-    echo "Checking if virtual environment is active..."
-    echo "Active Python is $(command -v python)."
-    python_prefix=$(python -c 'import sys; print(sys.prefix)')
-    if [[ "$python_prefix" == *"$(pwd)"* ]]; then
-      in_venv=1
-    fi
-  fi
-  if [ "$num" = 0 ] || [ "$in_venv" = 0 ]; then
-    create_venv=true
-    if [[ ! "$num" = 0 ]]; then
-      read -rp "Overwrite virtual env directory? [Y\n] " create_venv
-      if [[ "$create_venv" = "n" ]]; then
-        create_venv=false
-      fi
-    fi
-    if [[ "$create_venv" = true ]]; then
-      # Attempt to create the virtual environment
-      echo "Creating virtual environment..."
-      rm -r "$PREFERRED_VENV_NAME" &>/dev/null
-      virtualenv "$PREFERRED_VENV_NAME" && source "$PREFERRED_VENV_NAME/bin/activate" &&
-      echo "Activated virtual environment at $VIRTUAL_ENV"
-    fi
-    if [[ $(python -c 'import sys; print(sys.prefix)') == *"$(pwd)"* ]]; then
-      in_venv=1
-    fi
-  fi
-  if [[ "$in_venv" == 0 ]]; then
-    error "Unable to activate virtual Python environment."
-    error "Create and activate a virtual environment named $PREFERRED_VENV_NAME in your project root, then rerun this script."
-    exit 1
-  fi
-fi
-
 # Install Poetry
 poetry --version &>/dev/null || {
   echo "Installing Poetry..."
+  # https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions
   curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python &>/dev/null
   # shellcheck source=/dev/null
   source "$HOME/.poetry/env"
@@ -263,9 +194,9 @@ poetry --version &>/dev/null || {
 poetry self update &>/dev/null
 echo "Using $(poetry --version)..."
 
-# Prevent Poetry from creating virtual environments;
-# this is essential to avoid errors in GitHub builds.
-poetry config virtualenvs.create false
+# https://python-poetry.org/docs/configuration/
+poetry config virtualenvs.create true
+poetry config virtualenvs.in-project true
 
 if [[ ! "$skip_dependencies" == true ]]; then
   # Install dependencies with Poetry
@@ -283,93 +214,90 @@ if [[ ! "$skip_dependencies" == true ]]; then
   fi
 fi
 
-# Grant the db user access to create databases (so that tests can be run, etc.)
-db_user=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["USER"])')
-echo "Granting $db_user permission to create databases..."
-psql postgres -c "ALTER USER $db_user CREATEDB" &>/dev/null
+# # Grant the db user access to create databases (so that tests can be run, etc.)
+# db_user=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["USER"])')
+# echo "Granting $db_user permission to create databases..."
+# psql postgres -c "ALTER USER $db_user CREATEDB" &>/dev/null
 
-if [[ "$interactive" == true ]]; then
-  # Check if default db exists
-  db_name=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["NAME"])')
-  echo "Checking if db named $db_name (specified in project settings) exists..."
-  # Check if db already exists
-  if psql "$db_name" -c '\q' 2>&1; then
-    echo "Database named $db_name already exists."
-    while [ "$create_database" != "y" ] && [ "$create_database" != "n" ]; do
-      echo "Recreate database? (WARNING: All local changes will be obliterated.) [y/n] "
-      read -r create_database
-    done
-    if [[ "$create_database" == "y" ]]; then
-      echo "Dropping $db_name..."
-      lsof -t -i tcp:8000 | xargs kill -9 &>/dev/null
-      dropdb "$db_name" || {
-        error "Failed to drop database '$db_name'"
-        error "Hint: Try stopping the development server and rerunning this script."
-        exit 1
-      }
-    fi
-  else
-    create_database="y"
-  fi
+# if [[ "$interactive" == true ]]; then
+#   # Check if default db exists
+#   db_name=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["NAME"])')
+#   echo "Checking if db named $db_name (specified in project settings) exists..."
+#   # Check if db already exists
+#   if psql "$db_name" -c '\q' 2>&1; then
+#     echo "Database named $db_name already exists."
+#     while [ "$create_database" != "y" ] && [ "$create_database" != "n" ]; do
+#       echo "Recreate database? (WARNING: All local changes will be obliterated.) [y/n] "
+#       read -r create_database
+#     done
+#     if [[ "$create_database" == "y" ]]; then
+#       echo "Dropping $db_name..."
+#       lsof -t -i tcp:8000 | xargs kill -9 &>/dev/null
+#       dropdb "$db_name" || {
+#         error "Failed to drop database '$db_name'"
+#         error "Hint: Try stopping the development server and rerunning this script."
+#         exit 1
+#       }
+#     fi
+#   else
+#     create_database="y"
+#   fi
 
-  # Create db (if it does not already exist)
-  if [[ "$create_database" == "y" ]]; then
-    echo "Creating $db_name..."
-    createdb "$db_name" || error "Failed to create database."
+#   # Create db (if it does not already exist)
+#   if [[ "$create_database" == "y" ]]; then
+#     echo "Creating $db_name..."
+#     createdb "$db_name" || error "Failed to create database."
 
-    while [ "$use_sql_file" != "y" ] && [ "$use_sql_file" != "n" ]; do
-      read -r -p "Build db from a SQL backup file? [y/n] " use_sql_file
-    done
+#     while [ "$use_sql_file" != "y" ] && [ "$use_sql_file" != "n" ]; do
+#       read -r -p "Build db from a SQL backup file? [y/n] " use_sql_file
+#     done
 
-    if [[ "$use_sql_file" == "y" ]]; then
-      while [[ ! -f "$sql_file" ]]; do
-        read -r -e -p "Enter path to SQL file (to build db): " sql_file
-        sql_file="${sql_file/\~/$HOME}"
-        if [[ ! -f "$sql_file" ]]; then
-          echo "$sql_file does not exist."
-        fi
-      done
-      echo "Importing $sql_file..."
-      psql "$db_name" <"$sql_file" &>/dev/null || error "Failed to import $sql_file."
+#     if [[ "$use_sql_file" == "y" ]]; then
+#       while [[ ! -f "$sql_file" ]]; do
+#         read -r -e -p "Enter path to SQL file (to build db): " sql_file
+#         sql_file="${sql_file/\~/$HOME}"
+#         if [[ ! -f "$sql_file" ]]; then
+#           echo "$sql_file does not exist."
+#         fi
+#       done
+#       echo "Importing $sql_file..."
+#       psql "$db_name" <"$sql_file" &>/dev/null || error "Failed to import $sql_file."
 
-      # Set db permissions correctly
-      psql "$db_name" -c "alter database $db_name owner to $db_user" &>/dev/null
-      psql "$db_name" -c "alter schema public owner to $db_user" &>/dev/null
-      # Set permissions for db tables
-      tables=$(psql "$db_name" -qAt -c "select tablename from pg_tables where schemaname = 'public';")
-      for table in $tables; do
-        psql "$db_name" -c "alter table \"$table\" owner to $db_user" &>/dev/null
-      done
-      # Set permissions for db sequences
-      seqs=$(psql "$db_name" -qAt -c "select sequence_name from information_schema.sequences where sequence_schema = 'public';")
-      for seq in $seqs; do
-        psql "$db_name" -c "alter table \"$seq\" owner to $db_user" &>/dev/null
-      done
-      # Set permissions for db views
-      views=$(psql "$db_name" -qAt -c "select table_name from information_schema.views where table_schema = 'public';")
-      for view in $views; do
-        psql "$db_name" -c "alter table \"$view\" owner to $db_user" &>/dev/null
-      done
-    fi
-  fi
-fi
+#       # Set db permissions correctly
+#       psql "$db_name" -c "alter database $db_name owner to $db_user" &>/dev/null
+#       psql "$db_name" -c "alter schema public owner to $db_user" &>/dev/null
+#       # Set permissions for db tables
+#       tables=$(psql "$db_name" -qAt -c "select tablename from pg_tables where schemaname = 'public';")
+#       for table in $tables; do
+#         psql "$db_name" -c "alter table \"$table\" owner to $db_user" &>/dev/null
+#       done
+#       # Set permissions for db sequences
+#       seqs=$(psql "$db_name" -qAt -c "select sequence_name from information_schema.sequences where sequence_schema = 'public';")
+#       for seq in $seqs; do
+#         psql "$db_name" -c "alter table \"$seq\" owner to $db_user" &>/dev/null
+#       done
+#       # Set permissions for db views
+#       views=$(psql "$db_name" -qAt -c "select table_name from information_schema.views where table_schema = 'public';")
+#       for view in $views; do
+#         psql "$db_name" -c "alter table \"$view\" owner to $db_user" &>/dev/null
+#       done
+#     fi
+#   fi
+# fi
 
-# Run database migrations
-if [[ "${USE_PROD_DB}" != 'True' ]]; then
-  if [[ "$interactive" == true ]]; then
-    while [ "$run_migrations" != "y" ] && [ "$run_migrations" != "n" ]; do
-      echo "Run db migrations? [y/n] "
-      read -r run_migrations
-    done
-  else
-    run_migrations="y"
-  fi
-  if [[ "$run_migrations" == "y" ]]; then
-    echo "Running database migrations..."
-    python manage.py migrate || exit 1
-    echo ""
-  fi
-fi
-
-# TODO
-git update-index --skip-worktree .vscode/
+# # Run database migrations
+# if [[ "${USE_PROD_DB}" != 'True' ]]; then
+#   if [[ "$interactive" == true ]]; then
+#     while [ "$run_migrations" != "y" ] && [ "$run_migrations" != "n" ]; do
+#       echo "Run db migrations? [y/n] "
+#       read -r run_migrations
+#     done
+#   else
+#     run_migrations="y"
+#   fi
+#   if [[ "$run_migrations" == "y" ]]; then
+#     echo "Running database migrations..."
+#     python manage.py migrate || exit 1
+#     echo ""
+#   fi
+# fi
