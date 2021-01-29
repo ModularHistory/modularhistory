@@ -17,13 +17,9 @@ BASE_URLS = {
 class TestSuite:
     """Base class for test suites."""
 
-    pass
-
 
 class HypothesisTestSuite(TestSuite, DjangoHypothesisTestSuite):
     """Base class for test suites containing Hypothesis tests."""
-
-    pass
 
 
 class UserInterfaceTestSuite(TestSuite):

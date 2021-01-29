@@ -1,10 +1,11 @@
 # pylint: disable=anomalous-backslash-in-string
 
 import os
+import re
 from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Iterable, Optional, TypeVar
-import re
+
 from django.db import transaction
 from invoke.context import Context
 
@@ -38,11 +39,6 @@ def autoformat(context: Context = CONTEXT, files: Optional[Iterable[str]] = None
         for command in commands:
             context.run(command.format(filename=filename))
     context.run('isort .')
-
-
-def back_up_db(context: Context = CONTEXT):
-    """Create a database backup file."""
-    context.run('python manage.py dbbackup --no-input')
 
 
 def clear_migration_history(context: Context = CONTEXT):

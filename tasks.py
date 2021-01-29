@@ -12,17 +12,18 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
-import os
 import json
+import os
 import re
-from glob import iglob
-import zipfile
-from typing import Any, Callable, List, Optional, TypeVar
-from dotenv import load_dotenv
+from glob import glob, iglob
+from os.path import join
+from typing import Any, Callable, Optional, TypeVar
+from zipfile import BadZipFile, ZipFile
+
 import django
 from decouple import config
+from dotenv import load_dotenv
 from paramiko import SSHClient
-from requests import post
 from scp import SCPClient
 
 from modularhistory.constants.environments import Environments
@@ -38,11 +39,15 @@ django.setup()
 
 from django.conf import settings  # noqa: E402
 
+from modularhistory.storage.mega_storage import mega_client  # noqa: E402
+
 if fix_annotations():
     import invoke
 
 TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
 
+BACKUPS_DIR = '.backups'
+DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
 SERVER: Optional[str] = config('SERVER', default=None)
 SERVER_SSH_PORT: Optional[int] = config('SERVER_SSH_PORT', default=22)
 SERVER_USERNAME: Optional[str] = config('SERVER_USERNAME', default=None)
@@ -134,6 +139,31 @@ def commit(context):
 
 
 @task
+def dbbackup(context, redact: bool = True):
+    """Create a database backup file."""
+    backups_dir = '.backups'
+    context.run('python manage.py dbbackup --noinput')
+    temp_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
+    backup_file = temp_file.replace('.psql', '.sql')
+    print('Processing backup file...')
+    with open(temp_file, 'r') as unprocessed_backup:
+        with open(backup_file, 'w') as processed_backup:
+            for line in unprocessed_backup:
+                if any(
+                    [
+                        line.startswith('ALTER '),
+                        line.startswith('DROP '),
+                    ]
+                ):
+                    continue
+                elif redact and any(['sha256$' in line]):  # TODO
+                    continue
+                else:
+                    processed_backup.write(line)
+    print(f'Finished creating backup file: {backup_file}')
+
+
+@task
 def flake8(context, *args):
     """Run flake8 linter."""
     lint_with_flake8(interactive=True)
@@ -154,9 +184,7 @@ def generate_artifacts(context):
         .order_by('-num_quotes')
     )
     text = '\n'.join([topic.key for topic in ordered_topics])
-    with open(
-        os.path.join(settings.BASE_DIR, 'topics/topics.txt'), mode='w+'
-    ) as artifact:
+    with open(join(settings.BASE_DIR, 'topics/topics.txt'), mode='w+') as artifact:
         artifact.write(text)
 
     print('Building topic_cloud.png...')
@@ -171,12 +199,11 @@ def generate_artifacts(context):
         normalize_plurals=False,
         regexp=r'\w[\w\' ]+',
     ).generate(text)
-    word_cloud.to_file(os.path.join(settings.BASE_DIR, 'static', 'topic_cloud.png'))
+    word_cloud.to_file(join(settings.BASE_DIR, 'static', '_topic_cloud.png'))
     print('Done.')
 
 
-@task
-def get_db_backup(context):
+def _get_db_backup(context):
     """Get latest db backup from server."""
     if SERVER:
         ssh = SSHClient()
@@ -188,12 +215,30 @@ def get_db_backup(context):
             password=SERVER_PASSWORD,
         )
         with SCPClient(ssh.get_transport()) as scp:
-            scp.get('.backups/', './', recursive=True)
-        latest_backup = max(iglob('.backups/*sql'), key=os.path.getctime)
+            scp.get(BACKUPS_DIR, './', recursive=True)
+        latest_backup = max(iglob(join(BACKUPS_DIR, '*sql')), key=os.path.getctime)
         print(latest_backup)
-        context.run(f'cp {latest_backup} .backups/init.sql')
+        context.run(f'cp {latest_backup} {DB_INIT_FILE}')
     else:
-        raise EnvironmentError('Necessary environment variables are not set.')
+        init_file = 'init.sql'
+        init_archive = f'{init_file}.zip'
+        mega_client.download(mega_client.find(init_archive), dest_path=BACKUPS_DIR)
+        init_archive_path = f'{BACKUPS_DIR}/{init_archive}'
+        init_file_path = f'{BACKUPS_DIR}/{init_file}'
+        try:
+            with ZipFile(init_archive_path, 'r') as archive:
+                if os.path.exists(init_file_path):
+                    context.run(f'mv {init_file_path} {init_file_path}.prior')
+                archive.extractall()
+            context.run(f'rm {init_archive_path}')
+        except BadZipFile as err:
+            print(f'Could not extract init.sql from {init_archive_path} due to {err}')
+
+
+@task
+def get_db_backup(context):
+    """Get latest db backup from server."""
+    _get_db_backup(context)
 
 
 def pat_is_valid(context, username: str, pat: str) -> bool:
@@ -253,12 +298,12 @@ def get_env_file(context, dev: bool = False, dry: bool = False):
         f'&& sleep 3 && echo "Downloaded {zip_file}"'
     )
     try:
-        with zipfile.ZipFile(zip_file, 'r') as archive:
+        with ZipFile(zip_file, 'r') as archive:
             if os.path.exists('.env'):
                 context.run('mv .env .env.prior')
             archive.extractall()
         context.run(f'rm {zip_file}')
-    except zipfile.BadZipFile as err:
+    except BadZipFile as err:
         print(f'Could not extract .env from {zip_file} due to error: {err}')
 
 
@@ -293,37 +338,43 @@ def migrate(context, *args, noninteractive: bool = False):
 
 
 @task
-def nox(context, *args):
-    """Run linters and tests in multiple environments using nox."""
-    nox_cmd = SPACE.join(['nox', *args])
-    context.run(nox_cmd)
-    context.run('rm -r modularhistory.egg-info')
-
-
-@task
 def restore_squashed_migrations(context):
     """Restore migrations with squashed_migrations."""
     commands.restore_squashed_migrations(context)
 
 
-@task
-def seed(context):
+def _seed(context):
     """Seed the dev database and media directory."""
-    init_file = '.backups/init.sql'
     if input('Remove existing database and reinitialize? [Y/n] ') != NEGATIVE:
-        if os.path.exists(init_file):
-            if os.path.isfile(init_file):
+        seeded = False
+        if os.path.exists(DB_INIT_FILE):
+            if os.path.isfile(DB_INIT_FILE):
                 context.run('docker-compose down')
                 context.run('docker volume rm modularhistory_postgres_data')
                 context.run('docker-compose up postgres')
+                seeded = True
             else:
-                context.run(f'rm -r {init_file}')
-        raise EnvironmentError(
-            f'There is no {init_file} file. Try running `invoke get-db-backup` first.'
-        )
-    context.run(
-        f'rsync -au -e "ssh -p {SERVER_SSH_PORT}" {SERVER_USERNAME}@{SERVER}:media/ ./media/'
-    )
+                context.run(f'rm -r {DB_INIT_FILE}')
+        if not seeded:
+            _get_db_backup(context)
+            _seed(context)
+    zipped_media_filename = 'media.zip'
+    zipped_media_file = mega_client.find(zipped_media_filename)
+    mega_client.download(zipped_media_file, dest_path='.')
+    try:
+        with ZipFile(zipped_media_filename, 'r') as archive:
+            if os.path.exists(f'./{zipped_media_file}'):
+                context.run('rm -r media', warn=True, hide='both')
+            archive.extractall()
+        context.run(f'rm {zipped_media_filename}')
+    except BadZipFile as err:
+        print(f'Could not extract media from {zipped_media_filename} due to {err}')
+
+
+@task
+def seed(context):
+    """Seed the dev database and media directory."""
+    _seed(context)
 
 
 @task
@@ -371,8 +422,8 @@ def write_env_file(context, dev: bool = False, dry: bool = False):
     destination_file = '.env'
     dry_destination_file = '.env.tmp'
     config_dir = os.path.abspath('config')
-    template_file = os.path.join(config_dir, 'env.yaml')
-    dev_overrides_file = os.path.join(config_dir, 'env.dev.yaml')
+    template_file = join(config_dir, 'env.yaml')
+    dev_overrides_file = join(config_dir, 'env.dev.yaml')
     if dry and os.path.exists(destination_file):
         load_dotenv(dotenv_path=destination_file)
     elif os.path.exists(destination_file):

@@ -389,7 +389,7 @@ MENU_ITEMS = [
     ['Entities', '/entities/'],
 ]
 
-ENABLE_PATREON = True
+ENABLE_PATREON = False
 
 SETTINGS_EXPORT = [
     # 'Environment',  # TODO: Can't be exported as a class/enum
@@ -426,8 +426,8 @@ elif REDIS_HOST:
         }
     }
     # https://github.com/jazzband/django-redis
-    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-    SESSION_CACHE_ALIAS = "default"
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+    SESSION_CACHE_ALIAS = 'default'
 
 # https://django-q.readthedocs.io/en/latest/configure.html
 Q_CLUSTER = {
