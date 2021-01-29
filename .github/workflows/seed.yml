@@ -1,0 +1,215 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+name: seed
+
+on: workflow_dispatch
+  # workflow_dispatch:
+  #   inputs:
+  #     name:
+  #       description: 'Person to greet'
+  #       required: true
+  #       default: 'Mona the Octocat'
+  #     home:
+  #       description: 'location'
+  #       required: false
+  #       default: 'The Octoverse'
+
+env:
+  ENVIRONMENT: dev
+  SHA: latest
+
+jobs:
+  db_init_file:
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      ADMINS: ${{ secrets.ADMINS }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+      SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+      SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+      SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
+      SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+      X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
+      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+    steps:
+    - name: Check out main branch
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+    ##### TODO: Move to composite action when possible #####
+    ##### https://github.com/actions/runner/issues/646 #####
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      name: Install dependencies
+      run: poetry install
+    ########################################################
+    ########################################################
+    - name: Inject environment vars
+      if: ${{ success() }}
+      run: poetry run invoke get-db-backup
+    - name: Archive init.sql.zip
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: init-sql-file
+        path: .backups/init.sql
+        retention-days: 1
+
+  env_file:
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      ADMINS: ${{ secrets.ADMINS }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+      SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+      SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+      SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
+      SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+      X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
+      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+    steps:
+    - name: Check out main branch
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+    ##### TODO: Move to composite action when possible #####
+    ##### https://github.com/actions/runner/issues/646 #####
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      name: Install dependencies
+      run: poetry install
+    ########################################################
+    ########################################################
+    - name: Inject environment vars
+      if: ${{ success() }}
+      run: poetry run invoke write-env-file --dev
+    - name: Archive .env file
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: env-file
+        path: .env
+        retention-days: 1
+
+  media_dir:
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      ADMINS: ${{ secrets.ADMINS }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+      SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+      SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+      SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
+      SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+      X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
+      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+    steps:
+    - name: Check out main branch
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+    ##### TODO: Move to composite action when possible #####
+    ##### https://github.com/actions/runner/issues/646 #####
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      name: Install dependencies
+      run: poetry install
+    ########################################################
+    ########################################################
+    - name: Inject environment vars
+      if: ${{ success() }}
+      run: poetry run invoke get-media-backup
+    - name: Archive .env file
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: media-dir
+        path: media.tar.gz
+        retention-days: 1

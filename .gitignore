@@ -18,6 +18,8 @@ venv/
 .postgres-data/
 .artifacts/
 artifacts/
+*.zip
+*.prior
 
 # Django
 /media/

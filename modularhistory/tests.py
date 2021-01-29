@@ -20,15 +20,3 @@ class TestSuite:
 
 class HypothesisTestSuite(TestSuite, DjangoHypothesisTestSuite):
     """Base class for test suites containing Hypothesis tests."""
-
-
-class UserInterfaceTestSuite(TestSuite):
-    """Base class for UI test suites."""
-
-    base_url: str
-
-    @pytest.fixture(autouse=True)
-    def _setup_ui_test(self, live_server, sb):
-        """Set necessary test attributes and attach the Selenium client."""
-        self.base_url = live_server.url
-        self.client = sb

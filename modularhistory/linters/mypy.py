@@ -212,10 +212,11 @@ def report(
     color = linting.COLORS[status]
     status = linting.colored(f'{status}', color, attrs=display_attrs)
     msg = linting.colored(msg, color, attrs=display_attrs)
-    print(
-        f'{"IGNORED: " if options.show_ignored and is_filtered else ""}'
-        f'{filename}:{line_number}: {msg}  [{error_key}: {ERROR_CODE_LIST_URL}]'
-    )
+    if 'found module but no type hints or library stubs' not in msg:  # TODO
+        print(
+            f'{"IGNORED: " if options.show_ignored and is_filtered else ""}'
+            f'{filename}:{line_number}: {msg}  [{error_key}: {ERROR_CODE_LIST_URL}]'
+        )
 
 
 class ConfigFileOptionsParser(BaseConfigFileOptionsParser):

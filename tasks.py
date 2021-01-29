@@ -28,8 +28,12 @@ from scp import SCPClient
 
 from modularhistory.constants.environments import Environments
 from modularhistory.constants.strings import NEGATIVE, SPACE
-from modularhistory.linters import flake8 as lint_with_flake8
-from modularhistory.linters import mypy as lint_with_mypy
+
+try:
+    from modularhistory.linters import flake8 as lint_with_flake8
+    from modularhistory.linters import mypy as lint_with_mypy
+except ModuleNotFoundError:
+    print('Skipped importing nonexistent linting modules.')
 from modularhistory.utils import commands
 from modularhistory.utils.files import relativize
 from monkeypatch import fix_annotations
@@ -38,8 +42,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
 
 from django.conf import settings  # noqa: E402
-
-from modularhistory.storage.mega_storage import mega_client  # noqa: E402
 
 if fix_annotations():
     import invoke
@@ -139,28 +141,49 @@ def commit(context):
 
 
 @task
-def dbbackup(context, redact: bool = True):
+def dbbackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
+    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
+
     backups_dir = '.backups'
-    context.run('python manage.py dbbackup --noinput')
+    context.run('python manage.py dbbackup --quiet --noinput', hide='out')
     temp_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
     backup_file = temp_file.replace('.psql', '.sql')
     print('Processing backup file...')
     with open(temp_file, 'r') as unprocessed_backup:
         with open(backup_file, 'w') as processed_backup:
+            previous_line = ''  # falsey, but compatible with `startswith`
             for line in unprocessed_backup:
                 if any(
                     [
                         line.startswith('ALTER '),
                         line.startswith('DROP '),
+                        line == '\n' == previous_line,
                     ]
                 ):
                     continue
-                elif redact and any(['sha256$' in line]):  # TODO
+                elif all(
+                    [
+                        redact,
+                        previous_line.startswith('COPY public.account_user'),
+                        not line.startswith(r'\.'),
+                    ]
+                ):
                     continue
-                else:
-                    processed_backup.write(line)
+                processed_backup.write(line)
+                previous_line = line
+    context.run(f'rm {temp_file}')
     print(f'Finished creating backup file: {backup_file}')
+    if push:
+        print(f'Zipping up {backup_file}...')
+        zipped_backup_file = f'{backup_file}.zip'
+        with ZipFile(zipped_backup_file, 'x') as archive:
+            archive.write(backup_file)
+        print(f'Pushing {zipped_backup_file} to Mega...')
+        extant_backup = mega_client.find(zipped_backup_file, exclude_deleted=True)
+        if extant_backup:
+            print(f'Found extant backup: {extant_backup}')
+        mega_client.upload(zipped_backup_file)
 
 
 @task
@@ -203,9 +226,31 @@ def generate_artifacts(context):
     print('Done.')
 
 
-def _get_db_backup(context):
+@task
+def get_media_backup(context, unzip: bool = False):
+    """Seed the media dir for development."""
+    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
+
+    zipped_media_filename = 'media.zip'
+    zipped_media_file = mega_client.find(zipped_media_filename, exclude_deleted=True)
+    mega_client.download(zipped_media_file, dest_path='.')
+    if unzip:
+        try:
+            with ZipFile(zipped_media_filename, 'r') as archive:
+                if os.path.exists(f'./{zipped_media_file}'):
+                    context.run('rm -r media', warn=True, hide='both')
+                archive.extractall()
+            context.run(f'rm {zipped_media_filename}')
+        except BadZipFile as err:
+            print(f'Could not extract media from {zipped_media_filename} due to {err}')
+
+
+@task
+def get_db_backup(context, unzip: bool = False):
     """Get latest db backup from server."""
-    if SERVER:
+    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
+
+    if SERVER and SERVER_SSH_PORT and SERVER_USERNAME and SERVER_PASSWORD:
         ssh = SSHClient()
         ssh.load_system_host_keys()
         ssh.connect(
@@ -222,23 +267,26 @@ def _get_db_backup(context):
     else:
         init_file = 'init.sql'
         init_archive = f'{init_file}.zip'
-        mega_client.download(mega_client.find(init_archive), dest_path=BACKUPS_DIR)
         init_archive_path = f'{BACKUPS_DIR}/{init_archive}'
-        init_file_path = f'{BACKUPS_DIR}/{init_file}'
-        try:
-            with ZipFile(init_archive_path, 'r') as archive:
-                if os.path.exists(init_file_path):
-                    context.run(f'mv {init_file_path} {init_file_path}.prior')
-                archive.extractall()
-            context.run(f'rm {init_archive_path}')
-        except BadZipFile as err:
-            print(f'Could not extract init.sql from {init_archive_path} due to {err}')
+        context.run(f'rm {init_archive_path}', warn=True, hide='both')
 
+        # TODO: Run GitHub action to get zipped backup
 
-@task
-def get_db_backup(context):
-    """Get latest db backup from server."""
-    _get_db_backup(context)
+        mega_client.download(
+            mega_client.find(init_archive, exclude_deleted=True), dest_path=BACKUPS_DIR
+        )
+        if unzip:
+            init_file_path = f'{BACKUPS_DIR}/{init_file}'
+            try:
+                with ZipFile(init_archive_path, 'r') as archive:
+                    if os.path.exists(init_file_path):
+                        context.run(f'mv {init_file_path} {init_file_path}.prior')
+                    archive.extractall()
+                context.run(f'rm {init_archive_path}')
+            except BadZipFile as err:
+                print(
+                    f'Could not extract init.sql from {init_archive_path} due to {err}'
+                )
 
 
 def pat_is_valid(context, username: str, pat: str) -> bool:
@@ -252,59 +300,21 @@ def pat_is_valid(context, username: str, pat: str) -> bool:
 
 
 @task
-def get_env_file(context, dev: bool = False, dry: bool = False):
-    """Get a .env file for dev environment."""
-    workflow = 'setup.yml'
-    owner = 'modularhistory'
-    repo = 'modularhistory'
-    pat_file = '.github/.pat'
-    api_base_url = 'https://api.github.com'
-    repo_actions_base_url = f'{api_base_url}/repos/{owner}/{repo}/actions'
-    username = input('Enter your GitHub username/email: ')
-    if os.path.exists(pat_file):
-        print('Reading personal access token...')
-        with open(pat_file, 'r') as personal_access_token:
-            pat = personal_access_token.read()
-    else:
-        pat = input('Enter your Personal Access Token: ')
-        while not pat_is_valid(context, username, pat):
-            print('Invalid GitHub credentials.')
-            username = input('Enter your GitHub username/email: ')
-            pat = input('Enter your Personal Access Token: ')
-        with open(pat_file, 'w') as credentials_file:
-            credentials_file.write(pat)
-    signature = f'{username}:{pat}'
-    default_request_args = f'-u {signature} -H "Accept: application/vnd.github.v3+json"'
-    request_for_artifacts = (
-        f'curl {default_request_args} {repo_actions_base_url}/artifacts'
-    )
-    artifacts = extant_artifacts = context.run(request_for_artifacts, hide='out').stdout
-    print('Dispatching workflow...')
-    context.run(
-        f'curl -X POST {default_request_args} '
-        f'{repo_actions_base_url}/workflows/{workflow}/dispatches '
-        '-d \'{"ref":"main"}\''
-    )
-    print('Waiting for the .env file...')
-    while artifacts == extant_artifacts:
-        context.run('sleep 15')
-        artifacts = context.run(request_for_artifacts, hide='out').stdout
-    artifact = json.loads(artifacts[artifacts.index('{') :])['artifacts'][0]
-    archive_download_url = artifact['archive_download_url']
-    print(f'Extracted artifact download URL: {archive_download_url}')
-    zip_file = 'env-file.zip'
-    context.run(
-        f'curl -u {signature} -L {archive_download_url} --output {zip_file} '
-        f'&& sleep 3 && echo "Downloaded {zip_file}"'
-    )
-    try:
-        with ZipFile(zip_file, 'r') as archive:
-            if os.path.exists('.env'):
-                context.run('mv .env .env.prior')
-            archive.extractall()
-        context.run(f'rm {zip_file}')
-    except BadZipFile as err:
-        print(f'Could not extract .env from {zip_file} due to error: {err}')
+def mediabackup(context, redact: bool = False, push: bool = False):
+    """Create a database backup file."""
+    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
+
+    # TODO: redact images
+    backups_dir = '.backups'
+    context.run('python manage.py mediabackup -z --quiet --noinput', hide='out')
+    backup_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
+    print(f'Finished creating backup file: {backup_file}')
+    if push:
+        print(f'Pushing {backup_file} to Mega...')
+        extant_backup = mega_client.find(backup_file, exclude_deleted=True)
+        if extant_backup:
+            print(f'Found extant backup: {extant_backup}')
+        mega_client.upload(backup_file)
 
 
 @task
@@ -343,38 +353,88 @@ def restore_squashed_migrations(context):
     commands.restore_squashed_migrations(context)
 
 
-def _seed(context):
-    """Seed the dev database and media directory."""
-    if input('Remove existing database and reinitialize? [Y/n] ') != NEGATIVE:
-        seeded = False
-        if os.path.exists(DB_INIT_FILE):
-            if os.path.isfile(DB_INIT_FILE):
-                context.run('docker-compose down')
-                context.run('docker volume rm modularhistory_postgres_data')
-                context.run('docker-compose up postgres')
-                seeded = True
-            else:
-                context.run(f'rm -r {DB_INIT_FILE}')
-        if not seeded:
-            _get_db_backup(context)
-            _seed(context)
-    zipped_media_filename = 'media.zip'
-    zipped_media_file = mega_client.find(zipped_media_filename)
-    mega_client.download(zipped_media_file, dest_path='.')
+def _seed(context, remote: bool = False):
+    """Seed the dev database, media directory, and env file."""
+    workflow = 'seed.yml'
+    owner = 'modularhistory'
+    repo = 'modularhistory'
+    pat_file = '.github/.pat'
+    api_base_url = 'https://api.github.com'
+    repo_actions_base_url = f'{api_base_url}/repos/{owner}/{repo}/actions'
+    username = input('Enter your GitHub username/email: ')
+    if os.path.exists(pat_file):
+        print('Reading personal access token...')
+        with open(pat_file, 'r') as personal_access_token:
+            pat = personal_access_token.read()
+    else:
+        pat = input('Enter your Personal Access Token: ')
+        while not pat_is_valid(context, username, pat):
+            print('Invalid GitHub credentials.')
+            username = input('Enter your GitHub username/email: ')
+            pat = input('Enter your Personal Access Token: ')
+        with open(pat_file, 'w') as credentials_file:
+            credentials_file.write(pat)
+    signature = f'{username}:{pat}'
+    default_request_args = f'-u {signature} -H "Accept: application/vnd.github.v3+json"'
+    request_for_artifacts = (
+        f'curl {default_request_args} {repo_actions_base_url}/artifacts'
+    )
+    artifacts = extant_artifacts = context.run(request_for_artifacts, hide='out').stdout
+    print('Dispatching workflow...')
+    context.run(
+        f'curl -X POST {default_request_args} '
+        f'{repo_actions_base_url}/workflows/{workflow}/dispatches '
+        '-d \'{"ref":"main"}\''
+    )
+    print('Waiting for the .env file...')
+    env_dl_url = media_dl_url = db_dl_url = None
+    while artifacts == extant_artifacts:
+        context.run('sleep 15')
+        artifacts = context.run(request_for_artifacts, hide='out').stdout
+    artifact = json.loads(artifacts[artifacts.index('{') :])['artifacts'][0]
+    print(artifact)
+    input('Continue? ')
+    archive_download_url = artifact['archive_download_url']
+    print(f'Extracted artifact download URL: {archive_download_url}')
+
+    # Seed the env file
+    zip_file = 'env-file.zip'
+    context.run(
+        f'curl -u {signature} -L {archive_download_url} --output {zip_file} '
+        f'&& sleep 3 && echo "Downloaded {zip_file}"'
+    )
     try:
-        with ZipFile(zipped_media_filename, 'r') as archive:
-            if os.path.exists(f'./{zipped_media_file}'):
-                context.run('rm -r media', warn=True, hide='both')
+        with ZipFile(zip_file, 'r') as archive:
+            if os.path.exists('.env'):
+                context.run('mv .env .env.prior')
             archive.extractall()
-        context.run(f'rm {zipped_media_filename}')
+        context.run(f'rm {zip_file}')
     except BadZipFile as err:
-        print(f'Could not extract media from {zipped_media_filename} due to {err}')
+        print(f'Could not extract .env from {zip_file} due to error: {err}')
+
+    # Seed the db
+    db_volume = 'modularhistory_postgres_data'
+    seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
+    if not seed_exists:
+        raise Exception('Seed does not exist')
+    # TODO: enable not getting seed from remote
+    # use_extant_seed = seed_exists and not remote
+    # if seed_exists and not use_extant_seed:
+    #     context.run(f'rm -r {DB_INIT_FILE}')
+    context.run(f'docker-compose down; docker volume rm {db_volume}')
+    context.run('docker-compose up -d postgres')
+
+    # Seed the media directory only if needed
+    tar_file = 'media.tar.gz'
+    if not len(glob('media/*')):
+        context.run(f'python manage.py mediarestore -z --noinput -i {tar_file} -q')
+    # os.remove(tar_file)  # TODO
 
 
 @task
-def seed(context):
+def seed(context, remote: bool = False):
     """Seed the dev database and media directory."""
-    _seed(context)
+    _seed(context, remote=remote)
 
 
 @task

@@ -192,9 +192,7 @@ def _google_dict_api(word: str) -> Dict:
 
 
 def word_search(request, word: str) -> JsonResponse:
-    """
-    Pass a request to Words API and return the results as JSON.
-    """
+    """Pass a request to Words API and return the results as JSON."""
     use_words_api = True
     if use_words_api:
         data = _words_api(word)
