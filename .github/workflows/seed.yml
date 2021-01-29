@@ -76,7 +76,7 @@ jobs:
     - name: Inject environment vars
       if: ${{ success() }}
       run: poetry run invoke get-db-backup
-    - name: Archive init.sql.zip
+    - name: Archive init.sql
       if: ${{ success() }}
       uses: actions/upload-artifact@v2
       with:

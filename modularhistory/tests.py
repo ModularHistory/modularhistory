@@ -10,7 +10,7 @@ from modularhistory.structures import HTML
 register_field_strategy(HTMLField, just(HTML('lorem ipsum')))
 
 BASE_URLS = {
-    Environments.DEV: 'http://localhost:8001',
+    Environments.DEV: 'http://localhost:8000',
 }
 
 

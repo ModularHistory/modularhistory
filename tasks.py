@@ -12,7 +12,6 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
-import json
 import os
 import re
 from glob import glob, iglob
@@ -21,6 +20,7 @@ from typing import Any, Callable, Optional, TypeVar
 from zipfile import BadZipFile, ZipFile
 
 import django
+import requests
 from decouple import config
 from dotenv import load_dotenv
 from paramiko import SSHClient
@@ -54,6 +54,11 @@ SERVER: Optional[str] = config('SERVER', default=None)
 SERVER_SSH_PORT: Optional[int] = config('SERVER_SSH_PORT', default=22)
 SERVER_USERNAME: Optional[str] = config('SERVER_USERNAME', default=None)
 SERVER_PASSWORD: Optional[str] = config('SERVER_PASSWORD', default=None)
+
+GITHUB_API_BASE_URL = 'https://api.github.com'
+OWNER = 'modularhistory'
+REPO = 'modularhistory'
+GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
 
 
 def task(task_function: TaskFunction) -> TaskFunction:
@@ -266,16 +271,13 @@ def get_db_backup(context, unzip: bool = False):
         context.run(f'cp {latest_backup} {DB_INIT_FILE}')
     else:
         init_file = 'init.sql'
-        init_archive = f'{init_file}.zip'
-        init_archive_path = f'{BACKUPS_DIR}/{init_archive}'
-        context.run(f'rm {init_archive_path}', warn=True, hide='both')
-
-        # TODO: Run GitHub action to get zipped backup
-
+        init_file_path = f'{BACKUPS_DIR}/{init_file}'
+        context.run(f'mv {init_file_path} {init_file_path}.prior', warn=True)
         mega_client.download(
-            mega_client.find(init_archive, exclude_deleted=True), dest_path=BACKUPS_DIR
+            mega_client.find(init_file, exclude_deleted=True), dest_path=BACKUPS_DIR
         )
-        if unzip:
+        if unzip:  # TODO
+            init_archive_path = f'{init_file_path}.zip'
             init_file_path = f'{BACKUPS_DIR}/{init_file}'
             try:
                 with ZipFile(init_archive_path, 'r') as archive:
@@ -353,14 +355,12 @@ def restore_squashed_migrations(context):
     commands.restore_squashed_migrations(context)
 
 
-def _seed(context, remote: bool = False):
-    """Seed the dev database, media directory, and env file."""
+@task
+def seed(context, remote: bool = False):
+    """Seed a dev database, media directory, and env file."""
     workflow = 'seed.yml'
-    owner = 'modularhistory'
-    repo = 'modularhistory'
     pat_file = '.github/.pat'
-    api_base_url = 'https://api.github.com'
-    repo_actions_base_url = f'{api_base_url}/repos/{owner}/{repo}/actions'
+    n_expected_new_artifacts = 3
     username = input('Enter your GitHub username/email: ')
     if os.path.exists(pat_file):
         print('Reading personal access token...')
@@ -374,33 +374,49 @@ def _seed(context, remote: bool = False):
             pat = input('Enter your Personal Access Token: ')
         with open(pat_file, 'w') as credentials_file:
             credentials_file.write(pat)
-    signature = f'{username}:{pat}'
-    default_request_args = f'-u {signature} -H "Accept: application/vnd.github.v3+json"'
-    request_for_artifacts = (
-        f'curl {default_request_args} {repo_actions_base_url}/artifacts'
-    )
-    artifacts = extant_artifacts = context.run(request_for_artifacts, hide='out').stdout
+    signature = (username, pat)
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    artifacts_url = f'{GITHUB_ACTIONS_BASE_URL}/artifacts'
+    artifacts = extant_artifacts = requests.get(
+        artifacts_url,
+        headers=headers,
+        auth=signature,
+    ).json()['artifacts']
+    n_extant_artifacts = len(extant_artifacts)
     print('Dispatching workflow...')
-    context.run(
-        f'curl -X POST {default_request_args} '
-        f'{repo_actions_base_url}/workflows/{workflow}/dispatches '
-        '-d \'{"ref":"main"}\''
+    requests.post(
+        f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
+        data={'ref': 'main'},
+        headers=headers,
+        auth=signature,
     )
     print('Waiting for the .env file...')
-    env_dl_url = media_dl_url = db_dl_url = None
-    while artifacts == extant_artifacts:
+    while len(artifacts) < n_extant_artifacts + n_expected_new_artifacts:
         context.run('sleep 15')
-        artifacts = context.run(request_for_artifacts, hide='out').stdout
-    artifact = json.loads(artifacts[artifacts.index('{') :])['artifacts'][0]
-    print(artifact)
-    input('Continue? ')
-    archive_download_url = artifact['archive_download_url']
-    print(f'Extracted artifact download URL: {archive_download_url}')
+        artifacts = requests.get(
+            artifacts_url,
+            headers=headers,
+            auth=signature,
+        ).json()['artifacts']
+    artifacts = artifacts[:n_expected_new_artifacts]
+    env_dl_url = media_dl_url = db_dl_url = None
+    zip_dl_url_key = 'archive_download_url'
+    env_artifact_name = 'env-file'
+    db_artifact_name = 'init-sql-file'
+    media_artifact_name = 'media-dir'
+    for artifact in artifacts:
+        artifact_name = artifact['name']
+        if artifact_name == env_artifact_name:
+            env_dl_url = artifact[zip_dl_url_key]
+        elif artifact_name == media_artifact_name:
+            media_dl_url = artifact[zip_dl_url_key]
+        elif artifact_name == db_artifact_name:
+            db_dl_url = artifact[zip_dl_url_key]
 
     # Seed the env file
-    zip_file = 'env-file.zip'
+    zip_file = f'{env_artifact_name}.zip'
     context.run(
-        f'curl -u {signature} -L {archive_download_url} --output {zip_file} '
+        f'curl -u {signature} -L {env_dl_url} --output {zip_file} '
         f'&& sleep 3 && echo "Downloaded {zip_file}"'
     )
     try:
@@ -410,9 +426,21 @@ def _seed(context, remote: bool = False):
             archive.extractall()
         context.run(f'rm {zip_file}')
     except BadZipFile as err:
-        print(f'Could not extract .env from {zip_file} due to error: {err}')
+        print(f'Could not extract from {zip_file} due to {err}')
 
     # Seed the db
+    zip_file = f'{db_artifact_name}.zip'
+    context.run(
+        f'curl -u {signature} -L {db_dl_url} --output {zip_file} '
+        f'&& sleep 3 && echo "Downloaded {zip_file}"'
+    )
+    try:
+        with ZipFile(zip_file, 'r') as archive:
+            archive.extractall()
+        context.run(f'rm {zip_file}')
+    except BadZipFile as err:
+        print(f'Could not extract from {zip_file} due to {err}')
+    context.run(f'mv init.sql {join(BACKUPS_DIR, "init.sql")}')
     db_volume = 'modularhistory_postgres_data'
     seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
     if not seed_exists:
@@ -425,16 +453,22 @@ def _seed(context, remote: bool = False):
     context.run('docker-compose up -d postgres')
 
     # Seed the media directory only if needed
+    zip_file = f'{media_artifact_name}.zip'
+    context.run(
+        f'curl -u {signature} -L {media_dl_url} --output {zip_file} '
+        f'&& sleep 3 && echo "Downloaded {zip_file}"'
+    )
+    try:
+        with ZipFile(zip_file, 'r') as archive:
+            archive.extractall()
+        context.run(f'rm {zip_file}')
+    except BadZipFile as err:
+        print(f'Could not extract from {zip_file} due to {err}')
     tar_file = 'media.tar.gz'
+    context.run(f'mv {tar_file} {join(BACKUPS_DIR, tar_file)}')
     if not len(glob('media/*')):
         context.run(f'python manage.py mediarestore -z --noinput -i {tar_file} -q')
     # os.remove(tar_file)  # TODO
-
-
-@task
-def seed(context, remote: bool = False):
-    """Seed the dev database and media directory."""
-    _seed(context, remote=remote)
 
 
 @task
