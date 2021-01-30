@@ -18,7 +18,7 @@ RUN npm run build
 
 # Grant necessary permissions to non-root user
 RUN chown -R www-data:www-data /modularhistory && \
-  chmod +x /modularhistory/config/wait-for-it.sh && \
+  chmod +x /modularhistory/wait-for-it.sh && \
   chmod g+w -R /modularhistory/frontend/.next/
 
 # Expose port

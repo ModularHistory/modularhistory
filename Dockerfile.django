@@ -51,7 +51,7 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/media && \
   chmod g+w -R /modularhistory/static && \
   chmod g+w -R /modularhistory/.backups && \
-  chmod +x /modularhistory/config/wait-for-it.sh
+  chmod +x /modularhistory/wait-for-it.sh
 
 # Expose port 8001
 EXPOSE 8001

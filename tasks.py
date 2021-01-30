@@ -359,21 +359,22 @@ def restore_squashed_migrations(context):
 def seed(context, remote: bool = False):
     """Seed a dev database, media directory, and env file."""
     workflow = 'seed.yml'
-    pat_file = '.github/.pat'
+    credentials_file = '.github/.credentials'
     n_expected_new_artifacts = 3
-    username = input('Enter your GitHub username/email: ')
-    if os.path.exists(pat_file):
-        print('Reading personal access token...')
-        with open(pat_file, 'r') as personal_access_token:
-            pat = personal_access_token.read()
+    if os.path.exists(credentials_file):
+        print('Reading credentials...')
+        with open(credentials_file, 'r') as personal_access_token:
+            credentials = personal_access_token.read()
+            username, pat = credentials.split(':')
     else:
+        username = input('Enter your GitHub username/email: ')
         pat = input('Enter your Personal Access Token: ')
         while not pat_is_valid(context, username, pat):
             print('Invalid GitHub credentials.')
             username = input('Enter your GitHub username/email: ')
             pat = input('Enter your Personal Access Token: ')
-        with open(pat_file, 'w') as credentials_file:
-            credentials_file.write(pat)
+        with open(credentials_file, 'w') as file:
+            file.write(f'{username}:{pat}')
     signature = (username, pat)
     headers = {'Accept': 'application/vnd.github.v3+json'}
     artifacts_url = f'{GITHUB_ACTIONS_BASE_URL}/artifacts'
@@ -507,7 +508,7 @@ def test(context, docker=False):
             'docker build -t modularhistory/modularhistory . && docker-compose up'
         )
     context.run(command)
-    context.run('coverage combine; rm -r archived_logs; mv latest_logs .selenium')
+    context.run('coverage combine')
 
 
 @task

@@ -3,21 +3,50 @@ version: "3.8"
 services:
   dev:
     depends_on:
+      - flower
       - django
       - react
     image: nginx
     ports:
-      - "8000:80"
+      - "80:80"
     volumes:
       - ./config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
+
+  celery:
+    command: sh -c "wait-for-it.sh redis:6379 -- celery -A modularhistory worker --loglevel=info"
+    depends_on:
+      - django
+      - redis
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+    env_file: .env
+    image: "$BACKEND_IMAGE:$SHA"
+    restart: on-failure
+    volumes:
+      - ./project:/usr/src/app
+
+  celery_beat:
+    command: sh -c "wait-for-it.sh redis:6379 -- celery -A modularhistory beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    depends_on:
+    depends_on:
+      - celery
+      - django
+    image: "$BACKEND_IMAGE:$SHA"
+    restart: on-failure
   
   django:
     command: sh init.sh
     depends_on:
       - postgres
       - redis
-      - redis-commander
+      - redisinsight
       - mongo
     env_file: .env
     environment:
@@ -25,17 +54,17 @@ services:
       - DOCKERIZED=True
       - POSTGRES_HOST=postgres
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:8001/ht/ || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
       timeout: 7s
       interval: 15s
       retries: 2
       start_period: 10s
-    image: "ghcr.io/modularhistory/django:$SHA"
+    image: "$BACKEND_IMAGE:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.6
     ports:
-      - "8001:8001"
+      - "8000:8000"
     restart: "unless-stopped"
     user: www-data
     volumes:
@@ -43,6 +72,19 @@ services:
       - ./media:/modularhistory/media
       - ./.backups:/modularhistory/.backups
       - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
+
+  flower:
+    command: flower -A modularhistory --port=5555 --broker=redis://redis:6379/0
+    depends_on:
+      - celery
+      - celery_beat
+      - django
+      - redis
+    env_file: .env
+    image: "$BACKEND_IMAGE:$SHA"
+    ports:
+      - 5555:5555
+    restart: "always"
 
   mongo:
     env_file: .env
@@ -88,19 +130,24 @@ services:
     volumes:
       - "data:/data"
 
-  redis-commander:
-    container_name: redis-commander
+  redisinsight:
     depends_on:
       - redis
-    hostname: redis-commander
-    image: rediscommander/redis-commander:latest
-    restart: always
+    env_file: .env
     environment:
       - REDIS_HOSTS=local:redis:6379
-      # - HTTP_USER=www-data
-      # - HTTP_PASSWORD=
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8001/healthcheck/ || exit 1"]
+      timeout: 7s
+      interval: 15s
+      retries: 2
+      start_period: 10s
+    image: redislabs/redisinsight:latest
+    restart: "always"
     ports:
-      - "8081:8081"
+      - "8001:8001"
+    volumes:
+      - "redisinsight:/db"
 
 networks:
   default:
@@ -113,3 +160,4 @@ volumes:
   # `data` is used by both redis and mongodb
   data:
   postgres_data:
+  redisinsight:
