@@ -24,16 +24,14 @@ class SourceContainment(PositionedRelation):
     """A source containment."""
 
     source = ForeignKey(
-        'sources.Source',
+        to='sources.Source',
         on_delete=CASCADE,
         related_name='source_containments',
-        null=True,
     )
     container = ForeignKey(
-        'sources.Source',
+        to='sources.Source',
         on_delete=CASCADE,
         related_name='container_containments',
-        null=True,
     )
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)
     end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)

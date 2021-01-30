@@ -42,6 +42,7 @@ RUN poetry config virtualenvs.create false && \
 
 # Add source code
 COPY . /modularhistory/
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 
 # Collect static files
 RUN python manage.py collectstatic --no-input
@@ -51,10 +52,8 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/media && \
   chmod g+w -R /modularhistory/static && \
   chmod g+w -R /modularhistory/.backups && \
-  chmod +x /modularhistory/wait-for-it.sh
-
-# Expose port 8001
-EXPOSE 8001
+  chmod +x /modularhistory/wait-for-it.sh && \
+  chmod +x /usr/local/bin/wait-for-it.sh
 
 # Switch from root to non-root user
 USER www-data

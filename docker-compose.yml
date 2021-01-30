@@ -1,10 +1,15 @@
 version: "3.8"
 
+x-common-env-vars: &common-env-vars
+  DOCKERIZED: 'True'
+  REDIS_HOST: 'redis'
+  POSTGRES_HOST: 'postgres'
+
 services:
   dev:
     depends_on:
-      - flower
       - django
+      - flower
       - react
     image: nginx
     ports:
@@ -18,15 +23,17 @@ services:
     depends_on:
       - django
       - redis
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 50M
+      - postgres
+    # deploy:
+    #   replicas: 2
+    #   restart_policy:
+    #     condition: on-failure
+    #   resources:
+    #     limits:
+    #       cpus: '0.50'
+    #       memory: 50M
     env_file: .env
+    environment: *common-env-vars
     image: "$BACKEND_IMAGE:$SHA"
     restart: on-failure
     volumes:
@@ -35,9 +42,12 @@ services:
   celery_beat:
     command: sh -c "wait-for-it.sh redis:6379 -- celery -A modularhistory beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     depends_on:
-    depends_on:
       - celery
       - django
+      - redis
+      - postgres
+    env_file: .env
+    environment: *common-env-vars
     image: "$BACKEND_IMAGE:$SHA"
     restart: on-failure
   
@@ -50,9 +60,8 @@ services:
       - mongo
     env_file: .env
     environment:
-      - DJANGO_SETTINGS_MODULE=modularhistory.settings
-      - DOCKERIZED=True
-      - POSTGRES_HOST=postgres
+      <<: *common-env-vars
+      DJANGO_SETTINGS_MODULE: 'modularhistory.settings'
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
       timeout: 7s
@@ -62,7 +71,7 @@ services:
     image: "$BACKEND_IMAGE:$SHA"
     networks:
       default:
-        ipv4_address: 172.27.0.6
+        ipv4_address: 172.27.0.8
     ports:
       - "8000:8000"
     restart: "unless-stopped"
@@ -81,7 +90,11 @@ services:
       - django
       - redis
     env_file: .env
+    environment: *common-env-vars
     image: "$BACKEND_IMAGE:$SHA"
+    networks:
+      default:
+        ipv4_address: 172.27.0.7
     ports:
       - 5555:5555
     restart: "always"
@@ -135,13 +148,16 @@ services:
       - redis
     env_file: .env
     environment:
-      - REDIS_HOSTS=local:redis:6379
+      REDIS_HOSTS: 'local:redis:6379'
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:8001/healthcheck/ || exit 1"]
       timeout: 7s
       interval: 15s
       retries: 2
       start_period: 10s
+    networks:
+      default:
+        ipv4_address: 172.27.0.9
     image: redislabs/redisinsight:latest
     restart: "always"
     ports:
