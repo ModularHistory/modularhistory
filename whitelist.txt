@@ -23,6 +23,7 @@ flatpage
 formatpainter
 gunicorn
 hacky
+healthcheck
 hljs
 href
 http

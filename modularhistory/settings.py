@@ -426,25 +426,6 @@ else:
     SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
     SESSION_CACHE_ALIAS = 'default'
 
-RQ_QUEUES = {
-    'high': {
-        'USE_REDIS_CACHE': 'default',
-    },
-    'low': {
-        'USE_REDIS_CACHE': 'default',
-    },
-    # 'with-sentinel': {
-    #     'SENTINELS': [('localhost', 26736), ('localhost', 26737)],
-    #     'MASTER_NAME': 'redismaster',
-    #     'DB': 0,
-    #     'PASSWORD': 'secret',
-    #     'SOCKET_TIMEOUT': None,
-    #     'CONNECTION_KWARGS': {
-    #         'socket_connect_timeout': 0.3
-    #     },
-    # },
-}
-
 # https://github.com/jazzband/django-defender
 DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
 if IS_PROD:

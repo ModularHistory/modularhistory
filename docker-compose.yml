@@ -9,7 +9,7 @@ services:
   dev:
     depends_on:
       - django
-      - flower
+      # - flower
       - react
     image: nginx
     ports:
@@ -35,6 +35,9 @@ services:
     env_file: .env
     environment: *common-env-vars
     image: "$BACKEND_IMAGE:$SHA"
+    networks:
+      default:
+        ipv4_address: 172.27.0.11
     restart: on-failure
     volumes:
       - ./project:/usr/src/app
@@ -49,6 +52,9 @@ services:
     env_file: .env
     environment: *common-env-vars
     image: "$BACKEND_IMAGE:$SHA"
+    networks:
+      default:
+        ipv4_address: 172.27.0.12
     restart: on-failure
   
   django:
@@ -83,7 +89,7 @@ services:
       - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
 
   flower:
-    command: flower -A modularhistory --port=5555 --broker=redis://redis:6379/0
+    command: sh -c "wait-for-it.sh redis:6379 -- flower -A modularhistory --port=5555 --broker=redis://redis:6379/0"
     depends_on:
       - celery
       - celery_beat
@@ -94,9 +100,9 @@ services:
     image: "$BACKEND_IMAGE:$SHA"
     networks:
       default:
-        ipv4_address: 172.27.0.7
+        ipv4_address: 172.27.0.13
     ports:
-      - 5555:5555
+      - "5555:5555"
     restart: "always"
 
   mongo:
@@ -131,7 +137,7 @@ services:
     image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:
-        ipv4_address: 172.27.0.7
+        ipv4_address: 172.27.0.9
     ports:
       - "3000:3000"
   
@@ -157,7 +163,7 @@ services:
       start_period: 10s
     networks:
       default:
-        ipv4_address: 172.27.0.9
+        ipv4_address: 172.27.0.14
     image: redislabs/redisinsight:latest
     restart: "always"
     ports:
