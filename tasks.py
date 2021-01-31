@@ -12,8 +12,8 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
-import os
 import logging
+import os
 import re
 from glob import glob, iglob
 from os.path import join

@@ -1,6 +1,7 @@
 import os
 
 from celery import Celery
+from invoke.context import Context
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
@@ -15,8 +16,22 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
+CONTEXT = Context()
+
 
 @app.task(bind=True)
 def debug(self):
     """Print request info to debug/test Celery."""
     print(f'Request: {self.request!r}')
+
+
+@app.task(bind=True)
+def dbbackup(context: Context = CONTEXT):
+    """Create a database backup file."""
+    context.run('invoke dbbackup')
+
+
+@app.task(bind=True)
+def mediabackup(context: Context = CONTEXT):
+    """Create a media backup file."""
+    context.run('invoke mediabackup')
