@@ -9,8 +9,9 @@ services:
   dev:
     depends_on:
       - django
-      # - flower
+      - flower
       - react
+      - redisinsight
     image: nginx
     ports:
       - "80:80"
@@ -62,7 +63,6 @@ services:
     depends_on:
       - postgres
       - redis
-      - redisinsight
       - mongo
     env_file: .env
     environment:
@@ -122,6 +122,9 @@ services:
       timeout: 5s
       retries: 5
     image: postgres
+    networks:
+      default:
+        ipv4_address: 172.27.0.6
     ports:
       - "5432:5432"
     restart: "always"
@@ -143,6 +146,9 @@ services:
   
   redis:
     image: redis
+    networks:
+      default:
+        ipv4_address: 172.27.0.7
     ports:
       - "6379:6379"
     restart: "always"
