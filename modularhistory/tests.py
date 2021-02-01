@@ -1,4 +1,3 @@
-import pytest
 from hypothesis.extra.django import TestCase as DjangoHypothesisTestSuite
 from hypothesis.extra.django import register_field_strategy
 from hypothesis.strategies import just

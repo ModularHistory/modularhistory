@@ -1,12 +1,28 @@
 version: "3.8"
 
-services:  
+services:
+  celery:
+    volumes:
+      - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+  
+  celery_beat:
+    volumes:
+      - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+  
   django:
     build:
       context: .
       dockerfile: Dockerfile.django
     volumes:
       - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+  
+  flower:
+    volumes:
+      - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
   
   react:
     build:
@@ -15,3 +31,4 @@ services:
     command: npm run dev
     volumes:
       - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh

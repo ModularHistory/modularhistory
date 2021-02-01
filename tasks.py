@@ -12,6 +12,7 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
+import logging
 import os
 import re
 from glob import glob, iglob
@@ -61,19 +62,19 @@ REPO = 'modularhistory'
 GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
 
 
-def task(task_function: TaskFunction) -> TaskFunction:
+def command(task_function: TaskFunction) -> TaskFunction:
     """Wrap invoke.task to enable type annotations."""
     task_function.__annotations__ = {}
     return invoke.task(task_function)
 
 
-@task
+@command
 def autoformat(context):
     """Safely run autoformatters against all Python files."""
     commands.autoformat(context)
 
 
-@task
+@command
 def build(context, github_actor: str, access_token: str, sha: str, push: bool = False):
     """Build the Docker images used by ModularHistory."""
     if not access_token:
@@ -102,7 +103,7 @@ def build(context, github_actor: str, access_token: str, sha: str, push: bool = 
             context.run(f'docker push {image}:{sha} && docker push {image}:latest')
 
 
-@task
+@command
 def commit(context):
     """Commit and (optionally) push code changes."""
     # Check that the branch is correct
@@ -145,7 +146,7 @@ def commit(context):
         print(f'\nCreate pull request / view diff: {diff_link}')
 
 
-@task
+@command
 def dbbackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
     from modularhistory.storage.mega_storage import mega_client  # noqa: E402
@@ -191,13 +192,13 @@ def dbbackup(context, redact: bool = False, push: bool = False):
         mega_client.upload(zipped_backup_file)
 
 
-@task
+@command
 def flake8(context, *args):
     """Run flake8 linter."""
     lint_with_flake8(interactive=True)
 
 
-@task
+@command
 def generate_artifacts(context):
     """Generate artifacts."""
     from django.db.models import Count
@@ -231,7 +232,7 @@ def generate_artifacts(context):
     print('Done.')
 
 
-@task
+@command
 def get_media_backup(context, unzip: bool = False):
     """Seed the media dir for development."""
     from modularhistory.storage.mega_storage import mega_client  # noqa: E402
@@ -250,7 +251,7 @@ def get_media_backup(context, unzip: bool = False):
             print(f'Could not extract media from {zipped_media_filename} due to {err}')
 
 
-@task
+@command
 def get_db_backup(context, unzip: bool = False):
     """Get latest db backup from server."""
     from modularhistory.storage.mega_storage import mega_client  # noqa: E402
@@ -301,7 +302,7 @@ def pat_is_valid(context, username: str, pat: str) -> bool:
     return '200' in context.run(pat_validity_check, hide='out').stdout
 
 
-@task
+@command
 def mediabackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
     from modularhistory.storage.mega_storage import mega_client  # noqa: E402
@@ -319,13 +320,13 @@ def mediabackup(context, redact: bool = False, push: bool = False):
         mega_client.upload(backup_file)
 
 
-@task
+@command
 def mypy(context, *args):
     """Run mypy static type checker."""
     lint_with_mypy()
 
 
-@task
+@command
 def lint(context, *args):
     """Run linters."""
     # Run Flake8
@@ -337,43 +338,45 @@ def lint(context, *args):
     lint_with_mypy()
 
 
-@task
+@command
 def makemigrations(context, noninteractive: bool = False):
     """Safely create migrations."""
     commands.makemigrations(context, noninteractive=noninteractive)
 
 
-@task
+@command
 def migrate(context, *args, noninteractive: bool = False):
     """Safely run db migrations."""
     commands.migrate(context, *args, noninteractive=noninteractive)
 
 
-@task
+@command
 def restore_squashed_migrations(context):
     """Restore migrations with squashed_migrations."""
     commands.restore_squashed_migrations(context)
 
 
-@task
+# TODO
+@command
 def seed(context, remote: bool = False):
     """Seed a dev database, media directory, and env file."""
     workflow = 'seed.yml'
-    pat_file = '.github/.pat'
+    credentials_file = '.github/.credentials'
     n_expected_new_artifacts = 3
-    username = input('Enter your GitHub username/email: ')
-    if os.path.exists(pat_file):
-        print('Reading personal access token...')
-        with open(pat_file, 'r') as personal_access_token:
-            pat = personal_access_token.read()
+    if os.path.exists(credentials_file):
+        print('Reading credentials...')
+        with open(credentials_file, 'r') as personal_access_token:
+            credentials = personal_access_token.read()
+            username, pat = credentials.split(':')
     else:
+        username = input('Enter your GitHub username/email: ')
         pat = input('Enter your Personal Access Token: ')
         while not pat_is_valid(context, username, pat):
             print('Invalid GitHub credentials.')
             username = input('Enter your GitHub username/email: ')
             pat = input('Enter your Personal Access Token: ')
-        with open(pat_file, 'w') as credentials_file:
-            credentials_file.write(pat)
+        with open(credentials_file, 'w') as file:
+            file.write(f'{username}:{pat}')
     signature = (username, pat)
     headers = {'Accept': 'application/vnd.github.v3+json'}
     artifacts_url = f'{GITHUB_ACTIONS_BASE_URL}/artifacts'
@@ -390,7 +393,7 @@ def seed(context, remote: bool = False):
         headers=headers,
         auth=signature,
     )
-    print('Waiting for the .env file...')
+    print('Waiting for artifacts...')
     while len(artifacts) < n_extant_artifacts + n_expected_new_artifacts:
         context.run('sleep 15')
         artifacts = requests.get(
@@ -399,47 +402,37 @@ def seed(context, remote: bool = False):
             auth=signature,
         ).json()['artifacts']
     artifacts = artifacts[:n_expected_new_artifacts]
-    env_dl_url = media_dl_url = db_dl_url = None
+
+    seeds = {
+        'env-file': {'pot': 'env', 'dest': '.env'},
+        'init-sql-file': {'pot': 'db', 'dest': '.backups/init.sql'},
+        'media-dir': {'pot': 'media', 'dest': 'media'},
+    }
     zip_dl_url_key = 'archive_download_url'
-    env_artifact_name = 'env-file'
-    db_artifact_name = 'init-sql-file'
-    media_artifact_name = 'media-dir'
     for artifact in artifacts:
         artifact_name = artifact['name']
-        if artifact_name == env_artifact_name:
-            env_dl_url = artifact[zip_dl_url_key]
-        elif artifact_name == media_artifact_name:
-            media_dl_url = artifact[zip_dl_url_key]
-        elif artifact_name == db_artifact_name:
-            db_dl_url = artifact[zip_dl_url_key]
-
-    # Seed the env file
-    zip_file = f'{env_artifact_name}.zip'
-    context.run(
-        f'curl -u {signature} -L {env_dl_url} --output {zip_file} '
-        f'&& sleep 3 && echo "Downloaded {zip_file}"'
-    )
-    try:
-        with ZipFile(zip_file, 'r') as archive:
-            if os.path.exists('.env'):
-                context.run('mv .env .env.prior')
-            archive.extractall()
-        context.run(f'rm {zip_file}')
-    except BadZipFile as err:
-        print(f'Could not extract from {zip_file} due to {err}')
+        if artifact_name not in seeds:
+            logging.error(f'"{artifact_name}" could not be mapped to env, db, or media')
+            continue
+        seeds[artifact_name]['dl_url'] = artifact[zip_dl_url_key]
+    for seed_name, seed in seeds.items():
+        zip_file = f'{seed_name}.zip'
+        context.run(
+            f'curl -u {signature} -L {seed["dl_url"]} --output {zip_file} '
+            f'&& sleep 3 && echo "Downloaded {zip_file}"'
+        )
+        dest_path = seed['dest']
+        try:
+            with ZipFile(zip_file, 'r') as archive:
+                if os.path.exists(dest_path):
+                    if os.path.isfile(dest_path):
+                        context.run(f'mv {dest_path} {dest_path}.prior')
+                archive.extractall()
+            context.run(f'rm {zip_file}')
+        except BadZipFile as err:
+            print(f'Could not extract from {zip_file} due to {err}')
 
     # Seed the db
-    zip_file = f'{db_artifact_name}.zip'
-    context.run(
-        f'curl -u {signature} -L {db_dl_url} --output {zip_file} '
-        f'&& sleep 3 && echo "Downloaded {zip_file}"'
-    )
-    try:
-        with ZipFile(zip_file, 'r') as archive:
-            archive.extractall()
-        context.run(f'rm {zip_file}')
-    except BadZipFile as err:
-        print(f'Could not extract from {zip_file} due to {err}')
     context.run(f'mv init.sql {join(BACKUPS_DIR, "init.sql")}')
     db_volume = 'modularhistory_postgres_data'
     seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
@@ -453,17 +446,6 @@ def seed(context, remote: bool = False):
     context.run('docker-compose up -d postgres')
 
     # Seed the media directory only if needed
-    zip_file = f'{media_artifact_name}.zip'
-    context.run(
-        f'curl -u {signature} -L {media_dl_url} --output {zip_file} '
-        f'&& sleep 3 && echo "Downloaded {zip_file}"'
-    )
-    try:
-        with ZipFile(zip_file, 'r') as archive:
-            archive.extractall()
-        context.run(f'rm {zip_file}')
-    except BadZipFile as err:
-        print(f'Could not extract from {zip_file} due to {err}')
     tar_file = 'media.tar.gz'
     context.run(f'mv {tar_file} {join(BACKUPS_DIR, tar_file)}')
     if not len(glob('media/*')):
@@ -471,7 +453,7 @@ def seed(context, remote: bool = False):
     # os.remove(tar_file)  # TODO
 
 
-@task
+@command
 def setup(context, noninteractive: bool = False):
     """Install all dependencies; set up the ModularHistory application."""
     args = [relativize('setup.sh')]
@@ -482,13 +464,13 @@ def setup(context, noninteractive: bool = False):
     context.run('rm -r modularhistory.egg-info')
 
 
-@task
+@command
 def squash_migrations(context, dry: bool = True):
     """Squash migrations."""
     commands.squash_migrations(context, dry)
 
 
-@task
+@command
 def test(context, docker=False):
     """Run tests."""
     pytest_args = [
@@ -507,10 +489,10 @@ def test(context, docker=False):
             'docker build -t modularhistory/modularhistory . && docker-compose up'
         )
     context.run(command)
-    context.run('coverage combine; rm -r archived_logs; mv latest_logs .selenium')
+    context.run('coverage combine')
 
 
-@task
+@command
 def write_env_file(context, dev: bool = False, dry: bool = False):
     """Write a .env file."""
     destination_file = '.env'

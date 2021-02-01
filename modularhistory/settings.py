@@ -82,7 +82,6 @@ ADMINS = (
     else []
 )
 
-REDIS_HOST = None
 if DOCKERIZED:
     REDIS_HOST = 'redis'
 else:
@@ -127,10 +126,10 @@ INSTALLED_APPS = [
     'corsheaders',  # https://github.com/adamchainz/django-cors-headers
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
+    'django_celery_beat',  # https://github.com/celery/django-celery-beat
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'defender',  # https://github.com/jazzband/django-defender
-    'django_q',  # https://django-q.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
     'decouple',  # https://github.com/henriquebastos/python-decouple/
@@ -138,12 +137,9 @@ INSTALLED_APPS = [
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
-    'health_check.db',
-    # 'health_check.cache',  # TODO
     'health_check.contrib.migrations',
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
-    'health_check.storage',
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'lockdown',  # https://github.com/Dunedan/django-lockdown
     'massadmin',  # https://github.com/burke-software/django-mass-edit
@@ -158,6 +154,7 @@ INSTALLED_APPS = [
     'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
+    'watchman',  # https://github.com/mwarkentin/django-watchman
     'webpack_loader',  # https://github.com/owais/django-webpack-loader
     'apps.account.apps.AccountConfig',
     'apps.chat.apps.ChatConfig',
@@ -409,13 +406,13 @@ Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 
 # https://github.com/jazzband/django-redis
-if ENVIRONMENT == Environments.DEV and use_dummy_cache:
+if IS_DEV and use_dummy_cache:
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         }
     }
-elif REDIS_HOST:
+else:
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
@@ -429,17 +426,17 @@ elif REDIS_HOST:
     SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
     SESSION_CACHE_ALIAS = 'default'
 
-# https://django-q.readthedocs.io/en/latest/configure.html
-Q_CLUSTER = {
-    'cpu_affinity': 1,
-    'label': 'Django Q',
-    'redis': f'{REDIS_BASE_URL}/0',
-}
-
 # https://github.com/jazzband/django-defender
 DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
 if IS_PROD:
     DEFENDER_BEHIND_REVERSE_PROXY = True
+
+# https://docs.celeryproject.org/en/stable/django/
+CELERY_BROKER_URL = f'{REDIS_BASE_URL}/0'
+CELERY_RESULT_BACKEND = f'{REDIS_BASE_URL}/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:

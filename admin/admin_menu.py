@@ -54,7 +54,6 @@ class AdminMenu(Menu):
                     'defender.*',
                     'django_celery_*',
                     'django.contrib.*',
-                    'django_q.*',
                     'social_django.*',
                 ],
             ),

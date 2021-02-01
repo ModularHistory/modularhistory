@@ -8,6 +8,7 @@ import logging
 
 import sentry_sdk
 from decouple import config
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
@@ -48,6 +49,7 @@ sentry_sdk.init(
     environment=environment,
     # https://docs.sentry.io/platforms/python/configuration/integrations/
     integrations=[
+        CeleryIntegration(),
         DjangoIntegration(),
         RedisIntegration(),
     ],

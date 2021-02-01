@@ -4,6 +4,8 @@ clean_data.py
 # Environment & credentials
 .env
 *credentials.json
+.username
+.password
 .pat
 .credentials/
 .secrets/
@@ -66,6 +68,7 @@ nosetests.xml
 
 # Celery
 celerybeat-schedule.*
+celerybeat.pid
 
 # Distribution / packaging
 *.egg-info/

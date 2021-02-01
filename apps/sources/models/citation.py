@@ -80,8 +80,7 @@ class Citation(PositionedRelation):
     source = models.ForeignKey(
         to='sources.Source',
         related_name='citations',
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.PROTECT,
     )
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()

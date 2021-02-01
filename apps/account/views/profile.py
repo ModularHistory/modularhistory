@@ -60,7 +60,6 @@ class SettingsView(LoginRequiredMixin, View):
                 Provider('github', 'GitHub'),
             ]
             for backend in social_auth_backends:
-                backend_name: str = backend.name
                 try:
                     auth = user.social_auth.get(provider=backend.key)
                     backend.auth = auth
