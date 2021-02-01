@@ -68,6 +68,7 @@ nosetests.xml
 
 # Celery
 celerybeat-schedule.*
+celerybeat.pid
 
 # Distribution / packaging
 *.egg-info/

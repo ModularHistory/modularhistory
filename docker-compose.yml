@@ -25,14 +25,6 @@ services:
       - django
       - redis
       - postgres
-    # deploy:
-    #   replicas: 2
-    #   restart_policy:
-    #     condition: on-failure
-    #   resources:
-    #     limits:
-    #       cpus: '0.50'
-    #       memory: 50M
     env_file: .env
     environment: *common-env-vars
     image: "$BACKEND_IMAGE:$SHA"
