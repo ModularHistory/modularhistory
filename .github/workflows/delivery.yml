@@ -126,6 +126,7 @@ jobs:
           echo "" && echo "Restarting server..."
           docker-compose down
           docker-compose up -d django
+          docker-compose up -d flower
           docker-compose up -d react
           echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
           docker image prune -a -f

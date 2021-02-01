@@ -149,47 +149,7 @@ def commit(context):
 @command
 def dbbackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
-    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
-
-    backups_dir = '.backups'
-    context.run('python manage.py dbbackup --quiet --noinput', hide='out')
-    temp_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
-    backup_file = temp_file.replace('.psql', '.sql')
-    print('Processing backup file...')
-    with open(temp_file, 'r') as unprocessed_backup:
-        with open(backup_file, 'w') as processed_backup:
-            previous_line = ''  # falsey, but compatible with `startswith`
-            for line in unprocessed_backup:
-                if any(
-                    [
-                        line.startswith('ALTER '),
-                        line.startswith('DROP '),
-                        line == '\n' == previous_line,
-                    ]
-                ):
-                    continue
-                elif all(
-                    [
-                        redact,
-                        previous_line.startswith('COPY public.account_user'),
-                        not line.startswith(r'\.'),
-                    ]
-                ):
-                    continue
-                processed_backup.write(line)
-                previous_line = line
-    context.run(f'rm {temp_file}')
-    print(f'Finished creating backup file: {backup_file}')
-    if push:
-        print(f'Zipping up {backup_file}...')
-        zipped_backup_file = f'{backup_file}.zip'
-        with ZipFile(zipped_backup_file, 'x') as archive:
-            archive.write(backup_file)
-        print(f'Pushing {zipped_backup_file} to Mega...')
-        extant_backup = mega_client.find(zipped_backup_file, exclude_deleted=True)
-        if extant_backup:
-            print(f'Found extant backup: {extant_backup}')
-        mega_client.upload(zipped_backup_file)
+    commands.dbbackup(context, redact=redact, push=push)
 
 
 @command
@@ -304,20 +264,8 @@ def pat_is_valid(context, username: str, pat: str) -> bool:
 
 @command
 def mediabackup(context, redact: bool = False, push: bool = False):
-    """Create a database backup file."""
-    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
-
-    # TODO: redact images
-    backups_dir = '.backups'
-    context.run('python manage.py mediabackup -z --quiet --noinput', hide='out')
-    backup_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
-    print(f'Finished creating backup file: {backup_file}')
-    if push:
-        print(f'Pushing {backup_file} to Mega...')
-        extant_backup = mega_client.find(backup_file, exclude_deleted=True)
-        if extant_backup:
-            print(f'Found extant backup: {extant_backup}')
-        mega_client.upload(backup_file)
+    """Create a media backup file."""
+    commands.mediabackup(context, redact=redact, push=push)
 
 
 @command

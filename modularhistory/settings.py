@@ -19,15 +19,10 @@ from easy_thumbnails.conf import Settings as ThumbnailSettings
 from split_settings.tools import include
 
 from modularhistory.constants.environments import Environments
-from modularhistory.environment import environment
+from modularhistory.environment import DOCKERIZED, ENVIRONMENT, IS_DEV, IS_PROD
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
-ENVIRONMENT = environment
-
-IS_PROD = ENVIRONMENT == Environments.PROD
-IS_DEV = ENVIRONMENT == Environments.DEV
-DOCKERIZED = config('DOCKERIZED', cast=bool, default=IS_PROD)
 TESTING: bool = 'test' in sys.argv
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
@@ -82,11 +77,9 @@ ADMINS = (
     else []
 )
 
-if DOCKERIZED:
-    REDIS_HOST = 'redis'
-else:
-    REDIS_HOST = 'localhost'
-REDIS_BASE_URL = REDIS_URL = f'redis://{REDIS_HOST}:6379'
+REDIS_HOST = 'redis' if DOCKERIZED else 'localhost'
+REDIS_PORT = '6379'
+REDIS_BASE_URL = REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 
 # https://channels.readthedocs.io/en/latest/
 ASGI_APPLICATION = 'modularhistory.asgi.application'

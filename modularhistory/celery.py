@@ -2,6 +2,7 @@ import os
 
 from celery import Celery
 from invoke.context import Context
+from modularhistory.utils import commands
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
@@ -28,10 +29,10 @@ def debug(self):
 @app.task(bind=True)
 def dbbackup(context: Context = CONTEXT):
     """Create a database backup file."""
-    context.run('invoke dbbackup')
+    commands.dbbackup()
 
 
 @app.task(bind=True)
 def mediabackup(context: Context = CONTEXT):
     """Create a media backup file."""
-    context.run('invoke mediabackup')
+    commands.mediabackup()

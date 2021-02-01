@@ -5,7 +5,7 @@ import re
 from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Iterable, Optional, TypeVar
-
+from zipfile import ZipFile
 from django.db import transaction
 from invoke.context import Context
 
@@ -61,6 +61,49 @@ def clear_migration_history(context: Context = CONTEXT):
         remove_migrations(context)
 
 
+def dbbackup(context: Context = CONTEXT, redact: bool = False, push: bool = False):
+    """Create a database backup file."""
+    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
+
+    backups_dir = '.backups'
+    context.run('python manage.py dbbackup --quiet --noinput', hide='out')
+    temp_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
+    backup_file = temp_file.replace('.psql', '.sql')
+    print('Processing backup file...')
+    with open(temp_file, 'r') as unprocessed_backup:
+        with open(backup_file, 'w') as processed_backup:
+            previous_line = ''  # falsey, but compatible with `startswith`
+            for line in unprocessed_backup:
+                drop_conditions = [
+                    line.startswith('ALTER '),
+                    line.startswith('DROP '),
+                    line == '\n' == previous_line,
+                    all(
+                        [
+                            redact,
+                            previous_line.startswith('COPY public.account_user'),
+                            not line.startswith(r'\.'),
+                        ]
+                    ),
+                ]
+                if any(drop_conditions):
+                    continue
+                processed_backup.write(line)
+                previous_line = line
+    context.run(f'rm {temp_file}')
+    print(f'Finished creating backup file: {backup_file}')
+    if push:
+        print(f'Zipping up {backup_file}...')
+        zipped_backup_file = f'{backup_file}.zip'
+        with ZipFile(zipped_backup_file, 'x') as archive:
+            archive.write(backup_file)
+        print(f'Pushing {zipped_backup_file} to Mega...')
+        extant_backup = mega_client.find(zipped_backup_file, exclude_deleted=True)
+        if extant_backup:
+            print(f'Found extant backup: {extant_backup}')
+        mega_client.upload(zipped_backup_file)
+
+
 def envsubst(input_file) -> str:
     """Python implementation of envsubst."""
     with open(input_file, 'r') as base:
@@ -82,6 +125,23 @@ def makemigrations(context: Context = CONTEXT, noninteractive: bool = False):
         make_migrations = input('^ Do these changes look OK? [Y/n]') != NEGATIVE
     if make_migrations:
         context.run('python manage.py makemigrations')
+
+
+def mediabackup(context: Context = CONTEXT, redact: bool = False, push: bool = False):
+    """Create a media backup file."""
+    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
+
+    # TODO: redact images
+    backups_dir = '.backups'
+    context.run('python manage.py mediabackup -z --quiet --noinput', hide='out')
+    backup_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
+    print(f'Finished creating backup file: {backup_file}')
+    if push:
+        print(f'Pushing {backup_file} to Mega...')
+        extant_backup = mega_client.find(backup_file, exclude_deleted=True)
+        if extant_backup:
+            print(f'Found extant backup: {extant_backup}')
+        mega_client.upload(backup_file)
 
 
 def migrate(context: Context = CONTEXT, *args, noninteractive: bool = False):
