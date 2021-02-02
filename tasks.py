@@ -25,7 +25,6 @@ import django
 import requests
 from decouple import config
 from dotenv import load_dotenv
-from github import Github as GitHub
 from paramiko import SSHClient
 from scp import SCPClient
 

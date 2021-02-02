@@ -23,7 +23,7 @@ from mega.mega import (
     str_to_a32,
 )
 
-from modularhistory.constants.environments import PRODUCTION, Environments
+from modularhistory.constants.environments import Environments
 
 SIXTEEN = 16
 THIRTY_TWO = 32

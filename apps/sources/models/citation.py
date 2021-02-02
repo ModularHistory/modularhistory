@@ -174,7 +174,7 @@ class Citation(PositionedRelation):
     def primary_page_number(self) -> Optional[int]:
         """Return the page number of the citation's primary page range."""
         try:
-            return self.pages.first().page_number
+            return self.pages.first().page_number  # type: ignore
         except (ObjectDoesNotExist, AttributeError):
             return None
 

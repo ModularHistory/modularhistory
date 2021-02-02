@@ -75,10 +75,16 @@ services:
     restart: "unless-stopped"
     user: www-data
     volumes:
+      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
+      # NOTE: www-data must be granted permission to write to these directories
+      # both in the container and on the host machine. Permissions to write in
+      # the container are granted in Dockerfile.django. Permissions to write on
+      # the host machine have been granted manually; e.g.,
+      #     sudo chown -R www-data:www-data .backups
+      #     sudo chmod g+w -R .backups
       - ./static:/modularhistory/static
       - ./media:/modularhistory/media
       - ./.backups:/modularhistory/.backups
-      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
 
   flower:
     command: sh -c "wait-for-it.sh redis:6379 -- flower -A modularhistory --port=5555 --broker=redis://redis:6379/0"
