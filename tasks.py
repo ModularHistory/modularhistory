@@ -317,7 +317,7 @@ def seed(context, remote: bool = False):
     print('Dispatching workflow...')
     response = session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
-        data=json.dumps({u'ref': u'main'}),
+        data=json.dumps({'ref': 'main'}),
     ).json()
     print(response)
     while len(artifacts) < n_extant_artifacts + n_expected_new_artifacts:
