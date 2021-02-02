@@ -306,10 +306,6 @@ def seed(context, remote: bool = False):
             pat = input('Enter your Personal Access Token: ')
         with open(credentials_file, 'w') as file:
             file.write(f'{username}:{pat}')
-    # client = GitHub(username, pat)
-    # repo = client.get_organization(OWNER).get_repo(REPO)
-    # repo.create_repository_dispatch()
-    # artifacts = repo.get_artif
     session = requests.Session()
     session.auth = signature = (username, pat)
     session.headers.update({'Accept': 'application/vnd.github.v3+json'})
