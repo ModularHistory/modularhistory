@@ -135,8 +135,6 @@ jobs:
           lxc file push nginx.conf webserver/etc/nginx/sites-available/default
           lxc exec webserver -- service nginx restart
           echo "" && echo "Done."
-          echo "" && echo "Uploading dev seeds to Mega..."
-          docker-compose exec django invoke dbbackup --redact --push
         ENDSSH
     - name: Create Sentry release
       if: ${{ success() }}
