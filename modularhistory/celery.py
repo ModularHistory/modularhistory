@@ -2,6 +2,7 @@ import os
 
 from celery import Celery
 from invoke.context import Context
+
 from modularhistory.utils import commands
 
 # Set the default Django settings module for the 'celery' program.

@@ -21,7 +21,7 @@ env:
 jobs:
   db_init_file:
     runs-on: ubuntu-latest
-    environment: prod
+    environment: dev
     env:
       ADMINS: ${{ secrets.ADMINS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
@@ -151,7 +151,7 @@ jobs:
 
   media_dir:
     runs-on: ubuntu-latest
-    environment: prod
+    environment: dev
     env:
       ADMINS: ${{ secrets.ADMINS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}

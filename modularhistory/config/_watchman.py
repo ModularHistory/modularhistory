@@ -1,8 +1,9 @@
-from watchman.decorators import check
-from django.core import management
-from io import StringIO
-import stringcase
 import re
+from io import StringIO
+
+import stringcase
+from django.core import management
+from watchman.decorators import check
 
 # https://github.com/KristianOellegaard/django-health-check#django-command
 HEALTH_CHECK_COMMAND = 'health_check'

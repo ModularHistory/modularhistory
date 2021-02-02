@@ -3,7 +3,7 @@ import os
 import tempfile
 from datetime import datetime
 from typing import IO, Any, List, Optional, Tuple
-
+from modularhistory.constants.environments import Environments, PRODUCTION
 import requests
 from django.conf import settings
 from django.core.exceptions import SuspiciousFileOperation
@@ -122,6 +122,15 @@ try:
 except Exception as err:
     logging.error(f'Failed to initialize Mega client: {err}')
     mega_client = None
+
+
+mega_clients = {'default': mega_client}
+if settings.IS_PROD and mega_client:
+    mega_clients[Environments.DEV] = MegaClient().login(
+        settings.MEGA_DEV_USERNAME, settings.MEGA_DEV_PASSWORD
+    )
+else:
+    mega_clients[Environments.DEV] = mega_client
 
 
 class MegaStorage(Storage):

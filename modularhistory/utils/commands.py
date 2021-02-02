@@ -6,6 +6,7 @@ from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Iterable, Optional, TypeVar
 from zipfile import ZipFile
+
 from django.db import transaction
 from invoke.context import Context
 
@@ -61,10 +62,13 @@ def clear_migration_history(context: Context = CONTEXT):
         remove_migrations(context)
 
 
-def dbbackup(context: Context = CONTEXT, redact: bool = False, push: bool = False):
+def dbbackup(
+    context: Context = CONTEXT,
+    redact: bool = False,
+    zip: bool = False,
+    push: bool = False,
+):
     """Create a database backup file."""
-    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
-
     backups_dir = '.backups'
     context.run('python manage.py dbbackup --quiet --noinput', hide='out')
     temp_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
@@ -91,17 +95,23 @@ def dbbackup(context: Context = CONTEXT, redact: bool = False, push: bool = Fals
                 processed_backup.write(line)
                 previous_line = line
     context.run(f'rm {temp_file}')
-    print(f'Finished creating backup file: {backup_file}')
-    if push:
+    if zip:
         print(f'Zipping up {backup_file}...')
         zipped_backup_file = f'{backup_file}.zip'
         with ZipFile(zipped_backup_file, 'x') as archive:
             archive.write(backup_file)
-        print(f'Pushing {zipped_backup_file} to Mega...')
-        extant_backup = mega_client.find(zipped_backup_file, exclude_deleted=True)
-        if extant_backup:
-            print(f'Found extant backup: {extant_backup}')
-        mega_client.upload(zipped_backup_file)
+        backup_file = zipped_backup_file
+    print(f'Finished creating backup file: {backup_file}')
+    if push:
+        from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
+
+        for mega_account in mega_clients:
+            mega_client = mega_clients[mega_account]
+            print(f'Pushing {backup_file} to Mega...')
+            extant_backup = mega_client.find(backup_file, exclude_deleted=True)
+            if extant_backup:
+                print(f'Found extant backup: {extant_backup}')
+            mega_client.upload(backup_file)
 
 
 def envsubst(input_file) -> str:

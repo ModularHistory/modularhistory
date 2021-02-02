@@ -12,9 +12,11 @@ Note: Invoke must first be installed by running setup.sh or `poetry install`.
 See Invoke's documentation: http://docs.pyinvoke.org/en/stable/.
 """
 
+import json
 import logging
 import os
 import re
+from github import Github as GitHub
 from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Optional, TypeVar
@@ -51,6 +53,7 @@ TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
 
 BACKUPS_DIR = '.backups'
 DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
+MEDIA_INIT_FILE = join(BACKUPS_DIR, 'media.tar.gz')
 SERVER: Optional[str] = config('SERVER', default=None)
 SERVER_SSH_PORT: Optional[int] = config('SERVER_SSH_PORT', default=22)
 SERVER_USERNAME: Optional[str] = config('SERVER_USERNAME', default=None)
@@ -193,29 +196,8 @@ def generate_artifacts(context):
 
 
 @command
-def get_media_backup(context, unzip: bool = False):
-    """Seed the media dir for development."""
-    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
-
-    zipped_media_filename = 'media.zip'
-    zipped_media_file = mega_client.find(zipped_media_filename, exclude_deleted=True)
-    mega_client.download(zipped_media_file, dest_path='.')
-    if unzip:
-        try:
-            with ZipFile(zipped_media_filename, 'r') as archive:
-                if os.path.exists(f'./{zipped_media_file}'):
-                    context.run('rm -r media', warn=True, hide='both')
-                archive.extractall()
-            context.run(f'rm {zipped_media_filename}')
-        except BadZipFile as err:
-            print(f'Could not extract media from {zipped_media_filename} due to {err}')
-
-
-@command
-def get_db_backup(context, unzip: bool = False):
-    """Get latest db backup from server."""
-    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
-
+def get_db_backup(context, env: str = Environments.DEV):
+    """Get latest db backup from remote storage."""
     if SERVER and SERVER_SSH_PORT and SERVER_USERNAME and SERVER_PASSWORD:
         ssh = SSHClient()
         ssh.load_system_host_keys()
@@ -231,25 +213,25 @@ def get_db_backup(context, unzip: bool = False):
         print(latest_backup)
         context.run(f'cp {latest_backup} {DB_INIT_FILE}')
     else:
+        from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
+
+        mega_client = mega_clients[env]
         init_file = 'init.sql'
         init_file_path = f'{BACKUPS_DIR}/{init_file}'
         context.run(f'mv {init_file_path} {init_file_path}.prior', warn=True)
-        mega_client.download(
-            mega_client.find(init_file, exclude_deleted=True), dest_path=BACKUPS_DIR
-        )
-        if unzip:  # TODO
-            init_archive_path = f'{init_file_path}.zip'
-            init_file_path = f'{BACKUPS_DIR}/{init_file}'
-            try:
-                with ZipFile(init_archive_path, 'r') as archive:
-                    if os.path.exists(init_file_path):
-                        context.run(f'mv {init_file_path} {init_file_path}.prior')
-                    archive.extractall()
-                context.run(f'rm {init_archive_path}')
-            except BadZipFile as err:
-                print(
-                    f'Could not extract init.sql from {init_archive_path} due to {err}'
-                )
+        backup_file = mega_client.find(init_file, exclude_deleted=True)
+        mega_client.download(backup_file, dest_path=BACKUPS_DIR)
+
+
+@command
+def get_media_backup(context, env: str = Environments.DEV):
+    """Seed latest media backup from remote storage."""
+    from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
+
+    mega_client = mega_clients[env]
+    zipped_media_filename = 'media.zip'
+    zipped_media_file = mega_client.find(zipped_media_filename, exclude_deleted=True)
+    mega_client.download(zipped_media_file, dest_path=BACKUPS_DIR)
 
 
 def pat_is_valid(context, username: str, pat: str) -> bool:
@@ -304,7 +286,6 @@ def restore_squashed_migrations(context):
     commands.restore_squashed_migrations(context)
 
 
-# TODO
 @command
 def seed(context, remote: bool = False):
     """Seed a dev database, media directory, and env file."""
@@ -325,80 +306,83 @@ def seed(context, remote: bool = False):
             pat = input('Enter your Personal Access Token: ')
         with open(credentials_file, 'w') as file:
             file.write(f'{username}:{pat}')
-    signature = (username, pat)
-    headers = {'Accept': 'application/vnd.github.v3+json'}
+    # client = GitHub(username, pat)
+    # repo = client.get_organization(OWNER).get_repo(REPO)
+    # repo.create_repository_dispatch()
+    # artifacts = repo.get_artif
+    session = requests.Session()
+    session.auth = signature = (username, pat)
+    session.headers.update({'Accept': 'application/vnd.github.v3+json'})
     artifacts_url = f'{GITHUB_ACTIONS_BASE_URL}/artifacts'
-    artifacts = extant_artifacts = requests.get(
+    artifacts = extant_artifacts = session.get(
         artifacts_url,
-        headers=headers,
-        auth=signature,
     ).json()['artifacts']
     n_extant_artifacts = len(extant_artifacts)
     print('Dispatching workflow...')
-    requests.post(
+    response = session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
-        data={'ref': 'main'},
-        headers=headers,
-        auth=signature,
-    )
-    print('Waiting for artifacts...')
+        data=json.dumps({u'ref': u'main'}),
+    ).json()
+    print(response)
     while len(artifacts) < n_extant_artifacts + n_expected_new_artifacts:
+        print('Waiting for artifacts...')
         context.run('sleep 15')
-        artifacts = requests.get(
+        artifacts = session.get(
             artifacts_url,
-            headers=headers,
-            auth=signature,
         ).json()['artifacts']
     artifacts = artifacts[:n_expected_new_artifacts]
 
     seeds = {
-        'env-file': {'pot': 'env', 'dest': '.env'},
-        'init-sql-file': {'pot': 'db', 'dest': '.backups/init.sql'},
-        'media-dir': {'pot': 'media', 'dest': 'media'},
+        'env-file': '.env',
+        'init-sql-file': '.backups/init.sql',
+        'media-dir': '.backups/media.tar.gz',
     }
+    dl_urls = {}
     zip_dl_url_key = 'archive_download_url'
     for artifact in artifacts:
         artifact_name = artifact['name']
         if artifact_name not in seeds:
-            logging.error(f'"{artifact_name}" could not be mapped to env, db, or media')
+            logging.error(f'Unexpected artifact name: "{artifact_name}"')
             continue
-        seeds[artifact_name]['dl_url'] = artifact[zip_dl_url_key]
-    for seed_name, seed in seeds.items():
+        dl_urls[artifact_name] = artifact[zip_dl_url_key]
+    for seed_name, dest_path in seeds.items():
         zip_file = f'{seed_name}.zip'
         context.run(
-            f'curl -u {signature} -L {seed["dl_url"]} --output {zip_file} '
+            f'curl -u {signature} -L {dl_urls[seed_name]} --output {zip_file} '
             f'&& sleep 3 && echo "Downloaded {zip_file}"'
         )
-        dest_path = seed['dest']
         try:
             with ZipFile(zip_file, 'r') as archive:
                 if os.path.exists(dest_path):
                     if os.path.isfile(dest_path):
                         context.run(f'mv {dest_path} {dest_path}.prior')
+                    else:
+                        print(f'{dest_path} already exists; skipping {zip_file}')
+                        continue
                 archive.extractall()
             context.run(f'rm {zip_file}')
         except BadZipFile as err:
             print(f'Could not extract from {zip_file} due to {err}')
-
-    # Seed the db
-    context.run(f'mv init.sql {join(BACKUPS_DIR, "init.sql")}')
+        if '/' in dest_path:
+            dest_dir, filename = os.path.dirname(dest_path), os.path.basename(dest_path)
+        else:
+            dest_dir, filename = '.', dest_path
+        if dest_dir != '.':
+            context.run(f'mv {filename} {dest_path}')
     db_volume = 'modularhistory_postgres_data'
     seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
     if not seed_exists:
         raise Exception('Seed does not exist')
-    # TODO: enable not getting seed from remote
-    # use_extant_seed = seed_exists and not remote
-    # if seed_exists and not use_extant_seed:
-    #     context.run(f'rm -r {DB_INIT_FILE}')
+
+    # Seed the db
     context.run(f'docker-compose down; docker volume rm {db_volume}')
     context.run('docker-compose up -d postgres')
 
     # Seed the media directory only if needed
-    tar_file = 'media.tar.gz'
-    context.run(f'mv {tar_file} {join(BACKUPS_DIR, tar_file)}')
     if not len(glob('media/*')):
-        context.run(f'python manage.py mediarestore -z --noinput -i {tar_file} -q')
-    # os.remove(tar_file)  # TODO
+        context.run(
+            f'python manage.py mediarestore -z --noinput -i {MEDIA_INIT_FILE} -q'
+        )
 
 
 @command
