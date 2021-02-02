@@ -16,7 +16,6 @@ import json
 import logging
 import os
 import re
-from github import Github as GitHub
 from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Optional, TypeVar
@@ -26,6 +25,7 @@ import django
 import requests
 from decouple import config
 from dotenv import load_dotenv
+from github import Github as GitHub
 from paramiko import SSHClient
 from scp import SCPClient
 
@@ -152,7 +152,7 @@ def commit(context):
 @command
 def dbbackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
-    commands.dbbackup(context, redact=redact, push=push)
+    commands.back_up_db(context, redact=redact, push=push)
 
 
 @command
@@ -247,7 +247,7 @@ def pat_is_valid(context, username: str, pat: str) -> bool:
 @command
 def mediabackup(context, redact: bool = False, push: bool = False):
     """Create a media backup file."""
-    commands.mediabackup(context, redact=redact, push=push)
+    commands.back_up_media(context, redact=redact, push=push)
 
 
 @command

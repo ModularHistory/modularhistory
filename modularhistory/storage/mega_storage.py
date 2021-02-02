@@ -3,7 +3,7 @@ import os
 import tempfile
 from datetime import datetime
 from typing import IO, Any, List, Optional, Tuple
-from modularhistory.constants.environments import Environments, PRODUCTION
+
 import requests
 from django.conf import settings
 from django.core.exceptions import SuspiciousFileOperation
@@ -22,6 +22,8 @@ from mega.mega import (
     get_chunks,
     str_to_a32,
 )
+
+from modularhistory.constants.environments import PRODUCTION, Environments
 
 SIXTEEN = 16
 THIRTY_TWO = 32

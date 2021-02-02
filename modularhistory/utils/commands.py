@@ -6,10 +6,11 @@ from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Iterable, Optional, TypeVar
 from zipfile import ZipFile
-
+from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
 
+from modularhistory.constants.environments import Environments
 from modularhistory.constants.misc import (
     APPS_WITH_MIGRATIONS,
     MAX_MIGRATION_COUNT,
@@ -62,7 +63,7 @@ def clear_migration_history(context: Context = CONTEXT):
         remove_migrations(context)
 
 
-def dbbackup(
+def back_up_db(
     context: Context = CONTEXT,
     redact: bool = False,
     zip: bool = False,
@@ -103,15 +104,26 @@ def dbbackup(
         backup_file = zipped_backup_file
     print(f'Finished creating backup file: {backup_file}')
     if push:
-        from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
+        upload_to_mega(file=backup_file, account=Environments.DEV)
 
-        for mega_account in mega_clients:
-            mega_client = mega_clients[mega_account]
-            print(f'Pushing {backup_file} to Mega...')
-            extant_backup = mega_client.find(backup_file, exclude_deleted=True)
-            if extant_backup:
-                print(f'Found extant backup: {extant_backup}')
-            mega_client.upload(backup_file)
+
+def back_up_media(context: Context = CONTEXT, redact: bool = False, push: bool = False):
+    """Create a media backup file."""
+    backups_dir = '.backups'
+    media_dir = join(settings.BASE_DIR, 'media')
+    account_media_dir = join(media_dir, 'account')
+    temp_dir = join(settings.BASE_DIR, 'account_media')
+    if redact:
+        context.run(f'mv {account_media_dir} {temp_dir}')
+        context.run(f'mkdir {account_media_dir}')
+    context.run('python manage.py mediabackup -z --quiet --noinput', hide='out')
+    if redact:
+        context.run(f'rm -r {account_media_dir}')
+        context.run(f'mv {temp_dir} {account_media_dir}')
+    backup_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
+    print(f'Finished creating backup file: {backup_file}')
+    if push:
+        upload_to_mega(file=backup_file, account=Environments.DEV)
 
 
 def envsubst(input_file) -> str:
@@ -135,23 +147,6 @@ def makemigrations(context: Context = CONTEXT, noninteractive: bool = False):
         make_migrations = input('^ Do these changes look OK? [Y/n]') != NEGATIVE
     if make_migrations:
         context.run('python manage.py makemigrations')
-
-
-def mediabackup(context: Context = CONTEXT, redact: bool = False, push: bool = False):
-    """Create a media backup file."""
-    from modularhistory.storage.mega_storage import mega_client  # noqa: E402
-
-    # TODO: redact images
-    backups_dir = '.backups'
-    context.run('python manage.py mediabackup -z --quiet --noinput', hide='out')
-    backup_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
-    print(f'Finished creating backup file: {backup_file}')
-    if push:
-        print(f'Pushing {backup_file} to Mega...')
-        extant_backup = mega_client.find(backup_file, exclude_deleted=True)
-        if extant_backup:
-            print(f'Found extant backup: {extant_backup}')
-        mega_client.upload(backup_file)
 
 
 def migrate(context: Context = CONTEXT, *args, noninteractive: bool = False):
@@ -313,3 +308,15 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
         restore_squashed_migrations(context)
         if input('Squash migrations for real? [Y/n] ') != NEGATIVE:
             squash_migrations(context, dry=False)
+
+
+def upload_to_mega(file: str, account: str = 'default'):
+    """Upload a file to Mega."""
+    from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
+
+    mega_client = mega_clients[account]
+    print(f'Pushing {file} to Mega...')
+    extant_file = mega_client.find(file, exclude_deleted=True)
+    if extant_file:
+        print(f'Found extant backup: {extant_file}')
+    mega_client.upload(file)

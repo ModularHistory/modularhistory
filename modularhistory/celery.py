@@ -30,10 +30,10 @@ def debug(self):
 @app.task(bind=True)
 def dbbackup(context: Context = CONTEXT):
     """Create a database backup file."""
-    commands.dbbackup()
+    commands.back_up_db()
 
 
 @app.task(bind=True)
 def mediabackup(context: Context = CONTEXT):
     """Create a media backup file."""
-    commands.mediabackup()
+    commands.back_up_media()
