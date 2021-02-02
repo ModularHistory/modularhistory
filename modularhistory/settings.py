@@ -120,6 +120,7 @@ INSTALLED_APPS = [
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
+    'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'defender',  # https://github.com/jazzband/django-defender
@@ -425,11 +426,13 @@ if IS_PROD:
     DEFENDER_BEHIND_REVERSE_PROXY = True
 
 # https://docs.celeryproject.org/en/stable/django/
-CELERY_BROKER_URL = f'{REDIS_BASE_URL}/0'
-CELERY_RESULT_BACKEND = f'{REDIS_BASE_URL}/0'
 CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_BROKER_URL = f'{REDIS_BASE_URL}/0'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+# https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
+CELERY_RESULT_BACKEND = 'django-cache'
+CELERY_CACHE_BACKEND = 'default'
 
 DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
