@@ -72,6 +72,7 @@ def back_up_db(
 ):
     """Create a database backup file."""
     backups_dir = '.backups'
+    # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --quiet --noinput', hide='out')
     temp_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
     backup_file = temp_file.replace('.psql', '.sql')
@@ -117,7 +118,8 @@ def back_up_media(context: Context = CONTEXT, redact: bool = False, push: bool =
     if redact:
         context.run(f'mv {account_media_dir} {temp_dir}')
         context.run(f'mkdir {account_media_dir}')
-    context.run('python manage.py mediabackup -z --quiet --noinput', hide='out')
+    # https://github.com/django-dbbackup/django-dbbackup#mediabackup
+    context.run('python manage.py mediabackup -z --noinput', hide='out')
     if redact:
         context.run(f'rm -r {account_media_dir}')
         context.run(f'mv {temp_dir} {account_media_dir}')

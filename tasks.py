@@ -151,6 +151,7 @@ def commit(context):
 @command
 def dbbackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
+    # based on https://github.com/django-dbbackup/django-dbbackup#dbbackup
     commands.back_up_db(context, redact=redact, push=push)
 
 
@@ -246,6 +247,7 @@ def pat_is_valid(context, username: str, pat: str) -> bool:
 @command
 def mediabackup(context, redact: bool = False, push: bool = False):
     """Create a media backup file."""
+    # based on https://github.com/django-dbbackup/django-dbbackup#mediabackup
     commands.back_up_media(context, redact=redact, push=push)
 
 

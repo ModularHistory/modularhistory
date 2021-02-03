@@ -158,7 +158,7 @@ class HTMLField(MceHTMLField):
                     f'with `{replacement}` ({type(replacement)} '
                     f'in {raw_html}\n({type(raw_html)})\n{error}'
                 )
-        deletions = (("div", {'id': 'i4c-draggable-container'}),)
+        deletions = (('div', {'id': 'i4c-draggable-container'}),)
         # Use html.parser to avoid adding <html> and <body> tags
         soup = soupify(raw_html, features='html.parser')
         for deletion in deletions:
@@ -223,10 +223,10 @@ class HTMLField(MceHTMLField):
                     try:
                         updated_placeholder = model_cls.get_updated_placeholder(match)
                         html = html.replace(placeholder, updated_placeholder)
-                    except ObjectDoesNotExist:
-                        logging.error(
+                    except ObjectDoesNotExist as err:
+                        raise ValueError(
                             f'Unable to retrieve object matching {match.group(0)}'
-                        )
+                        ) from err
         return html
 
     def deconstruct(self):

@@ -1,8 +1,12 @@
 """Serializers for the entities app."""
 
 import serpy
+from typing import TYPE_CHECKING
 
 from modularhistory.models.model import ModelSerializer
+
+if TYPE_CHECKING:
+    from apps.entities.models import Entity
 
 
 class CategorySerializer(serpy.Serializer):
@@ -15,8 +19,16 @@ class CategorizationSerializer(serpy.Serializer):
     """Serializer for Entity-Category relationship."""
 
     category = CategorySerializer()
-    start_date = serpy.Field(attr='date')
-    end_date = serpy.Field()
+    start_date = serpy.MethodField('get_serialized_start_date')
+    end_date = serpy.MethodField('get_serialized_end_date')
+
+    def get_serialized_start_date(self, instance: 'Entity'):
+        """Return the entity's birth date, serialized."""
+        return instance.date.isoformat() if instance.date else None
+
+    def get_serialized_end_date(self, instance: 'Entity'):
+        """Return the entity's death date, serialized."""
+        return instance.end_date.isoformat() if instance.end_date else None
 
 
 class EntitySerializer(ModelSerializer):
@@ -25,8 +37,8 @@ class EntitySerializer(ModelSerializer):
     name = serpy.Field()
     unabbreviated_name = serpy.Field()
     aliases = serpy.Field()
-    birth_date = serpy.Field()
-    death_date = serpy.Field()
+    birth_date = serpy.MethodField('get_serialized_birth_date')
+    death_date = serpy.MethodField('get_serialized_death_date')
     description = serpy.Field(attr='description.html', required=False)
     serialized_images = serpy.Field()
     categorizations = CategorizationSerializer(
@@ -36,3 +48,11 @@ class EntitySerializer(ModelSerializer):
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
         return f'entities.{instance.__class__.__name__.lower()}'
+
+    def get_serialized_birth_date(self, instance: 'Entity'):
+        """Return the entity's birth date, serialized."""
+        return instance.birth_date.isoformat() if instance.birth_date else None
+
+    def get_serialized_death_date(self, instance: 'Entity'):
+        """Return the entity's death date, serialized."""
+        return instance.death_date.isoformat() if instance.death_date else None

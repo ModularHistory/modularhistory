@@ -1,5 +1,7 @@
 # User scripts
 clean_data.py
+clean.py
+scratch.py
 
 # Environment & credentials
 .env
