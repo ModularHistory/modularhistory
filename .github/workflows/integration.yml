@@ -19,29 +19,29 @@ on:
     - cron: '0 9 * * *'
 
 env:
-  CR_PAT: ${{ secrets.CR_PAT }}
-  SHA: ${{ github.sha }}
   ADMINS: ${{ secrets.ADMINS }}
-  SECRET_KEY: ${{ secrets.SECRET_KEY }}
   ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+  CR_PAT: ${{ secrets.CR_PAT }}
+  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+  IMGUR_CLIENT_SECRET: ${IMGUR_CLIENT_SECRET}
+  MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+  MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SHA: ${{ github.sha }}
   SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
   SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
   SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
   SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
   SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
   SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
-  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-  ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
-  IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
-  IMGUR_CLIENT_SECRET: ${IMGUR_CLIENT_SECRET}
   X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
-  MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-  MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
 
 jobs:
   test:
@@ -76,8 +76,9 @@ jobs:
           - 6379:6379
         # Set health checks to wait until redis has started
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    environment: integration
     env:
-      POSTGRES_HOST: localhost
+      POSTGRES_HOST: postgres
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -132,11 +133,12 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ 3.7 ]
+    environment: integration
     env:
       POSTGRES_HOST: postgres
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      POSTGRES_PASSWORD: postgres
     steps:
     - name: Check out main branch
       uses: actions/checkout@v2
