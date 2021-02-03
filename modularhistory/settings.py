@@ -58,7 +58,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='localhost, 127.0.0.1, 0.0.0.0',
+    default='localhost, 127.0.0.1, 0.0.0.0, django, react',
     cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
 
