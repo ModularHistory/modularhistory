@@ -1,5 +1,6 @@
 # pylint: disable=anomalous-backslash-in-string
 
+import logging
 import os
 import re
 from glob import glob, iglob
@@ -322,4 +323,5 @@ def upload_to_mega(file: str, account: str = 'default'):
     extant_file = mega_client.find(file, exclude_deleted=True)
     if extant_file:
         print(f'Found extant backup: {extant_file}')
-    mega_client.upload(file)
+    result = mega_client.upload(file)
+    logging.info(result)
