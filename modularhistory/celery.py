@@ -28,12 +28,19 @@ def debug(self):
 
 
 @app.task(bind=True)
-def dbbackup(context: Context = CONTEXT):
+def dbbackup():
     """Create a database backup file."""
     commands.back_up_db()
 
 
 @app.task(bind=True)
-def mediabackup(context: Context = CONTEXT):
+def mediabackup():
     """Create a media backup file."""
     commands.back_up_media()
+
+
+@app.task(bind=True)
+def push_seeds():
+    """Push db and media seeds to the cloud."""
+    commands.back_up_db(redact=True, push=True)
+    commands.back_up_media(redact=True, push=True)
