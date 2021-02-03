@@ -62,6 +62,13 @@ GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'
 REPO = 'modularhistory'
 GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
+GITHUB_CREDENTIALS_FILE = '.github/.credentials'
+
+SEEDS = {
+    'env-file': '.env',
+    'init-sql': '.backups/init.sql',
+    'media': '.backups/media.tar.gz',
+}
 
 
 def command(task_function: TaskFunction) -> TaskFunction:
@@ -291,11 +298,10 @@ def restore_squashed_migrations(context):
 def seed(context, remote: bool = False):
     """Seed a dev database, media directory, and env file."""
     workflow = 'seed.yml'
-    credentials_file = '.github/.credentials'
     n_expected_new_artifacts = 3
-    if os.path.exists(credentials_file):
+    if os.path.exists(GITHUB_CREDENTIALS_FILE):
         print('Reading credentials...')
-        with open(credentials_file, 'r') as personal_access_token:
+        with open(GITHUB_CREDENTIALS_FILE, 'r') as personal_access_token:
             credentials = personal_access_token.read()
             username, pat = credentials.split(':')
     else:
@@ -305,7 +311,7 @@ def seed(context, remote: bool = False):
             print('Invalid GitHub credentials.')
             username = input('Enter your GitHub username/email: ')
             pat = input('Enter your Personal Access Token: ')
-        with open(credentials_file, 'w') as file:
+        with open(GITHUB_CREDENTIALS_FILE, 'w') as file:
             file.write(f'{username}:{pat}')
     session = requests.Session()
     session.auth = signature = (username, pat)
@@ -328,21 +334,15 @@ def seed(context, remote: bool = False):
             artifacts_url,
         ).json()['artifacts']
     artifacts = artifacts[:n_expected_new_artifacts]
-
-    seeds = {
-        'env-file': '.env',
-        'init-sql-file': '.backups/init.sql',
-        'media-dir': '.backups/media.tar.gz',
-    }
     dl_urls = {}
     zip_dl_url_key = 'archive_download_url'
     for artifact in artifacts:
         artifact_name = artifact['name']
-        if artifact_name not in seeds:
+        if artifact_name not in SEEDS:
             logging.error(f'Unexpected artifact name: "{artifact_name}"')
             continue
         dl_urls[artifact_name] = artifact[zip_dl_url_key]
-    for seed_name, dest_path in seeds.items():
+    for seed_name, dest_path in SEEDS.items():
         zip_file = f'{seed_name}.zip'
         context.run(
             f'curl -u {signature} -L {dl_urls[seed_name]} --output {zip_file} '

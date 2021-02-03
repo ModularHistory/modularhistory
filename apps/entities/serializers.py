@@ -24,11 +24,11 @@ class CategorizationSerializer(serpy.Serializer):
 
     def get_serialized_start_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
-        return instance.date.isoformat() if instance.date else None
+        return instance.date.serialize() if instance.date else None
 
     def get_serialized_end_date(self, instance: 'Entity'):
         """Return the entity's death date, serialized."""
-        return instance.end_date.isoformat() if instance.end_date else None
+        return instance.end_date.serialize() if instance.end_date else None
 
 
 class EntitySerializer(ModelSerializer):
@@ -51,8 +51,8 @@ class EntitySerializer(ModelSerializer):
 
     def get_serialized_birth_date(self, instance: 'Entity'):
         """Return the entity's birth date, serialized."""
-        return instance.birth_date.isoformat() if instance.birth_date else None
+        return instance.birth_date.serialize() if instance.birth_date else None
 
     def get_serialized_death_date(self, instance: 'Entity'):
         """Return the entity's death date, serialized."""
-        return instance.death_date.isoformat() if instance.death_date else None
+        return instance.death_date.serialize() if instance.death_date else None

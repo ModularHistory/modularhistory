@@ -124,7 +124,7 @@ jobs:
           echo "Pulling images to $SERVER..."
           docker-compose pull
           echo "" && echo "Restarting server..."
-          docker-compose down
+          docker-compose down --remove-orphans
           docker-compose up -d django
           docker-compose up -d flower
           docker-compose up -d react

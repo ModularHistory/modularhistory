@@ -80,7 +80,7 @@ jobs:
       if: ${{ success() }}
       uses: actions/upload-artifact@v2
       with:
-        name: init-sql-file
+        name: init-sql
         path: .backups/init.sql
         retention-days: 1
 
@@ -210,6 +210,6 @@ jobs:
       if: ${{ success() }}
       uses: actions/upload-artifact@v2
       with:
-        name: media-dir
+        name: media
         path: media.tar.gz
         retention-days: 1

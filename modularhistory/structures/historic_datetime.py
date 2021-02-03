@@ -82,6 +82,10 @@ class HistoricDateTime(datetime):
         """Return the datetime's string representation."""
         return self.string
 
+    def serialize(self) -> str:
+        """Serialize the datetime to a JSON-compatible string value."""
+        return self.isoformat()
+
     @property
     def html(self) -> SafeString:
         """Return the datetime's HTML representation."""
@@ -184,7 +188,7 @@ class HistoricDateTime(datetime):
             year_string = f'{self.strftime("%-d %b")} {year_string}'
         elif self.month_is_known:
             year_string = f'{self.strftime("%B")} {year_string}'
-        elif self.season_is_known:
+        elif self.season_is_known and self.season:
             year_string = f'{self.season.title()} {year_string}'
         return year_string
 
