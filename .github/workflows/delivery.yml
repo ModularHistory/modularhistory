@@ -125,14 +125,13 @@ jobs:
           docker-compose pull
           echo "" && echo "Restarting server..."
           docker-compose down --remove-orphans
-          docker-compose up -d django
-          docker-compose up -d flower
-          docker-compose up -d react
+          docker-compose up -d django flower react
           echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
           docker image prune -a -f
           docker system prune -f
           echo "" && echo "Updating Nginx config..."
           lxc file push nginx.conf webserver/etc/nginx/sites-available/default
+          echo "" && echo "Restarting Nginx server..."
           lxc exec webserver -- service nginx restart
           echo "" && echo "Done."
         ENDSSH
