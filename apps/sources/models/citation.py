@@ -227,7 +227,7 @@ class Citation(PositionedRelation):
         """Return a URL to a specific page of the citation's source file."""
         page_number = int(page_number)
         try:
-            file_url = self.source.source_file.url or None
+            file_url = self.source.source_file.url or None  # type: ignore
         except AttributeError:
             return None
         if not file_url:

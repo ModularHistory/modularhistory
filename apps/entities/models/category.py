@@ -71,8 +71,6 @@ class Categorization(Model):
         to=Category,
         related_name='categorizations',
         on_delete=models.CASCADE,
-        null=True,
-        blank=True,
         verbose_name=_('category'),
     )
     date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)

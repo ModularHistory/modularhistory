@@ -1,3 +1,4 @@
+import logging
 import os
 
 from celery import Celery
@@ -24,23 +25,26 @@ CONTEXT = Context()
 @app.task(bind=True)
 def debug(self):
     """Print request info to debug/test Celery."""
-    print(f'Request: {self.request!r}')
+    logging.info(f'Request: {self.request!r}')
 
 
 @app.task(bind=True)
 def dbbackup(self):
     """Create a database backup file."""
+    logging.info(f'dbbackup received request: {self.request!r}')
     commands.back_up_db()
 
 
 @app.task(bind=True)
 def mediabackup(self):
     """Create a media backup file."""
+    logging.info(f'mediabackup received request: {self.request!r}')
     commands.back_up_media()
 
 
 @app.task(bind=True)
 def push_seeds(self):
     """Push db and media seeds to the cloud."""
+    logging.info(f'push_seeds received request: {self.request!r}')
     commands.back_up_db(redact=True, push=True)
     commands.back_up_media(redact=True, push=True)

@@ -116,12 +116,13 @@ def back_up_media(context: Context = CONTEXT, redact: bool = False, push: bool =
     media_dir = join(settings.BASE_DIR, 'media')
     account_media_dir = join(media_dir, 'account')
     temp_dir = join(settings.BASE_DIR, 'account_media')
-    if redact:
+    exclude_account_media = redact and os.path.exists(account_media_dir)
+    if exclude_account_media:
         context.run(f'mv {account_media_dir} {temp_dir}')
         context.run(f'mkdir {account_media_dir}')
     # https://github.com/django-dbbackup/django-dbbackup#mediabackup
     context.run('python manage.py mediabackup -z --noinput', hide='out')
-    if redact:
+    if exclude_account_media:
         context.run(f'rm -r {account_media_dir}')
         context.run(f'mv {temp_dir} {account_media_dir}')
     backup_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
