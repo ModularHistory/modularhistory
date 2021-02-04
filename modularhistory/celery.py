@@ -28,19 +28,19 @@ def debug(self):
 
 
 @app.task(bind=True)
-def dbbackup():
+def dbbackup(self):
     """Create a database backup file."""
     commands.back_up_db()
 
 
 @app.task(bind=True)
-def mediabackup():
+def mediabackup(self):
     """Create a media backup file."""
     commands.back_up_media()
 
 
 @app.task(bind=True)
-def push_seeds():
+def push_seeds(self):
     """Push db and media seeds to the cloud."""
     commands.back_up_db(redact=True, push=True)
     commands.back_up_media(redact=True, push=True)
