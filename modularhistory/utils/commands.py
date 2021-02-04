@@ -3,11 +3,13 @@
 import logging
 import os
 import re
+import time
 from glob import glob, iglob
 from os.path import join
+from pprint import pformat
 from typing import Any, Callable, Iterable, Optional, TypeVar
 from zipfile import ZipFile
-from pprint import pformat
+
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -25,6 +27,9 @@ from modularhistory.utils.files import relativize
 TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
 
 CONTEXT = Context()
+DAYS_TO_KEEP_BACKUP = 7
+SECONDS_IN_DAY = 86400
+SECONDS_TO_KEEP_BACKUP = DAYS_TO_KEEP_BACKUP * SECONDS_IN_DAY
 
 
 def autoformat(context: Context = CONTEXT, files: Optional[Iterable[str]] = None):
@@ -75,7 +80,8 @@ def back_up_db(
     backups_dir = '.backups'
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --quiet --noinput', hide='out')
-    temp_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
+    backup_files = glob(f'{backups_dir}/*')
+    temp_file = max(backup_files, key=os.path.getctime)
     backup_file = temp_file.replace('.psql', '.sql')
     print('Processing backup file...')
     with open(temp_file, 'r') as unprocessed_backup:
@@ -108,6 +114,11 @@ def back_up_db(
     print(f'Finished creating backup file: {backup_file}')
     if push:
         upload_to_mega(file=backup_file, account=Environments.DEV)
+    # Remove old backup files
+    now = time.time()
+    for backup_file in backup_files:
+        if os.stat(backup_file).st_mtime < now - SECONDS_TO_KEEP_BACKUP:
+            os.remove(backup_file)
 
 
 def back_up_media(context: Context = CONTEXT, redact: bool = False, push: bool = False):

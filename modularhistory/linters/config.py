@@ -90,19 +90,21 @@ class LinterOptions:
 
     def is_excluded_path(self, path: str) -> bool:
         """Return whether the path is to be excluded from linting."""
-        if self.exclude:
-            return linting.match(self.exclude, path)
-        return False
+        if self.exclude is None:
+            return False
+        return linting.match(self.exclude, path)
 
     def is_included_path(self, path: str) -> bool:
         """Return whether the path is to be included in linting."""
+        if self.include is None:
+            return False
         return linting.match(self.include, path)
 
     def error_is_ignored(self, message: str, error_code: str, filename: str) -> bool:
         """Return whether the violation should be ignored."""
         return any(
             [
-                linting.match(self.error_filters, message),
+                self.error_filters and linting.match(self.error_filters, message),
                 self.ignore is ALL or error_code in self.ignore,
                 self.error_is_ignored_in_file(filename=filename, error_code=error_code),
             ]
@@ -110,11 +112,12 @@ class LinterOptions:
 
     def error_is_ignored_in_file(self, filename: str, error_code: str):
         """Return True if an error is specifically ignored for the given filename."""
-        filename = filename.lstrip('./')
-        for pattern, error_codes in self.per_file_ignores:
-            matched_files = glob(pattern, recursive=True)
-            if filename in matched_files and error_code in error_codes:
-                return True
+        if self.per_file_ignores:
+            filename = filename.lstrip('./')
+            for pattern, error_codes in self.per_file_ignores:
+                matched_files = glob(pattern, recursive=True)
+                if filename in matched_files and error_code in error_codes:
+                    return True
         return False
 
     def get_message_level(self, message, error_code, filename) -> Optional[str]:

@@ -121,6 +121,7 @@ def _encrypt_chunk(chunk, encryptor, mac_encryptor, file_size):
 
 try:
     mega_client = MegaClient().login(settings.MEGA_USERNAME, settings.MEGA_PASSWORD)
+    logging.info(f'Obtained Mega client for {settings.MEGA_USERNAME}')
 except Exception as err:
     logging.error(f'Failed to initialize Mega client: {err}')
     mega_client = None
@@ -130,6 +131,7 @@ if settings.IS_PROD and mega_client:
     mega_clients[Environments.DEV] = MegaClient().login(
         settings.MEGA_DEV_USERNAME, settings.MEGA_DEV_PASSWORD
     )
+    logging.info(f'Obtained Mega client for {settings.MEGA_DEV_USERNAME}')
 else:
     mega_clients[Environments.DEV] = mega_client
 
