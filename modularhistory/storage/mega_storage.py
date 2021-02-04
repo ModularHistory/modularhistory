@@ -125,7 +125,6 @@ except Exception as err:
     logging.error(f'Failed to initialize Mega client: {err}')
     mega_client = None
 
-
 mega_clients = {'default': mega_client}
 if settings.IS_PROD and mega_client:
     mega_clients[Environments.DEV] = MegaClient().login(

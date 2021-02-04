@@ -319,9 +319,9 @@ def upload_to_mega(file: str, account: str = 'default'):
     from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
 
     mega_client = mega_clients[account]
-    print(f'Pushing {file} to Mega...')
+    logging.info(f'Pushing {file} to Mega ({account}) ...')
     extant_file = mega_client.find(file, exclude_deleted=True)
     if extant_file:
-        print(f'Found extant backup: {extant_file}')
+        logging.info(f'Found extant backup: {extant_file}')
     result = mega_client.upload(file)
     logging.info(result)
