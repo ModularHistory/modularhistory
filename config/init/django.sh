@@ -1,7 +1,6 @@
 #!/bin/sh
 
-wait-for-it.sh postgres:5432 -- invoke dbbackup --redact --push
-python manage.py migrate
+wait-for-it.sh postgres:5432 -- invoke dbbackup && python manage.py migrate
 
 if [ "$ENVIRONMENT" = prod ]; then
     python manage.py collectstatic --no-input &&
