@@ -223,7 +223,7 @@ class Quote(
         return format_html(html)
 
     @property
-    def ordered_attributees(self) -> Optional[List['Entity']]:
+    def ordered_attributees(self) -> List['Entity']:
         """
         Return an ordered list of the quote's attributees.
 
@@ -234,7 +234,7 @@ class Quote(
             return [attribution.attributee for attribution in attributions]
         except (AttributeError, ObjectDoesNotExist) as error:
             logging.error(f'>>> {type(error)}: {error}')
-            return None
+            return []
 
     @property
     def related_occurrences(self) -> 'QuerySet':

@@ -75,14 +75,18 @@ def back_up_db(
     redact: bool = False,
     zip: bool = False,
     push: bool = False,
+    filename: Optional[str] = None,
 ):
     """Create a database backup file."""
-    backups_dir = '.backups'
+    backups_dir = settings.BACKUPS_DIR
+    backup_files_pattern = join(backups_dir, '*sql')
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --quiet --noinput', hide='out')
-    backup_files = glob(f'{backups_dir}/*')
+    backup_files = glob(backup_files_pattern)
     temp_file = max(backup_files, key=os.path.getctime)
     backup_file = temp_file.replace('.psql', '.sql')
+    if filename:
+        backup_file = backup_file.replace(os.path.basename(backup_file), filename)
     print('Processing backup file...')
     with open(temp_file, 'r') as unprocessed_backup:
         with open(backup_file, 'w') as processed_backup:
@@ -115,16 +119,22 @@ def back_up_db(
     if push:
         upload_to_mega(file=backup_file, account=Environments.DEV)
     # Remove old backup files
-    now = time.time()
-    for backup_file in backup_files:
-        if os.stat(backup_file).st_mtime < now - SECONDS_TO_KEEP_BACKUP:
-            os.remove(backup_file)
+    logging.info('Removing old backup files...')
+    end = '{} \;'  # noqa: W605, P103
+    context.run(
+        f'find {backup_files_pattern} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}'
+    )
 
 
-def back_up_media(context: Context = CONTEXT, redact: bool = False, push: bool = False):
+def back_up_media(
+    context: Context = CONTEXT,
+    redact: bool = False,
+    push: bool = False,
+    filename: Optional[str] = None,
+):
     """Create a media backup file."""
-    backups_dir = '.backups'
-    media_dir = join(settings.BASE_DIR, 'media')
+    backups_dir, media_dir = settings.BACKUPS_DIR, settings.MEDIA_ROOT
+    backup_files_pattern = join(backups_dir, '*.tar.gz')
     account_media_dir = join(media_dir, 'account')
     temp_dir = join(settings.BASE_DIR, 'account_media')
     exclude_account_media = redact and os.path.exists(account_media_dir)
@@ -136,7 +146,11 @@ def back_up_media(context: Context = CONTEXT, redact: bool = False, push: bool =
     if exclude_account_media:
         context.run(f'rm -r {account_media_dir}')
         context.run(f'mv {temp_dir} {account_media_dir}')
-    backup_file = max(glob(f'{backups_dir}/*'), key=os.path.getctime)
+    backup_files = glob(backup_files_pattern)
+    backup_file = max(backup_files, key=os.path.getctime)
+    if filename:
+        context.run(f'mv {backup_file} {join(backups_dir, filename)}')
+        backup_file = join(backups_dir, filename)
     print(f'Finished creating backup file: {backup_file}')
     if push:
         upload_to_mega(file=backup_file, account=Environments.DEV)
@@ -178,6 +192,12 @@ def migrate(context: Context = CONTEXT, *args, noninteractive: bool = False):
     print()
     if interactive and input('Did migrations run successfully? [Y/n] ') == NEGATIVE:
         context.run('python manage.py dbrestore')
+
+
+def push_seeds(context: Context = CONTEXT):
+    """Push db and media seeds to the cloud."""
+    back_up_db(context, redact=True, push=True, filename='init.sql')
+    back_up_media(context, redact=True, push=True, filename='media.tar.gz')
 
 
 def restore_squashed_migrations(context: Context = CONTEXT):
@@ -337,8 +357,7 @@ def upload_to_mega(file: str, account: str = 'default'):
         logging.info(f'Found extant backup: {extant_file}')
     result = mega_client.upload(file)
     logging.info(f'Upload result: {pformat(result)}')
-    logging.info(f'Upload link: {mega_client.get_upload_link(result)}')
-    uploaded_file = mega_client.find(file)
+    uploaded_file = mega_client.find(os.path.basename(file))
     if not uploaded_file:
         raise Exception(f'{file} was not found in Mega ({account}) after uploading.')
     return uploaded_file

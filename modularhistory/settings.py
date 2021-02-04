@@ -335,8 +335,9 @@ ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
 ARTIFACTS_STORAGE = 'modularhistory.storage.LocalArtifactsStorage'
 
 # https://django-dbbackup.readthedocs.io/en/master/
+BACKUPS_DIR = os.path.join(BASE_DIR, '.backups')
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '.backups/')}
+DBBACKUP_STORAGE_OPTIONS = {'location': BACKUPS_DIR}
 
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8

@@ -46,5 +46,4 @@ def mediabackup(self):
 def push_seeds(self):
     """Push db and media seeds to the cloud."""
     logging.info(f'push_seeds received request: {self.request!r}')
-    commands.back_up_db(redact=True, push=True)
-    commands.back_up_media(redact=True, push=True)
+    commands.push_seeds()

@@ -422,6 +422,12 @@ def test(context, docker=False):
 
 
 @command
+def push_seeds(context):
+    """Push db and media seeds to the cloud."""
+    commands.push_seeds()
+
+
+@command
 def write_env_file(context, dev: bool = False, dry: bool = False):
     """Write a .env file."""
     destination_file = '.env'

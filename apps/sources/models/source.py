@@ -387,13 +387,13 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         return None
 
     @property
-    def ordered_attributees(self) -> Optional[List['Entity']]:
+    def ordered_attributees(self) -> List['Entity']:
         """Return an ordered list of the source's attributees."""
         try:
             attributions = self.attributions.select_related('attributee')
             return [attribution.attributee for attribution in attributions]
         except (AttributeError, ObjectDoesNotExist):
-            return None
+            return []
 
     @property
     def string(self) -> str:

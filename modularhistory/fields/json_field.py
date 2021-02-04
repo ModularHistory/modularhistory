@@ -6,8 +6,8 @@ from pprint import pformat
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
-# https://github.com/typeddjango/django-stubs/issues/439
-from django.db.models import JSONField as BaseJSONField  # type: ignore
+
+from django.db.models import JSONField as BaseJSONField  # type: ignore  # https://github.com/typeddjango/django-stubs/issues/439  # noqa: E501
 from jsonschema import exceptions as jsonschema_exceptions
 from jsonschema import validate
 
