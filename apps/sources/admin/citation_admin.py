@@ -46,7 +46,7 @@ class CitationAdmin(ModelAdmin):
     search_fields = ['source__full_string']
     list_filter = [ContentTypeFilter]
     list_per_page = 10
-    ordering = ['html', 'pk']
+    ordering = ['pk']
 
     def get_queryset(self, request) -> 'QuerySet[models.Citation]':
         """
