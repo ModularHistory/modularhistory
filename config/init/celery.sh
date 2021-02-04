@@ -1,4 +1,4 @@
 #!/bin/sh
 
 wait-for-it.sh redis:6379 -- 
-redis:6379 -- celery -A modularhistory worker --loglevel=info
+celery -A modularhistory worker --loglevel=info
