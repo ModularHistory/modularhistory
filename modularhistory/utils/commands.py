@@ -337,7 +337,7 @@ def upload_to_mega(file: str, account: str = 'default'):
         logging.info(f'Found extant backup: {extant_file}')
     result = mega_client.upload(file)
     logging.info(f'Upload result: {pformat(result)}')
-    logging.info(f'Upload link: {result.get_upload_link()}')
+    logging.info(f'Upload link: {mega_client.get_upload_link(result)}')
     uploaded_file = mega_client.find(file)
     if not uploaded_file:
         raise Exception(f'{file} was not found in Mega ({account}) after uploading.')

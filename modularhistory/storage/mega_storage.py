@@ -3,9 +3,10 @@ import os
 import tempfile
 from datetime import datetime
 from typing import IO, Any, List, Optional, Tuple
-
+from pprint import pformat
 import requests
 from django.conf import settings
+from modularhistory.environment import IS_PROD
 from django.core.exceptions import SuspiciousFileOperation
 from django.core.files import File
 from django.core.files.storage import Storage
@@ -121,17 +122,24 @@ def _encrypt_chunk(chunk, encryptor, mac_encryptor, file_size):
 
 try:
     mega_client = MegaClient().login(settings.MEGA_USERNAME, settings.MEGA_PASSWORD)
-    logging.info(f'Obtained Mega client for {settings.MEGA_USERNAME}')
+    mega_user = mega_client.get_user()
+    logging.info(
+        f'Obtained Mega client for {settings.MEGA_USERNAME}: {pformat(mega_user)}'
+    )
 except Exception as err:
     logging.error(f'Failed to initialize Mega client: {err}')
     mega_client = None
 
+
 mega_clients = {'default': mega_client}
-if settings.IS_PROD and mega_client:
+if IS_PROD and mega_client:
     mega_clients[Environments.DEV] = MegaClient().login(
         settings.MEGA_DEV_USERNAME, settings.MEGA_DEV_PASSWORD
     )
-    logging.info(f'Obtained Mega client for {settings.MEGA_DEV_USERNAME}')
+    mega_user = mega_client.get_user()
+    logging.info(
+        f'Obtained Mega client for {settings.MEGA_DEV_USERNAME}: {pformat(mega_user)}'
+    )
 else:
     mega_clients[Environments.DEV] = mega_client
 
