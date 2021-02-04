@@ -2,11 +2,11 @@ import logging
 import os
 import tempfile
 from datetime import datetime
-from typing import IO, Any, List, Optional, Tuple
 from pprint import pformat
+from typing import IO, Any, List, Optional, Tuple
+
 import requests
 from django.conf import settings
-from modularhistory.environment import IS_PROD
 from django.core.exceptions import SuspiciousFileOperation
 from django.core.files import File
 from django.core.files.storage import Storage
@@ -25,6 +25,7 @@ from mega.mega import (
 )
 
 from modularhistory.constants.environments import Environments
+from modularhistory.environment import IS_PROD
 
 SIXTEEN = 16
 THIRTY_TWO = 32
