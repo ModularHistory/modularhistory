@@ -87,7 +87,7 @@ services:
       - ./.backups:/modularhistory/.backups
 
   flower:
-    command: sh -c "wait-for-it.sh redis:6379 -- flower -A modularhistory --port=5555 --broker=redis://redis:6379/0"
+    command: sh -c "wait-for-it.sh redis:6379 -- flower -A modularhistory --port=5555 --broker=redis://redis:6379/0" --url_prefix=flower
     depends_on:
       - celery
       - celery_beat

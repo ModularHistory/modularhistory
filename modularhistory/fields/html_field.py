@@ -139,7 +139,7 @@ class HTMLField(MceHTMLField):
     processor: Optional[Callable]
 
     # Whether content should be wrapped in <p> tags (if none are present)
-    paragraphed: bool
+    paragraphed: Optional[bool]
 
     # Types of processable objects that can be included in HTML fields
     processable_content_types: Iterable[str] = [

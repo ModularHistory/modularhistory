@@ -348,7 +348,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
             )
             html = f'{html}, {page_number_html}'
         if not self.source_file:
-            if self.url and self.link not in html:
+            if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
         if getattr(self, 'information_url', None) and self.information_url:
             html = (

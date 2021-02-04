@@ -80,7 +80,7 @@ def back_up_db(
     print('Processing backup file...')
     with open(temp_file, 'r') as unprocessed_backup:
         with open(backup_file, 'w') as processed_backup:
-            previous_line = ''  # falsey, but compatible with `startswith`
+            previous_line = ''  # falsy; compatible with `startswith`
             for line in unprocessed_backup:
                 drop_conditions = [
                     line.startswith('ALTER '),
