@@ -7,7 +7,7 @@ from glob import glob, iglob
 from os.path import join
 from typing import Any, Callable, Iterable, Optional, TypeVar
 from zipfile import ZipFile
-
+from pprint import pformat
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -325,4 +325,9 @@ def upload_to_mega(file: str, account: str = 'default'):
     if extant_file:
         logging.info(f'Found extant backup: {extant_file}')
     result = mega_client.upload(file)
-    logging.info(result)
+    logging.info(f'Upload result: {pformat(result)}')
+    logging.info(f'Upload link: {result.get_upload_link()}')
+    uploaded_file = mega_client.find(file)
+    if not uploaded_file:
+        raise Exception(f'{file} was not found in Mega ({account}) after uploading.')
+    return uploaded_file
