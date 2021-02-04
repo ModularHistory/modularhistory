@@ -20,7 +20,7 @@ services:
       - .:/modularhistory
 
   celery:
-    command: sh -c "wait-for-it.sh redis:6379 -- celery -A modularhistory worker --loglevel=info"
+    command: sh config/init/celery.sh
     depends_on:
       - django
       - redis
@@ -36,7 +36,7 @@ services:
       - ./project:/usr/src/app
 
   celery_beat:
-    command: sh -c "wait-for-it.sh redis:6379 -- celery -A modularhistory beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    command: sh config/init/celery_beat.sh
     depends_on:
       - celery
       - django
@@ -87,7 +87,7 @@ services:
       - ./.backups:/modularhistory/.backups
 
   flower:
-    command: sh -c "wait-for-it.sh redis:6379 -- flower -A modularhistory --port=5555 --broker=redis://redis:6379/0" --url_prefix=flower
+    command: sh config/init/flower.sh
     depends_on:
       - celery
       - celery_beat
