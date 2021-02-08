@@ -6,8 +6,9 @@ from pprint import pformat
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
-
-from django.db.models import JSONField as BaseJSONField  # type: ignore  # https://github.com/typeddjango/django-stubs/issues/439  # noqa: E501
+from django.db.models import (  # type: ignore  # https://github.com/typeddjango/django-stubs/issues/439  # noqa: E501
+    JSONField as BaseJSONField,
+)
 from jsonschema import exceptions as jsonschema_exceptions
 from jsonschema import validate
 
@@ -100,7 +101,9 @@ class ExtraField:
         self.blank = blank
         self.help_text = help_text
 
-    def __get__(self, instance: 'Model', owner: Type['Model'] = None) -> Optional[Any]:
+    def __get__(
+        self, instance: Optional['Model'], owner: Optional[Type['Model']] = None
+    ) -> Optional[Any]:
         """See https://docs.python.org/3/reference/datamodel.html#object.__get__."""
         if instance is None:
             return self

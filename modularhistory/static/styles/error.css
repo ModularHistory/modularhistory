@@ -1,4 +1,5 @@
 
+/* 
 * {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -39,8 +40,8 @@ body {
 
 .error .error-content h1 {
   font-family: 'Montserrat', sans-serif;
-  /* font-size: 200px; */
-  /* font-weight: 200; */
+  font-size: 200px;
+  font-weight: 200;
   margin: 0;
   color: #211b19;
   text-transform: uppercase;
@@ -54,8 +55,8 @@ body {
 
 .error .error-content h2 {
   font-family: 'Montserrat', sans-serif;
-  /* font-size: 28px;
-  font-weight: 400; */
+  font-size: 28px;
+  font-weight: 400;
   text-transform: uppercase;
   color: #211b19;
   background: #fff;
@@ -111,4 +112,5 @@ body {
     padding: 7px 15px;
     font-size: 14px;
   }
-}
+} 
+*/

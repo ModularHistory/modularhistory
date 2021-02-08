@@ -233,7 +233,7 @@ class Quote(
             attributions = self.attributions.select_related('attributee').iterator()
             return [attribution.attributee for attribution in attributions]
         except (AttributeError, ObjectDoesNotExist) as error:
-            logging.error(f'>>> {type(error)}: {error}')
+            logging.error(f'{type(error)}: {error}')
             return []
 
     @property

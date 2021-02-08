@@ -227,19 +227,22 @@ class Citation(PositionedRelation):
         """Return a URL to a specific page of the citation's source file."""
         page_number = int(page_number)
         try:
-            file_url = self.source.source_file.url or None  # type: ignore
-        except AttributeError:
+            source_file = self.source.source_file
+        except (AttributeError, ObjectDoesNotExist):
             return None
-        if not file_url:
-            return None
-        page_number += self.source.source_file.page_offset
-        if pdf.url_specifies_page(file_url):
-            page_number_url = re.sub(
-                rf'{pdf.PAGE_KEY}=\d+', f'{pdf.PAGE_KEY}={page_number}', file_url
-            )
-        else:
-            page_number_url = f'{file_url}#page={page_number}'
-        return page_number_url
+        if source_file:
+            file_url = source_file.url
+            if not file_url:
+                return None
+            page_number += source_file.page_offset
+            if pdf.url_specifies_page(file_url):
+                page_number_url = re.sub(
+                    rf'{pdf.PAGE_KEY}=\d+', f'{pdf.PAGE_KEY}={page_number}', file_url
+                )
+            else:
+                page_number_url = f'{file_url}#page={page_number}'
+            return page_number_url
+        return None
 
     def get_page_number_link(
         self, page_number: Union[str, int], url: Optional[str] = None

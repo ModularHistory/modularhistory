@@ -3,7 +3,6 @@
 import logging
 import os
 import re
-import time
 from glob import glob, iglob
 from os.path import join
 from pprint import pformat

@@ -106,7 +106,9 @@ class HistoricDateTime(datetime):
 
         Circa dates should be displayed with a "c." preface.
         """
-        return self.is_bce and self.year_bce >= BCE_CIRCA_FLOOR
+        if self.year_bce:
+            return self.year_bce >= BCE_CIRCA_FLOOR
+        return False
 
     @property
     def season_is_known(self) -> bool:

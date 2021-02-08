@@ -1,9 +1,8 @@
-from typing import Optional
-
 from django.core.exceptions import ValidationError
 from django.db.models import CASCADE, ForeignKey, PositiveSmallIntegerField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.models import Model
 from modularhistory.utils.html import soupify
@@ -13,7 +12,10 @@ class PageRange(Model):
     """TODO: add docstring."""
 
     citation = ForeignKey(
-        to='sources.Citation', on_delete=CASCADE, related_name='pages'
+        to='sources.Citation',
+        on_delete=CASCADE,
+        related_name='pages',
+        verbose_name=_('citation'),
     )
     page_number = PositiveSmallIntegerField()
     end_page_number = PositiveSmallIntegerField(null=True, blank=True)
@@ -34,24 +36,20 @@ class PageRange(Model):
             )
 
     @property
-    def html(self) -> Optional[SafeString]:
+    def html(self) -> SafeString:
         """Return the page range's HTML representation."""
         html = self.unprefixed_html
-        if html:
-            end_pn = self.end_page_number or None
-            if end_pn:
-                html = f'pp. {html}'
-            else:
-                html = f'p. {html}'
-            return format_html(html)
-        return None
+        end_pn = self.end_page_number or None
+        if end_pn:
+            html = f'pp. {html}'
+        else:
+            html = f'p. {html}'
+        return format_html(html)
 
     @property
-    def unprefixed_html(self) -> Optional[str]:
+    def unprefixed_html(self) -> str:
         """Return the page range's HTML, without any "p." prefix."""
         citation = self.citation
-        if not self.page_number:
-            return None
         pn, end_pn = self.page_number, self.end_page_number or None
         pn_url = citation.get_page_number_url(pn)
         pn_html = citation.get_page_number_link(pn, pn_url) or str(pn)
