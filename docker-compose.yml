@@ -33,7 +33,9 @@ services:
         ipv4_address: 172.27.0.11
     restart: on-failure
     volumes:
-      - ./project:/usr/src/app
+      - ./static:/modularhistory/static
+      - ./media:/modularhistory/media
+      - ./.backups:/modularhistory/.backups
 
   celery_beat:
     command: sh config/init/celery_beat.sh
@@ -101,7 +103,7 @@ services:
         ipv4_address: 172.27.0.13
     ports:
       - "5555:5555"
-    restart: "always"
+    restart: "unless-stopped"
 
   mongo:
     env_file: .env
@@ -141,6 +143,7 @@ services:
         ipv4_address: 172.27.0.9
     ports:
       - "3000:3000"
+    restart: "unless-stopped"
   
   redis:
     image: redis
@@ -169,7 +172,7 @@ services:
       default:
         ipv4_address: 172.27.0.14
     image: redislabs/redisinsight:latest
-    restart: "always"
+    restart: "unless-stopped"
     ports:
       - "8001:8001"
     volumes:
