@@ -9,11 +9,14 @@ ModularHistory
     
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
+    
+.. _ModularHistory.com: https://modularhistory.com/
+.. _wiki: https://github.com/ModularHistory/modularhistory/wiki
 
 
-This repository powers [ModularHistory.com](https://modularhistory.com).
+This repository powers ModularHistory.com_.
 
-Take a look at ModularHistory's [wiki](https://github.com/ModularHistory/modularhistory/wiki).
+Take a look at ModularHistory's wiki_.
 
 --------------
 
