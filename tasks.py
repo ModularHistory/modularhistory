@@ -84,12 +84,21 @@ def autoformat(context):
 
 
 @command
-def build(context, github_actor: str, access_token: str, sha: str, push: bool = False):
+def build(
+    context,
+    github_actor: str,
+    access_token: str,
+    sha: str,
+    push: bool = False,
+    environment: str = Environments.DEV,
+):
     """Build the Docker images used by ModularHistory."""
     if not access_token:
         access_token = config('CR_PAT', default=None)
     if not all([github_actor, access_token, sha]):
         raise ValueError
+    if push and environment != Environments.PROD:
+        raise ValueError(f'Cannot push image built for {environment} environment.')
     print('Logging in to GitHub container registry...')
     context.run(
         f'echo {access_token} | docker login ghcr.io -u {github_actor} --password-stdin'
@@ -100,7 +109,10 @@ def build(context, github_actor: str, access_token: str, sha: str, push: bool = 
         context.run(f'docker pull {image}:latest', warn=True)
         print(f'Building {image}:{sha}...')
         extant = context.run(f'docker inspect {image}:latest', warn=True).exited == 0
-        build_command = f'docker build . -f Dockerfile.{image_name} -t {image}:{sha}'
+        build_command = (
+            f'docker build . -f Dockerfile.{image_name} -t {image}:{sha} '
+            f'--build-arg ENVIRONMENT={environment}'
+        )
         if extant:
             build_command = f'{build_command} --cache-from {image}:latest'
         print(build_command)

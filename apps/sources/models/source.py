@@ -280,12 +280,8 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
             # Remove redundant creator string if necessary
             creator_string_is_duplicated = (
-                all(
-                    [
-                        same_creator,
-                        self.attributee_html,
-                    ]
-                )
+                same_creator
+                and self.attributee_html
                 and self.attributee_html in container_html
             )
             if creator_string_is_duplicated:

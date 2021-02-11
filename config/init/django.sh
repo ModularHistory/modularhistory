@@ -9,5 +9,6 @@ if [ "$ENVIRONMENT" = prod ]; then
       --user www-data --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker \
       --workers 9 --max-requests 100 --max-requests-jitter 50
 else
+    # Run dev server
     python manage.py runserver 0.0.0.0:8000
 fi
