@@ -50,10 +50,8 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        os: [
-          macos-latest,
-          ubuntu-latest
-        ]
+        # services (running in Docker containers) only work on ubuntu
+        os: [ ubuntu-latest ]
         python-version: [ 3.7 ]
     services:
       postgres:
