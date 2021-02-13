@@ -18,6 +18,7 @@ import os
 import re
 from glob import glob, iglob
 from os.path import join
+from pprint import pprint
 from typing import Any, Callable, Optional, TypeVar
 from zipfile import BadZipFile, ZipFile
 
@@ -235,11 +236,16 @@ def get_db_backup(context, env: str = Environments.DEV):
         from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
 
         mega_client = mega_clients[env]
+        pprint(mega_client.get_user())
         init_file = 'init.sql'
         init_file_path = f'{BACKUPS_DIR}/{init_file}'
-        context.run(f'mv {init_file_path} {init_file_path}.prior', warn=True)
+        if os.path.exists(init_file_path):
+            context.run(f'mv {init_file_path} {init_file_path}.prior', warn=True)
         backup_file = mega_client.find(init_file, exclude_deleted=True)
-        mega_client.download(backup_file, dest_path=BACKUPS_DIR)
+        if backup_file:
+            mega_client.download(backup_file, dest_path=BACKUPS_DIR)
+        else:
+            print(f'Could not find {init_file}.')
 
 
 @command
@@ -248,9 +254,13 @@ def get_media_backup(context, env: str = Environments.DEV):
     from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
 
     mega_client = mega_clients[env]
-    zipped_media_filename = 'media.zip'
-    zipped_media_file = mega_client.find(zipped_media_filename, exclude_deleted=True)
-    mega_client.download(zipped_media_file, dest_path=BACKUPS_DIR)
+    pprint(mega_client.get_user())
+    media_archive_name = 'media.tar.gz'
+    media_archive = mega_client.find(media_archive, exclude_deleted=True)
+    if media_archive:
+        mega_client.download(media_archive, dest_path=BACKUPS_DIR)
+    else: 
+        print(f'Could not find {media_archive_name}')
 
 
 def pat_is_valid(context, username: str, pat: str) -> bool:
