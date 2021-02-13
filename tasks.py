@@ -91,13 +91,14 @@ def build(
     access_token: str,
     sha: str,
     push: bool = False,
-    environment: str = Environments.DEV,
+    # default environment is delegated to ARG statement in Dockerfile
+    environment: Optional[str] = None,
 ):
     """Build the Docker images used by ModularHistory."""
     if not access_token:
         access_token = config('CR_PAT', default=None)
     if not all([github_actor, access_token, sha]):
-        raise ValueError
+        raise ValueError('Missing one or more required args: github_actor, access_token, sha.')
     if push and environment != Environments.PROD:
         raise ValueError(f'Cannot push image built for {environment} environment.')
     print('Logging in to GitHub container registry...')
