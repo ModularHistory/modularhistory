@@ -40,11 +40,10 @@ node_modules/
 *.py[cod]
 *$py.class
 
-# PyCharm / IntelliJ / Visual Studio Code
+# PyCharm / IntelliJ
 .idea
 .idea/
 .DS_Store
-.vscode
 
 # Backup files
 *.bak

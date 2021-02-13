@@ -410,7 +410,7 @@ def seed(context, remote: bool = False):
     context.run('docker-compose up -d postgres')
 
     # Seed the media directory
-    context.run(f'mkdir -p {settings.MEDIA_ROOT}'), warn=True)
+    context.run(f'mkdir -p {settings.MEDIA_ROOT}', warn=True)
     commands.sync_media(context, push=False)
     # if os.path.exists(join(BACKUPS_DIR, 'media.tar.gz')):
     #     context.run(
