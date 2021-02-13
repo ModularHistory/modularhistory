@@ -16,9 +16,7 @@ services:
       context: .
       dockerfile: Dockerfile.django
       args:
-          ADMIN_USERNNAME: weblogic1
-          ADMIN_PASSWORD: weblogic1
-          ADMIN_NAME: admin1
+        ENVIRONMENT: dev
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
