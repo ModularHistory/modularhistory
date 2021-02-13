@@ -345,6 +345,23 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
             squash_migrations(context, dry=False)
 
 
+def sync_media(context: Context = CONTEXT, push: bool = False):
+    """Sync media from source to destination, modifying destination only."""
+    mega_username = settings.MEGA_DEV_USERNAME
+    mega_password = settings.MEGA_DEV_PASSWORD
+    local_media_dir = settings.MEDIA_ROOT
+    mega_media_dir = 'mega:/media/'
+    source, destination = (
+        (local_media_dir, mega_media_dir) if push else (mega_media_dir, local_media_dir)
+    )
+    context.run(
+        f'rclone sync {source} {destination} '
+        f'--mega-user={mega_username} '
+        f'--mega-pass=$(echo "{mega_password}" | rclone obscure -) '
+        f'--config {join(settings.BASE_DIR, "config/rclone/rclone.conf")}'
+    )
+
+
 def upload_to_mega(file: str, account: str = 'default'):
     """Upload a file to Mega."""
     from modularhistory.storage.mega_storage import mega_clients  # noqa: E402

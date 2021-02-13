@@ -33,6 +33,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip install "poetry>=1.0.5"
 
+# Install rclone (for media backup/sync).
+RUN curl https://rclone.org/install.sh | bash
+
 # Create required directories.
 RUN mkdir -p /modularhistory
 

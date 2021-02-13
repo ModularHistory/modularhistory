@@ -235,6 +235,12 @@ if [[ ! "$skip_dependencies" == true ]]; then
   fi
 fi
 
+rclone version &>/dev/null || {
+  curl https://rclone.org/install.sh | sudo bash
+}
+mkdir -p $HOME/.config/rclone
+cp config/rclone/rclone.conf $HOME/.config/rclone/rclone.conf
+
 # read -r -d '' INITIAL_ENV_CONTENTS << EOM
 # This is line 1.
 # This is line 2.

@@ -98,7 +98,9 @@ def build(
     if not access_token:
         access_token = config('CR_PAT', default=None)
     if not all([github_actor, access_token, sha]):
-        raise ValueError('Missing one or more required args: github_actor, access_token, sha.')
+        raise ValueError(
+            'Missing one or more required args: github_actor, access_token, sha.'
+        )
     if push and environment != Environments.PROD:
         raise ValueError(f'Cannot push image built for {environment} environment.')
     print('Logging in to GitHub container registry...')
@@ -255,6 +257,7 @@ def get_db_backup(context, env: str = Environments.DEV):
 def get_media_backup(context, env: str = Environments.DEV):
     """Seed latest media backup from remote storage."""
     context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
+
     from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
 
     mega_client = mega_clients[env]
@@ -263,8 +266,11 @@ def get_media_backup(context, env: str = Environments.DEV):
     media_archive = mega_client.find(media_archive_name, exclude_deleted=True)
     if media_archive:
         mega_client.download(media_archive)
-        context.run(f'mv {media_archive_name} {join(BACKUPS_DIR, media_archive_name)}', warn=True)
-    else: 
+        context.run(
+            f'mv {media_archive_name} {join(BACKUPS_DIR, media_archive_name)}',
+            warn=True,
+        )
+    else:
         print(f'Could not find {media_archive_name}')
 
 
@@ -325,7 +331,7 @@ def restore_squashed_migrations(context):
 def seed(context, remote: bool = False):
     """Seed a dev database, media directory, and env file."""
     workflow = 'seed.yml'
-    n_expected_new_artifacts = 3
+    n_expected_new_artifacts = 2
     if os.path.exists(GITHUB_CREDENTIALS_FILE):
         print('Reading credentials...')
         with open(GITHUB_CREDENTIALS_FILE, 'r') as personal_access_token:
@@ -394,20 +400,22 @@ def seed(context, remote: bool = False):
             dest_dir, filename = '.', dest_path
         if dest_dir != '.':
             context.run(f'mv {filename} {dest_path}')
+
+    # Seed the db
     db_volume = 'modularhistory_postgres_data'
     seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
     if not seed_exists:
         raise Exception('Seed does not exist')
-
-    # Seed the db
     context.run(f'docker-compose down; docker volume rm {db_volume}')
     context.run('docker-compose up -d postgres')
 
-    # Seed the media directory only if needed
-    if not len(glob('media/*')):
-        context.run(
-            f'python manage.py mediarestore -z --noinput -i {MEDIA_INIT_FILE} -q'
-        )
+    # Seed the media directory
+    context.run(f'mkdir -p {settings.MEDIA_ROOT}'), warn=True)
+    commands.sync_media(context, push=False)
+    # if os.path.exists(join(BACKUPS_DIR, 'media.tar.gz')):
+    #     context.run(
+    #         f'python manage.py mediarestore -z --noinput -i {MEDIA_INIT_FILE} -q'
+    #     )
 
 
 @command
@@ -425,6 +433,12 @@ def setup(context, noninteractive: bool = False):
 def squash_migrations(context, dry: bool = True):
     """Squash migrations."""
     commands.squash_migrations(context, dry)
+
+
+@command
+def sync_media(context, push: bool = False):
+    """Sync media from source to destination, modifying destination only."""
+    commands.sync_media(context, push=push)
 
 
 @command
