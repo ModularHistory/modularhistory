@@ -102,7 +102,7 @@ jobs:
       run: poetry run invoke write-env-file
     - name: Build and push Docker images
       if: ${{ success() }}
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --push
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
     - name: Deploy images to server
       id: deploy-image
       if: ${{ success() }}

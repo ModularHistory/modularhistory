@@ -2,12 +2,25 @@ FROM python:3.7-buster
 
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
-# Add PostgreSQL repo
+# Allow ENVIRONMENT to be passed as a build argument.
+# https://docs.docker.com/engine/reference/builder/#arg
+ARG ENVIRONMENT=dev
+
+# Set environment vars.
+ENV \
+  PYTHONUNBUFFERED=1 \
+  PYTHONFAULTHANDLER=1 \
+  PYTHONHASHSEED=random \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100
+
+# Add PostgreSQL repo.
 RUN wget --quiet https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
   apt-key add ACCC4CF8.asc && \
   sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
 
-# Install packages
+# Install packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
   dnsutils \
   gnupg2 \
@@ -18,36 +31,33 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   vim \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set environment vars
-ENV \
-  PYTHONUNBUFFERED=1 \
-  PYTHONFAULTHANDLER=1 \
-  PYTHONHASHSEED=random \
-  PIP_NO_CACHE_DIR=off \
-  PIP_DISABLE_PIP_VERSION_CHECK=on \
-  PIP_DEFAULT_TIMEOUT=100
-
 RUN pip install "poetry>=1.0.5"
 
-# Create required directories
-RUN mkdir -p -- /modularhistory/static /modularhistory/media /modularhistory/.backups
+# Create required directories.
+RUN mkdir -p /modularhistory
 
-# Set the working directory
+# Set the working directory.
 WORKDIR /modularhistory
 
-# Install project dependencies
+# Install project dependencies.
 COPY poetry.lock pyproject.toml /modularhistory/
-RUN poetry config virtualenvs.create false && \
-  poetry install --no-dev --no-interaction --no-ansi
+RUN poetry config virtualenvs.create false
+RUN if [ "$ENVIRONMENT" = "dev" ] ; then poetry install --no-interaction --no-ansi ; else poetry install --no-interaction --no-ansi --no-dev ; fi
 
-# Add source code
+# Create required directories.
+RUN mkdir -p -- \
+  /modularhistory/static \
+  /modularhistory/media \
+  /modularhistory/.backups
+
+# Add source code.
 COPY . /modularhistory/
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 
-# Collect static files
+# Collect static files.
 RUN python manage.py collectstatic --no-input
 
-# Grant necessary permissions to non-root user
+# Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/media && \
   chmod g+w -R /modularhistory/static && \
@@ -55,5 +65,5 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod +x /modularhistory/wait-for-it.sh && \
   chmod +x /usr/local/bin/wait-for-it.sh
 
-# Switch from root to non-root user
+# Switch from root to non-root user.
 USER www-data
