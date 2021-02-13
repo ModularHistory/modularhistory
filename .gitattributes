@@ -1,0 +1,3 @@
+# Force line endings to be LF:
+# https://docs.github.com/en/github/using-git/configuring-git-to-handle-line-endings
+* text eol=lf
