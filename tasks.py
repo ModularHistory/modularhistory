@@ -258,7 +258,7 @@ def get_media_backup(context, env: str = Environments.DEV):
     mega_client = mega_clients[env]
     pprint(mega_client.get_user())
     media_archive_name = 'media.tar.gz'
-    media_archive = mega_client.find(media_archive, exclude_deleted=True)
+    media_archive = mega_client.find(media_archive_name, exclude_deleted=True)
     if media_archive:
         mega_client.download(media_archive)
         context.run(f'mv {media_archive_name} {join(BACKUPS_DIR, media_archive_name)}', warn=True)
