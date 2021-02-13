@@ -238,12 +238,13 @@ def get_db_backup(context, env: str = Environments.DEV):
         mega_client = mega_clients[env]
         pprint(mega_client.get_user())
         init_file = 'init.sql'
-        init_file_path = f'{BACKUPS_DIR}/{init_file}'
+        init_file_path = join(BACKUPS_DIR, init_file)
         if os.path.exists(init_file_path):
             context.run(f'mv {init_file_path} {init_file_path}.prior', warn=True)
         backup_file = mega_client.find(init_file, exclude_deleted=True)
         if backup_file:
-            mega_client.download(backup_file, dest_path=BACKUPS_DIR)
+            mega_client.download(backup_file)
+            context.run(f'mv {init_file} {init_file_path}', warn=True)
         else:
             print(f'Could not find {init_file}.')
 
@@ -258,7 +259,8 @@ def get_media_backup(context, env: str = Environments.DEV):
     media_archive_name = 'media.tar.gz'
     media_archive = mega_client.find(media_archive, exclude_deleted=True)
     if media_archive:
-        mega_client.download(media_archive, dest_path=BACKUPS_DIR)
+        mega_client.download(media_archive)
+        context.run(f'mv {media_archive_name} {join(BACKUPS_DIR, media_archive_name)}', warn=True)
     else: 
         print(f'Could not find {media_archive_name}')
 
