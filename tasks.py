@@ -350,8 +350,9 @@ def seed(context, remote: bool = False):
     response = session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
         data=json.dumps({'ref': 'main'}),
-    ).json()
-    print(response)
+    )
+    response_data = response.json()
+    print(response_data)
     while len(artifacts) < n_extant_artifacts + n_expected_new_artifacts:
         print('Waiting for artifacts...')
         context.run('sleep 15')

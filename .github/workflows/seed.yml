@@ -72,10 +72,10 @@ jobs:
       run: poetry install
     ########################################################
     ########################################################
-    - name: Inject environment vars
+    - name: Get db backup file
       if: ${{ success() }}
       run: poetry run invoke get-db-backup
-    - name: Archive init.sql
+    - name: Upload init.sql artifact
       if: ${{ success() }}
       uses: actions/upload-artifact@v2
       with:
@@ -201,13 +201,13 @@ jobs:
       run: poetry install
     ########################################################
     ########################################################
-    - name: Inject environment vars
+    - name: Get media backup
       if: ${{ success() }}
       run: poetry run invoke get-media-backup
-    - name: Archive .env file
+    - name: Upload media.tar.gz artifact
       if: ${{ success() }}
       uses: actions/upload-artifact@v2
       with:
         name: media
-        path: media.tar.gz
+        path: .backups/media.tar.gz
         retention-days: 1
