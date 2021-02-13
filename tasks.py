@@ -219,6 +219,7 @@ def generate_artifacts(context):
 @command
 def get_db_backup(context, env: str = Environments.DEV):
     """Get latest db backup from remote storage."""
+    context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
     if SERVER and SERVER_SSH_PORT and SERVER_USERNAME and SERVER_PASSWORD:
         ssh = SSHClient()
         ssh.load_system_host_keys()
@@ -245,7 +246,7 @@ def get_db_backup(context, env: str = Environments.DEV):
         backup_file = mega_client.find(init_file, exclude_deleted=True)
         if backup_file:
             mega_client.download(backup_file)
-            context.run(f'mv {init_file} {init_file_path}', warn=True)
+            context.run(f'mv {init_file} {init_file_path}')
         else:
             print(f'Could not find {init_file}.')
 
@@ -253,6 +254,7 @@ def get_db_backup(context, env: str = Environments.DEV):
 @command
 def get_media_backup(context, env: str = Environments.DEV):
     """Seed latest media backup from remote storage."""
+    context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
     from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
 
     mega_client = mega_clients[env]
