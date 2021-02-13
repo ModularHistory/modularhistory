@@ -11,11 +11,8 @@ import PaginationItem from "@material-ui/lab/PaginationItem";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { forwardRef, useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import Layout from "../../components/layout";
-
-
-
 
 
 const PaginationLink = forwardRef(({ href, ...childProps }, ref) => (
@@ -99,7 +96,7 @@ export async function getServerSideProps(context) {
   let entitiesData = {};
 
   await axios.get(
-    "http://django:8001/api/entities/" +
+    "http://django:8000/api/entities/" +
     ('page' in q ? `?page=${q['page']}` : "")
   ).then((response) => {
     entitiesData = response.data;
