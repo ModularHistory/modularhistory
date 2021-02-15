@@ -67,8 +67,7 @@ GITHUB_CREDENTIALS_FILE = '.github/.credentials'
 
 SEEDS = {
     'env-file': '.env',
-    'init-sql': '.backups/init.sql',
-    'media': '.backups/media.tar.gz',
+    'init-sql': '.backups/init.sql'
 }
 
 
@@ -335,19 +334,21 @@ def seed(context, remote: bool = False):
     if os.path.exists(GITHUB_CREDENTIALS_FILE):
         print('Reading credentials...')
         with open(GITHUB_CREDENTIALS_FILE, 'r') as personal_access_token:
-            credentials = personal_access_token.read()
-            username, pat = credentials.split(':')
+            signature = personal_access_token.read()
+            username, pat = signature.split(':')
     else:
         username = input('Enter your GitHub username/email: ')
         pat = input('Enter your Personal Access Token: ')
+        signature = f'{username}:{pat}'
         while not pat_is_valid(context, username, pat):
             print('Invalid GitHub credentials.')
             username = input('Enter your GitHub username/email: ')
             pat = input('Enter your Personal Access Token: ')
+            signature = f'{username}:{pat}'
         with open(GITHUB_CREDENTIALS_FILE, 'w') as file:
-            file.write(f'{username}:{pat}')
+            file.write(signature)
     session = requests.Session()
-    session.auth = signature = (username, pat)
+    session.auth = (username, pat)
     session.headers.update({'Accept': 'application/vnd.github.v3+json'})
     artifacts_url = f'{GITHUB_ACTIONS_BASE_URL}/artifacts'
     artifacts = extant_artifacts = session.get(
@@ -359,14 +360,11 @@ def seed(context, remote: bool = False):
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
         data=json.dumps({'ref': 'main'}),
     )
-    response_data = response.json()
-    print(response_data)
+    print(response)
     while len(artifacts) < n_extant_artifacts + n_expected_new_artifacts:
         print('Waiting for artifacts...')
         context.run('sleep 15')
-        artifacts = session.get(
-            artifacts_url,
-        ).json()['artifacts']
+        artifacts = session.get(artifacts_url).json()['artifacts']
     artifacts = artifacts[:n_expected_new_artifacts]
     dl_urls = {}
     zip_dl_url_key = 'archive_download_url'
@@ -406,16 +404,27 @@ def seed(context, remote: bool = False):
     seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
     if not seed_exists:
         raise Exception('Seed does not exist')
+    print('Wiping postgres data volume...')
     context.run(f'docker-compose down; docker volume rm {db_volume}')
+    print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
 
     # Seed the media directory
     context.run(f'mkdir -p {settings.MEDIA_ROOT}', warn=True)
+    print('Syncing media... \n')
+    print(
+        'This could take a while. Leave this shell running until you '
+        'see a "Finished" message. In the meantime, feel free to open '
+        'a new shell and start up the app with the following command: \n'
+        'docker-compose up -d dev'
+    )
+    context.run('echo "" && echo "..........................')
     commands.sync_media(context, push=False)
     # if os.path.exists(join(BACKUPS_DIR, 'media.tar.gz')):
     #     context.run(
     #         f'python manage.py mediarestore -z --noinput -i {MEDIA_INIT_FILE} -q'
     #     )
+    print('Finished.')
 
 
 @command
@@ -504,7 +513,7 @@ def write_env_file(context, dev: bool = False, dry: bool = False):
         env_vars[var_name] = var_value
     destination_file = dry_destination_file if dry else destination_file
     with open(destination_file, 'w') as env_file:
-        for var_name, var_value in env_vars.items():
+        for var_name, var_value in sorted(env_vars.items()):
             env_file.write(f'{var_name}={var_value}\n')
     if dry:
         context.run(f'cat {destination_file} && rm {destination_file}')
