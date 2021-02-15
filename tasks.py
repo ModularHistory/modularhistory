@@ -324,11 +324,22 @@ def restore_squashed_migrations(context):
 
 
 @command
-def seed(context, remote: bool = False, dry: bool = False):
+def seed(
+    context,
+    remote: bool = False,
+    dry: bool = False,
+    username: Optional[str] = None,
+    pat: Optional[str] = None,
+):
     """Seed a dev database, media directory, and env file."""
     workflow = 'seed.yml'
     n_expected_new_artifacts = 2
-    if os.path.exists(GITHUB_CREDENTIALS_FILE):
+    if username or pat:
+        if username and pat:
+            signature = f'{username}:{pat}'
+        else:
+            raise ValueError('Specify both or neither of --username and --pat.')
+    elif os.path.exists(GITHUB_CREDENTIALS_FILE):
         print('Reading credentials...')
         with open(GITHUB_CREDENTIALS_FILE, 'r') as personal_access_token:
             signature = personal_access_token.read()

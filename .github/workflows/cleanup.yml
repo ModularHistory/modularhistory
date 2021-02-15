@@ -3,9 +3,12 @@
 name: Remove old artifacts
 
 on:
+  # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#schedule
   schedule:
     # Every day at 1am
     - cron: '0 1 * * *'
+  # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   remove-old-artifacts:
