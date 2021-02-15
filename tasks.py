@@ -65,10 +65,7 @@ REPO = 'modularhistory'
 GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
 GITHUB_CREDENTIALS_FILE = '.github/.credentials'
 
-SEEDS = {
-    'env-file': '.env',
-    'init-sql': '.backups/init.sql'
-}
+SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
 
 
 def command(task_function: TaskFunction) -> TaskFunction:
@@ -327,7 +324,7 @@ def restore_squashed_migrations(context):
 
 
 @command
-def seed(context, remote: bool = False):
+def seed(context, remote: bool = False, dry: bool = False):
     """Seed a dev database, media directory, and env file."""
     workflow = 'seed.yml'
     n_expected_new_artifacts = 2
@@ -365,6 +362,7 @@ def seed(context, remote: bool = False):
         print('Waiting for artifacts...')
         context.run('sleep 15')
         artifacts = session.get(artifacts_url).json()['artifacts']
+        pprint(artifacts)
     artifacts = artifacts[:n_expected_new_artifacts]
     dl_urls = {}
     zip_dl_url_key = 'archive_download_url'
@@ -383,11 +381,7 @@ def seed(context, remote: bool = False):
         try:
             with ZipFile(zip_file, 'r') as archive:
                 if os.path.exists(dest_path):
-                    if os.path.isfile(dest_path):
-                        context.run(f'mv {dest_path} {dest_path}.prior')
-                    else:
-                        print(f'{dest_path} already exists; skipping {zip_file}')
-                        continue
+                    context.run(f'mv {dest_path} {dest_path}.prior')
                 archive.extractall()
             context.run(f'rm {zip_file}')
         except BadZipFile as err:
