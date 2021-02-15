@@ -280,12 +280,8 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
             # Remove redundant creator string if necessary
             creator_string_is_duplicated = (
-                all(
-                    [
-                        same_creator,
-                        self.attributee_html,
-                    ]
-                )
+                same_creator
+                and self.attributee_html
                 and self.attributee_html in container_html
             )
             if creator_string_is_duplicated:
@@ -348,7 +344,7 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
             )
             html = f'{html}, {page_number_html}'
         if not self.source_file:
-            if self.url and self.link not in html:
+            if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
         if getattr(self, 'information_url', None) and self.information_url:
             html = (
@@ -387,13 +383,13 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         return None
 
     @property
-    def ordered_attributees(self) -> Optional[List['Entity']]:
+    def ordered_attributees(self) -> List['Entity']:
         """Return an ordered list of the source's attributees."""
         try:
             attributions = self.attributions.select_related('attributee')
             return [attribution.attributee for attribution in attributions]
         except (AttributeError, ObjectDoesNotExist):
-            return None
+            return []
 
     @property
     def string(self) -> str:

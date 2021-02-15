@@ -1,19 +1,42 @@
 version: "3.8"
 
-services:  
+services:
+  celery:
+    image: ghcr.io/modularhistory/django:latest
+    volumes:
+      - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+  
+  celery_beat:
+    image: ghcr.io/modularhistory/django:latest
+    volumes:
+      - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+  
   django:
     build:
       context: .
       dockerfile: Dockerfile.django
+      args:
+        ENVIRONMENT: dev
     image: ghcr.io/modularhistory/django:latest
     user: root
     volumes:
       - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+  
+  flower:
+    image: ghcr.io/modularhistory/django:latest
+    volumes:
+      - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
   
   react:
     build:
       context: .
       dockerfile: Dockerfile.react
+      args:
+        ENVIRONMENT: dev
     command: npm run dev
     environment:
       - NEXTAUTH_URL=http://dev
@@ -21,3 +44,4 @@ services:
     user: root
     volumes:
       - .:/modularhistory
+      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh

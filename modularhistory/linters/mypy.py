@@ -27,9 +27,10 @@ MYPY_SCRIPT_NAME: str = 'mypyrun'
 
 os.environ['MYPY_DJANGO_CONFIG'] = f'./{CONFIG_FILE}'
 
-# Example:
-# history/checks.py:17: error: Need type annotation for 'errors'
-MYPY_OUTPUT_PATTERN = re.compile(r'^(.+\d+): (\w+): (.+)')
+MYPY_OUTPUT_PATTERN = re.compile(
+    # Example --> history/checks.py:17: error: Need type annotation for 'errors'
+    r'^(?P<location>.+\d+): (?P<level>\w+): (?P<message>.+)'
+)
 
 ALL = None
 
@@ -90,7 +91,7 @@ def process_mypy_output(output: str):
         if not parsed_line:
             print(line, end='')
             continue
-        location, filename, line_number, level, message = parsed_line
+        filename, line_number, level, message = parsed_line
 
         # Exclude errors from specific files
         if options.is_excluded_path(filename):
@@ -106,24 +107,28 @@ def process_mypy_output(output: str):
             error_code = match.group(1)
             message = message.replace(f'[{error_code}]', '').rstrip()
 
-        level, matched_error = _process_mypy_message(
+        level, error_code = _process_mypy_message(
             message, level, error_code, matched_error, filename, line_number, options
         )
-        if level == 'error':
+        if level == 'error' and error_code:
             errors[filename] += 1
             errors_by_type[error_code] += 1
         elif level == 'warning':
             warnings[filename] += 1
-        elif level is None:
-            filtered[filename] += 1
         elif level == 'note':
             pass
     print()
 
 
 def _process_mypy_message(
-    message, level, error_code, matched_error, filename, line_number, options
-):
+    message,
+    level: str,
+    error_code,
+    matched_error,
+    filename,
+    line_number,
+    options,
+) -> Tuple[str, str]:
     if level == 'error':
         # Change the level based on config
         level = options.get_message_level(message, error_code, filename)
@@ -138,9 +143,6 @@ def _process_mypy_message(
                 not level,
                 error_code,
             )
-            matched_error = level, error_code
-        else:
-            matched_error = None
     elif level == 'note':
         if matched_error is not None:
             is_filtered = not matched_error[0]
@@ -156,7 +158,7 @@ def _process_mypy_message(
         elif message.startswith(REVEALED_TYPE):
             is_filtered = False
             report(options, filename, line_number, level, message, is_filtered)
-    return level, matched_error
+    return level, error_code
 
 
 def _get_mypy_options() -> Tuple[MyPyOptions, PerModuleOptions]:
@@ -189,11 +191,11 @@ def _parse_output_line(line: str) -> Optional[Tuple[str, ...]]:
     parsed_line = MYPY_OUTPUT_PATTERN.match(line)
     if not parsed_line:
         return None
-    location = parsed_line.group(1)
-    level = parsed_line.group(2)
-    message = parsed_line.group(3)
+    location = parsed_line.group('location')
+    level = parsed_line.group('level')
+    message = parsed_line.group('message')
     filename, line_number = location.split(':')
-    return location, filename, line_number, level, message
+    return filename, line_number, level, message
 
 
 def report(
@@ -212,10 +214,11 @@ def report(
     color = linting.COLORS[status]
     status = linting.colored(f'{status}', color, attrs=display_attrs)
     msg = linting.colored(msg, color, attrs=display_attrs)
-    print(
-        f'{"IGNORED: " if options.show_ignored and is_filtered else ""}'
-        f'{filename}:{line_number}: {msg}  [{error_key}: {ERROR_CODE_LIST_URL}]'
-    )
+    if 'found module but no type hints or library stubs' not in msg:  # TODO
+        print(
+            f'{"IGNORED: " if options.show_ignored and is_filtered else ""}'
+            f'{filename}:{line_number}: {msg}  [{error_key}: {ERROR_CODE_LIST_URL}]'
+        )
 
 
 class ConfigFileOptionsParser(BaseConfigFileOptionsParser):

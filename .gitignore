@@ -1,10 +1,14 @@
 # User scripts
 clean_data.py
+clean.py
+scratch.py
 
 # Environment & credentials
 .env
 *credentials.json
-.credentials/
+.credentials
+.password
+.pat
 .secrets/
 .devcontainer/
 
@@ -17,6 +21,8 @@ venv/
 .postgres-data/
 .artifacts/
 artifacts/
+*.zip
+*.prior
 
 # Django
 /media/
@@ -34,11 +40,10 @@ node_modules/
 *.py[cod]
 *$py.class
 
-# PyCharm / IntelliJ / Visual Studio Code
+# PyCharm / IntelliJ
 .idea
 .idea/
 .DS_Store
-.vscode
 
 # Backup files
 *.bak
@@ -63,6 +68,7 @@ nosetests.xml
 
 # Celery
 celerybeat-schedule.*
+celerybeat.pid
 
 # Distribution / packaging
 *.egg-info/
@@ -87,3 +93,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary files
+*.tmp

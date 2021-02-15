@@ -6,8 +6,14 @@ from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.http import HttpRequest
-from django_q.admin import FailAdmin, QueueAdmin, ScheduleAdmin, TaskAdmin
-from django_q.models import Failure, OrmQ, Schedule, Task
+from django_celery_beat.admin import ClockedScheduleAdmin, PeriodicTaskAdmin
+from django_celery_beat.models import (
+    ClockedSchedule,
+    CrontabSchedule,
+    IntervalSchedule,
+    PeriodicTask,
+    SolarSchedule,
+)
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
@@ -120,7 +126,8 @@ class SiteAdmin(ModelAdmin):
 
 admin_site.register(Site, SiteAdmin)
 
-admin_site.register(Failure, FailAdmin)
-admin_site.register(Schedule, ScheduleAdmin)
-admin_site.register(OrmQ, QueueAdmin)
-admin_site.register(Task, TaskAdmin)
+admin_site.register(IntervalSchedule)
+admin_site.register(CrontabSchedule)
+admin_site.register(SolarSchedule)
+admin_site.register(ClockedSchedule, ClockedScheduleAdmin)
+admin_site.register(PeriodicTask, PeriodicTaskAdmin)

@@ -185,8 +185,9 @@ class HistoricDateWidget(MultiWidget):
         dt_string = dt.strftime('%Y-%m-%d %H:%M:%S.%f')
         # Ensure the year is 4 digits; add leading zeros if necessary
         incomplete_year_pattern = re.compile(r'^(\d{1,3})(-.+)')
-        if incomplete_year_pattern.match(dt_string):
-            year_string = incomplete_year_pattern.match(dt_string).group(1)
+        incomplete_year_match = incomplete_year_pattern.match(dt_string)
+        if incomplete_year_match:
+            year_string = incomplete_year_match.group(1)
             year_string = f'{year_string:0>4}'
             dt_string = incomplete_year_pattern.sub(rf'{year_string}\g<2>', dt_string)
         return dt_string

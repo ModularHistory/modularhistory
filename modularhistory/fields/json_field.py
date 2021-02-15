@@ -3,13 +3,17 @@
 import json
 import logging
 from pprint import pformat
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
-from django.db.models import JSONField as BaseJSONField
-from django.db.models import Model
+from django.db.models import (  # type: ignore  # https://github.com/typeddjango/django-stubs/issues/439  # noqa: E501
+    JSONField as BaseJSONField,
+)
 from jsonschema import exceptions as jsonschema_exceptions
 from jsonschema import validate
+
+if TYPE_CHECKING:
+    from django.db.models import Model
 
 
 class JSONField(BaseJSONField):
@@ -97,7 +101,9 @@ class ExtraField:
         self.blank = blank
         self.help_text = help_text
 
-    def __get__(self, instance: Model, owner: Type['Model'] = None) -> Optional[Any]:
+    def __get__(
+        self, instance: Optional['Model'], owner: Optional[Type['Model']] = None
+    ) -> Optional[Any]:
         """See https://docs.python.org/3/reference/datamodel.html#object.__get__."""
         if instance is None:
             return self
@@ -106,7 +112,7 @@ class ExtraField:
             return self.from_json(json_value.get(self.name, None))
         return None
 
-    def __set__(self, instance: Model, value_to_store: Any):
+    def __set__(self, instance: 'Model', value_to_store: Any):
         """See https://docs.python.org/3/reference/datamodel.html#object.__set__."""
         json_value = self.get_json_field_value(instance)
 
@@ -150,7 +156,7 @@ class ExtraField:
         """Transform a value to a format suitable for storage in JSON."""
         return value_to_store
 
-    def get_json_field_value(self, model_instance: Model):
+    def get_json_field_value(self, model_instance: 'Model'):
         """Retrieve the value of the JSON field."""
         # Retrieve the full JSON value
         json_value = getattr(model_instance, self.json_field_name)

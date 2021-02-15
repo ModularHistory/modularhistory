@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import List, Optional
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -11,10 +11,22 @@ from apps.account.models import User
 
 LOGIN_PATH = '/login/'
 
-BACKEND_NAME = 'name'
-AUTH_KEY = 'auth'
-PROVIDER_KEY = 'provider'
-HANDLE_KEY = 'handle'
+
+class Provider:
+    """Social auth provider."""
+
+    key: str
+    name: str
+    domain: Optional[str]
+
+    auth: Optional[str]
+    handle: Optional[str]
+
+    def __init__(self, key: str, name: str, domain: Optional[str] = None):
+        """Construct a social auth provider object."""
+        self.key = key
+        self.name = name
+        self.domain = domain or f'{name.lower()}.com'
 
 
 class ProfileView(LoginRequiredMixin, View):
@@ -41,45 +53,23 @@ class SettingsView(LoginRequiredMixin, View):
         """Render the settings view upon request."""
         if isinstance(request.user, User):
             user: User = request.user
-            social_auth_backends = [
-                {
-                    PROVIDER_KEY: 'google_oauth2',
-                    BACKEND_NAME: 'Google',
-                    AUTH_KEY: None,
-                    HANDLE_KEY: None,
-                },
-                {
-                    PROVIDER_KEY: 'facebook',
-                    BACKEND_NAME: 'Facebook',
-                    AUTH_KEY: None,
-                    HANDLE_KEY: None,
-                },
-                {
-                    PROVIDER_KEY: 'twitter',
-                    BACKEND_NAME: 'Twitter',
-                    AUTH_KEY: None,
-                    HANDLE_KEY: None,
-                },
-                {
-                    PROVIDER_KEY: 'github',
-                    BACKEND_NAME: 'GitHub',
-                    AUTH_KEY: None,
-                    HANDLE_KEY: None,
-                },
+            social_auth_backends: List[Provider] = [
+                Provider('google_oauth2', 'Google'),
+                Provider('facebook', 'Facebook'),
+                Provider('twitter', 'Twitter'),
+                Provider('github', 'GitHub'),
             ]
             for backend in social_auth_backends:
-                backend_name = backend[BACKEND_NAME]
                 try:
-                    auth = user.social_auth.get(provider=backend[PROVIDER_KEY])
-                    backend[AUTH_KEY] = auth
-                    backend[HANDLE_KEY] = get_user_handle_from_auth(auth)
+                    auth = user.social_auth.get(provider=backend.key)
+                    backend.auth = auth
+                    backend.handle = get_user_handle_from_auth(auth)
                 except UserSocialAuth.DoesNotExist:
                     pass
                 except Exception as err:
                     logging.error(
                         f'Error processing social auth integration: {type(err)}: {err}'
                     )
-                backend['domain'] = f'{backend_name.lower()}.com'
 
             can_disconnect = user.social_auth.count() > 1 or user.has_usable_password()
 

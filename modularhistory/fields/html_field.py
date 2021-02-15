@@ -20,6 +20,39 @@ if TYPE_CHECKING:
 # group 2: entity name
 ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
+REPLACEMENTS = (
+    # Prevent related videos from different channels from being displayed
+    (
+        r'''(<iframe .*?src=["'].*youtube\.com\/[^\?]+?)(["'])''',
+        r'\g<1>?rel=0\g<2>',
+    ),
+    (r'074c54e4-ff1d-4952-9964-7d1e52cec4db', '6'),
+    (r'354f9d11-74bb-4e2a-8e0d-5df877b4c461', '86'),
+    (r'53a517fc-68a6-42bd-ac6b-e3a84a617ace', '8'),
+    (r'd8d7199b-4eaa-4189-bd29-b33dc9de4c8c', '90'),
+    (r'aa7291c7-55bf-4ff0-981f-38c259bc160e', '244'),
+    (r'e1e1cf34-b070-41d4-b8ba-604a3a257ace', '88'),
+    (r'a662f48d-9674-4154-9d8f-3456efe7aebf', '70'),
+    (r'993f6db6-c815-4521-b8a0-65e19d0dbe25', '204'),
+    (r'7c86ed23-d548-4aef-81a1-1a16d6ecd7cb', '72'),
+    (r'27c0d6f6-8306-4b3f-a60b-c842857ea1ab', '73'),
+    (r'7579f024-9a48-4f55-b7c7-a1e88b866a0c', '246'),
+    (r'260c4e8e-a35b-4306-a0ce-17cfcb7de47d', '268'),
+    (r'f0af0a2b-68e5-484e-8f08-5de0179a185c', '229'),
+    (r'19e0f153-b248-4147-a09b-ee35c5e4fdaf', '250'),
+    (r'5610f0f6-8bba-4647-9642-e0a623c266d9', '261'),
+    (r'e93eda83-560d-4a8a-8eac-8c28798b52ff', '262'),
+    (r'ed35a437-15a0-4c03-9661-903db39fe216', '91'),
+    # Fix media URLs
+    (r'https:\S+/media/', '/media/'),
+    # Remove empty divs & paragraphs
+    (r'\n?<(?:div|p)>&nbsp;<\/(?:div|p)>', ''),
+    # Add bootstrap classes to HTML elements
+    (r'<blockquote>', '<blockquote class="blockquote">'),
+    (r'<table>', '<table class="table">'),
+)
+DELETIONS = (('div', {'id': 'i4c-draggable-container'}),)
+
 
 class PlaceholderGroups(Constant):
     """Groups in the object placeholder regex pattern."""
@@ -106,7 +139,7 @@ class HTMLField(MceHTMLField):
     processor: Optional[Callable]
 
     # Whether content should be wrapped in <p> tags (if none are present)
-    paragraphed: bool
+    paragraphed: Optional[bool]
 
     # Types of processable objects that can be included in HTML fields
     processable_content_types: Iterable[str] = [
@@ -137,19 +170,7 @@ class HTMLField(MceHTMLField):
             raise ValidationError(
                 'The "{" and "}" characters are illegal in HTML fields.'
             )
-        replacements = (
-            # Update placeholder markers to square brackets
-            (r'(?:\{\{|&lt;&lt;|\<\<)', '[['),
-            (r'(?:\}\}|&gt;&gt;|\>\>)', ']]'),
-            # Add bootstrap classes to HTML elements
-            (r'<blockquote>', '<blockquote class="blockquote">'),
-            (r'<table>', '<table class="table">'),
-            # Remove empty divs & paragraphs
-            (r'\n?<(?:div|p)>&nbsp;<\/(?:div|p)>', ''),
-            # fact --> postulation  # TODO
-            (r'\[\[ fact: ', '[[ postulation: '),
-        )
-        for pattern, replacement in replacements:
+        for pattern, replacement in REPLACEMENTS:
             try:
                 raw_html = re.sub(pattern, replacement, raw_html).strip()
             except Exception as error:
@@ -158,10 +179,9 @@ class HTMLField(MceHTMLField):
                     f'with `{replacement}` ({type(replacement)} '
                     f'in {raw_html}\n({type(raw_html)})\n{error}'
                 )
-        deletions = (("div", {'id': 'i4c-draggable-container'}),)
         # Use html.parser to avoid adding <html> and <body> tags
         soup = soupify(raw_html, features='html.parser')
-        for deletion in deletions:
+        for deletion in DELETIONS:
             try:
                 soup.find(deletion).decompose()
             except AttributeError:  # no match
@@ -223,10 +243,10 @@ class HTMLField(MceHTMLField):
                     try:
                         updated_placeholder = model_cls.get_updated_placeholder(match)
                         html = html.replace(placeholder, updated_placeholder)
-                    except ObjectDoesNotExist:
-                        logging.error(
+                    except ObjectDoesNotExist as err:
+                        raise ValueError(
                             f'Unable to retrieve object matching {match.group(0)}'
-                        )
+                        ) from err
         return html
 
     def deconstruct(self):
@@ -252,48 +272,10 @@ class HTMLField(MceHTMLField):
         """
         if html_value is None:
             return html_value
-        # Add or remove <p> tags if necessary
-        html_value = self.format_html(html_value)
-        replacements = (
-            # Prevent related videos from different channels from being displayed
-            (
-                r'''(<iframe .*?src=["'].*youtube\.com\/[^?]+?)(["'])''',
-                r'\g<1>?rel=0\g<2>',
-            ),
-            # Update placeholder markers to square brackets
-            (r'(?:\{\{|&lt;&lt;|\<\<)', '[['),
-            (r'(?:\}\}|&gt;&gt;|\>\>)', ']]'),
-            (r'\[\[ fact: ', '[[ postulation: '),
-            (r'074c54e4-ff1d-4952-9964-7d1e52cec4db', '6'),
-            (r'354f9d11-74bb-4e2a-8e0d-5df877b4c461', '86'),
-            (r'53a517fc-68a6-42bd-ac6b-e3a84a617ace', '8'),
-            (r'd8d7199b-4eaa-4189-bd29-b33dc9de4c8c', '90'),
-            (r'aa7291c7-55bf-4ff0-981f-38c259bc160e', '244'),
-            (r'e1e1cf34-b070-41d4-b8ba-604a3a257ace', '88'),
-            (r'a662f48d-9674-4154-9d8f-3456efe7aebf', '70'),
-            (r'993f6db6-c815-4521-b8a0-65e19d0dbe25', '204'),
-            (r'7c86ed23-d548-4aef-81a1-1a16d6ecd7cb', '72'),
-            (r'27c0d6f6-8306-4b3f-a60b-c842857ea1ab', '73'),
-            (r'7579f024-9a48-4f55-b7c7-a1e88b866a0c', '246'),
-            (r'260c4e8e-a35b-4306-a0ce-17cfcb7de47d', '268'),
-            (r'f0af0a2b-68e5-484e-8f08-5de0179a185c', '229'),
-            (r'19e0f153-b248-4147-a09b-ee35c5e4fdaf', '250'),
-            (r'5610f0f6-8bba-4647-9642-e0a623c266d9', '261'),
-            (r'e93eda83-560d-4a8a-8eac-8c28798b52ff', '262'),
-            (r'ed35a437-15a0-4c03-9661-903db39fe216', '91'),
-            # Fix media URLs
-            (r'https:\S+/media/', '/media/'),
-            # Remove empty divs & paragraphs
-            (r'\n?<div>&nbsp;<\/div>', ''),
-            (r'<div>&nbsp;<\/div>', ''),
-            (r'<div id=\"i4c-draggable-container\"[^\/]+</div>', ''),
-            (r'<p>&nbsp;<\/p>', ''),
-        )
-        for pattern, replacement in replacements:
-            html_value, n_replacements = re.subn(pattern, replacement, html_value)
-            if n_replacements:
-                # Log an error so that we know the replacement is still necessary.
-                logging.error(f'Matches for r"{pattern}" were found and replaced.')
+        try:
+            html_value = self.format_html(html_value)
+        except Exception as err:
+            logging.error(f'{err}')
         return HTML(html_value, processor=self.processor)
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python

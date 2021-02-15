@@ -9,62 +9,14 @@ ModularHistory
     
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
-
-
-https://www.modularhistory.com
-
---------------
-
-Installation
-------------
-
-Prerequisites
-~~~~~~~~~~~~~
-
-- Docker (https://docs.docker.com/get-docker/)
-- Docker Compose (https://docs.docker.com/compose/install/)
-
-Cloning
-~~~~~~~
-
-Clone ModularHistory to your local machine::
-
-    git clone https://github.com/ModularHistory/modularhistory.git
-
-Setup
-~~~~~
-With Docker
-########
-
-Enter the cloned project directory::
-
-    cd modularhistory
     
-Start up the application in development mode::
-
-    docker-compose up -d dev
-    
-Watch the logs::
-
-    docker-compose logs -f
+.. _ModularHistory.com: https://modularhistory.com/
+.. _wiki: https://github.com/ModularHistory/modularhistory/wiki
 
 
-Without Docker
-########
+This repository powers ModularHistory.com_.
 
-NOTE: ModularHistory can only be run without Docker on MacOS or Linux operating systems.
-
-Enter the cloned project directory::
-
-    cd modularhistory
-
-Execute the setup script (which should install all dependencies)::
-
-    ./setup.sh
-
-Run tests::
-
-    invoke test
+Take a look at ModularHistory's wiki_.
 
 --------------
 

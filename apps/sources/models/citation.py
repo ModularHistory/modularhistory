@@ -80,8 +80,7 @@ class Citation(PositionedRelation):
     source = models.ForeignKey(
         to='sources.Source',
         related_name='citations',
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.PROTECT,
     )
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
@@ -140,9 +139,9 @@ class Citation(PositionedRelation):
         # TODO: Remove search icon so citations can be joined together with semicolons
         the_following_code_is_fixed = False
         if the_following_code_is_fixed:
-            if self.source_file_url:
+            if self.source_file:
                 html += (
-                    f'<a href="{self.source_file_url}" class="display-source"'
+                    f'<a href="{self.source_file.url}" class="display-source"'
                     f' target="_blank" data-toggle="modal" data-target="#modal">'
                     f'<i class="fas fa-search"></i>'
                     f'</a>'
@@ -175,7 +174,7 @@ class Citation(PositionedRelation):
     def primary_page_number(self) -> Optional[int]:
         """Return the page number of the citation's primary page range."""
         try:
-            return self.pages.first().page_number
+            return self.pages.first().page_number  # type: ignore
         except (ObjectDoesNotExist, AttributeError):
             return None
 
@@ -228,19 +227,22 @@ class Citation(PositionedRelation):
         """Return a URL to a specific page of the citation's source file."""
         page_number = int(page_number)
         try:
-            file_url = self.source.source_file.url or None
-        except AttributeError:
+            source_file = self.source.source_file
+        except (AttributeError, ObjectDoesNotExist):
             return None
-        if not file_url:
-            return None
-        page_number += self.source.source_file.page_offset
-        if pdf.url_specifies_page(file_url):
-            page_number_url = re.sub(
-                rf'{pdf.PAGE_KEY}=\d+', f'{pdf.PAGE_KEY}={page_number}', file_url
-            )
-        else:
-            page_number_url = f'{file_url}#page={page_number}'
-        return page_number_url
+        if source_file:
+            file_url = source_file.url
+            if not file_url:
+                return None
+            page_number += source_file.page_offset
+            if pdf.url_specifies_page(file_url):
+                page_number_url = re.sub(
+                    rf'{pdf.PAGE_KEY}=\d+', f'{pdf.PAGE_KEY}={page_number}', file_url
+                )
+            else:
+                page_number_url = f'{file_url}#page={page_number}'
+            return page_number_url
+        return None
 
     def get_page_number_link(
         self, page_number: Union[str, int], url: Optional[str] = None

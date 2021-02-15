@@ -2,6 +2,7 @@ import logging
 import os
 import tempfile
 from datetime import datetime
+from pprint import pformat
 from typing import IO, Any, List, Optional, Tuple
 
 import requests
@@ -22,6 +23,9 @@ from mega.mega import (
     get_chunks,
     str_to_a32,
 )
+
+from modularhistory.constants.environments import Environments
+from modularhistory.environment import IS_PROD
 
 SIXTEEN = 16
 THIRTY_TWO = 32
@@ -119,9 +123,26 @@ def _encrypt_chunk(chunk, encryptor, mac_encryptor, file_size):
 
 try:
     mega_client = MegaClient().login(settings.MEGA_USERNAME, settings.MEGA_PASSWORD)
+    mega_user = mega_client.get_user()
+    logging.info(
+        f'Obtained Mega client for {settings.MEGA_USERNAME}: {pformat(mega_user)}'
+    )
 except Exception as err:
     logging.error(f'Failed to initialize Mega client: {err}')
     mega_client = None
+
+
+mega_clients = {'default': mega_client}
+if IS_PROD and mega_client:
+    mega_clients[Environments.DEV] = MegaClient().login(
+        settings.MEGA_DEV_USERNAME, settings.MEGA_DEV_PASSWORD
+    )
+    mega_user = mega_client.get_user()
+    logging.info(
+        f'Obtained Mega client for {settings.MEGA_DEV_USERNAME}: {pformat(mega_user)}'
+    )
+else:
+    mega_clients[Environments.DEV] = mega_client
 
 
 class MegaStorage(Storage):

@@ -34,8 +34,8 @@ MARTOR_TOOLBAR_BUTTONS = [
     'help',
 ]
 MARTOR_ENABLE_LABEL = True  # default is False
-MARTOR_IMGUR_CLIENT_ID = config('IMGUR_CLIENT_ID')
-MARTOR_IMGUR_API_KEY = config('IMGUR_CLIENT_SECRET')
+MARTOR_IMGUR_CLIENT_ID = config('IMGUR_CLIENT_ID', default='')
+MARTOR_IMGUR_API_KEY = config('IMGUR_CLIENT_SECRET', default='')
 # Markdown extensions (default)
 MARTOR_MARKDOWN_EXTENSIONS = [
     'markdown.extensions.extra',

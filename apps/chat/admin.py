@@ -7,7 +7,6 @@ class ChatAdmin(ModelAdmin):
 
     model: models.Chat
     fields = ['content']
-    # exclude = []
 
 
 admin_site.register(models.Chat, ChatAdmin)

@@ -19,15 +19,10 @@ from easy_thumbnails.conf import Settings as ThumbnailSettings
 from split_settings.tools import include
 
 from modularhistory.constants.environments import Environments
-from modularhistory.environment import environment
+from modularhistory.environment import DOCKERIZED, ENVIRONMENT, IS_DEV, IS_PROD
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
-ENVIRONMENT = environment
-
-IS_PROD = ENVIRONMENT == Environments.PROD
-IS_DEV = ENVIRONMENT == Environments.DEV
-DOCKERIZED = config('DOCKERIZED', cast=bool, default=IS_PROD)
 TESTING: bool = 'test' in sys.argv
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
@@ -38,7 +33,7 @@ DEBUG = IS_DEV
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secret-key
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='f67EPexT9Tmwnt71kcGPk')
 
 # --- URL MODIFICATION SETTINGS ---
 # Do not prepend `www.` to `modularhistory.com`; in production,
@@ -65,7 +60,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='localhost, 127.0.0.1, 0.0.0.0',
+    default='localhost, 127.0.0.1, 0.0.0.0, django, react',
     cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
 
@@ -84,12 +79,9 @@ ADMINS = (
     else []
 )
 
-REDIS_HOST = None
-if DOCKERIZED:
-    REDIS_HOST = 'redis'
-else:
-    REDIS_HOST = 'localhost'
-REDIS_BASE_URL = REDIS_URL = f'redis://{REDIS_HOST}:6379'
+REDIS_HOST = 'redis' if DOCKERIZED else 'localhost'
+REDIS_PORT = '6379'
+REDIS_BASE_URL = REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 
 # https://channels.readthedocs.io/en/latest/
 ASGI_APPLICATION = 'modularhistory.asgi.application'
@@ -129,10 +121,11 @@ INSTALLED_APPS = [
     'corsheaders',  # https://github.com/adamchainz/django-cors-headers
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
+    'django_celery_beat',  # https://github.com/celery/django-celery-beat
+    'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'defender',  # https://github.com/jazzband/django-defender
-    'django_q',  # https://django-q.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
     'decouple',  # https://github.com/henriquebastos/python-decouple/
@@ -140,12 +133,9 @@ INSTALLED_APPS = [
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
-    'health_check.db',
-    # 'health_check.cache',  # TODO
     'health_check.contrib.migrations',
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
-    'health_check.storage',
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'lockdown',  # https://github.com/Dunedan/django-lockdown
     'massadmin',  # https://github.com/burke-software/django-mass-edit
@@ -160,6 +150,7 @@ INSTALLED_APPS = [
     'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
+    'watchman',  # https://github.com/mwarkentin/django-watchman
     'webpack_loader',  # https://github.com/owais/django-webpack-loader
     'apps.account.apps.AccountConfig',
     'apps.chat.apps.ChatConfig',
@@ -324,6 +315,12 @@ USE_TZ = True
 # Mega credentials
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
+if IS_DEV:
+    MEGA_DEV_USERNAME = MEGA_USERNAME
+    MEGA_DEV_PASSWORD = MEGA_PASSWORD
+else:
+    MEGA_DEV_USERNAME = config('MEGA_DEV_USERNAME', default=None)
+    MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=None)
 
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -343,8 +340,9 @@ ARTIFACTS_ROOT = os.path.join(BASE_DIR, '.artifacts')
 ARTIFACTS_STORAGE = 'modularhistory.storage.LocalArtifactsStorage'
 
 # https://django-dbbackup.readthedocs.io/en/master/
+BACKUPS_DIR = os.path.join(BASE_DIR, '.backups')
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '.backups/')}
+DBBACKUP_STORAGE_OPTIONS = {'location': BACKUPS_DIR}
 
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
@@ -403,7 +401,7 @@ SETTINGS_EXPORT = [
     'ENABLE_PATREON',
 ]
 
-RAPIDAPI_KEY = config('RAPIDAPI_KEY', default='')
+RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default='')
 
 # https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
 SITE_ID = 1
@@ -414,13 +412,13 @@ Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 
 # https://github.com/jazzband/django-redis
-if ENVIRONMENT == Environments.DEV and use_dummy_cache:
+if IS_DEV and use_dummy_cache:
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         }
     }
-elif REDIS_HOST:
+else:
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
@@ -431,20 +429,22 @@ elif REDIS_HOST:
         }
     }
     # https://github.com/jazzband/django-redis
-    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-    SESSION_CACHE_ALIAS = "default"
-
-# https://django-q.readthedocs.io/en/latest/configure.html
-Q_CLUSTER = {
-    'cpu_affinity': 1,
-    'label': 'Django Q',
-    'redis': f'{REDIS_BASE_URL}/0',
-}
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+    SESSION_CACHE_ALIAS = 'default'
 
 # https://github.com/jazzband/django-defender
 DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
 if IS_PROD:
     DEFENDER_BEHIND_REVERSE_PROXY = True
+
+# https://docs.celeryproject.org/en/stable/django/
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_BROKER_URL = f'{REDIS_BASE_URL}/0'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+# https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
+CELERY_RESULT_BACKEND = 'django-cache'
+CELERY_CACHE_BACKEND = 'default'
 
 DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
 if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:

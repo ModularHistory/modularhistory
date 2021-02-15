@@ -1,48 +1,109 @@
 version: "3.8"
 
+x-common-env-vars: &common-env-vars
+  DOCKERIZED: 'True'
+  REDIS_HOST: 'redis'
+  POSTGRES_HOST: 'postgres'
+
 services:
   dev:
     depends_on:
       - django
+      - flower
       - react
+      - redisinsight
     image: nginx
     ports:
       - "80:80"
     volumes:
       - ./config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
+
+  celery:
+    command: sh config/init/celery.sh
+    depends_on:
+      - django
+      - redis
+      - postgres
+    env_file: .env
+    environment: *common-env-vars
+    image: "$BACKEND_IMAGE:$SHA"
+    networks:
+      default:
+        ipv4_address: 172.27.0.11
+    restart: on-failure
+    volumes:
+      - ./static:/modularhistory/static
+      - ./media:/modularhistory/media
+      - ./.backups:/modularhistory/.backups
+
+  celery_beat:
+    command: sh config/init/celery_beat.sh
+    depends_on:
+      - celery
+      - django
+      - redis
+      - postgres
+    env_file: .env
+    environment: *common-env-vars
+    image: "$BACKEND_IMAGE:$SHA"
+    networks:
+      default:
+        ipv4_address: 172.27.0.12
+    restart: on-failure
   
   django:
-    command: sh init.sh
+    command: sh config/init/django.sh
     depends_on:
       - postgres
       - redis
-      - redis-commander
       - mongo
     env_file: .env
     environment:
-      - DJANGO_SETTINGS_MODULE=modularhistory.settings
-      - DOCKERIZED=True
-      - POSTGRES_HOST=postgres
+      <<: *common-env-vars
+      DJANGO_SETTINGS_MODULE: 'modularhistory.settings'
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:8000/ht/ || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
       timeout: 7s
       interval: 15s
       retries: 2
       start_period: 10s
-    image: "ghcr.io/modularhistory/django:$SHA"
+    image: "$BACKEND_IMAGE:$SHA"
     networks:
       default:
-        ipv4_address: 172.27.0.6
+        ipv4_address: 172.27.0.8
     ports:
       - "8000:8000"
     restart: "unless-stopped"
     user: www-data
     volumes:
+      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
+      # NOTE: www-data must be granted permission to write to these directories
+      # both in the container and on the host machine. Permissions to write in
+      # the container are granted in Dockerfile.django. Permissions to write on
+      # the host machine have been granted manually; e.g.,
+      #     sudo chown -R www-data:www-data .backups
+      #     sudo chmod g+w -R .backups
       - ./static:/modularhistory/static
       - ./media:/modularhistory/media
       - ./.backups:/modularhistory/.backups
-      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
+
+  flower:
+    command: sh config/init/flower.sh
+    depends_on:
+      - celery
+      - celery_beat
+      - django
+      - redis
+    env_file: .env
+    environment: *common-env-vars
+    image: "$BACKEND_IMAGE:$SHA"
+    networks:
+      default:
+        ipv4_address: 172.27.0.13
+    ports:
+      - "5555:5555"
+    restart: "unless-stopped"
 
   mongo:
     env_file: .env
@@ -61,6 +122,9 @@ services:
       timeout: 5s
       retries: 5
     image: postgres
+    networks:
+      default:
+        ipv4_address: 172.27.0.6
     ports:
       - "5432:5432"
     restart: "always"
@@ -76,31 +140,43 @@ services:
     image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:
-        ipv4_address: 172.27.0.7
+        ipv4_address: 172.27.0.9
     ports:
       - "3000:3000"
+    restart: "unless-stopped"
   
   redis:
     image: redis
+    networks:
+      default:
+        ipv4_address: 172.27.0.7
     ports:
       - "6379:6379"
     restart: "always"
     volumes:
       - "data:/data"
 
-  redis-commander:
-    container_name: redis-commander
+  redisinsight:
     depends_on:
       - redis
-    hostname: redis-commander
-    image: rediscommander/redis-commander:latest
-    restart: always
+    env_file: .env
     environment:
-      - REDIS_HOSTS=local:redis:6379
-      # - HTTP_USER=www-data
-      # - HTTP_PASSWORD=
+      REDIS_HOSTS: 'local:redis:6379'
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8001/healthcheck/ || exit 1"]
+      timeout: 7s
+      interval: 15s
+      retries: 2
+      start_period: 10s
+    networks:
+      default:
+        ipv4_address: 172.27.0.14
+    image: redislabs/redisinsight:latest
+    restart: "unless-stopped"
     ports:
-      - "8081:8081"
+      - "8001:8001"
+    volumes:
+      - "redisinsight:/db"
 
 networks:
   default:
@@ -113,3 +189,4 @@ volumes:
   # `data` is used by both redis and mongodb
   data:
   postgres_data:
+  redisinsight:

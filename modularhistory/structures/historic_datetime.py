@@ -82,6 +82,10 @@ class HistoricDateTime(datetime):
         """Return the datetime's string representation."""
         return self.string
 
+    def serialize(self) -> str:
+        """Serialize the datetime to a JSON-compatible string value."""
+        return self.isoformat()
+
     @property
     def html(self) -> SafeString:
         """Return the datetime's HTML representation."""
@@ -102,7 +106,9 @@ class HistoricDateTime(datetime):
 
         Circa dates should be displayed with a "c." preface.
         """
-        return self.is_bce and self.year_bce >= BCE_CIRCA_FLOOR
+        if self.year_bce:
+            return self.year_bce >= BCE_CIRCA_FLOOR
+        return False
 
     @property
     def season_is_known(self) -> bool:
@@ -122,7 +128,9 @@ class HistoricDateTime(datetime):
     @property
     def use_ybp(self) -> bool:
         """Return True if the datetime should be displayed using the YBP system."""
-        return self.is_bce and self.year_bce > self.bce_threshold
+        if self.year_bce:
+            return self.year_bce > self.bce_threshold
+        return False
 
     @property
     def year_bce(self) -> Optional[int]:
@@ -148,7 +156,7 @@ class HistoricDateTime(datetime):
     def year_bp(self) -> int:
         """Return the year in YBP (years before present)."""
         current_year = datetime.now().year
-        if self.is_bce:
+        if self.year_bce:
             ybp = self.year_bce + APPROXIMATE_PRESENT_YEAR
         else:
             ybp = current_year - self.year
@@ -184,14 +192,14 @@ class HistoricDateTime(datetime):
             year_string = f'{self.strftime("%-d %b")} {year_string}'
         elif self.month_is_known:
             year_string = f'{self.strftime("%B")} {year_string}'
-        elif self.season_is_known:
+        elif self.season_is_known and self.season:
             year_string = f'{self.season.title()} {year_string}'
         return year_string
 
     @property
     def year_string(self) -> str:
         """Return a string representation of the datetime's year."""
-        if self.is_bce:
+        if self.year_bce:
             if self.use_ybp:
                 # YBP dates
                 ybp, humanized_ybp = self.year_bp, None
