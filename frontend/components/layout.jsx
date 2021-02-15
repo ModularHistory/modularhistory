@@ -1,8 +1,9 @@
 import Head from "next/head";
-import Navbar from "./navbar";
-import Footer from "./footer";
+import { useRouter } from "next/router";
 // import Modal from "./modal";
-import {useRouter} from "next/router";
+import React from 'react';
+import Footer from "./footer";
+import Navbar from "./navbar";
 
 
 export default function Layout({title, canonicalUrl, children}) {
