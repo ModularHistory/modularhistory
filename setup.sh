@@ -108,8 +108,8 @@ if [[ "$os_name" == Darwin* ]]; then
   os='MacOS'
 elif [[ "$os_name" == Linux* ]]; then
   os='Linux'
-  # Remove mounted Windows paths from PATH, if necessary
-  path_mod="export PATH=$(echo $PATH | tr ':' '\n' | grep -v /mnt/ | tr '\n' ':')"
+  # Remove conflicting Windows paths from PATH, if necessary
+  path_mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
   grep -qxF "$path_mod" ~/.bashrc || echo "$path_mod" >> ~/.bashrc
   source ~/.bashrc
 elif [[ "$os_name" == Windows* ]]; then
@@ -136,12 +136,15 @@ if [[ "$os" == "$MAC_OS" ]]; then
   echo "Updating packages ..."
   brew update
   brew tap homebrew/services
+  brew list postgresql &>/dev/null || brew install postgresql
   # Command-line dev tools
   xcode-select --install
 elif [[ "$os" == "$LINUX" ]]; then
-  sudo apt update -y && 
-  sudo apt upgrade -y &&
-  sudo apt install -y \
+  sudo apt update -y && sudo apt upgrade -y
+  sudo apt install -y vim bash-completion wget curl
+  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+  sudo apt update && sudo apt install -y \
   make \
   build-essential \
   libssl-dev \
@@ -149,8 +152,6 @@ elif [[ "$os" == "$LINUX" ]]; then
   libbz2-dev \
   libreadline-dev \
   libsqlite3-dev \
-  wget \
-  curl \
   llvm \
   libncurses5-dev \
   libncursesw5-dev \
@@ -159,7 +160,12 @@ elif [[ "$os" == "$LINUX" ]]; then
   libffi-dev \
   liblzma-dev \
   python-openssl \
-  git
+  git \
+  postgresql-client-common \
+  postgresql-client-13 || {
+    error "Unable to install one or more required packages."
+    exit 1
+  }
 fi
 
 # Enter the project
@@ -254,7 +260,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 echo "Installing Node modules ..."
-cd frontend && nvm install && nvm use && npm ci && cd ..
+cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 
 # Rclone: https://rclone.org/
 rclone version &>/dev/null || {
@@ -271,7 +277,16 @@ sudo bash -c "echo madvise > /sys/kernel/mm/transparent_hugepage/enabled"
 #    echo madvise > /sys/kernel/mm/transparent_hugepage/enabled
 # fi
 
-echo "Seeding database, environment vars, and media files (NOTE: This could take a long time!) ..."
-poetry run invoke seed --remote && echo "Finished seeding dev environment."
+read -p "Seed db, env file, and media [Y/n]? " CONT
+if [ ! "$CONT" = "n" ]; then
+  echo "Seeding database, env file, and media files (NOTE: This could take a long time!) ..."
+  poetry run invoke seed && echo "Finished seeding dev environment."
+fi
+
+# Add user to www-data group
+echo "Granting file permissions to $USER ..."
+sudo usermod -a -G www-data $USER
+sudo chown -R $USER:www-data .
+sudo chmod g+w -R .
 
 echo "Finished setup."

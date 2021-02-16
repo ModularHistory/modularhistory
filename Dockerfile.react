@@ -12,7 +12,7 @@ RUN mkdir -p -- /modularhistory/static /modularhistory/media /modularhistory/fro
 # Install project dependencies
 WORKDIR /modularhistory/frontend
 COPY frontend/package*.json /modularhistory/frontend/
-RUN npm ci
+RUN npm ci --cache .npm
 
 # Add source code
 COPY . /modularhistory/

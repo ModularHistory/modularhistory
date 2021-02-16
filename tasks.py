@@ -170,7 +170,8 @@ def commit(context):
 @command
 def dbbackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
-    # based on https://github.com/django-dbbackup/django-dbbackup#dbbackup
+    print('>>>>>>>>>>>>>>>>>')
+    context.run(f'echo {os.getenv("USER")}')
     commands.back_up_db(context, redact=redact, push=push)
 
 

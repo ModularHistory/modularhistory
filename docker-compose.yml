@@ -32,6 +32,7 @@ services:
       default:
         ipv4_address: 172.27.0.11
     restart: on-failure
+    user: www-data
     volumes:
       - ./static:/modularhistory/static
       - ./media:/modularhistory/media
