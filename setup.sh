@@ -108,8 +108,17 @@ if [[ "$os_name" == Darwin* ]]; then
   os='MacOS'
 elif [[ "$os_name" == Linux* ]]; then
   os='Linux'
+  # Remove mounted Windows paths from PATH, if necessary
+  path_mod="export PATH=$(echo $PATH | tr ':' '\n' | grep -v /mnt/ | tr '\n' ':')"
+  grep -qxF "$path_mod" ~/.bashrc || echo "$path_mod" >> ~/.bashrc
+  source ~/.bashrc
 elif [[ "$os_name" == Windows* ]]; then
   os='Windows'
+  error "
+    This setup script must be run in a bash shell in Windows Subsystem for Linux (WSL):
+    https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup#windows-prereqs
+  "
+  exit 1
 else
   error "Detected unknown operating system."
   exit 1
@@ -117,14 +126,14 @@ fi
 echo "Detected $os."
 
 # Update package managers
-echo "Checking package manager..."
+echo "Checking package manager ..."
 if [[ "$os" == "$MAC_OS" ]]; then
   # Install/update Homebrew
   brew help &>/dev/null || {
-    echo "Installing Homebrew..."
+    echo "Installing Homebrew ..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   }
-  echo "Updating packages..."
+  echo "Updating packages ..."
   brew update
   brew tap homebrew/services
 elif [[ "$os" == "$LINUX" ]]; then
@@ -154,49 +163,43 @@ elif [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Enter the project
-cd "$(dirname "$0")" && echo "Running in $(pwd)..." || exit 1
+cd "$(dirname "$0")" && echo "Running in $(pwd) ..." || exit 1
 
 # Create directories for db backups, static files, and media files
 mkdir -p .backups static media &>/dev/null
 
-# If running with sudo, source .bashrc explicitly
-if [ "$EUID" -e 0 ]; then
-  source "$HOME/.bashrc"
-fi
-
 # Make sure pyenv is installed
-echo "Checking for pyenv..."
+echo "Checking for pyenv ..."
 pyenv --version &>/dev/null || {
   if [[ "$os" == "$MAC_OS" ]]; then
     brew install pyenv
     echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >>~/.bash_profile
   elif [[ "$os" == "$LINUX" ]]; then
-    error "Install and configure pyenv (https://github.com/pyenv/pyenv), then rerun this script."
-    exit 1
+    echo "Installing pyenv ..."
+    # https://github.com/pyenv/pyenv-installer
+    curl https://pyenv.run | bash
+    echo "Sourcing ~/.bashrc ..."
+    source ~/.bashrc
   fi
 }
-echo "Using $(pyenv --version)..."
-echo "Installing required Python versions..."
+echo "Using $(pyenv --version) ..."
+echo "Installing required Python versions ..."
 while IFS= read -r pyversion; do
   if [[ -n $pyversion ]]; then
     pyenv install "$pyversion"
   fi
 done < .python-version
 
-# Node Version Manager (NVM)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-cd frontend && nvm install && nvm use && cd ..
+# Activate local Python version by re-entering the directory
+cd .. && cd modularhistory || exit
 
 # Make sure correct version of Python is used
-echo "Checking Python version..."
+echo "Checking Python version ..."
 python --version &>/dev/null || {
-  error "Could not detect Python. Install Python 3.7 and rerun this script."
+  error "Failed to install Python."
   exit 1
 }
-echo "Using $(python --version)..."
+echo "Using $(python --version) ..."
 
 # Make sure Pip is installed
 pip --version &>/dev/null || {
@@ -206,7 +209,7 @@ pip --version &>/dev/null || {
 
 # Install Poetry
 poetry --version &>/dev/null || {
-  echo "Installing Poetry..."
+  echo "Installing Poetry ..."
   # https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions
   curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python &>/dev/null
   # shellcheck source=/dev/null
@@ -224,16 +227,16 @@ poetry --version &>/dev/null || {
     exit 1
   fi
 }
-poetry self update &>/dev/null
-echo "Using $(poetry --version)..."
 
 # https://python-poetry.org/docs/configuration/
 poetry config virtualenvs.create true
 poetry config virtualenvs.in-project true
+poetry self update &>/dev/null
+echo "Using $(poetry --version) ..."
 
 if [[ ! "$skip_dependencies" == true ]]; then
   # Install dependencies with Poetry
-  echo "Installing dependencies..."
+  echo "Installing dependencies ..."
   if [[ "$skip_dev_dependencies" == true ]]; then
     poetry install --no-dev --no-root || {
       error "Failed to install dependencies with Poetry."
@@ -243,6 +246,15 @@ if [[ ! "$skip_dependencies" == true ]]; then
     poetry install --no-root
   fi
 fi
+
+# Node Version Manager (NVM)
+echo "Enabling NVM ..."
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+echo "Installing Node modules ..."
+cd frontend && nvm install && nvm use && npm ci && cd ..
 
 # Rclone: https://rclone.org/
 rclone version &>/dev/null || {
