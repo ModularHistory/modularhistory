@@ -345,8 +345,16 @@ def seed(
             signature = personal_access_token.read()
             username, pat = signature.split(':')
     else:
+        print()
+        print(
+            'To proceed, you will need a GitHub personal access token (PAT) '
+            'with "repo" and "workfow" permissions. For instructions on acquiring '
+            'a PAT, see the GitHub PAT documentation: \n'
+            'https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'
+        )
+        print()
         username = input('Enter your GitHub username/email: ')
-        pat = input('Enter your Personal Access Token: ')
+        pat = input('Enter your GitHub personal access token: ')
         signature = f'{username}:{pat}'
         while not pat_is_valid(context, username, pat):
             print('Invalid GitHub credentials.')
