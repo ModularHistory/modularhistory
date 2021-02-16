@@ -5,12 +5,12 @@ services:
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-  
+
   celery_beat:
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-  
+
   django:
     build:
       context: .
@@ -20,12 +20,12 @@ services:
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-  
+
   flower:
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-  
+
   react:
     build:
       context: .

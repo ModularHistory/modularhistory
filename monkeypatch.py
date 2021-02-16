@@ -1,3 +1,5 @@
+"""Monkeypatch for PyInvoke to enable type annotations."""
+
 from inspect import ArgSpec, getfullargspec
 from unittest.mock import patch
 

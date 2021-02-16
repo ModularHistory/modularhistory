@@ -170,7 +170,8 @@ def commit(context):
 @command
 def dbbackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
-    # based on https://github.com/django-dbbackup/django-dbbackup#dbbackup
+    print('>>>>>>>>>>>>>>>>>')
+    context.run(f'echo {os.getenv("USER")}')
     commands.back_up_db(context, redact=redact, push=push)
 
 
@@ -367,22 +368,21 @@ def seed(
     session.auth = (username, pat)
     session.headers.update({'Accept': 'application/vnd.github.v3+json'})
     artifacts_url = f'{GITHUB_ACTIONS_BASE_URL}/artifacts'
-    artifacts = extant_artifacts = session.get(
+    artifacts = session.get(
         artifacts_url,
     ).json()['artifacts']
-    n_extant_artifacts = len(extant_artifacts)
+    latest_artifacts = latest_extant_artifacts = artifacts[:n_expected_new_artifacts]
     print('Dispatching workflow...')
-    response = session.post(
+    session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
         data=json.dumps({'ref': 'main'}),
     )
-    print(response)
-    while len(artifacts) < n_extant_artifacts + n_expected_new_artifacts:
+    while any(artifact in latest_artifacts for artifact in latest_extant_artifacts):
         print('Waiting for artifacts...')
         context.run('sleep 15')
         artifacts = session.get(artifacts_url).json()['artifacts']
-        pprint(artifacts)
-    artifacts = artifacts[:n_expected_new_artifacts]
+        latest_artifacts = artifacts[:n_expected_new_artifacts]
+    artifacts = latest_artifacts
     dl_urls = {}
     zip_dl_url_key = 'archive_download_url'
     for artifact in artifacts:
@@ -400,7 +400,8 @@ def seed(
         try:
             with ZipFile(zip_file, 'r') as archive:
                 if os.path.exists(dest_path):
-                    context.run(f'mv {dest_path} {dest_path}.prior')
+                    if input(f'Overwrite existing {dest_path}? [Y/n] ') != NEGATIVE:
+                        context.run(f'mv {dest_path} {dest_path}.prior')
                 archive.extractall()
             context.run(f'rm {zip_file}')
         except BadZipFile as err:
@@ -429,9 +430,9 @@ def seed(
         'This could take a while. Leave this shell running until you '
         'see a "Finished" message. In the meantime, feel free to open '
         'a new shell and start up the app with the following command: \n'
-        'docker-compose up -d dev'
+        '    docker-compose up -d dev\n\n'
+        '..........................'
     )
-    context.run('echo "" && echo "..........................')
     commands.sync_media(context, push=False)
     # if os.path.exists(join(BACKUPS_DIR, 'media.tar.gz')):
     #     context.run(
