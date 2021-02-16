@@ -136,6 +136,8 @@ if [[ "$os" == "$MAC_OS" ]]; then
   echo "Updating packages ..."
   brew update
   brew tap homebrew/services
+  # Command-line dev tools
+  xcode-select --install
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && 
   sudo apt upgrade -y &&
@@ -157,9 +159,7 @@ elif [[ "$os" == "$LINUX" ]]; then
   libffi-dev \
   liblzma-dev \
   python-openssl \
-  git \
-  nodejs \
-  npm
+  git
 fi
 
 # Enter the project
@@ -272,6 +272,6 @@ sudo bash -c "echo madvise > /sys/kernel/mm/transparent_hugepage/enabled"
 # fi
 
 echo "Seeding database, environment vars, and media files (NOTE: This could take a long time!) ..."
-poetry run invoke seed --remote
+poetry run invoke seed --remote && echo "Finished seeding dev environment."
 
 echo "Finished setup."

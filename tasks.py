@@ -429,9 +429,9 @@ def seed(
         'This could take a while. Leave this shell running until you '
         'see a "Finished" message. In the meantime, feel free to open '
         'a new shell and start up the app with the following command: \n'
-        'docker-compose up -d dev'
+        '    docker-compose up -d dev\n\n'
+        '..........................'
     )
-    context.run('echo "" && echo "..........................')
     commands.sync_media(context, push=False)
     # if os.path.exists(join(BACKUPS_DIR, 'media.tar.gz')):
     #     context.run(
