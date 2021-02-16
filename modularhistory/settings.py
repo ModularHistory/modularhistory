@@ -441,10 +441,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-cache'
 CELERY_CACHE_BACKEND = 'default'
 
-DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
-if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
-    from . import checks  # noqa: F401
-
 # https://github.com/sobolevn/django-split-settings
 # Include all settings modules with names not beginning with an underscore.
 include('config/[!_]*.py')
