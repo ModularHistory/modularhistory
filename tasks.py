@@ -51,7 +51,7 @@ if fix_annotations():
 
 TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
 
-BACKUPS_DIR = '.backups'
+BACKUPS_DIR = settings.BACKUPS_DIR
 DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
 MEDIA_INIT_FILE = join(BACKUPS_DIR, 'media.tar.gz')
 SERVER: Optional[str] = config('SERVER', default=None)

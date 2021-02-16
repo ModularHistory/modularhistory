@@ -1,6 +1,6 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-name: Remove old artifacts
+name: artifact cleanup
 
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#schedule
