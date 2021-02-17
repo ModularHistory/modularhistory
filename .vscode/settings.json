@@ -69,4 +69,5 @@
     "workbench.editor.limit.enabled": true,
     "workbench.editor.limit.value": 5,
     "files.eol": "\n",
+    "python.pythonPath": "/Users/jacob/IdeaProjects/modularhistory/.venv/bin/python3.7",
 }

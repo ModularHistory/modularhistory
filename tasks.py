@@ -16,7 +16,7 @@ import json
 import logging
 import os
 import re
-from glob import glob, iglob
+from glob import iglob
 from os.path import join
 from pprint import pprint
 from typing import Any, Callable, Optional, TypeVar
@@ -351,7 +351,7 @@ def seed(
             'To proceed, you will need a GitHub personal access token (PAT) '
             'with "repo" and "workfow" permissions. For instructions on acquiring '
             'a PAT, see the GitHub PAT documentation: \n'
-            'https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'
+            'https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'  # noqa: E501
         )
         print()
         username = input('Enter your GitHub username/email: ')
@@ -399,10 +399,14 @@ def seed(
         )
         try:
             with ZipFile(zip_file, 'r') as archive:
+                soft_deleted_path = f'{dest_path}.prior'
                 if os.path.exists(dest_path):
                     if input(f'Overwrite existing {dest_path}? [Y/n] ') != NEGATIVE:
-                        context.run(f'mv {dest_path} {dest_path}.prior')
+                        context.run(f'mv {dest_path} {soft_deleted_path}')
                 archive.extractall()
+                if os.path.exists(dest_path) and os.path.exists(soft_deleted_path):
+                    print(f'Removing prior {dest_path} ...')
+                    os.remove(soft_deleted_path)
             context.run(f'rm {zip_file}')
         except BadZipFile as err:
             print(f'Could not extract from {zip_file} due to {err}')

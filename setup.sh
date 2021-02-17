@@ -118,10 +118,10 @@ elif [[ "$os_name" == Windows* ]]; then
     This setup script must be run in a bash shell in Windows Subsystem for Linux (WSL):
     https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup#windows-prereqs
   "
-  exit 1
+  exit
 else
-  error "Detected unknown operating system."
-  exit 1
+  error "Detected unknown operating system; exiting."
+  exit
 fi
 echo "Detected $os."
 
@@ -134,17 +134,22 @@ if [[ "$os" == "$MAC_OS" ]]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   }
   echo "Updating packages ..."
+  xcode-select --install
   brew update
   brew tap homebrew/services
   brew list postgresql &>/dev/null || brew install postgresql
-  # Command-line dev tools
-  xcode-select --install
+  brew install openssl@1.1 rust libjpeg zlib
+  # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
+  brew install bzip2
+  export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
+  export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && sudo apt upgrade -y
   sudo apt install -y vim bash-completion wget curl
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-  sudo apt update && sudo apt install -y \
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+  sudo apt update
+  sudo apt install -y \
   make \
   build-essential \
   libssl-dev \
@@ -241,6 +246,11 @@ poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
 if [[ ! "$skip_dependencies" == true ]]; then
+  if [[ "$os" == "$MAC_OS" ]]; then
+    # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
+    export LDFLAGS="-L$(brew --prefix openssl@1.1)/lib"
+    export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
+  fi
   # Install dependencies with Poetry
   echo "Installing dependencies ..."
   if [[ "$skip_dev_dependencies" == true ]]; then
@@ -249,7 +259,10 @@ if [[ ! "$skip_dependencies" == true ]]; then
       exit 1
     }
   else
-    poetry install --no-root
+    poetry install --no-root || {
+      error "Failed to install dependencies with Poetry."
+      exit 1
+    }
   fi
 fi
 
@@ -271,13 +284,12 @@ mkdir -p $HOME/.config/rclone
 cp config/rclone/rclone.conf $HOME/.config/rclone/rclone.conf
 
 # Disable THP so it doesn't cause issues for Redis containers
-echo "Disabling THP ..."
-sudo bash -c "echo madvise > /sys/kernel/mm/transparent_hugepage/enabled"
-# if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
-#    echo madvise > /sys/kernel/mm/transparent_hugepage/enabled
-# fi
+if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+  echo "Disabling THP ..."
+  sudo bash -c "echo madvise > /sys/kernel/mm/transparent_hugepage/enabled"
+fi
 
-read -p "Seed db, env file, and media [Y/n]? " CONT
+read -rp "Seed db, env file, and media [Y/n]? " CONT
 if [ ! "$CONT" = "n" ]; then
   echo "Seeding database, env file, and media files (NOTE: This could take a long time!) ..."
   poetry run invoke seed && echo "Finished seeding dev environment."

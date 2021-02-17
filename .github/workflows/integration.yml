@@ -45,7 +45,28 @@ env:
 
 jobs:
   test:
-    name: Test
+    name: Test setup script
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        # services (running in Docker containers) only work on ubuntu
+        os: [ ubuntu-latest, macos-latest ]
+        environment: integration
+    env:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run setup script
+      run: |
+        bash setup.sh
+      shell: bash
+    
+  test:
+    name: Test application
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 3
@@ -124,7 +145,7 @@ jobs:
       run: poetry run invoke test
 
   build:
-    name: Build
+    name: Build image
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
