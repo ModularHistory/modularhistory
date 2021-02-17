@@ -11,97 +11,6 @@ function error() {
   printf "${RED}$1${NC}" && echo ""
 }
 
-function usage() {
-  cat - >&2 <<EOF
-NAME
-    setup.sh - Setup script for ModularHistory development
-
-SYNOPSIS
-    setup.sh [-h|--help]
-    setup.sh
-    setup.sh [--noninteractive] [--no-installation]
-
-OPTIONS
-  -h, --help
-      Prints this and exits
-
-  --noninteractive
-      Option that makes the script run without user input
-
-  --skip-dependencies
-      Option that makes the script skip installing dependencies with Poetry/Pip
-
-  --skip-dev-dependencies
-      Option that makes the script skip installing dev dependencies with Poetry/Pip
-
-  --
-      Specify end of options; useful if the first non option
-      argument starts with a hyphen
-
-EOF
-}
-
-function fatal() {
-  for i; do
-    echo -e "${i}" >&2
-  done
-  exit 1
-}
-
-# For long option processing
-function next_arg() {
-  if [[ $OPTARG == *=* ]]; then
-    # for cases like '--opt=arg'
-    OPTARG="${OPTARG#*=}"
-  else
-    # for cases like '--opt arg'
-    OPTARG="${args[$OPTIND]}"
-    OPTIND=$((OPTIND + 1))
-  fi
-}
-
-# ':' means preceding option character expects one argument, except
-# first ':' which make getopts run in silent mode. We handle errors with
-# wildcard case catch. Long options are considered as the '-' character
-optspec=":hfb:-:"
-args=("" "$@") # dummy first element so $1 and $args[1] are aligned
-while getopts "$optspec" optchar; do
-  case "$optchar" in
-  h)
-    usage
-    exit 0
-    ;;
-  -) # long option processing
-    case "$OPTARG" in
-    help)
-      usage
-      exit 0
-      ;;
-    noninteractive)
-      noninteractive=true
-      ;;
-    skip-dependencies)
-      skip_dependencies=true
-      ;;
-    skip-dev-dependencies)
-      skip_dev_dependencies=true
-      ;;
-    -) break ;;
-    *) fatal "Unknown option '--${OPTARG}'" "See '${0} --help' for usage" ;;
-    esac
-    ;;
-  *) fatal "Unknown option: '-${OPTARG}'" "See '${0} --help' for usage" ;;
-  esac
-done
-
-shift $((OPTIND - 1))
-
-if [[ "$noninteractive" == true ]]; then
-  interactive=false
-else
-  interactive=true
-fi
-
 # Detect operating system
 os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
@@ -111,6 +20,7 @@ elif [[ "$os_name" == Linux* ]]; then
   # Remove conflicting Windows paths from PATH, if necessary
   path_mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
   grep -qxF "$path_mod" ~/.bashrc || echo "$path_mod" >> ~/.bashrc
+  # shellcheck disable=SC1090
   source ~/.bashrc
 elif [[ "$os_name" == Windows* ]]; then
   os='Windows'
@@ -184,20 +94,33 @@ echo "Checking for pyenv ..."
 pyenv --version &>/dev/null || {
   if [[ "$os" == "$MAC_OS" ]]; then
     brew install pyenv
-    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >>~/.bash_profile
+    # shellcheck disable=SC2016
+    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
+    # shellcheck disable=SC2016
+    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
+    # shellcheck disable=SC1090
+    source ~/.bash_profile
   elif [[ "$os" == "$LINUX" ]]; then
     echo "Installing pyenv ..."
     # https://github.com/pyenv/pyenv-installer
     curl https://pyenv.run | bash
     echo "Sourcing ~/.bashrc ..."
+    # shellcheck disable=SC1090
     source ~/.bashrc
   fi
 }
 echo "Using $(pyenv --version) ..."
 echo "Installing required Python versions ..."
+installed_py_versions="$(pyenv versions)"
 while IFS= read -r pyversion; do
-  if [[ -n $pyversion ]]; then
+  # shellcheck disable=SC2076
+  if [[ -n $pyversion ]] && [[ ! "$installed_py_versions" =~ "$pyversion" ]]; then
     pyenv install "$pyversion"
+    # shellcheck disable=SC2076
+    if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
+      error "Failed to install Python $pyversion."
+      exit 1
+    fi
   fi
 done < .python-version
 
@@ -206,10 +129,11 @@ cd .. && cd modularhistory || exit
 
 # Make sure correct version of Python is used
 echo "Checking Python version ..."
-python --version &>/dev/null || {
-  error "Failed to install Python."
+active_py_version="$(python --version)"
+if [[ ! "$active_py_version" =~ .*"$pyversion".* ]]; then
+  error "Failed to activate Python $pyversion."
   exit 1
-}
+fi
 echo "Using $(python --version) ..."
 
 # Make sure Pip is installed
