@@ -134,7 +134,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   }
   echo "Updating packages ..."
-  xcode-select --install
+  xcode-select --install || echo "XCode dev tools are already up to date."
   brew update
   brew tap homebrew/services
   brew list postgresql &>/dev/null || brew install postgresql
