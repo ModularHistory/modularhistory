@@ -290,3 +290,6 @@ sudo chown -R $USER:www-data .
 sudo chmod g+w -R .
 
 echo "Finished setup."
+
+echo "Spinning up containers ..."
+docker-compose up -d dev
