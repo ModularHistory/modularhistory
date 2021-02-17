@@ -17,6 +17,8 @@ os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
   os='MacOS'
   bash_profile="$HOME/.bash_profile"
+  # Create bash profile if it doesn't already exist
+  touch "$bash_profile"
 elif [[ "$os_name" == Linux* ]]; then
   os='Linux'
   bash_profile="$HOME/.bashrc"

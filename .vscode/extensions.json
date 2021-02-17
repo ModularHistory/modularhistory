@@ -24,5 +24,14 @@
 		"timonwong.shellcheck"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
-	"unwantedRecommendations": []
+	"unwantedRecommendations": [
+		"bajdzis.vscode-database",
+		"felipecaputo.git-project-manager",
+		"googlecloudtools.cloudcode",
+		"mindaro.mindaro",
+		"ms-azuretools.vscode-cosmosdb",
+		"ms-mssql.mssql",
+		"ms-vscode.azurecli",
+		"oracle.oracledevtools"
+	]
 }
