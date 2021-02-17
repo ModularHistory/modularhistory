@@ -69,4 +69,5 @@
     "workbench.editor.limit.enabled": true,
     "workbench.editor.limit.value": 5,
     "files.eol": "\n",
+    "python.pythonPath": ".venv/bin/python",
 }
