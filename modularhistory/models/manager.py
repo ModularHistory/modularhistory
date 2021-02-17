@@ -1,7 +1,7 @@
 """Manager classes for ModularHistory's models."""
 
 from datetime import date, datetime
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.db.models import Manager as ModelManager
 from typedmodels.models import TypedModelManager as BaseTypedModelManager
@@ -27,7 +27,7 @@ class Manager(ModelManager):
         self,
         datetime_value: Union[date, datetime, HistoricDateTime],
         datetime_attr: str = 'date',
-    ) -> 'Model':
+    ) -> Optional['Model']:
         """Return the model instance closest to the specified datetime_value."""
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()

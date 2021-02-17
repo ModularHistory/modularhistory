@@ -44,7 +44,7 @@ env:
   X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
 
 jobs:
-  test:
+  test-setup:
     name: Test setup script
     runs-on: ${{ matrix.os }}
     strategy:
@@ -52,7 +52,7 @@ jobs:
       matrix:
         # services (running in Docker containers) only work on ubuntu
         os: [ ubuntu-latest, macos-latest ]
-        environment: dev
+    environment: dev
     env:
       POSTGRES_HOST: postgres
       POSTGRES_DB: postgres
@@ -65,7 +65,7 @@ jobs:
         bash setup.sh || echo "Failed to run setup script."
       shell: bash
     
-  test:
+  test-app:
     name: Test application
     runs-on: ${{ matrix.os }}
     strategy:
