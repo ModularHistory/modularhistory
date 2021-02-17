@@ -134,7 +134,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   }
   echo "Updating packages ..."
-  xcode-select --install || echo "XCode dev tools are already up to date."
+  xcode-select --install &>/dev/null || softwareupdate -l
   brew update
   brew tap homebrew/services
   brew list postgresql &>/dev/null || brew install postgresql
@@ -277,9 +277,17 @@ cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 
 # Rclone: https://rclone.org/
 rclone version &>/dev/null || {
+  echo "Creating .tmp dir ..."
+  mkdir -p .tmp && cd .tmp
+  echo "Downloading rclone setup script ..."
+  curl https://rclone.org/install.sh --output install-rclone.sh
+  cd ..
   echo "Installing rclone ..."
-  curl https://rclone.org/install.sh | sudo bash
+  sudo bash .tmp/install-rclone.sh
+  echo "Cleaning up ..."
+  rm -r .tmp
 }
+echo "Overwriting rclone.conf ..."
 mkdir -p $HOME/.config/rclone
 cp config/rclone/rclone.conf $HOME/.config/rclone/rclone.conf
 
@@ -292,14 +300,17 @@ fi
 read -rp "Seed db, env file, and media [Y/n]? " CONT
 if [ ! "$CONT" = "n" ]; then
   echo "Seeding database, env file, and media files (NOTE: This could take a long time!) ..."
+
   poetry run invoke seed && echo "Finished seeding dev environment."
 fi
 
-# Add user to www-data group
-echo "Granting file permissions to $USER ..."
-sudo usermod -a -G www-data $USER
-sudo chown -R $USER:www-data .
-sudo chmod g+w -R .
+if [[ "$os" == "$LINUX" ]]; then
+  # Add user to www-data group
+  echo "Granting file permissions to $USER ..."
+  sudo usermod -a -G www-data "$USER"
+  sudo chown -R "$USER:www-data" .
+  sudo chmod g+w -R .
+fi
 
 echo "Finished setup."
 
