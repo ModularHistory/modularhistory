@@ -62,7 +62,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run setup script
       run: |
-        bash setup.sh
+        bash setup.sh || echo "Failed to run setup script."
       shell: bash
     
   test:
