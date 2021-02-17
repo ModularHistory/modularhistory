@@ -52,7 +52,7 @@ jobs:
       matrix:
         # services (running in Docker containers) only work on ubuntu
         os: [ ubuntu-latest, macos-latest ]
-        environment: integration
+        environment: dev
     env:
       POSTGRES_HOST: postgres
       POSTGRES_DB: postgres
