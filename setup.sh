@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'  # No Color
 
 MAC_OS="MacOS"
 LINUX="Linux"
@@ -9,29 +9,31 @@ LINUX="Linux"
 function error() {
   # shellcheck disable=SC2059
   printf "${RED}$1${NC}" && echo ""
+  exit 1
 }
 
-# Detect operating system
+# Detect operating system.
 os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
   os='MacOS'
+  bash_profile="$HOME/.bash_profile"
 elif [[ "$os_name" == Linux* ]]; then
   os='Linux'
-  # Remove conflicting Windows paths from PATH, if necessary
+  bash_profile="$HOME/.bashrc"
+  # Remove conflicting Windows paths from PATH, if necessary.
+  # shellcheck disable=SC2016
   path_mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
-  grep -qxF "$path_mod" ~/.bashrc || echo "$path_mod" >> ~/.bashrc
+  grep -qxF "$path_mod" "$bash_profile" || echo "$path_mod" >> "$bash_profile"
   # shellcheck disable=SC1090
-  source ~/.bashrc
+  source "$bash_profile"
 elif [[ "$os_name" == Windows* ]]; then
   os='Windows'
   error "
     This setup script must be run in a bash shell in Windows Subsystem for Linux (WSL):
     https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup#windows-prereqs
   "
-  exit
 else
-  error "Detected unknown operating system; exiting."
-  exit
+  error "Unknown operating system."
 fi
 echo "Detected $os."
 
@@ -77,14 +79,13 @@ elif [[ "$os" == "$LINUX" ]]; then
   python-openssl \
   git \
   postgresql-client-common \
-  postgresql-client-13 || {
-    error "Unable to install one or more required packages."
-    exit 1
-  }
+  postgresql-client-13 || error "Unable to install one or more required packages."
 fi
 
 # Enter the project
-cd "$(dirname "$0")" && echo "Running in $(pwd) ..." || exit 1
+project_dir=$(dirname "$0")
+cd "$project_dir" || error "Could not cd into $project_dir"
+echo "Running in $(pwd) ..."
 
 # Create directories for db backups, static files, and media files
 mkdir -p .backups static media &>/dev/null
@@ -95,19 +96,16 @@ pyenv --version &>/dev/null || {
   if [[ "$os" == "$MAC_OS" ]]; then
     brew install pyenv
     # shellcheck disable=SC2016
-    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
+    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> "$bash_profile"
     # shellcheck disable=SC2016
     echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
-    # shellcheck disable=SC1090
-    source ~/.bash_profile
   elif [[ "$os" == "$LINUX" ]]; then
     echo "Installing pyenv ..."
     # https://github.com/pyenv/pyenv-installer
     curl https://pyenv.run | bash
-    echo "Sourcing ~/.bashrc ..."
-    # shellcheck disable=SC1090
-    source ~/.bashrc
   fi
+  # shellcheck disable=SC1090
+  source "$bash_profile"
 }
 echo "Using $(pyenv --version) ..."
 echo "Installing required Python versions ..."
@@ -119,28 +117,27 @@ while IFS= read -r pyversion; do
     # shellcheck disable=SC2076
     if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
       error "Failed to install Python $pyversion."
-      exit 1
     fi
   fi
 done < .python-version
 
-# Activate local Python version by re-entering the directory
-cd .. && cd modularhistory || exit
+# Activate the local Python version by re-entering the directory.
+# shellcheck disable=SC2015
+cd .. && cd modularhistory || error "Cannot cd into modularhistory directory."
+# Sourcing ~/.bash_profile or ~/.bashrc might also be necessary.
+# shellcheck disable=SC1090
+source "$bash_profile"
 
 # Make sure correct version of Python is used
 echo "Checking Python version ..."
 active_py_version="$(python --version)"
 if [[ ! "$active_py_version" =~ .*"$pyversion".* ]]; then
   error "Failed to activate Python $pyversion."
-  exit 1
 fi
 echo "Using $(python --version) ..."
 
 # Make sure Pip is installed
-pip --version &>/dev/null || {
-  error "Pip is not installed; unable to proceed."
-  exit 1
-}
+pip --version &>/dev/null || error "Pip is not installed; unable to proceed."
 
 # Install Poetry
 poetry --version &>/dev/null || {
@@ -158,8 +155,7 @@ poetry --version &>/dev/null || {
   }
   poetry_version=$(poetry --version)
   if [ -z "$poetry_version" ]; then
-    echo "Error: Unable to install Poetry."
-    exit 1
+    error "Unable to install Poetry."
   fi
 }
 
@@ -169,32 +165,22 @@ poetry config virtualenvs.in-project true
 poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
-if [[ ! "$skip_dependencies" == true ]]; then
-  if [[ "$os" == "$MAC_OS" ]]; then
-    # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
-    export LDFLAGS="-L$(brew --prefix openssl@1.1)/lib"
-    export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
-  fi
-  # Install dependencies with Poetry
-  echo "Installing dependencies ..."
-  if [[ "$skip_dev_dependencies" == true ]]; then
-    poetry install --no-dev --no-root || {
-      error "Failed to install dependencies with Poetry."
-      exit 1
-    }
-  else
-    poetry install --no-root || {
-      error "Failed to install dependencies with Poetry."
-      exit 1
-    }
-  fi
+if [[ "$os" == "$MAC_OS" ]]; then
+  # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
+  export LDFLAGS="-L$(brew --prefix openssl@1.1)/lib"
+  export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
 fi
+# Install dependencies with Poetry
+echo "Installing dependencies ..."
+poetry install --no-root || error "Failed to install dependencies with Poetry."
 
 # Node Version Manager (NVM)
 echo "Enabling NVM ..."
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 export NVM_DIR="$HOME/.nvm"
+# shellcheck disable=SC1090
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# shellcheck disable=SC1090
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 echo "Installing Node modules ..."
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
@@ -202,6 +188,7 @@ cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 # Rclone: https://rclone.org/
 rclone version &>/dev/null || {
   echo "Creating .tmp dir ..."
+  # shellcheck disable=SC2164
   mkdir -p .tmp && cd .tmp
   echo "Downloading rclone setup script ..."
   curl https://rclone.org/install.sh --output install-rclone.sh
