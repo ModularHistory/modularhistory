@@ -19,15 +19,16 @@ if [[ "$os_name" == Darwin* ]]; then
   bash_profile="$HOME/.bash_profile"
   # Create bash profile if it doesn't already exist
   touch "$bash_profile"
+  # shellcheck disable=SC2016
+  mod='export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
+  grep -qxF "$mod" "$bash_profile" || echo "$mod" >> "$bash_profile"
 elif [[ "$os_name" == Linux* ]]; then
   os='Linux'
   bash_profile="$HOME/.bashrc"
   # Remove conflicting Windows paths from PATH, if necessary.
   # shellcheck disable=SC2016
-  path_mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
-  grep -qxF "$path_mod" "$bash_profile" || echo "$path_mod" >> "$bash_profile"
-  # shellcheck disable=SC1090
-  source "$bash_profile"
+  mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
+  grep -qxF "$mod" "$bash_profile" || echo "$mod" >> "$bash_profile"
 elif [[ "$os_name" == Windows* ]]; then
   os='Windows'
   error "
@@ -38,6 +39,10 @@ else
   error "Unknown operating system."
 fi
 echo "Detected $os."
+
+echo "Sourcing bash profile ..."
+# shellcheck disable=SC1090
+source "$bash_profile"
 
 # Update package managers
 echo "Checking package manager ..."
@@ -52,7 +57,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew update
   brew tap homebrew/services
   brew list postgresql &>/dev/null || brew install postgresql
-  brew install openssl@1.1 rust libjpeg zlib
+  brew install openssl@1.1 rust libjpeg zlib grep
   # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
   brew install bzip2
   export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
@@ -97,18 +102,21 @@ echo "Checking for pyenv ..."
 pyenv --version &>/dev/null || {
   if [[ "$os" == "$MAC_OS" ]]; then
     brew install pyenv
-    # shellcheck disable=SC2016
-    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> "$bash_profile"
-    # shellcheck disable=SC2016
-    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc
   elif [[ "$os" == "$LINUX" ]]; then
     echo "Installing pyenv ..."
     # https://github.com/pyenv/pyenv-installer
     curl https://pyenv.run | bash
   fi
-  # shellcheck disable=SC1090
-  source "$bash_profile"
 }
+if [[ "$os" == "$MAC_OS" ]]; then
+  echo "Ensuring pyenv automatic activation is enabled ..."
+  # shellcheck disable=SC2016
+  mod='if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi'
+  grep -qxFz "$mod" "$bash_profile" || echo -e "$mod" >> "$bash_profile"
+  grep -qxFz "$mod" ~/.zshrc || echo -e "$mod" >> ~/.zshrc
+fi
+# shellcheck disable=SC1090
+source "$bash_profile"
 echo "Using $(pyenv --version) ..."
 echo "Installing required Python versions ..."
 installed_py_versions="$(pyenv versions)"
@@ -132,7 +140,7 @@ source "$bash_profile"
 
 # Make sure correct version of Python is used
 echo "Checking Python version ..."
-active_py_version="$(python --version)"
+active_py_version=$(python --version || error "Failed to activate Python")
 if [[ ! "$active_py_version" =~ .*"$pyversion".* ]]; then
   error "Failed to activate Python $pyversion."
 fi
@@ -178,12 +186,14 @@ poetry install --no-root || error "Failed to install dependencies with Poetry."
 
 # Node Version Manager (NVM)
 echo "Enabling NVM ..."
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-# shellcheck disable=SC1090
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-# shellcheck disable=SC1090
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+nvm --version &>/dev/null || {
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  # shellcheck disable=SC1090
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  # shellcheck disable=SC1090
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+}
 echo "Installing Node modules ..."
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 
