@@ -47,19 +47,33 @@ source "$bash_profile"
 # Update package managers
 echo "Checking package manager ..."
 if [[ "$os" == "$MAC_OS" ]]; then
-  # Install/update Homebrew
+  # Update software dependencies through XCode
+  echo "Updating software ..."
+  xcode-select --install &>/dev/null || softwareupdate -l
+
+  # Install/update Homebrew and Homebrew-managed packages
   brew help &>/dev/null || {
     echo "Installing Homebrew ..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   }
-  echo "Updating packages ..."
-  xcode-select --install &>/dev/null || softwareupdate -l
+  echo "Updating Homebrew packages ..."
   brew update
   brew tap homebrew/services
   brew list postgresql &>/dev/null || brew install postgresql
   brew install openssl@1.1 rust libjpeg zlib grep
+
+  # Modify PATH to use GNU Grep over MacOS Grep.
+  echo "Modifying PATH (in $bash_profile) to use GNU Grep over BSD Grep ..."
+  # shellcheck disable=SC2016
+  mod='export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
+  grep -qxF "$mod" "$bash_profile" || echo "$mod" >> "$bash_profile"
+  grep -qxF "$mod" ~/.zshrc || echo "$mod" >> ~/.zshrc
+
+  # Fix environment for installation of Python versions via pyenv.
   # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
   brew install bzip2
+  echo "Exporting LDFLAGS and CFLAGS to allow installing new Python versions via pyenv ..."
+  echo "https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829"
   export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
   export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
 elif [[ "$os" == "$LINUX" ]]; then
@@ -92,7 +106,7 @@ fi
 # Enter the project
 project_dir=$(dirname "$0")
 cd "$project_dir" || error "Could not cd into $project_dir"
-echo "Running in $(pwd) ..."
+echo "Working in $(pwd) ..."
 
 # Create directories for db backups, static files, and media files
 mkdir -p .backups static media &>/dev/null
