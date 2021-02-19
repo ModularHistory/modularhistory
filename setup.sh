@@ -122,11 +122,11 @@ pyenv --version &>/dev/null || {
     curl https://pyenv.run | bash
   fi
 }
+echo "Ensuring pyenv automatic activation is enabled ..."
+# shellcheck disable=SC2016
+mod=$(echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi')
+grep -qxF "$mod" "$bash_profile" || echo -e "$mod" >> "$bash_profile"
 if [[ "$os" == "$MAC_OS" ]]; then
-  echo "Ensuring pyenv automatic activation is enabled ..."
-  # shellcheck disable=SC2016
-  mod=$(echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi')
-  grep -qxF "$mod" "$bash_profile" || echo -e "$mod" >> "$bash_profile"
   grep -qxF "$mod" ~/.zshrc || echo -e "$mod" >> ~/.zshrc
 fi
 # shellcheck disable=SC1090
