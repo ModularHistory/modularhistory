@@ -152,8 +152,6 @@ echo "Ensuring pyenv is in PATH ..."
 _append_to_sh_profile 'export PATH="$HOME/.pyenv/bin:$PATH"'
 pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
 echo "Ensuring pyenv automatic activation is enabled ..."
-# shellcheck disable=SC2016
-_append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
 echo "Using $(pyenv --version) ..."
 echo "Installing required Python versions ..."
 installed_py_versions="$(pyenv versions)"
@@ -169,8 +167,10 @@ while IFS= read -r pyversion; do
 done < .python-version
 
 # Activate the local Python version by re-entering the directory.
-# shellcheck disable=SC2015
-cd .. && cd modularhistory || _error "Cannot cd into modularhistory directory."
+# shellcheck disable=SC2016
+_append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
+# # shellcheck disable=SC2015
+# cd .. && cd modularhistory || _error "Cannot cd into modularhistory directory."
 
 # Make sure correct version of Python is used
 echo "Checking Python version ..."
@@ -246,8 +246,8 @@ rclone version &>/dev/null || {
   rm -r .tmp
 }
 echo "Overwriting rclone.conf ..."
-mkdir -p $HOME/.config/rclone
-cp config/rclone/rclone.conf $HOME/.config/rclone/rclone.conf
+mkdir -p "$HOME/.config/rclone"
+cp config/rclone/rclone.conf "$HOME/.config/rclone/rclone.conf"
 
 # Disable THP so it doesn't cause issues for Redis containers
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then

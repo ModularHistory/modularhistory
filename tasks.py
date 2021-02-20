@@ -422,8 +422,11 @@ def seed(
     seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
     if not seed_exists:
         raise Exception('Seed does not exist')
+    # Remove the data volume, if it exists
     print('Wiping postgres data volume...')
-    context.run(f'docker-compose down; docker volume rm {db_volume}')
+    context.run('docker-compose down', warn=True)
+    context.run(f'docker volume rm {db_volume}', warn=True, hide='both')
+    # Start up the postgres container to automatically run init.sql
     print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
 
