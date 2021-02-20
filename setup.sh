@@ -6,7 +6,8 @@ NC='\033[0m'  # No Color
 MAC_OS="MacOS"
 LINUX="Linux"
 
-function error() {
+function _error() {
+  echo "$1" >&2
   # shellcheck disable=SC2059
   printf "${RED}$1${NC}" && echo ""
   exit 1
@@ -17,32 +18,53 @@ os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
   os='MacOS'
   bash_profile="$HOME/.bash_profile"
-  # Create bash profile if it doesn't already exist
-  touch "$bash_profile"
-  # shellcheck disable=SC2016
-  mod='export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
-  grep -qxF "$mod" "$bash_profile" || echo "$mod" >> "$bash_profile"
 elif [[ "$os_name" == Linux* ]]; then
   os='Linux'
   bash_profile="$HOME/.bashrc"
-  # Remove conflicting Windows paths from PATH, if necessary.
-  # shellcheck disable=SC2016
-  mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
-  grep -qxF "$mod" "$bash_profile" || echo "$mod" >> "$bash_profile"
 elif [[ "$os_name" == Windows* ]]; then
   os='Windows'
-  error "
+  _error "
     This setup script must be run in a bash shell in Windows Subsystem for Linux (WSL):
     https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup#windows-prereqs
   "
 else
-  error "Unknown operating system."
+  _error "Unknown operating system."
 fi
 echo "Detected $os."
 
-echo "Sourcing bash profile ..."
-# shellcheck disable=SC1090
-source "$bash_profile"
+zsh_profile="$HOME/.zshrc"
+
+# Create shell profiles if they don't already exist
+touch "$bash_profile"
+touch "$zsh_profile"
+
+function _append_to_sh_profile() {
+  # Append to bash profile
+  grep -qxF "$1" "$bash_profile" || {
+    echo "Appending the following to $bash_profile:"
+    echo "" && echo "$1" && echo ""
+    echo "$1" >> "$bash_profile"
+    # Execute the statement that was added to the bash profile
+    eval "$1"
+  }
+  # Append to zsh profile
+  grep -qxF "$1" "$zsh_profile" || {
+    echo "Appending the following to $zsh_profile:"
+    echo "" && echo "$1" && echo ""
+    echo "$1" >> "$zsh_profile"
+  }
+}
+
+if [[ "$os" == "$MAC_OS" ]]; then
+  # Use GNU Grep
+  # shellcheck disable=SC2016
+  _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
+elif [[ "$os_name" == Linux* ]]; then
+  # Remove conflicting Windows paths from PATH, if necessary.
+  # shellcheck disable=SC2016
+  mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
+  _append_to_sh_profile "$mod"
+fi
 
 # Update package managers
 echo "Checking package manager ..."
@@ -65,9 +87,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # Modify PATH to use GNU Grep over MacOS Grep.
   echo "Modifying PATH (in $bash_profile) to use GNU Grep over BSD Grep ..."
   # shellcheck disable=SC2016
-  mod='export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
-  grep -qxF "$mod" "$bash_profile" || echo "$mod" >> "$bash_profile"
-  grep -qxF "$mod" ~/.zshrc || echo "$mod" >> ~/.zshrc
+  _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
 
   # Fix environment for installation of Python versions via pyenv.
   # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
@@ -100,12 +120,12 @@ elif [[ "$os" == "$LINUX" ]]; then
   python-openssl \
   git \
   postgresql-client-common \
-  postgresql-client-13 || error "Unable to install one or more required packages."
+  postgresql-client-13 || _error "Unable to install one or more required packages."
 fi
 
 # Enter the project
 project_dir=$(dirname "$0")
-cd "$project_dir" || error "Could not cd into $project_dir"
+cd "$project_dir" || _error "Could not cd into $project_dir"
 echo "Working in $(pwd) ..."
 
 # Create directories for db backups, static files, and media files
@@ -114,6 +134,11 @@ mkdir -p .backups static media &>/dev/null
 # Make sure pyenv is installed
 echo "Checking for pyenv ..."
 pyenv --version &>/dev/null || {
+  pyenv_dir="$HOME/.pyenv"
+  [ -d "$pyenv_dir" ] && {
+    echo "Removing extant $pyenv_dir ..."
+    sudo rm -rf "$pyenv_dir" &>/dev/null
+  }
   if [[ "$os" == "$MAC_OS" ]]; then
     brew install pyenv
   elif [[ "$os" == "$LINUX" ]]; then
@@ -122,16 +147,14 @@ pyenv --version &>/dev/null || {
     curl https://pyenv.run | bash
   fi
 }
+echo "Ensuring pyenv is in PATH ..."
+# shellcheck disable=SC2016
+_append_to_sh_profile 'export PATH="$HOME/.pyenv/bin:$PATH"'
+pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
 echo "Ensuring pyenv automatic activation is enabled ..."
 # shellcheck disable=SC2016
-mod=$(echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi')
-grep -qxF "$mod" "$bash_profile" || echo -e "$mod" >> "$bash_profile"
-if [[ "$os" == "$MAC_OS" ]]; then
-  grep -qxF "$mod" ~/.zshrc || echo -e "$mod" >> ~/.zshrc
-fi
-# shellcheck disable=SC1090
-source "$bash_profile"
-echo "Using $(pyenv --version || error 'ERROR: pyenv is not in PATH.') ..."
+_append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
+echo "Using $(pyenv --version) ..."
 echo "Installing required Python versions ..."
 installed_py_versions="$(pyenv versions)"
 while IFS= read -r pyversion; do
@@ -140,28 +163,26 @@ while IFS= read -r pyversion; do
     pyenv install "$pyversion"
     # shellcheck disable=SC2076
     if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
-      error "Failed to install Python $pyversion."
+      _error "Failed to install Python $pyversion."
     fi
   fi
 done < .python-version
 
 # Activate the local Python version by re-entering the directory.
 # shellcheck disable=SC2015
-cd .. && cd modularhistory || error "Cannot cd into modularhistory directory."
-# Sourcing ~/.bash_profile or ~/.bashrc might also be necessary.
-# shellcheck disable=SC1090
-source "$bash_profile"
+cd .. && cd modularhistory || _error "Cannot cd into modularhistory directory."
 
 # Make sure correct version of Python is used
 echo "Checking Python version ..."
-active_py_version=$(python --version || error "Failed to activate Python")
+python --version &>/dev/null || _error "Failed to activate Python"
+active_py_version=$(python --version)
 if [[ ! "$active_py_version" =~ .*"$pyversion".* ]]; then
-  error "Failed to activate Python $pyversion."
+  _error "Failed to activate Python $pyversion."
 fi
 echo "Using $(python --version) ..."
 
 # Make sure Pip is installed
-pip --version &>/dev/null || error "Pip is not installed; unable to proceed."
+pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
 
 # Install Poetry
 poetry --version &>/dev/null || {
@@ -179,7 +200,7 @@ poetry --version &>/dev/null || {
   }
   poetry_version=$(poetry --version)
   if [ -z "$poetry_version" ]; then
-    error "Unable to install Poetry."
+    _error "Unable to install Poetry."
   fi
 }
 
@@ -196,7 +217,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
 fi
 # Install dependencies with Poetry
 echo "Installing dependencies ..."
-poetry install --no-root || error "Failed to install dependencies with Poetry."
+poetry install --no-root || _error "Failed to install dependencies with Poetry."
 
 # Node Version Manager (NVM)
 echo "Enabling NVM ..."
