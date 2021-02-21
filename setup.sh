@@ -44,8 +44,6 @@ function _append_to_sh_profile() {
     echo "Appending the following to $bash_profile:"
     echo "" && echo "$1" && echo ""
     echo "$1" >> "$bash_profile"
-    # Execute the statement that was added to the bash profile
-    eval "$1"
   }
   # Append to zsh profile
   grep -qxF "$1" "$zsh_profile" || {
@@ -53,6 +51,10 @@ function _append_to_sh_profile() {
     echo "" && echo "$1" && echo ""
     echo "$1" >> "$zsh_profile"
   }
+  # Explicitly execute the statement, regardless of whether it was already present
+  # in the bash profile, since non-interactive shells on Ubuntu do not execute all 
+  # the statements in .bashrc.
+  eval "$1"
 }
 
 if [[ "$os" == "$MAC_OS" ]]; then
