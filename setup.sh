@@ -133,8 +133,10 @@ mkdir -p .backups static media &>/dev/null
 
 # Make sure pyenv is installed
 echo "Checking for pyenv ..."
+pyenv_dir="$HOME/.pyenv"
+# shellcheck disable=SC2016
+_append_to_sh_profile 'export PATH="$HOME/.pyenv/bin:$PATH"'
 pyenv --version &>/dev/null || {
-  pyenv_dir="$HOME/.pyenv"
   [ -d "$pyenv_dir" ] && {
     echo "Removing extant $pyenv_dir ..."
     sudo rm -rf "$pyenv_dir" &>/dev/null
@@ -148,8 +150,6 @@ pyenv --version &>/dev/null || {
   fi
 }
 echo "Ensuring pyenv is in PATH ..."
-# shellcheck disable=SC2016
-_append_to_sh_profile 'export PATH="$HOME/.pyenv/bin:$PATH"'
 pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
 echo "Ensuring pyenv automatic activation is enabled ..."
 echo "Using $(pyenv --version) ..."
