@@ -38,19 +38,18 @@ zsh_profile="$HOME/.zshrc"
 touch "$bash_profile"
 touch "$zsh_profile"
 
+function _append() {
+  grep -qxF "$1" "$2" || {
+    echo "Appending the following line to $2:" && echo "  $1"
+    echo "$1" >> "$2"
+  }
+}
+
 function _append_to_sh_profile() {
   # Append to bash profile
-  grep -qxF "$1" "$bash_profile" || {
-    echo "Appending the following to $bash_profile:"
-    echo "" && echo "$1" && echo ""
-    echo "$1" >> "$bash_profile"
-  }
+  _append "$1" "$bash_profile"
   # Append to zsh profile
-  grep -qxF "$1" "$zsh_profile" || {
-    echo "Appending the following to $zsh_profile:"
-    echo "" && echo "$1" && echo ""
-    echo "$1" >> "$zsh_profile"
-  }
+  _append "$1" "$zsh_profile"
   # Explicitly execute the statement, regardless of whether it was already present
   # in the bash profile, since non-interactive shells on Ubuntu do not execute all 
   # the statements in .bashrc.
@@ -67,6 +66,15 @@ elif [[ "$os_name" == Linux* ]]; then
   mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
   _append_to_sh_profile "$mod"
 fi
+
+# Add container names to /etc/hosts
+echo "Updating /etc/hosts ..."
+sudo grep -qxF "127.0.0.1 postgres" /etc/hosts || { 
+  sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts 
+}
+sudo grep -qxF "127.0.0.1 redis" /etc/hosts || { 
+  sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts 
+}
 
 # Update package managers
 echo "Checking package manager ..."
