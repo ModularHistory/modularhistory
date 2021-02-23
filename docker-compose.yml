@@ -27,6 +27,12 @@ services:
       - postgres
     env_file: .env
     environment: *common-env-vars
+    healthcheck:
+      test: celery -A modularhistory inspect ping -d celery@$$HOSTNAME
+      timeout: 30s
+      interval: 20s
+      retries: 3
+      start_period: 15s
     image: "$BACKEND_IMAGE:$SHA"
     networks:
       default:
@@ -66,9 +72,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
       timeout: 7s
-      interval: 15s
-      retries: 2
-      start_period: 10s
+      interval: 10s
+      retries: 3
+      start_period: 15s
     image: "$BACKEND_IMAGE:$SHA"
     networks:
       default:
@@ -108,6 +114,12 @@ services:
 
   mongo:
     env_file: .env
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     image: mongo
     ports:
       - "27017:27017"
@@ -145,8 +157,15 @@ services:
     ports:
       - "3000:3000"
     restart: "unless-stopped"
+    volumes:
+      - ./.env:/modularhistory/.env
   
   redis:
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
     image: redis
     networks:
       default:

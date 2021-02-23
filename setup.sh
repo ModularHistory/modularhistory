@@ -67,15 +67,6 @@ elif [[ "$os_name" == Linux* ]]; then
   _append_to_sh_profile "$mod"
 fi
 
-# Add container names to /etc/hosts
-echo "Updating /etc/hosts ..."
-sudo grep -qxF "127.0.0.1 postgres" /etc/hosts || { 
-  sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts 
-}
-sudo grep -qxF "127.0.0.1 redis" /etc/hosts || { 
-  sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts 
-}
-
 # Update package managers
 echo "Checking package manager ..."
 if [[ "$os" == "$MAC_OS" ]]; then
@@ -92,7 +83,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew update
   brew tap homebrew/services
   brew list postgresql &>/dev/null || brew install postgresql
-  brew install openssl@1.1 rust libjpeg zlib grep
+  brew install openssl@1.1 rust libjpeg zlib grep jq
 
   # Modify PATH to use GNU Grep over MacOS Grep.
   echo "Modifying PATH (in $bash_profile) to use GNU Grep over BSD Grep ..."
@@ -140,6 +131,15 @@ echo "Working in $(pwd) ..."
 
 # Create directories for db backups, static files, and media files
 mkdir -p .backups static media &>/dev/null
+
+# Add container names to /etc/hosts
+echo "Updating /etc/hosts ..."
+sudo grep -qxF "127.0.0.1 postgres" /etc/hosts || { 
+  sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts 
+}
+sudo grep -qxF "127.0.0.1 redis" /etc/hosts || { 
+  sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts 
+}
 
 # Make sure pyenv is installed
 echo "Checking for pyenv ..."
@@ -265,10 +265,34 @@ if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
   sudo bash -c "echo madvise > /sys/kernel/mm/transparent_hugepage/enabled"
 fi
 
+if [[ "$os" == "$MAC_OS" ]]; then
+  # Enable mounting volumes within ~/modularhistory
+  docker_settings_file="$HOME/Library/Group Containers/group.com.docker/settings.json"
+  # shellcheck disable=SC2002
+  if [[ $(cat "$docker_settings_file" | jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])") = true ]]; then
+    echo "Docker file sharing is enabled for $HOME/modularhistory."
+  else
+    echo "Enabling file sharing for $HOME/modularhistory ..."
+    cat "$HOME/Library/Group Containers/group.com.docker/settings.json" | jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" > settings.json.tmp &&
+    mv settings.json.tmp "$docker_settings_file"
+    test "$(docker ps -q)" && {
+      echo "Stopping containers ..."
+      docker-compose down
+    }
+    test -z "$(docker ps -q)" && {
+      echo "Quitting Docker ..."
+      osascript -e 'quit app "Docker"'
+      sleep 9
+      echo "Starting Docker ..."
+      open --background -a Docker
+      while ! docker system info > /dev/null 2>&1; do sleep 2; done
+    }
+  fi
+fi
+
 read -rp "Seed db, env file, and media [Y/n]? " CONT
 if [ ! "$CONT" = "n" ]; then
   echo "Seeding database, env file, and media files (NOTE: This could take a long time!) ..."
-
   poetry run invoke seed && echo "Finished seeding dev environment."
 fi
 

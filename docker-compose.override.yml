@@ -32,5 +32,5 @@ services:
       dockerfile: Dockerfile.react
     command: npm run dev
     volumes:
-      - .:/modularhistory
+      - ./frontend:/modularhistory/frontend
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh

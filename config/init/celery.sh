@@ -5,4 +5,4 @@ test -w /modularhistory/.backups/init.sql || {
     echo "Celery lacks permission to write in .backups; exiting."
     exit 1
 }
-celery -A modularhistory worker --loglevel=info
+celery -A modularhistory worker --hostname=%h --loglevel=info

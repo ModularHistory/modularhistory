@@ -65,7 +65,6 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/media && \
   chmod g+w -R /modularhistory/static && \
   chmod g+w -R /modularhistory/.backups && \
-  chmod +x /modularhistory/wait-for-it.sh && \
   chmod +x /usr/local/bin/wait-for-it.sh
 
 # Switch from root to non-root user.

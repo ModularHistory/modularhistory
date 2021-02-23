@@ -170,8 +170,6 @@ def commit(context):
 @command
 def dbbackup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
-    print('>>>>>>>>>>>>>>>>>')
-    context.run(f'echo {os.getenv("USER")}')
     commands.back_up_db(context, redact=redact, push=push)
 
 
@@ -351,7 +349,7 @@ def seed(
             'To proceed, you will need a GitHub personal access token (PAT) '
             'with "repo" and "workfow" permissions. For instructions on acquiring '
             'a PAT, see the GitHub PAT documentation: \n'
-            'https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'  # noqa: E501
+            '    https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'  # noqa: E501
         )
         print()
         username = input('Enter your GitHub username/email: ')

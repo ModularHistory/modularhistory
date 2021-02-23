@@ -7,7 +7,11 @@ LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularh
 ARG ENVIRONMENT=dev
 
 # Create required directories
-RUN mkdir -p -- /modularhistory/static /modularhistory/media /modularhistory/frontend
+RUN mkdir -p -- \
+  /modularhistory/modularhistory \
+  /modularhistory/static \
+  /modularhistory/media \
+  /modularhistory/frontend
 
 # Install project dependencies
 WORKDIR /modularhistory/frontend
@@ -15,15 +19,18 @@ COPY frontend/package*.json /modularhistory/frontend/
 RUN npm ci --cache .npm
 
 # Add source code
-COPY . /modularhistory/
+COPY .env /modularhistory/.env
+COPY modularhistory/static /modularhistory/modularhistory/static
+COPY frontend /modularhistory/frontend
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 
 # Build
 RUN npm run build
 
 # Grant necessary permissions to non-root user
 RUN chown -R www-data:www-data /modularhistory && \
-  chmod +x /modularhistory/wait-for-it.sh && \
-  chmod g+w -R /modularhistory/frontend/.next/
+  chmod g+w -R /modularhistory/frontend/.next/ && \
+  chmod +x /usr/local/bin/wait-for-it.sh
 
 # Expose port
 EXPOSE 3000
