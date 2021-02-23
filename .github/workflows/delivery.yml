@@ -99,7 +99,7 @@ jobs:
     ########################################################
     - name: Inject environment vars
       if: ${{ success() }}
-      run: poetry run invoke write-env-file
+      run: poetry run invoke seeding.write-env-file
     - name: Build and push Docker images
       if: ${{ success() }}
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push

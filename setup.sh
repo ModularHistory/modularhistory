@@ -268,25 +268,29 @@ fi
 if [[ "$os" == "$MAC_OS" ]]; then
   # Enable mounting volumes within ~/modularhistory
   docker_settings_file="$HOME/Library/Group Containers/group.com.docker/settings.json"
-  # shellcheck disable=SC2002
-  if [[ $(cat "$docker_settings_file" | jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])") = true ]]; then
-    echo "Docker file sharing is enabled for $HOME/modularhistory."
+  if [[ -f "$docker_settings_file" ]]; then 
+    # shellcheck disable=SC2002
+    if [[ $(cat "$docker_settings_file" | jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])") = true ]]; then
+      echo "Docker file sharing is enabled for $HOME/modularhistory."
+    else
+      echo "Enabling file sharing for $HOME/modularhistory ..."
+      cat "$HOME/Library/Group Containers/group.com.docker/settings.json" | jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" > settings.json.tmp &&
+      mv settings.json.tmp "$docker_settings_file"
+      test "$(docker ps -q)" && {
+        echo "Stopping containers ..."
+        docker-compose down
+      }
+      test -z "$(docker ps -q)" && {
+        echo "Quitting Docker ..."
+        osascript -e 'quit app "Docker"'
+        sleep 9
+        echo "Starting Docker ..."
+        open --background -a Docker
+        while ! docker system info > /dev/null 2>&1; do sleep 2; done
+      }
+    fi
   else
-    echo "Enabling file sharing for $HOME/modularhistory ..."
-    cat "$HOME/Library/Group Containers/group.com.docker/settings.json" | jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" > settings.json.tmp &&
-    mv settings.json.tmp "$docker_settings_file"
-    test "$(docker ps -q)" && {
-      echo "Stopping containers ..."
-      docker-compose down
-    }
-    test -z "$(docker ps -q)" && {
-      echo "Quitting Docker ..."
-      osascript -e 'quit app "Docker"'
-      sleep 9
-      echo "Starting Docker ..."
-      open --background -a Docker
-      while ! docker system info > /dev/null 2>&1; do sleep 2; done
-    }
+    echo "Could not find Docker settings file; skipping enabling Docker file sharing ... "
   fi
 fi
 

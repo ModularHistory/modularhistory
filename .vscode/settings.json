@@ -22,6 +22,7 @@
     "emmet.includeLanguages": {
         "django-html": "html"
     },
+    "explorer.autoReveal": false,
     "explorer.confirmDragAndDrop": false,
     "files.associations": {
         "**/*.html": "html",
@@ -30,6 +31,8 @@
         "**/templates/**/*": "django-txt"
     },
     "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 7000,
+    "files.eol": "\n",
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -37,7 +40,7 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/*.pyc": true,
-        "**/__pycache__": true,
+        "**/__pycache__": true
     },
     "php.suggest.basic": false,
     "php.validate.enable": false,
@@ -52,10 +55,12 @@
     "terminal.integrated.cursorStyle": "line",
     "workbench.tree.indent": 16,
     "workbench.iconTheme": "material-icon-theme",
-    "explorer.autoReveal": false,
-    "python.autoComplete.addBrackets": true,
+    "python.analysis.memory.keepLibraryAst": true,
     "python.analysis.completeFunctionParens": true,
+    "python.autoComplete.addBrackets": true,
     "python.languageServer": "Pylance",
+    "python.linting.mypyEnabled": true,
+    "python.pythonPath": ".venv/bin/python",
     "python.sortImports.path": "isort",
     "[python]": {
         "editor.codeActionsOnSave": {
@@ -63,11 +68,6 @@
         }
     },
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    "files.autoSaveDelay": 7000,
-    "python.analysis.memory.keepLibraryAst": true,
-    "python.linting.mypyEnabled": true,
     "workbench.editor.limit.enabled": true,
-    "workbench.editor.limit.value": 5,
-    "files.eol": "\n",
-    "python.pythonPath": ".venv/bin/python",
+    "workbench.editor.limit.value": 5
 }
