@@ -74,6 +74,14 @@ if [[ "$os" == "$MAC_OS" ]]; then
   echo "Updating software ..."
   xcode-select --install &>/dev/null || softwareupdate -l
 
+  function brew_install {
+    if brew ls --versions "$1" >/dev/null; then
+      HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade "$1"
+    else
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install "$1"
+    fi
+  }
+
   # Install/update Homebrew and Homebrew-managed packages
   brew help &>/dev/null || {
     echo "Installing Homebrew ..."
@@ -81,15 +89,15 @@ if [[ "$os" == "$MAC_OS" ]]; then
   }
   echo "Updating Homebrew packages ..."
   brew update
-  brew tap homebrew/services
-  brew list postgresql &>/dev/null || brew install postgresql
-  brew install openssl@1.1 rust libjpeg zlib grep jq
-
+  # PostgreSQL
+  brew tap homebrew/services && brew_install postgresql
+  # Other packages
+  brew_install openssl@1.1
+  brew install rust libjpeg zlib grep jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   echo "Modifying PATH (in $bash_profile) to use GNU Grep over BSD Grep ..."
   # shellcheck disable=SC2016
   _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
-
   # Fix environment for installation of Python versions via pyenv.
   # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
   brew install bzip2
@@ -99,10 +107,13 @@ if [[ "$os" == "$MAC_OS" ]]; then
   export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && sudo apt upgrade -y
-  sudo apt install -y vim bash-completion wget curl
+  # Basic dev dependencies
+  sudo apt install -y bash-completion curl git wget vim
+  # PostgreSQL
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-  sudo apt update
+  # All other dependencies
+  sudo apt update -y
   sudo apt install -y \
   make \
   build-essential \
@@ -119,7 +130,6 @@ elif [[ "$os" == "$LINUX" ]]; then
   libffi-dev \
   liblzma-dev \
   python-openssl \
-  git \
   postgresql-client-common \
   postgresql-client-13 || _error "Unable to install one or more required packages."
 fi

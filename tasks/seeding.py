@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import re
-from glob import iglob
 from os.path import join
 from pprint import pprint
 from typing import Optional
@@ -12,10 +11,7 @@ from zipfile import BadZipFile, ZipFile
 
 import django
 import requests
-from decouple import config
 from dotenv import load_dotenv
-from paramiko import SSHClient
-from scp import SCPClient
 
 from modularhistory.constants.environments import Environments
 from modularhistory.constants.strings import NEGATIVE
@@ -31,10 +27,6 @@ from django.conf import settings  # noqa: E402
 BACKUPS_DIR = settings.BACKUPS_DIR
 DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
 MEDIA_INIT_FILE = join(BACKUPS_DIR, 'media.tar.gz')
-SERVER: Optional[str] = config('SERVER', default=None)
-SERVER_SSH_PORT: Optional[int] = config('SERVER_SSH_PORT', default=22)
-SERVER_USERNAME: Optional[str] = config('SERVER_USERNAME', default=None)
-SERVER_PASSWORD: Optional[str] = config('SERVER_PASSWORD', default=None)
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'
@@ -43,62 +35,6 @@ GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
 GITHUB_CREDENTIALS_FILE = '.github/.credentials'
 
 SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
-
-
-@command
-def get_db_backup(context, env: str = Environments.DEV):
-    """Get latest db backup from remote storage."""
-    context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
-    if SERVER and SERVER_SSH_PORT and SERVER_USERNAME and SERVER_PASSWORD:
-        ssh = SSHClient()
-        ssh.load_system_host_keys()
-        ssh.connect(
-            SERVER,
-            port=SERVER_SSH_PORT,
-            username=SERVER_USERNAME,
-            password=SERVER_PASSWORD,
-        )
-        with SCPClient(ssh.get_transport()) as scp:
-            scp.get(BACKUPS_DIR, './', recursive=True)
-        latest_backup = max(iglob(join(BACKUPS_DIR, '*sql')), key=os.path.getctime)
-        print(latest_backup)
-        context.run(f'cp {latest_backup} {DB_INIT_FILE}')
-    else:
-        from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
-
-        mega_client = mega_clients[env]
-        pprint(mega_client.get_user())
-        init_file = 'init.sql'
-        init_file_path = join(BACKUPS_DIR, init_file)
-        if os.path.exists(init_file_path):
-            context.run(f'mv {init_file_path} {init_file_path}.prior', warn=True)
-        backup_file = mega_client.find(init_file, exclude_deleted=True)
-        if backup_file:
-            mega_client.download(backup_file)
-            context.run(f'mv {init_file} {init_file_path}')
-        else:
-            print(f'Could not find {init_file}.')
-
-
-@command
-def get_media_backup(context, env: str = Environments.DEV):
-    """Seed latest media backup from remote storage."""
-    context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
-
-    from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
-
-    mega_client = mega_clients[env]
-    pprint(mega_client.get_user())
-    media_archive_name = 'media.tar.gz'
-    media_archive = mega_client.find(media_archive_name, exclude_deleted=True)
-    if media_archive:
-        mega_client.download(media_archive)
-        context.run(
-            f'mv {media_archive_name} {join(BACKUPS_DIR, media_archive_name)}',
-            warn=True,
-        )
-    else:
-        print(f'Could not find {media_archive_name}')
 
 
 def pat_is_valid(context, username: str, pat: str) -> bool:
@@ -234,12 +170,6 @@ def seed(
             f'python manage.py mediarestore -z --noinput -i {MEDIA_INIT_FILE} -q'
         )
     print('Finished.')
-
-
-@command
-def sync_media(context, push: bool = False):
-    """Sync media from source to destination, modifying destination only."""
-    commands.sync_media(context, push=push)
 
 
 @command
