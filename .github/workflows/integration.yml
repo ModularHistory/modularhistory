@@ -60,6 +60,14 @@ jobs:
       POSTGRES_PASSWORD: postgres
     steps:
     - uses: actions/checkout@v2
+    - name: Cache virtual environment
+      uses: actions/cache@v2.1.4
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
     - name: Run setup script
       run: |
         bash setup.sh || echo "Failed to run setup script."
@@ -132,10 +140,6 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
     ########################################################
     ########################################################
-    - name: Install Chrome and Firefox
-      run: |
-        sudo apt install google-chrome-stable
-        sudo apt-get install firefox
     - name: Make sure pytest is working
       run: |
         echo "def test_pytest(): pass" > nothing.py
