@@ -8,7 +8,7 @@ from os.path import join
 from pprint import pprint
 from typing import Optional
 from zipfile import BadZipFile, ZipFile
-
+from datetime import datetime
 import django
 import requests
 from dotenv import load_dotenv
@@ -57,7 +57,7 @@ def seed(
 ):
     """Seed a dev database, media directory, and env file."""
     workflow = 'seed.yml'
-    n_expected_new_artifacts = 2
+    n_expected_artifacts = 2
     if username or pat:
         if username and pat:
             signature = f'{username}:{pat}'
@@ -90,22 +90,55 @@ def seed(
     session = requests.Session()
     session.auth = (username, pat)
     session.headers.update({'Accept': 'application/vnd.github.v3+json'})
-    artifacts_url = f'{GITHUB_ACTIONS_BASE_URL}/artifacts'
-    artifacts = session.get(
-        artifacts_url,
-    ).json()['artifacts']
-    latest_artifacts = latest_extant_artifacts = artifacts[:n_expected_new_artifacts]
     print('Dispatching workflow...')
+    time_posted = datetime.now()
     session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
         data=json.dumps({'ref': 'main'}),
     )
-    while any(artifact in latest_artifacts for artifact in latest_extant_artifacts):
-        print('Waiting for artifacts...')
-        context.run('sleep 15')
-        artifacts = session.get(artifacts_url).json()['artifacts']
-        latest_artifacts = artifacts[:n_expected_new_artifacts]
-    artifacts = latest_artifacts
+    context.run('sleep 5')
+    # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
+    workflow_runs = [
+        workflow_run
+        for workflow_run in session.get(
+            f'{GITHUB_ACTIONS_BASE_URL}/runs?event=workflow_dispatch&per_page=5&page=1'
+        ).json()['workflow_runs']
+        if workflow_run['name'] == 'seed'
+    ]
+    while True:
+        try:
+            workflow_run = next(
+                _
+                for _ in workflow_runs
+                if _['name'] == 'seed'
+                and datetime.fromisoformat(_['created_at'].replace('Z', ''))
+                >= time_posted
+            )
+            break
+        except Exception:
+            print('Retrieving most recent workflow run ...')
+            context.run('sleep 5')
+            workflow_runs = [
+                workflow_run
+                for workflow_run in session.get(
+                    f'{GITHUB_ACTIONS_BASE_URL}/runs?event=workflow_dispatch&per_page=5&page=1'
+                ).json()['workflow_runs']
+                if workflow_run['name'] == 'seed'
+            ]
+            continue
+    workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run["id"]}'
+    status = initial_status = workflow_run['status']
+    artifacts_url = workflow_run['artifacts_url']
+    while status == initial_status:
+        print(f'Waiting for artifacts... status: {status}')
+        context.run('sleep 9')
+        status = session.get(workflow_run_url).json().get('status')
+    artifacts = session.get(artifacts_url).json().get('artifacts')
+    while len(artifacts) < n_expected_artifacts:
+        print(f'Waiting for artifacts... status: {status}')
+        context.run('sleep 9')
+        artifacts = session.get(artifacts_url).json().get('artifacts')
+        status = session.get(workflow_run_url).json().get('status')
     dl_urls = {}
     zip_dl_url_key = 'archive_download_url'
     for artifact in artifacts:
@@ -136,10 +169,9 @@ def seed(
         if '/' in dest_path:
             dest_dir, filename = os.path.dirname(dest_path), os.path.basename(dest_path)
         else:
-            dest_dir, filename = '.', dest_path
-        if dest_dir != '.':
+            dest_dir, filename = settings.BASE_DIR, dest_path
+        if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
-
     # Seed the db
     db_volume = 'modularhistory_postgres_data'
     seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
