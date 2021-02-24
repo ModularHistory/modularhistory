@@ -3,11 +3,11 @@
 import os
 from os.path import join
 from pprint import pprint
-from modularhistory.utils import commands
 
 import django
 
 from modularhistory.constants.environments import Environments
+from modularhistory.utils import commands
 
 from .command import command
 

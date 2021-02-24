@@ -4,11 +4,11 @@ import json
 import logging
 import os
 import re
-from os.path import join
-from pprint import pprint
-from typing import Optional
-from zipfile import BadZipFile, ZipFile
 from datetime import datetime
+from os.path import join
+from typing import List, Optional
+from zipfile import BadZipFile, ZipFile
+
 import django
 import requests
 from dotenv import load_dotenv
@@ -98,34 +98,21 @@ def seed(
     )
     context.run('sleep 5')
     # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
-    workflow_runs = [
-        workflow_run
-        for workflow_run in session.get(
-            f'{GITHUB_ACTIONS_BASE_URL}/runs?event=workflow_dispatch&per_page=5&page=1'
-        ).json()['workflow_runs']
-        if workflow_run['name'] == 'seed'
-    ]
-    while True:
-        try:
-            workflow_run = next(
-                _
-                for _ in workflow_runs
-                if _['name'] == 'seed'
-                and datetime.fromisoformat(_['created_at'].replace('Z', ''))
-                >= time_posted
-            )
-            break
-        except Exception:
-            print('Retrieving most recent workflow run ...')
-            context.run('sleep 5')
-            workflow_runs = [
-                workflow_run
-                for workflow_run in session.get(
-                    f'{GITHUB_ACTIONS_BASE_URL}/runs?event=workflow_dispatch&per_page=5&page=1'
-                ).json()['workflow_runs']
-                if workflow_run['name'] == 'seed'
-            ]
-            continue
+    workflow_runs: List[dict] = []
+    while not workflow_runs:
+        print('Retrieving most recent workflow run ...')
+        context.run('sleep 5')
+        workflow_runs = [
+            workflow_run
+            for workflow_run in session.get(
+                f'{GITHUB_ACTIONS_BASE_URL}/runs?event=workflow_dispatch&per_page=5&page=1'
+            ).json()['workflow_runs']
+            if workflow_run['name'] == 'seed'
+            and datetime.fromisoformat(workflow_run['created_at'].replace('Z', ''))
+            >= time_posted
+        ]
+        continue
+    workflow_run = workflow_runs[0]
     workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run["id"]}'
     status = initial_status = workflow_run['status']
     artifacts_url = workflow_run['artifacts_url']
