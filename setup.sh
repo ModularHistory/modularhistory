@@ -91,8 +91,6 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew update
   # PostgreSQL
   brew tap homebrew/services && brew_install postgresql
-  # Atlassian SDK
-  brew tap atlassian/tap && brew_install atlassian/tap/atlassian-plugin-sdk
   # Other packages
   brew_install openssl@1.1
   brew install rust libjpeg zlib grep jq
@@ -109,13 +107,13 @@ if [[ "$os" == "$MAC_OS" ]]; then
   export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && sudo apt upgrade -y
+  # Basic dev dependencies
   sudo apt install -y bash-completion curl git wget vim
-  # Atlassian SDK
-  sudo sh -c 'echo "deb https://packages.atlassian.com/debian/atlassian-sdk-deb/ stable contrib" >> /etc/apt/sources.list'
-  wget --quiet -O - https://packages.atlassian.com/api/gpg/key/public | sudo apt-key add -   
+  # PostgreSQL
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-  sudo apt update
+  # All other dependencies
+  sudo apt update -y
   sudo apt install -y \
   make \
   build-essential \
@@ -133,8 +131,7 @@ elif [[ "$os" == "$LINUX" ]]; then
   liblzma-dev \
   python-openssl \
   postgresql-client-common \
-  postgresql-client-13 \
-  atlassian-plugin-sdk || _error "Unable to install one or more required packages."
+  postgresql-client-13 || _error "Unable to install one or more required packages."
 fi
 
 # Enter the project

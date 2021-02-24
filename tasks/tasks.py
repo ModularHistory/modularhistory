@@ -21,15 +21,15 @@ GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'
 REPO = 'modularhistory'
 GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
-GITHUB_CREDENTIALS_FILE = '.github/.credentials'
+GITHUB_CREDENTIALS_FILE = join(settings.BASE_DIR, '.github/.credentials')
 
 
 @command
 def build(
     context,
-    github_actor: str,
-    access_token: str,
-    sha: str,
+    github_actor: str = '',
+    access_token: str = '',
+    sha: str = 'latest',
     push: bool = False,
     # default environment is delegated to ARG statement in Dockerfile
     environment: Optional[str] = None,
@@ -38,9 +38,15 @@ def build(
     if not access_token:
         access_token = config('CR_PAT', default=None)
     if not all([github_actor, access_token, sha]):
-        raise ValueError(
-            'Missing one or more required args: github_actor, access_token, sha.'
-        )
+        if os.path.exists(GITHUB_CREDENTIALS_FILE):
+            print('Reading credentials...')
+            with open(GITHUB_CREDENTIALS_FILE, 'r') as personal_access_token:
+                signature = personal_access_token.read()
+                github_actor, access_token = signature.split(':')
+        else:
+            raise ValueError(
+                'Missing one or more required args: github_actor, access_token, sha.'
+            )
     if push and environment != Environments.PROD:
         raise ValueError(f'Cannot push image built for {environment} environment.')
     print('Logging in to GitHub container registry...')
