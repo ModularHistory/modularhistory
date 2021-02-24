@@ -133,7 +133,8 @@ elif [[ "$os" == "$LINUX" ]]; then
   liblzma-dev \
   python-openssl \
   postgresql-client-common \
-  postgresql-client-13 || _error "Unable to install one or more required packages."
+  postgresql-client-13 \
+  atlassian-plugin-sdk || _error "Unable to install one or more required packages."
 fi
 
 # Enter the project

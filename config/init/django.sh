@@ -6,7 +6,7 @@ test -w /modularhistory/.backups/init.sql || {
     echo "Django lacks permission to write in .backups; exiting."
     exit 1
 }
-invoke dbbackup && python manage.py migrate
+invoke db.backup && python manage.py migrate
 python manage.py collectstatic --no-input
 python manage.py cleanup_django_defender
 

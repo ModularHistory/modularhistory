@@ -100,10 +100,3 @@ def generate_artifacts(context):
     ).generate(text)
     word_cloud.to_file(join(settings.BASE_DIR, 'static', '_topic_cloud.png'))
     print('Done.')
-
-
-@command
-def mediabackup(context, redact: bool = False, push: bool = False):
-    """Create a media backup file."""
-    # based on https://github.com/django-dbbackup/django-dbbackup#mediabackup
-    commands.back_up_media(context, redact=redact, push=push)
