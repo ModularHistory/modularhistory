@@ -74,7 +74,7 @@ jobs:
     ########################################################
     - name: Get db backup file
       if: ${{ success() }}
-      run: poetry run invoke get-db-backup
+      run: poetry run invoke db.get-backup
     - name: Upload init.sql artifact
       if: ${{ success() }}
       uses: actions/upload-artifact@v2
@@ -138,7 +138,7 @@ jobs:
     ########################################################
     - name: Inject environment vars
       if: ${{ success() }}
-      run: poetry run invoke write-env-file --dev
+      run: poetry run invoke seeding.write-env-file --dev
     - name: Archive .env file
       if: ${{ success() }}
       uses: actions/upload-artifact@v2

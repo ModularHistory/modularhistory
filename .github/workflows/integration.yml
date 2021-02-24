@@ -191,7 +191,7 @@ jobs:
     ########################################################
     ########################################################
     - name: Inject environment vars
-      run: poetry run invoke write-env-file
+      run: poetry run invoke seeding.write-env-file
     - name: Build Docker image
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA
     - name: Run Snyk to check Docker image for vulnerabilities

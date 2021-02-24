@@ -1,6 +1,7 @@
-"""Monkeypatch for PyInvoke to enable type annotations."""
+"""See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
 from inspect import ArgSpec, getfullargspec
+from typing import Any, Callable, TypeVar
 from unittest.mock import patch
 
 import invoke
@@ -24,4 +25,14 @@ def fix_annotations():
             return org_task_argspec(*args, **kwargs)
 
     invoke.tasks.Task.argspec = patched_task_argspec
-    return True
+
+
+fix_annotations()
+
+TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
+
+
+def command(task_function: TaskFunction) -> TaskFunction:
+    """Wrap invoke.task to enable type annotations."""
+    task_function.__annotations__ = {}
+    return invoke.task(task_function)
