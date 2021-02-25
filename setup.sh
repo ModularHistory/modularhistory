@@ -272,9 +272,7 @@ rclone version &>/dev/null || {
   echo "Cleaning up ..."
   rm -r .tmp
 }
-echo "Overwriting rclone.conf ..."
 mkdir -p "$HOME/.config/rclone"
-cp config/rclone/rclone.conf "$HOME/.config/rclone/rclone.conf"
 
 # Disable THP so it doesn't cause issues for Redis containers
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then

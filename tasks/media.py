@@ -60,4 +60,6 @@ def get_backup(context, env: str = Environments.DEV):
 @command
 def sync(context, push: bool = False):
     """Sync media from source to destination, modifying destination only."""
+    print('Syncing media ...')
     commands.sync_media(context, push=push)
+    print('Media sync complete.')
