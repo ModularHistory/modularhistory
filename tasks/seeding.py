@@ -50,8 +50,6 @@ def pat_is_valid(context, username: str, pat: str) -> bool:
 @command
 def seed(
     context,
-    remote: bool = False,
-    dry: bool = False,
     username: Optional[str] = None,
     pat: Optional[str] = None,
 ):
@@ -91,7 +89,7 @@ def seed(
     session.auth = (username, pat)
     session.headers.update({'Accept': 'application/vnd.github.v3+json'})
     print('Dispatching workflow...')
-    time_posted = datetime.now()
+    time_posted = datetime.utcnow()
     session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
         data=json.dumps({'ref': 'main'}),
@@ -99,9 +97,11 @@ def seed(
     context.run('sleep 5')
     # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
     workflow_runs: List[dict] = []
-    while not workflow_runs:
+    time_waited, wait_interval, timeout = 0, 5, 30
+    while time_waited < timeout and not workflow_runs:
         print('Retrieving most recent workflow run ...')
-        context.run('sleep 5')
+        context.run(f'sleep {wait_interval}')
+        time_waited += wait_interval
         workflow_runs = [
             workflow_run
             for workflow_run in session.get(
