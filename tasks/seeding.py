@@ -89,7 +89,7 @@ def seed(
     session.auth = (username, pat)
     session.headers.update({'Accept': 'application/vnd.github.v3+json'})
     print('Dispatching workflow...')
-    time_posted = datetime.utcnow()
+    time_posted = datetime.utcnow().replace(microsecond=0)
     session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
         data=json.dumps({'ref': 'main'}),
@@ -98,19 +98,21 @@ def seed(
     # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
     workflow_runs: List[dict] = []
     time_waited, wait_interval, timeout = 0, 5, 30
-    while time_waited < timeout and not workflow_runs:
-        print('Retrieving most recent workflow run ...')
+    while not workflow_runs:
         context.run(f'sleep {wait_interval}')
         time_waited += wait_interval
+        workflow_runs = session.get(
+            f'{GITHUB_ACTIONS_BASE_URL}/runs?event=workflow_dispatch&per_page=5&page=1'
+        ).json()['workflow_runs']
         workflow_runs = [
             workflow_run
-            for workflow_run in session.get(
-                f'{GITHUB_ACTIONS_BASE_URL}/runs?event=workflow_dispatch&per_page=5&page=1'
-            ).json()['workflow_runs']
+            for workflow_run in workflow_runs
             if workflow_run['name'] == 'seed'
             and datetime.fromisoformat(workflow_run['created_at'].replace('Z', ''))
             >= time_posted
         ]
+        if time_waited > timeout:
+            raise TimeoutError('Timed out while attempting to retrieve workflow run.')
         continue
     workflow_run = workflow_runs[0]
     workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run["id"]}'
