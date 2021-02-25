@@ -8,7 +8,7 @@ from os.path import join
 from pprint import pformat
 from typing import Any, Callable, Iterable, Optional, TypeVar
 from zipfile import ZipFile
-
+from decouple import config
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -347,8 +347,13 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
 
 def sync_media(context: Context = CONTEXT, push: bool = False):
     """Sync media from source to destination, modifying destination only."""
-    mega_username = settings.MEGA_DEV_USERNAME
-    mega_password = settings.MEGA_DEV_PASSWORD
+    # TODO: refactor
+    mega_username = config(
+        'MEGA_DEV_USERNAME', default=config('MEGA_USERNAME', default=None)
+    )
+    mega_password = config(
+        'MEGA_DEV_PASSWORD', default=config('MEGA_PASSWORD', default=None)
+    )
     local_media_dir = settings.MEDIA_ROOT
     mega_media_dir = 'mega:/media/'
     source, destination = (
