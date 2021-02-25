@@ -311,8 +311,12 @@ if [[ "$os" == "$LINUX" ]]; then
   # Add user to www-data group
   echo "Granting file permissions to $USER ..."
   sudo usermod -a -G www-data "$USER"
-  sudo chown -R "$USER:www-data" .
-  sudo chmod g+w -R .
+  groups | grep -q www-data || _error "Failed to add $USER to the www-data group."
+  echo "$USER belongs to the following groups: $(groups)"
+  sudo chown -R "$USER":www-data ~/modularhistory
+  sudo chmod g+w -R ~/modularhistory/.backups
+  sudo chmod g+w -R ~/modularhistory/media
+  sudo chmod g+w -R ~/modularhistory/static
 fi
 
 read -rp "Seed db, env file, and media [Y/n]? " CONT
