@@ -328,4 +328,7 @@ fi
 echo "Finished setup."
 
 echo "Spinning up containers ..."
-docker-compose up -d dev
+docker-compose up -d dev || _print_red "
+  Could not start containers. Try using the following command:
+    docker-compose up -d dev && docker-compose logs -f
+"

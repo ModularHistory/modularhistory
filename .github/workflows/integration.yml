@@ -52,7 +52,7 @@ jobs:
       matrix:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
         # NOTE: Services (running in Docker containers) only work on ubuntu.
-        os: [ macos-11.0, ubuntu-20.04, windows-latest ]
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
     environment: dev
     env:
       POSTGRES_HOST: postgres
