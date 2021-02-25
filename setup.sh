@@ -35,7 +35,7 @@ elif [[ "$os_name" == Windows* ]]; then
     https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup#windows-prereqs
   " && exit
 else
-  _error "Unknown operating system."
+  _error "Unknown operating system: $os_name"
 fi
 echo "Detected $os."
 

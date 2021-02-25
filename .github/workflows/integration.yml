@@ -50,8 +50,9 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        # NOTE: Services (running in Docker containers) only work on ubuntu
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+        # NOTE: Services (running in Docker containers) only work on ubuntu.
+        os: [ macos-11.0, ubuntu-20.04, windows-latest ]
     environment: dev
     env:
       POSTGRES_HOST: postgres
@@ -74,6 +75,7 @@ jobs:
     
   test-app:
     name: Test application
+    # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 3

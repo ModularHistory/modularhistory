@@ -15,6 +15,7 @@ on:
       - '**.rst'
       - '**.txt'
       - 'tests.py'
+      - 'setup.sh'
 
 env:
   ENVIRONMENT: prod
