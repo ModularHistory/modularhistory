@@ -6,10 +6,16 @@ NC='\033[0m'  # No Color
 MAC_OS="MacOS"
 LINUX="Linux"
 
-function _error() {
-  echo "$1" >&2
+# Print message with red text
+function _print_red() {
   # shellcheck disable=SC2059
   printf "${RED}$1${NC}" && echo ""
+}
+
+# Print message with red text and exit the script with an error status (1)
+function _error() {
+  echo "$1" >&2
+  _print_red "$1"
   exit 1
 }
 
@@ -23,10 +29,11 @@ elif [[ "$os_name" == Linux* ]]; then
   bash_profile="$HOME/.bashrc"
 elif [[ "$os_name" == Windows* ]]; then
   os='Windows'
-  _error "
+  # Exit without error:
+  _print_red "
     This setup script must be run in a bash shell in Windows Subsystem for Linux (WSL):
     https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup#windows-prereqs
-  "
+  " && exit
 else
   _error "Unknown operating system."
 fi

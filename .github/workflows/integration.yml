@@ -50,8 +50,8 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        # services (running in Docker containers) only work on ubuntu
-        os: [ ubuntu-latest, macos-latest ]
+        # NOTE: Services (running in Docker containers) only work on ubuntu
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
     environment: dev
     env:
       POSTGRES_HOST: postgres
@@ -69,8 +69,7 @@ jobs:
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
     - name: Run setup script
-      run: |
-        bash setup.sh || echo "Failed to run setup script."
+      run: bash setup.sh
       shell: bash
     
   test-app:
