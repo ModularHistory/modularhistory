@@ -304,18 +304,18 @@ if [[ "$os" == "$MAC_OS" ]]; then
   fi
 fi
 
-read -rp "Seed db, env file, and media [Y/n]? " CONT
-if [ ! "$CONT" = "n" ]; then
-  echo "Seeding database, env file, and media files (NOTE: This could take a long time!) ..."
-  poetry run invoke seed && echo "Finished seeding dev environment."
-fi
-
 if [[ "$os" == "$LINUX" ]]; then
   # Add user to www-data group
   echo "Granting file permissions to $USER ..."
   sudo usermod -a -G www-data "$USER"
   sudo chown -R "$USER:www-data" .
   sudo chmod g+w -R .
+fi
+
+read -rp "Seed db, env file, and media [Y/n]? " CONT
+if [ ! "$CONT" = "n" ]; then
+  echo "Seeding database, env file, and media files (NOTE: This could take a long time!) ..."
+  poetry run invoke seed && echo "Finished seeding dev environment."
 fi
 
 echo "Finished setup."
