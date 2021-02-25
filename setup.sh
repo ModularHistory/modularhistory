@@ -193,11 +193,9 @@ while IFS= read -r pyversion; do
   fi
 done < .python-version
 
-# Activate the local Python version by re-entering the directory.
+# Activate the local Python version.
 # shellcheck disable=SC2016
 _append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
-# # shellcheck disable=SC2015
-# cd .. && cd modularhistory || _error "Cannot cd into modularhistory directory."
 
 # Make sure correct version of Python is used
 echo "Checking Python version ..."
