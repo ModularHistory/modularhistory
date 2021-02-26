@@ -55,6 +55,7 @@ jobs:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
     environment: dev
     env:
+      TESTING: true
       POSTGRES_HOST: postgres
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres

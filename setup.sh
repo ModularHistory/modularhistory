@@ -362,7 +362,7 @@ if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.backups/init.sql" ]]; th
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
 fi
 read -rp "$prompt" CONT
-if [ ! "$CONT" = "n" ]; then
+if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   echo "Seeding database and env file ..."
   poetry run invoke seed && echo "Finished seeding db and env file." || {
     _print_red "Failed to seed dev environment."
@@ -376,7 +376,7 @@ if [ ! "$CONT" = "n" ]; then
 fi
 
 read -rp "Sync media [Y/n]? " CONT
-if [ ! "$CONT" = "n" ]; then
+if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   poetry run invoke media.sync && echo "Finished syncing media." || {
     _print_red "
       Failed to sync media. Try running the following in a new shell:
