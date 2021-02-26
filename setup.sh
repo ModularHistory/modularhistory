@@ -390,7 +390,7 @@ fi
 echo "Spinning up containers ..."
 docker-compose up -d dev || {
   _print_red "Failed to start containers."
-  _prompt_to_rerun
+  [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
     Could not start containers. Try running the following in a new shell:
 
