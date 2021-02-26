@@ -61,11 +61,11 @@ def get_backup(context, env: str = Environments.DEV):
 def sync(context, push: bool = False):
     """Sync media from source to destination, modifying destination only."""
     context.run(f'mkdir -p {settings.MEDIA_ROOT}', warn=True)
-    print('Syncing media... \n')
     print(
+        'Syncing media... \n\n'
         'This could take a while. Leave this shell running until you '
         'see a "Finished" message. In the meantime, feel free to open '
-        'a new shell and start up the app with the following command: \n'
+        'a new shell and start up the app with the following command: \n\n'
         '    docker-compose up -d dev\n\n'
         '..........................'
     )

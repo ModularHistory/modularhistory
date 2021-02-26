@@ -349,7 +349,6 @@ fi
 
 read -rp "Sync media [Y/n]? " CONT
 if [ ! "$CONT" = "n" ]; then
-  echo "Syncing media (NOTE: This could take a long time!) ..."
   poetry run invoke media.sync && echo "Finished syncing media." || {
     _print_red "
       Failed to sync media. 
