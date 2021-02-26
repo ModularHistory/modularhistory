@@ -168,28 +168,11 @@ def seed(
         raise Exception('Seed does not exist')
     # Remove the data volume, if it exists
     print('Wiping postgres data volume...')
-    context.run('docker-compose down', warn=True)
-    context.run(f'docker volume rm {db_volume}', warn=True, hide='both')
+    context.run('docker-compose down')
+    context.run(f'docker volume rm {db_volume}', warn=True)
     # Start up the postgres container to automatically run init.sql
     print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
-
-    # Seed the media directory
-    context.run(f'mkdir -p {settings.MEDIA_ROOT}', warn=True)
-    print('Syncing media... \n')
-    print(
-        'This could take a while. Leave this shell running until you '
-        'see a "Finished" message. In the meantime, feel free to open '
-        'a new shell and start up the app with the following command: \n'
-        '    docker-compose up -d dev\n\n'
-        '..........................'
-    )
-    commands.sync_media(context, push=False)
-    restore_from_tar = False
-    if restore_from_tar and os.path.exists(join(BACKUPS_DIR, 'media.tar.gz')):
-        context.run(
-            f'python manage.py mediarestore -z --noinput -i {MEDIA_INIT_FILE} -q'
-        )
     print('Finished.')
 
 

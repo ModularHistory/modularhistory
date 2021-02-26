@@ -3,6 +3,9 @@
 RED='\033[0;31m'
 NC='\033[0m'  # No Color
 
+BOLD=$(tput bold)
+NORMAL=$(tput sgr0)
+
 MAC_OS="MacOS"
 LINUX="Linux"
 
@@ -148,6 +151,34 @@ echo "Working in $(pwd) ..."
 
 # Create directories for db backups, static files, and media files
 mkdir -p .backups static media &>/dev/null
+if [[ "$os" == "$LINUX" ]]; then
+  # Add user to www-data group
+  new_shell_required="false"
+  groups "$USER" | grep -q www-data || {
+    echo "Adding $USER to the www-data group ..."
+    sudo usermod -a -G www-data "$USER"
+    groups "$USER" | grep -q www-data || {
+      _error "Failed to add $USER to the www-data group."
+    }
+    new_shell_required="true"
+  }
+  ls -ld ~/modularhistory | grep -q "$USER www-data" || {
+    echo "Granting the www-data group permission to write in project directories ..."
+    sudo chown -R "$USER":www-data ~/modularhistory
+    sudo chmod g+w -R ~/modularhistory/.backups
+    sudo chmod g+w -R ~/modularhistory/media
+    sudo chmod g+w -R ~/modularhistory/static
+    new_shell_required="true"
+  }
+  if [[ "$new_shell_required" = "true" ]]; then
+    _print_red "
+      File permissions have been updated.
+      To finish setup, ${BOLD}open a new shell${NORMAL} and run the setup script again:
+        cd ~/modularhistory && bash setup.sh
+    "
+    exit
+  fi
+fi
 
 # Add container names to /etc/hosts
 echo "Updating /etc/hosts ..."
@@ -210,23 +241,15 @@ echo "Using $(python --version) ..."
 pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
 
 # Install Poetry
+poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
 poetry --version &>/dev/null || {
   echo "Installing Poetry ..."
   # https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions
-  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python &>/dev/null
-  # shellcheck source=/dev/null
-  source "$HOME/.poetry/env"
+  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+  _append_to_sh_profile "$poetry_init"
   poetry --version &>/dev/null || {
-    echo "Unable to use Poetry's custom installer; falling back on pip..."
-    # Update Pip
-    pip install --upgrade pip &>/dev/null
-    # Install Poetry with Pip
-    pip install -U poetry
+    _error "Failed to install Poetry (https://python-poetry.org/docs/#installation)."
   }
-  poetry_version=$(poetry --version)
-  if [ -z "$poetry_version" ]; then
-    _error "Unable to install Poetry."
-  fi
 }
 
 # https://python-poetry.org/docs/configuration/
@@ -307,28 +330,43 @@ if [[ "$os" == "$MAC_OS" ]]; then
   fi
 fi
 
-if [[ "$os" == "$LINUX" ]]; then
-  # Add user to www-data group
-  echo "Granting file permissions to $USER ..."
-  sudo usermod -a -G www-data "$USER"
-  groups | grep -q www-data || _error "Failed to add $USER to the www-data group."
-  echo "$USER belongs to the following groups: $(groups)"
-  sudo chown -R "$USER":www-data ~/modularhistory
-  sudo chmod g+w -R ~/modularhistory/.backups
-  sudo chmod g+w -R ~/modularhistory/media
-  sudo chmod g+w -R ~/modularhistory/static
+prompt="Seed db and env file [Y/n]? "
+if [[ -f ~/modularhistory/.env ]] && [[ -f ~/modularhistory/.backups/init.sql ]]; then
+  prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
+fi
+read -rp "$prompt" CONT
+if [ ! "$CONT" = "n" ]; then
+  echo "Seeding database and env file ..."
+  poetry run invoke seed && echo "Finished seeding db and env file." || {
+    _error "
+      Failed to seed dev environment. 
+      Try running the following ${BOLD}in a new shell${NORMAL}:
+
+        cd ~/modularhistory && poetry run invoke seed
+    "
+  }
 fi
 
-read -rp "Seed db, env file, and media [Y/n]? " CONT
+read -rp "Sync media [Y/n]? " CONT
 if [ ! "$CONT" = "n" ]; then
-  echo "Seeding database, env file, and media files (NOTE: This could take a long time!) ..."
-  poetry run invoke seed && echo "Finished seeding dev environment."
+  echo "Syncing media (NOTE: This could take a long time!) ..."
+  poetry run invoke media.sync && echo "Finished syncing media." || {
+    _print_red "
+      Failed to sync media. 
+      Try running the following ${BOLD}in a new shell${NORMAL}:
+
+        cd ~/modularhistory && poetry run invoke media.sync
+
+    "
+  }
 fi
 
 echo "Finished setup."
 
 echo "Spinning up containers ..."
-docker-compose up -d dev || _print_red "
-  Could not start containers. Try using the following command:
-    docker-compose up -d dev && docker-compose logs -f
+sudo su -c 'docker-compose up -d dev' "$USER" || _print_red "
+  Could not start containers. 
+  Try running the following ${BOLD}in a new shell${NORMAL}:
+
+    cd ~/modularhistory && docker-compose up -d dev && docker-compose logs -f
 "
