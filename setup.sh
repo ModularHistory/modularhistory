@@ -12,14 +12,12 @@ LINUX="Linux"
 # Print message with red text
 function _print_red() {
   # shellcheck disable=SC2059
-  printf "${RED}$1${NC}" && echo ""
+  printf "${RED}$1${NC}\n"
 }
 
 # Print message with red text and exit the script with an error status (1)
 function _error() {
-  echo "$1" >&2
-  _print_red "$1"
-  exit 1
+  _print_red "$1" >&2; exit 1
 }
 
 # Detect operating system.

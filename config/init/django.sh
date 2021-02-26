@@ -2,7 +2,7 @@
 
 wait-for-it.sh postgres:5432 -- 
 # These commands must be run by a www-data user:
-test -w /modularhistory/.backups/init.sql || {
+test -w /modularhistory/.backups || {
     echo "Django lacks permission to write in .backups; exiting."
     exit 1
 }
