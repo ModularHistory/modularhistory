@@ -167,14 +167,13 @@ echo "Working in $(pwd) ..."
 mkdir -p .backups static media &>/dev/null
 if [[ "$os" == "$LINUX" ]]; then
   # Add user to www-data group
-  new_shell_required="false"
   groups "$USER" | grep -q www-data || {
     echo "Adding $USER to the www-data group ..."
     sudo usermod -a -G www-data "$USER"
     groups "$USER" | grep -q www-data || {
       _error "Failed to add $USER to the www-data group."
     }
-    new_shell_required="true"
+    rerun_required="true"
   }
   ls -ld ~/modularhistory | grep -q "$USER www-data" || {
     echo "Granting the www-data group permission to write in project directories ..."
@@ -182,9 +181,9 @@ if [[ "$os" == "$LINUX" ]]; then
     sudo chmod g+w -R ~/modularhistory/.backups
     sudo chmod g+w -R ~/modularhistory/media
     sudo chmod g+w -R ~/modularhistory/static
-    new_shell_required="true"
+    rerun_required="true"
   }
-  if [[ "$new_shell_required" = "true" ]]; then
+  if [[ "$rerun_required" = "true" ]]; then
     _print_red "File permissions have been updated."
     prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
     read -rp "$prompt" CONT
@@ -289,9 +288,9 @@ nvm --version &>/dev/null || {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   # shellcheck disable=SC1090
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # loads nvm
   # shellcheck disable=SC1090
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
 echo "Installing Node modules ..."
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
@@ -322,7 +321,8 @@ if [[ "$os" == "$MAC_OS" ]]; then
   docker_settings_file="$HOME/Library/Group Containers/group.com.docker/settings.json"
   if [[ -f "$docker_settings_file" ]]; then 
     # shellcheck disable=SC2002
-    if [[ $(cat "$docker_settings_file" | jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])") = true ]]; then
+    sharing_enabled=$(cat "$docker_settings_file" | jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])")
+    if [[ $sharing_enabled = true ]]; then
       echo "Docker file sharing is enabled for $HOME/modularhistory."
     else
       echo "Enabling file sharing for $HOME/modularhistory ..."
