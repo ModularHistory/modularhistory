@@ -20,6 +20,8 @@ function _error() {
   _print_red "$1" >&2; exit 1
 }
 
+rerun_required="false"
+
 # Detect operating system.
 os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
@@ -68,6 +70,13 @@ function _append_to_sh_profile() {
   # in the bash profile, since non-interactive shells on Ubuntu do not execute all 
   # the statements in .bashrc.
   eval "$1"
+}
+
+function _prompt_to_rerun() {
+  read -rp "This might be fixed by rerunning the script. Rerun? [Y/n] " CONT
+  if [ ! "$CONT" = "n" ]; then
+    exec bash ~/modularhistory/setup.sh
+  fi
 }
 
 if [[ "$os" == "$MAC_OS" ]]; then
@@ -125,7 +134,8 @@ elif [[ "$os" == "$LINUX" ]]; then
   sudo apt install -y bash-completion curl git wget vim
   # PostgreSQL
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" |
+  sudo tee /etc/apt/sources.list.d/pgdg.list
   # All other dependencies
   sudo apt update -y
   sudo apt install -y \
@@ -175,12 +185,13 @@ if [[ "$os" == "$LINUX" ]]; then
     new_shell_required="true"
   }
   if [[ "$new_shell_required" = "true" ]]; then
-    _print_red "
-      File permissions have been updated.
-      To finish setup, ${BOLD}open a new shell${NORMAL} and run the setup script again:
-        cd ~/modularhistory && bash setup.sh
-    "
-    exit
+    _print_red "File permissions have been updated."
+    prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
+    read -rp "$prompt" CONT
+    if [ ! "$CONT" = "n" ]; then
+      exit
+    fi
+    exec bash ~/modularhistory/setup.sh
   fi
 fi
 
@@ -254,6 +265,7 @@ poetry --version &>/dev/null || {
   poetry --version &>/dev/null || {
     _error "Failed to install Poetry (https://python-poetry.org/docs/#installation)."
   }
+  rerun_required="true"
 }
 
 # https://python-poetry.org/docs/configuration/
@@ -314,7 +326,8 @@ if [[ "$os" == "$MAC_OS" ]]; then
       echo "Docker file sharing is enabled for $HOME/modularhistory."
     else
       echo "Enabling file sharing for $HOME/modularhistory ..."
-      cat "$HOME/Library/Group Containers/group.com.docker/settings.json" | jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" > settings.json.tmp &&
+      cat "$HOME/Library/Group Containers/group.com.docker/settings.json" |
+      jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" > settings.json.tmp &&
       mv settings.json.tmp "$docker_settings_file"
       test "$(docker ps -q)" && {
         echo "Stopping containers ..."
@@ -334,6 +347,15 @@ if [[ "$os" == "$MAC_OS" ]]; then
   fi
 fi
 
+if [[ "$rerun_required" = "true" ]]; then
+  prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
+  read -rp "$prompt" CONT
+  if [ ! "$CONT" = "n" ]; then
+    exec bash ~/modularhistory/setup.sh
+  fi
+  exit
+fi
+
 prompt="Seed db and env file [Y/n]? "
 if [[ -f ~/modularhistory/.env ]] && [[ -f ~/modularhistory/.backups/init.sql ]]; then
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
@@ -342,6 +364,8 @@ read -rp "$prompt" CONT
 if [ ! "$CONT" = "n" ]; then
   echo "Seeding database and env file ..."
   poetry run invoke seed && echo "Finished seeding db and env file." || {
+    _print_red "Failed to seed dev environment."
+    _prompt_to_rerun
     _error "
       Failed to seed dev environment. Try running the following in a new shell:
 
@@ -362,11 +386,13 @@ if [ ! "$CONT" = "n" ]; then
   }
 fi
 
-echo "Finished setup."
-
 echo "Spinning up containers ..."
-docker-compose up -d dev || _print_red "
-  Could not start containers. Try running the following in a new shell:
+docker-compose up -d dev || {
+  _print_red "Failed to start containers."
+  _prompt_to_rerun
+  _print_red "
+    Could not start containers. Try running the following in a new shell:
 
-    ${BOLD}cd ~/modularhistory && docker-compose up -d dev && docker-compose logs -f
-"
+      ${BOLD}cd ~/modularhistory && docker-compose up -d dev && docker-compose logs -f
+  "
+} 

@@ -42,6 +42,7 @@
         "**/*.pyc": true,
         "**/__pycache__": true
     },
+    "gitlens.currentLine.scrollable": false,
     "php.suggest.basic": false,
     "php.validate.enable": false,
     "python.formatting.provider": "black",
