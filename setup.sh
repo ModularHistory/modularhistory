@@ -76,7 +76,7 @@ function _append_to_sh_profile() {
 
 function _prompt_to_rerun() {
   read -rp "This might be fixed by rerunning the script. Rerun? [Y/n] " CONT
-  if [ ! "$CONT" = "n" ]; then
+  if [[ ! "$CONT" = "n" ]]; then
     exec bash "$PROJECT_DIR/setup.sh"
   fi
 }
@@ -188,7 +188,7 @@ if [[ "$os" == "$LINUX" ]]; then
     _print_red "File permissions have been updated."
     prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
     read -rp "$prompt" CONT
-    if [ ! "$CONT" = "n" ]; then
+    if [[ ! "$CONT" = "n" ]]; then
       exec bash "$PROJECT_DIR/setup.sh"
     fi
     exit
@@ -210,7 +210,7 @@ pyenv_dir="$HOME/.pyenv"
 # shellcheck disable=SC2016
 _append_to_sh_profile 'export PATH="$HOME/.pyenv/bin:$PATH"'
 pyenv --version &>/dev/null || {
-  [ -d "$pyenv_dir" ] && {
+  [[ -d "$pyenv_dir" ]] && {
     echo "Removing extant $pyenv_dir ..."
     sudo rm -rf "$pyenv_dir" &>/dev/null
   }
@@ -256,6 +256,7 @@ echo "Using $(python --version) ..."
 pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
 
 # Install Poetry
+# shellcheck disable=SC2016
 poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
 poetry --version &>/dev/null || {
   echo "Installing Poetry ..."
@@ -276,7 +277,9 @@ echo "Using $(poetry --version) ..."
 
 if [[ "$os" == "$MAC_OS" ]]; then
   # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
+  # shellcheck disable=SC2155
   export LDFLAGS="-L$(brew --prefix openssl@1.1)/lib"
+  # shellcheck disable=SC2155
   export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
 fi
 # Install dependencies with Poetry
@@ -289,9 +292,9 @@ nvm --version &>/dev/null || {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   # shellcheck disable=SC1090
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # loads nvm
+  [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # loads nvm
   # shellcheck disable=SC1090
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
+  [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
 echo "Installing Node modules ..."
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
@@ -320,15 +323,13 @@ fi
 if [[ "$os" == "$MAC_OS" ]]; then
   # Enable mounting volumes within ~/modularhistory
   docker_settings_file="$HOME/Library/Group Containers/group.com.docker/settings.json"
-  if [[ -f "$docker_settings_file" ]]; then 
-    # shellcheck disable=SC2002
-    sharing_enabled=$(cat "$docker_settings_file" | jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])")
+  if [[ -f "$docker_settings_file" ]]; then
+    sharing_enabled=$(jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])" < "$docker_settings_file")
     if [[ $sharing_enabled = true ]]; then
       echo "Docker file sharing is enabled for $HOME/modularhistory."
     else
       echo "Enabling file sharing for $PROJECT_DIR ..."
-      cat "$HOME/Library/Group Containers/group.com.docker/settings.json" |
-      jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" > settings.json.tmp &&
+      jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" < "$docker_settings_file" > settings.json.tmp &&
       mv settings.json.tmp "$docker_settings_file"
       test "$(docker ps -q)" && {
         echo "Stopping containers ..."
@@ -351,7 +352,7 @@ fi
 if [[ "$rerun_required" = "true" ]]; then
   prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
   read -rp "$prompt" CONT
-  if [ ! "$CONT" = "n" ]; then
+  if [[ ! "$CONT" = "n" ]]; then
     exec bash "$PROJECT_DIR/setup.sh"
   fi
   exit
@@ -364,6 +365,7 @@ fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   echo "Seeding database and env file ..."
+  # shellcheck disable=SC2015
   poetry run invoke seed && echo "Finished seeding db and env file." || {
     _print_red "Failed to seed dev environment."
     _prompt_to_rerun
@@ -377,6 +379,7 @@ fi
 
 read -rp "Sync media [Y/n]? " CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
+  # shellcheck disable=SC2015
   poetry run invoke media.sync && echo "Finished syncing media." || {
     _print_red "
       Failed to sync media. Try running the following in a new shell:
@@ -388,7 +391,8 @@ if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
 fi
 
 echo "Spinning up containers ..."
-docker-compose up -d dev || {
+# shellcheck disable=SC2015
+docker-compose up -d dev && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "

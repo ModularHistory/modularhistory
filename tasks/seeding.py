@@ -8,7 +8,7 @@ from datetime import datetime
 from os.path import join
 from typing import List, Optional
 from zipfile import BadZipFile, ZipFile
-
+from getpass import getpass
 import django
 import requests
 from dotenv import load_dotenv
@@ -76,7 +76,7 @@ def seed(
         )
         print()
         username = input('Enter your GitHub username/email: ')
-        pat = input('Enter your GitHub personal access token: ')
+        pat = getpass('Enter your GitHub personal access token: ')
         signature = f'{username}:{pat}'
         while not pat_is_valid(context, username, pat):
             print('Invalid GitHub credentials.')
