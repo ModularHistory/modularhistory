@@ -189,9 +189,9 @@ if [[ "$os" == "$LINUX" ]]; then
     prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
     read -rp "$prompt" CONT
     if [ ! "$CONT" = "n" ]; then
-      exit
+      exec bash "$PROJECT_DIR/setup.sh"
     fi
-    exec bash "$PROJECT_DIR/setup.sh"
+    exit
   fi
 fi
 
