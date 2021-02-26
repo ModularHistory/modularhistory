@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PROJECT_DIR=$(dirname "$0")
+
 RED='\033[0;31m'
 NC='\033[0m'  # No Color
 
@@ -75,7 +77,7 @@ function _append_to_sh_profile() {
 function _prompt_to_rerun() {
   read -rp "This might be fixed by rerunning the script. Rerun? [Y/n] " CONT
   if [ ! "$CONT" = "n" ]; then
-    exec bash ~/modularhistory/setup.sh
+    exec bash "$PROJECT_DIR/setup.sh"
   fi
 }
 
@@ -159,8 +161,7 @@ elif [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Enter the project
-project_dir=$(dirname "$0")
-cd "$project_dir" || _error "Could not cd into $project_dir"
+cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
 echo "Working in $(pwd) ..."
 
 # Create directories for db backups, static files, and media files
@@ -175,12 +176,12 @@ if [[ "$os" == "$LINUX" ]]; then
     }
     rerun_required="true"
   }
-  ls -ld ~/modularhistory | grep -q "$USER www-data" || {
+  ls -ld "$PROJECT_DIR" | grep -q "$USER www-data" || {
     echo "Granting the www-data group permission to write in project directories ..."
-    sudo chown -R "$USER":www-data ~/modularhistory
-    sudo chmod g+w -R ~/modularhistory/.backups
-    sudo chmod g+w -R ~/modularhistory/media
-    sudo chmod g+w -R ~/modularhistory/static
+    sudo chown -R "$USER":www-data "$PROJECT_DIR"
+    sudo chmod g+w -R "$PROJECT_DIR/.backups"
+    sudo chmod g+w -R "$PROJECT_DIR/media"
+    sudo chmod g+w -R "$PROJECT_DIR/static"
     rerun_required="true"
   }
   if [[ "$rerun_required" = "true" ]]; then
@@ -188,9 +189,9 @@ if [[ "$os" == "$LINUX" ]]; then
     prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
     read -rp "$prompt" CONT
     if [ ! "$CONT" = "n" ]; then
-      exit
+      exec bash "$PROJECT_DIR/setup.sh"
     fi
-    exec bash ~/modularhistory/setup.sh
+    exit
   fi
 fi
 
@@ -325,7 +326,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
     if [[ $sharing_enabled = true ]]; then
       echo "Docker file sharing is enabled for $HOME/modularhistory."
     else
-      echo "Enabling file sharing for $HOME/modularhistory ..."
+      echo "Enabling file sharing for $PROJECT_DIR ..."
       cat "$HOME/Library/Group Containers/group.com.docker/settings.json" |
       jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" > settings.json.tmp &&
       mv settings.json.tmp "$docker_settings_file"
@@ -351,17 +352,17 @@ if [[ "$rerun_required" = "true" ]]; then
   prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
   read -rp "$prompt" CONT
   if [ ! "$CONT" = "n" ]; then
-    exec bash ~/modularhistory/setup.sh
+    exec bash "$PROJECT_DIR/setup.sh"
   fi
   exit
 fi
 
 prompt="Seed db and env file [Y/n]? "
-if [[ -f ~/modularhistory/.env ]] && [[ -f ~/modularhistory/.backups/init.sql ]]; then
+if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.backups/init.sql" ]]; then
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
 fi
 read -rp "$prompt" CONT
-if [ ! "$CONT" = "n" ]; then
+if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   echo "Seeding database and env file ..."
   poetry run invoke seed && echo "Finished seeding db and env file." || {
     _print_red "Failed to seed dev environment."
@@ -375,7 +376,7 @@ if [ ! "$CONT" = "n" ]; then
 fi
 
 read -rp "Sync media [Y/n]? " CONT
-if [ ! "$CONT" = "n" ]; then
+if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   poetry run invoke media.sync && echo "Finished syncing media." || {
     _print_red "
       Failed to sync media. Try running the following in a new shell:
@@ -389,7 +390,7 @@ fi
 echo "Spinning up containers ..."
 docker-compose up -d dev || {
   _print_red "Failed to start containers."
-  _prompt_to_rerun
+  [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
     Could not start containers. Try running the following in a new shell:
 
