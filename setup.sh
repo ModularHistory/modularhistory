@@ -339,10 +339,9 @@ if [ ! "$CONT" = "n" ]; then
   echo "Seeding database and env file ..."
   poetry run invoke seed && echo "Finished seeding db and env file." || {
     _error "
-      Failed to seed dev environment. 
-      Try running the following ${BOLD}in a new shell${NORMAL}:
+      Failed to seed dev environment. Try running the following in a new shell:
 
-        cd ~/modularhistory && poetry run invoke seed
+        ${BOLD}cd ~/modularhistory && poetry run invoke seed
     "
   }
 fi
@@ -351,10 +350,9 @@ read -rp "Sync media [Y/n]? " CONT
 if [ ! "$CONT" = "n" ]; then
   poetry run invoke media.sync && echo "Finished syncing media." || {
     _print_red "
-      Failed to sync media. 
-      Try running the following ${BOLD}in a new shell${NORMAL}:
+      Failed to sync media. Try running the following in a new shell:
 
-        cd ~/modularhistory && poetry run invoke media.sync
+        ${BOLD}cd ~/modularhistory && poetry run invoke media.sync
 
     "
   }
@@ -363,9 +361,8 @@ fi
 echo "Finished setup."
 
 echo "Spinning up containers ..."
-sudo su -c 'docker-compose up -d dev' "$USER" || _print_red "
-  Could not start containers. 
-  Try running the following ${BOLD}in a new shell${NORMAL}:
+docker-compose up -d dev || _print_red "
+  Could not start containers. Try running the following in a new shell:
 
-    cd ~/modularhistory && docker-compose up -d dev && docker-compose logs -f
+    ${BOLD}cd ~/modularhistory && docker-compose up -d dev && docker-compose logs -f
 "
