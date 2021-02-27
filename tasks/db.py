@@ -12,7 +12,7 @@ from paramiko import SSHClient
 from scp import SCPClient
 
 from modularhistory.constants.environments import Environments
-from modularhistory.utils import commands
+from modularhistory.utils import db
 
 from .command import command
 
@@ -40,7 +40,7 @@ SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
 @command
 def backup(context, redact: bool = False, push: bool = False):
     """Create a database backup file."""
-    commands.back_up_db(context, redact=redact, push=push)
+    db.back_up(context, redact=redact, push=push)
 
 
 @command
@@ -81,22 +81,22 @@ def get_backup(context, env: str = Environments.DEV):
 @command
 def makemigrations(context, noninteractive: bool = False):
     """Safely create migrations."""
-    commands.makemigrations(context, noninteractive=noninteractive)
+    db.makemigrations(context, noninteractive=noninteractive)
 
 
 @command
 def migrate(context, *args, noninteractive: bool = False):
     """Safely run db migrations."""
-    commands.migrate(context, *args, noninteractive=noninteractive)
+    db.migrate(context, *args, noninteractive=noninteractive)
 
 
 @command
 def restore_squashed_migrations(context):
     """Restore migrations with squashed_migrations."""
-    commands.restore_squashed_migrations(context)
+    db.restore_squashed_migrations(context)
 
 
 @command
 def squash_migrations(context, dry: bool = True):
     """Squash migrations."""
-    commands.squash_migrations(context, dry)
+    db.squash_migrations(context, dry)

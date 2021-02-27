@@ -7,7 +7,7 @@ from pprint import pprint
 import django
 
 from modularhistory.constants.environments import Environments
-from modularhistory.utils import commands
+from modularhistory.utils import media
 
 from .command import command
 
@@ -33,7 +33,7 @@ SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
 def backup(context, redact: bool = False, push: bool = False):
     """Create a media backup file."""
     # based on https://github.com/django-dbbackup/django-dbbackup#mediabackup
-    commands.back_up_media(context, redact=redact, push=push)
+    media.back_up(context, redact=redact, push=push)
 
 
 @command
@@ -69,7 +69,7 @@ def sync(context, push: bool = False):
         '    docker-compose up -d dev\n\n'
         '..........................'
     )
-    commands.sync_media(context, push=push)
+    media.sync(context, push=push)
     restore_from_tar = False
     if restore_from_tar and os.path.exists(join(BACKUPS_DIR, 'media.tar.gz')):
         context.run(

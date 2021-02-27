@@ -1,14 +1,10 @@
-# pylint: disable=anomalous-backslash-in-string
-
 import logging
 import os
-import re
-from glob import glob, iglob
+from glob import glob
 from os.path import join
-from pprint import pformat
-from typing import Any, Callable, Iterable, Optional, TypeVar
+from typing import Optional
 from zipfile import ZipFile
-from decouple import config
+
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -21,9 +17,7 @@ from modularhistory.constants.misc import (
     SQUASHED_MIGRATIONS_DIRNAME,
 )
 from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
-from modularhistory.utils.files import relativize
-
-TaskFunction = TypeVar('TaskFunction', bound=Callable[..., Any])
+from modularhistory.utils.files import relativize, upload_to_mega
 
 CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
@@ -31,45 +25,7 @@ SECONDS_IN_DAY = 86400
 SECONDS_TO_KEEP_BACKUP = DAYS_TO_KEEP_BACKUP * SECONDS_IN_DAY
 
 
-def autoformat(context: Context = CONTEXT, files: Optional[Iterable[str]] = None):
-    """Autoformat all of ModularHistory's Python code."""
-    commands = (
-        (
-            'autoflake --imports=apps,django,requests,typing,urllib3 '
-            '--ignore-init-module-imports --in-place {filename}'
-        ),
-        ('unify --in-place {filename}'),
-        ('black {filename}'),
-    )
-    file_names = files or iglob('[!.]**/*.py', recursive=True)
-    for filename in file_names:
-        print(f'Formatting {filename}...')
-        for command in commands:
-            context.run(command.format(filename=filename))
-    context.run('isort .')
-
-
-def clear_migration_history(context: Context = CONTEXT):
-    """."""
-    with transaction.atomic():
-        for app in APPS_WITH_MIGRATIONS:
-            n_migrations = (
-                len(os.listdir(path=relativize(join(app, MIGRATIONS_DIRNAME)))) - 1
-            )
-            if n_migrations > MAX_MIGRATION_COUNT:
-                # Fake reverting all migrations.
-                print(f'\n Clearing migration history for the {app} app...')
-                revert_to_migration_zero(context, app)
-            else:
-                print(
-                    f'Skipping {app} since there are only {n_migrations} migration files...'
-                )
-    # Remove old migration files.
-    if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
-        remove_migrations(context)
-
-
-def back_up_db(
+def back_up(
     context: Context = CONTEXT,
     redact: bool = False,
     zip: bool = False,
@@ -125,45 +81,24 @@ def back_up_db(
     )
 
 
-def back_up_media(
-    context: Context = CONTEXT,
-    redact: bool = False,
-    push: bool = False,
-    filename: Optional[str] = None,
-):
-    """Create a media backup file."""
-    backups_dir, media_dir = settings.BACKUPS_DIR, settings.MEDIA_ROOT
-    backup_files_pattern = join(backups_dir, '*.tar.gz')
-    account_media_dir = join(media_dir, 'account')
-    temp_dir = join(settings.BASE_DIR, 'account_media')
-    exclude_account_media = redact and os.path.exists(account_media_dir)
-    if exclude_account_media:
-        context.run(f'mv {account_media_dir} {temp_dir}')
-        context.run(f'mkdir {account_media_dir}')
-    # https://github.com/django-dbbackup/django-dbbackup#mediabackup
-    context.run('python manage.py mediabackup -z --noinput', hide='out')
-    if exclude_account_media:
-        context.run(f'rm -r {account_media_dir}')
-        context.run(f'mv {temp_dir} {account_media_dir}')
-    backup_files = glob(backup_files_pattern)
-    backup_file = max(backup_files, key=os.path.getctime)
-    if filename:
-        context.run(f'mv {backup_file} {join(backups_dir, filename)}')
-        backup_file = join(backups_dir, filename)
-    print(f'Finished creating backup file: {backup_file}')
-    if push:
-        upload_to_mega(file=backup_file, account=Environments.DEV)
-
-
-def envsubst(input_file) -> str:
-    """Python implementation of envsubst."""
-    with open(input_file, 'r') as base:
-        content_after = content_before = base.read()
-        for match in re.finditer(r'\$\{?(.+?)\}?', content_before):
-            env_var = match.group(1)
-            env_var_value = os.getenv(env_var)
-            content_after = content_before.replace(match.group(0), env_var_value or '')
-    return content_after
+def clear_migration_history(context: Context = CONTEXT):
+    """."""
+    with transaction.atomic():
+        for app in APPS_WITH_MIGRATIONS:
+            n_migrations = (
+                len(os.listdir(path=relativize(join(app, MIGRATIONS_DIRNAME)))) - 1
+            )
+            if n_migrations > MAX_MIGRATION_COUNT:
+                # Fake reverting all migrations.
+                print(f'\n Clearing migration history for the {app} app...')
+                revert_to_migration_zero(context, app)
+            else:
+                print(
+                    f'Skipping {app} since there are only {n_migrations} migration files...'
+                )
+    # Remove old migration files.
+    if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
+        remove_migrations(context)
 
 
 def makemigrations(context: Context = CONTEXT, noninteractive: bool = False):
@@ -191,42 +126,6 @@ def migrate(context: Context = CONTEXT, *args, noninteractive: bool = False):
     print()
     if interactive and input('Did migrations run successfully? [Y/n] ') == NEGATIVE:
         context.run('python manage.py dbrestore')
-
-
-def push_seeds(context: Context = CONTEXT):
-    """Push db and media seeds to the cloud."""
-    back_up_db(context, redact=True, push=True, filename='init.sql')
-    back_up_media(context, redact=True, push=True, filename='media.tar.gz')
-
-
-def restore_squashed_migrations(context: Context = CONTEXT):
-    """Restore migrations with squashed_migrations."""
-    for app in APPS_WITH_MIGRATIONS:
-        squashed_migrations_dir = relativize(join(app, SQUASHED_MIGRATIONS_DIRNAME))
-        # TODO: only do this if there are files in the squashed_migrations dir
-        squashed_migrations_exist = os.path.exists(
-            squashed_migrations_dir
-        ) and os.listdir(path=squashed_migrations_dir)
-        if squashed_migrations_exist:
-            # Remove the replacement migrations
-            migration_files_path = relativize(f'{app}/migrations/*.py')
-            context.run(
-                f'find . -type f -path "{migration_files_path}" '
-                f'-not -name "__init__.py" '
-                f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
-            )
-            # Restore the squashed migrations
-            migrations_dir = relativize(f'{join(app, MIGRATIONS_DIRNAME)}')
-            context.run(
-                f'find {squashed_migrations_dir} -type f -name "*.py" '
-                f'-exec mv {BASH_PLACEHOLDER} {migrations_dir}/ \;'  # noqa: W605
-            )
-            # Remove the squashed_migrations directory
-            if os.path.exists(squashed_migrations_dir):
-                context.run(f'rm -r {squashed_migrations_dir}')
-            print(f'Removed squashed migrations from {app}.')
-        else:
-            print(f'There are no squashed migrations to remove from {app}.')
 
 
 def remove_migrations(
@@ -288,6 +187,36 @@ def remove_migrations_from_app(
     print(f'Removed migration files from {app}.')
 
 
+def restore_squashed_migrations(context: Context = CONTEXT):
+    """Restore migrations with squashed_migrations."""
+    for app in APPS_WITH_MIGRATIONS:
+        squashed_migrations_dir = relativize(join(app, SQUASHED_MIGRATIONS_DIRNAME))
+        # TODO: only do this if there are files in the squashed_migrations dir
+        squashed_migrations_exist = os.path.exists(
+            squashed_migrations_dir
+        ) and os.listdir(path=squashed_migrations_dir)
+        if squashed_migrations_exist:
+            # Remove the replacement migrations
+            migration_files_path = relativize(f'{app}/migrations/*.py')
+            context.run(
+                f'find . -type f -path "{migration_files_path}" '
+                f'-not -name "__init__.py" '
+                f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
+            )
+            # Restore the squashed migrations
+            migrations_dir = relativize(f'{join(app, MIGRATIONS_DIRNAME)}')
+            context.run(
+                f'find {squashed_migrations_dir} -type f -name "*.py" '
+                f'-exec mv {BASH_PLACEHOLDER} {migrations_dir}/ \;'  # noqa: W605
+            )
+            # Remove the squashed_migrations directory
+            if os.path.exists(squashed_migrations_dir):
+                context.run(f'rm -r {squashed_migrations_dir}')
+            print(f'Removed squashed migrations from {app}.')
+        else:
+            print(f'There are no squashed migrations to remove from {app}.')
+
+
 def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
     """Spoof reverting migrations by running a fake migration to `zero`."""
     app = app or input('App name: ')
@@ -343,60 +272,3 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
         restore_squashed_migrations(context)
         if input('Squash migrations for real? [Y/n] ') != NEGATIVE:
             squash_migrations(context, dry=False)
-
-
-def sync_media(
-    context: Context = CONTEXT, push: bool = False, max_transfer: str = '5G'
-):
-    """Sync media from source to destination, modifying destination only."""
-    # TODO: refactor
-    mega_username = config(
-        'MEGA_DEV_USERNAME', default=config('MEGA_USERNAME', default=None)
-    )
-    mega_password = config(
-        'MEGA_DEV_PASSWORD', default=config('MEGA_PASSWORD', default=None)
-    )
-    local_media_dir = settings.MEDIA_ROOT
-    mega_media_dir = 'mega:/media/'
-    source, destination = (
-        (local_media_dir, mega_media_dir) if push else (mega_media_dir, local_media_dir)
-    )
-    use_gdrive=False  # TODO
-    if use_gdrive:
-        command = (
-            f'rclone sync {source} {destination} '
-            f'--drive-client-id=... '
-            f'--drive-client-secret=...'
-        )
-    else:
-        # https://rclone.org/drive/#standard-options
-        command = (
-            f'rclone sync {source} {destination} '
-            # https://rclone.org/flags/
-            f'--max-transfer={max_transfer} --order-by="size,ascending" --progress '
-            f'--config {join(settings.BASE_DIR, "config/rclone/rclone.conf")} '
-            f'--mega-user={mega_username} '
-            f'--mega-pass=$(echo "{mega_password}" | rclone obscure -)'
-        )
-    if push:
-        command = f'{command} --drive-stop-on-upload-limit'
-    else:
-        command = f'{command} --drive-stop-on-download-limit'
-    context.run(command)
-
-
-def upload_to_mega(file: str, account: str = 'default'):
-    """Upload a file to Mega."""
-    from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
-
-    mega_client = mega_clients[account]
-    logging.info(f'Pushing {file} to Mega ({account}) ...')
-    extant_file = mega_client.find(file, exclude_deleted=True)
-    if extant_file:
-        logging.info(f'Found extant backup: {extant_file}')
-    result = mega_client.upload(file)
-    logging.info(f'Upload result: {pformat(result)}')
-    uploaded_file = mega_client.find(os.path.basename(file))
-    if not uploaded_file:
-        raise Exception(f'{file} was not found in Mega ({account}) after uploading.')
-    return uploaded_file

@@ -11,7 +11,7 @@ try:
     from modularhistory.linters import mypy as lint_with_mypy
 except ModuleNotFoundError:
     print('Skipped importing nonexistent linting modules.')
-from modularhistory.utils import commands
+from modularhistory.utils import qa
 
 from .command import command
 
@@ -24,7 +24,7 @@ from django.conf import settings  # noqa: E402
 @command
 def autoformat(context):
     """Safely run autoformatters against all Python files."""
-    commands.autoformat(context)
+    qa.autoformat(context)
 
 
 @command

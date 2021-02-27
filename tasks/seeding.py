@@ -5,17 +5,18 @@ import logging
 import os
 import re
 from datetime import datetime
+from getpass import getpass
 from os.path import join
 from typing import List, Optional
 from zipfile import BadZipFile, ZipFile
-from getpass import getpass
+
 import django
 import requests
 from dotenv import load_dotenv
 
 from modularhistory.constants.environments import Environments
 from modularhistory.constants.strings import NEGATIVE
-from modularhistory.utils import commands
+from modularhistory.utils import files as file_utils
 
 from .command import command
 
@@ -177,12 +178,6 @@ def seed(
 
 
 @command
-def push_seeds(context):
-    """Push db and media seeds to the cloud."""
-    commands.push_seeds()
-
-
-@command
 def write_env_file(context, dev: bool = False, dry: bool = False):
     """Write a .env file."""
     destination_file = '.env'
@@ -200,13 +195,13 @@ def write_env_file(context, dev: bool = False, dry: bool = False):
     vars = (
         context.run(f'envsubst < {template_file}', hide='out').stdout
         if envsubst
-        else commands.envsubst(template_file)
+        else file_utils.envsubst(template_file)
     ).splitlines()
     if dev:
         vars += (
             context.run(f'envsubst < {dev_overrides_file}', hide='out').stdout
             if envsubst
-            else commands.envsubst(dev_overrides_file)
+            else file_utils.envsubst(dev_overrides_file)
         ).splitlines()
     env_vars = {}
     for line in vars:
