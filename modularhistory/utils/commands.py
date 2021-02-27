@@ -345,7 +345,9 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
             squash_migrations(context, dry=False)
 
 
-def sync_media(context: Context = CONTEXT, push: bool = False):
+def sync_media(
+    context: Context = CONTEXT, push: bool = False, max_transfer: str = '5G'
+):
     """Sync media from source to destination, modifying destination only."""
     # TODO: refactor
     mega_username = config(
@@ -359,12 +361,28 @@ def sync_media(context: Context = CONTEXT, push: bool = False):
     source, destination = (
         (local_media_dir, mega_media_dir) if push else (mega_media_dir, local_media_dir)
     )
-    context.run(
-        f'rclone sync {source} {destination} '
-        f'--mega-user={mega_username} '
-        f'--mega-pass=$(echo "{mega_password}" | rclone obscure -) '
-        f'--config {join(settings.BASE_DIR, "config/rclone/rclone.conf")}'
-    )
+    use_gdrive=False  # TODO
+    if use_gdrive:
+        command = (
+            f'rclone sync {source} {destination} '
+            f'--drive-client-id=... '
+            f'--drive-client-secret=...'
+        )
+    else:
+        # https://rclone.org/drive/#standard-options
+        command = (
+            f'rclone sync {source} {destination} '
+            # https://rclone.org/flags/
+            f'--max-transfer={max_transfer} --order-by="size,ascending" --progress '
+            f'--config {join(settings.BASE_DIR, "config/rclone/rclone.conf")} '
+            f'--mega-user={mega_username} '
+            f'--mega-pass=$(echo "{mega_password}" | rclone obscure -)'
+        )
+    if push:
+        command = f'{command} --drive-stop-on-upload-limit'
+    else:
+        command = f'{command} --drive-stop-on-download-limit'
+    context.run(command)
 
 
 def upload_to_mega(file: str, account: str = 'default'):
