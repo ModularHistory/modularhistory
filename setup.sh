@@ -176,14 +176,21 @@ if [[ "$os" == "$LINUX" ]]; then
     }
     rerun_required="true"
   }
+  # shellcheck disable=SC2010
   ls -ld "$PROJECT_DIR" | grep -q "$USER www-data" || {
     echo "Granting the www-data group permission to write in project directories ..."
     sudo chown -R "$USER":www-data "$PROJECT_DIR"
-    sudo chmod g+w -R "$PROJECT_DIR/.backups"
-    sudo chmod g+w -R "$PROJECT_DIR/media"
-    sudo chmod g+w -R "$PROJECT_DIR/static"
     rerun_required="true"
   }
+  writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/static" "$PROJECT_DIR/frontend/.next" )
+  for writable_dir in "${writable_dirs[@]}"; do
+    # shellcheck disable=SC2010
+    sudo -u www-data test -w "$writable_dir" || {
+      echo "Granting the www-data group permission to write in $writable_dir ..."
+      sudo chmod g+w -R "$writable_dir"
+      rerun_required="true"
+    }
+  done
   if [[ "$rerun_required" = "true" ]]; then
     _print_red "File permissions have been updated."
     prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
