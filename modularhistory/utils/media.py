@@ -48,7 +48,7 @@ def back_up(
 def sync(context: Context = CONTEXT, push: bool = False, max_transfer: str = '5G'):
     """Sync media from source to destination, modifying destination only."""
     # TODO: refactor
-    use_gdrive = True  # TODO
+    use_gdrive = True
     local_media_dir = settings.MEDIA_ROOT
     remote_media_dir = 'gdrive:/media/' if use_gdrive else 'mega:/media/'
     if push:
@@ -81,7 +81,7 @@ def sync(context: Context = CONTEXT, push: bool = False, max_transfer: str = '5G
         )
     if push:
         command = f'{command} --drive-stop-on-upload-limit'
-        context.run(f'{command} --dry-run')
+        context.run(f'echo "" && {command} --dry-run; echo ""')
         print('Completed dry run. Proceeding shortly ...')
         context.run('sleep 10')
     else:
