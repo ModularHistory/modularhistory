@@ -8,7 +8,6 @@ import django
 from decouple import config
 
 from modularhistory.constants.environments import Environments
-from modularhistory.utils import commands
 
 from .command import command
 

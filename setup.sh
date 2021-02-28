@@ -6,7 +6,6 @@ RED='\033[0;31m'
 NC='\033[0m'  # No Color
 
 BOLD=$(tput bold)
-NORMAL=$(tput sgr0)
 
 MAC_OS="MacOS"
 LINUX="Linux"
@@ -49,8 +48,11 @@ else
   " && exit
 fi
 echo "Detected $os."
-
 zsh_profile="$HOME/.zshrc"
+
+# Enter the project
+cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
+echo "Working in $(pwd) ..."
 
 # Create shell profiles if they don't already exist
 touch "$bash_profile"
@@ -160,12 +162,9 @@ elif [[ "$os" == "$LINUX" ]]; then
   postgresql-client-13 || _error "Unable to install one or more required packages."
 fi
 
-# Enter the project
-cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
-echo "Working in $(pwd) ..."
-
 # Create directories for db backups, static files, and media files
-mkdir -p .backups static media &>/dev/null
+mkdir -p .backups static media frontend/.next &>/dev/null
+
 if [[ "$os" == "$LINUX" ]]; then
   # Add user to www-data group
   groups "$USER" | grep -q www-data || {
@@ -407,4 +406,6 @@ docker-compose up -d dev && echo 'Finished.' || {
 
       ${BOLD}cd ~/modularhistory && docker-compose up -d dev && docker-compose logs -f
   "
-} 
+}
+
+shasum "$PROJECT_DIR/setup.sh" > "$PROJECT_DIR/.venv/.setup.sha"

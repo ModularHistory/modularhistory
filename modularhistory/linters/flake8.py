@@ -13,7 +13,7 @@ from modularhistory.linters.config import (
 )
 from modularhistory.linters.config import LinterOptions, PerModuleOptions
 from modularhistory.utils import linting
-from modularhistory.utils.commands import autoformat
+from modularhistory.utils.qa import autoformat
 
 StringOrCallable = Union[str, Callable]
 StringOrCallableOrDict = Union[StringOrCallable, Dict[str, StringOrCallable]]
