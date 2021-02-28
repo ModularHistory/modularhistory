@@ -34,7 +34,6 @@ jobs:
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-      RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
@@ -89,8 +88,17 @@ jobs:
     environment: dev
     env:
       ADMINS: ${{ secrets.ADMINS }}
+      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
       SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
       SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
@@ -98,16 +106,8 @@ jobs:
       SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
       SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
       SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
-      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
-      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
-      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+      RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
-      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
     steps:
     - name: Check out main branch
       uses: actions/checkout@v2
