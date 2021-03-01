@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function Modal() {
   return (
     <div className="modal fade" id="modal" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel"

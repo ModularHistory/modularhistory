@@ -44,8 +44,39 @@ env:
   X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
 
 jobs:
-  test:
-    name: Test
+  test-setup:
+    name: Test setup script
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+        # NOTE: Services (running in Docker containers) only work on ubuntu.
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+    environment: dev
+    env:
+      TESTING: true
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache virtual environment
+      uses: actions/cache@v2.1.4
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Run setup script
+      run: bash setup.sh
+      shell: bash
+    
+  test-app:
+    name: Test application
+    # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 3
@@ -99,7 +130,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.4
       id: cache
       with:
         path: |
@@ -111,10 +142,6 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
     ########################################################
     ########################################################
-    - name: Install Chrome and Firefox
-      run: |
-        sudo apt install google-chrome-stable
-        sudo apt-get install firefox
     - name: Make sure pytest is working
       run: |
         echo "def test_pytest(): pass" > nothing.py
@@ -124,7 +151,7 @@ jobs:
       run: poetry run invoke test
 
   build:
-    name: Build
+    name: Build image
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
@@ -157,7 +184,7 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.4
       id: cache
       with:
         path: |
@@ -170,7 +197,7 @@ jobs:
     ########################################################
     ########################################################
     - name: Inject environment vars
-      run: poetry run invoke write-env-file
+      run: poetry run invoke seeding.write-env-file
     - name: Build Docker image
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA
     - name: Run Snyk to check Docker image for vulnerabilities

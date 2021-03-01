@@ -4,7 +4,7 @@ import os
 from celery import Celery
 from invoke.context import Context
 
-from modularhistory.utils import commands
+from modularhistory.utils import db, media
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
@@ -32,18 +32,11 @@ def debug(self):
 def dbbackup(self):
     """Create a database backup file."""
     logging.info(f'dbbackup received request: {self.request!r}')
-    commands.back_up_db()
+    db.back_up()
 
 
 @app.task(bind=True)
 def mediabackup(self):
     """Create a media backup file."""
     logging.info(f'mediabackup received request: {self.request!r}')
-    commands.back_up_media()
-
-
-@app.task(bind=True)
-def push_seeds(self):
-    """Push db and media seeds to the cloud."""
-    logging.info(f'push_seeds received request: {self.request!r}')
-    commands.push_seeds()
+    media.back_up()

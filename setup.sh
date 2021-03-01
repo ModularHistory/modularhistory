@@ -1,135 +1,147 @@
 #!/bin/bash
 
+PROJECT_DIR=$(dirname "$0")
+
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'  # No Color
+
+BOLD=$(tput bold)
 
 MAC_OS="MacOS"
 LINUX="Linux"
 
-function error() {
+# Print message with red text
+function _print_red() {
   # shellcheck disable=SC2059
-  printf "${RED}$1${NC}" && echo ""
+  printf "${RED}$1${NC}\n"
 }
 
-function usage() {
-  cat - >&2 <<EOF
-NAME
-    setup.sh - Setup script for ModularHistory development
-
-SYNOPSIS
-    setup.sh [-h|--help]
-    setup.sh
-    setup.sh [--noninteractive] [--no-installation]
-
-OPTIONS
-  -h, --help
-      Prints this and exits
-
-  --noninteractive
-      Option that makes the script run without user input
-
-  --skip-dependencies
-      Option that makes the script skip installing dependencies with Poetry/Pip
-
-  --skip-dev-dependencies
-      Option that makes the script skip installing dev dependencies with Poetry/Pip
-
-  --
-      Specify end of options; useful if the first non option
-      argument starts with a hyphen
-
-EOF
+# Print message with red text and exit the script with an error status (1)
+function _error() {
+  _print_red "$1" >&2; exit 1
 }
 
-function fatal() {
-  for i; do
-    echo -e "${i}" >&2
-  done
-  exit 1
-}
+rerun_required="false"
 
-# For long option processing
-function next_arg() {
-  if [[ $OPTARG == *=* ]]; then
-    # for cases like '--opt=arg'
-    OPTARG="${OPTARG#*=}"
-  else
-    # for cases like '--opt arg'
-    OPTARG="${args[$OPTIND]}"
-    OPTIND=$((OPTIND + 1))
-  fi
-}
-
-# ':' means preceding option character expects one argument, except
-# first ':' which make getopts run in silent mode. We handle errors with
-# wildcard case catch. Long options are considered as the '-' character
-optspec=":hfb:-:"
-args=("" "$@") # dummy first element so $1 and $args[1] are aligned
-while getopts "$optspec" optchar; do
-  case "$optchar" in
-  h)
-    usage
-    exit 0
-    ;;
-  -) # long option processing
-    case "$OPTARG" in
-    help)
-      usage
-      exit 0
-      ;;
-    noninteractive)
-      noninteractive=true
-      ;;
-    skip-dependencies)
-      skip_dependencies=true
-      ;;
-    skip-dev-dependencies)
-      skip_dev_dependencies=true
-      ;;
-    -) break ;;
-    *) fatal "Unknown option '--${OPTARG}'" "See '${0} --help' for usage" ;;
-    esac
-    ;;
-  *) fatal "Unknown option: '-${OPTARG}'" "See '${0} --help' for usage" ;;
-  esac
-done
-
-shift $((OPTIND - 1))
-
-if [[ "$noninteractive" == true ]]; then
-  interactive=false
-else
-  interactive=true
-fi
-
-# Detect operating system
+# Detect operating system.
 os_name=$(uname -s)
 if [[ "$os_name" == Darwin* ]]; then
   os='MacOS'
+  bash_profile="$HOME/.bash_profile"
 elif [[ "$os_name" == Linux* ]]; then
   os='Linux'
+  bash_profile="$HOME/.bashrc"
 elif [[ "$os_name" == Windows* ]]; then
   os='Windows'
+  # Exit without error:
+  _print_red "
+    This setup script must be run in a bash shell in Windows Subsystem for Linux (WSL):
+    https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup#windows-prereqs
+  " && exit
 else
-  error "Detected unknown operating system."
-  exit 1
+  # Exit without error:
+  _print_red "
+    Unknown operating system: $os_name
+
+    This script must be run from a bash shell on a supported operating system;
+    see https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup.
+  " && exit
 fi
 echo "Detected $os."
+zsh_profile="$HOME/.zshrc"
+
+# Enter the project
+cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
+echo "Working in $(pwd) ..."
+
+# Create shell profiles if they don't already exist
+touch "$bash_profile"
+touch "$zsh_profile"
+
+function _append() {
+  grep -qxF "$1" "$2" || {
+    echo "Appending the following line to $2:" && echo "  $1"
+    echo "$1" >> "$2"
+  }
+}
+
+function _append_to_sh_profile() {
+  # Append to bash profile
+  _append "$1" "$bash_profile"
+  # Append to zsh profile
+  _append "$1" "$zsh_profile"
+  # Explicitly execute the statement, regardless of whether it was already present
+  # in the bash profile, since non-interactive shells on Ubuntu do not execute all 
+  # the statements in .bashrc.
+  eval "$1"
+}
+
+function _prompt_to_rerun() {
+  read -rp "This might be fixed by rerunning the script. Rerun? [Y/n] " CONT
+  if [[ ! "$CONT" = "n" ]]; then
+    exec bash "$PROJECT_DIR/setup.sh"
+  fi
+}
+
+if [[ "$os" == "$MAC_OS" ]]; then
+  # Use GNU Grep
+  # shellcheck disable=SC2016
+  _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
+elif [[ "$os_name" == Linux* ]]; then
+  # Remove conflicting Windows paths from PATH, if necessary.
+  # shellcheck disable=SC2016
+  mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
+  _append_to_sh_profile "$mod"
+fi
 
 # Update package managers
-echo "Checking package manager..."
+echo "Checking package manager ..."
 if [[ "$os" == "$MAC_OS" ]]; then
-  # Install/update Homebrew
+  # Update software dependencies through XCode
+  echo "Updating software ..."
+  xcode-select --install &>/dev/null || softwareupdate -l
+
+  function brew_install {
+    if brew ls --versions "$1" >/dev/null; then
+      HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade "$1"
+    else
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install "$1"
+    fi
+  }
+
+  # Install/update Homebrew and Homebrew-managed packages
   brew help &>/dev/null || {
-    echo "Installing Homebrew..."
+    echo "Installing Homebrew ..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   }
-  echo "Updating packages..."
+  echo "Updating Homebrew packages ..."
   brew update
-  brew tap homebrew/services
+  # PostgreSQL
+  brew tap homebrew/services && brew_install postgresql
+  # Other packages
+  brew_install openssl@1.1
+  brew install rust libjpeg zlib grep jq
+  # Modify PATH to use GNU Grep over MacOS Grep.
+  echo "Modifying PATH (in $bash_profile) to use GNU Grep over BSD Grep ..."
+  # shellcheck disable=SC2016
+  _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
+  # Fix environment for installation of Python versions via pyenv.
+  # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
+  brew install bzip2
+  echo "Exporting LDFLAGS and CFLAGS to allow installing new Python versions via pyenv ..."
+  echo "https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829"
+  export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
+  export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
 elif [[ "$os" == "$LINUX" ]]; then
-  sudo apt update -y && 
-  sudo apt upgrade -y &&
+  sudo apt update -y && sudo apt upgrade -y
+  # Basic dev dependencies
+  sudo apt install -y bash-completion curl git wget vim
+  # PostgreSQL
+  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" |
+  sudo tee /etc/apt/sources.list.d/pgdg.list
+  # All other dependencies
+  sudo apt update -y
   sudo apt install -y \
   make \
   build-essential \
@@ -138,8 +150,6 @@ elif [[ "$os" == "$LINUX" ]]; then
   libbz2-dev \
   libreadline-dev \
   libsqlite3-dev \
-  wget \
-  curl \
   llvm \
   libncurses5-dev \
   libncursesw5-dev \
@@ -148,194 +158,254 @@ elif [[ "$os" == "$LINUX" ]]; then
   libffi-dev \
   liblzma-dev \
   python-openssl \
-  git
+  postgresql-client-common \
+  postgresql-client-13 || _error "Unable to install one or more required packages."
 fi
-
-# Enter the project
-cd "$(dirname "$0")" && echo "Running in $(pwd)..." || exit 1
 
 # Create directories for db backups, static files, and media files
-mkdir -p .backups static media &>/dev/null
+mkdir -p .backups static media frontend/.next &>/dev/null
 
-# If running with sudo, source .bashrc explicitly
-if [ "$EUID" -e 0 ]; then
-  source "$HOME/.bashrc"
+if [[ "$os" == "$LINUX" ]]; then
+  # Add user to www-data group
+  groups "$USER" | grep -q www-data || {
+    echo "Adding $USER to the www-data group ..."
+    sudo usermod -a -G www-data "$USER"
+    groups "$USER" | grep -q www-data || {
+      _error "Failed to add $USER to the www-data group."
+    }
+    rerun_required="true"
+  }
+  # shellcheck disable=SC2010
+  ls -ld "$PROJECT_DIR" | grep -q "$USER www-data" || {
+    echo "Granting the www-data group permission to write in project directories ..."
+    sudo chown -R "$USER":www-data "$PROJECT_DIR"
+    rerun_required="true"
+  }
+  writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/static" "$PROJECT_DIR/frontend/.next" )
+  for writable_dir in "${writable_dirs[@]}"; do
+    # shellcheck disable=SC2010
+    sudo -u www-data test -w "$writable_dir" || {
+      echo "Granting the www-data group permission to write in $writable_dir ..."
+      sudo chmod g+w -R "$writable_dir"
+      rerun_required="true"
+    }
+  done
+  if [[ "$rerun_required" = "true" ]]; then
+    _print_red "File permissions have been updated."
+    prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
+    read -rp "$prompt" CONT
+    if [[ ! "$CONT" = "n" ]]; then
+      exec bash "$PROJECT_DIR/setup.sh"
+    fi
+    exit
+  fi
 fi
 
+# Add container names to /etc/hosts
+echo "Updating /etc/hosts ..."
+sudo grep -qxF "127.0.0.1 postgres" /etc/hosts || { 
+  sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts 
+}
+sudo grep -qxF "127.0.0.1 redis" /etc/hosts || { 
+  sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts 
+}
+
 # Make sure pyenv is installed
-echo "Checking for pyenv..."
+echo "Checking for pyenv ..."
+pyenv_dir="$HOME/.pyenv"
+# shellcheck disable=SC2016
+_append_to_sh_profile 'export PATH="$HOME/.pyenv/bin:$PATH"'
 pyenv --version &>/dev/null || {
+  [[ -d "$pyenv_dir" ]] && {
+    echo "Removing extant $pyenv_dir ..."
+    sudo rm -rf "$pyenv_dir" &>/dev/null
+  }
   if [[ "$os" == "$MAC_OS" ]]; then
     brew install pyenv
-    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >>~/.bash_profile
   elif [[ "$os" == "$LINUX" ]]; then
-    error "Install and configure pyenv (https://github.com/pyenv/pyenv), then rerun this script."
-    exit 1
+    echo "Installing pyenv ..."
+    # https://github.com/pyenv/pyenv-installer
+    curl https://pyenv.run | bash
   fi
 }
-echo "Using $(pyenv --version)..."
-echo "Installing required Python versions..."
+echo "Ensuring pyenv is in PATH ..."
+pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
+echo "Ensuring pyenv automatic activation is enabled ..."
+echo "Using $(pyenv --version) ..."
+echo "Installing required Python versions ..."
+installed_py_versions="$(pyenv versions)"
 while IFS= read -r pyversion; do
-  if [[ -n $pyversion ]]; then
+  # shellcheck disable=SC2076
+  if [[ -n $pyversion ]] && [[ ! "$installed_py_versions" =~ "$pyversion" ]]; then
     pyenv install "$pyversion"
+    # shellcheck disable=SC2076
+    if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
+      _error "Failed to install Python $pyversion."
+    fi
   fi
 done < .python-version
 
+# Activate the local Python version.
+# shellcheck disable=SC2016
+_append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
+
 # Make sure correct version of Python is used
-echo "Checking Python version..."
-python --version &>/dev/null || {
-  error "Could not detect Python. Install Python 3.7 and rerun this script."
-  exit 1
-}
-echo "Using $(python --version)..."
+echo "Checking Python version ..."
+python --version &>/dev/null || _error "Failed to activate Python"
+active_py_version=$(python --version)
+if [[ ! "$active_py_version" =~ .*"$pyversion".* ]]; then
+  _error "Failed to activate Python $pyversion."
+fi
+echo "Using $(python --version) ..."
 
 # Make sure Pip is installed
-pip --version &>/dev/null || {
-  error "Pip is not installed; unable to proceed."
-  exit 1
-}
+pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
 
 # Install Poetry
+# shellcheck disable=SC2016
+poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
 poetry --version &>/dev/null || {
-  echo "Installing Poetry..."
+  echo "Installing Poetry ..."
   # https://python-poetry.org/docs/#osx-linux-bashonwindows-install-instructions
-  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python &>/dev/null
-  # shellcheck source=/dev/null
-  source "$HOME/.poetry/env"
+  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+  _append_to_sh_profile "$poetry_init"
   poetry --version &>/dev/null || {
-    echo "Unable to use Poetry's custom installer; falling back on pip..."
-    # Update Pip
-    pip install --upgrade pip &>/dev/null
-    # Install Poetry with Pip
-    pip install -U poetry
+    _error "Failed to install Poetry (https://python-poetry.org/docs/#installation)."
   }
-  poetry_version=$(poetry --version)
-  if [ -z "$poetry_version" ]; then
-    echo "Error: Unable to install Poetry."
-    exit 1
-  fi
+  rerun_required="true"
 }
-poetry self update &>/dev/null
-echo "Using $(poetry --version)..."
 
 # https://python-poetry.org/docs/configuration/
 poetry config virtualenvs.create true
 poetry config virtualenvs.in-project true
+poetry self update &>/dev/null
+echo "Using $(poetry --version) ..."
 
-if [[ ! "$skip_dependencies" == true ]]; then
-  # Install dependencies with Poetry
-  echo "Installing dependencies..."
-  if [[ "$skip_dev_dependencies" == true ]]; then
-    poetry install --no-dev --no-root || {
-      error "Failed to install dependencies with Poetry."
-      exit 1
-    }
+if [[ "$os" == "$MAC_OS" ]]; then
+  # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
+  # shellcheck disable=SC2155
+  export LDFLAGS="-L$(brew --prefix openssl@1.1)/lib"
+  # shellcheck disable=SC2155
+  export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
+fi
+# Install dependencies with Poetry
+echo "Installing dependencies ..."
+poetry install --no-root || _error "Failed to install dependencies with Poetry."
+
+# Node Version Manager (NVM)
+echo "Enabling NVM ..."
+nvm --version &>/dev/null || {
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  # shellcheck disable=SC1090
+  [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # loads nvm
+  # shellcheck disable=SC1090
+  [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
+}
+echo "Installing Node modules ..."
+cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
+
+# Rclone: https://rclone.org/
+rclone version &>/dev/null || {
+  echo "Creating .tmp dir ..."
+  # shellcheck disable=SC2164
+  mkdir -p .tmp && cd .tmp
+  echo "Downloading rclone setup script ..."
+  curl https://rclone.org/install.sh --output install-rclone.sh
+  cd ..
+  echo "Installing rclone ..."
+  sudo bash .tmp/install-rclone.sh
+  echo "Cleaning up ..."
+  rm -r .tmp
+}
+mkdir -p "$HOME/.config/rclone"
+
+# Disable THP so it doesn't cause issues for Redis containers
+if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+  echo "Disabling THP ..."
+  sudo bash -c "echo madvise > /sys/kernel/mm/transparent_hugepage/enabled"
+fi
+
+if [[ "$os" == "$MAC_OS" ]]; then
+  # Enable mounting volumes within ~/modularhistory
+  docker_settings_file="$HOME/Library/Group Containers/group.com.docker/settings.json"
+  if [[ -f "$docker_settings_file" ]]; then
+    sharing_enabled=$(jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])" < "$docker_settings_file")
+    if [[ $sharing_enabled = true ]]; then
+      echo "Docker file sharing is enabled for $HOME/modularhistory."
+    else
+      echo "Enabling file sharing for $PROJECT_DIR ..."
+      jq ".filesharingDirectories += [\"$HOME/modularhistory\"]" < "$docker_settings_file" > settings.json.tmp &&
+      mv settings.json.tmp "$docker_settings_file"
+      test "$(docker ps -q)" && {
+        echo "Stopping containers ..."
+        docker-compose down
+      }
+      test -z "$(docker ps -q)" && {
+        echo "Quitting Docker ..."
+        osascript -e 'quit app "Docker"'
+        sleep 9
+        echo "Starting Docker ..."
+        open --background -a Docker
+        while ! docker system info > /dev/null 2>&1; do sleep 2; done
+      }
+    fi
   else
-    poetry install --no-root
+    echo "Could not find Docker settings file; skipping enabling Docker file sharing ... "
   fi
 fi
 
-rclone version &>/dev/null || {
-  curl https://rclone.org/install.sh | sudo bash
-}
-mkdir -p $HOME/.config/rclone
-cp config/rclone/rclone.conf $HOME/.config/rclone/rclone.conf
-
-# read -r -d '' INITIAL_ENV_CONTENTS << EOM
-# This is line 1.
-# This is line 2.
-# Line 3.
-# EOM
-# $INITIAL_ENV_CONTENTS >> .env
-
-# TODO
-if [[ false ]]; then
-  echo "Initializing db..."
-  # # Grant the db user access to create databases (so that tests can be run, etc.)
-  # db_user=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["USER"])')
-  # echo "Granting $db_user permission to create databases..."
-  # psql postgres -c "ALTER USER $db_user CREATEDB" &>/dev/null
-
-  # if [[ "$interactive" == true ]]; then
-  #   # Check if default db exists
-  #   db_name=$(python -c 'from modularhistory.settings import DATABASES; print(DATABASES["default"]["NAME"])')
-  #   echo "Checking if db named $db_name (specified in project settings) exists..."
-  #   # Check if db already exists
-  #   if psql "$db_name" -c '\q' 2>&1; then
-  #     echo "Database named $db_name already exists."
-  #     while [ "$create_database" != "y" ] && [ "$create_database" != "n" ]; do
-  #       echo "Recreate database? (WARNING: All local changes will be obliterated.) [y/n] "
-  #       read -r create_database
-  #     done
-  #     if [[ "$create_database" == "y" ]]; then
-  #       echo "Dropping $db_name..."
-  #       lsof -t -i tcp:8000 | xargs kill -9 &>/dev/null
-  #       dropdb "$db_name" || {
-  #         error "Failed to drop database '$db_name'"
-  #         error "Hint: Try stopping the development server and rerunning this script."
-  #         exit 1
-  #       }
-  #     fi
-  #   else
-  #     create_database="y"
-  #   fi
-
-  #   # Create db (if it does not already exist)
-  #   if [[ "$create_database" == "y" ]]; then
-  #     echo "Creating $db_name..."
-  #     createdb "$db_name" || error "Failed to create database."
-
-  #     while [ "$use_sql_file" != "y" ] && [ "$use_sql_file" != "n" ]; do
-  #       read -r -p "Build db from a SQL backup file? [y/n] " use_sql_file
-  #     done
-
-  #     if [[ "$use_sql_file" == "y" ]]; then
-  #       while [[ ! -f "$sql_file" ]]; do
-  #         read -r -e -p "Enter path to SQL file (to build db): " sql_file
-  #         sql_file="${sql_file/\~/$HOME}"
-  #         if [[ ! -f "$sql_file" ]]; then
-  #           echo "$sql_file does not exist."
-  #         fi
-  #       done
-  #       echo "Importing $sql_file..."
-  #       psql "$db_name" <"$sql_file" &>/dev/null || error "Failed to import $sql_file."
-
-  #       # Set db permissions correctly
-  #       psql "$db_name" -c "alter database $db_name owner to $db_user" &>/dev/null
-  #       psql "$db_name" -c "alter schema public owner to $db_user" &>/dev/null
-  #       # Set permissions for db tables
-  #       tables=$(psql "$db_name" -qAt -c "select tablename from pg_tables where schemaname = 'public';")
-  #       for table in $tables; do
-  #         psql "$db_name" -c "alter table \"$table\" owner to $db_user" &>/dev/null
-  #       done
-  #       # Set permissions for db sequences
-  #       seqs=$(psql "$db_name" -qAt -c "select sequence_name from information_schema.sequences where sequence_schema = 'public';")
-  #       for seq in $seqs; do
-  #         psql "$db_name" -c "alter table \"$seq\" owner to $db_user" &>/dev/null
-  #       done
-  #       # Set permissions for db views
-  #       views=$(psql "$db_name" -qAt -c "select table_name from information_schema.views where table_schema = 'public';")
-  #       for view in $views; do
-  #         psql "$db_name" -c "alter table \"$view\" owner to $db_user" &>/dev/null
-  #       done
-  #     fi
-  #   fi
-  # fi
-
-  # # Run database migrations
-  # if [[ "${USE_PROD_DB}" != 'True' ]]; then
-  #   if [[ "$interactive" == true ]]; then
-  #     while [ "$run_migrations" != "y" ] && [ "$run_migrations" != "n" ]; do
-  #       echo "Run db migrations? [y/n] "
-  #       read -r run_migrations
-  #     done
-  #   else
-  #     run_migrations="y"
-  #   fi
-  #   if [[ "$run_migrations" == "y" ]]; then
-  #     echo "Running database migrations..."
-  #     python manage.py migrate || exit 1
-  #     echo ""
-  #   fi
-  # fi
+if [[ "$rerun_required" = "true" ]]; then
+  prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
+  read -rp "$prompt" CONT
+  if [[ ! "$CONT" = "n" ]]; then
+    exec bash "$PROJECT_DIR/setup.sh"
+  fi
+  exit
 fi
+
+prompt="Seed db and env file [Y/n]? "
+if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.backups/init.sql" ]]; then
+  prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
+fi
+read -rp "$prompt" CONT
+if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
+  echo "Seeding database and env file ..."
+  # shellcheck disable=SC2015
+  poetry run invoke seed && echo "Finished seeding db and env file." || {
+    _print_red "Failed to seed dev environment."
+    _prompt_to_rerun
+    _error "
+      Failed to seed dev environment. Try running the following in a new shell:
+
+        ${BOLD}cd ~/modularhistory && poetry run invoke seed
+    "
+  }
+fi
+
+read -rp "Sync media [Y/n]? " CONT
+if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
+  # shellcheck disable=SC2015
+  poetry run invoke media.sync && echo "Finished syncing media." || {
+    _print_red "
+      Failed to sync media. Try running the following in a new shell:
+
+        ${BOLD}cd ~/modularhistory && poetry run invoke media.sync
+
+    "
+  }
+fi
+
+echo "Spinning up containers ..."
+# shellcheck disable=SC2015
+docker-compose up -d dev && echo 'Finished.' || {
+  _print_red "Failed to start containers."
+  [[ ! $TESTING = true ]] && _prompt_to_rerun
+  _print_red "
+    Could not start containers. Try running the following in a new shell:
+
+      ${BOLD}cd ~/modularhistory && docker-compose up -d dev && docker-compose logs -f
+  "
+}
+
+shasum "$PROJECT_DIR/setup.sh" > "$PROJECT_DIR/.venv/.setup.sha"

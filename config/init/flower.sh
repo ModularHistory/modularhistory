@@ -2,7 +2,8 @@
 
 wait-for-it.sh redis:6379 -- 
 until timeout 15 celery -A modularhistory inspect ping; do
-    >&2 echo "Celery workers not available"
+    >&2 echo "Celery workers not available; waiting..."
+    sleep 3
 done
 
 # --url_prefix=flower

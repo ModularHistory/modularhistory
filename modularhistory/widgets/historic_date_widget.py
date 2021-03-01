@@ -203,7 +203,7 @@ class HistoricDateWidget(MultiWidget):
         )
         if historic_datetime.use_ybp:
             year, year_system = historic_datetime.year_bp, YBP
-        elif historic_datetime.is_bce:
+        elif historic_datetime.year_bce:
             year, year_system = historic_datetime.year_bce, BCE
         else:
             year_system = CE

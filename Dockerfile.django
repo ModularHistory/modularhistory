@@ -18,7 +18,7 @@ ENV \
 # Add PostgreSQL repo.
 RUN wget --quiet https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
   apt-key add ACCC4CF8.asc && \
-  sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
 
 # Install packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -51,7 +51,8 @@ RUN if [ "$ENVIRONMENT" = "dev" ] ; then poetry install --no-interaction --no-an
 RUN mkdir -p -- \
   /modularhistory/static \
   /modularhistory/media \
-  /modularhistory/.backups
+  /modularhistory/.backups \
+  /opt/atlas
 
 # Add source code.
 COPY . /modularhistory/

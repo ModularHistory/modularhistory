@@ -315,12 +315,8 @@ USE_TZ = True
 # Mega credentials
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
-if IS_DEV:
-    MEGA_DEV_USERNAME = MEGA_USERNAME
-    MEGA_DEV_PASSWORD = MEGA_PASSWORD
-else:
-    MEGA_DEV_USERNAME = config('MEGA_DEV_USERNAME', default=None)
-    MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=None)
+MEGA_DEV_USERNAME = config('MEGA_DEV_USERNAME', default=MEGA_USERNAME)
+MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=MEGA_PASSWORD)
 
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -445,10 +441,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 # https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
 CELERY_RESULT_BACKEND = 'django-cache'
 CELERY_CACHE_BACKEND = 'default'
-
-DISABLE_CHECKS = config('DISABLE_CHECKS', cast=bool, default=False)
-if ENVIRONMENT == Environments.DEV and not DISABLE_CHECKS:
-    from . import checks  # noqa: F401
 
 # https://github.com/sobolevn/django-split-settings
 # Include all settings modules with names not beginning with an underscore.

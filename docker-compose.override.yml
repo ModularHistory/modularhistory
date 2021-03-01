@@ -6,13 +6,13 @@ services:
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-  
+
   celery_beat:
     image: ghcr.io/modularhistory/django:latest
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-  
+
   django:
     build:
       context: .
@@ -24,13 +24,13 @@ services:
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-  
+
   flower:
     image: ghcr.io/modularhistory/django:latest
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-  
+
   react:
     build:
       context: .
@@ -43,5 +43,5 @@ services:
     image: ghcr.io/modularhistory/react:latest
     user: root
     volumes:
-      - .:/modularhistory
+      - ./frontend:/modularhistory/frontend
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh

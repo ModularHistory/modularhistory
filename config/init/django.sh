@@ -1,6 +1,12 @@
 #!/bin/sh
 
-wait-for-it.sh postgres:5432 -- invoke dbbackup && python manage.py migrate
+wait-for-it.sh postgres:5432 -- 
+# These commands must be run by a www-data user:
+test -w /modularhistory/.backups || {
+    echo "Django lacks permission to write in .backups; exiting."
+    exit 1
+}
+invoke db.backup && python manage.py migrate
 python manage.py collectstatic --no-input
 python manage.py cleanup_django_defender
 
@@ -9,6 +15,6 @@ if [ "$ENVIRONMENT" = prod ]; then
       --user www-data --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker \
       --workers 9 --max-requests 100 --max-requests-jitter 50
 else
-    # Run dev server
+    # Run dev server.
     python manage.py runserver 0.0.0.0:8000
 fi
