@@ -45,7 +45,7 @@ def back_up(
         upload_to_mega(file=backup_file, account=Environments.DEV)
 
 
-def sync(context: Context = CONTEXT, push: bool = False, max_transfer: str = '5G'):
+def sync(context: Context = CONTEXT, push: bool = False):
     """Sync media from source to destination, modifying destination only."""
     # TODO: refactor
     use_gdrive = True
@@ -56,9 +56,9 @@ def sync(context: Context = CONTEXT, push: bool = False, max_transfer: str = '5G
     else:
         source, destination = (remote_media_dir, local_media_dir)
     command = (
-        f'rclone sync {source} {destination} '
+        f'rclone sync {source} {destination} --exclude .DS_Store '
         # https://rclone.org/flags/
-        f'--max-transfer={max_transfer} --order-by="size,ascending" --progress '
+        f'--order-by="size,ascending" --progress '
         f'--config {join(settings.BASE_DIR, "config/rclone/rclone.conf")}'
     )
     if use_gdrive:
@@ -76,7 +76,8 @@ def sync(context: Context = CONTEXT, push: bool = False, max_transfer: str = '5G
             'MEGA_DEV_PASSWORD', default=config('MEGA_PASSWORD', default=None)
         )
         command = (
-            f'{command} --mega-user={mega_username} '
+            f'{command} --max-transfer=5G '
+            f'--mega-user={mega_username} '
             f'--mega-pass=$(echo "{mega_password}" | rclone obscure -)'
         )
     if push:
