@@ -1,0 +1,3 @@
+# https://rclone.org/filtering/
+.DS_Store
+account/*

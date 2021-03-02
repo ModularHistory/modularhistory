@@ -5,25 +5,19 @@ import logging
 import os
 import re
 from datetime import datetime
-from getpass import getpass
 from os.path import join
 from typing import List, Optional
 from zipfile import BadZipFile, ZipFile
 
-import django
 import requests
+from django.conf import settings
 from dotenv import load_dotenv
 
-from modularhistory.constants.environments import Environments
 from modularhistory.constants.strings import NEGATIVE
 from modularhistory.utils import files as file_utils
+from modularhistory.utils import github as github_utils
 
 from .command import command
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
-django.setup()
-
-from django.conf import settings  # noqa: E402
 
 BACKUPS_DIR = settings.BACKUPS_DIR
 DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
@@ -36,16 +30,6 @@ GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
 GITHUB_CREDENTIALS_FILE = '.github/.credentials'
 
 SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
-
-
-def pat_is_valid(context, username: str, pat: str) -> bool:
-    """Return a bool reflecting whether the PAT is valid."""
-    pat_validity_check = (
-        f'curl -u {username}:{pat} '
-        '-s -o /dev/null -I -w "%{http_code}" '
-        f'https://api.github.com/user'
-    )
-    return '200' in context.run(pat_validity_check, hide='out').stdout
 
 
 @command
@@ -68,27 +52,8 @@ def seed(
             signature = personal_access_token.read()
             username, pat = signature.split(':')
     else:
-        print()
-        print(
-            'To proceed, you will need a GitHub personal access token (PAT) '
-            'with "repo" and "workfow" permissions. For instructions on acquiring '
-            'a PAT, see the GitHub PAT documentation: \n'
-            '    https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'  # noqa: E501
-        )
-        print()
-        username = input('Enter your GitHub username/email: ')
-        pat = getpass('Enter your GitHub personal access token: ')
-        signature = f'{username}:{pat}'
-        while not pat_is_valid(context, username, pat):
-            print('Invalid GitHub credentials.')
-            username = input('Enter your GitHub username/email: ')
-            pat = input('Enter your Personal Access Token: ')
-            signature = f'{username}:{pat}'
-        with open(GITHUB_CREDENTIALS_FILE, 'w') as file:
-            file.write(signature)
-    session = requests.Session()
-    session.auth = (username, pat)
-    session.headers.update({'Accept': 'application/vnd.github.v3+json'})
+        username, pat = github_utils.accept_credentials()
+    session = github_utils.initialize_session(username=username, pat=pat)
     print('Dispatching workflow...')
     time_posted = datetime.utcnow().replace(microsecond=0)
     session.post(
