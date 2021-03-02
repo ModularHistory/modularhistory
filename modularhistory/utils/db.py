@@ -39,12 +39,16 @@ def back_up(
     context.run('python manage.py dbbackup --quiet --noinput', hide='out')
     backup_files = glob(backup_files_pattern)
     temp_file = max(backup_files, key=os.path.getctime)
-    backup_file = temp_file.replace('.psql', '.sql')
+    backup_filename = temp_file.replace('.psql', '.sql')
     if filename:
-        backup_file = backup_file.replace(os.path.basename(backup_file), filename)
+        backup_filename = backup_filename.replace(
+            os.path.basename(backup_filename), filename
+        )
     print('Processing backup file...')
     with open(temp_file, 'r') as unprocessed_backup:
-        with open(backup_file, 'w') as processed_backup:
+        if os.path.isdir(backup_filename):
+            os.rmdir(backup_filename)
+        with open(backup_filename, 'w') as processed_backup:
             previous_line = ''  # falsy; compatible with `startswith`
             for line in unprocessed_backup:
                 drop_conditions = [
@@ -65,14 +69,14 @@ def back_up(
                 previous_line = line
     context.run(f'rm {temp_file}')
     if zip:
-        print(f'Zipping up {backup_file}...')
-        zipped_backup_file = f'{backup_file}.zip'
+        print(f'Zipping up {backup_filename}...')
+        zipped_backup_file = f'{backup_filename}.zip'
         with ZipFile(zipped_backup_file, 'x') as archive:
-            archive.write(backup_file)
-        backup_file = zipped_backup_file
+            archive.write(backup_filename)
+        backup_filename = zipped_backup_file
     print(f'Finished creating backup file: {backup_file}')
     if push:
-        upload_to_mega(file=backup_file, account=Environments.DEV)
+        upload_to_mega(file=backup_filename, account=Environments.DEV)
     # Remove old backup files
     logging.info('Removing old backup files...')
     end = '{} \;'  # noqa: W605, P103
