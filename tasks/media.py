@@ -32,7 +32,7 @@ SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
 def backup(context, redact: bool = False, push: bool = False):
     """Create a media backup file."""
     # based on https://github.com/django-dbbackup/django-dbbackup#mediabackup
-    media.back_up(context, redact=redact, push=push)
+    media.backup(context, redact=redact, push=push)
 
 
 @command

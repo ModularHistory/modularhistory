@@ -41,7 +41,7 @@ def backup(
     context, redact: bool = False, push: bool = False, filename: Optional[str] = None
 ):
     """Create a database backup file."""
-    db.back_up(context, redact=redact, push=push, filename=filename)
+    db.backup(context, redact=redact, push=push, filename=filename)
 
 
 @command

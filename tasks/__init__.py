@@ -1,6 +1,7 @@
 # http://docs.pyinvoke.org/en/0.12.1/concepts/namespaces.html
-from invoke import Collection
 import os
+
+from invoke import Collection
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 

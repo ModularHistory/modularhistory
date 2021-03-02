@@ -32,11 +32,11 @@ def debug(self):
 def dbbackup(self, *args, **kwargs):
     """Create a database backup file."""
     logging.info(f'dbbackup received request: {self.request!r}')
-    db.back_up(*args, **kwargs)
+    db.backup(*args, **kwargs)
 
 
 @app.task(bind=True)
 def mediabackup(self, *args, **kwargs):
     """Create a media backup file."""
     logging.info(f'mediabackup received request: {self.request!r}')
-    media.back_up(*args, **kwargs)
+    media.backup(*args, **kwargs)

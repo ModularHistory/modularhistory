@@ -1,9 +1,10 @@
+import os
 from getpass import getpass
 from os.path import join
 from typing import Optional, Tuple
-import os
-from django.conf import settings
+
 import requests
+from django.conf import settings
 
 BACKUPS_DIR = settings.BACKUPS_DIR
 DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')

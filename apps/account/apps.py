@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from django.core.checks import Error, register
+from django.core.checks import Warning, register
 
 
 def superuser_check(app_configs, **kwargs):
@@ -9,9 +9,9 @@ def superuser_check(app_configs, **kwargs):
     if User.objects.filter(is_superuser=True).exists():
         return []
     return [
-        Error(
-            'You need to create a superuser. To do so, run this command: \n'
-            'poetry run python manage.py createsuperuser',
+        Warning(
+            'You need to create a superuser. To do so, run this command: \n\n\t'
+            'poetry run python manage.py createsuperuser \n',
         )
     ]
 

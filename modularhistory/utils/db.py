@@ -1,6 +1,6 @@
 import logging
 import os
-from glob import glob
+from glob import glob, iglob
 from os.path import join
 from typing import Optional
 from zipfile import ZipFile
@@ -27,7 +27,7 @@ SECONDS_IN_DAY = 86400
 SECONDS_TO_KEEP_BACKUP = DAYS_TO_KEEP_BACKUP * SECONDS_IN_DAY
 
 
-def back_up(
+def backup(
     context: Context = CONTEXT,
     redact: bool = False,
     zip: bool = False,
@@ -38,7 +38,7 @@ def back_up(
     backups_dir = settings.BACKUPS_DIR
     backup_files_pattern = join(backups_dir, '*sql')
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
-    context.run('python manage.py dbbackup --quiet --noinput', hide='out')
+    context.run('python manage.py dbbackup --noinput')
     backup_files = glob(backup_files_pattern)
     temp_file = max(backup_files, key=os.path.getctime)
     backup_filename = temp_file.replace('.psql', '.sql')
