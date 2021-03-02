@@ -38,9 +38,11 @@ SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
 
 
 @command
-def backup(context, redact: bool = False, push: bool = False):
+def backup(
+    context, redact: bool = False, push: bool = False, filename: Optional[str] = None
+):
     """Create a database backup file."""
-    db.back_up(context, redact=redact, push=push)
+    db.back_up(context, redact=redact, push=push, filename=filename)
 
 
 @command
