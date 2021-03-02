@@ -4,7 +4,7 @@ from glob import glob
 from os.path import join
 from typing import Optional
 from zipfile import ZipFile
-from filecmp import cmp
+
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -19,6 +19,8 @@ from modularhistory.constants.misc import (
 from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from modularhistory.utils.files import relativize, upload_to_mega
 
+BACKUPS_DIR = settings.BACKUPS_DIR
+DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
 CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400
@@ -38,26 +40,17 @@ def back_up(
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --quiet --noinput', hide='out')
     backup_files = glob(backup_files_pattern)
-    temp_filepath = max(backup_files, key=os.path.getctime)
-    backup_files.remove(temp_filepath)
-    latest_extant_backup_filepath = max(backup_files, key=os.path.getctime)
-    backup_is_unchanged = cmp(latest_extant_backup_filepath, temp_filepath)
-    backup_filepath = temp_filepath.replace('.psql', '.sql')
-    os.rename(temp_filepath, backup_filepath)
+    temp_file = max(backup_files, key=os.path.getctime)
+    backup_filename = temp_file.replace('.psql', '.sql')
     if filename:
-        backup_filepath = backup_filepath.replace(
-            os.path.basename(backup_filepath), filename
+        backup_filename = backup_filename.replace(
+            os.path.basename(backup_filename), filename
         )
-    # Ensure an empty directory with the destination name (e.g., init.sql)
-    # hasn't been created as a result of Docker volume mounting.
-    if os.path.isdir(backup_filepath):
-        os.rmdir(backup_filepath)
-    if backup_is_unchanged and not redact:
-        os.replace(latest_extant_backup_filepath, backup_filepath)
     print('Processing backup file...')
-    intermediate_filepath = f'{backup_filepath}.tmp'
-    with open(backup_filepath, 'r') as unprocessed_backup:
-        with open(intermediate_filepath, 'w') as processed_backup:
+    with open(temp_file, 'r') as unprocessed_backup:
+        if os.path.isdir(backup_filename):
+            os.rmdir(backup_filename)
+        with open(backup_filename, 'w') as processed_backup:
             previous_line = ''  # falsy; compatible with `startswith`
             for line in unprocessed_backup:
                 drop_conditions = [
@@ -76,16 +69,16 @@ def back_up(
                     continue
                 processed_backup.write(line)
                 previous_line = line
-    os.replace(intermediate_filepath, backup_filepath)
+    context.run(f'rm {temp_file}')
     if zip:
-        logging.info(f'Zipping up {backup_filepath}...')
-        zipped_backup_file = f'{backup_filepath}.zip'
+        print(f'Zipping up {backup_filename}...')
+        zipped_backup_file = f'{backup_filename}.zip'
         with ZipFile(zipped_backup_file, 'x') as archive:
-            archive.write(backup_filepath)
-        backup_filepath = zipped_backup_file
-    logging.info(f'Finished creating backup file: {backup_filepath}')
+            archive.write(backup_filename)
+        backup_filename = zipped_backup_file
+    print(f'Finished creating backup file: {backup_filename}')
     if push:
-        upload_to_mega(file=backup_filepath, account=Environments.DEV)
+        upload_to_mega(file=backup_filename, account=Environments.DEV)
     # Remove old backup files
     logging.info('Removing old backup files...')
     end = '{} \;'  # noqa: W605, P103
@@ -238,6 +231,21 @@ def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
     print('Migrations after fake reversion:')
     context.run('python manage.py showmigrations')
     print()
+
+
+def seed(context: Context = CONTEXT):
+    """Seed the database."""
+    db_volume = 'modularhistory_postgres_data'
+    seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
+    if not seed_exists:
+        raise Exception('Seed does not exist')
+    # Remove the data volume, if it exists
+    print('Wiping postgres data volume...')
+    context.run('docker-compose down')
+    context.run(f'docker volume rm {db_volume}', warn=True)
+    # Start up the postgres container to automatically run init.sql
+    print('Initializing postgres data...')
+    context.run('docker-compose up -d postgres')
 
 
 def squash_migrations(context: Context = CONTEXT, dry: bool = True):

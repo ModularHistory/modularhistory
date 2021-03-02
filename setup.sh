@@ -122,16 +122,8 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew_install openssl@1.1
   brew install rust libjpeg zlib grep jq
   # Modify PATH to use GNU Grep over MacOS Grep.
-  echo "Modifying PATH (in $bash_profile) to use GNU Grep over BSD Grep ..."
   # shellcheck disable=SC2016
   _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
-  # Fix environment for installation of Python versions via pyenv.
-  # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
-  brew install bzip2
-  echo "Exporting LDFLAGS and CFLAGS to allow installing new Python versions via pyenv ..."
-  echo "https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829"
-  export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
-  export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && sudo apt upgrade -y
   # Basic dev dependencies
@@ -202,12 +194,12 @@ if [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Add container names to /etc/hosts
-echo "Updating /etc/hosts ..."
 sudo grep -qxF "127.0.0.1 postgres" /etc/hosts || { 
-  sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts 
+  echo "Updating /etc/hosts ..."
+  sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
 }
 sudo grep -qxF "127.0.0.1 redis" /etc/hosts || { 
-  sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts 
+  sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
 }
 
 # Make sure pyenv is installed
@@ -240,7 +232,21 @@ while IFS= read -r pyversion; do
     pyenv install "$pyversion"
     # shellcheck disable=SC2076
     if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
-      _error "Failed to install Python $pyversion."
+      if [[ "$os" == "$MAC_OS" ]]; then
+        # Try to fix MacOS environment for installation of Python versions via pyenv.
+        # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
+        brew install bzip2
+        echo "Exporting LDFLAGS and CFLAGS to allow installing new Python versions via pyenv ..."
+        echo "https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829"
+        export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
+        export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
+        pyenv install "$pyversion"
+        if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
+          _error "Failed to install Python $pyversion."
+        fi
+      else
+        _error "Failed to install Python $pyversion."
+      fi
     fi
   fi
 done < .python-version
@@ -402,9 +408,10 @@ docker-compose up -d dev && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
-    Could not start containers. Try running the following in a new shell:
+    Could not start containers. 
+    Try restarting Docker and/or running the following in a new shell:
 
-      ${BOLD}cd ~/modularhistory && docker-compose up -d dev && docker-compose logs -f
+      ${BOLD}cd ~/modularhistory && docker-compose up -d dev
   "
 }
 

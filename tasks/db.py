@@ -16,7 +16,6 @@ from modularhistory.utils import db
 
 from .command import command
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 django.setup()
 
 from django.conf import settings  # noqa: E402

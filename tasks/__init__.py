@@ -1,7 +1,10 @@
 # http://docs.pyinvoke.org/en/0.12.1/concepts/namespaces.html
 from invoke import Collection
+import os
 
-from . import db, media, qa, scm, seeding, tasks
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
+
+from . import db, media, qa, scm, seeding, tasks  # noqa: E402
 
 # http://docs.pyinvoke.org/en/latest/api/collection.html#invoke.collection.Collection.from_module
 namespace = Collection.from_module(tasks)
