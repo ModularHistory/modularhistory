@@ -16,7 +16,7 @@ SECONDS_IN_DAY = 86400
 SECONDS_TO_KEEP_BACKUP = DAYS_TO_KEEP_BACKUP * SECONDS_IN_DAY
 
 
-def back_up(
+def backup(
     context: Context = CONTEXT,
     redact: bool = False,
     push: bool = False,

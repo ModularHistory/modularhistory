@@ -6,16 +6,17 @@ import os
 import re
 from datetime import datetime
 from os.path import join
+from pprint import pformat
 from typing import List, Optional
 from zipfile import BadZipFile, ZipFile
-from pprint import pformat
+
 from django.conf import settings
 from dotenv import load_dotenv
 
 from modularhistory.constants.strings import NEGATIVE
+from modularhistory.utils import db as db_utils
 from modularhistory.utils import files as file_utils
 from modularhistory.utils import github as github_utils
-from modularhistory.utils import db as db_utils
 
 from .command import command
 
