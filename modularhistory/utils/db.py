@@ -19,6 +19,8 @@ from modularhistory.constants.misc import (
 from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from modularhistory.utils.files import relativize, upload_to_mega
 
+BACKUPS_DIR = settings.BACKUPS_DIR
+DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
 CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400
@@ -229,6 +231,21 @@ def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
     print('Migrations after fake reversion:')
     context.run('python manage.py showmigrations')
     print()
+
+
+def seed(context: Context = CONTEXT):
+    """Seed the database."""
+    db_volume = 'modularhistory_postgres_data'
+    seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
+    if not seed_exists:
+        raise Exception('Seed does not exist')
+    # Remove the data volume, if it exists
+    print('Wiping postgres data volume...')
+    context.run('docker-compose down')
+    context.run(f'docker volume rm {db_volume}', warn=True)
+    # Start up the postgres container to automatically run init.sql
+    print('Initializing postgres data...')
+    context.run('docker-compose up -d postgres')
 
 
 def squash_migrations(context: Context = CONTEXT, dry: bool = True):

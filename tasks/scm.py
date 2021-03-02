@@ -1,15 +1,10 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
-import os
-
 import django
 
 from modularhistory.constants.strings import NEGATIVE
 
 from .command import command
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
-django.setup()
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'
