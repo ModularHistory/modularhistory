@@ -74,7 +74,7 @@ def back_up(
         with ZipFile(zipped_backup_file, 'x') as archive:
             archive.write(backup_filename)
         backup_filename = zipped_backup_file
-    print(f'Finished creating backup file: {backup_file}')
+    print(f'Finished creating backup file: {backup_filename}')
     if push:
         upload_to_mega(file=backup_filename, account=Environments.DEV)
     # Remove old backup files
