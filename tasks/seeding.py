@@ -14,7 +14,6 @@ import django
 import requests
 from dotenv import load_dotenv
 
-from modularhistory.constants.environments import Environments
 from modularhistory.constants.strings import NEGATIVE
 from modularhistory.utils import files as file_utils
 
@@ -100,6 +99,8 @@ def seed(
     workflow_runs: List[dict] = []
     time_waited, wait_interval, timeout = 0, 5, 30
     while not workflow_runs:
+        if time_waited > timeout:
+            raise TimeoutError('Timed out while attempting to retrieve workflow run.')
         context.run(f'sleep {wait_interval}')
         time_waited += wait_interval
         workflow_runs = session.get(
@@ -112,9 +113,6 @@ def seed(
             and datetime.fromisoformat(workflow_run['created_at'].replace('Z', ''))
             >= time_posted
         ]
-        if time_waited > timeout:
-            raise TimeoutError('Timed out while attempting to retrieve workflow run.')
-        continue
     workflow_run = workflow_runs[0]
     workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run["id"]}'
     status = initial_status = workflow_run['status']
