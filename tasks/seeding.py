@@ -14,7 +14,6 @@ import django
 import requests
 from dotenv import load_dotenv
 
-from modularhistory.constants.environments import Environments
 from modularhistory.constants.strings import NEGATIVE
 from modularhistory.utils import files as file_utils
 

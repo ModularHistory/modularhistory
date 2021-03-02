@@ -1,11 +1,11 @@
 """Serializers for the account app."""
 
+import serpy
 from django.conf import settings
 from rest_framework import serializers
 from rest_framework_simplejwt import serializers as jwt_serializers
 from rest_framework_simplejwt.settings import api_settings as jwt_settings
 from rest_framework_simplejwt.tokens import RefreshToken
-import serpy
 
 
 class UserSerializer(serpy.Serializer):
@@ -21,7 +21,10 @@ class UserSerializer(serpy.Serializer):
     # 'date_joined',
     # 'last_login',
 
+
 class TokenObtainPairSerializer(jwt_serializers.TokenObtainPairSerializer):
+    """Serializer for token pairs."""
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)

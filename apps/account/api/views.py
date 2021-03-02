@@ -1,14 +1,15 @@
 """API views for the account app."""
 
 import datetime as dt
+import json
 import logging
+from pprint import pprint
+
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from django.views.decorators.http import require_POST
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
-
+from django.views.decorators.http import require_POST
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -17,10 +18,9 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.settings import api_settings as jwt_settings
 from rest_framework_simplejwt.tokens import RefreshToken as RefreshTokenModel
 from rest_framework_simplejwt.views import TokenViewBase
-from apps.account.models import User
+
 from apps.account.api import serializers
-from pprint import pprint
-import json
+from apps.account.models import User
 
 print(settings.ALLOWED_HOSTS)
 

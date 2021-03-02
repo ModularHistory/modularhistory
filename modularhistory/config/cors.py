@@ -1,7 +1,7 @@
 """Settings related to cross-origin requests."""
 
-from modularhistory.environment import environment
 from modularhistory.constants.environments import Environments
+from modularhistory.environment import ENVIRONMENT
 
 # https://github.com/adamchainz/django-cors-headers
 
@@ -23,7 +23,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://django:8000",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = environment == Environments.DEV
+CORS_ALLOW_ALL_ORIGINS = ENVIRONMENT == Environments.DEV
 CORS_ALLOW_CREDENTIALS = CORS_ALLOW_ALL_ORIGINS
 CSRF_TRUSTED_ORIGINS = [
     "127.0.0.1",

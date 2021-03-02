@@ -28,8 +28,8 @@ from django.views.generic import TemplateView
 from watchman.views import bare_status
 
 from admin.model_admin import admin_site
-from apps.search.views import SearchResultsView
 from apps.account.api.views import set_csrf_token
+from apps.search.views import SearchResultsView
 from modularhistory import errors
 
 
@@ -50,7 +50,7 @@ urlpatterns = [
     path('api/csrf/set', set_csrf_token),
     path('account/', include(('apps.account.urls', 'account'), namespace='account')),
     # Admin
-    path('admin/defender/', include('defender.urls')),  # defender admin
+    # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
     # Chat

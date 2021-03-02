@@ -125,7 +125,7 @@ INSTALLED_APPS = [
     'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
-    'defender',  # https://github.com/jazzband/django-defender
+    # 'defender',  # https://github.com/jazzband/django-defender  # TODO
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
     'decouple',  # https://github.com/henriquebastos/python-decouple/
@@ -193,7 +193,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
-    'defender.middleware.FailedLoginMiddleware',
+    # 'defender.middleware.FailedLoginMiddleware',  # TODO
     # https://django-debug-toolbar.readthedocs.io/en/latest/
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -430,7 +430,8 @@ else:
 
 # https://github.com/jazzband/django-defender
 DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
-if IS_PROD:
+if IS_PROD or DOCKERIZED:
+    # https://github.com/jazzband/django-defender#customizing-django-defender
     DEFENDER_BEHIND_REVERSE_PROXY = True
 
 # https://docs.celeryproject.org/en/stable/django/

@@ -6,9 +6,19 @@ test -w /modularhistory/.backups || {
     echo "Django lacks permission to write in .backups; exiting."
     exit 1
 }
-invoke db.backup && python manage.py migrate
-python manage.py collectstatic --no-input
-python manage.py cleanup_django_defender
+invoke db.backup || {
+    echo "Failed to create db backup."
+    exit 1
+}
+python manage.py migrate || {
+    echo "Failed to run db migrations."
+    exit 1
+}
+python manage.py collectstatic --no-input || {
+    echo "Failed to collect static files."
+    exit 1
+}
+# python manage.py cleanup_django_defender  # TODO
 
 if [ "$ENVIRONMENT" = prod ]; then
     gunicorn modularhistory.asgi:application \
