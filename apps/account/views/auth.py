@@ -2,7 +2,7 @@ import logging
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import redirect, render
 from django.views.generic import View
 
@@ -15,6 +15,10 @@ class LoginView(auth_views.LoginView):
 
     form_class = LoginForm
     template_name = 'account/login.html'
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """Respond to GET requests for the login page."""
+        return HttpResponsePermanentRedirect('/api/auth/signin')
 
 
 LogoutView = auth_views.LogoutView

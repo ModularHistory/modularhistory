@@ -12,7 +12,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
     "http://127.0.0.1:80",
-    "http://dev",
     # Frontend server
     "http://localhost:3000",
     "http://127.0.0.1:3000",

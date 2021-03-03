@@ -1,14 +1,13 @@
-import axios from 'axios';
-import { Provider } from 'next-auth/client';
+import axios from "axios";
+import { Provider } from "next-auth/client";
 import Head from "next/head";
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import "../../modularhistory/static/styles/base.scss";
-
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
     // Get CSRF cookie
-    const url = ('/api/csrf/set');
+    const url = "http://localhost/api/csrf/set";
     axios.get(url).then(console.log);
   }, []);
   return (
@@ -16,7 +15,10 @@ function MyApp({ Component, pageProps }) {
       <Head>
         {/*<title>Home | ModularHistory</title>*/}
         <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
         <meta httpEquiv="Content-Language" content="en" />
 
         <meta property="og:type" content="website" />
@@ -29,8 +31,12 @@ function MyApp({ Component, pageProps }) {
         <meta property="og:description" content="History, modularized." />
       </Head>
       <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
-          height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} />
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+        />
       </noscript>
       <Provider session={pageProps.session}>
         <Component {...pageProps} />

@@ -12,6 +12,12 @@ services:
       - flower
       - react
       - redisinsight
+    healthcheck:
+      # NOTE: This check will only work in dev environment.
+      test: ["CMD", "curl", "--fail", "http://localhost"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
     image: nginx
     ports:
       - "80:80"
@@ -64,7 +70,7 @@ services:
     depends_on:
       - postgres
       - redis
-      - mongo
+      # - mongo
     env_file: .env
     environment:
       <<: *common-env-vars
@@ -72,9 +78,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
       timeout: 7s
-      interval: 10s
+      interval: 7s
       retries: 3
-      start_period: 15s
+      start_period: 12s
     image: "$BACKEND_IMAGE:$SHA"
     networks:
       default:
@@ -150,6 +156,12 @@ services:
     depends_on:
       - django
     env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3000/ || exit 1"]
+      timeout: 7s
+      interval: 7s
+      retries: 3
+      start_period: 12s
     image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:

@@ -1,7 +1,7 @@
 // https://nextjs.org/docs/advanced-features/custom-document
 
 import Document, { Head, Html, Main, NextScript } from "next/document";
-import React from 'react';
+import React from "react";
 
 class MyDocument extends Document {
   render() {
@@ -22,11 +22,20 @@ class MyDocument extends Document {
           {/*<link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />*/}
 
           {/* Font Awesome */}
-          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+          <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"
+          />
           {/* Latest compiled and minified Bootstrap CSS */}
-          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+          <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          />
           {/* Material Design Bootstrap CSS */}
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/css/mdb.min.css" />
+          <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/css/mdb.min.css"
+          />
 
           {/*Inheriting templates can add <link rel="stylesheet"> and/or <style> elements with the styles block.*/}
           {/*{% block styles %}{% endblock %}*/}
@@ -43,10 +52,16 @@ class MyDocument extends Document {
           {/* PDF.js */}
           {/* TODO: replace with node package and import where used
                     https://www.npmjs.com/package/pdfjs-dist */}
-          <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js" defer />
+          <script
+            src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js"
+            defer
+          />
           {/* Epub.js */}
           {/* TODO: likewise, https://www.npmjs.com/package/epubjs */}
-          <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js" defer />
+          <script
+            src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"
+            defer
+          />
 
           {/*{% if request.user.is_superuser %}*/}
           {/*    <style>*/}

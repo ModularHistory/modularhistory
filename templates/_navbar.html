@@ -36,7 +36,7 @@
                         </a>
                     {% else %}
                         <a href="{% url 'account:register' %}" class="dropdown-item">Create an account</a>
-                        <a href="{% url 'account:login' %}" class="dropdown-item">Login</a>
+                        <a href="/api/auth/signin" class="dropdown-item">Login</a>
                     {% endif %}
                 </div>
             </li>

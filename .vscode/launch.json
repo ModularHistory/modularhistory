@@ -14,6 +14,17 @@
             ],
             "envFile": "${workspaceFolder}/.env",
             "django": true
-        }
+        },
+        // https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome
+        // {
+        //     "name": "Chrome",
+        //     "type": "chrome",
+        //     "request": "launch",
+        //     "url": "http://localhost:3000",
+        //     "webRoot": "${workspaceFolder}/frontend",
+        //     "sourceMapPathOverrides": {
+        //         "webpack:///src/*": "${webRoot}/*"
+        //     }
+        // }
     ]
 }

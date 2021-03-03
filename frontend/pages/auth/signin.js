@@ -1,14 +1,15 @@
 import Container from "@material-ui/core/Container";
-import { providers } from 'next-auth/client';
-import React from 'react';
+import { providers } from "next-auth/client";
+import React from "react";
 import Layout from "../../components/layout";
 
-const BASE_URL = 'http://dev';
+const BASE_URL = "http://localhost";
 
-{/* <div class="signin">
+{
+  /* <div class="signin">
   <div class="provider">
   <hr>
-  <form action="http://dev/api/auth/callback/credentials" method="POST">
+  <form action="http://localhost/api/auth/callback/credentials" method="POST">
     <input type="hidden" name="csrfToken" value="2d58f12d0104b1e1ba41a01ca423e2fb00defa6337c448d643f46eca647eab0d">
     <div>
       <label for="input-username-for-credentials-provider">Username</label>
@@ -24,21 +25,32 @@ const BASE_URL = 'http://dev';
     </div>
     <button type="submit">Sign in with Credentials</button>
   </form>
-</div> */}
-
+</div> */
+}
 
 export default function SignIn({ providers }) {
   return (
     <Layout title={"Entities"}>
       <Container>
         <div className="text-center">
-          {Object.values(providers).map(provider => (
+          {Object.values(providers).map((provider) => (
             <div key={provider.name} className="provider">
               {/* <button onClick={() => signIn(provider.id)}>Sign in with {provider.name}</button> */}
-              <form action={`${BASE_URL}/api/auth/signin/${provider.name}`} method="POST">
-                <input type="hidden" name="csrfToken" value="2d58f12d0104b1e1ba41a01ca423e2fb00defa6337c448d643f46eca647eab0d" />
-                <input type="hidden" name="callbackUrl" value="http://dev" />
-                <button type="submit" class="button">
+              <form
+                action={`${BASE_URL}/api/auth/signin/${provider.name}`}
+                method="POST"
+              >
+                <input
+                  type="hidden"
+                  name="csrfToken"
+                  value="2d58f12d0104b1e1ba41a01ca423e2fb00defa6337c448d643f46eca647eab0d"
+                />
+                <input
+                  type="hidden"
+                  name="callbackUrl"
+                  value="http://localhost"
+                />
+                <button type="submit" className="button">
                   Sign in with {provider.name}
                 </button>
               </form>
@@ -47,13 +59,13 @@ export default function SignIn({ providers }) {
         </div>
       </Container>
     </Layout>
-  )
+  );
 }
 
 export async function getStaticProps(context) {
-    return {
-        props: {
-            providers: await providers(context)
-        }, // passed to the page component as props
-    }
-  }
+  return {
+    props: {
+      providers: await providers(context),
+    }, // passed to the page component as props
+  };
+}
