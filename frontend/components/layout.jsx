@@ -2,10 +2,9 @@ import Head from "next/head";
 import Navbar from "./navbar";
 import Footer from "./footer";
 // import Modal from "./modal";
-import {useRouter} from "next/router";
+import { useRouter } from "next/router";
 
-
-export default function Layout({title, canonicalUrl, children}) {
+export default function Layout({ title, canonicalUrl, children }) {
   const router = useRouter();
 
   return (
@@ -17,9 +16,7 @@ export default function Layout({title, canonicalUrl, children}) {
 
       <Navbar />
 
-      <div className="main-content">
-        {children}
-      </div>
+      <div className="main-content">{children}</div>
 
       <Footer />
       {/*<Modal />*/}
