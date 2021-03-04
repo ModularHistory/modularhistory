@@ -18,15 +18,16 @@ services:
       interval: 1m
       timeout: 10s
       retries: 3
+    hostname: modularhistory.dev.net
     image: nginx
     ports:
       - "80:80"
     volumes:
-      - ./config/nginx/dev:/etc/nginx/conf.d
+      - ./.config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
 
   celery:
-    command: sh config/init/celery.sh
+    command: sh .config/init/celery.sh
     depends_on:
       - django
       - redis
@@ -46,12 +47,12 @@ services:
     restart: on-failure
     user: www-data
     volumes:
-      - ./static:/modularhistory/static
+      - ./.static:/modularhistory/.static
       - ./media:/modularhistory/media
       - ./.backups:/modularhistory/.backups
 
   celery_beat:
-    command: sh config/init/celery_beat.sh
+    command: sh .config/init/celery_beat.sh
     depends_on:
       - celery
       - django
@@ -66,7 +67,7 @@ services:
     restart: on-failure
   
   django:
-    command: sh config/init/django.sh
+    command: sh .config/init/django.sh
     depends_on:
       - postgres
       - redis
@@ -78,9 +79,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
       timeout: 7s
-      interval: 7s
-      retries: 3
-      start_period: 12s
+      interval: 15s
+      retries: 2
+      start_period: 10s
     image: "$BACKEND_IMAGE:$SHA"
     networks:
       default:
@@ -97,12 +98,12 @@ services:
       # the host machine have been granted manually; e.g.,
       #     sudo chown -R www-data:www-data .backups
       #     sudo chmod g+w -R .backups
-      - ./static:/modularhistory/static
+      - ./.static:/modularhistory/.static
       - ./media:/modularhistory/media
       - ./.backups:/modularhistory/.backups
 
   flower:
-    command: sh config/init/flower.sh
+    command: sh .config/init/flower.sh
     depends_on:
       - celery
       - celery_beat
@@ -156,6 +157,8 @@ services:
     depends_on:
       - django
     env_file: .env
+    environment:
+      NEXTAUTH_URL: 'https://modularhistory.com'
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3000/ || exit 1"]
       timeout: 7s

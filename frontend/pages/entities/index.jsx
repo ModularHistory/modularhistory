@@ -97,6 +97,7 @@ export default function Entities({ entitiesData }) {
   );
 }
 
+// https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export async function getServerSideProps(context) {
   const q = context.query;
   let entitiesData = {};

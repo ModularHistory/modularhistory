@@ -8,10 +8,6 @@ from modularhistory.structures import HTML
 
 register_field_strategy(HTMLField, just(HTML('lorem ipsum')))
 
-BASE_URLS = {
-    Environments.DEV: 'http://localhost',
-}
-
 
 class TestSuite:
     """Base class for test suites."""

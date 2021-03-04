@@ -39,8 +39,8 @@ services:
         ENVIRONMENT: dev
     command: npm run dev
     environment:
-      NEXTAUTH_URL: 'http://localhost'
-      REACT_EDITOR: 
+      NEXTAUTH_URL: 'http://modularhistory.dev.net'
+      REACT_EDITOR: 'code'
     image: ghcr.io/modularhistory/react:latest
     user: root
     volumes:

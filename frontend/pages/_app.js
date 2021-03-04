@@ -7,7 +7,7 @@ import "../../modularhistory/static/styles/base.scss";
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
     // Get CSRF cookie
-    const url = "http://localhost/api/csrf/set";
+    const url = "/api/csrf/set";
     axios.get(url).then(console.log);
   }, []);
   return (

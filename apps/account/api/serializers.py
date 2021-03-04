@@ -1,7 +1,6 @@
 """Serializers for the account app."""
 
 import serpy
-from django.conf import settings
 from rest_framework import serializers
 from rest_framework_simplejwt import serializers as jwt_serializers
 from rest_framework_simplejwt.settings import api_settings as jwt_settings

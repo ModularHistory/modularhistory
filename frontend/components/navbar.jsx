@@ -1,6 +1,7 @@
 import { signIn, signOut, useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import PropTypes from 'prop-types';
 import React from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -56,11 +57,21 @@ function WrappedNavDropdown({ title, children, ...childProps }) {
     </NavDropdown>
   );
 }
+// https://reactjs.org/docs/typechecking-with-proptypes.html
+WrappedNavDropdown.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.arrayOf(PropTypes.object)
+}
 
 export default function GlobalNavbar({ menuItems }) {
   menuItems = menuItems || globalMenuItems;
 
-  const [session, loading] = useSession();
+  const [session] = useSession();
+
+  const handleLogout = (e) => {
+    e.preventDefault()
+    signOut()
+  }
 
   let accountDropdownIcon;
   if (session && session.user["avatar"]) {
@@ -100,7 +111,7 @@ export default function GlobalNavbar({ menuItems }) {
             item.children ? (
               <WrappedNavDropdown key={item.title} {...item} />
             ) : (
-              <WrappedNavLink key={item.href} {...item} />
+              <WrappedNavLink key={item.title} {...item} />
             )
           )}
         </Nav>
@@ -129,7 +140,7 @@ export default function GlobalNavbar({ menuItems }) {
                     </NavDropdown.Item>
                   </>
                 )}
-                <NavDropdown.Item onClick={signOut}>
+                <NavDropdown.Item onClick={handleLogout}>
                   <span className="glyphicon glyphicon-log-out" /> Logout
                 </NavDropdown.Item>
               </>
@@ -146,4 +157,8 @@ export default function GlobalNavbar({ menuItems }) {
       </Navbar.Collapse>
     </Navbar>
   );
+}
+// https://reactjs.org/docs/typechecking-with-proptypes.html
+GlobalNavbar.propTypes = {
+  menuItems: PropTypes.array,
 }

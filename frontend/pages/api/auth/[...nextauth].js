@@ -1,5 +1,4 @@
 import axios from "axios";
-import Cookies from "cookies";
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 
@@ -8,47 +7,9 @@ axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.withCredentials = true;
 
-const server = "http://django:8000";
-const API_BASE = `${server}/api/account`;
-
 const makeDjangoApiUrl = (endpoint) => {
-  return API_BASE + endpoint;
+  return `http://django:8000/api/account${endpoint}`;
 };
-
-// const fetchTokenPair = (username, password) => {
-//   const url = makeDjangoApiUrl("/token/obtain/");
-//   console.log('fetchTokenPair ', url);
-//   return fetch(url, {
-//     method: "POST",
-//     body: JSON.stringify({ username, password }),
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     credentials: "include"
-//   });
-// };
-
-// const refreshToken = () => {
-//   const url = makeDjangoApiUrl("/token/refresh/");
-//   return fetch(url, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     credentials: "include"
-//   });
-// };
-
-// async function fetchUser(token) {
-//   const url = makeDjangoApiUrl("/me/")
-//   const params = {
-//     method: "GET",
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }
-//   return fetch(url, params);
-// }
 
 const providers = [
   Providers.Facebook({
@@ -70,7 +31,7 @@ const providers = [
     credentials: {
       username: { label: "Username", type: "text", placeholder: "" },
       password: { label: "Password", type: "password" },
-      csrf_token: { label: "CSRF_Token", type: "hidden" },
+      csrf_token: { type: "hidden" },
     },
     authorize: async (credentials) => {
       // Look up the user based on the credentials supplied
@@ -92,8 +53,7 @@ const providers = [
           console.error(error);
         });
       console.log("authorize got response: ", response);
-      const user = response["user"] ? response["user"] : null;
-      return Promise.resolve(user);
+      return Promise.resolve(response["user"] ? response["user"] : null);
     },
   }),
 ];
@@ -101,16 +61,15 @@ const providers = [
 const callbacks = {};
 
 callbacks.signIn = async function signIn(user, account, data) {
-  console.log("signIn.user: ", user);
-  console.log("signIn.account: ", account);
-  console.log("signIn.data: ", data);
+  console.log("signIn.user: ", user, "\nsignIn.account: ", account, "\nsignIn.data: ", data);
   if (account.provider === "credentials") {
-    user.accessToken = await getTokenFromYourAPIServer(account.provider, user);
+    console.log('Get token from API server!!!');  // TODO
+    // user.accessToken = await getTokenFromYourAPIServer(account.provider, user);
   } else {
-    let socialUser;
+    let user;
     switch (account.provider) {
       case "facebook":
-        socialUser = {
+        user = {
           id: data.id,
           login: data.login,
           name: data.name,
@@ -118,7 +77,16 @@ callbacks.signIn = async function signIn(user, account, data) {
         };
         break;
       case "github":
-        socialUser = {
+        // TODO: https://getstarted.sh/bulletproof-next/add-social-authentication/5
+        // const emailRes = await fetch('https://api.github.com/user/emails', {
+        //   headers: {
+        //     'Authorization': `token ${account.accessToken}`
+        //   }
+        // })
+        // const emails = await emailRes.json()
+        // const primaryEmail = emails.find(e => e.primary).email;
+        // user.email = primaryEmail;
+        user = {
           id: data.id,
           login: data.login,
           name: data.name,
@@ -126,7 +94,7 @@ callbacks.signIn = async function signIn(user, account, data) {
         };
         break;
       case "google":
-        socialUser = {
+        user = {
           id: data.id,
           login: data.login,
           name: data.name,
@@ -134,7 +102,7 @@ callbacks.signIn = async function signIn(user, account, data) {
         };
         break;
       case "twitter":
-        socialUser = {
+        user = {
           id: data.id,
           login: data.login,
           name: data.name,
@@ -145,15 +113,14 @@ callbacks.signIn = async function signIn(user, account, data) {
         return false;
     }
   }
-  // user.accessToken = await getTokenFromYourAPIServer(account.provider, socialUser);
+  // https://getstarted.sh/bulletproof-next/add-social-authentication/7
+  user.accessToken = null;  // TODO: await getTokenFromYourAPIServer(account.provider, socialUser);
   return true;
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback
 callbacks.jwt = async function jwt(token, user) {
-  console.log("callbacks.jwt");
-  console.log("jwt.token", token);
-  console.log("jwt.user", user);
+  console.log("callbacks.jwt --> ", token, user);
   const isAuthenticated = user ? true : false;
   if (isAuthenticated) {
     token = { accessToken: user.accessToken };
@@ -163,49 +130,30 @@ callbacks.jwt = async function jwt(token, user) {
 };
 
 callbacks.session = async function session(session, token) {
-  console.log("callbacks.session");
-  console.log("session.session", session);
-  console.log("session.token", token);
+  console.log("callbacks.session --> ", session, token);
   session.accessToken = token.accessToken;
-  // session.user = getUserFromApi(session.accessToken);
+  const user = null;  // await getUserFromApi(session.accessToken);  // TODO
+  if (!user) {
+    return null;
+  }
+  session.user = user;
   return Promise.resolve(session);
 };
 
 const options = {
   providers: providers,
+  session: {
+    jwt: true
+  },
+  jwt: {
+    secret: process.env.SECRET_KEY
+  },
   callbacks: callbacks,
   // TODO: https://next-auth.js.org/configuration/pages
   pages: {
     signIn: "/auth/signin",
     // signOut: '/auth/signout'
   },
-  // A database is optional, but required to persist accounts in a database
-  // database: process.env.DATABASE_URL,
 };
 
-export default (req, res) => {
-  const cookies = new Cookies(req, res);
-  const csrf_cookie = cookies.get("csrftoken");
-  console.log("HEEEEEYYYYYYY");
-  console.log(csrf_cookie);
-  NextAuth(req, res, options);
-};
-
-// async function fetchUser(): Promise<AxiosResponse> {
-//   const url = makeDjangoApiUrl("/me/");
-//   return axios.get(url);
-// }
-
-//   const login = async (username: string, password: string): Promise<Response> => {
-//     const response = await fetchToken(username, password);
-//     if (response.ok) {
-//       const tokenData = await response.json();
-//       handleNewToken(tokenData);
-//       await initUser(tokenData.access);
-//     } else {
-//       setIsAuthenticated(false);
-//       setLoading(true);
-//       // Let the page handle the error
-//     }
-//     return response;
-//   };
+export default (req, res) => NextAuth(req, res, options)

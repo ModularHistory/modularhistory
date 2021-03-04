@@ -155,7 +155,7 @@ elif [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Create directories for db backups, static files, and media files
-mkdir -p .backups static media frontend/.next &>/dev/null
+mkdir -p .backups .static media frontend/.next &>/dev/null
 
 if [[ "$os" == "$LINUX" ]]; then
   # Add user to www-data group
@@ -193,15 +193,6 @@ if [[ "$os" == "$LINUX" ]]; then
   fi
 fi
 
-# Add container names to /etc/hosts
-sudo grep -qxF "127.0.0.1 postgres" /etc/hosts || { 
-  echo "Updating /etc/hosts ..."
-  sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-}
-sudo grep -qxF "127.0.0.1 redis" /etc/hosts || { 
-  sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-}
-
 # Make sure pyenv is installed
 echo "Checking for pyenv ..."
 pyenv_dir="$HOME/.pyenv"
@@ -238,7 +229,9 @@ while IFS= read -r pyversion; do
         brew install bzip2
         echo "Exporting LDFLAGS and CFLAGS to allow installing new Python versions via pyenv ..."
         echo "https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829"
+        # shellcheck disable=SC2155
         export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
+        # shellcheck disable=SC2155
         export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
         pyenv install "$pyversion"
         if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
@@ -298,6 +291,9 @@ fi
 echo "Installing dependencies ..."
 poetry install --no-root || _error "Failed to install dependencies with Poetry."
 
+# Add container names to /etc/hosts
+poetry run invoke setup.update-hosts
+
 # Node Version Manager (NVM)
 echo "Enabling NVM ..."
 nvm --version &>/dev/null || {
@@ -309,6 +305,7 @@ nvm --version &>/dev/null || {
   [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
 echo "Installing Node modules ..."
+npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 
 # Rclone: https://rclone.org/

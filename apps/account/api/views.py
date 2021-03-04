@@ -2,12 +2,10 @@
 
 import datetime as dt
 import json
-import logging
-from pprint import pprint
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from rest_framework import generics, status
@@ -20,7 +18,7 @@ from rest_framework_simplejwt.tokens import RefreshToken as RefreshTokenModel
 from rest_framework_simplejwt.views import TokenViewBase
 
 from apps.account.api import serializers
-from apps.account.models import User
+from apps.account.models import User  # noqa: E500
 
 print(settings.ALLOWED_HOSTS)
 
@@ -71,8 +69,8 @@ class Login(TokenViewWithCookie):
     serializer_class = serializers.TokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
-        credentials = json.loads(request.body.decode('utf-8'))
-        username, password = credentials.get('username'), credentials.get('password')
+        # credentials = json.loads(request.body.decode('utf-8'))  # noqa: E500
+        # username, password = credentials.get('username'), credentials.get('password')  # noqa: E500
         return super().post(request=request, *args, **kwargs)
 
 
@@ -125,3 +123,19 @@ def log_in(request):
         {"detail": "Invalid credentials"},
         status=400,
     )
+
+
+class DeletionView(generics.DestroyAPIView):
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.UserSerializer
+    lookup_field = 'email'
+    queryset = User.objects.all()
+
+    def get_object(self):
+        user: User = self.request.user  # type: ignore
+        try:
+            instance = self.queryset.get(email=user.email)
+            return instance
+        except User.DoesNotExist:
+            raise Http404

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import sys
 from datetime import timedelta
+from os.path import join
 from typing import Any, Dict
 
 from decouple import config
@@ -60,7 +61,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='localhost, 127.0.0.1, 0.0.0.0, django, react',
+    default='localhost, 127.0.0.1, 0.0.0.0, django',
     cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
 
@@ -323,7 +324,7 @@ MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=MEGA_PASSWORD)
 STATIC_URL = '/static/'
 SHARED_STATICFILES_DIR = os.path.join(BASE_DIR, 'modularhistory/static')
 STATICFILES_DIRS = (SHARED_STATICFILES_DIR,)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, '.static')
 SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 
 # Media files (images, etc. uploaded by users)
@@ -442,6 +443,8 @@ CELERY_RESULT_SERIALIZER = 'json'
 # https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
 CELERY_RESULT_BACKEND = 'django-cache'
 CELERY_CACHE_BACKEND = 'default'
+
+CONFIG_DIR = join(BASE_DIR, '.config')
 
 # https://github.com/sobolevn/django-split-settings
 # Include all settings modules with names not beginning with an underscore.

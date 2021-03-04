@@ -46,8 +46,6 @@ class MyDocument extends Document {
           <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" />
           {/* Latest compiled Bootstrap JavaScript */}
           <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" />
-          {/* Material Design Bootstrap core JavaScript */}
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/js/mdb.min.js" />
 
           {/* PDF.js */}
           {/* TODO: replace with node package and import where used
