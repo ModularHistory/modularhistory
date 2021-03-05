@@ -88,7 +88,7 @@ def backup(
 
 
 def clear_migration_history(context: Context = CONTEXT):
-    """."""
+    """Delete all migration files."""
     with transaction.atomic():
         for app in APPS_WITH_MIGRATIONS:
             n_migrations = (
