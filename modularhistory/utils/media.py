@@ -59,8 +59,8 @@ def sync(context: Context = CONTEXT, push: bool = False):
     command = (
         f'rclone sync {source} {destination} '
         # https://rclone.org/flags/
-        f'--config {join(settings.BASE_DIR, "config/rclone/rclone.conf")} '
-        f'--exclude-from {join(settings.BASE_DIR, "config/rclone/filters.txt")} '
+        f'--config {join(settings.CONFIG_DIR, "rclone/rclone.conf")} '
+        f'--exclude-from {join(settings.CONFIG_DIR, "rclone/filters.txt")} '
         f'--order-by="size,ascending" --progress'
     )
     if use_gdrive:

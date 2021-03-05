@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import sys
 from datetime import timedelta
+from os.path import join
 from typing import Any, Dict
 
 from decouple import config
@@ -46,9 +47,11 @@ APPEND_SLASH = True
 # https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
-SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy
+SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy in prod.
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
+# https://docs.djangoproject.com/en/3.1/ref/settings/#session-cookie-samesite
+SESSION_COOKIE_SAMESITE = 'Lax' if IS_PROD else 'None'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-csrf-cookie-secure
 CSRF_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-referrer-policy
@@ -58,7 +61,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='localhost, 127.0.0.1, 0.0.0.0, django, react',
+    default='localhost, 127.0.0.1, 0.0.0.0, django',
     cast=lambda hosts: [string.strip() for string in hosts.split(',')],
 )
 
@@ -123,7 +126,7 @@ INSTALLED_APPS = [
     'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
-    'defender',  # https://github.com/jazzband/django-defender
+    # 'defender',  # https://github.com/jazzband/django-defender  # TODO
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
     'decouple',  # https://github.com/henriquebastos/python-decouple/
@@ -191,7 +194,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
-    'defender.middleware.FailedLoginMiddleware',
+    # 'defender.middleware.FailedLoginMiddleware',  # TODO
     # https://django-debug-toolbar.readthedocs.io/en/latest/
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -252,6 +255,7 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'modularhistory.pagination.PageNumberPagination',
@@ -267,13 +271,15 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     # Whatever value is set for AUTH_HEADER_TYPES must be reflected in React’s headers.
-    # Here, it is set as "JWT" but could alternatively be set as “Bearer”, etc.
-    'AUTH_HEADER_TYPES': ('JWT',),
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
+JWT_COOKIE_NAME = 'jwt_token'
+JWT_COOKIE_SAMESITE = 'Strict' if IS_PROD else 'None'
+JWT_COOKIE_SECURE = IS_PROD
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -318,7 +324,7 @@ MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=MEGA_PASSWORD)
 STATIC_URL = '/static/'
 SHARED_STATICFILES_DIR = os.path.join(BASE_DIR, 'modularhistory/static')
 STATICFILES_DIRS = (SHARED_STATICFILES_DIR,)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, '.static')
 SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 
 # Media files (images, etc. uploaded by users)
@@ -425,7 +431,8 @@ else:
 
 # https://github.com/jazzband/django-defender
 DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
-if IS_PROD:
+if IS_PROD or DOCKERIZED:
+    # https://github.com/jazzband/django-defender#customizing-django-defender
     DEFENDER_BEHIND_REVERSE_PROXY = True
 
 # https://docs.celeryproject.org/en/stable/django/
@@ -436,6 +443,8 @@ CELERY_RESULT_SERIALIZER = 'json'
 # https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
 CELERY_RESULT_BACKEND = 'django-cache'
 CELERY_CACHE_BACKEND = 'default'
+
+CONFIG_DIR = join(BASE_DIR, '.config')
 
 # https://github.com/sobolevn/django-split-settings
 # Include all settings modules with names not beginning with an underscore.

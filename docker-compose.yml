@@ -16,11 +16,11 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./config/nginx/dev:/etc/nginx/conf.d
+      - ./.config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
 
   celery:
-    command: sh config/init/celery.sh
+    command: sh .config/init/celery.sh
     depends_on:
       - django
       - redis
@@ -45,7 +45,7 @@ services:
       - ./.backups:/modularhistory/.backups
 
   celery_beat:
-    command: sh config/init/celery_beat.sh
+    command: sh .config/init/celery_beat.sh
     depends_on:
       - celery
       - django
@@ -60,7 +60,7 @@ services:
     restart: on-failure
   
   django:
-    command: sh config/init/django.sh
+    command: sh .config/init/django.sh
     depends_on:
       - postgres
       - redis
@@ -96,7 +96,7 @@ services:
       - ./.backups:/modularhistory/.backups
 
   flower:
-    command: sh config/init/flower.sh
+    command: sh .config/init/flower.sh
     depends_on:
       - celery
       - celery_beat
