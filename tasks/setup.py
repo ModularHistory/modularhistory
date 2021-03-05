@@ -166,7 +166,7 @@ def write_env_file(context, dev: bool = False, dry: bool = False):
     """Write a .env file."""
     destination_file = '.env'
     dry_destination_file = '.env.tmp'
-    config_dir = os.path.abspath('config')
+    config_dir = settings.CONFIG_DIR
     template_file = join(config_dir, 'env.yaml')
     dev_overrides_file = join(config_dir, 'env.dev.yaml')
     if dry and os.path.exists(destination_file):
