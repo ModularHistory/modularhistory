@@ -48,7 +48,7 @@ urlpatterns = [
     path('api/account/', include(_api('account'), namespace='account_api')),
     path('account/', include(('apps.account.urls', 'account'), namespace='account')),
     # Admin
-    path('admin/defender/', include('defender.urls')),  # defender admin
+    # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
     # Chat
