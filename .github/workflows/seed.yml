@@ -139,7 +139,7 @@ jobs:
     ########################################################
     - name: Inject environment vars
       if: ${{ success() }}
-      run: poetry run invoke seeding.write-env-file --dev
+      run: poetry run invoke setup.write-env-file --dev
     - name: Archive .env file
       if: ${{ success() }}
       uses: actions/upload-artifact@v2

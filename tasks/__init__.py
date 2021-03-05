@@ -5,7 +5,7 @@ from invoke import Collection
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
 
-from . import db, media, qa, scm, seeding, tasks  # noqa: E402
+from . import db, media, qa, scm, setup, tasks  # noqa: E402
 
 # http://docs.pyinvoke.org/en/latest/api/collection.html#invoke.collection.Collection.from_module
 namespace = Collection.from_module(tasks)
@@ -21,5 +21,5 @@ namespace.add_task(qa.test)
 namespace.add_collection(scm)
 namespace.add_task(scm.commit)
 
-namespace.add_collection(seeding)
-namespace.add_task(seeding.seed)
+namespace.add_collection(setup)
+namespace.add_task(setup.seed)
