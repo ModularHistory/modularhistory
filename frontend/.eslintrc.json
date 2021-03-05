@@ -1,3 +1,4 @@
+// https://eslint.org/docs/user-guide/configuring/
 {
     "env": {
         "browser": true,
@@ -6,10 +7,8 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:react/recommended"
     ],
-    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -18,9 +17,25 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react",
-        "@typescript-eslint"
+        "react"
     ],
     "rules": {
-    }
+    },
+    "overrides": [
+      {
+        "files": ["**/*.ts", "**/*.tsx"],
+        "extends": [
+            "eslint:recommended",
+            "plugin:react/recommended",
+            "plugin:@typescript-eslint/eslint-recommended",
+            "plugin:@typescript-eslint/recommended"
+        ],
+        // https://www.npmjs.com/package/@typescript-eslint/parser
+        "parser": "@typescript-eslint/parser",
+        "plugins": [
+            "react",
+            "@typescript-eslint"
+        ]
+      }  
+    ]
 }

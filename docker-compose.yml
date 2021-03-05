@@ -79,7 +79,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
       timeout: 7s
-      interval: 15s
+      interval: 20s
       retries: 2
       start_period: 10s
     image: "$BACKEND_IMAGE:$SHA"

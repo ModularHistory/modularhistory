@@ -2,9 +2,11 @@ import axios from "axios";
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 
+const djangoCsrfCookieName = "csrftoken"
+
 // Axios config for DRF requests
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
-axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfCookieName = djangoCsrfCookieName;
 axios.defaults.withCredentials = true;
 
 const makeDjangoApiUrl = (endpoint) => {
@@ -12,6 +14,11 @@ const makeDjangoApiUrl = (endpoint) => {
 };
 
 const providers = [
+  // TODO
+  // Providers.Discord({
+  //   clientId: process.env.SOCIAL_AUTH_DISCORD_KEY,
+  //   clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET
+  // })
   Providers.Facebook({
     clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
     clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
@@ -25,20 +32,20 @@ const providers = [
     clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
   }),
   Providers.Credentials({
+    id: "credentials",
     // The name to display on the sign-in form (i.e., 'Sign in with ...')
     name: "Credentials",
     // The fields expected to be submitted in the sign-in form
     credentials: {
       username: { label: "Username", type: "text", placeholder: "" },
       password: { label: "Password", type: "password" },
-      csrf_token: { type: "hidden" },
+      // djangoCsrfToken: { label: "CSRF Token", type: "text" },
     },
-    authorize: async (credentials) => {
-      // Look up the user based on the credentials supplied
+    async authorize(credentials) {
       console.log("Attempting to authorize");
+      const token = cookies(context).csrftoken || "";
       const url = makeDjangoApiUrl("/login/");
-      const csrf_token = null; // TODO
-      axios.defaults.headers[axios.defaults.xsrfHeaderName] = csrf_token;
+      axios.defaults.headers[djangoCsrfCookieName] = credentials.djangoCsrfToken || null;
       const response = await axios
         .post(url, {
           username: credentials.username,
@@ -54,14 +61,14 @@ const providers = [
         });
       console.log("authorize got response: ", response);
       return Promise.resolve(response["user"] ? response["user"] : null);
-    },
+    }
   }),
 ];
 
 const callbacks = {};
 
 callbacks.signIn = async function signIn(user, account, data) {
-  console.log("signIn.user: ", user, "\nsignIn.account: ", account, "\nsignIn.data: ", data);
+  console.log("signIn.user: ", user, "\nsignIn.account.provider: ", account.provider, "\nsignIn.data: ", data);
   if (account.provider === "credentials") {
     console.log('Get token from API server!!!');  // TODO
     // user.accessToken = await getTokenFromYourAPIServer(account.provider, user);

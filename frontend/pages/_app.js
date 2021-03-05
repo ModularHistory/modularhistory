@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "axios";
 import { Provider } from "next-auth/client";
 import Head from "next/head";
 import React, { useEffect } from "react";
@@ -6,9 +6,10 @@ import "../../modularhistory/static/styles/base.scss";
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
-    // Get CSRF cookie
-    const url = "/api/csrf/set";
-    axios.get(url).then(console.log);
+    // TODO: get CSRF cookie
+    // const url = "/api/csrf/set";
+    // axios.get(url).then(console.log);
+    console.log('>>>>>>>>>>>>>> useEffect');
   }, []);
   return (
     <>
