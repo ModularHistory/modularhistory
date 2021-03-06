@@ -41,6 +41,10 @@ node_modules/
 *.py[cod]
 *$py.class
 
+# Legacy requirements
+# Note: Python packages should be managed through pyproject.toml
+requirements.txt
+
 # PyCharm / IntelliJ
 .idea
 .idea/

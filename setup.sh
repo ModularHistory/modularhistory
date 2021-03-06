@@ -120,7 +120,8 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew tap homebrew/services && brew_install postgresql
   # Other packages
   brew_install openssl@1.1
-  brew install rust libjpeg zlib grep jq
+  brew_install rust
+  brew install libjpeg zlib grep jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
   _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
@@ -289,7 +290,31 @@ if [[ "$os" == "$MAC_OS" ]]; then
 fi
 # Install dependencies with Poetry
 echo "Installing dependencies ..."
-poetry install --no-root || _error "Failed to install dependencies with Poetry."
+poetry install --no-root || {
+  _print_red "Failed to install dependencies with Poetry."
+  echo "Attempting workaround ..."
+  # Try installing with pip
+  set a
+  # shellcheck disable=SC1090
+  source "$PROJECT_DIR/.venv/bin/activate"; unset a
+  IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
+  [[ "$IN_VENV" = 0 ]] || {
+    _error "Failed to create and/or activate virtual environment."
+  }
+  # https://python-poetry.org/docs/cli/#export
+  poetry export -f requirements.txt --without-hashes --dev -o requirements.txt
+  pip install --upgrade pip
+  # shellcheck disable=SC2015
+  pip install -r requirements.txt && {
+    rm requirements.txt
+    echo "Installed dependencies with pip after failing to install with Poetry."
+    _prompt_to_rerun
+  } || {
+    _print_red "Failed to install dependencies with pip."
+  }
+  rm requirements.txt
+  _error "Failed to install dependencies with Poetry."
+}
 
 # Add container names to /etc/hosts
 poetry run invoke setup.update-hosts
