@@ -98,6 +98,12 @@ def restore_squashed_migrations(context):
 
 
 @command
+def seed(context):
+    """Seed the database."""
+    db.seed(context)
+
+
+@command
 def squash_migrations(context, dry: bool = True):
     """Squash migrations."""
     db.squash_migrations(context, dry)
