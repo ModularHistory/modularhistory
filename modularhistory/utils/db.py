@@ -238,7 +238,7 @@ def seed(context: Context = CONTEXT):
     db_volume = 'modularhistory_postgres_data'
     seed_exists = os.path.exists(DB_INIT_FILE) and os.path.isfile(DB_INIT_FILE)
     if not seed_exists:
-        raise Exception('Seed does not exist')
+        raise Exception('Seed does not exist.')
     # Remove the data volume, if it exists
     print('Wiping postgres data volume...')
     context.run('docker-compose down')
