@@ -430,10 +430,12 @@ else:
     SESSION_CACHE_ALIAS = 'default'
 
 # https://github.com/jazzband/django-defender
-DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
-if IS_PROD or DOCKERIZED:
-    # https://github.com/jazzband/django-defender#customizing-django-defender
-    DEFENDER_BEHIND_REVERSE_PROXY = True
+USE_DEFENDER = False  # TODO
+if USE_DEFENDER:
+    DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
+    if IS_PROD or DOCKERIZED:
+        # https://github.com/jazzband/django-defender#customizing-django-defender
+        DEFENDER_BEHIND_REVERSE_PROXY = True
 
 # https://docs.celeryproject.org/en/stable/django/
 CELERY_ACCEPT_CONTENT = ['application/json']

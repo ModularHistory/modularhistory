@@ -9,7 +9,7 @@ from modularhistory.utils.html import soupify
 
 
 class PageRange(Model):
-    """TODO: add docstring."""
+    """A page range associated with a citation."""
 
     citation = ForeignKey(
         to='sources.Citation',
