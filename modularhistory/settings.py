@@ -10,7 +10,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 import sys
-from datetime import timedelta
 from os.path import join
 from typing import Any, Dict
 
@@ -32,9 +31,6 @@ DEBUG = IS_DEV
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-secret-key
-SECRET_KEY = config('SECRET_KEY', default='f67EPexT9Tmwnt71kcGPk')
 
 # --- URL MODIFICATION SETTINGS ---
 # Do not prepend `www.` to `modularhistory.com`; in production,
@@ -80,23 +76,6 @@ ADMINS = (
     else []
 )
 
-REDIS_HOST = 'redis' if DOCKERIZED else 'localhost'
-REDIS_PORT = '6379'
-REDIS_BASE_URL = REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
-
-# https://channels.readthedocs.io/en/latest/
-ASGI_APPLICATION = 'modularhistory.asgi.application'
-WSGI_APPLICATION = 'modularhistory.wsgi.application'  # unused
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [(REDIS_HOST, 6379)],
-            'symmetric_encryption_keys': [SECRET_KEY],
-        },
-    },
-}
-
 INSTALLED_APPS = [
     # admin_tools and its modules must come before django.contrib.admin
     'admin_tools',  # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
@@ -115,6 +94,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
+    # Note: allauth is a dependency of dj-rest-auth and depends on django.contrib.sites.
+    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    # 'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
@@ -147,8 +132,11 @@ INSTALLED_APPS = [
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'rest_framework',  # https://github.com/encode/django-rest-framework
+    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
+    # Note: `dj_rest_auth` must be loaded after `rest_framework`
+    'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
+    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
     'sass_processor',  # https://github.com/jrief/django-sass-processor
-    'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
@@ -255,31 +243,14 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'modularhistory.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
 }
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': False,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    # Whatever value is set for AUTH_HEADER_TYPES must be reflected in React’s headers.
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-}
-JWT_COOKIE_NAME = 'jwt_token'
-JWT_COOKIE_SAMESITE = 'Strict' if IS_PROD else 'None'
-JWT_COOKIE_SECURE = IS_PROD
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -402,49 +373,6 @@ RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default='')
 
 # https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
 SITE_ID = 1
-
-# Caching settings
-use_dummy_cache = config('DUMMY_CACHE', cast=bool, default=False)
-Cache = Dict[str, Any]
-CACHES: Dict[str, Cache]
-
-# https://github.com/jazzband/django-redis
-if IS_DEV and use_dummy_cache:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        }
-    }
-else:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': f'{REDIS_BASE_URL}/0',
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            },
-        }
-    }
-    # https://github.com/jazzband/django-redis
-    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-    SESSION_CACHE_ALIAS = 'default'
-
-# https://github.com/jazzband/django-defender
-USE_DEFENDER = False  # TODO
-if USE_DEFENDER:
-    DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
-    if IS_PROD or DOCKERIZED:
-        # https://github.com/jazzband/django-defender#customizing-django-defender
-        DEFENDER_BEHIND_REVERSE_PROXY = True
-
-# https://docs.celeryproject.org/en/stable/django/
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_BROKER_URL = f'{REDIS_BASE_URL}/0'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-# https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
-CELERY_RESULT_BACKEND = 'django-cache'
-CELERY_CACHE_BACKEND = 'default'
 
 CONFIG_DIR = join(BASE_DIR, '.config')
 

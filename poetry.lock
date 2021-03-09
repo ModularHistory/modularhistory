@@ -562,6 +562,22 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "dj-rest-auth"
+version = "2.1.3"
+description = "Authentication and Registration in Django Rest Framework"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+Django = ">=2.0"
+django-allauth = {version = ">=0.40.0,<0.45.0", optional = true, markers = "extra == \"with_social\""}
+djangorestframework = ">=3.7.0"
+
+[package.extras]
+with_social = ["django-allauth (>=0.40.0,<0.45.0)"]
+
+[[package]]
 name = "django"
 version = "3.1.7"
 description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
@@ -596,6 +612,21 @@ description = "A collection of tools for the django administration interface"
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "django-allauth"
+version = "0.44.0"
+description = "Integrated set of Django applications addressing authentication, registration, account management as well as 3rd party (social) account authentication."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=2.0"
+pyjwt = {version = ">=1.7", extras = ["crypto"]}
+python3-openid = ">=3.0.8"
+requests = "*"
+requests-oauthlib = ">=0.3.0"
 
 [[package]]
 name = "django-appconf"
@@ -1867,7 +1898,7 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
 [[package]]
 name = "martor"
-version = "1.5.8"
+version = "1.5.9"
 description = "Django Markdown Editor"
 category = "main"
 optional = false
@@ -2305,6 +2336,9 @@ description = "JSON Web Token implementation in Python"
 category = "main"
 optional = false
 python-versions = "*"
+
+[package.dependencies]
+cryptography = {version = ">=1.4", optional = true, markers = "extra == \"crypto\""}
 
 [package.extras]
 crypto = ["cryptography (>=1.4)"]
@@ -3195,7 +3229,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.9"
-content-hash = "73fa75c1e469a36dfc83388a836bf2986e9a94cc973addb1c7bca1a1c3e6f57a"
+content-hash = "6718510aa59aa44ef45eb6fbe5dabdbb8476d1bb768c070179b363383410878e"
 
 [metadata.files]
 aenum = [
@@ -3571,6 +3605,9 @@ distro = [
     {file = "distro-1.5.0-py2.py3-none-any.whl", hash = "sha256:df74eed763e18d10d0da624258524ae80486432cd17392d9c3d96f5e83cd2799"},
     {file = "distro-1.5.0.tar.gz", hash = "sha256:0e58756ae38fbd8fc3020d54badb8eae17c5b9dcbed388b17bb55b8a5928df92"},
 ]
+dj-rest-auth = [
+    {file = "dj-rest-auth-2.1.3.tar.gz", hash = "sha256:a5ae4e1180e29539839677b51fd6faf84ea410270c082d2479abf5490422ca21"},
+]
 django = [
     {file = "Django-3.1.7-py3-none-any.whl", hash = "sha256:baf099db36ad31f970775d0be5587cc58a6256a6771a44eb795b554d45f211b8"},
     {file = "Django-3.1.7.tar.gz", hash = "sha256:32ce792ee9b6a0cbbec340123e229ac9f765dff8c2a4ae9247a14b2ba3a365a7"},
@@ -3582,6 +3619,9 @@ django-admin-autocomplete-filter = [
 django-admin-tools = [
     {file = "django-admin-tools-0.9.0.tar.gz", hash = "sha256:428d1b6a572ee364c35086d7bec34344cc43105839e5637dbb900b9cabd6adf8"},
     {file = "django_admin_tools-0.9.0-py2.py3-none-any.whl", hash = "sha256:d1ecc7664b17110c4c1a38e9709de932b7f711521951720b95705205983218a2"},
+]
+django-allauth = [
+    {file = "django-allauth-0.44.0.tar.gz", hash = "sha256:e51af457466022f52154d74c8523ac69375120fad2acce6e239635d85e610b25"},
 ]
 django-appconf = [
     {file = "django-appconf-1.0.4.tar.gz", hash = "sha256:be58deb54a43d77d2e1621fe59f787681376d3cd0b8bd8e4758ef6c3a6453380"},
@@ -4190,7 +4230,7 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
 ]
 martor = [
-    {file = "martor-1.5.8.tar.gz", hash = "sha256:e3597390bc5cc0dbc487cd4f909d9bdd473c2bbc22276d92435e8041784a8ec3"},
+    {file = "martor-1.5.9.tar.gz", hash = "sha256:85a06c57dfb6c4956cfd2be442cc61eadbc593e628034163e8b6909aa40e5e50"},
 ]
 matplotlib = [
     {file = "matplotlib-3.3.4-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:672960dd114e342b7c610bf32fb99d14227f29919894388b41553217457ba7ef"},

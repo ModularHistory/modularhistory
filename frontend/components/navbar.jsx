@@ -16,6 +16,7 @@ const logoImageSrc = "/static/logo_head_white.png";
 const globalMenuItems = [
   {
     title: "About",
+    path: "/about",
     children: [
       { title: "About Us", path: "/about", reactive: false },
       { title: "Manifesto", path: "/manifesto", reactive: false },

@@ -87,14 +87,14 @@ urlpatterns = [
     path('topics/', include('apps.topics.urls', namespace='topics')),
     # Third-party apps
     path('api-auth/', include('rest_framework.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),  # https://github.com/iMerica/dj-rest-auth
     path('ht/', include('health_check.urls')),
     path('martor/', include('martor.urls')),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('select2/', include('django_select2.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('watchman/', include('watchman.urls')),
-    # Basic healthcheck
-    path('healthcheck/', bare_status),
+    path('healthcheck/', bare_status),  # basic healthcheck
     # Home
     path('', include('apps.home.urls')),
     # robots.txt

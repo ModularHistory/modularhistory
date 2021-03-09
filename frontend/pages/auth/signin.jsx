@@ -1,18 +1,19 @@
+import { Box, Button, Typography } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import { csrfToken, providers, signIn } from 'next-auth/client';
+import { csrfToken, providers, signIn, signOut, useSession } from 'next-auth/client';
 import PropTypes from 'prop-types';
 import React from "react";
 import Layout from "../../components/layout";
-import cookies from 'next-cookies';
+
 
 const CREDENTIALS_KEY = 'credentials';
 
 export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
+  const [session, loading] = useSession();
   const credentialsAuthProvider = providers[CREDENTIALS_KEY] || null;
   const socialAuthProviders = providers;
   if (credentialsAuthProvider) {
     console.log('Credentials provider is enabled.');
-    delete socialAuthProviders[CREDENTIALS_KEY];
   } else {
     console.log('Credentials provider is not enabled.');
   }
@@ -20,31 +21,53 @@ export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
   return (
     <Layout title={"Sign in"}>
       <Container>
-        <div className="text-center">
-          {credentialsAuthProvider && (
-            <div key={credentialsAuthProvider.name} className="provider">
-              <form method='post' action='/api/auth/callback/credentials'>
-                <input type="hidden" name="csrfToken" value={csrfToken} />
-                <label>
-                  Username
-                  <input name='username' type='text'/>
-                </label>
-                <label>
-                  Password
-                  <input name='password' type='text'/>
-                </label>
-                <button type='submit'>Sign in</button>
-              </form>
-            </div>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          m={5}
+          p={5}
+          flexDirection="column"
+        >
+          {!loading && session && (
+            <>
+              <Typography>Logged in as {session.user.email}</Typography>
+              <pre>{JSON.stringify(session, null, 2)}</pre>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => signOut()}
+              >
+                Sign Out
+              </Button>
+            </>
           )}
-          <>
-            {Object.values(providers).map(provider => (
-              <div key={provider.name} className="provider">
-                <button onClick={() => signIn(provider.id)}>Sign in with {provider.name}</button>
+          {!loading && !session && (
+            <>
+              <div key={credentialsAuthProvider.name} className="provider">
+                <form method='post' action='/api/auth/callback/credentials'>
+                  <input type="hidden" name="csrfToken" value={csrfToken} />
+                  <label>
+                    Username
+                    <input name='username' type='text'/>
+                  </label>
+                  <label>
+                    Password
+                    <input name='password' type='text'/>
+                  </label>
+                  <button type='submit'>Sign in</button>
+                </form>
               </div>
-            ))}
-          </>
-        </div>
+              <>
+                {Object.values(socialAuthProviders).map(provider => (
+                  <div key={provider.name} className="provider">
+                    <Button onClick={() => signIn(provider.id)}>Sign in with {provider.name}</Button>
+                  </div>
+                ))}
+              </>
+            </>
+          )}
+        </Box>
       </Container>
     </Layout>
   );

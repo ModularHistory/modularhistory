@@ -1,12 +1,46 @@
 """Auth-related settings, including social auth settings."""
 
 from decouple import config
+from datetime import timedelta
+from modularhistory.config.secrets import SECRET_KEY
+from modularhistory.environment import IS_PROD
 
-AUTH_USER_MODEL = 'account.User'
+
+AUTH_USER_MODEL = '_account.User'
 LOGIN_URL = 'account/login'
 LOGOUT_URL = 'account/logout'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# https://dj-rest-auth.readthedocs.io/en/latest/installation.html#json-web-token-jwt-support-optional
+REST_USE_JWT = True
+# TODO
+JWT_AUTH_COOKIE = 'my-app-auth'
+JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
+
+# https://dj-rest-auth.readthedocs.io/en/latest/configuration.html#configuration
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'apps.account.api.serializers.UserSerializer',
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    # Whatever value is set for AUTH_HEADER_TYPES must be reflected in React’s headers.
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+}
+JWT_COOKIE_NAME = 'jwt_token'
+JWT_COOKIE_SAMESITE = 'Strict' if IS_PROD else 'None'
+JWT_COOKIE_SECURE = IS_PROD
 
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -37,47 +71,47 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
-# https://python-social-auth.readthedocs.io/en/latest/pipeline.html
-SOCIAL_AUTH_PIPELINE = (
-    # Get the information we can about the user and return it in a simple
-    # format to create the user instance later. In some cases the details are
-    # already part of the auth response from the provider, but sometimes this
-    # could hit a provider API.
-    'social_core.pipeline.social_auth.social_details',
-    # Get the social UID (unique identifier of the user) from the auth provider.
-    'social_core.pipeline.social_auth.social_uid',
-    # Verify that the current auth process is valid within the current project.
-    # This is where emails and domains whitelists are applied (if defined).
-    'social_core.pipeline.social_auth.auth_allowed',
-    # Check if the current social-account is already associated in the site.
-    'social_core.pipeline.social_auth.social_user',
-    # Get the user's email address, if it wasn't automatically obtained
-    'account.social_auth.get_user_email',
-    # Make up a username for this person.
-    # Append a random string at the end if there's any collision.
-    'social_core.pipeline.user.get_username',
-    # Associate the current details with a user account having a similar email address.
-    # Note: Default settings would disable this.
-    'social_core.pipeline.social_auth.associate_by_email',
-    # Create a user account if we haven't found one yet.
-    'social_core.pipeline.user.create_user',
-    # Create the record that associates the social account with the user.
-    'social_core.pipeline.social_auth.associate_user',
-    # Populate the extra_data field in the social record with the values
-    # specified by settings (and the default ones like access_token, etc).
-    'social_core.pipeline.social_auth.load_extra_data',
-    # Update the user record with any changed info from the auth service.
-    'social_core.pipeline.user.user_details',
-    # Get the user's profile picture
-    'account.social_auth.get_user_avatar',
-)
-SOCIAL_AUTH_POSTGRES_JSONFIELD = True
-SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
-SOCIAL_AUTH_LOGIN_ERROR_URL = '/account/settings'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_RAISE_EXCEPTIONS = False
-# Fields to populate `search_fields` in admin to search for related users
-SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'last_name', 'email']
+# # https://python-social-auth.readthedocs.io/en/latest/pipeline.html
+# SOCIAL_AUTH_PIPELINE = (
+#     # Get the information we can about the user and return it in a simple
+#     # format to create the user instance later. In some cases the details are
+#     # already part of the auth response from the provider, but sometimes this
+#     # could hit a provider API.
+#     'social_core.pipeline.social_auth.social_details',
+#     # Get the social UID (unique identifier of the user) from the auth provider.
+#     'social_core.pipeline.social_auth.social_uid',
+#     # Verify that the current auth process is valid within the current project.
+#     # This is where emails and domains whitelists are applied (if defined).
+#     'social_core.pipeline.social_auth.auth_allowed',
+#     # Check if the current social-account is already associated in the site.
+#     'social_core.pipeline.social_auth.social_user',
+#     # Get the user's email address, if it wasn't automatically obtained
+#     'account.social_auth.get_user_email',
+#     # Make up a username for this person.
+#     # Append a random string at the end if there's any collision.
+#     'social_core.pipeline.user.get_username',
+#     # Associate the current details with a user account having a similar email address.
+#     # Note: Default settings would disable this.
+#     'social_core.pipeline.social_auth.associate_by_email',
+#     # Create a user account if we haven't found one yet.
+#     'social_core.pipeline.user.create_user',
+#     # Create the record that associates the social account with the user.
+#     'social_core.pipeline.social_auth.associate_user',
+#     # Populate the extra_data field in the social record with the values
+#     # specified by settings (and the default ones like access_token, etc).
+#     'social_core.pipeline.social_auth.load_extra_data',
+#     # Update the user record with any changed info from the auth service.
+#     'social_core.pipeline.user.user_details',
+#     # Get the user's profile picture
+#     'account.social_auth.get_user_avatar',
+# )
+# SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+# SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+# SOCIAL_AUTH_LOGIN_ERROR_URL = '/account/settings'
+# SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+# SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+# # Fields to populate `search_fields` in admin to search for related users
+# SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'last_name', 'email']
 # Permissions to request
 SOCIAL_AUTH_SCOPE = ['email']
 # Twitter auth settings

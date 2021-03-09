@@ -43,9 +43,11 @@ const providers = [
     },
     async authorize(credentials) {
       console.log("Attempting to authorize");
-      const token = cookies(context).csrftoken || "";
-      const url = makeDjangoApiUrl("/login/");
+      // const token = cookies(context).csrftoken || "";
+      const url = makeDjangoApiUrl("/auth/login/");
       axios.defaults.headers[djangoCsrfCookieName] = credentials.djangoCsrfToken || null;
+      // TODO: Use state?
+      // See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js
       const response = await axios
         .post(url, {
           username: credentials.username,
@@ -67,16 +69,36 @@ const providers = [
 
 const callbacks = {};
 
+async function getTokenFromYourAPIServer(provider, user) {
+  const url = makeDjangoApiUrl("/token/obtain");
+  const response = await axios
+    .post(url, {
+      username: credentials.username,
+      password: credentials.password,
+    })
+    .then(function (response) {
+      // handle success
+      console.log(response);
+    })
+    .catch(function (error) {
+      // handle error
+      console.error(error);
+    });
+  return response
+}
+
 callbacks.signIn = async function signIn(user, account, data) {
   console.log("signIn.user: ", user, "\nsignIn.account.provider: ", account.provider, "\nsignIn.data: ", data);
+  let accessToken = null;
   if (account.provider === "credentials") {
     console.log('Get token from API server!!!');  // TODO
-    // user.accessToken = await getTokenFromYourAPIServer(account.provider, user);
+    accessToken = await getTokenFromYourAPIServer(account.provider, user);
   } else {
-    let user;
+    console.log(`Signing in via ${account.provider}`);
+    let socialUser;
     switch (account.provider) {
       case "facebook":
-        user = {
+        socialUser = {
           id: data.id,
           login: data.login,
           name: data.name,
@@ -93,7 +115,7 @@ callbacks.signIn = async function signIn(user, account, data) {
         // const emails = await emailRes.json()
         // const primaryEmail = emails.find(e => e.primary).email;
         // user.email = primaryEmail;
-        user = {
+        socialUser = {
           id: data.id,
           login: data.login,
           name: data.name,
@@ -101,7 +123,7 @@ callbacks.signIn = async function signIn(user, account, data) {
         };
         break;
       case "google":
-        user = {
+        socialUser = {
           id: data.id,
           login: data.login,
           name: data.name,
@@ -109,7 +131,7 @@ callbacks.signIn = async function signIn(user, account, data) {
         };
         break;
       case "twitter":
-        user = {
+        socialUser = {
           id: data.id,
           login: data.login,
           name: data.name,
@@ -119,9 +141,10 @@ callbacks.signIn = async function signIn(user, account, data) {
       default:
         return false;
     }
+    accessToken = null;  // TODO: await getTokenFromYourAPIServer(account.provider, socialUser);
   }
   // https://getstarted.sh/bulletproof-next/add-social-authentication/7
-  user.accessToken = null;  // TODO: await getTokenFromYourAPIServer(account.provider, socialUser);
+  user.accessToken = accessToken;
   return true;
 };
 
