@@ -53,19 +53,22 @@ def backup(
         with open(backup_filename, 'w') as processed_backup:
             previous_line = ''  # falsy; compatible with `startswith`
             for line in unprocessed_backup:
-                drop_conditions = [
-                    line.startswith('ALTER '),
-                    line.startswith('DROP '),
-                    line == '\n' == previous_line,
-                    all(
-                        [
-                            redact,
-                            previous_line.startswith('COPY public.account_user'),
-                            not line.startswith(r'\.'),
-                        ]
-                    ),
-                ]
-                if any(drop_conditions):
+                drop_line = any(
+                    [
+                        line.startswith('ALTER ') and ' DROP ' in line,
+                        line.startswith('ALTER ') and ' OWNER TO ' in line,
+                        line.startswith('DROP '),
+                        line == '\n' == previous_line,
+                        all(
+                            [
+                                redact,
+                                previous_line.startswith('COPY public.account_user'),
+                                not line.startswith(r'\.'),
+                            ]
+                        ),
+                    ]
+                )
+                if drop_line:
                     continue
                 processed_backup.write(line)
                 previous_line = line
