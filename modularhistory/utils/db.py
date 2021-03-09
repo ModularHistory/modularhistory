@@ -46,7 +46,7 @@ def backup(
         backup_filename = backup_filename.replace(
             os.path.basename(backup_filename), filename
         )
-    print('Processing backup file...')
+    print('Processing backup file ...')
     with open(temp_file, 'r') as unprocessed_backup:
         if os.path.isdir(backup_filename):
             os.rmdir(backup_filename)
@@ -74,16 +74,18 @@ def backup(
                 previous_line = line
     context.run(f'rm {temp_file}')
     if zip:
-        print(f'Zipping up {backup_filename}...')
+        print(f'Zipping up {backup_filename} ...')
         zipped_backup_file = f'{backup_filename}.zip'
         with ZipFile(zipped_backup_file, 'x') as archive:
             archive.write(backup_filename)
         backup_filename = zipped_backup_file
     print(f'Finished creating backup file: {backup_filename}')
     if push:
+        print(f'Uploading {backup_filename} to Mega ...')
         upload_to_mega(file=backup_filename, account=Environments.DEV)
+        print(f'Finished uploading {backup_filename} to Mega.')
     # Remove old backup files
-    logging.info('Removing old backup files...')
+    logging.info('Removing old backup files ...')
     end = '{} \;'  # noqa: W605, P103
     context.run(
         f'find {backup_files_pattern} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}'
