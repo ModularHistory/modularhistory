@@ -99,7 +99,15 @@ echo "Checking package manager ..."
 if [[ "$os" == "$MAC_OS" ]]; then
   # Update software dependencies through XCode
   echo "Updating software ..."
-  xcode-select --install &>/dev/null || softwareupdate -l
+  xcodebuild -version &>/dev/null || {
+    xcode-select --install || {
+      error "
+        XCode is required. Rerun this script after installing XCode: 
+          https://apps.apple.com/us/app/xcode/id497799835?mt=12
+      "
+    }
+  }
+  softwareupdate -l
 
   function brew_install {
     if brew ls --versions "$1" >/dev/null; then
