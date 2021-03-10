@@ -1,5 +1,4 @@
-import logging
-from typing import List, Optional
+from typing import Optional
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -43,33 +42,3 @@ class ProfileView(LoginRequiredMixin, View):
             }
             return render(request, 'account/profile.html', context)
         return HttpResponseRedirect(LOGIN_PATH)
-
-
-class SettingsView(LoginRequiredMixin, View):
-    """Account settings view."""
-
-    def get(self, request: HttpRequest) -> HttpResponse:
-        """Render the settings view upon request."""
-        if isinstance(request.user, User):
-            user: User = request.user
-            social_auth_backends: List[Provider] = [
-                Provider('google_oauth2', 'Google'),
-                Provider('facebook', 'Facebook'),
-                Provider('twitter', 'Twitter'),
-                Provider('github', 'GitHub'),
-            ]
-            context = {}
-            return render(request, 'account/settings.html', context)
-        return HttpResponseRedirect(LOGIN_PATH)
-
-
-def get_user_handle_from_auth(auth: Optional[UserSocialAuth]) -> Optional[str]:
-    """Given a social auth object, return the user's social media handle/username."""
-    if auth:
-        provider = auth.provider
-        if provider == 'twitter':
-            return auth.extra_data['access_token']['screen_name']
-        elif provider == 'facebook':
-            return auth.extra_data['id']
-        # TODO: handle other backends
-    return None

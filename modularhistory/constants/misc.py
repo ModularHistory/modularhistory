@@ -34,5 +34,3 @@ APPS_WITH_MIGRATIONS = (
     'staticpages',
     'topics',
 )
-
-SOCIAL_AUTH_URL_NAME = 'social:begin'

@@ -33,6 +33,5 @@ urlpatterns = [
         name='password_reset_complete',
     ),
     re_path(r'profile/?', views.ProfileView.as_view(), name='profile'),
-    re_path(r'settings/?', views.SettingsView.as_view(), name='settings'),
     path('', include('django.contrib.auth.urls')),
 ]

@@ -7,4 +7,4 @@ from .password import (
     PasswordResetDoneView,
     PasswordResetView,
 )
-from .profile import ProfileView, SettingsView
+from .profile import ProfileView
