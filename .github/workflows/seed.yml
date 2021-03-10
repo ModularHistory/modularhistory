@@ -55,7 +55,7 @@ jobs:
       with:
         python-version: 3.7
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.1
+      uses: snok/install-poetry@v1.1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -120,7 +120,7 @@ jobs:
       with:
         python-version: 3.7
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.1
+      uses: snok/install-poetry@v1.1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
