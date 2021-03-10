@@ -118,7 +118,7 @@ class Entity(
     @property
     def has_quotes(self) -> bool:
         """Return whether the entity has any attributed quotes."""
-        return bool(len(self.quotes.all()))
+        return self.quotes.exists()
 
     @property
     def name_html(self) -> str:
