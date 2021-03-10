@@ -1,12 +1,8 @@
-from typing import List
-
 from django import forms
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, Permission
-from social_django.admin import AssociationOption, NonceOption, UserSocialAuthOption
-from social_django.models import Association, Nonce, UserSocialAuth
 
-from admin import TabularInline, admin_site
+from admin import admin_site
 from apps.account.models import User
 
 EMAIL_FIELD = 'email'
@@ -194,14 +190,6 @@ class UserChangeForm(forms.ModelForm):
         ]
 
 
-class SocialAuthInline(TabularInline):
-    """Inline admin for social auth instances."""
-
-    model = UserSocialAuth
-    extra = 0
-    readonly_fields: List[str] = []
-
-
 class UserAdmin(BaseUserAdmin):
     """Admin for users of ModularHistory."""
 
@@ -274,11 +262,7 @@ class UserAdmin(BaseUserAdmin):
 
     filter_horizontal = ()
 
-    inlines = [SocialAuthInline]
+    inlines = []
 
 
 admin_site.register(User, UserAdmin)
-
-admin_site.register(UserSocialAuth, UserSocialAuthOption)
-admin_site.register(Nonce, NonceOption)
-admin_site.register(Association, AssociationOption)

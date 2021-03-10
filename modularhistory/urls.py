@@ -87,7 +87,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('ht/', include('health_check.urls')),
     path('martor/', include('martor.urls')),
-    path('oauth/', include('social_django.urls', namespace='social')),
     path('select2/', include('django_select2.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('watchman/', include('watchman.urls')),

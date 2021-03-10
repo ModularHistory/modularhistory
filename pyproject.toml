@@ -117,7 +117,6 @@ scp = "^0.13"
 sentry-sdk = "^0.19"
 serpy = "^0.3.1"
 sigfig = "==1.1.8"
-social-auth-app-django = "^4.0"
 stringcase = "^1.2.0"
 tomlkit = "^0.7.0"
 Twisted = [

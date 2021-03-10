@@ -148,7 +148,6 @@ INSTALLED_APPS = [
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'rest_framework',  # https://github.com/encode/django-rest-framework
     'sass_processor',  # https://github.com/jrief/django-sass-processor
-    'social_django',  # https://python-social-auth.readthedocs.io/en/latest/configuration/django.html  # noqa: E501
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
@@ -199,7 +198,6 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware',
     # Staticpage middleware (based on Django's Flatpage middleware):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
     'apps.staticpages.middleware.StaticPageFallbackMiddleware',
@@ -222,8 +220,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
                 'django_settings_export.settings_export',
             ],
             # https://docs.djangoproject.com/en/3.1/ref/templates/api/#loader-types

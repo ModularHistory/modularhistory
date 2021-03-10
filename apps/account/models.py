@@ -8,7 +8,6 @@ from django.core.files import File
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.translation import ugettext_lazy as _
-from social_django.models import UserSocialAuth
 
 from modularhistory.fields.file_field import upload_to
 
@@ -37,17 +36,11 @@ class User(AbstractUser):
         'Prompt user to change password upon first login', default=False
     )
 
-    social_auth: 'QuerySet[UserSocialAuth]'
     objects: UserManager = UserManager()
 
     def __str__(self) -> str:
         """Return a string representation of the user."""
         return self.get_full_name()
-
-    @property
-    def social_auths(self) -> 'QuerySet[UserSocialAuth]':
-        """Wrap the reverse attribute of the UserSocialAuth–User relation."""
-        return self.social_auth
 
     def update_avatar(self, url):
         """Update the user's avatar with the image located at the given URL."""
