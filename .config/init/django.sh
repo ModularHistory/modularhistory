@@ -1,6 +1,6 @@
 #!/bin/sh
 
-wait-for-it.sh postgres:5432 -- 
+sleep 3 && wait-for-it.sh postgres:5432 -- 
 # These commands must be run by a www-data user:
 test -w /modularhistory/.backups || {
     echo "Django lacks permission to write in .backups; exiting."
@@ -13,6 +13,10 @@ invoke db.backup || {
 }
 python manage.py migrate || {
     echo "Failed to run db migrations."
+    exit 1
+}
+python manage.py makemigrations --no-input --dry-run || {
+    echo "Uh oh. Unable to make migrations..."
     exit 1
 }
 python manage.py collectstatic --no-input || {
