@@ -1,0 +1,76 @@
+{% extends 'account/base.html' %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block page_header %}
+    Settings &amp; Privacy
+{% endblock %}
+
+{% block content %}
+    <div class="container card-deck" style="margin: auto">
+        <div class="card m-3">
+            <div class="card-header">
+                <h3>Contact Information</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Email address</h5>
+                <p class="card-text">
+                    {{ request.user.email }}
+                </p>
+            </div>
+        </div>
+        <div class="card m-3">
+            <div class="card-header">
+                <h3>Login Information</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Username</h5>
+                <p class="card-text">
+                    {{ request.user.email }}
+                </p>
+                <h5 class="card-title">Password</h5>
+                <p class="card-text">
+                    [hidden]
+                </p>
+                <a href="{% url 'account:password_change' %}" class="btn btn-default">Change password</a>
+            </div>
+        </div>
+        <div class="card m-3">
+            <div class="card-header">
+                <h3>Social Media Connections</h3>
+            </div>
+            <div class="card-body">
+                {% for backend in social_auth_backends %}
+                    <h4>{{ backend.name }}</h4>
+                    {% if backend.auth %}
+                        <p>Connected{% if backend.handle %} as <a href="https://{{ backend.domain }}/{{ backend.handle }}" target="_blank" rel="noopener noreferrer">{{ backend.handle }}</a>
+                            {% elif request.user.email %}
+                                as {{ request.user.email }}
+                            {% endif %}
+                        </p>
+                        {% if can_disconnect %}
+                            <form method="post" action="{% url 'social:disconnect' backend=backend.provider %}">
+                                {% csrf_token %}
+                                <button type="submit">Disconnect from {{ backend.name }}</button>
+                            </form>
+                        {% else %}
+                            <button type="button" disabled>Disconnect from {{ backend.name }}</button>
+                            <p style="color: red">You must <a href="">set a password</a> for your
+                                account before disconnecting from {{ backend.name }}.</p>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'social:begin' backend=backend.provider %}"
+                           class="btn btn-block btn-social btn-{{ backend.name|lower }}"
+                           onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-{{ backend.name|lower }}']);">
+                            <span class="fab fa-{{ backend.name|lower }}"></span> Connect with {{ backend.name }}
+                        </a>
+                    {% endif %}
+                    <hr />
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -5,7 +5,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
-from social_django.models import UserSocialAuth
 
 from apps.account.models import User
 
@@ -59,25 +58,7 @@ class SettingsView(LoginRequiredMixin, View):
                 Provider('twitter', 'Twitter'),
                 Provider('github', 'GitHub'),
             ]
-            for backend in social_auth_backends:
-                try:
-                    auth = user.social_auth.get(provider=backend.key)
-                    backend.auth = auth
-                    backend.handle = get_user_handle_from_auth(auth)
-                except UserSocialAuth.DoesNotExist:
-                    pass
-                except Exception as err:
-                    logging.error(
-                        f'Error processing social auth integration: {type(err)}: {err}'
-                    )
-
-            can_disconnect = user.social_auth.count() > 1 or user.has_usable_password()
-
-            context = {
-                'profile_image': user.avatar or 'nobody_m.jpg',
-                'social_auth_backends': social_auth_backends,
-                'can_disconnect': can_disconnect,
-            }
+            context = {}
             return render(request, 'account/settings.html', context)
         return HttpResponseRedirect(LOGIN_PATH)
 

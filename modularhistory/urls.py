@@ -46,9 +46,10 @@ urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
     # Account
-    path('api/account/', include(_api('account'), namespace='account_api')),
-    path('api/csrf/set', set_csrf_token),
-    path('account/', include(('apps.account.urls', 'account'), namespace='account')),
+    # TODO: uncomment
+    # path('api/users/', include(_api('users'), namespace='users_api')),
+    # path('api/csrf/set', set_csrf_token),
+    # path('users/', include('apps.users.urls', namespace='users')),
     # Admin
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
@@ -90,7 +91,6 @@ urlpatterns = [
     path('dj-rest-auth/', include('dj_rest_auth.urls')),  # https://github.com/iMerica/dj-rest-auth
     path('ht/', include('health_check.urls')),
     path('martor/', include('martor.urls')),
-    path('oauth/', include('social_django.urls', namespace='social')),
     path('select2/', include('django_select2.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('watchman/', include('watchman.urls')),

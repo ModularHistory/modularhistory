@@ -2,6 +2,8 @@ from django.urls import include, path, re_path
 
 from apps.account import views
 
+app_name = 'users'
+
 urlpatterns = [
     re_path(r'login/?', views.LoginView.as_view(), name='login'),
     re_path(r'register/?', views.RegisterView.as_view(), name='register'),

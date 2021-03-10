@@ -1,3 +1,4 @@
+allauth
 ASGI
 asgiref
 attributee

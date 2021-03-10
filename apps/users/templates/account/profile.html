@@ -1,0 +1,50 @@
+{% extends "account/base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img class="img-responsive" src="{{ profile_image_url }}" alt="profile picture" />
+                    <input type="file" name="file"/>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="profile-head">
+                    <h5>{{ request.user.get_full_name }}</h5>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Username</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p>{{ request.user.username }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p>{{ request.user.get_full_name }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p>{{ request.user.email }}</p>
+                    </div>
+                </div>
+            </div>
+{#            <div class="col-md-2">#}
+{#                <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>#}
+{#            </div>#}
+        </div>
+    </form>
+</div>
+{% endblock %}

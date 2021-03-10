@@ -8,7 +8,7 @@ from apps.account import models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('_account', '0003_auto_20200306_0743'),
+        ('account', '0003_auto_20200306_0743'),
     ]
 
     operations = [

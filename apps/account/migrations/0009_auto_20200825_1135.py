@@ -10,7 +10,7 @@ import modularhistory.fields.file_field
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('_account', '0008_auto_20200822_0855'),
+        ('account', '0008_auto_20200822_0855'),
     ]
 
     operations = [

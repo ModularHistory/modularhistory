@@ -2,7 +2,7 @@ import logging
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission, Group
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
 from django.db import models
@@ -36,11 +36,43 @@ class User(AbstractUser):
         'Prompt user to change password upon first login', default=False
     )
 
+    # TODO: remove these
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name=_('groups'),
+        blank=True,
+        help_text=_(
+            'The groups this user belongs to. A user will get all permissions '
+            'granted to each of their groups.'
+        ),
+        related_name="users",
+        related_query_name="user",
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_('user permissions'),
+        blank=True,
+        help_text=_('Specific permissions for this user.'),
+        related_name="users",
+        related_query_name="user",
+    )
+
+    social_auth: 'QuerySet[UserSocialAuth]'
     objects: UserManager = UserManager()
 
     def __str__(self) -> str:
         """Return a string representation of the user."""
+        return self.name
+
+    @property
+    def name(self) -> str:
+        """Return the user's name."""
         return self.get_full_name()
+
+    @property
+    def social_auths(self) -> 'QuerySet[UserSocialAuth]':
+        """Wrap the reverse attribute of the UserSocialAuth–User relation."""
+        return self.social_auth
 
     def update_avatar(self, url):
         """Update the user's avatar with the image located at the given URL."""

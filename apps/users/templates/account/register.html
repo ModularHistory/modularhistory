@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block page_header %}
+    Register
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if form.errors %}
+        <p class="text-danger">{{ form.errors }}</p>
+    {% endif %}
+    {% crispy form %}
+</div>
+{% endblock %}

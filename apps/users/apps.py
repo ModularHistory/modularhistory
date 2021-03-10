@@ -6,7 +6,11 @@ def superuser_check(app_configs, **kwargs):
     """Check that a superuser has been created."""
     from apps.account.models import User
 
-    if User.objects.filter(is_superuser=True).exists():
+    try:
+        if User.objects.filter(is_superuser=True).exists():
+            return []
+    except Exception as err:
+        print(err)
         return []
     return [
         Warning(
@@ -16,7 +20,7 @@ def superuser_check(app_configs, **kwargs):
     ]
 
 
-class AccountConfig(AppConfig):
+class UsersConfig(AppConfig):
     """Config for the account app."""
 
     name = 'apps.account'

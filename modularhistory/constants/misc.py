@@ -21,7 +21,7 @@ PRODUCTION = 'production'
 MAX_MIGRATION_COUNT = 2
 
 APPS_WITH_MIGRATIONS = (
-    # 'account',  # affected by social_django
+    # 'account',
     'entities',
     'images',
     'markup',
