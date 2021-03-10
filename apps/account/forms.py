@@ -10,7 +10,6 @@ from django.urls import reverse
 
 from apps.account.admin import EMAIL_FIELD, PASSWORD_FIELD, USERNAME_FIELD
 from apps.account.models import User
-from modularhistory.constants.misc import SOCIAL_AUTH_URL_NAME
 
 DEFAULT_FIELD_CLASSES = 'form-control mb-4'
 
@@ -59,35 +58,6 @@ class LoginForm(AuthenticationForm):
             Submit('submit', 'Sign in', css_class='btn btn-info btn-block my-4'),
             HTML(
                 f'<p>Not a member? <a href="{reverse("account:register")}">Register</a></p>'
-            ),
-            # self.SOCIAL_LOGIN_COMPONENT,
-            HTML(
-                f'''
-                <!-- Social login -->
-                <p>or sign in with:</p>
-                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["facebook"])}'
-                   class="mx-2 btn-social btn-facebook" role="button"
-                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["twitter"])}'
-                   class="mx-2 btn-social btn-twitter" role="button"
-                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["github"])}'
-                   class="mx-2 btn-social btn-github" role="button"
-                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-github']);">
-                    <i class="fab fa-github"></i>
-                </a>
-                <!--
-                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["google-oauth2"])}'
-                   class="mx-2 btn-social btn-google" role="button"
-                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
-                    <i class="fab fa-google"></i>
-                </a>
-                -->
-                '''
             ),
         )
 
@@ -142,34 +112,6 @@ class RegistrationForm(UserCreationForm):
             Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
             HTML(
                 f'<p>Already have an account? <a href="{reverse("account:login")}">Sign in</a></p>'
-            ),
-            HTML(
-                f'''
-                <!-- Social login -->
-                <p>or sign in with:</p>
-                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["facebook"])}'
-                   class="mx-2 btn-social btn-facebook" role="button"
-                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-facebook']);">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["twitter"])}'
-                   class="mx-2 btn-social btn-twitter" role="button"
-                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-twitter']);">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["github"])}'
-                   class="mx-2 btn-social btn-github" role="button"
-                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-github']);">
-                    <i class="fab fa-github"></i>
-                </a>
-                <!--
-                <a href='{reverse(SOCIAL_AUTH_URL_NAME, args=["google-oauth2"])}'
-                   class="mx-2 btn-social btn-google" role="button"
-                   onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-google']);">
-                    <i class="fab fa-google"></i>
-                </a>
-                -->
-                '''
             ),
         )
 
