@@ -1,6 +1,7 @@
 from watchman import constants as watchman_constants
-from modularhistory.environment import ENVIRONMENT
+
 from modularhistory.constants.environments import Environments
+from modularhistory.environment import ENVIRONMENT
 
 MIN_MEMORY = {Environments.DEV: 50, Environments.PROD: 100}
 

@@ -25,7 +25,7 @@ def backup(
     """Create a media backup file."""
     backups_dir, media_dir = settings.BACKUPS_DIR, settings.MEDIA_ROOT
     backup_files_pattern = join(backups_dir, '*.tar.gz')
-    account_media_dir = join(media_dir, 'account')
+    account_media_dir = join(media_dir, 'users')
     temp_dir = join(settings.BASE_DIR, 'account_media')
     exclude_account_media = redact and os.path.exists(account_media_dir)
     if exclude_account_media:

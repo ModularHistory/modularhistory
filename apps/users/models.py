@@ -2,7 +2,7 @@ import logging
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
-from django.contrib.auth.models import AbstractUser, Permission, Group
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
 from django.db import models
@@ -57,7 +57,6 @@ class User(AbstractUser):
         related_query_name="user",
     )
 
-    social_auth: 'QuerySet[UserSocialAuth]'
     objects: UserManager = UserManager()
 
     def __str__(self) -> str:
@@ -68,11 +67,6 @@ class User(AbstractUser):
     def name(self) -> str:
         """Return the user's name."""
         return self.get_full_name()
-
-    @property
-    def social_auths(self) -> 'QuerySet[UserSocialAuth]':
-        """Wrap the reverse attribute of the UserSocialAuth–User relation."""
-        return self.social_auth
 
     def update_avatar(self, url):
         """Update the user's avatar with the image located at the given URL."""

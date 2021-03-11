@@ -1,11 +1,12 @@
 from typing import Optional
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
 
-from apps.account.models import User
+User = get_user_model()
 
 LOGIN_PATH = '/login/'
 

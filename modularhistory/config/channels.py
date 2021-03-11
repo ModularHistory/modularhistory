@@ -1,5 +1,5 @@
-from modularhistory.config.secrets import SECRET_KEY
 from modularhistory.config.redis import REDIS_HOST
+from modularhistory.config.secrets import SECRET_KEY
 
 # https://channels.readthedocs.io/en/latest/
 ASGI_APPLICATION = 'modularhistory.asgi.application'

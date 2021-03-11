@@ -59,6 +59,7 @@ def get_backup(context, env: str = Environments.DEV):
         )
         with SCPClient(ssh.get_transport()) as scp:
             scp.get(BACKUPS_DIR, './', recursive=True)
+        # Possible alternative: context.run(f'ls -t {join(BACKUPS_DIR, "*sql")} | head -1')  # noqa: SC100, E501
         latest_backup = max(iglob(join(BACKUPS_DIR, '*sql')), key=os.path.getctime)
         print(latest_backup)
         context.run(f'cp {latest_backup} {DB_INIT_FILE}')

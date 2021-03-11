@@ -163,11 +163,16 @@ elif [[ "$os" == "$LINUX" ]]; then
   postgresql-client-13 || _error "Unable to install one or more required packages."
 fi
 
-# Create directories for db backups, static files, and media files
-mkdir -p .backups .static media frontend/.next &>/dev/null
+# Note: These are referenced multiple times in this script.
+writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/static" "$PROJECT_DIR/frontend/.next" )
+
+# Create directories.
+for writable_dir in "${writable_dirs[@]}"; do
+  mkdir -p "$writable_dir" &>/dev/null
+done
 
 if [[ "$os" == "$LINUX" ]]; then
-  # Add user to www-data group
+  # Add user to www-data group.
   groups "$USER" | grep -q www-data || {
     echo "Adding $USER to the www-data group ..."
     sudo usermod -a -G www-data "$USER"
@@ -182,7 +187,6 @@ if [[ "$os" == "$LINUX" ]]; then
     sudo chown -R "$USER":www-data "$PROJECT_DIR"
     rerun_required="true"
   }
-  writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/static" "$PROJECT_DIR/frontend/.next" )
   for writable_dir in "${writable_dirs[@]}"; do
     # shellcheck disable=SC2010
     sudo -u www-data test -w "$writable_dir" || {
@@ -202,7 +206,7 @@ if [[ "$os" == "$LINUX" ]]; then
   fi
 fi
 
-# Make sure pyenv is installed
+# Make sure pyenv is installed.
 echo "Checking for pyenv ..."
 pyenv_dir="$HOME/.pyenv"
 # shellcheck disable=SC2016
@@ -257,7 +261,7 @@ done < .python-version
 # shellcheck disable=SC2016
 _append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
 
-# Make sure correct version of Python is used
+# Make sure the correct version of Python is used.
 echo "Checking Python version ..."
 python --version &>/dev/null || _error "Failed to activate Python"
 active_py_version=$(python --version)
@@ -266,10 +270,10 @@ if [[ ! "$active_py_version" =~ .*"$pyversion".* ]]; then
 fi
 echo "Using $(python --version) ..."
 
-# Make sure Pip is installed
+# Make sure Pip is installed.
 pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
 
-# Install Poetry
+# Install Poetry.
 # shellcheck disable=SC2016
 poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
 poetry --version &>/dev/null || {
@@ -296,7 +300,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # shellcheck disable=SC2155
   export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
 fi
-# Install dependencies with Poetry
+# Install dependencies with Poetry.
 echo "Installing dependencies ..."
 poetry install --no-root || {
   _print_red "Failed to install dependencies with Poetry."
@@ -324,10 +328,10 @@ poetry install --no-root || {
   _error "Failed to install dependencies with Poetry."
 }
 
-# Add container names to /etc/hosts
+# Add container names to /etc/hosts.
 poetry run invoke setup.update-hosts
 
-# Node Version Manager (NVM)
+# Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."
 nvm --version &>/dev/null || {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
@@ -341,7 +345,7 @@ echo "Installing Node modules ..."
 npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 
-# Rclone: https://rclone.org/
+# Set up Rclone (https://rclone.org/).
 rclone version &>/dev/null || {
   echo "Creating .tmp dir ..."
   # shellcheck disable=SC2164
@@ -356,14 +360,14 @@ rclone version &>/dev/null || {
 }
 mkdir -p "$HOME/.config/rclone"
 
-# Disable THP so it doesn't cause issues for Redis containers
+# Disable THP so it doesn't cause issues for Redis containers.
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
   echo "Disabling THP ..."
   sudo bash -c "echo madvise > /sys/kernel/mm/transparent_hugepage/enabled"
 fi
 
 if [[ "$os" == "$MAC_OS" ]]; then
-  # Enable mounting volumes within ~/modularhistory
+  # Enable mounting volumes within ~/modularhistory.
   docker_settings_file="$HOME/Library/Group Containers/group.com.docker/settings.json"
   if [[ -f "$docker_settings_file" ]]; then
     sharing_enabled=$(jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])" < "$docker_settings_file")

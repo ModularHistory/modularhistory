@@ -3,6 +3,20 @@
 import datetime as dt
 import json
 
+# from dj_rest_auth.social_serializers import TwitterLoginSerializer
+# from dj_rest_auth.registration.views import SocialLoginView
+from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model, login
+from django.http import Http404, JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_POST
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+
+from apps.users.api import serializers
+
+User = get_user_model()
+
 # from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 # from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
 # from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
@@ -14,15 +28,6 @@ import json
 # from dj_rest_auth.registration.views import SocialConnectView
 # from dj_rest_auth.social_serializers import TwitterConnectSerializer
 
-# from dj_rest_auth.social_serializers import TwitterLoginSerializer
-# from dj_rest_auth.registration.views import SocialLoginView
-from django.conf import settings
-from django.contrib.auth import authenticate, login
-from django.http import Http404, JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.http import require_POST
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
 
 # from rest_framework.response import Response
 # from rest_framework.views import APIView
@@ -31,8 +36,6 @@ from rest_framework.permissions import IsAuthenticated
 # from rest_framework_simplejwt.tokens import RefreshToken as RefreshTokenModel
 # from rest_framework_simplejwt.views import TokenViewBase
 
-from apps.account.api import serializers
-from apps.account.models import User  # noqa: E500
 
 print(settings.ALLOWED_HOSTS)
 

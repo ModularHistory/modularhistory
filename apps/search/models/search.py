@@ -5,7 +5,7 @@ from typing import List, Tuple
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.account.models import User
+from django.conf import settings
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.models import Model
 
@@ -23,7 +23,7 @@ class UserSearch(Model):
     """An instance of a search by a user."""
 
     user = models.ForeignKey(
-        to=User,
+        to=settings.AUTH_USER_MODEL,
         related_name='searches',
         null=True,
         blank=True,

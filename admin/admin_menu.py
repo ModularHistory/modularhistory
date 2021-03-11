@@ -23,7 +23,7 @@ APPS_TO_INCLUDE = (
     'images',
     'places',
     'sources',
-    'account',
+    'users',
     'staticpages',
 )
 

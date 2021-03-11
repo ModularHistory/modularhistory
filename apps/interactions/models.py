@@ -2,6 +2,7 @@
 
 from difflib import ndiff
 
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -53,7 +54,7 @@ class Edit(FieldContentInteraction):
     """An edit of some content."""
 
     user = models.ForeignKey(
-        to='account.User', related_name='edits', on_delete=models.CASCADE
+        to=settings.AUTH_USER_MODEL, related_name='edits', on_delete=models.CASCADE
     )
 
     before = models.TextField(blank=False)
@@ -71,7 +72,7 @@ class Comment(FieldContentInteraction):
     """A comment regarding some content."""
 
     user = models.ForeignKey(
-        to='account.User', related_name='comments', on_delete=models.CASCADE
+        to=settings.AUTH_USER_MODEL, related_name='comments', on_delete=models.CASCADE
     )
 
     start = models.PositiveIntegerField()
@@ -88,7 +89,7 @@ class Highlight(FieldContentInteraction):
     """Highlighted content."""
 
     user = models.ForeignKey(
-        to='account.User', related_name='highlights', on_delete=models.CASCADE
+        to=settings.AUTH_USER_MODEL, related_name='highlights', on_delete=models.CASCADE
     )
 
     start = models.PositiveIntegerField()

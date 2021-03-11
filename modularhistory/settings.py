@@ -96,13 +96,13 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     # Note: allauth is a dependency of dj-rest-auth and depends on django.contrib.sites.
     'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
-    # 'allauth.account',
-    # 'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.discord',
-    # 'allauth.socialaccount.providers.facebook',
-    # 'allauth.socialaccount.providers.github',
-    # 'allauth.socialaccount.providers.google',
-    # 'allauth.socialaccount.providers.twitter',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.discord',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
@@ -130,22 +130,19 @@ INSTALLED_APPS = [
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'meta',  # https://django-meta.readthedocs.io/en/latest/
-    # 'menu',
     'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'rest_framework',  # https://github.com/encode/django-rest-framework
-    # 'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
+    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
     # Note: `dj_rest_auth` must be loaded after `rest_framework`
-    # 'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
-    # 'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
+    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
     'webpack_loader',  # https://github.com/owais/django-webpack-loader
-    # 'apps.account.apps.accountConfig',
-    'apps.account.apps.AccountConfig',
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
@@ -160,6 +157,7 @@ INSTALLED_APPS = [
     'apps.sources.apps.SourcesConfig',
     'apps.staticpages.apps.StaticPagesConfig',
     'apps.topics.apps.TopicsConfig',
+    'apps.users.apps.UsersConfig',
     'apps.verifications.apps.VerificationsConfig',
 ]
 

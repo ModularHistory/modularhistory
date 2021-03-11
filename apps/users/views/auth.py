@@ -1,13 +1,14 @@
 import logging
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth import views as auth_views
 from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import redirect, render
 from django.views.generic import View
 
-from apps.account.forms import LoginForm, RegistrationForm
-from apps.account.models import User
+from apps.users.forms import LoginForm, RegistrationForm
+
+User = get_user_model()
 
 
 class LoginView(auth_views.LoginView):

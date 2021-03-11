@@ -1,12 +1,13 @@
 """Auth-related settings, including social auth settings."""
 
-from decouple import config
 from datetime import timedelta
+
+from decouple import config
+
 from modularhistory.config.secrets import SECRET_KEY
 from modularhistory.environment import IS_PROD
 
-
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = 'account/login'
 LOGOUT_URL = 'account/logout'
 LOGIN_REDIRECT_URL = '/'
@@ -23,7 +24,7 @@ JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
 
 # https://dj-rest-auth.readthedocs.io/en/latest/configuration.html#configuration
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'apps.account.api.serializers.UserSerializer',
+    'USER_DETAILS_SERIALIZER': 'apps.users.api.serializers.UserSerializer',
 }
 
 SIMPLE_JWT = {

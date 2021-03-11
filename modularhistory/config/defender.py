@@ -1,5 +1,5 @@
 from modularhistory.config.redis import REDIS_BASE_URL
-from modularhistory.environment import IS_PROD, DOCKERIZED
+from modularhistory.environment import DOCKERIZED, IS_PROD
 
 # https://github.com/jazzband/django-defender
 USE_DEFENDER = False  # TODO

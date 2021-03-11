@@ -1,6 +1,8 @@
-from modularhistory.config.redis import REDIS_BASE_URL
 from typing import Any, Dict
+
 from decouple import config
+
+from modularhistory.config.redis import REDIS_BASE_URL
 from modularhistory.environment import IS_DEV
 
 # Caching settings

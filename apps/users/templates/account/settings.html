@@ -38,39 +38,5 @@
                 <a href="{% url 'account:password_change' %}" class="btn btn-default">Change password</a>
             </div>
         </div>
-        <div class="card m-3">
-            <div class="card-header">
-                <h3>Social Media Connections</h3>
-            </div>
-            <div class="card-body">
-                {% for backend in social_auth_backends %}
-                    <h4>{{ backend.name }}</h4>
-                    {% if backend.auth %}
-                        <p>Connected{% if backend.handle %} as <a href="https://{{ backend.domain }}/{{ backend.handle }}" target="_blank" rel="noopener noreferrer">{{ backend.handle }}</a>
-                            {% elif request.user.email %}
-                                as {{ request.user.email }}
-                            {% endif %}
-                        </p>
-                        {% if can_disconnect %}
-                            <form method="post" action="{% url 'social:disconnect' backend=backend.provider %}">
-                                {% csrf_token %}
-                                <button type="submit">Disconnect from {{ backend.name }}</button>
-                            </form>
-                        {% else %}
-                            <button type="button" disabled>Disconnect from {{ backend.name }}</button>
-                            <p style="color: red">You must <a href="">set a password</a> for your
-                                account before disconnecting from {{ backend.name }}.</p>
-                        {% endif %}
-                    {% else %}
-                        <a href="{% url 'social:begin' backend=backend.provider %}"
-                           class="btn btn-block btn-social btn-{{ backend.name|lower }}"
-                           onclick="_gaq.push(['_trackEvent', 'btn-social', 'click', 'btn-{{ backend.name|lower }}']);">
-                            <span class="fab fa-{{ backend.name|lower }}"></span> Connect with {{ backend.name }}
-                        </a>
-                    {% endif %}
-                    <hr />
-                {% endfor %}
-            </div>
-        </div>
     </div>
 {% endblock %}

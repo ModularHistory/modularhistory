@@ -28,7 +28,7 @@ from django.views.generic import TemplateView
 from watchman.views import bare_status
 
 from admin.model_admin import admin_site
-from apps.account.api.views import set_csrf_token
+from apps.users.api.views import set_csrf_token
 from apps.search.views import SearchResultsView
 from modularhistory import errors
 
@@ -43,14 +43,9 @@ _api = 'apps.{}.api.urls'.format  # noqa: P103
 
 # fmt: off
 urlpatterns = [
+    # Admin
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
-    # Account
-    # TODO: uncomment
-    # path('api/users/', include(_api('users'), namespace='users_api')),
-    # path('api/csrf/set', set_csrf_token),
-    # path('users/', include('apps.users.urls', namespace='users')),
-    # Admin
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),
@@ -86,6 +81,10 @@ urlpatterns = [
     # Topics
     path('api/topics/', include(_api('topics'), namespace='topics_api')),
     path('topics/', include('apps.topics.urls', namespace='topics')),
+    # Users
+    path('api/users/', include(_api('users'), namespace='users_api')),
+    path('api/csrf/set', set_csrf_token),
+    path('users/', include('apps.users.urls', namespace='users')),
     # Third-party apps
     path('api-auth/', include('rest_framework.urls')),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),  # https://github.com/iMerica/dj-rest-auth

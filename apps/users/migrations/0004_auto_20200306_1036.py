@@ -2,13 +2,13 @@
 
 from django.db import migrations
 
-from apps.account import models
+from apps.users import models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('account', '0003_auto_20200306_0743'),
+        ('users', '0003_auto_20200306_0743'),
     ]
 
     operations = [

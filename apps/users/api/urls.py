@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import (
 
 from . import views
 
-app_name = 'account'
+app_name = 'users'
 
 urlpatterns = [
     # https://github.com/iMerica/dj-rest-auth
