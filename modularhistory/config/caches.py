@@ -28,5 +28,6 @@ else:
         }
     }
     # https://github.com/jazzband/django-redis
-    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+    # https://docs.djangoproject.com/en/3.1/topics/http/sessions/#using-cached-sessions
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
     SESSION_CACHE_ALIAS = 'default'

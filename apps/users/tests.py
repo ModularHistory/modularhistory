@@ -17,5 +17,5 @@ class AdminTestSuite(TestSuite):
         """Verify pages have 200 status."""
         client = Client()
         for endpoint in unauthenticated_endpoints:
-            response = client.get(reverse(f'account:{endpoint}'))
+            response = client.get(reverse(f'users:{endpoint}'))
             assert response.status_code == 200

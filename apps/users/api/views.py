@@ -3,8 +3,15 @@
 import datetime as dt
 import json
 
-# from dj_rest_auth.social_serializers import TwitterLoginSerializer
-# from dj_rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
+from dj_rest_auth.registration.views import SocialConnectView, SocialLoginView
+from dj_rest_auth.social_serializers import (
+    TwitterConnectSerializer,
+    TwitterLoginSerializer,
+)
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login
 from django.http import Http404, JsonResponse
@@ -12,89 +19,72 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.settings import api_settings as jwt_settings
+from rest_framework_simplejwt.tokens import RefreshToken as RefreshTokenModel
+from rest_framework_simplejwt.views import TokenViewBase
 
 from apps.users.api import serializers
 
 User = get_user_model()
 
-# from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
-# from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
-# from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
-# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-# from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
-# from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
-# from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
-# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-# from dj_rest_auth.registration.views import SocialConnectView
-# from dj_rest_auth.social_serializers import TwitterConnectSerializer
+
+class FacebookMixin:
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
+
+    adapter_class = FacebookOAuth2Adapter
 
 
-# from rest_framework.response import Response
-# from rest_framework.views import APIView
-# from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-# from rest_framework_simplejwt.settings import api_settings as jwt_settings
-# from rest_framework_simplejwt.tokens import RefreshToken as RefreshTokenModel
-# from rest_framework_simplejwt.views import TokenViewBase
+class FacebookLogin(FacebookMixin, SocialLoginView):
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
+
+    pass
 
 
-print(settings.ALLOWED_HOSTS)
+class FacebookConnect(FacebookMixin, SocialConnectView):
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""
+
+    pass
 
 
-# class FacebookMixin:
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
+class TwitterMixin:
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#twitter."""
 
-#     adapter_class = FacebookOAuth2Adapter
-
-
-# class FacebookLogin(FacebookMixin, SocialLoginView):
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
-
-#     pass
+    adapter_class = TwitterOAuthAdapter
 
 
-# class FacebookConnect(FacebookMixin, SocialConnectView):
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""
+class TwitterLogin(TwitterMixin, SocialLoginView):
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#twitter."""
 
-#     pass
-
-
-# class TwitterMixin:
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#twitter."""
-
-#     serializer_class = TwitterConnectSerializer
-#     adapter_class = TwitterOAuthAdapter
+    serializer_class = TwitterLoginSerializer
 
 
-# class TwitterLogin(TwitterMixin, SocialLoginView):
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#twitter."""
+class TwitterConnect(TwitterMixin, SocialConnectView):
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""
 
-#     pass
-
-
-# class TwitterConnect(TwitterMixin, SocialConnectView):
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""
-
-#     pass
+    serializer_class = TwitterConnectSerializer
 
 
-# class GithubMixin:
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
+class GithubMixin:
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
 
-#     adapter_class = GitHubOAuth2Adapter
-#     callback_url = None  # CALLBACK_URL_YOU_SET_ON_GITHUB
-#     client_class = OAuth2Client
-
-
-# class GithubLogin(GithubMixin, SocialLoginView):
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
-
-#     pass
+    adapter_class = GitHubOAuth2Adapter
+    callback_url = None  # CALLBACK_URL_YOU_SET_ON_GITHUB
+    client_class = OAuth2Client
 
 
-# class GithubConnect(GithubMixin, SocialConnectView):
-#     """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""
+class GithubLogin(GithubMixin, SocialLoginView):
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
 
-#     pass
+    pass
+
+
+class GithubConnect(GithubMixin, SocialConnectView):
+    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""
+
+    pass
 
 
 class Me(generics.RetrieveAPIView):

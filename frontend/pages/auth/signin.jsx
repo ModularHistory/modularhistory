@@ -10,13 +10,10 @@ const CREDENTIALS_KEY = 'credentials';
 
 export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
   const [session, loading] = useSession();
-  const credentialsAuthProvider = providers[CREDENTIALS_KEY] || null;
-  const socialAuthProviders = providers;
-  if (credentialsAuthProvider) {
-    console.log('Credentials provider is enabled.');
-  } else {
-    console.log('Credentials provider is not enabled.');
-  }
+  const credentialsAuthProvider = providers[CREDENTIALS_KEY];
+  // Clone the providers object and remove the credentials provider. 
+  const socialAuthProviders = JSON.parse(JSON.stringify(providers));
+  delete socialAuthProviders[CREDENTIALS_KEY];
   // console.log('>>>> ', djangoCsrfToken);
   return (
     <Layout title={"Sign in"}>
@@ -53,7 +50,7 @@ export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
                   </label>
                   <label>
                     Password
-                    <input name='password' type='text'/>
+                    <input name='password' type='password'/>
                   </label>
                   <button type='submit'>Sign in</button>
                 </form>
@@ -61,7 +58,9 @@ export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
               <>
                 {Object.values(socialAuthProviders).map(provider => (
                   <div key={provider.name} className="provider">
-                    <Button onClick={() => signIn(provider.id)}>Sign in with {provider.name}</Button>
+                    <Button variant="outlined" onClick={() => signIn(provider.id)}>
+                      Sign in with {provider.name}
+                    </Button>
                   </div>
                 ))}
               </>

@@ -129,7 +129,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # Other packages
   brew_install openssl@1.1
   brew_install rust
-  brew install libjpeg zlib grep jq
+  brew install libjpeg zlib grep gnu-sed jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
   _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
@@ -438,7 +438,7 @@ fi
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker-compose up -d dev && echo 'Finished.' || {
+docker-compose up --build -d dev && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
@@ -446,7 +446,16 @@ docker-compose up -d dev && echo 'Finished.' || {
     Try restarting Docker and/or running the following in a new shell:
 
       ${BOLD}cd ~/modularhistory && docker-compose up -d dev
+
   "
+}
+
+# Check Docker's memory cap
+[[ "$os" == "$MAC_OS" ]] && {
+  mem_limit=$(docker stats --format "{{.MemUsage}}" --no-stream | head -1 | gsed -r -e 's/.+ \/ ([0-9]+).*/\1/')
+  if [[ "$mem_limit" -lt 2 ]]; then
+    _print_red "Consider increasing Docker's memory limit to 3–4 GB."
+  fi
 }
 
 shasum "$PROJECT_DIR/setup.sh" > "$PROJECT_DIR/.venv/.setup.sha"

@@ -33,7 +33,7 @@ DEBUG = IS_DEV
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # --- URL MODIFICATION SETTINGS ---
-# Do not prepend `www.` to `modularhistory.com`; in production,
+# Do not prepend `www.` to `modularhistory.com`;
 # the Nginx reverse proxy chops off the `www.` from all incoming requests.
 # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
 PREPEND_WWW = False
@@ -77,7 +77,7 @@ ADMINS = (
 )
 
 INSTALLED_APPS = [
-    # admin_tools and its modules must come before django.contrib.admin
+    # Note: admin_tools and its modules must come before django.contrib.admin.
     'admin_tools',  # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
     'admin_tools.menu',
     # 'admin_tools.theming',
@@ -94,15 +94,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
-    # Note: allauth is a dependency of dj-rest-auth and depends on django.contrib.sites.
-    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.discord',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.github',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.twitter',
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
@@ -133,16 +124,27 @@ INSTALLED_APPS = [
     'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
-    'rest_framework',  # https://github.com/encode/django-rest-framework
-    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
-    # Note: `dj_rest_auth` must be loaded after `rest_framework`
-    'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
-    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
-    'webpack_loader',  # https://github.com/owais/django-webpack-loader
+    'webpack_loader',  # https://github.com/owais/django-webpack-loader  # TODO
+    # DRF apps
+    'rest_framework',  # https://github.com/encode/django-rest-framework
+    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
+    # Note: dj_rest_auth must be loaded after rest_framework.
+    'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
+    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.
+    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    'allauth.account',
+    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.discord',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
+    # In-project apps
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',

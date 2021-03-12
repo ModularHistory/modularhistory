@@ -12,9 +12,11 @@ done
 
 # python manage.py cleanup_django_defender  # TODO
 
-invoke db.backup || {
-    echo "Failed to create db backup."
-    exit 1
+[[ "$ENVIRONMENT" = prod ]] && {
+    invoke db.backup || {
+        echo "Failed to create db backup."
+        exit 1
+    }
 }
 
 python manage.py migrate || {

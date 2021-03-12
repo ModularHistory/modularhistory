@@ -28,33 +28,12 @@ class User(AbstractUser):
         verbose_name=_('avatar'),
         null=True,
         blank=True,
-        upload_to=upload_to('account/avatars'),
+        upload_to=upload_to('users/avatars'),
     )
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, auto_now=True)
     force_password_change = models.BooleanField(
         'Prompt user to change password upon first login', default=False
-    )
-
-    # TODO: remove these
-    groups = models.ManyToManyField(
-        Group,
-        verbose_name=_('groups'),
-        blank=True,
-        help_text=_(
-            'The groups this user belongs to. A user will get all permissions '
-            'granted to each of their groups.'
-        ),
-        related_name="users",
-        related_query_name="user",
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        verbose_name=_('user permissions'),
-        blank=True,
-        help_text=_('Specific permissions for this user.'),
-        related_name="users",
-        related_query_name="user",
     )
 
     objects: UserManager = UserManager()

@@ -10,7 +10,7 @@ class PasswordChangeView(auth_views.PasswordChangeView):
     """
 
     template_name = 'account/password_change_form.html'
-    success_url = reverse_lazy('account:password_change_done')
+    success_url = reverse_lazy('users:password_change_done')
 
 
 class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
@@ -32,9 +32,9 @@ class PasswordResetView(auth_views.PasswordResetView):
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetView
     """
 
-    template_name = 'account/password_reset_form.html'
-    email_template_name = 'account/password_reset_email.html'
-    success_url = reverse_lazy('account:password_reset_done')
+    template_name = 'users/password_reset_form.html'
+    email_template_name = 'users/password_reset_email.html'
+    success_url = reverse_lazy('users:password_reset_done')
 
 
 class PasswordResetDoneView(auth_views.PasswordResetDoneView):

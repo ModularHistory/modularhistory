@@ -11,7 +11,7 @@ services:
       - django
       - flower
       - react
-      - redisinsight
+      # - redisinsight
     deploy:
       restart_policy:
         condition: on-failure

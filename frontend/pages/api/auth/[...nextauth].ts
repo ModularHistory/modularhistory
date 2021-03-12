@@ -1,5 +1,6 @@
 import axios from "axios";
-import NextAuth from "next-auth";
+import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import NextAuth, { Callbacks, InitOptions, User as NextAuthUser } from "next-auth";
 import Providers from "next-auth/providers";
 
 const djangoCsrfCookieName = "csrftoken"
@@ -10,27 +11,40 @@ axios.defaults.xsrfCookieName = djangoCsrfCookieName;
 axios.defaults.withCredentials = true;
 
 const makeDjangoApiUrl = (endpoint) => {
-  return `http://django:8000/api/account${endpoint}`;
+  return `http://django:8000/api/users${endpoint}`;
 };
 
+interface User extends NextAuthUser {
+  accessToken: string
+}
+
 const providers = [
-  // TODO
-  // Providers.Discord({
-  //   clientId: process.env.SOCIAL_AUTH_DISCORD_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET
-  // })
+  // TODO: https://next-auth.js.org/providers/discord
+  Providers.Discord({
+    clientId: process.env.SOCIAL_AUTH_DISCORD_CLIENT_ID,
+    clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET
+  }),
+  // TODO: https://next-auth.js.org/providers/facebook
   Providers.Facebook({
     clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
     clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
   }),
+  // TODO: https://next-auth.js.org/providers/google
+  Providers.Google({
+    clientId: process.env.SOCIAL_AUTH_GOOGLE_KEY,
+    clientSecret: process.env.SOCIAL_AUTH_GOOGLE_SECRET,
+  }),
+  // TODO: https://next-auth.js.org/providers/twitter
   Providers.Twitter({
     clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
     clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
   }),
+  // TODO: https://next-auth.js.org/providers/github
   Providers.GitHub({
     clientId: process.env.SOCIAL_AUTH_GITHUB_KEY,
     clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
   }),
+  // TODO: https://next-auth.js.org/providers/credentials
   Providers.Credentials({
     id: "credentials",
     // The name to display on the sign-in form (i.e., 'Sign in with ...')
@@ -39,13 +53,14 @@ const providers = [
     credentials: {
       username: { label: "Username", type: "text", placeholder: "" },
       password: { label: "Password", type: "password" },
-      // djangoCsrfToken: { label: "CSRF Token", type: "text" },
+      // djangoCsrfToken: { label: "CSRF Token", type: "text" },  // TODO
     },
     async authorize(credentials) {
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>");
       console.log("Attempting to authorize");
       // const token = cookies(context).csrftoken || "";
       const url = makeDjangoApiUrl("/auth/login/");
-      axios.defaults.headers[djangoCsrfCookieName] = credentials.djangoCsrfToken || null;
+      // axios.defaults.headers[djangoCsrfCookieName] = credentials.djangoCsrfToken || null;  // TODO
       // TODO: Use state?
       // See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js
       const response = await axios
@@ -67,32 +82,14 @@ const providers = [
   }),
 ];
 
-const callbacks = {};
+const callbacks: Callbacks = {};
 
-async function getTokenFromYourAPIServer(provider, user) {
-  const url = makeDjangoApiUrl("/token/obtain");
-  const response = await axios
-    .post(url, {
-      username: credentials.username,
-      password: credentials.password,
-    })
-    .then(function (response) {
-      // handle success
-      console.log(response);
-    })
-    .catch(function (error) {
-      // handle error
-      console.error(error);
-    });
-  return response
-}
-
-callbacks.signIn = async function signIn(user, account, data) {
+callbacks.signIn = async function signIn(user: User, account, data) {
   console.log("signIn.user: ", user, "\nsignIn.account.provider: ", account.provider, "\nsignIn.data: ", data);
   let accessToken = null;
   if (account.provider === "credentials") {
     console.log('Get token from API server!!!');  // TODO
-    accessToken = await getTokenFromYourAPIServer(account.provider, user);
+    accessToken = await getTokenFromDjangoServer(user);
   } else {
     console.log(`Signing in via ${account.provider}`);
     let socialUser;
@@ -149,7 +146,7 @@ callbacks.signIn = async function signIn(user, account, data) {
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback
-callbacks.jwt = async function jwt(token, user) {
+callbacks.jwt = async function jwt(token, user: User) {
   console.log("callbacks.jwt --> ", token, user);
   const isAuthenticated = user ? true : false;
   if (isAuthenticated) {
@@ -159,18 +156,18 @@ callbacks.jwt = async function jwt(token, user) {
   return Promise.resolve(token);
 };
 
-callbacks.session = async function session(session, token) {
-  console.log("callbacks.session --> ", session, token);
-  session.accessToken = token.accessToken;
-  const user = null;  // await getUserFromApi(session.accessToken);  // TODO
-  if (!user) {
+callbacks.session = async function session(session, user: User) {
+  console.log("callbacks.session --> ", session, user);
+  session.accessToken = user.accessToken;
+  const userData = null;  // await getUserFromApi(session.accessToken);  // TODO
+  if (!userData) {
     return null;
   }
-  session.user = user;
+  session.user = userData;
   return Promise.resolve(session);
 };
 
-const options = {
+const options: InitOptions = {
   providers: providers,
   session: {
     jwt: true
@@ -184,6 +181,31 @@ const options = {
     signIn: "/auth/signin",
     // signOut: '/auth/signout'
   },
+  // secret: process.env.SECRET_KEY,  // TODO?
 };
 
-export default (req, res) => NextAuth(req, res, options)
+const authHandler: NextApiHandler = (req: NextApiRequest, res: NextApiResponse) => {
+  return NextAuth(req, res, options);
+};
+
+export default authHandler;
+
+async function getTokenFromDjangoServer(user: User) {
+  const url = makeDjangoApiUrl("/token/obtain");
+  const response = "";
+  // TODO
+  // const response = await axios
+  //   .post(url, {
+  //     username: credentials.username,
+  //     password: credentials.password,
+  //   })
+  //   .then(function (response) {
+  //     // handle success
+  //     console.log(response);
+  //   })
+  //   .catch(function (error) {
+  //     // handle error
+  //     console.error(error);
+  //   });
+  return response
+}
