@@ -6,7 +6,6 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
 from django.db import models
-from django.db.models import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 from modularhistory.fields.file_field import upload_to

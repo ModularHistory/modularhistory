@@ -31,6 +31,7 @@ services:
       context: .
       dockerfile: Dockerfile.react
     command: npm run dev
+    image: react:latest
     volumes:
       - ./frontend:/modularhistory/frontend
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh

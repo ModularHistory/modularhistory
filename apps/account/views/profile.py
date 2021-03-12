@@ -1,5 +1,4 @@
-import logging
-from typing import List, Optional
+from typing import Optional
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
