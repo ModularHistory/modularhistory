@@ -1,7 +1,5 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
-import os
-
 import django
 
 from modularhistory.constants.environments import Environments
