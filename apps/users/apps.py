@@ -16,7 +16,7 @@ def superuser_check(app_configs, **kwargs):
     ]
 
 
-class AccountConfig(AppConfig):
+class UsersConfig(AppConfig):
     """Config for the users app."""
 
     name = 'apps.users'
