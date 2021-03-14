@@ -1,0 +1,49 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block page_header %}
+    Settings &amp; Privacy
+{% endblock %}
+
+{% block content %}
+    <div class="container card-deck" style="margin: auto">
+        <div class="card m-3">
+            <div class="card-header">
+                <h3>Contact Information</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Email address</h5>
+                <p class="card-text">
+                    {{ request.user.email }}
+                </p>
+            </div>
+        </div>
+        <div class="card m-3">
+            <div class="card-header">
+                <h3>Login Information</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Username</h5>
+                <p class="card-text">
+                    {{ request.user.email }}
+                </p>
+                <h5 class="card-title">Password</h5>
+                <p class="card-text">
+                    [hidden]
+                </p>
+                <a href="{% url 'users:password_change' %}" class="btn btn-default">Change password</a>
+            </div>
+        </div>
+        <div class="card m-3">
+            <div class="card-header">
+                <h3>Social Media Connections</h3>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+{% endblock %}

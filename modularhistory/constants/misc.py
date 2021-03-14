@@ -21,7 +21,6 @@ PRODUCTION = 'production'
 MAX_MIGRATION_COUNT = 2
 
 APPS_WITH_MIGRATIONS = (
-    # 'account',
     'entities',
     'images',
     'markup',
@@ -33,4 +32,5 @@ APPS_WITH_MIGRATIONS = (
     'sources',
     'staticpages',
     'topics',
+    'users',
 )

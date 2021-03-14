@@ -62,7 +62,7 @@ def backup(
                         all(
                             [
                                 redact,
-                                previous_line.startswith('COPY public.account_user')
+                                previous_line.startswith('COPY public.users_user')
                                 or 'user_id' in previous_line,
                                 not line.startswith(r'\.'),
                             ]

@@ -25,17 +25,17 @@ def backup(
     """Create a media backup file."""
     backups_dir, media_dir = settings.BACKUPS_DIR, settings.MEDIA_ROOT
     backup_files_pattern = join(backups_dir, '*.tar.gz')
-    account_media_dir = join(media_dir, 'account')
-    temp_dir = join(settings.BASE_DIR, 'account_media')
-    exclude_account_media = redact and os.path.exists(account_media_dir)
-    if exclude_account_media:
-        context.run(f'mv {account_media_dir} {temp_dir}')
-        context.run(f'mkdir {account_media_dir}')
+    users_media_dir = join(media_dir, 'users')
+    temp_dir = join(settings.BASE_DIR, 'users_media')
+    exclude_users_media = redact and os.path.exists(users_media_dir)
+    if exclude_users_media:
+        context.run(f'mv {users_media_dir} {temp_dir}')
+        context.run(f'mkdir {users_media_dir}')
     # https://github.com/django-dbbackup/django-dbbackup#mediabackup
     context.run('python manage.py mediabackup -z --noinput', hide='out')
-    if exclude_account_media:
-        context.run(f'rm -r {account_media_dir}')
-        context.run(f'mv {temp_dir} {account_media_dir}')
+    if exclude_users_media:
+        context.run(f'rm -r {users_media_dir}')
+        context.run(f'mv {temp_dir} {users_media_dir}')
     backup_files = glob(backup_files_pattern)
     backup_file = max(backup_files, key=os.path.getctime)
     if filename:

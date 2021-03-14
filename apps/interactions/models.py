@@ -53,7 +53,7 @@ class Edit(FieldContentInteraction):
     """An edit of some content."""
 
     user = models.ForeignKey(
-        to='account.User', related_name='edits', on_delete=models.CASCADE
+        to='users.User', related_name='edits', on_delete=models.CASCADE
     )
 
     before = models.TextField(blank=False)
@@ -71,7 +71,7 @@ class Comment(FieldContentInteraction):
     """A comment regarding some content."""
 
     user = models.ForeignKey(
-        to='account.User', related_name='comments', on_delete=models.CASCADE
+        to='users.User', related_name='comments', on_delete=models.CASCADE
     )
 
     start = models.PositiveIntegerField()
@@ -88,7 +88,7 @@ class Highlight(FieldContentInteraction):
     """Highlighted content."""
 
     user = models.ForeignKey(
-        to='account.User', related_name='highlights', on_delete=models.CASCADE
+        to='users.User', related_name='highlights', on_delete=models.CASCADE
     )
 
     start = models.PositiveIntegerField()
