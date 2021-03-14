@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -8,23 +6,6 @@ from django.views.generic import View
 from apps.account.models import User
 
 LOGIN_PATH = '/login/'
-
-
-class Provider:
-    """Social auth provider."""
-
-    key: str
-    name: str
-    domain: Optional[str]
-
-    auth: Optional[str]
-    handle: Optional[str]
-
-    def __init__(self, key: str, name: str, domain: Optional[str] = None):
-        """Construct a social auth provider object."""
-        self.key = key
-        self.name = name
-        self.domain = domain or f'{name.lower()}.com'
 
 
 class ProfileView(LoginRequiredMixin, View):
