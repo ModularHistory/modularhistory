@@ -42,7 +42,6 @@ services:
       NEXTAUTH_URL: 'http://modularhistory.dev.net'
       REACT_EDITOR: 'code'
     image: react:latest
-    user: root
     volumes:
       - ./frontend:/modularhistory/frontend
       - ./frontend/node_modules:/modularhistory/frontend/node_modules
