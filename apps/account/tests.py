@@ -8,6 +8,8 @@ from modularhistory.tests import TestSuite
 unauthenticated_endpoints = ('login', 'register')
 authenticated_endpoints = ('password_change', 'password_reset', 'profile', 'settings')
 
+ACCEPTABLE_STATUS_CODES = (200, 301)
+
 
 @pytest.mark.django_db
 class AdminTestSuite(TestSuite):
@@ -18,4 +20,4 @@ class AdminTestSuite(TestSuite):
         client = Client()
         for endpoint in unauthenticated_endpoints:
             response = client.get(reverse(f'account:{endpoint}'))
-            assert response.status_code == 200
+            assert response.status_code in ACCEPTABLE_STATUS_CODES
