@@ -42,12 +42,12 @@ _api = 'apps.{}.api.urls'.format  # noqa: P103
 
 # fmt: off
 urlpatterns = [
+    # Users
+    path('api/users/', include(_api('users'), namespace='users_api')),
+    path('users/', include(('apps.users.urls', 'users'), namespace='users')),
+    # Admin
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
-    # Account
-    path('api/account/', include(_api('account'), namespace='account_api')),
-    path('account/', include(('apps.account.urls', 'account'), namespace='account')),
-    # Admin
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path('admin/', admin_site.urls),

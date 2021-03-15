@@ -5,7 +5,7 @@ from typing import List, Tuple
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.account.models import User
+from apps.users.models import User
 from modularhistory.fields import HistoricDateTimeField
 from modularhistory.models import Model
 

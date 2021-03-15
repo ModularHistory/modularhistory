@@ -152,7 +152,6 @@ INSTALLED_APPS = [
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
     'webpack_loader',  # https://github.com/owais/django-webpack-loader
-    'apps.account.apps.AccountConfig',
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
@@ -167,6 +166,7 @@ INSTALLED_APPS = [
     'apps.sources.apps.SourcesConfig',
     'apps.staticpages.apps.StaticPagesConfig',
     'apps.topics.apps.TopicsConfig',
+    'apps.users.apps.UsersConfig',
     'apps.verifications.apps.VerificationsConfig',
 ]
 

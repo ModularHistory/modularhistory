@@ -69,9 +69,9 @@ export default function GlobalNavbar({ user, menuItems }) {
           ))}
         </Nav>
         <Nav>
-          <NavDropdown id="accountDropdown" title={<i className="fas fa-user" />} renderMenuOnMount alignRight>
-            <NavDropdown.Item href="/account/register">Create an account</NavDropdown.Item>
-            <NavDropdown.Item href="/account/login">Log in</NavDropdown.Item>
+          <NavDropdown id="userDropdown" title={<i className="fas fa-user" />} renderMenuOnMount alignRight>
+            <NavDropdown.Item href="/register">Create an account</NavDropdown.Item>
+            <NavDropdown.Item href="/login">Log in</NavDropdown.Item>
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
