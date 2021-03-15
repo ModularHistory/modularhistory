@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 upload_to=functools.partial(
                     modularhistory.fields.file_field._generate_upload_path,
                     *(),
-                    **{'path': 'account/avatars'}
+                    **{'path': 'users/avatars'}
                 ),
             ),
         ),

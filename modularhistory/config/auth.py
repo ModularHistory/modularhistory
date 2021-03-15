@@ -61,7 +61,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# https://python-social-auth.readthedocs.io/en/latest/configuration/django.html#authentication-backends
 AUTHENTICATION_BACKENDS = (
     # Necessary for Django admin login
     'django.contrib.auth.backends.ModelBackend',

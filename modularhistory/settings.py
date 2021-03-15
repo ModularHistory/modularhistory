@@ -134,7 +134,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
     # Note: dj_rest_auth must be loaded after rest_framework.
     'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
-    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.
+    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.  # noqa: E501
     'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
     'allauth.account',
     'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501

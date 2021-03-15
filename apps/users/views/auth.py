@@ -15,7 +15,7 @@ class LoginView(auth_views.LoginView):
     """Login view."""
 
     form_class = LoginForm
-    template_name = 'account/login.html'
+    template_name = 'users/login.html'
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """Respond to GET requests for the login page."""
@@ -32,7 +32,7 @@ class RegisterView(View):
         """Render the registration view when the page is requested."""
         form: RegistrationForm = RegistrationForm()
         context = {'form': form}
-        return render(request, 'account/register.html', context)
+        return render(request, 'users/register.html', context)
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Respond to registration form submission."""
@@ -47,4 +47,4 @@ class RegisterView(View):
                 return redirect('/')
             else:
                 logging.error(f'Unexpected authentication result: {type(user)}: {user}')
-        return render(request, 'account/register.html', {'form': form})
+        return render(request, 'users/register.html', {'form': form})

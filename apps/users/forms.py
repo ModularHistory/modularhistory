@@ -28,7 +28,7 @@ class LoginForm(AuthenticationForm):
         self.helper.form_id = 'loginForm'
         self.helper.form_class = 'text-center border border-light p-5'
         self.helper.form_method = 'post'
-        self.helper.form_action = '/account/login'
+        self.helper.form_action = '/login'
         self.helper.label_class = 'hidden'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Sign in</p>'),
@@ -88,7 +88,7 @@ class RegistrationForm(UserCreationForm):
         self.helper.form_id = 'registrationForm'
         self.helper.form_class = 'text-center border border-light p-5'
         self.helper.form_method = 'post'
-        self.helper.form_action = '/account/register'
+        self.helper.form_action = '/register'
         self.helper.label_class = 'hidden'
         self.helper.layout = Layout(
             HTML('<p class="h4 mb-4">Register account</p>'),
@@ -166,7 +166,7 @@ class PictureForm(forms.Form):
     """Form for submitting or updating a profile picture."""
 
     form_id = 'picture-form'
-    action = '/account/profile.picture/'
+    action = '/users/profile.picture/'
     method = 'POST'
     submit = 'Upload'
     is_ajax = True

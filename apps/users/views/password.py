@@ -9,7 +9,7 @@ class PasswordChangeView(auth_views.PasswordChangeView):
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordChangeView
     """
 
-    template_name = 'account/password_change_form.html'
+    template_name = 'users/password_change_form.html'
     success_url = reverse_lazy('users:password_change_done')
 
 
@@ -20,7 +20,7 @@ class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordChangeDoneView
     """
 
-    template_name = 'account/password_change_done.html'
+    template_name = 'users/password_change_done.html'
 
 
 class PasswordResetView(auth_views.PasswordResetView):
@@ -46,7 +46,7 @@ class PasswordResetDoneView(auth_views.PasswordResetDoneView):
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetDoneView
     """
 
-    template_name = 'account/password_reset_done.html'
+    template_name = 'users/password_reset_done.html'
 
 
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
@@ -56,7 +56,7 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetConfirmView
     """
 
-    template_name = 'account/password_reset_confirm.html'
+    template_name = 'users/password_reset_confirm.html'
 
 
 class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
@@ -66,4 +66,4 @@ class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetCompleteView
     """
 
-    template_name = 'account/password_reset_complete.html'
+    template_name = 'users/password_reset_complete.html'

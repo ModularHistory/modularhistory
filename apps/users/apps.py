@@ -5,7 +5,6 @@ from django.core.checks import Warning, register
 
 def superuser_check(app_configs, **kwargs):
     """Check that a superuser has been created."""
-
     if get_user_model().objects.filter(is_superuser=True).exists():
         return []
     return [
@@ -17,13 +16,13 @@ def superuser_check(app_configs, **kwargs):
 
 
 class UsersConfig(AppConfig):
-    """Config for the account app."""
+    """Config for the users app."""
 
     name = 'apps.users'
 
     def ready(self) -> None:
         """
-        Perform initialization tasks for the account app.
+        Perform initialization tasks for the users app.
 
         https://docs.djangoproject.com/en/3.1/ref/applications/#django.apps.AppConfig.ready
         """

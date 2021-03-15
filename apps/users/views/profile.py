@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -9,23 +7,6 @@ from django.views.generic import View
 User = get_user_model()
 
 LOGIN_PATH = '/login/'
-
-
-class Provider:
-    """Social auth provider."""
-
-    key: str
-    name: str
-    domain: Optional[str]
-
-    auth: Optional[str]
-    handle: Optional[str]
-
-    def __init__(self, key: str, name: str, domain: Optional[str] = None):
-        """Construct a social auth provider object."""
-        self.key = key
-        self.name = name
-        self.domain = domain or f'{name.lower()}.com'
 
 
 class ProfileView(LoginRequiredMixin, View):
@@ -41,5 +22,5 @@ class ProfileView(LoginRequiredMixin, View):
                 'email': user.email,
                 'profile_image_url': user.avatar.url if user.avatar else None,
             }
-            return render(request, 'account/profile.html', context)
+            return render(request, 'users/profile.html', context)
         return HttpResponseRedirect(LOGIN_PATH)

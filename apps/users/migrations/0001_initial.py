@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
                     models.ImageField(
                         blank=True,
                         null=True,
-                        upload_to='account/profile_pictures/%Y/%m',
+                        upload_to='users/profile_pictures/%Y/%m',
                     ),
                 ),
                 (

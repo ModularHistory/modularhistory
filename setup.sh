@@ -143,7 +143,7 @@ elif [[ "$os" == "$LINUX" ]]; then
   sudo tee /etc/apt/sources.list.d/pgdg.list
   # All other dependencies
   sudo apt update -y
-  sudo apt install -y \
+  sudo apt install -y --allow-downgrades \
   make \
   build-essential \
   libssl-dev \
