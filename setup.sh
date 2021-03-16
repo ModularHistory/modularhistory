@@ -164,7 +164,7 @@ elif [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Create directories for db backups, static files, and media files
-mkdir -p .backups static media frontend/.next &>/dev/null
+mkdir -p .backups .static media frontend/.next &>/dev/null
 
 if [[ "$os" == "$LINUX" ]]; then
   # Add user to www-data group
@@ -182,7 +182,7 @@ if [[ "$os" == "$LINUX" ]]; then
     sudo chown -R "$USER":www-data "$PROJECT_DIR"
     rerun_required="true"
   }
-  writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/static" "$PROJECT_DIR/frontend/.next" )
+  writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
   for writable_dir in "${writable_dirs[@]}"; do
     # shellcheck disable=SC2010
     sudo -u www-data test -w "$writable_dir" || {
