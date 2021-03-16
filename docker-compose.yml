@@ -81,7 +81,6 @@ services:
     depends_on:
       - postgres
       - redis
-      # - mongo
     deploy:
       restart_policy:
         condition: on-failure
