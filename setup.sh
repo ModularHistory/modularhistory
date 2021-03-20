@@ -164,7 +164,7 @@ elif [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Note: These are referenced multiple times in this script.
-writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/static" "$PROJECT_DIR/frontend/.next" )
+writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
 
 # Create directories.
 for writable_dir in "${writable_dirs[@]}"; do
@@ -189,6 +189,7 @@ if [[ "$os" == "$LINUX" ]]; then
   }
   for writable_dir in "${writable_dirs[@]}"; do
     # shellcheck disable=SC2010
+    echo "Checking write permissions for $writable_dir ..."
     sudo -u www-data test -w "$writable_dir" || {
       echo "Granting the www-data group permission to write in $writable_dir ..."
       sudo chmod g+w -R "$writable_dir"
