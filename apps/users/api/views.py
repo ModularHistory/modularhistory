@@ -1,7 +1,9 @@
 """API views for the account app."""
 
+from allauth.socialaccount.providers.discord.views import DiscordOAuth2Adapter
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
 from dj_rest_auth.registration.views import SocialConnectView, SocialLoginView
@@ -10,7 +12,8 @@ from dj_rest_auth.social_serializers import (
     TwitterLoginSerializer,
 )
 from django.contrib.auth import get_user_model
-from django.http import Http404
+from django.http import Http404, JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
@@ -19,44 +22,46 @@ from apps.users.api import serializers
 User = get_user_model()
 
 
+class DiscordMixin:
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
+
+    adapter_class = DiscordOAuth2Adapter
+    callback_url = None  # CALLBACK_URL_YOU_SET_ON_DISCORD
+    client_class = OAuth2Client
+
+
+class DiscordLogin(DiscordMixin, SocialLoginView):
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
+
+    pass
+
+
+class DiscordConnect(DiscordMixin, SocialConnectView):
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
+
+    pass
+
+
 class FacebookMixin:
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
 
     adapter_class = FacebookOAuth2Adapter
 
 
 class FacebookLogin(FacebookMixin, SocialLoginView):
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
 
     pass
 
 
 class FacebookConnect(FacebookMixin, SocialConnectView):
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
 
     pass
 
 
-class TwitterMixin:
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#twitter."""
-
-    adapter_class = TwitterOAuthAdapter
-
-
-class TwitterLogin(TwitterMixin, SocialLoginView):
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#twitter."""
-
-    serializer_class = TwitterLoginSerializer
-
-
-class TwitterConnect(TwitterMixin, SocialConnectView):
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    serializer_class = TwitterConnectSerializer
-
-
 class GithubMixin:
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
 
     adapter_class = GitHubOAuth2Adapter
     callback_url = None  # CALLBACK_URL_YOU_SET_ON_GITHUB
@@ -64,15 +69,53 @@ class GithubMixin:
 
 
 class GithubLogin(GithubMixin, SocialLoginView):
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
 
     pass
 
 
 class GithubConnect(GithubMixin, SocialConnectView):
-    """https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
 
     pass
+
+
+class GoogleMixin:
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
+
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = None  # CALLBACK_URL_YOU_SET_ON_GOOGLE
+    client_class = OAuth2Client
+
+
+class GoogleLogin(GoogleMixin, SocialLoginView):
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
+
+    pass
+
+
+class GoogleConnect(GoogleMixin, SocialConnectView):
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
+
+    pass
+
+
+class TwitterMixin:
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#twitter."""
+
+    adapter_class = TwitterOAuthAdapter
+
+
+class TwitterLogin(TwitterMixin, SocialLoginView):
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#twitter."""
+
+    serializer_class = TwitterLoginSerializer
+
+
+class TwitterConnect(TwitterMixin, SocialConnectView):
+    """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
+
+    serializer_class = TwitterConnectSerializer
 
 
 class Me(generics.RetrieveAPIView):
@@ -110,3 +153,9 @@ class DeletionView(generics.DestroyAPIView):
             return instance
         except User.DoesNotExist:
             raise Http404
+
+
+@ensure_csrf_cookie
+def set_csrf_token(request):
+    """Ensure the CSRF cookie is set correctly."""
+    return JsonResponse({"details": "CSRF cookie set"})

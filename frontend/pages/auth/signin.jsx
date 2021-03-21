@@ -26,7 +26,7 @@ export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
           p={5}
           flexDirection="column"
         >
-          {!loading && session && (
+          {!loading && session && session.user && (
             <>
               <Typography>Logged in as {session.user.email}</Typography>
               <pre>{JSON.stringify(session, null, 2)}</pre>

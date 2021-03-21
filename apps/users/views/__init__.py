@@ -1,4 +1,4 @@
-from .auth import LoginView, LogoutView, RegisterView
+from .auth import LoginView, LogoutView, RegisterView, sign_in
 from .password import (
     PasswordChangeDoneView,
     PasswordChangeView,

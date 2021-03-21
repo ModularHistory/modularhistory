@@ -30,6 +30,7 @@ from watchman.views import bare_status
 from admin.model_admin import admin_site
 from apps.search.views import SearchResultsView
 from apps.users.api.views import set_csrf_token
+from apps.users.views import sign_in
 from modularhistory import errors
 
 
@@ -48,6 +49,7 @@ urlpatterns = [
     path('_nested_admin/', include('nested_admin.urls')),
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
+    path('admin/login/', sign_in),  # redirects to Next.js login page
     path('admin/', admin_site.urls),
     # Chat
     path('chat/', include('apps.chat.urls', namespace='chat')),

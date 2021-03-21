@@ -2,13 +2,23 @@ import logging
 
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth import views as auth_views
-from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+)
 from django.shortcuts import redirect, render
 from django.views.generic import View
 
 from apps.users.forms import LoginForm, RegistrationForm
 
 User = get_user_model()
+
+
+def sign_in(request: HttpRequest):
+    """Render the login page."""
+    return HttpResponseRedirect('/api/auth/signin')
 
 
 class LoginView(auth_views.LoginView):

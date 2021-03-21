@@ -18,6 +18,7 @@ interface User extends NextAuthUser {
   accessToken: string
 }
 
+// https://next-auth.js.org/configuration/providers
 const providers = [
   // TODO: https://next-auth.js.org/providers/discord
   Providers.Discord({
@@ -74,9 +75,8 @@ const providers = [
           if (!user) {
             throw new Error(`${response}`);
           }
-          console.log("user: ", response.data.user);
-          console.log("access_token: ", response.data.access_token);
-          console.log("refresh_token: ", response.data.refresh_token);
+          user.accessToken = response.data.access_token;
+          user.refreshToken = response.data.refresh_token;
           return Promise.resolve(user);
         })
         .catch(function (error) {
@@ -89,36 +89,28 @@ const providers = [
   }),
 ];
 
+// https://next-auth.js.org/configuration/callbacks
 const callbacks: Callbacks = {};
 
 callbacks.signIn = async function signIn(user: User, provider, data) {
-  console.log("\nSigning in via ", provider.type)
-  console.log("\nsignIn.data: ", data);
+  console.log("\nSigning in via", provider.type, "...");
+  console.log("\nsignIn.user: ", user, "\n");
   let accessToken: string;
   if (provider.id === "credentials") {
-    const url = makeDjangoApiUrl("/users/auth/login/");
-    await axios
-      .post(url, {
-        username: data.username,
-        password: data.password,
-      })
-      .then(function (response: AxiosResponse) {
-        // handle success
-        if (!user) {
-          throw new Error(`${response}`);
-        }
-        console.log("user: ", response.data.user);
-        console.log("access_token: ", response.data.access_token);
-        console.log("refresh_token: ", response.data.refresh_token);
-        accessToken = response.data.access_token;
-      })
-      .catch(function (error) {
-        // handle error
-        console.error(error);
-        throw new Error(error);
-      });
+    /*
+      Coming from the credentials provider, `data` is of the following form:
+      {
+        csrfToken: 'example',
+        username: 'example',
+        password: 'example'
+      }
+    */
+    accessToken = user.accessToken;
+    // refreshToken = user.refreshToken;
+    // accessToken = await signInWithCredentials(data.username, data.password);
   } else {
     let socialUser;
+    console.log("\nsignIn.data: ", data);
     switch (provider.id) {
       case "discord":  // https://next-auth.js.org/providers/discord
         socialUser = {
@@ -174,33 +166,40 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
     }
     accessToken = accessToken || null;  // TODO: await getTokenFromYourAPIServer(account.provider, socialUser);
   }
-  // https://getstarted.sh/bulletproof-next/add-social-authentication/7
   user.accessToken = accessToken;
   return true;
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback
-callbacks.jwt = async function jwt(token, user: User) {
-  console.log("callbacks.jwt --> ", token, user);
-  const isAuthenticated = user ? true : false;
-  if (isAuthenticated) {
-    token = { accessToken: user.accessToken };
-    // token.auth_time = Math.floor(Date.now() / 1000)
+callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNewUser?: boolean) {
+  // The arguments user, account, profile and isNewUser are only passed the first time 
+  // this callback is called on a new session, after the user signs in.
+  console.log("\ncallbacks.jwt -->");
+  if (isNewUser) {
+    console.log(`Signing in ${user} for the first time.`)
+  }
+  if (user) {
+    console.log('Setting access token ...');
+    token.accessToken = user.accessToken;
   }
   return Promise.resolve(token);
 };
 
 callbacks.session = async function session(session, user: User) {
-  console.log("callbacks.session --> ", session, user);
-  session.accessToken = user.accessToken;
+  console.log("\ncallbacks.session -->");
+  const accessToken = user.accessToken;
+  session.accessToken = accessToken;
   let userData;
   const url = makeDjangoApiUrl("/users/me");
   await axios
-    .get(url, {})
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      }
+    })
     .then(function (response: AxiosResponse) {
       // handle success
-      console.log("response: ", response.data);
-      userData = response.data.user;
+      userData = response.data;
     })
     .catch(function (error) {
       // handle error
@@ -208,24 +207,39 @@ callbacks.session = async function session(session, user: User) {
       throw new Error(error);
     });
   session.user = userData;
+  console.log(session);
   return Promise.resolve(session);
 };
 
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');  // $& means the whole matched string
+}
+
+callbacks.redirect = async function redirect(url, baseUrl) {
+  const preUrl = url;
+  const re = new RegExp(`(\\?callbackUrl=${escapeRegExp(baseUrl)}\\/auth\\/signin)+`);
+  url = preUrl.replace(re, `?callbackUrl=${baseUrl}/auth/signin`);
+  if (url != preUrl) {
+    console.log(`Changed redirect URL from ${preUrl} to ${url}`);
+  }
+  return url;
+}
+
 const options: InitOptions = {
-  providers: providers,
-  session: {
-    jwt: true
-  },
-  jwt: {
-    secret: process.env.SECRET_KEY
-  },
+  // https://next-auth.js.org/configuration/options#callbacks
   callbacks: callbacks,
-  // TODO: https://next-auth.js.org/configuration/pages
+  // https://next-auth.js.org/configuration/options#jwt
+  jwt: {secret: process.env.SECRET_KEY},
+  // https://next-auth.js.org/configuration/pages
   pages: {
     signIn: "/auth/signin",
-    // signOut: '/auth/signout'
   },
-  // secret: process.env.SECRET_KEY,  // TODO?
+  // https://next-auth.js.org/configuration/options#providers
+  providers: providers,
+  // https://next-auth.js.org/configuration/options#secret
+  secret: process.env.SECRET_KEY,
+  // https://next-auth.js.org/configuration/options#session
+  session: {jwt: true},
 };
 
 const authHandler: NextApiHandler = (req: NextApiRequest, res: NextApiResponse) => {
@@ -252,4 +266,27 @@ async function getTokenFromDjangoServer(user: User) {
   //     console.error(error);
   //   });
   return response
+}
+
+async function signInWithCredentials (username, password) {
+  const url = makeDjangoApiUrl("/users/auth/login/");
+  let accessToken;
+  await axios
+    .post(url, {
+      username: username,
+      password: password,
+    })
+    .then(function (response: AxiosResponse) {
+      // handle success
+      if (!response) {
+        throw new Error(`${response}`);
+      }
+      accessToken = response.data.access_token;
+    })
+    .catch(function (error) {
+      // handle error
+      console.error(error);
+      throw new Error(error);
+    });
+  return accessToken;
 }

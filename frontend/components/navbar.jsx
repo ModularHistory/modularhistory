@@ -75,7 +75,7 @@ export default function GlobalNavbar({ menuItems }) {
   }
 
   let accountDropdownIcon;
-  if (session && session.user["avatar"]) {
+  if (session && session.user && session.user["avatar"]) {
     accountDropdownIcon = (
       <img
         src={session.user.avatar}
@@ -86,6 +86,54 @@ export default function GlobalNavbar({ menuItems }) {
     );
   } else {
     accountDropdownIcon = <i className="fas fa-user" />;
+  }
+
+  let accountControls;
+  if (session && session.user) {
+    if (session.user.is_superuser) {
+      accountControls = (
+        <>
+          <NavDropdown.Item href="/account/profile">
+            Profile
+          </NavDropdown.Item>
+          <NavDropdown.Item href="/account/setting">
+            Settings
+          </NavDropdown.Item>
+          <NavDropdown.Item href="/admin/">
+            Administrate
+          </NavDropdown.Item>
+          <NavDropdown.Item href="" className="hide-admin-controls">
+            Hide admin controls
+          </NavDropdown.Item>
+          <NavDropdown.Item onClick={handleLogout}>
+            <span className="glyphicon glyphicon-log-out" /> Logout
+          </NavDropdown.Item>
+        </>
+      );
+    } else {
+      accountControls = (
+        <>
+          <NavDropdown.Item href="/account/profile">
+            Profile
+          </NavDropdown.Item>
+          <NavDropdown.Item href="/account/settings">
+            Settings
+          </NavDropdown.Item>
+          <NavDropdown.Item onClick={handleLogout}>
+            <span className="glyphicon glyphicon-log-out" /> Logout
+          </NavDropdown.Item>
+        </>
+      );
+    }
+  } else {
+    accountControls = (
+      <>
+        <NavDropdown.Item href="/account/register">
+          Create an account
+        </NavDropdown.Item>
+        <NavDropdown.Item onClick={signIn}>Log in</NavDropdown.Item>
+      </>
+    )
   }
 
   return (
@@ -123,36 +171,7 @@ export default function GlobalNavbar({ menuItems }) {
             renderMenuOnMount
             alignRight
           >
-            {session ? (
-              <>
-                <NavDropdown.Item href="/account/profile">
-                  Profile
-                </NavDropdown.Item>
-                <NavDropdown.Item href="/account/setting">
-                  Settings
-                </NavDropdown.Item>
-                {session.user.isSuperUser && (
-                  <>
-                    <NavDropdown.Item href="/admin/">
-                      Administrate
-                    </NavDropdown.Item>
-                    <NavDropdown.Item href="" className="hide-admin-controls">
-                      Hide admin controls
-                    </NavDropdown.Item>
-                  </>
-                )}
-                <NavDropdown.Item onClick={handleLogout}>
-                  <span className="glyphicon glyphicon-log-out" /> Logout
-                </NavDropdown.Item>
-              </>
-            ) : (
-              <>
-                <NavDropdown.Item href="/account/register">
-                  Create an account
-                </NavDropdown.Item>
-                <NavDropdown.Item onClick={signIn}>Log in</NavDropdown.Item>
-              </>
-            )}
+            { accountControls }
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
