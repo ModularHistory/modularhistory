@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import NextAuth, { Callbacks, InitOptions, User as NextAuthUser } from "next-auth";
 import Providers from "next-auth/providers";
@@ -11,7 +11,7 @@ axios.defaults.xsrfCookieName = djangoCsrfCookieName;
 axios.defaults.withCredentials = true;
 
 const makeDjangoApiUrl = (endpoint) => {
-  return `http://django:8000/api/users${endpoint}`;
+  return `http://django:8000/api${endpoint}`;
 };
 
 interface User extends NextAuthUser {
@@ -57,44 +57,70 @@ const providers = [
     },
     async authorize(credentials) {
       console.log(">>>>>>>>>>>>>>>>>>>>>>>");
-      console.log("Attempting to authorize");
       // const token = cookies(context).csrftoken || "";
-      const url = makeDjangoApiUrl("/auth/login/");
+      const url = makeDjangoApiUrl("/users/auth/login/");
       // axios.defaults.headers[djangoCsrfCookieName] = credentials.djangoCsrfToken || null;  // TODO
       // TODO: Use state?
       // See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js
-      const response = await axios
+      let user;
+      await axios
         .post(url, {
           username: credentials.username,
           password: credentials.password,
         })
-        .then(function (response) {
+        .then(function (response: AxiosResponse) {
           // handle success
-          console.log(response);
+          user = response.data["user"];
+          if (!user) {
+            throw new Error(`${response}`);
+          }
+          console.log("user: ", response.data.user);
+          console.log("access_token: ", response.data.access_token);
+          console.log("refresh_token: ", response.data.refresh_token);
+          return Promise.resolve(user);
         })
         .catch(function (error) {
           // handle error
           console.error(error);
+          throw new Error(error);
         });
-      console.log("authorize got response: ", response);
-      return Promise.resolve(response["user"] ? response["user"] : null);
+      return Promise.resolve(user);
     }
   }),
 ];
 
 const callbacks: Callbacks = {};
 
-callbacks.signIn = async function signIn(user: User, account, data) {
-  console.log("signIn.user: ", user, "\nsignIn.account.provider: ", account.provider, "\nsignIn.data: ", data);
-  let accessToken = null;
-  if (account.provider === "credentials") {
-    console.log('Get token from API server!!!');  // TODO
-    accessToken = await getTokenFromDjangoServer(user);
+callbacks.signIn = async function signIn(user: User, provider, data) {
+  console.log("\nSigning in via ", provider.type)
+  console.log("\nsignIn.data: ", data);
+  let accessToken: string;
+  if (provider.id === "credentials") {
+    const url = makeDjangoApiUrl("/users/auth/login/");
+    await axios
+      .post(url, {
+        username: data.username,
+        password: data.password,
+      })
+      .then(function (response: AxiosResponse) {
+        // handle success
+        if (!user) {
+          throw new Error(`${response}`);
+        }
+        console.log("user: ", response.data.user);
+        console.log("access_token: ", response.data.access_token);
+        console.log("refresh_token: ", response.data.refresh_token);
+        accessToken = response.data.access_token;
+      })
+      .catch(function (error) {
+        // handle error
+        console.error(error);
+        throw new Error(error);
+      });
   } else {
-    console.log(`Signing in via ${account.provider}`);
     let socialUser;
-    switch (account.provider) {
-      case "facebook":
+    switch (provider.id) {
+      case "discord":  // https://next-auth.js.org/providers/discord
         socialUser = {
           id: data.id,
           login: data.login,
@@ -102,7 +128,15 @@ callbacks.signIn = async function signIn(user: User, account, data) {
           avatar: user.image,
         };
         break;
-      case "github":
+      case "facebook":  // https://next-auth.js.org/providers/facebook
+        socialUser = {
+          id: data.id,
+          login: data.login,
+          name: data.name,
+          avatar: user.image,
+        };
+        break;
+      case "github":  // https://next-auth.js.org/providers/github
         // TODO: https://getstarted.sh/bulletproof-next/add-social-authentication/5
         // const emailRes = await fetch('https://api.github.com/user/emails', {
         //   headers: {
@@ -119,7 +153,7 @@ callbacks.signIn = async function signIn(user: User, account, data) {
           avatar: user.image,
         };
         break;
-      case "google":
+      case "google":  // https://next-auth.js.org/providers/google
         socialUser = {
           id: data.id,
           login: data.login,
@@ -127,7 +161,7 @@ callbacks.signIn = async function signIn(user: User, account, data) {
           avatar: user.image,
         };
         break;
-      case "twitter":
+      case "twitter":  // https://next-auth.js.org/providers/twitter
         socialUser = {
           id: data.id,
           login: data.login,
@@ -138,7 +172,7 @@ callbacks.signIn = async function signIn(user: User, account, data) {
       default:
         return false;
     }
-    accessToken = null;  // TODO: await getTokenFromYourAPIServer(account.provider, socialUser);
+    accessToken = accessToken || null;  // TODO: await getTokenFromYourAPIServer(account.provider, socialUser);
   }
   // https://getstarted.sh/bulletproof-next/add-social-authentication/7
   user.accessToken = accessToken;
@@ -159,10 +193,20 @@ callbacks.jwt = async function jwt(token, user: User) {
 callbacks.session = async function session(session, user: User) {
   console.log("callbacks.session --> ", session, user);
   session.accessToken = user.accessToken;
-  const userData = null;  // await getUserFromApi(session.accessToken);  // TODO
-  if (!userData) {
-    return null;
-  }
+  let userData;
+  const url = makeDjangoApiUrl("/users/me");
+  await axios
+    .get(url, {})
+    .then(function (response: AxiosResponse) {
+      // handle success
+      console.log("response: ", response.data);
+      userData = response.data.user;
+    })
+    .catch(function (error) {
+      // handle error
+      console.error(error);
+      throw new Error(error);
+    });
   session.user = userData;
   return Promise.resolve(session);
 };

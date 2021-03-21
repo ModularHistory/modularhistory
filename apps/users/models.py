@@ -2,7 +2,7 @@ import logging
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
 from django.db import models

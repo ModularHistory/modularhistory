@@ -1,9 +1,8 @@
-from django.urls import path
-from rest_framework_simplejwt import views as jwt
+from django.urls import include, path
 
 app_name = 'users'
 
 urlpatterns = [
-    path('token/obtain/', jwt.TokenObtainPairView.as_view(), name='token_create'),
-    path('token/refresh/', jwt.TokenRefreshView.as_view(), name='token_refresh'),
+    # https://github.com/iMerica/dj-rest-auth
+    path('auth/', include('dj_rest_auth.urls')),
 ]
