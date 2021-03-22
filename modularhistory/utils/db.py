@@ -19,9 +19,6 @@ from modularhistory.constants.misc import (
 from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from modularhistory.utils.files import relativize, upload_to_mega
 
-BACKUPS_DIR = settings.BACKUPS_DIR
-DB_INIT_DIR = settings.DB_INIT_DIR
-DB_INIT_FILEPATH = join(DB_INIT_DIR, 'init.sql')
 CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400
@@ -36,7 +33,7 @@ def backup(
     filename: Optional[str] = None,
 ):
     """Create a database backup file."""
-    backup_files_pattern = join(BACKUPS_DIR, '*sql')
+    backup_files_pattern = join(settings.BACKUPS_DIR, '*sql')
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --noinput')
     backup_files = glob(backup_files_pattern)
@@ -242,8 +239,7 @@ def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
 def seed(context: Context = CONTEXT):
     """Seed the database."""
     db_volume = 'modularhistory_postgres_data'
-    seed_exists = os.path.exists(DB_INIT_FILEPATH) and os.path.isfile(DB_INIT_FILEPATH)
-    if not seed_exists:
+    if not os.path.isfile(settings.DB_INIT_FILEPATH):
         raise Exception('Seed does not exist.')
     # Remove the data volume, if it exists
     print('Wiping postgres data volume...')

@@ -336,7 +336,10 @@ ARTIFACTS_STORAGE = 'modularhistory.storage.LocalArtifactsStorage'
 BACKUPS_DIR = os.path.join(BASE_DIR, '.backups')
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': BACKUPS_DIR}
+
 DB_INIT_DIR = os.path.join(BASE_DIR, '.init')
+DB_INIT_FILENAME = 'init.sql'
+DB_INIT_FILEPATH = os.path.join(DB_INIT_DIR, DB_INIT_FILENAME)
 
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
