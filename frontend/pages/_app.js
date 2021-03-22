@@ -1,8 +1,17 @@
 import Head from "next/head";
-import React from 'react';
+import React, {useEffect} from 'react';
 import "../../modularhistory/static/styles/base.scss";
 
 function MyApp({ Component, pageProps }) {
+  useEffect(() => {
+    // Remove the server-side injected CSS.
+    // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/
+    const jssStyles = document.querySelector('#jss-server-side');
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+    }
+  }, []);
+
   return (
     <>
       <Head>
