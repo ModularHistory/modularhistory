@@ -20,8 +20,8 @@ from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from modularhistory.utils.files import relativize, upload_to_mega
 
 BACKUPS_DIR = settings.BACKUPS_DIR
-INITDB_DIR = settings.INITDB_DIR
-DB_INIT_FILEPATH = join(INITDB_DIR, 'init.sql')
+DB_INIT_DIR = settings.DB_INIT_DIR
+DB_INIT_FILEPATH = join(DB_INIT_DIR, 'init.sql')
 CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400

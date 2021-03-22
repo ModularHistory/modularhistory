@@ -21,9 +21,9 @@ django.setup()
 from django.conf import settings  # noqa: E402
 
 BACKUPS_DIR = settings.BACKUPS_DIR
-INITDB_DIR = settings.INITDB_DIR
-DB_INIT_FILE = 'init.sql'
-DB_INIT_FILEPATH = join(INITDB_DIR, DB_INIT_FILE)
+DB_INIT_DIR = settings.DB_INIT_DIR
+DB_INIT_FILENAME = 'init.sql'
+DB_INIT_FILEPATH = join(DB_INIT_DIR, DB_INIT_FILENAME)
 SERVER: Optional[str] = config('SERVER', default=None)
 SERVER_SSH_PORT: Optional[int] = config('SERVER_SSH_PORT', default=22)
 SERVER_USERNAME: Optional[str] = config('SERVER_USERNAME', default=None)
@@ -61,20 +61,22 @@ def get_backup(context, env: str = Environments.DEV):
             scp.get(BACKUPS_DIR, './', recursive=True)
         latest_backup = max(iglob(join(BACKUPS_DIR, '*sql')), key=os.path.getctime)
         print(latest_backup)
-        context.run(f'cp {latest_backup} {DB_INIT_FILE}')
+        context.run(f'cp {latest_backup} {DB_INIT_FILEPATH}')
     else:
         from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
 
         mega_client = mega_clients[env]
         pprint(mega_client.get_user())
-        if os.path.exists(DB_INIT_FILEPATH):
-            context.run(f'mv {DB_INIT_FILEPATH} {DB_INIT_FILEPATH}.prior', warn=True)
-        backup_file = mega_client.find(DB_INIT_FILE, exclude_deleted=True)
+        backup_file = mega_client.find(DB_INIT_FILENAME, exclude_deleted=True)
         if backup_file:
+            print(f'Found {DB_INIT_FILENAME} in Mega storage.')
+            if os.path.exists(DB_INIT_FILEPATH):
+                print(f'Renaming extant {DB_INIT_FILEPATH} to {DB_INIT_FILEPATH}.prior ...')
+                context.run(f'mv {DB_INIT_FILEPATH} {DB_INIT_FILEPATH}.prior', warn=True)
             mega_client.download(backup_file)
-            context.run(f'mv {DB_INIT_FILE} {DB_INIT_FILEPATH}')
+            context.run(f'mv {DB_INIT_FILENAME} {DB_INIT_FILEPATH}')
         else:
-            print(f'Could not find {DB_INIT_FILE}.')
+            print(f'Could not find {DB_INIT_FILENAME} in Mega storage.')
 
 
 @command
