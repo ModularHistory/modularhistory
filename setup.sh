@@ -164,9 +164,8 @@ elif [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Note: These are referenced multiple times in this script.
-writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
+writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
 
-# Create directories.
 for writable_dir in "${writable_dirs[@]}"; do
   mkdir -p "$writable_dir" &>/dev/null
 done
@@ -406,7 +405,7 @@ if [[ "$rerun_required" = "true" ]]; then
 fi
 
 prompt="Seed db and env file [Y/n]? "
-if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.backups/init.sql" ]]; then
+if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
 fi
 read -rp "$prompt" CONT

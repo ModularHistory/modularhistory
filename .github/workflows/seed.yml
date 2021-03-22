@@ -80,7 +80,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: init-sql
-        path: .backups/init.sql
+        path: .init/init.sql
         retention-days: 1
 
   env_file:

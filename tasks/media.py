@@ -16,7 +16,6 @@ django.setup()
 from django.conf import settings  # noqa: E402
 
 BACKUPS_DIR = settings.BACKUPS_DIR
-DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
 MEDIA_INIT_FILE = join(BACKUPS_DIR, 'media.tar.gz')
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
@@ -24,8 +23,6 @@ OWNER = 'modularhistory'
 REPO = 'modularhistory'
 GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
 GITHUB_CREDENTIALS_FILE = '.github/.credentials'
-
-SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
 
 
 @command

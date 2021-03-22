@@ -57,6 +57,9 @@ requirements.txt
 .backups/
 backups/
 
+# Init files
+.init/
+
 # Testing / linting / coverage reports
 .cache
 .coverage_html/

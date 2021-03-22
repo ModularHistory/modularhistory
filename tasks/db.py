@@ -21,7 +21,9 @@ django.setup()
 from django.conf import settings  # noqa: E402
 
 BACKUPS_DIR = settings.BACKUPS_DIR
-DB_INIT_FILE = join(BACKUPS_DIR, 'init.sql')
+INITDB_DIR = settings.INITDB_DIR
+DB_INIT_FILE = 'init.sql'
+DB_INIT_FILEPATH = join(INITDB_DIR, DB_INIT_FILE)
 SERVER: Optional[str] = config('SERVER', default=None)
 SERVER_SSH_PORT: Optional[int] = config('SERVER_SSH_PORT', default=22)
 SERVER_USERNAME: Optional[str] = config('SERVER_USERNAME', default=None)
@@ -32,8 +34,6 @@ OWNER = 'modularhistory'
 REPO = 'modularhistory'
 GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
 GITHUB_CREDENTIALS_FILE = '.github/.credentials'
-
-SEEDS = {'env-file': '.env', 'init-sql': '.backups/init.sql'}
 
 
 @command
@@ -68,16 +68,14 @@ def get_backup(context, env: str = Environments.DEV):
 
         mega_client = mega_clients[env]
         pprint(mega_client.get_user())
-        init_file = 'init.sql'
-        init_file_path = join(BACKUPS_DIR, init_file)
-        if os.path.exists(init_file_path):
-            context.run(f'mv {init_file_path} {init_file_path}.prior', warn=True)
-        backup_file = mega_client.find(init_file, exclude_deleted=True)
+        if os.path.exists(DB_INIT_FILEPATH):
+            context.run(f'mv {DB_INIT_FILEPATH} {DB_INIT_FILEPATH}.prior', warn=True)
+        backup_file = mega_client.find(DB_INIT_FILE, exclude_deleted=True)
         if backup_file:
             mega_client.download(backup_file)
-            context.run(f'mv {init_file} {init_file_path}')
+            context.run(f'mv {DB_INIT_FILE} {DB_INIT_FILEPATH}')
         else:
-            print(f'Could not find {init_file}.')
+            print(f'Could not find {DB_INIT_FILE}.')
 
 
 @command
