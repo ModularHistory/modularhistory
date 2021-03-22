@@ -7,10 +7,15 @@ import "../../modularhistory/static/styles/base.scss";
 
 const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
-    // TODO: get CSRF cookie
+    // Remove the server-side injected CSS.
+    // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.
+    const jssStyles = document.querySelector('#jss-server-side');
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+    }
+    // TODO: get Django CSRF cookie?
     // const url = "/api/csrf/set";
     // axios.get(url).then(console.log);
-    console.log('>>>>>>>>>>>>>> useEffect');
   }, []);
   return (
     <>
