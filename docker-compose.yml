@@ -18,6 +18,9 @@ services:
     volumes:
       - ./.config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
+    networks:
+      default:
+        ipv4_address: 172.27.0.5
 
   celery:
     command: sh .config/init/celery.sh
