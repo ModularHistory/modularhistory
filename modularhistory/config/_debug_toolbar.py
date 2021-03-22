@@ -19,7 +19,7 @@ def show_toolbar(request: HttpRequest) -> bool:
         request.user.is_superuser,
     )
     disqualifiers = (
-        [settings.TESTING]
+        settings.TESTING,
     )
     if any(conditions) and not any(disqualifiers):
         return True
