@@ -163,8 +163,12 @@ elif [[ "$os" == "$LINUX" ]]; then
   postgresql-client-13 || _error "Unable to install one or more required packages."
 fi
 
+writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
+
 # Create directories for db backups, static files, and media files
-mkdir -p .backups .static media frontend/.next &>/dev/null
+for writable_dir in "${writable_dirs[@]}"; do
+  mkdir -p "$writable_dir" &>/dev/null
+done
 
 if [[ "$os" == "$LINUX" ]]; then
   # Add user to www-data group
@@ -182,7 +186,6 @@ if [[ "$os" == "$LINUX" ]]; then
     sudo chown -R "$USER":www-data "$PROJECT_DIR"
     rerun_required="true"
   }
-  writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
   for writable_dir in "${writable_dirs[@]}"; do
     # shellcheck disable=SC2010
     echo "Checking write permissions for $writable_dir ..."
@@ -405,7 +408,7 @@ if [[ "$rerun_required" = "true" ]]; then
 fi
 
 prompt="Seed db and env file [Y/n]? "
-if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.backups/init.sql" ]]; then
+if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
 fi
 read -rp "$prompt" CONT
