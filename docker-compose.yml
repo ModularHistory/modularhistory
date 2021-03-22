@@ -65,7 +65,6 @@ services:
     depends_on:
       - postgres
       - redis
-      - mongo
     env_file: .env
     environment:
       <<: *common-env-vars
