@@ -47,7 +47,7 @@ def backup(
 @command
 def get_backup(context, env: str = Environments.DEV):
     """Get latest db backup from remote storage."""
-    context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
+    context.run(f'mkdir -p {BACKUPS_DIR} {DB_INIT_DIR}')
     if SERVER and SERVER_SSH_PORT and SERVER_USERNAME and SERVER_PASSWORD:
         ssh = SSHClient()
         ssh.load_system_host_keys()
