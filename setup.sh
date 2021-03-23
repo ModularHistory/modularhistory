@@ -166,9 +166,8 @@ git --help &>/dev/null || {
 }
 
 # Make sure this script is being run in the 'main' branch.
-branch=$(git branch --show-current || "${GITHUB_REF##*/}")
+branch=$(git branch --show-current || echo "${GITHUB_REF##*/}")
 if [[ ! "$branch" = "main" ]]; then
-  echo "On branch "
   _error "
     Check out the main branch before running this script.
     You can use the following command to check out the main branch:
