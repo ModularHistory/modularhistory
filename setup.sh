@@ -1,15 +1,5 @@
 #!/bin/bash
 
-PROJECT_DIR=$(dirname "$0")
-
-RED='\033[0;31m'
-NC='\033[0m'  # No Color
-
-BOLD=$(tput bold)
-
-MAC_OS="MacOS"
-LINUX="Linux"
-
 # Print message with red text
 function _print_red() {
   # shellcheck disable=SC2059
@@ -20,6 +10,32 @@ function _print_red() {
 function _error() {
   _print_red "$1" >&2; exit 1
 }
+
+if [[ ! $(git branch --show-current) = "main" ]]; then
+  _error "
+    Check out the main branch before running this script.
+    You can use the following command to check out the main branch:
+      git checkout main
+  "
+fi
+
+if ! git diff --quiet origin/main; then
+  _error "
+    Pull the latest updates, then try running this script again.
+    You can use the following command to pull the latest updates:
+      git pull
+  "
+fi
+
+PROJECT_DIR=$(dirname "$0")
+
+RED='\033[0;31m'
+NC='\033[0m'  # No Color
+
+BOLD=$(tput bold)
+
+MAC_OS="MacOS"
+LINUX="Linux"
 
 rerun_required="false"
 
