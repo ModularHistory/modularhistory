@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-import NextAuth, { Callbacks, InitOptions, User as NextAuthUser } from "next-auth";
+import NextAuth, { CallbacksOptions, NextAuthOptions, PagesOptions, User as NextAuthUser } from "next-auth";
 import Providers from "next-auth/providers";
 
 const djangoCsrfCookieName = "csrftoken"
@@ -90,7 +90,7 @@ const providers = [
 ];
 
 // https://next-auth.js.org/configuration/callbacks
-const callbacks: Callbacks = {};
+const callbacks: CallbacksOptions = {};
 
 callbacks.signIn = async function signIn(user: User, provider, data) {
   console.log("\nSigning in via", provider.type, "...");
@@ -225,15 +225,18 @@ callbacks.redirect = async function redirect(url, baseUrl) {
   return url;
 }
 
-const options: InitOptions = {
+// https://next-auth.js.org/configuration/pages
+const pages: PagesOptions = {
+  signIn: "/auth/signin",
+}
+
+const options: NextAuthOptions = {
   // https://next-auth.js.org/configuration/options#callbacks
   callbacks: callbacks,
   // https://next-auth.js.org/configuration/options#jwt
   jwt: {secret: process.env.SECRET_KEY},
   // https://next-auth.js.org/configuration/pages
-  pages: {
-    signIn: "/auth/signin",
-  },
+  pages: pages,
   // https://next-auth.js.org/configuration/options#providers
   providers: providers,
   // https://next-auth.js.org/configuration/options#secret
