@@ -57,7 +57,6 @@ git --help &>/dev/null || {
   _error "Git is not installed."
 }
 
-# Make sure this script is being run in the 'main' branch.
 branch=$(git branch --show-current)
 # When run in GitHub Actions), the code is in detached HEAD state, 
 # but the branch name can be extracted from GITHUB_REF.
@@ -71,12 +70,16 @@ branch=$(git branch --show-current)
   fi
 }
 echo "On branch '${branch}'."
-if [[ ! "$branch" = "main" ]]; then
-  _error "
-    Check out the main branch before running this script.
-    You can use the following command to check out the main branch:
-      git checkout main
-  "
+
+# Make sure this script is being run in the 'main' branch, if not running in CI.
+if [[ -z $GITHUB_REF ]]; then
+  if [[ ! "$branch" = "main" ]]; then
+    _error "
+      Check out the main branch before running this script.
+      You can use the following command to check out the main branch:
+        git checkout main
+    "
+  fi
 fi
 
 # Make sure the latest updates have been pulled.
