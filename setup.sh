@@ -1,27 +1,31 @@
 #!/bin/bash
 
 PROJECT_DIR=$(dirname "$0")
-
 RED='\033[0;31m'
 NC='\033[0m'  # No Color
-
 BOLD=$(tput bold)
-
 MAC_OS="MacOS"
 LINUX="Linux"
 
-# Print message with red text
+rerun_required="false"
+
+function _append() {
+  grep -qxF "$1" "$2" || {
+    echo "Appending the following line to $2:" && echo "  $1"
+    echo "$1" >> "$2"
+  }
+}
+
 function _print_red() {
+  # Print a message with red text.
   # shellcheck disable=SC2059
   printf "${RED}$1${NC}\n"
 }
 
-# Print message with red text and exit the script with an error status (1)
 function _error() {
+  # Print a message with red text and exit the script with an error status (1).
   _print_red "$1" >&2; exit 1
 }
-
-rerun_required="false"
 
 # Detect operating system.
 os_name=$(uname -s)
@@ -47,6 +51,45 @@ else
     see https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup.
   " && exit
 fi
+
+# Make sure Git is properly installed.
+git --help &>/dev/null || {
+  _error "Git is not installed."
+}
+
+branch=$(git branch --show-current)
+# When run in GitHub Actions), the code is in detached HEAD state, 
+# but the branch name can be extracted from GITHUB_REF.
+[[ $branch = "" ]] && {
+  if [[ -z $GITHUB_HEAD_REF ]]; then
+    echo "Extracting branch name from GITHUB_REF: $GITHUB_REF ..."
+    branch="${GITHUB_REF##*/}"
+  else
+    echo "Extracting branch name from GITHUB_HEAD_REF: $GITHUB_HEAD_REF ..."
+    branch="$GITHUB_HEAD_REF" 
+  fi
+}
+echo "On branch '${branch}'."
+
+# Make sure this script is being run in the 'main' branch, if not running in CI.
+if [[ -z $GITHUB_REF ]]; then
+  if [[ ! "$branch" = "main" ]]; then
+    _error "
+      Check out the main branch before running this script.
+      You can use the following command to check out the main branch:
+        git checkout main
+    "
+  fi
+  # Make sure the latest updates have been pulled.
+  if ! git diff --quiet origin/main; then
+    _error "
+      Pull the latest updates, then try running this script again.
+      You can use the following command to pull the latest updates:
+        git pull
+    "
+  fi
+fi
+
 echo "Detected $os."
 zsh_profile="$HOME/.zshrc"
 
@@ -54,16 +97,9 @@ zsh_profile="$HOME/.zshrc"
 cd "$PROJECT_DIR" || _error "Could not cd into $PROJECT_DIR"
 echo "Working in $(pwd) ..."
 
-# Create shell profiles if they don't already exist
+# Create shell profiles if they don't already exist.
 touch "$bash_profile"
 touch "$zsh_profile"
-
-function _append() {
-  grep -qxF "$1" "$2" || {
-    echo "Appending the following line to $2:" && echo "  $1"
-    echo "$1" >> "$2"
-  }
-}
 
 function _append_to_sh_profile() {
   # Append to bash profile
