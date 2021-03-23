@@ -80,15 +80,14 @@ if [[ -z $GITHUB_REF ]]; then
         git checkout main
     "
   fi
-fi
-
-# Make sure the latest updates have been pulled.
-if ! git diff --quiet origin/main; then
-  _error "
-    Pull the latest updates, then try running this script again.
-    You can use the following command to pull the latest updates:
-      git pull
-  "
+  # Make sure the latest updates have been pulled.
+  if ! git diff --quiet origin/main; then
+    _error "
+      Pull the latest updates, then try running this script again.
+      You can use the following command to pull the latest updates:
+        git pull
+    "
+  fi
 fi
 
 echo "Detected $os."
