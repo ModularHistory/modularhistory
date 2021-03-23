@@ -1,16 +1,17 @@
 #!/bin/bash
 
-# Print message with red text
 function _print_red() {
+  # Print a message with red text.
   # shellcheck disable=SC2059
   printf "${RED}$1${NC}\n"
 }
 
-# Print message with red text and exit the script with an error status (1)
 function _error() {
+  # Print a message with red text and exit the script with an error status (1).
   _print_red "$1" >&2; exit 1
 }
 
+# Make sure this script is being run in the 'main' branch.
 if [[ ! $(git branch --show-current) = "main" ]]; then
   _error "
     Check out the main branch before running this script.
@@ -19,6 +20,7 @@ if [[ ! $(git branch --show-current) = "main" ]]; then
   "
 fi
 
+# Make sure the latest updates have been pulled.
 if ! git diff --quiet origin/main; then
   _error "
     Pull the latest updates, then try running this script again.
