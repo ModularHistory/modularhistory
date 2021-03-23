@@ -437,7 +437,8 @@ if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
 fi
 
 # Remove all dangling (untagged) images
-docker rmi $(docker images -f “dangling=true” -q) &>/dev/null
+# shellcheck disable=SC2046
+docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
