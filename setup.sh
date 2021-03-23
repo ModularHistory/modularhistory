@@ -51,6 +51,34 @@ else
     see https://github.com/ModularHistory/modularhistory/wiki/Dev-Environment-Setup.
   " && exit
 fi
+
+# Make sure Git is properly installed.
+git --help &>/dev/null || {
+  _error "Git is not installed."
+}
+
+# Make sure this script is being run in the 'main' branch.
+# When run in GitHub Actions), the code is in detached HEAD state, 
+# but the branch name can be extracted from GITHUB_REF.
+branch=$(git branch --show-current || echo "${GITHUB_REF##*/}")
+echo "Branch: $branch"
+if [[ ! "$branch" = "main" ]]; then
+  _error "
+    Check out the main branch before running this script.
+    You can use the following command to check out the main branch:
+      git checkout main
+  "
+fi
+
+# Make sure the latest updates have been pulled.
+if ! git diff --quiet origin/main; then
+  _error "
+    Pull the latest updates, then try running this script again.
+    You can use the following command to pull the latest updates:
+      git pull
+  "
+fi
+
 echo "Detected $os."
 zsh_profile="$HOME/.zshrc"
 
@@ -158,30 +186,6 @@ elif [[ "$os" == "$LINUX" ]]; then
   python-openssl \
   postgresql-client-common \
   postgresql-client-13 || _error "Unable to install one or more required packages."
-fi
-
-# Make sure Git is properly installed.
-git --help &>/dev/null || {
-  _error "Git is not installed."
-}
-
-# Make sure this script is being run in the 'main' branch.
-branch=$(git branch --show-current || echo "${GITHUB_REF##*/}")
-if [[ ! "$branch" = "main" ]]; then
-  _error "
-    Check out the main branch before running this script.
-    You can use the following command to check out the main branch:
-      git checkout main
-  "
-fi
-
-# Make sure the latest updates have been pulled.
-if ! git diff --quiet origin/main; then
-  _error "
-    Pull the latest updates, then try running this script again.
-    You can use the following command to pull the latest updates:
-      git pull
-  "
 fi
 
 # Note: These are referenced multiple times in this script.
