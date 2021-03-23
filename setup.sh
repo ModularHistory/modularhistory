@@ -11,8 +11,12 @@ function _error() {
   _print_red "$1" >&2; exit 1
 }
 
+# Make sure Git is properly installed.
+git --help &>/dev/null || _error "Git is not installed."
+
 # Make sure this script is being run in the 'main' branch.
 if [[ ! $(git branch --show-current) = "main" ]]; then
+  echo "On branch "
   _error "
     Check out the main branch before running this script.
     You can use the following command to check out the main branch:
