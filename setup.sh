@@ -61,8 +61,11 @@ git --help &>/dev/null || {
 branch=$(git branch --show-current)
 # When run in GitHub Actions), the code is in detached HEAD state, 
 # but the branch name can be extracted from GITHUB_REF.
-[[ $branch = "" ]] && branch="${GITHUB_REF##*/}"
-echo "Branch: $branch"
+[[ $branch = "" ]] && {
+  echo "Extracting branch name from GITHUB_REF: $GITHUB_REF ..."
+  branch="${GITHUB_REF##*/}" 
+}
+echo "On branch '${branch}'."
 if [[ ! "$branch" = "main" ]]; then
   _error "
     Check out the main branch before running this script.
