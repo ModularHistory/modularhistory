@@ -129,7 +129,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # Other packages
   brew_install openssl@1.1
   brew_install rust
-  brew install libjpeg zlib grep jq
+  brew install libjpeg zlib grep gnu-sed jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
   _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
@@ -163,15 +163,15 @@ elif [[ "$os" == "$LINUX" ]]; then
   postgresql-client-13 || _error "Unable to install one or more required packages."
 fi
 
+# Note: These are referenced multiple times in this script.
 writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
 
-# Create directories for db backups, static files, and media files
 for writable_dir in "${writable_dirs[@]}"; do
   mkdir -p "$writable_dir" &>/dev/null
 done
 
 if [[ "$os" == "$LINUX" ]]; then
-  # Add user to www-data group
+  # Add user to www-data group.
   groups "$USER" | grep -q www-data || {
     echo "Adding $USER to the www-data group ..."
     sudo usermod -a -G www-data "$USER"
@@ -206,16 +206,7 @@ if [[ "$os" == "$LINUX" ]]; then
   fi
 fi
 
-# Add container names to /etc/hosts
-sudo grep -qxF "127.0.0.1 postgres" /etc/hosts || { 
-  echo "Updating /etc/hosts ..."
-  sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-}
-sudo grep -qxF "127.0.0.1 redis" /etc/hosts || { 
-  sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-}
-
-# Make sure pyenv is installed
+# Make sure pyenv is installed.
 echo "Checking for pyenv ..."
 pyenv_dir="$HOME/.pyenv"
 # shellcheck disable=SC2016
@@ -251,7 +242,9 @@ while IFS= read -r pyversion; do
         brew install bzip2
         echo "Exporting LDFLAGS and CFLAGS to allow installing new Python versions via pyenv ..."
         echo "https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829"
+        # shellcheck disable=SC2155
         export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
+        # shellcheck disable=SC2155
         export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
         pyenv install "$pyversion"
         if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
@@ -268,7 +261,7 @@ done < .python-version
 # shellcheck disable=SC2016
 _append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
 
-# Make sure correct version of Python is used
+# Make sure the correct version of Python is used.
 echo "Checking Python version ..."
 python --version &>/dev/null || _error "Failed to activate Python"
 active_py_version=$(python --version)
@@ -277,10 +270,10 @@ if [[ ! "$active_py_version" =~ .*"$pyversion".* ]]; then
 fi
 echo "Using $(python --version) ..."
 
-# Make sure Pip is installed
+# Make sure Pip is installed.
 pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
 
-# Install Poetry
+# Install Poetry.
 # shellcheck disable=SC2016
 poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
 poetry --version &>/dev/null || {
@@ -307,7 +300,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # shellcheck disable=SC2155
   export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
 fi
-# Install dependencies with Poetry
+# Install dependencies with Poetry.
 echo "Installing dependencies ..."
 poetry install --no-root || {
   _print_red "Failed to install dependencies with Poetry."
@@ -335,7 +328,10 @@ poetry install --no-root || {
   _error "Failed to install dependencies with Poetry."
 }
 
-# Node Version Manager (NVM)
+# Add container names to /etc/hosts.
+poetry run invoke setup.update-hosts
+
+# Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."
 nvm --version &>/dev/null || {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
@@ -346,9 +342,10 @@ nvm --version &>/dev/null || {
   [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
 echo "Installing Node modules ..."
+npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 
-# Rclone: https://rclone.org/
+# Set up Rclone (https://rclone.org/).
 rclone version &>/dev/null || {
   echo "Creating .tmp dir ..."
   # shellcheck disable=SC2164
@@ -363,14 +360,14 @@ rclone version &>/dev/null || {
 }
 mkdir -p "$HOME/.config/rclone"
 
-# Disable THP so it doesn't cause issues for Redis containers
+# Disable THP so it doesn't cause issues for Redis containers.
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
   echo "Disabling THP ..."
   sudo bash -c "echo madvise > /sys/kernel/mm/transparent_hugepage/enabled"
 fi
 
 if [[ "$os" == "$MAC_OS" ]]; then
-  # Enable mounting volumes within ~/modularhistory
+  # Enable mounting volumes within ~/modularhistory.
   docker_settings_file="$HOME/Library/Group Containers/group.com.docker/settings.json"
   if [[ -f "$docker_settings_file" ]]; then
     sharing_enabled=$(jq ".filesharingDirectories | contains([\"$HOME/modularhistory\"])" < "$docker_settings_file")
@@ -440,11 +437,12 @@ if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
 fi
 
 # Remove all dangling (untagged) images
-docker rmi $(docker images -f “dangling=true” -q) &>/dev/null
+# shellcheck disable=SC2046
+docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker-compose up -d dev && echo 'Finished.' || {
+docker-compose up --build -d dev && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
@@ -452,7 +450,16 @@ docker-compose up -d dev && echo 'Finished.' || {
     Try restarting Docker and/or running the following in a new shell:
 
       ${BOLD}cd ~/modularhistory && docker-compose up -d dev
+
   "
+}
+
+# Check Docker's memory cap
+[[ "$os" == "$MAC_OS" ]] && {
+  mem_limit=$(docker stats --format "{{.MemUsage}}" --no-stream | head -1 | gsed -r -e 's/.+ \/ ([0-9]+).*/\1/')
+  if [[ "$mem_limit" -lt 2 ]]; then
+    _print_red "Consider increasing Docker's memory limit to 3–4 GB."
+  fi
 }
 
 shasum "$PROJECT_DIR/setup.sh" > "$PROJECT_DIR/.venv/.setup.sha"
