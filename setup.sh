@@ -436,6 +436,9 @@ if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   }
 fi
 
+# Remove all dangling (untagged) images
+docker rmi $(docker images -f “dangling=true” -q) &>/dev/null
+
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
 docker-compose up --build -d dev && echo 'Finished.' || {

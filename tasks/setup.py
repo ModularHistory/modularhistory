@@ -22,7 +22,7 @@ from modularhistory.utils import github as github_utils
 from .command import command
 
 GITHUB_ACTIONS_BASE_URL = github_utils.GITHUB_ACTIONS_BASE_URL
-SEEDS = {'env-file': '.env', 'init-sql': os.path.join(settings.INITDB_DIR, 'init.sql')}
+SEEDS = {'env-file': '.env', 'init-sql': os.path.join(settings.DB_INIT_DIR, 'init.sql')}
 
 
 def dispatch_and_get_workflow(context, session: Session) -> dict:

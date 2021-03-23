@@ -20,10 +20,6 @@ django.setup()
 
 from django.conf import settings  # noqa: E402
 
-BACKUPS_DIR = settings.BACKUPS_DIR
-INITDB_DIR = settings.INITDB_DIR
-DB_INIT_FILE = 'init.sql'
-DB_INIT_FILEPATH = join(INITDB_DIR, DB_INIT_FILE)
 SERVER: Optional[str] = config('SERVER', default=None)
 SERVER_SSH_PORT: Optional[int] = config('SERVER_SSH_PORT', default=22)
 SERVER_USERNAME: Optional[str] = config('SERVER_USERNAME', default=None)
@@ -47,7 +43,7 @@ def backup(
 @command
 def get_backup(context, env: str = Environments.DEV):
     """Get latest db backup from remote storage."""
-    context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
+    context.run(f'mkdir -p {settings.BACKUPS_DIR} {settings.DB_INIT_DIR}')
     if SERVER and SERVER_SSH_PORT and SERVER_USERNAME and SERVER_PASSWORD:
         ssh = SSHClient()
         ssh.load_system_host_keys()
@@ -58,24 +54,33 @@ def get_backup(context, env: str = Environments.DEV):
             password=SERVER_PASSWORD,
         )
         with SCPClient(ssh.get_transport()) as scp:
-            scp.get(BACKUPS_DIR, './', recursive=True)
-        # Possible alternative: context.run(f'ls -t {join(BACKUPS_DIR, "*sql")} | head -1')  # noqa: SC100, E501
-        latest_backup = max(iglob(join(BACKUPS_DIR, '*sql')), key=os.path.getctime)
+            scp.get(settings.BACKUPS_DIR, './', recursive=True)
+        latest_backup = max(
+            iglob(join(settings.BACKUPS_DIR, '*sql')), key=os.path.getctime
+        )
         print(latest_backup)
-        context.run(f'cp {latest_backup} {DB_INIT_FILE}')
+        context.run(f'cp {latest_backup} {settings.DB_INIT_FILEPATH}')
     else:
         from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
 
         mega_client = mega_clients[env]
         pprint(mega_client.get_user())
-        if os.path.exists(DB_INIT_FILEPATH):
-            context.run(f'mv {DB_INIT_FILEPATH} {DB_INIT_FILEPATH}.prior', warn=True)
-        backup_file = mega_client.find(DB_INIT_FILE, exclude_deleted=True)
+        backup_file = mega_client.find(settings.DB_INIT_FILENAME, exclude_deleted=True)
         if backup_file:
+            print(f'Found {settings.DB_INIT_FILENAME} in Mega storage.')
+            if os.path.exists(settings.DB_INIT_FILEPATH):
+                print(
+                    f'Renaming extant {settings.DB_INIT_FILEPATH} '
+                    f'to {settings.DB_INIT_FILEPATH}.prior ...'
+                )
+                context.run(
+                    f'mv {settings.DB_INIT_FILEPATH} {settings.DB_INIT_FILEPATH}.prior',
+                    warn=True,
+                )
             mega_client.download(backup_file)
-            context.run(f'mv {DB_INIT_FILE} {DB_INIT_FILEPATH}')
+            context.run(f'mv {settings.DB_INIT_FILENAME} {settings.DB_INIT_FILEPATH}')
         else:
-            print(f'Could not find {DB_INIT_FILE}.')
+            print(f'Could not find {settings.DB_INIT_FILENAME} in Mega storage.')
 
 
 @command
