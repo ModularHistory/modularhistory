@@ -54,16 +54,15 @@ const providers = [
     credentials: {
       username: { label: "Username", type: "text", placeholder: "" },
       password: { label: "Password", type: "password" },
-      // djangoCsrfToken: { label: "CSRF Token", type: "text" },  // TODO
     },
     async authorize(credentials) {
-      console.log(">>>>>>>>>>>>>>>>>>>>>>>");
       // const token = cookies(context).csrftoken || "";
       const url = makeDjangoApiUrl("/users/auth/login/");
       // axios.defaults.headers[djangoCsrfCookieName] = credentials.djangoCsrfToken || null;  // TODO
       // TODO: Use state?
       // See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js
       let user;
+      console.log(`authorize --> signing with ${credentials.username}:${credentials.password}`);
       await axios
         .post(url, {
           username: credentials.username,
@@ -71,6 +70,7 @@ const providers = [
         })
         .then(function (response: AxiosResponse) {
           // handle success
+          console.log('Authenticated user successfully.');
           user = response.data["user"];
           if (!user) {
             throw new Error(`${response}`);
@@ -81,8 +81,7 @@ const providers = [
         })
         .catch(function (error) {
           // handle error
-          console.error(error);
-          throw new Error(error);
+          console.error(`Failed to authenticate due to error:\n${error}`);
         });
       return Promise.resolve(user);
     }
@@ -273,6 +272,7 @@ async function getTokenFromDjangoServer(user: User) {
 
 async function signInWithCredentials (username, password) {
   const url = makeDjangoApiUrl("/users/auth/login/");
+  console.log(`Attempting to sign in ${username}:${password}`);
   let accessToken;
   await axios
     .post(url, {

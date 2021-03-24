@@ -51,7 +51,7 @@ services:
       interval: 20s
       retries: 3
       start_period: 15s
-    image: "$BACKEND_IMAGE:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.11
@@ -75,7 +75,7 @@ services:
         max_attempts: 3
     env_file: .env
     environment: *common-env-vars
-    image: "$BACKEND_IMAGE:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.12
@@ -99,7 +99,7 @@ services:
       interval: 20s
       retries: 2
       start_period: 10s
-    image: "$BACKEND_IMAGE:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.8
@@ -132,7 +132,7 @@ services:
         max_attempts: 3
     env_file: .env
     environment: *common-env-vars
-    image: "$BACKEND_IMAGE:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.13

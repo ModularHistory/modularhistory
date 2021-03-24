@@ -61,6 +61,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# https://docs.djangoproject.com/en/3.1/topics/auth/customizing/#authentication-backends
 AUTHENTICATION_BACKENDS = (
     # Necessary for Django admin login
     'django.contrib.auth.backends.ModelBackend',
