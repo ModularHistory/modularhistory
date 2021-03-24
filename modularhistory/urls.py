@@ -49,7 +49,8 @@ urlpatterns = [
     path('_nested_admin/', include('nested_admin.urls')),
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
-    path('admin/login/', sign_in),  # redirects to Next.js login page
+    # TODO: https://modularhistory.atlassian.net/browse/MH-132
+    # path('admin/login/', sign_in),  # redirect to Next.js login page
     path('admin/', admin_site.urls),
     # Chat
     path('chat/', include('apps.chat.urls', namespace='chat')),
@@ -89,7 +90,7 @@ urlpatterns = [
     path('users/', include('apps.users.urls', namespace='users')),
     # Third-party apps
     path('api-auth/', include('rest_framework.urls')),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),  # https://github.com/iMerica/dj-rest-auth
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),  # https://github.com/iMerica/dj-rest-auth  # noqa: E501
     path('ht/', include('health_check.urls')),
     path('martor/', include('martor.urls')),
     path('select2/', include('django_select2.urls')),
@@ -99,7 +100,7 @@ urlpatterns = [
     # Home
     path('', include('apps.home.urls')),
     # robots.txt
-    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),  # noqa: E501
     # Debug toolbar: https://django-debug-toolbar.readthedocs.io/en/latest/
     path('__debug__', include(debug_toolbar.urls)),
     # Errors (for debugging)
@@ -114,7 +115,7 @@ urlpatterns = [
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# https://docs.djangoproject.com/en/3.1/ref/contrib/staticfiles/#django.contrib.staticfiles.urls.staticfiles_urlpatterns
+# https://docs.djangoproject.com/en/3.1/ref/contrib/staticfiles/#django.contrib.staticfiles.urls.staticfiles_urlpatterns  # noqa: E501
 urlpatterns += staticfiles_urlpatterns()
 
 handler400 = 'modularhistory.errors.bad_request'

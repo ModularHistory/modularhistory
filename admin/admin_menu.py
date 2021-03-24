@@ -51,6 +51,8 @@ class AdminMenu(Menu):
             items.AppList(
                 title='Applications',
                 exclude=[
+                    'allauth.*',
+                    'rest_framework.*',
                     'defender.*',
                     'django_celery_*',
                     'django.contrib.*',

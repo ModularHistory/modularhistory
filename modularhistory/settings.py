@@ -44,10 +44,12 @@ APPEND_SLASH = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy in prod.
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
+SESSION_COOKIE_HTTPONLY = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings/#session-cookie-samesite
-SESSION_COOKIE_SAMESITE = 'Lax' if IS_PROD else 'None'
+SESSION_COOKIE_SAMESITE = 'Lax' if (IS_PROD or DOCKERIZED) else 'None'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-csrf-cookie-secure
 CSRF_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-referrer-policy
