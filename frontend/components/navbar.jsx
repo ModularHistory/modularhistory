@@ -26,16 +26,15 @@ const globalMenuItems = [
 function WrappedNavLink({ title, path, reactive, ...childProps }) {
   const router = useRouter();
   const active = router.pathname === path;
+  const navLink = <Nav.Link href={path} className={active ? "active" : ""}>{title}</Nav.Link>;
   if (reactive) {
     return (
       <Link href={path}>
-        <Nav.Link className={active ? "active" : ""}>{title}</Nav.Link>
+        {navLink}
       </Link>
     );
   } else {
-    return (
-      <Nav.Link href={path} className={active ? "active" : ""}>{title}</Nav.Link>
-    );
+    return navLink;
   }
 }
 
@@ -53,19 +52,21 @@ export default function GlobalNavbar({ user, menuItems }) {
 
   return (
     <Navbar id="global-nav" bg="dark" variant="dark" style={{ minHeight: "4rem" }} expand="md" collapseOnSelect>
-      <Navbar.Brand href="/">
-        <img
-          alt="Logo"
-          src={logoImageSrc}
-          style={{ width: "2.7rem", height: "2.5rem" }}
-        />{' '}
-        ModularHistory
-      </Navbar.Brand>
+      <Link href={"/"} passHref>
+        <Navbar.Brand>
+          <img
+            alt="Logo"
+            src={logoImageSrc}
+            style={{width: "2.7rem", height: "2.5rem"}}
+          />{' '}
+          ModularHistory
+        </Navbar.Brand>
+      </Link>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
           {menuItems.map((item) => (
-            item.children ? <WrappedNavDropdown key={item.title} {...item} /> : <WrappedNavLink key={item.href} {...item} />
+            item.children ? <WrappedNavDropdown key={item.title} {...item} /> : <WrappedNavLink key={item.title} {...item} />
           ))}
         </Nav>
         <Nav>

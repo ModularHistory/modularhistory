@@ -77,6 +77,9 @@ class MyDocument extends Document {
           {/*    </style>*/}
           {/*{% endif %}*/}
           {/*<script type="text/javascript" src='{% static "scripts/base.js" %}' defer></script>*/}
+          <style>
+            {"#__next {display: flex; flex-direction: column; min-height: 100%}"}
+          </style>
         </Head>
         <body>
           <Main />

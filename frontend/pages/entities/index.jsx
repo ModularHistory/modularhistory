@@ -11,7 +11,7 @@ import PaginationItem from "@material-ui/lab/PaginationItem";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { forwardRef, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import Layout from "../../components/layout";
 
 
@@ -33,6 +33,7 @@ function EntitiesPagination({ count, ...childProps }) {
   const router = useRouter();
   const theme = useTheme();
 
+  // increase paginator size according to window size
   const sibCount = 1 + ['sm', 'md'].map((size) =>
     useMediaQuery(theme.breakpoints.up(size))
   ).reduce((sum, current) => sum + current);
@@ -62,7 +63,7 @@ export default function Entities({ entitiesData }) {
     <Grid item key={entity['pk']}
       xs={6} sm={4} md={3}>
       <a href={`entities/${entity['pk']}`}>
-        <Card>
+        <Card elevation={3}>
           <CardHeader title={entity['name']} />
           {entity['serialized_images'].length > 0 &&
             <CardMedia
