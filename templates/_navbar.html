@@ -30,7 +30,7 @@
                             <a href="/admin/" class="dropdown-item" >Administrate</a>
                             <a href="" class="dropdown-item hide-admin-controls">Hide admin controls</a>
                         {% endif %}
-                        <a href="{% url 'users:logout' %}" class="dropdown-item">
+                        <a href="/api/auth/signout" class="dropdown-item">
                             <span class="glyphicon glyphicon-log-out"></span> Logout
                         </a>
                     {% else %}

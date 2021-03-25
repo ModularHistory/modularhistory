@@ -2,7 +2,7 @@ import { signIn, signOut, useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from 'prop-types';
-import React from "react";
+import React, { useEffect } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -68,6 +68,21 @@ export default function GlobalNavbar({ menuItems }) {
   menuItems = menuItems || globalMenuItems;
 
   const [session] = useSession();
+
+  // https://next-auth.js.org/tutorials/refresh-token-rotation#client-side
+  useEffect(() => {
+    // Check for errors refreshing the access token.
+    if (session?.error === "RefreshAccessTokenError") {
+      signIn();  // Force sign in to hopefully resolve error.
+    }
+    // Set any cookies associated with the session.
+    if (session?.cookies) {
+      session.cookies.forEach(cookie => {
+        document.cookie = cookie;
+      });
+      console.log('Updated cookies.');
+    }
+  }, [session]);
 
   const handleLogout = (e) => {
     e.preventDefault()

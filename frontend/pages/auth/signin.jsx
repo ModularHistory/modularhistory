@@ -1,5 +1,6 @@
-import { Box, Button, Typography } from "@material-ui/core";
+import { Box, Button, TextField, Typography } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
+import Grid from '@material-ui/core/Grid';
 import { csrfToken, providers, signIn, signOut, useSession } from 'next-auth/client';
 import PropTypes from 'prop-types';
 import React from "react";
@@ -14,7 +15,6 @@ export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
   // Clone the providers object and remove the credentials provider. 
   const socialAuthProviders = JSON.parse(JSON.stringify(providers));
   delete socialAuthProviders[CREDENTIALS_KEY];
-  // console.log('>>>> ', djangoCsrfToken);
   return (
     <Layout title={"Sign in"}>
       <Container>
@@ -29,7 +29,6 @@ export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
           {!loading && session && session.user && (
             <>
               <Typography>Logged in as {session.user.email}</Typography>
-              <pre>{JSON.stringify(session, null, 2)}</pre>
               <Button
                 variant="outlined"
                 color="primary"
@@ -44,15 +43,23 @@ export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
               <div key={credentialsAuthProvider.name} className="provider">
                 <form method='post' action='/api/auth/callback/credentials'>
                   <input type="hidden" name="csrfToken" value={csrfToken} />
-                  <label>
-                    Username
-                    <input name='username' type='text'/>
-                  </label>
-                  <label>
-                    Password
-                    <input name='password' type='password'/>
-                  </label>
-                  <button type='submit'>Sign in</button>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <TextField id="username" name="username" label="Username or email address" variant="outlined" size="small" fullWidth />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <TextField id="password" name="password" label="Password" variant="outlined" type="password" size="small" fullWidth />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Button color="primary" fullWidth type="submit" variant="contained">
+                        Log in
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </form>
               </div>
               <>
@@ -76,18 +83,14 @@ export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
 SignIn.propTypes = {
   providers: PropTypes.object,
   csrfToken: PropTypes.string,
-  // djangoCsrfToken: PropTypes.string
 }
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export async function getServerSideProps(context) {
-  // const token = cookies(context).csrftoken || "";
-  // console.log('>>>getServerSideProps>>> ', token)
   return {
     props: {
       providers: await providers(context),
       csrfToken: await csrfToken(context),
-      // djangoCsrfToken: token
     }, // passed to the page component as props
   };
 }
