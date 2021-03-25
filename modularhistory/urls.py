@@ -76,7 +76,6 @@ urlpatterns = [
     # Search
     path('api/search/', include(_api('search'), namespace='search_api')),
     path('search/', include('apps.search.urls', namespace='search')),
-    re_path(r'search$', SearchResultsView.as_view(), name='search'),
     # Sources
     path('api/sources/', include(_api('sources'), namespace='sources_api')),
     path('sources/', include('apps.sources.urls', namespace='sources')),

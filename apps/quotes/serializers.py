@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 class QuoteSerializer(SearchableModelSerializer):
     """Serializer for quotes."""
 
-    text = serpy.Field()
-    bite = serpy.Field()
+    text = serpy.Field(attr='text.html', required=True)
+    bite = serpy.MethodField()
     html = serpy.Field()
     attributee_string = serpy.Field()
     has_multiple_attributees = serpy.BoolField()
@@ -30,4 +30,4 @@ class QuoteSerializer(SearchableModelSerializer):
 
     def get_bite(self, instance: 'Quote'):
         """Return the user-facing bite HTML."""
-        return instance.bite.html
+        return instance.bite.html if instance.bite else ""

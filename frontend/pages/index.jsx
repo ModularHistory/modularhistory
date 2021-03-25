@@ -1,5 +1,3 @@
-import Head from "next/head";
-// import styles from "../styles/Home.module.css";
 import Layout from "../components/layout";
 
 import Container from "@material-ui/core/Container";
@@ -9,7 +7,7 @@ import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   root: {
