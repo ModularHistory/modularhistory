@@ -24,8 +24,6 @@ N_RESULTS_PER_PAGE = 10
 class SearchResultsSerializer:
     def __init__(self, queryset, *args, **kwargs):
         self.data = [instance.serialize() for instance in queryset]
-        for json in self.data:
-            print(json, end='\n\n')
 
 
 class SearchResultsAPIView(ListAPIView):
