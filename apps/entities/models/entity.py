@@ -91,7 +91,7 @@ class Entity(
         verbose_name_plural = 'Entities'
         ordering = ['name']
 
-    searchable_fields = ['name', 'aliases', 'description']
+    searchable_fields = ['id', 'type', 'name', 'aliases', 'description']
     serializer = EntitySerializer
     slug_base_field = 'unabbreviated_name'
 
