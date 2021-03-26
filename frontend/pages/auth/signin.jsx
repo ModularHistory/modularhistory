@@ -9,7 +9,7 @@ import Layout from "../../components/layout";
 
 const CREDENTIALS_KEY = 'credentials';
 
-export default function SignIn({ providers, csrfToken }) {  // djangoCsrfToken
+export default function SignIn({ providers, csrfToken }) {
   const [session, loading] = useSession();
   const credentialsAuthProvider = providers[CREDENTIALS_KEY];
   // Clone the providers object and remove the credentials provider. 

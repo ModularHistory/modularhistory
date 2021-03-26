@@ -6,13 +6,10 @@ import React, { useEffect } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import axios from "../axios";
 
-// import Typography from '@material-ui/core/Typography';
-
-// TODO: use App Bar component: https://material-ui.com/components/app-bar/
-
+const logoutUrl = '/api/users/auth/logout/';
 const logoImageSrc = "/static/logo_head_white.png";
-
 const globalMenuItems = [
   {
     title: "About",
@@ -86,6 +83,26 @@ export default function GlobalNavbar({ menuItems }) {
 
   const handleLogout = (e) => {
     e.preventDefault()
+    // Sign out of the back end.
+    console.log('Trying to log out with token ', session.accessToken);
+    axios
+    .post(logoutUrl, {refresh: session.refreshToken}, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+      }
+    })
+    .then(function (response) {
+      console.log('logout response: ', response);
+      document.cookie = `next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+      document.cookie = `next-auth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+      // document.cookie = `nextauth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+      // document.cookie = `nextauth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+    })
+    .catch(function (error) {
+      console.error(`Failed to sign out due to error:\n${error}`);
+      throw new Error(`${error}`);
+    });
+    // Sign out of the front end.
     signOut()
   }
 

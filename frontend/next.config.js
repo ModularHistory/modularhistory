@@ -2,14 +2,14 @@
 
 module.exports = {
   // Delegate static file compression to Nginx in production
-  compress: process.env.ENVIRONMENT  === "prod" ? false : true,
+  compress: process.env.ENVIRONMENT === "prod" ? false : true,
   webpackDevMiddleware: (config) => {
     // Solve compiling problem within Docker
     config.watchOptions = {
       poll: 2000,
       aggregateTimeout: 200,
-      ignored: ['.next/', 'node_modules/']
+      ignored: [".next/", "node_modules/"],
     };
     return config;
-  }
+  },
 };
