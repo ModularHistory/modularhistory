@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-import NextAuth, { CallbacksOptions, NextAuthOptions, PagesOptions, Session as NextAuthSession, User as NextAuthUser } from "next-auth";
+import NextAuth, { CallbacksOptions, NextAuthOptions, PagesOptions, Session, User as NextAuthUser } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 import { WithAdditionalParams } from "next-auth/_utils";
@@ -21,9 +21,6 @@ interface User extends NextAuthUser {
   refreshToken: string
   cookies: Array<string>
   error: string
-}
-interface Session extends NextAuthSession {
-  cookies: Array<string>
 }
 
 // https://next-auth.js.org/configuration/providers

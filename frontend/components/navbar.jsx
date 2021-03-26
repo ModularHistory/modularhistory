@@ -95,8 +95,6 @@ export default function GlobalNavbar({ menuItems }) {
       console.log('logout response: ', response);
       document.cookie = `next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
       document.cookie = `next-auth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-      // document.cookie = `nextauth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-      // document.cookie = `nextauth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
     })
     .catch(function (error) {
       console.error(`Failed to sign out due to error:\n${error}`);
