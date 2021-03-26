@@ -34,4 +34,5 @@ services:
     image: react:latest
     volumes:
       - ./frontend:/modularhistory/frontend
+      - /modularhistory/frontend/.next/
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
