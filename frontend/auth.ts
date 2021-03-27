@@ -5,7 +5,10 @@ import { Router } from 'next/router';
 import axios from './axios';
 
 export const djangoLogoutUrl = '/api/users/auth/logout/';
-export const SESSION_TOKEN_COOKIE_NAME = 'next-auth.session-token';
+export const AUTH_COOKIES = [
+  'next-auth.session-token',
+  'next-auth.callback-url'
+]
 
 export const handleLogin = (router: Router): void => {
   // If not already on the sign-in page, initiate the sign-in process.
@@ -29,7 +32,7 @@ export const handleLogout = (session: WithAdditionalParams<Session>): void => {
         }
       )
       .then(function () {
-        console.log('Successfully signed out.');
+        console.log('Signed out.');
       })
       .catch(function (error) {
         console.error(`Failed to sign out due to error: ${error}`);
@@ -37,8 +40,9 @@ export const handleLogout = (session: WithAdditionalParams<Session>): void => {
       });
   }
   // Remove cookies.
-  document.cookie = `next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-  document.cookie = `${SESSION_TOKEN_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+  AUTH_COOKIES.forEach((cookieName) => {
+    document.cookie = `${cookieName}; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+  });
   // Sign out of the front end.
   signOut({ callbackUrl: window.location.origin });
   // Sign out of other windows.

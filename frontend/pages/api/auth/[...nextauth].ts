@@ -107,6 +107,7 @@ async function refreshAccessToken(jwt: JWT) {
     If an error occurs, return the old token.  TODO: Add error property?
     jwt contains name, email, accessToken, cookies, refreshToken, accessTokenExpiry, iat, exp.
   */
+  console.log('Refreshing access token...');
   await axios
     .post(makeDjangoApiUrl('/users/auth/token/refresh/'), {
       refresh: jwt.refreshToken
@@ -120,9 +121,8 @@ async function refreshAccessToken(jwt: JWT) {
           "access_token_expiration": "2021-03-25T20:24:03.605165Z"
         }
       */
-        console.log('Refreshed auth token successfully.');
+        console.log('Refreshed access token.');
         const accessTokenExpiry = Date.parse(response.data.access_token_expiration);
-        console.log('New expiry: ', accessTokenExpiry);
         const cookies = response.headers['set-cookie'];
         if (Date.now() > accessTokenExpiry) {
           console.error('New access token is already expired.');
@@ -138,7 +138,6 @@ async function refreshAccessToken(jwt: JWT) {
           exp: accessTokenExpiry / 1000
         };
       } else if (response.data.code === 'token_not_valid') {
-        1616791649000;
         /*
         If the refresh token was invalid, the API responds:
         {
@@ -146,9 +145,9 @@ async function refreshAccessToken(jwt: JWT) {
           "code": "token_not_valid"
         }
       */
-        console.log('Refresh token is expired.');
+        console.log('Refresh token expired.');
       } else {
-        console.error(`Failed to parse response data: ${response.data}`);
+        console.error(`Failed to parse response: ${response.data}`);
       }
     })
     .catch(function (error) {
@@ -178,7 +177,6 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
     cookies = user.cookies;
   } else {
     let socialUser;
-    console.log('\nsignIn.data: ', data);
     switch (provider.id) {
       case 'discord': // https://next-auth.js.org/providers/discord
         socialUser = {
@@ -265,9 +263,7 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
   }
   // Refresh the access token if it is expired.
   if (Date.now() > token.accessTokenExpiry) {
-    console.log('Expired: ', token.accessTokenExpiry, `by ${Date.now() - token.accessTokenExpiry}`);
     token = await refreshAccessToken(token);
-    console.log('New expiry: ', token.accessTokenExpiry);
   }
   return Promise.resolve(token);
 };
@@ -323,7 +319,6 @@ callbacks.redirect = async function redirect(url, baseUrl) {
       url = `${baseUrl}/auth/redirect/${path}`;
     }
   }
-  console.log('Redirect URL: ', url);
   return url;
 };
 
