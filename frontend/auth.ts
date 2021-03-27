@@ -1,12 +1,22 @@
-import { signOut } from 'next-auth/client';
+import { Session } from 'next-auth';
+import { signIn, signOut } from 'next-auth/client';
+import { WithAdditionalParams } from 'next-auth/_utils';
+import { Router } from 'next/router';
 import axios from './axios';
 
 export const djangoLogoutUrl = '/api/users/auth/logout/';
 export const SESSION_TOKEN_COOKIE_NAME = 'next-auth.session-token';
 
-export const handleLogout = (session) => {
+export const handleLogin = (router: Router): void => {
+  // If not already on the sign-in page, initiate the sign-in process.
+  // (This prevents messing up the callbackUrl by reloading the sign-in page.)
+  if (router.pathname != '/auth/signin') {
+    signIn();
+  }
+};
+
+export const handleLogout = (session: WithAdditionalParams<Session>): void => {
   // Sign out of the back end.
-  console.log('posting');
   if (session) {
     axios
       .post(
@@ -26,6 +36,7 @@ export const handleLogout = (session) => {
         throw new Error(`${error}`);
       });
   }
+  // Remove cookies.
   document.cookie = `next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
   document.cookie = `${SESSION_TOKEN_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
   // Sign out of the front end.

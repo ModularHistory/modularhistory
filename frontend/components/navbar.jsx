@@ -1,4 +1,4 @@
-import { signIn, signOut, useSession } from 'next-auth/client';
+import { useSession } from 'next-auth/client';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
@@ -6,9 +6,8 @@ import React from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import axios from '../axios';
+import { handleLogin, handleLogout } from '../auth';
 
-const logoutUrl = '/api/users/auth/logout/';
 const logoImageSrc = '/static/logo_head_white.png';
 const globalMenuItems = [
   {
@@ -65,41 +64,16 @@ export default function GlobalNavbar({ menuItems }) {
   menuItems = menuItems || globalMenuItems;
 
   const router = useRouter();
-  const [session] = useSession();
+  const [session, loading] = useSession();
 
-  const handleLogin = (e) => {
+  const login = (e) => {
     e.preventDefault();
-    // If not already on the sign-in page, initiate the sign-in process.
-    // (This prevents messing up the callbackUrl by reloading the sign-in page.)
-    if (router.pathname != '/auth/signin') {
-      signIn();
-    }
+    handleLogin(router);
   };
 
-  const handleLogout = (e) => {
+  const logout = (e) => {
     e.preventDefault();
-    // Sign out of the back end.
-    axios
-      .post(
-        logoutUrl,
-        { refresh: session.refreshToken },
-        {
-          headers: {
-            Authorization: `Bearer ${session.accessToken}`
-          }
-        }
-      )
-      .then(function (response) {
-        console.log('logout response: ', response);
-        document.cookie = `next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-        document.cookie = `next-auth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-      })
-      .catch(function (error) {
-        console.error(`Failed to sign out due to error:\n${error}`);
-        throw new Error(`${error}`);
-      });
-    // Sign out of the front end.
-    signOut();
+    handleLogout(session);
   };
 
   let accountDropdownIcon;
@@ -127,7 +101,7 @@ export default function GlobalNavbar({ menuItems }) {
           <NavDropdown.Item href="" className="hide-admin-controls">
             Hide admin controls
           </NavDropdown.Item>
-          <NavDropdown.Item onClick={handleLogout}>
+          <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
         </>
@@ -137,7 +111,7 @@ export default function GlobalNavbar({ menuItems }) {
         <>
           <NavDropdown.Item href="/account/profile">Profile</NavDropdown.Item>
           <NavDropdown.Item href="/account/settings">Settings</NavDropdown.Item>
-          <NavDropdown.Item onClick={handleLogout}>
+          <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
         </>
@@ -147,7 +121,7 @@ export default function GlobalNavbar({ menuItems }) {
     accountControls = (
       <>
         <NavDropdown.Item href="/account/register">Create an account</NavDropdown.Item>
-        <NavDropdown.Item onClick={handleLogin}>Log in</NavDropdown.Item>
+        <NavDropdown.Item onClick={login}>Log in</NavDropdown.Item>
       </>
     );
   }
@@ -183,7 +157,7 @@ export default function GlobalNavbar({ menuItems }) {
             renderMenuOnMount
             alignRight
           >
-            {accountControls}
+            {!loading && { accountControls }}
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
