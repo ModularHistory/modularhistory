@@ -157,7 +157,8 @@ export default function GlobalNavbar({ menuItems }) {
             renderMenuOnMount
             alignRight
           >
-            {!loading && { accountControls }}
+          {/* {accountControls} */}
+            {!loading && accountControls }
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>

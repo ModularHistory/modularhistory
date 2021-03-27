@@ -41,4 +41,7 @@ export const handleLogout = (session: WithAdditionalParams<Session>): void => {
   document.cookie = `${SESSION_TOKEN_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
   // Sign out of the front end.
   signOut({ callbackUrl: window.location.origin });
+  // Sign out of other windows.
+  // To trigger the event listener, save some random data into the `logout` key.
+  window.localStorage.setItem("logout", `${Date.now()}`);
 };

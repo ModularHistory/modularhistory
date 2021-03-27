@@ -7,13 +7,13 @@ import Layout from '../../components/layout';
 
 const Redirect: React.FunctionComponent = () => {
   const router = useRouter();
-  const [session, loading] = useSession();
+  const [_session, loading] = useSession();
   const path = router.query.path ?? '/';
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   return (
     <>
-      {session && !loading && (
+      {!loading && (
         <Head>
           <meta httpEquiv="refresh" content={`3; URL=${baseUrl}${path}`} />
         </Head>
