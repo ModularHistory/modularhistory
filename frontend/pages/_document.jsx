@@ -1,8 +1,8 @@
 // https://nextjs.org/docs/advanced-features/custom-document
 
-import React from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import { ServerStyleSheets } from "@material-ui/styles";
+import React from 'react';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+import { ServerStyleSheets } from '@material-ui/styles';
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -15,7 +15,7 @@ class MyDocument extends Document {
 
     ctx.renderPage = () =>
       originalRenderPage({
-        enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
+        enhanceApp: (App) => (props) => sheets.collect(<App {...props} />)
       });
 
     const initialProps = await Document.getInitialProps(ctx);
@@ -23,7 +23,7 @@ class MyDocument extends Document {
     return {
       ...initialProps,
       // Styles fragment is rendered after the app and page rendering finish.
-      styles: [...React.Children.toArray(initialProps.styles), sheets.getStyleElement()],
+      styles: [...React.Children.toArray(initialProps.styles), sheets.getStyleElement()]
     };
   }
 
@@ -45,10 +45,7 @@ class MyDocument extends Document {
           {/*<link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />*/}
 
           {/* Font Awesome */}
-          <link
-            rel="stylesheet"
-            href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"
-          />
+          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
           {/* Latest compiled and minified Bootstrap CSS */}
           <link
             rel="stylesheet"
@@ -73,16 +70,10 @@ class MyDocument extends Document {
           {/* PDF.js */}
           {/* TODO: replace with node package and import where used
                     https://www.npmjs.com/package/pdfjs-dist */}
-          <script
-            src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js"
-            defer
-          />
+          <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js" defer />
           {/* Epub.js */}
           {/* TODO: likewise, https://www.npmjs.com/package/epubjs */}
-          <script
-            src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"
-            defer
-          />
+          <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js" defer />
 
           {/*{% if request.user.is_superuser %}*/}
           {/*    <style>*/}

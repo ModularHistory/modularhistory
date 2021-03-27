@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export default function Modal() {
   return (
@@ -15,12 +15,7 @@ export default function Modal() {
         <div className="modal-content modal-top">
           <div className="modal-header">
             {/* <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> */}
-            <button
-              type="button"
-              className="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
+            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>

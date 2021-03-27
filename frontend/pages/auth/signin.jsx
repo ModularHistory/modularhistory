@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@material-ui/core";
+import { Box, Button, Paper, TextField } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import Grid from '@material-ui/core/Grid';
 import { csrfToken, providers, signIn, signOut, useSession } from 'next-auth/client';
@@ -27,16 +27,13 @@ export default function SignIn({ providers, csrfToken }) {
           flexDirection="column"
         >
           {!loading && session && session.user && (
-            <>
-              <Typography>Logged in as {session.user.email}</Typography>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => signOut()}
-              >
+            <Paper className="p-4 text-center">
+              <p className="lead">You are logged in as <strong>{session.user.email}</strong>.</p>
+              <br />
+              <Button variant="outlined" color="primary" size="large" onClick={() => signOut()}>
                 Sign Out
               </Button>
-            </>
+            </Paper>
           )}
           {!loading && !session && (
             <>

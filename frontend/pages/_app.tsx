@@ -1,9 +1,9 @@
 // import axios from "axios";
-import { Provider } from "next-auth/client";
-import { AppProps } from "next/app";
-import Head from "next/head";
-import React, { useEffect } from "react";
-import "../../modularhistory/static/styles/base.scss";
+import { Provider } from 'next-auth/client';
+import { AppProps } from 'next/app';
+import Head from 'next/head';
+import React, { useEffect } from 'react';
+import '../../modularhistory/static/styles/base.scss';
 
 const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
@@ -22,10 +22,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       <Head>
         {/*<title>Home | ModularHistory</title>*/}
         <meta charSet="UTF-8" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta httpEquiv="Content-Language" content="en" />
         <meta property="og:type" content="website" />
         {/* TODO: Use a better image. (This is the image that appears
@@ -40,7 +37,7 @@ const App = ({ Component, pageProps }: AppProps) => {
           src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
           height="0"
           width="0"
-          style={{ display: "none", visibility: "hidden" }}
+          style={{ display: 'none', visibility: 'hidden' }}
         />
       </noscript>
       <Provider session={pageProps.session}>
@@ -48,6 +45,6 @@ const App = ({ Component, pageProps }: AppProps) => {
       </Provider>
     </>
   );
-}
+};
 
 export default App;

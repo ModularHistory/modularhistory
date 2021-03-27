@@ -1,27 +1,27 @@
-import { signIn, signOut, useSession } from "next-auth/client";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import { signIn, signOut, useSession } from 'next-auth/client';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import React, { useEffect } from "react";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import axios from "../axios";
+import React from 'react';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import axios from '../axios';
 
 const logoutUrl = '/api/users/auth/logout/';
-const logoImageSrc = "/static/logo_head_white.png";
+const logoImageSrc = '/static/logo_head_white.png';
 const globalMenuItems = [
   {
-    title: "About",
-    path: "/about",
+    title: 'About',
+    path: '/about',
     children: [
-      { title: "About Us", path: "/about", reactive: false },
-      { title: "Manifesto", path: "/manifesto", reactive: false },
-    ],
+      { title: 'About Us', path: '/about', reactive: false },
+      { title: 'Manifesto', path: '/manifesto', reactive: false }
+    ]
   },
-  { title: "Occurrences", path: "/occurrences", reactive: false },
-  { title: "Quotes", path: "/quotes", reactive: false },
-  { title: "Entities", path: "/entities", reactive: true },
+  { title: 'Occurrences', path: '/occurrences', reactive: false },
+  { title: 'Quotes', path: '/quotes', reactive: false },
+  { title: 'Entities', path: '/entities', reactive: true }
 ];
 
 function WrappedNavLink({ title, path, reactive, ...childProps }) {
@@ -30,14 +30,14 @@ function WrappedNavLink({ title, path, reactive, ...childProps }) {
   if (reactive) {
     return (
       <Link href={path}>
-        <Nav.Link className={active ? "active" : ""} {...childProps}>
+        <Nav.Link className={active ? 'active' : ''} {...childProps}>
           {title}
         </Nav.Link>
       </Link>
     );
   } else {
     return (
-      <Nav.Link href={path} className={active ? "active" : ""} {...childProps}>
+      <Nav.Link href={path} className={active ? 'active' : ''} {...childProps}>
         {title}
       </Nav.Link>
     );
@@ -59,53 +59,51 @@ function WrappedNavDropdown({ title, children, ...childProps }) {
 WrappedNavDropdown.propTypes = {
   title: PropTypes.string.isRequired,
   children: PropTypes.arrayOf(PropTypes.object)
-}
+};
 
 export default function GlobalNavbar({ menuItems }) {
   menuItems = menuItems || globalMenuItems;
 
+  const router = useRouter();
   const [session] = useSession();
 
-  // https://next-auth.js.org/tutorials/refresh-token-rotation#client-side
-  useEffect(() => {
-    // Check for errors refreshing the access token.
-    if (session?.error === "RefreshAccessTokenError") {
-      signIn();  // Force sign in to hopefully resolve error.
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // If not already on the sign-in page, initiate the sign-in process.
+    // (This prevents messing up the callbackUrl by reloading the sign-in page.)
+    if (router.pathname != '/auth/signin') {
+      signIn();
     }
-    // Set any cookies associated with the session.
-    if (session?.cookies) {
-      session.cookies.forEach(cookie => {
-        document.cookie = cookie;
-      });
-      console.log('Updated cookies.');
-    }
-  }, [session]);
+  };
 
   const handleLogout = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     // Sign out of the back end.
-    console.log('Trying to log out with token ', session.accessToken);
     axios
-    .post(logoutUrl, {refresh: session.refreshToken}, {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      }
-    })
-    .then(function (response) {
-      console.log('logout response: ', response);
-      document.cookie = `next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-      document.cookie = `next-auth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-    })
-    .catch(function (error) {
-      console.error(`Failed to sign out due to error:\n${error}`);
-      throw new Error(`${error}`);
-    });
+      .post(
+        logoutUrl,
+        { refresh: session.refreshToken },
+        {
+          headers: {
+            Authorization: `Bearer ${session.accessToken}`
+          }
+        }
+      )
+      .then(function (response) {
+        console.log('logout response: ', response);
+        document.cookie = `next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+        document.cookie = `next-auth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+      })
+      .catch(function (error) {
+        console.error(`Failed to sign out due to error:\n${error}`);
+        throw new Error(`${error}`);
+      });
     // Sign out of the front end.
-    signOut()
-  }
+    signOut();
+  };
 
   let accountDropdownIcon;
-  if (session && session.user && session.user["avatar"]) {
+  if (session && session.user && session.user['avatar']) {
     accountDropdownIcon = (
       <img
         src={session.user.avatar}
@@ -123,15 +121,9 @@ export default function GlobalNavbar({ menuItems }) {
     if (session.user.is_superuser) {
       accountControls = (
         <>
-          <NavDropdown.Item href="/account/profile">
-            Profile
-          </NavDropdown.Item>
-          <NavDropdown.Item href="/account/setting">
-            Settings
-          </NavDropdown.Item>
-          <NavDropdown.Item href="/admin/">
-            Administrate
-          </NavDropdown.Item>
+          <NavDropdown.Item href="/account/profile">Profile</NavDropdown.Item>
+          <NavDropdown.Item href="/account/setting">Settings</NavDropdown.Item>
+          <NavDropdown.Item href="/admin/">Administrate</NavDropdown.Item>
           <NavDropdown.Item href="" className="hide-admin-controls">
             Hide admin controls
           </NavDropdown.Item>
@@ -143,12 +135,8 @@ export default function GlobalNavbar({ menuItems }) {
     } else {
       accountControls = (
         <>
-          <NavDropdown.Item href="/account/profile">
-            Profile
-          </NavDropdown.Item>
-          <NavDropdown.Item href="/account/settings">
-            Settings
-          </NavDropdown.Item>
+          <NavDropdown.Item href="/account/profile">Profile</NavDropdown.Item>
+          <NavDropdown.Item href="/account/settings">Settings</NavDropdown.Item>
           <NavDropdown.Item onClick={handleLogout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
@@ -158,12 +146,10 @@ export default function GlobalNavbar({ menuItems }) {
   } else {
     accountControls = (
       <>
-        <NavDropdown.Item href="/account/register">
-          Create an account
-        </NavDropdown.Item>
-        <NavDropdown.Item onClick={signIn}>Log in</NavDropdown.Item>
+        <NavDropdown.Item href="/account/register">Create an account</NavDropdown.Item>
+        <NavDropdown.Item onClick={handleLogin}>Log in</NavDropdown.Item>
       </>
-    )
+    );
   }
 
   return (
@@ -171,16 +157,12 @@ export default function GlobalNavbar({ menuItems }) {
       id="global-nav"
       bg="dark"
       variant="dark"
-      style={{ minHeight: "4rem" }}
+      style={{ minHeight: '4rem' }}
       expand="md"
       collapseOnSelect
     >
       <Navbar.Brand href="/">
-        <img
-          alt="Logo"
-          src={logoImageSrc}
-          style={{ width: "2.7rem", height: "2.5rem" }}
-        />{" "}
+        <img alt="Logo" src={logoImageSrc} style={{ width: '2.7rem', height: '2.5rem' }} />{' '}
         ModularHistory
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -201,7 +183,7 @@ export default function GlobalNavbar({ menuItems }) {
             renderMenuOnMount
             alignRight
           >
-            { accountControls }
+            {accountControls}
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
@@ -210,5 +192,5 @@ export default function GlobalNavbar({ menuItems }) {
 }
 // https://reactjs.org/docs/typechecking-with-proptypes.html
 GlobalNavbar.propTypes = {
-  menuItems: PropTypes.array,
-}
+  menuItems: PropTypes.array
+};

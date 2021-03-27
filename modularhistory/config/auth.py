@@ -17,7 +17,7 @@ REST_AUTH_SERIALIZERS = {
 # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#json-web-token-jwt-support-optional
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'next-auth.session-token'
-JWT_AUTH_REFRESH_COOKIE = 'next-auth.refresh-token'
+JWT_AUTH_REFRESH_COOKIE = 'refresh-token'
 JWT_COOKIE_SECURE = IS_PROD
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'apps.users.api.serializers.UserSerializer'
