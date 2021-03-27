@@ -109,8 +109,8 @@ export default function GlobalNavbar({ menuItems }) {
     } else {
       accountControls = (
         <>
-          <NavDropdown.Item href="/account/profile">Profile</NavDropdown.Item>
-          <NavDropdown.Item href="/account/settings">Settings</NavDropdown.Item>
+          {/* <NavDropdown.Item href="/account/profile">Profile</NavDropdown.Item> */}
+          {/* <NavDropdown.Item href="/account/settings">Settings</NavDropdown.Item> */}
           <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
