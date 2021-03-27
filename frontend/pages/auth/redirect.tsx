@@ -6,7 +6,7 @@ import React from "react";
 import Layout from "../../components/layout";
 
 
-export default function Redirect(props) {
+export default function Redirect() {
     const router = useRouter();
     const [session, loading] = useSession();
     const path = router.query.path ?? "/";
@@ -27,11 +27,4 @@ export default function Redirect(props) {
             </Layout>
         </>
     );
-}
-
-// https://nextjs.org/docs/basic-features/data-fetching#getstaticprops-static-generation
-export async function getStaticProps(context) {
-  return {
-    props: {}, // passed to the page component as props
-  };
 }
