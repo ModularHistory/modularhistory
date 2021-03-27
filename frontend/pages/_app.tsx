@@ -1,4 +1,3 @@
-// import axios from "axios";
 import { Provider } from 'next-auth/client';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
