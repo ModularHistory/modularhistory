@@ -8,7 +8,7 @@ import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import {useCallback, useState} from "react";
+import {useState} from "react";
 import {useRouter} from "next/router";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -39,13 +39,13 @@ export default function Home() {
   const router = useRouter();
   const [query, setQuery] = useQueryState("");
 
-  const search = useCallback(({key}) => {
+  const search = ({key}) => {
     if (key !== "Enter") return;
     router.push({
       pathname: "/search/",
       query: {query}
     });
-  }, [router]);
+  };
 
   const searchForm = (
     <Grid
