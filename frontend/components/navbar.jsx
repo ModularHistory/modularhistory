@@ -95,8 +95,8 @@ export default function GlobalNavbar({ menuItems }) {
     if (session.user.is_superuser) {
       accountControls = (
         <>
-          <NavDropdown.Item href="/account/profile">Profile</NavDropdown.Item>
-          <NavDropdown.Item href="/account/setting">Settings</NavDropdown.Item>
+          <NavDropdown.Item href="/users/profile">Profile</NavDropdown.Item>
+          <NavDropdown.Item href="/users/setting">Settings</NavDropdown.Item>
           <NavDropdown.Item href="/admin/">Administrate</NavDropdown.Item>
           <NavDropdown.Item href="" className="hide-admin-controls">
             Hide admin controls
@@ -109,8 +109,6 @@ export default function GlobalNavbar({ menuItems }) {
     } else {
       accountControls = (
         <>
-          {/* <NavDropdown.Item href="/account/profile">Profile</NavDropdown.Item> */}
-          {/* <NavDropdown.Item href="/account/settings">Settings</NavDropdown.Item> */}
           <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
@@ -120,7 +118,8 @@ export default function GlobalNavbar({ menuItems }) {
   } else {
     accountControls = (
       <>
-        <NavDropdown.Item href="/account/register">Create an account</NavDropdown.Item>
+        {/* TODO */}
+        {/* <NavDropdown.Item href="/users/register">Create an account</NavDropdown.Item> */}
         <NavDropdown.Item onClick={login}>Log in</NavDropdown.Item>
       </>
     );

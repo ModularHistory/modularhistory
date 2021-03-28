@@ -31,7 +31,6 @@ from admin.model_admin import admin_site
 from apps.search.views import SearchResultsView
 from apps.users.api.views import set_csrf_token
 
-# from apps.users.views import sign_in  # noqa: E800
 from modularhistory import errors
 
 
@@ -50,8 +49,6 @@ urlpatterns = [
     path('_nested_admin/', include('nested_admin.urls')),
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
-    # TODO: https://modularhistory.atlassian.net/browse/MH-132
-    # path('admin/login/', sign_in),  # redirect to Next.js login page  # noqa: E800
     path('admin/', admin_site.urls),
     # Chat
     path('chat/', include('apps.chat.urls', namespace='chat')),
