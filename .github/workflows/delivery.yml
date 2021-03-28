@@ -97,7 +97,9 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
     - if: steps.cache.outputs.cache-hit != 'true'
       name: Install dependencies
-      run: poetry install
+      run: |
+        sudo apt-get install -y graphviz graphviz-dev
+        poetry install
     ########################################################
     ########################################################
     - name: Inject environment vars
