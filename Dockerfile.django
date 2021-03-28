@@ -24,6 +24,8 @@ RUN wget --quiet https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
 RUN apt-get update && apt-get install -y --no-install-recommends \
   dnsutils \
   gnupg2 \
+  graphviz \
+  graphviz-dev \
   libenchant-dev \
   libmagic1 \
   postgresql-client-common \
