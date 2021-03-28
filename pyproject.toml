@@ -30,7 +30,7 @@ name = "modularhistory"
 authors = [
     "Jacob Fredericksen <jacob@modularhistory.com>",
     "Matthew Fredericksen <matthew@modularhistory.com",
-]
+] # TODO: Jonah
 description = "ModularHistory (https://modularhistory.com/)"
 homepage = "https://modularhistory.com/"
 license = "ISC"
