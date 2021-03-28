@@ -139,7 +139,7 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
     - name: Install dependencies
       run: |
-        sudo apt-get install -y pygraphviz pygraphviz-dev
+        sudo apt-get install -y graphviz graphviz-dev
         poetry install
       if: steps.cache.outputs.cache-hit != 'true'
     ########################################################
