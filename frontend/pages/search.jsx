@@ -3,8 +3,8 @@ import axios from "axios";
 import {useRouter} from "next/router";
 import {useState} from "react";
 
-import OccurrenceDetail from "../components/moduledetails/OccurrenceDetail";
-import OccurrenceCard from "../components/modulecards/OccurrenceCard";
+import ModuleCard from "../components/modulecards/ModuleCard";
+import ModuleDetail from "../components/moduledetails/ModuleDetail";
 
 function useTwoPaneState(...args) {
   const [moduleIndex, setModuleIndex] = useState(...args);
@@ -32,73 +32,10 @@ export default function Search({searchResults}) {
     </h1>
   );
 
-  return (
-    <Layout title={"SERCH"}>
-      <div className="serp-container">
-        {modules?.length > 0 ?
-          <>
-            {/*{% with display_option=request.GET.display %}*/}
-            <div id="slider" className="refinements-container side closed">
-              {/*{% crispy search_form %}*/}
-              <p>crispy</p>
-            </div>
-            <button id="sliderToggle" className="toggle-button btn btn-md btn-outline-black">
-              <i className="fas fa-filter"/>
-            </button>
-            <div className="display-options">
-              {/*{% with selected_option=display_option %}*/}
-              {/*<span className="display-option">*/}
-              {/*                      <input type="radio" id="2pane-option" name="display" value="2pane"*/}
-              {/*                             {% if selected_option == '2pane' or not selected_option %} checked{% endif %} />*/}
-              {/*                      <label htmlFor="2pane-option"><i className="fas fa-list"></i></label>*/}
-              {/*                  </span>*/}
-              {/*<span className="display-option">*/}
-              {/*                      <input type="radio" id="rows-option" name="display" value="rows"*/}
-              {/*                             {% if selected_option == 'rows' %} checked{% endif %} />*/}
-              {/*                      <label htmlFor="rows-option"><i className="fas fa-bars"></i></label>*/}
-              {/*                  </span>*/}
-              {/*<span className="display-option">*/}
-              {/*                      <input type="radio" id="timeline-option" name="display" value="timeline"*/}
-              {/*                             {% if selected_option == 'timeline' %} checked{% endif %} />*/}
-              {/*                      <label htmlFor="timeline-option"><i className="fas fa-columns"></i></label>*/}
-              {/*                  </span>*/}
-              {/*{% endwith %}*/}
-            </div>
-            <div className="results-container">
-              {pageHeader}
-              {/*{% if display_option == '2pane' or not display_option %}*/}
-              <div className="two-pane-container">
-                <div className="results result-cards">
-                  {modules.map((module, index) => (
-                    <a href={module['absolute_url']} className="result 2pane-result"
-                       data-href={module['absolute_url']} data-key={module['slug']}
-                       key={module['absolute_url']} data-index={index}
-                       onClick={setModuleIndex}>
-                      {/*object | get_card_html*/}
-                      {module['model'] === 'occurrences.occurrence' ? <OccurrenceCard occurrence={module}/> :
-                        <p>Module content</p>}
-                    </a>
-                  ))}
-                </div>
-                <div className="card view-detail sticky">
-                  <OccurrenceDetail occurrence={modules[moduleIndex]}/>
-                </div>
-              </div>
-              {/*{% elif display_option == 'rows' %}*/}
-              {/*<div className="container results">*/}
-              {/*  {% for object in object_list %}*/}
-              {/*  <div className="result" data-key="{{ object.slug }}">*/}
-              {/*    {{object | get_detail_html}}*/}
-              {/*  </div>*/}
-              {/*  <hr style="clear: both"/>*/}
-              {/*  {% endfor %}*/}
-              {/*</div>*/}
-              {/*{% elif display_option == 'timeline' %}*/}
-              {/*<p>Not yet implemented</p>*/}
-              {/*{% endif %}*/}
-            </div>
-          </>
-          :
+  if (modules?.length === 0) {
+    return (
+      <Layout title={"SERCH"}>
+        <div className="serp-container">
           <div className="container">
             <p className="lead text-center my-3 py-3">
               There are no results for your search. Please try a different search.
@@ -110,11 +47,77 @@ export default function Search({searchResults}) {
               </div>
             </div>
           </div>
-        }
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout title={"SERCH"}>
+      <div className="serp-container">
+
+        {/*{% with display_option=request.GET.display %}*/}
+        <div id="slider" className="refinements-container side closed">
+          {/*{% crispy search_form %}*/}
+          <p>crispy</p>
+        </div>
+        <button id="sliderToggle" className="toggle-button btn btn-md btn-outline-black">
+          <i className="fas fa-filter"/>
+        </button>
+
+        <div className="display-options">
+          {/*{% with selected_option=display_option %}*/}
+          {/*<span className="display-option">*/}
+          {/*                      <input type="radio" id="2pane-option" name="display" value="2pane"*/}
+          {/*                             {% if selected_option == '2pane' or not selected_option %} checked{% endif %} />*/}
+          {/*                      <label htmlFor="2pane-option"><i className="fas fa-list"></i></label>*/}
+          {/*                  </span>*/}
+          {/*<span className="display-option">*/}
+          {/*                      <input type="radio" id="rows-option" name="display" value="rows"*/}
+          {/*                             {% if selected_option == 'rows' %} checked{% endif %} />*/}
+          {/*                      <label htmlFor="rows-option"><i className="fas fa-bars"></i></label>*/}
+          {/*                  </span>*/}
+          {/*<span className="display-option">*/}
+          {/*                      <input type="radio" id="timeline-option" name="display" value="timeline"*/}
+          {/*                             {% if selected_option == 'timeline' %} checked{% endif %} />*/}
+          {/*                      <label htmlFor="timeline-option"><i className="fas fa-columns"></i></label>*/}
+          {/*                  </span>*/}
+          {/*{% endwith %}*/}
+        </div>
+
+        <div className="results-container">
+          {pageHeader}
+          {/*{% if display_option == '2pane' or not display_option %}*/}
+          <div className="two-pane-container">
+            <div className="results result-cards">
+              {modules.map((module, index) => (
+                <a href={module['absolute_url']} className="result 2pane-result"
+                   data-href={module['absolute_url']} data-key={module['slug']}
+                   key={module['absolute_url']} data-index={index}
+                   onClick={setModuleIndex}
+                >
+                  <ModuleCard module={module}/>
+                </a>
+              ))}
+            </div>
+            <div className="card view-detail sticky">
+              <ModuleDetail module={modules[moduleIndex]}/>
+            </div>
+          </div>
+          {/*{% elif display_option == 'rows' %}*/}
+          {/*<div className="container results">*/}
+          {/*  {% for object in object_list %}*/}
+          {/*  <div className="result" data-key="{{ object.slug }}">*/}
+          {/*    {{object | get_detail_html}}*/}
+          {/*  </div>*/}
+          {/*  <hr style="clear: both"/>*/}
+          {/*  {% endfor %}*/}
+          {/*</div>*/}
+          {/*{% elif display_option == 'timeline' %}*/}
+          {/*<p>Not yet implemented</p>*/}
+          {/*{% endif %}*/}
+        </div>
       </div>
-      <pre>
-        {JSON.stringify(searchResults, null, 4)}
-      </pre>
     </Layout>
   );
 }
