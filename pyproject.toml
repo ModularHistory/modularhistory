@@ -27,12 +27,16 @@ use_parentheses = true
 
 [tool.poetry]
 name = "modularhistory"
-version = "0.1.0"
-description = "ModularHistory (https://www.modularhistory.com/)"
-authors = ["Jacob Fredericksen <jacob.t.fredericksen@gmail.com>"]
+authors = [
+    "Jacob Fredericksen <jacob@modularhistory.com>",
+    "Matthew Fredericksen <matthew@modularhistory.com",
+]
+description = "ModularHistory (https://modularhistory.com/)"
+homepage = "https://modularhistory.com/"
 license = "ISC"
 readme = "README.rst"
 repository = "https://github.com/ModularHistory/modularhistory"
+version = "0.1.0"
 
 [tool.poetry.dependencies]
 python = "^3.7.9"
