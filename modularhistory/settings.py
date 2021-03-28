@@ -124,6 +124,7 @@ INSTALLED_APPS = [
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
     'django_celery_results',  # https://github.com/celery/django-celery-results
+    'django_extensions',  # https://github.com/django-extensions/django-extensions
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     # 'defender',  # https://github.com/jazzband/django-defender  # TODO
@@ -152,7 +153,6 @@ INSTALLED_APPS = [
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
     'webpack_loader',  # https://github.com/owais/django-webpack-loader
-    'django_extensions', # https://github.com/django-extensions/django-extensions
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
