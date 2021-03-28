@@ -1,4 +1,5 @@
 import Layout from "../components/layout";
+import Link from "next/link";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -7,7 +8,9 @@ import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import { makeStyles } from "@material-ui/core/styles";
+import {useCallback, useState} from "react";
+import {useRouter} from "next/router";
+import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   root: {
@@ -24,28 +27,48 @@ const useStyles = makeStyles({
   }
 })
 
+function useQueryState(...args) {
+  const [query, setQuery] = useState(...args);
+  return [query, ({target: {value}}) => setQuery(value)];
+}
+
 export default function Home() {
+  // TODO: show loading state during transition to search page
+
   const classes = useStyles();
+  const router = useRouter();
+  const [query, setQuery] = useQueryState("");
+
+  const search = useCallback(({key}) => {
+    if (key !== "Enter") return;
+    router.push({
+      pathname: "/search/",
+      query: {query}
+    });
+  }, [router]);
 
   const searchForm = (
-    <form action={"/search"} method={"get"} id={"search-form"}>
-      <Grid
-        container direction={"column"} spacing={2}
-        alignItems={"center"} justify={"center"}
-      >
-        <Grid item>
-          <TextField
-            id={"id_query"} name={"query"} variant={"outlined"}
-            size={"small"} style={{minWidth: "280px"}}/>
-        </Grid>
-        <Grid item>
+    <Grid
+      container direction={"column"} spacing={2}
+      alignItems={"center"} justify={"center"}
+    >
+      <Grid item>
+        <TextField
+          id={"id_query"} name={"query"} variant={"outlined"}
+          size={"small"} style={{minWidth: "280px"}}
+          onChange={setQuery} onKeyPress={search}
+        />
+      </Grid>
+      <Grid item>
+        <Link href={`/search/?query=${query}`} passHref>
           <Button variant={"contained"} color={"primary"}
-                  size={"large"} type={"submit"}>
+                  size={"large"} component={'a'}
+          >
             Search
           </Button>
-        </Grid>
+        </Link>
       </Grid>
-    </form>
+    </Grid>
   );
 
   return (
