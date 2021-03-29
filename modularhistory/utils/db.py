@@ -86,7 +86,8 @@ def backup(
     logging.info('Removing old backup files ...')
     end = '{} \;'  # noqa: W605, P103
     context.run(
-        f'find {backup_files_pattern} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}'
+        f'find {backup_files_pattern} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}',
+        warn=True,
     )
 
 

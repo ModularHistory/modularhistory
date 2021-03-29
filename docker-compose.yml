@@ -199,7 +199,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./.env:/modularhistory/.env
+      - ./frontend/.next:/modularhistory/frontend/.next
   
   redis:
     deploy:
