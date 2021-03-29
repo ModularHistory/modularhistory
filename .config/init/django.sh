@@ -5,8 +5,8 @@ writable_dirs=( ".backups" "media" ".static" )
 for writable_dir in "${writable_dirs[@]}"; do
     # Must be run by a www-data user:
     test -w "/modularhistory/$writable_dir" || {
-        echo "Django lacks permission to write in $writable_dir; exiting."
-        exit 1
+        echo "Django lacks permission to write in ${writable_dir}."
+        [[ "$ENVIRONMENT" = dev ]] && exit 1
     }
 done
 
