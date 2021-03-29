@@ -45,7 +45,7 @@ export const handleLogout = (session: WithAdditionalParams<Session>): void => {
   });
   // Sign out of the front end.
   signOut({ callbackUrl: window.location.origin });
-  // Sign out of other windows.
-  // To trigger the event listener, save some random data into the `logout` key.
+  // TODO: Save random data to the `logout` key in local storage
+  // to trigger the event listener to sign out of any other open windows.
   window.localStorage.setItem("logout", `${Date.now()}`);
 };

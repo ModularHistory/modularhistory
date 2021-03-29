@@ -1,18 +1,18 @@
-import { AxiosResponse } from 'axios';
-import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
+import { AxiosResponse } from "axios";
+import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import NextAuth, {
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
   Session,
-  User as NextAuthUser
-} from 'next-auth';
-import { JWT as NextAuthJWT } from 'next-auth/jwt';
-import Providers from 'next-auth/providers';
-import { WithAdditionalParams } from 'next-auth/_utils';
-import axios from '../../../axios';
+  User as NextAuthUser,
+} from "next-auth";
+import { JWT as NextAuthJWT } from "next-auth/jwt";
+import Providers from "next-auth/providers";
+import { WithAdditionalParams } from "next-auth/_utils";
+import axios from "../../../axios";
 
-const SESSION_TOKEN_COOKIE_NAME = 'next-auth.session-token';
+const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
 
 const makeDjangoApiUrl = (endpoint) => {
   return `http://django:8000/api${endpoint}`;
@@ -59,25 +59,25 @@ const providers = [
   // }),
   // TODO: https://next-auth.js.org/providers/credentials
   Providers.Credentials({
-    id: 'credentials',
+    id: "credentials",
     // The name to display on the sign-in form (i.e., 'Sign in with ...')
-    name: 'Credentials',
+    name: "Credentials",
     // The fields expected to be submitted in the sign-in form
     credentials: {
-      username: { label: 'Username', type: 'text', placeholder: '' },
-      password: { label: 'Password', type: 'password' }
+      username: { label: "Username", type: "text", placeholder: "" },
+      password: { label: "Password", type: "password" },
     },
     async authorize(credentials) {
-      const url = makeDjangoApiUrl('/users/auth/login/');
+      const url = makeDjangoApiUrl("/users/auth/login/");
       // TODO: Use state? See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js.
       let user;
       await axios
         .post(url, {
           username: credentials.username,
-          password: credentials.password
+          password: credentials.password,
         })
         .then(function (response: AxiosResponse) {
-          user = response.data['user'];
+          user = response.data["user"];
           if (!user) {
             throw new Error(`${response}`);
           }
@@ -88,7 +88,7 @@ const providers = [
         */
           user.accessToken = response.data.access_token;
           user.refreshToken = response.data.refresh_token;
-          user.cookies = response.headers['set-cookie'];
+          user.cookies = response.headers["set-cookie"];
           return Promise.resolve(user);
         })
         .catch(function (error) {
@@ -96,8 +96,8 @@ const providers = [
           throw new Error(`${error}`);
         });
       return Promise.resolve(user);
-    }
-  })
+    },
+  }),
 ];
 
 // https://next-auth.js.org/tutorials/refresh-token-rotation
@@ -107,10 +107,10 @@ async function refreshAccessToken(jwt: JWT) {
     If an error occurs, return the old token.  TODO: Add error property?
     jwt contains name, email, accessToken, cookies, refreshToken, accessTokenExpiry, iat, exp.
   */
-  console.log('Refreshing access token...');
+  console.log("Refreshing access token...");
   await axios
-    .post(makeDjangoApiUrl('/users/auth/token/refresh/'), {
-      refresh: jwt.refreshToken
+    .post(makeDjangoApiUrl("/users/auth/token/refresh/"), {
+      refresh: jwt.refreshToken,
     })
     .then(function (response: AxiosResponse) {
       if (response.data.access && response.data.access_token_expiration) {
@@ -121,11 +121,11 @@ async function refreshAccessToken(jwt: JWT) {
           "access_token_expiration": "2021-03-25T20:24:03.605165Z"
         }
       */
-        console.log('Refreshed access token.');
+        console.log("Refreshed access token.");
         const accessTokenExpiry = Date.parse(response.data.access_token_expiration);
-        const cookies = response.headers['set-cookie'];
+        const cookies = response.headers["set-cookie"];
         if (Date.now() > accessTokenExpiry) {
-          console.error('New access token is already expired.');
+          console.error("New access token is already expired.");
         }
         jwt = {
           ...jwt,
@@ -135,9 +135,9 @@ async function refreshAccessToken(jwt: JWT) {
           accessTokenExpiry: accessTokenExpiry,
           cookies: cookies,
           iat: Date.now() / 1000,
-          exp: accessTokenExpiry / 1000
+          exp: accessTokenExpiry / 1000,
         };
-      } else if (response.data.code === 'token_not_valid') {
+      } else if (response.data.code === "token_not_valid") {
         /*
         If the refresh token was invalid, the API responds:
         {
@@ -145,7 +145,7 @@ async function refreshAccessToken(jwt: JWT) {
           "code": "token_not_valid"
         }
       */
-        console.log('Refresh token expired.');
+        console.log("Refresh token expired.");
       } else {
         console.error(`Failed to parse response: ${response.data}`);
       }
@@ -163,7 +163,7 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
   let accessToken: string;
   let refreshToken: string;
   let cookies: Array<string>;
-  if (provider.id === 'credentials') {
+  if (provider.id === "credentials") {
     /*
       Coming from the credentials provider, `data` is of this form:
       {
@@ -178,23 +178,23 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
   } else {
     let socialUser;
     switch (provider.id) {
-      case 'discord': // https://next-auth.js.org/providers/discord
+      case "discord": // https://next-auth.js.org/providers/discord
         socialUser = {
           id: data.id,
           login: data.login,
           name: data.name,
-          avatar: user.image
+          avatar: user.image,
         };
         break;
-      case 'facebook': // https://next-auth.js.org/providers/facebook
+      case "facebook": // https://next-auth.js.org/providers/facebook
         socialUser = {
           id: data.id,
           login: data.login,
           name: data.name,
-          avatar: user.image
+          avatar: user.image,
         };
         break;
-      case 'github': // https://next-auth.js.org/providers/github
+      case "github": // https://next-auth.js.org/providers/github
         // TODO: https://modularhistory.atlassian.net/browse/MH-136
         // https://getstarted.sh/bulletproof-next/add-social-authentication/5
         // const emailRes = await fetch('https://api.github.com/user/emails', {
@@ -209,23 +209,23 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
           id: data.id,
           login: data.login,
           name: data.name,
-          avatar: user.image
+          avatar: user.image,
         };
         break;
-      case 'google': // https://next-auth.js.org/providers/google
+      case "google": // https://next-auth.js.org/providers/google
         socialUser = {
           id: data.id,
           login: data.login,
           name: data.name,
-          avatar: user.image
+          avatar: user.image,
         };
         break;
-      case 'twitter': // https://next-auth.js.org/providers/twitter
+      case "twitter": // https://next-auth.js.org/providers/twitter
         socialUser = {
           id: data.id,
           login: data.login,
           name: data.name,
-          avatar: user.image
+          avatar: user.image,
         };
         break;
       default:
@@ -286,16 +286,16 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
       sessionPlus.accessToken = accessToken;
       // If the access token is expired, ...
       if (Date.now() > expiry) {
-        console.error('Session got expired access token !!!!!');
-        console.error('^^^^^^^');
+        console.error("Session got expired access token !!!!!");
+        console.error("^^^^^^^");
       }
       sessionPlus.cookies = cookies;
       let userData;
       await axios
-        .get(makeDjangoApiUrl('/users/me/'), {
+        .get(makeDjangoApiUrl("/users/me/"), {
           headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
+            Authorization: `Bearer ${accessToken}`,
+          },
         })
         .then(function (response: AxiosResponse) {
           userData = response.data;
@@ -313,9 +313,9 @@ callbacks.redirect = async function redirect(url, baseUrl) {
   url = url.startsWith(baseUrl) ? url : baseUrl;
   // TODO: refactor
   const reactPattern = /\/(entities\/?|other_react_pattern\/?)/;
-  if (!url.includes('/auth/redirect/')) {
+  if (!url.includes("/auth/redirect/")) {
     if (!reactPattern.test(url)) {
-      const path = url.replace(baseUrl, '');
+      const path = url.replace(baseUrl, "");
       url = `${baseUrl}/auth/redirect/${path}`;
     }
   }
@@ -324,8 +324,8 @@ callbacks.redirect = async function redirect(url, baseUrl) {
 
 // https://next-auth.js.org/configuration/pages
 const pages: PagesOptions = {
-  signIn: '/auth/signin',
-  signOut: '/auth/signout'
+  signIn: "/auth/signin",
+  signOut: "/auth/signout",
 };
 
 const options: NextAuthOptions = {
@@ -340,7 +340,7 @@ const options: NextAuthOptions = {
   // https://next-auth.js.org/configuration/options#secret
   secret: process.env.SECRET_KEY,
   // https://next-auth.js.org/configuration/options#session
-  session: { jwt: true }
+  session: { jwt: true },
 };
 
 const authHandler: NextApiHandler = (req: NextApiRequest, res: NextApiResponse) => {

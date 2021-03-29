@@ -1,14 +1,14 @@
-import { Provider } from 'next-auth/client';
-import { AppProps } from 'next/app';
-import Head from 'next/head';
-import React, { useEffect } from 'react';
-import '../../modularhistory/static/styles/base.scss';
+import { Provider } from "next-auth/client";
+import { AppProps } from "next/app";
+import Head from "next/head";
+import React, { useEffect } from "react";
+import "../../modularhistory/static/styles/base.scss";
 
 const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     // Remove the server-side injected CSS.
     // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.
-    const jssStyles = document.querySelector('#jss-server-side');
+    const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
@@ -36,7 +36,7 @@ const App = ({ Component, pageProps }: AppProps) => {
           src="https://www.googletagmanager.com/ns.html?id=GTM-P68V7DK"
           height="0"
           width="0"
-          style={{ display: 'none', visibility: 'hidden' }}
+          style={{ display: "none", visibility: "hidden" }}
         />
       </noscript>
       <Provider session={pageProps.session}>

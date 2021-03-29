@@ -1,26 +1,26 @@
-import { useSession } from 'next-auth/client';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import PropTypes from 'prop-types';
-import React from 'react';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import { handleLogin, handleLogout } from '../auth';
+import { useSession } from "next-auth/client";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import React from "react";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import { handleLogin, handleLogout } from "../auth";
 
-const logoImageSrc = '/static/logo_head_white.png';
+const logoImageSrc = "/static/logo_head_white.png";
 const globalMenuItems = [
   {
-    title: 'About',
-    path: '/about',
+    title: "About",
+    path: "/about",
     children: [
-      { title: 'About Us', path: '/about', reactive: false },
-      { title: 'Manifesto', path: '/manifesto', reactive: false }
-    ]
+      { title: "About Us", path: "/about", reactive: false },
+      { title: "Manifesto", path: "/manifesto", reactive: false },
+    ],
   },
-  { title: 'Occurrences', path: '/occurrences', reactive: false },
-  { title: 'Quotes', path: '/quotes', reactive: false },
-  { title: 'Entities', path: '/entities', reactive: true }
+  { title: "Occurrences", path: "/occurrences", reactive: false },
+  { title: "Quotes", path: "/quotes", reactive: false },
+  { title: "Entities", path: "/entities", reactive: true },
 ];
 
 function WrappedNavLink({ title, path, reactive, ...childProps }) {
@@ -29,14 +29,14 @@ function WrappedNavLink({ title, path, reactive, ...childProps }) {
   if (reactive) {
     return (
       <Link href={path}>
-        <Nav.Link className={active ? 'active' : ''} {...childProps}>
+        <Nav.Link className={active ? "active" : ""} {...childProps}>
           {title}
         </Nav.Link>
       </Link>
     );
   } else {
     return (
-      <Nav.Link href={path} className={active ? 'active' : ''} {...childProps}>
+      <Nav.Link href={path} className={active ? "active" : ""} {...childProps}>
         {title}
       </Nav.Link>
     );
@@ -57,7 +57,7 @@ function WrappedNavDropdown({ title, children, ...childProps }) {
 // https://reactjs.org/docs/typechecking-with-proptypes.html
 WrappedNavDropdown.propTypes = {
   title: PropTypes.string.isRequired,
-  children: PropTypes.arrayOf(PropTypes.object)
+  children: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default function GlobalNavbar({ menuItems }) {
@@ -77,7 +77,7 @@ export default function GlobalNavbar({ menuItems }) {
   };
 
   let accountDropdownIcon;
-  if (session && session.user && session.user['avatar']) {
+  if (session && session.user && session.user["avatar"]) {
     accountDropdownIcon = (
       <img
         src={session.user.avatar}
@@ -130,12 +130,12 @@ export default function GlobalNavbar({ menuItems }) {
       id="global-nav"
       bg="dark"
       variant="dark"
-      style={{ minHeight: '4rem' }}
+      style={{ minHeight: "4rem" }}
       expand="md"
       collapseOnSelect
     >
       <Navbar.Brand href="/">
-        <img alt="Logo" src={logoImageSrc} style={{ width: '2.7rem', height: '2.5rem' }} />{' '}
+        <img alt="Logo" src={logoImageSrc} style={{ width: "2.7rem", height: "2.5rem" }} />{" "}
         ModularHistory
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -156,8 +156,8 @@ export default function GlobalNavbar({ menuItems }) {
             renderMenuOnMount
             alignRight
           >
-          {/* {accountControls} */}
-            {!loading && accountControls }
+            {/* {accountControls} */}
+            {!loading && accountControls}
           </NavDropdown>
         </Nav>
       </Navbar.Collapse>
@@ -166,5 +166,5 @@ export default function GlobalNavbar({ menuItems }) {
 }
 // https://reactjs.org/docs/typechecking-with-proptypes.html
 GlobalNavbar.propTypes = {
-  menuItems: PropTypes.array
+  menuItems: PropTypes.array,
 };

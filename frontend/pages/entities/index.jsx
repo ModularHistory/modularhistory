@@ -76,9 +76,7 @@ export default function Entities({ entitiesData }) {
               image={entity["serialized_images"][0]["src_url"]}
             />
           )}
-          <CardContent
-            dangerouslySetInnerHTML={{ __html: entity["description"] }}
-          />
+          <CardContent dangerouslySetInnerHTML={{ __html: entity["description"] }} />
         </Card>
       </a>
     </Grid>
@@ -103,10 +101,7 @@ export async function getServerSideProps(context) {
   let entitiesData = {};
 
   await axios
-    .get(
-      "http://django:8000/api/entities/" +
-        ("page" in q ? `?page=${q["page"]}` : "")
-    )
+    .get("http://django:8000/api/entities/" + ("page" in q ? `?page=${q["page"]}` : ""))
     .then((response) => {
       entitiesData = response.data;
     })

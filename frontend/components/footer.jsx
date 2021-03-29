@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import React from 'react';
+import Link from "next/link";
+import React from "react";
 
 export default function Footer() {
   return (
@@ -15,7 +15,7 @@ export default function Footer() {
 
         <div className="row">
           <div className="col-md-12 col-lg-12 text-center">
-            <div className="footer-links mb-1" style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+            <div className="footer-links mb-1" style={{ backgroundColor: "rgba(0,0,0,0.2)" }}>
               <span className="text-center py-3 mx-5">&copy; 2020 ModularHistory, Inc.</span>
 
               <Link href="/about">
@@ -32,9 +32,9 @@ export default function Footer() {
 
               <ul
                 className="list-social list-unstyled list-inline mx-5"
-                style={{ display: 'inline-block' }}
+                style={{ display: "inline-block" }}
               >
-                <li style={{ display: 'inline-block' }}>
+                <li style={{ display: "inline-block" }}>
                   <a
                     href="https://twitter.com/modularhistory"
                     rel="nofollow noopener"
@@ -45,7 +45,7 @@ export default function Footer() {
                   </a>
                 </li>
 
-                <li style={{ display: 'inline-block' }}>
+                <li style={{ display: "inline-block" }}>
                   <a
                     href="https://www.facebook.com/modularhistory"
                     rel="nofollow noopener"
@@ -56,7 +56,7 @@ export default function Footer() {
                   </a>
                 </li>
 
-                <li style={{ display: 'inline-block' }}>
+                <li style={{ display: "inline-block" }}>
                   <a
                     href="https://www.pinterest.com/modularhistory"
                     rel="nofollow noopener"
@@ -67,7 +67,7 @@ export default function Footer() {
                   </a>
                 </li>
 
-                <li style={{ display: 'inline-block' }}>
+                <li style={{ display: "inline-block" }}>
                   <a
                     href="https://www.youtube.com/c/modularhistory"
                     rel="nofollow noopener"
