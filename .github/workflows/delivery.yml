@@ -121,7 +121,6 @@ jobs:
         echo "Transferring files to $SERVER..."
         ls -alt frontend
         scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./templates/error.htm ./.config/nginx/prod/nginx.conf ./.config modularhistory@$SERVER:~/
-        scp -o StrictHostKeyChecking=no -P 2200 -r frontend/.next modularhistory@$SERVER:~/frontend/
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
           echo "Working dir:" && pwd && echo "" && ls
