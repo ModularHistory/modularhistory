@@ -111,8 +111,7 @@ services:
       # both in the container and on the host machine. Permissions to write in
       # the container are granted in Dockerfile.django. Permissions to write on
       # the host machine have been granted manually; e.g.,
-      #     sudo chown -R www-data:www-data .backups
-      #     docker
+      #     sudo chown -R www-data:www-data .backups && sudo chmod g+w -R .backups
       - ./.static:/modularhistory/.static
       - ./media:/modularhistory/media
       - ./.backups:/modularhistory/.backups
