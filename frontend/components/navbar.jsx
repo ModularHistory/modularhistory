@@ -77,7 +77,7 @@ export default function GlobalNavbar({ menuItems }) {
   };
 
   let accountDropdownIcon;
-  if (session && session.user && session.user["avatar"]) {
+  if (session?.user && session.user["avatar"]) {
     accountDropdownIcon = (
       <img
         src={session.user.avatar}
@@ -91,7 +91,7 @@ export default function GlobalNavbar({ menuItems }) {
   }
 
   let accountControls;
-  if (session && session.user) {
+  if (session?.user) {
     if (session.user.is_superuser) {
       accountControls = (
         <>

@@ -25,7 +25,7 @@ export default function SignIn({ providers, csrfToken }) {
           p={5}
           flexDirection="column"
         >
-          {!loading && session && session.user && (
+          {!loading && session?.user && (
             <Paper className="p-4 text-center">
               <p className="lead">
                 You are logged in as <strong>{session.user.email}</strong>.

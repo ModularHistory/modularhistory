@@ -12,7 +12,8 @@ const App = ({ Component, pageProps }: AppProps) => {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
-    // TODO: get Django CSRF cookie?
+    // TODO: https://modularhistory.atlassian.net/browse/MH-148
+    // Get Django CSRF cookie.
     // const url = "/api/csrf/set";
     // axios.get(url).then(console.log);
   }, []);

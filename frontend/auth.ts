@@ -39,7 +39,7 @@ export const handleLogout = (session: WithAdditionalParams<Session>): void => {
         throw new Error(`${error}`);
       });
   }
-  // Remove cookies.
+  // Remove cookies by setting their expiry to a past date.
   AUTH_COOKIES.forEach((cookieName) => {
     document.cookie = `${cookieName}; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
   });

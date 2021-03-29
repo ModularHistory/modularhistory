@@ -5,7 +5,7 @@ import NextAuth, {
   NextAuthOptions,
   PagesOptions,
   Session,
-  User as NextAuthUser,
+  User as NextAuthUser
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
@@ -286,8 +286,7 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
       sessionPlus.accessToken = accessToken;
       // If the access token is expired, ...
       if (Date.now() > expiry) {
-        console.error("Session got expired access token !!!!!");
-        console.error("^^^^^^^");
+        console.error("Session got an expired access token.");
       }
       sessionPlus.cookies = cookies;
       let userData;

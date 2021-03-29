@@ -1,10 +1,10 @@
 // https://nextjs.org/docs/advanced-features/custom-document
 
-import React from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
 import { ServerStyleSheets } from "@material-ui/styles";
+import BaseDocument, { Head, Html, Main, NextScript } from "next/document";
+import React from "react";
 
-class MyDocument extends Document {
+class Document extends BaseDocument {
   static async getInitialProps(ctx) {
     // Copied from https://github.com/mui-org/material-ui/blob/master/examples/nextjs/
     // Synchronizes server & client CSS for initial SSR
@@ -91,4 +91,4 @@ class MyDocument extends Document {
   }
 }
 
-export default MyDocument;
+export default Document;
