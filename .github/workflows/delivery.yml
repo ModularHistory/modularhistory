@@ -109,7 +109,6 @@ jobs:
       if: ${{ success() }}
       run: |
         poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
-        docker-compose up -d react
     - name: Deploy images to server
       id: deploy-image
       if: ${{ success() }}
