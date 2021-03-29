@@ -1,9 +1,9 @@
 version: "3.8"
 
 x-common-env-vars: &common-env-vars
-  DOCKERIZED: 'True'
-  REDIS_HOST: 'redis'
-  POSTGRES_HOST: 'postgres'
+  DOCKERIZED: "True"
+  REDIS_HOST: "redis"
+  POSTGRES_HOST: "postgres"
 
 services:
   dev:
@@ -78,7 +78,7 @@ services:
     networks:
       default:
         ipv4_address: 172.27.0.12
-  
+
   django:
     command: bash .config/init/django.sh
     depends_on:
@@ -91,9 +91,13 @@ services:
     env_file: .env
     environment:
       <<: *common-env-vars
-      DJANGO_SETTINGS_MODULE: 'modularhistory.settings'
+      DJANGO_SETTINGS_MODULE: "modularhistory.settings"
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail http://localhost:8000/healthcheck/ || exit 1",
+        ]
       timeout: 7s
       interval: 20s
       retries: 2
@@ -154,7 +158,7 @@ services:
       - "27017:27017"
     volumes:
       - data:/data
-  
+
   postgres:
     deploy:
       restart_policy:
@@ -185,7 +189,7 @@ services:
         max_attempts: 3
     env_file: .env
     environment:
-      NEXTAUTH_URL: 'https://modularhistory.com'
+      NEXTAUTH_URL: "https://modularhistory.com"
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3000/ || exit 1"]
       timeout: 7s
@@ -200,7 +204,7 @@ services:
       - "3000:3000"
     volumes:
       - ./.env:/modularhistory/.env
-  
+
   redis:
     deploy:
       restart_policy:
@@ -229,9 +233,13 @@ services:
         max_attempts: 3
     env_file: .env
     environment:
-      REDIS_HOSTS: 'local:redis:6379'
+      REDIS_HOSTS: "local:redis:6379"
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:8001/healthcheck/ || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail http://localhost:8001/healthcheck/ || exit 1",
+        ]
       timeout: 7s
       interval: 15s
       retries: 2

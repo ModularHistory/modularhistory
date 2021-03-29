@@ -39,10 +39,10 @@ services:
         ENVIRONMENT: dev
     command: npm run dev
     environment:
-      NEXTAUTH_URL: 'http://modularhistory.dev.net'
-      REACT_EDITOR: 'code'
+      NEXTAUTH_URL: "http://modularhistory.dev.net"
+      REACT_EDITOR: "code"
     image: react:latest
-    user: root  # avoid permissions issues with writing in build dir
+    user: root # avoid permissions issues with writing in build dir
     volumes:
       - ./frontend:/modularhistory/frontend
       - ./frontend/node_modules:/modularhistory/frontend/node_modules
