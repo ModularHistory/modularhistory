@@ -18,7 +18,7 @@ class Document extends BaseDocument {
         enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
       });
 
-    const initialProps = await Document.getInitialProps(ctx);
+    const initialProps = await BaseDocument.getInitialProps(ctx);
 
     return {
       ...initialProps,
