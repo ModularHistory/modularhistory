@@ -4,62 +4,15 @@ import magic
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Field, Layout, Submit
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.urls import reverse
 
-from apps.users.admin import EMAIL_FIELD, PASSWORD_FIELD, USERNAME_FIELD
-from apps.users.models import User
+from apps.users.admin import EMAIL_FIELD, USERNAME_FIELD
+
+User = get_user_model()
 
 DEFAULT_FIELD_CLASSES = 'form-control mb-4'
-
-
-class LoginForm(AuthenticationForm):
-    """Crispy login form."""
-
-    def __init__(self, request=None, *args, **kwargs):
-        """Construct the login form."""
-        super().__init__(request, *args, **kwargs)
-        # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
-        self.helper = FormHelper()
-        self.helper.field_class = ''
-        self.helper.form_id = 'loginForm'
-        self.helper.form_class = 'text-center border border-light p-5'
-        self.helper.form_method = 'post'
-        self.helper.form_action = '/login'
-        self.helper.label_class = 'hidden'
-        self.helper.layout = Layout(
-            HTML('<p class="h4 mb-4">Sign in</p>'),
-            Field(
-                USERNAME_FIELD,
-                css_class=DEFAULT_FIELD_CLASSES,
-                placeholder='Username or email address',
-            ),
-            Field(
-                PASSWORD_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Password'
-            ),
-            HTML(
-                f'''
-                <div class="d-flex justify-content-around">
-                    <div>
-                        <!-- Remember me -->
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" id="defaultLoginFormRemember">
-                            <label for="defaultLoginFormRemember">Remember me</label>
-                        </div>
-                    </div>
-                    <div>
-                        <!-- Forgot password -->
-                        <a href="{reverse('users:password_reset')}">Forgot password?</a>
-                    </div>
-                </div>
-                '''
-            ),
-            Submit('submit', 'Sign in', css_class='btn btn-info btn-block my-4'),
-            HTML(
-                f'<p>Not a member? <a href="{reverse("users:register")}">Register</a></p>'
-            ),
-        )
 
 
 class UserCreationForm(BaseUserCreationForm):

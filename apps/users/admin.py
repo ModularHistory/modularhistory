@@ -1,9 +1,11 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, Permission
 
 from admin import admin_site
-from apps.users.models import User
+
+User = get_user_model()
 
 EMAIL_FIELD = 'email'
 USERNAME_FIELD = 'username'

@@ -12,6 +12,7 @@ from zipfile import BadZipFile, ZipFile
 
 from django.conf import settings
 from dotenv import load_dotenv
+from requests import Session
 
 from modularhistory.constants.strings import NEGATIVE
 from modularhistory.utils import db as db_utils
@@ -24,25 +25,16 @@ GITHUB_ACTIONS_BASE_URL = github_utils.GITHUB_ACTIONS_BASE_URL
 SEEDS = {'env-file': '.env', 'init-sql': os.path.join(settings.DB_INIT_DIR, 'init.sql')}
 
 
-@command
-def seed(
-    context,
-    username: Optional[str] = None,
-    pat: Optional[str] = None,
-):
-    """Seed a dev database, media directory, and env file."""
-    workflow = 'seed.yml'
-    n_expected_artifacts = 2
-    username, pat = github_utils.accept_credentials(username, pat)
-    session = github_utils.initialize_session(username=username, pat=pat)
-    print('Dispatching workflow...')
+def dispatch_and_get_workflow(context, session: Session) -> dict:
+    """Dispatch the seed workflow in GitHub, and return the workflow run id."""
+    # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
+    workflow_id = 'seed.yml'
     time_posted = datetime.utcnow().replace(microsecond=0)
     session.post(
-        f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow}/dispatches',
+        f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow_id}/dispatches',
         data=json.dumps({'ref': 'main'}),
     )
     context.run('sleep 5')
-    # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
     workflow_runs: List[dict] = []
     time_waited, wait_interval, timeout = 0, 5, 30
     while not workflow_runs:
@@ -88,8 +80,23 @@ def seed(
                     raise TimeoutError(
                         'Timed out while attempting to retrieve workflow run.'
                     )
-    workflow_run = workflow_runs[0]
-    workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run["id"]}'
+    return workflow_runs[0]
+
+
+@command
+def seed(
+    context,
+    username: Optional[str] = None,
+    pat: Optional[str] = None,
+):
+    """Seed a dev database, media directory, and env file."""
+    n_expected_artifacts = 2
+    username, pat = github_utils.accept_credentials(username, pat)
+    session = github_utils.initialize_session(username=username, pat=pat)
+    print('Dispatching workflow...')
+    workflow_run = dispatch_and_get_workflow(context=context, session=session)
+    workflow_run_id = workflow_run['id']
+    workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run_id}'
     status = initial_status = workflow_run['status']
     artifacts_url = workflow_run['artifacts_url']
     while status == initial_status != 'completed':
@@ -138,6 +145,27 @@ def seed(
     # Seed the db
     db_utils.seed(context)
     print('Finished.')
+
+
+@command
+def update_hosts(context):
+    """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
+    hosts_filepaths = ['/etc/hosts']
+    wsl_windows_hosts_filepath = '/mnt/c/Windows/System32/drivers/etc/hosts'
+    if os.path.exists(wsl_windows_hosts_filepath):
+        hosts_filepaths.append(wsl_windows_hosts_filepath)
+    for hosts_filepath in hosts_filepaths:
+        print(f'Reading {hosts_filepath} ...')
+        with open(hosts_filepath, 'r') as hosts_file:
+            hosts = hosts_file.read()
+        with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
+            extra_hosts = [host for host in hosts_file.readlines() if host]
+        hosts_to_write = [host for host in extra_hosts if host not in hosts]
+        if hosts_to_write:
+            print('Updating /etc/hosts ...')
+            for host in hosts_to_write:
+                context.run(f'sudo echo "{host}" | sudo tee -a /etc/hosts')
+        print(f'{hosts_filepath} is up to date.')
 
 
 @command

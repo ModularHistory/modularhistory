@@ -1,12 +1,11 @@
 from django.apps import AppConfig
+from django.contrib.auth import get_user_model
 from django.core.checks import Warning, register
 
 
 def superuser_check(app_configs, **kwargs):
     """Check that a superuser has been created."""
-    from apps.users.models import User
-
-    if User.objects.filter(is_superuser=True).exists():
+    if get_user_model().objects.filter(is_superuser=True).exists():
         return []
     return [
         Warning(

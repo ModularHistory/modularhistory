@@ -11,9 +11,8 @@ import PaginationItem from "@material-ui/lab/PaginationItem";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useState } from "react";
 import Layout from "../../components/layout";
-
 
 const PaginationLink = forwardRef(({ href, ...childProps }, ref) => (
   <Link href={href}>
@@ -33,45 +32,51 @@ function EntitiesPagination({ count, ...childProps }) {
   const router = useRouter();
   const theme = useTheme();
 
-  const sibCount = 1 + ['sm', 'md'].map((size) =>
-    useMediaQuery(theme.breakpoints.up(size))
-  ).reduce((sum, current) => sum + current);
+  const sibCount =
+    1 +
+    ["sm", "md"]
+      .map((size) => useMediaQuery(theme.breakpoints.up(size)))
+      .reduce((sum, current) => sum + current);
 
-  const [pageNum, setPageNum] = usePageState(
-    Number(router.query['page'] || 1)
-  );
+  const [pageNum, setPageNum] = usePageState(Number(router.query["page"] || 1));
 
   return (
     <Pagination
-      count={count} page={pageNum} siblingCount={sibCount} onChange={setPageNum}
-      variant="outlined" shape="rounded" size={sibCount > 2 ? 'large' : undefined}
+      count={count}
+      page={pageNum}
+      siblingCount={sibCount}
+      onChange={setPageNum}
+      variant="outlined"
+      shape="rounded"
+      size={sibCount > 2 ? "large" : undefined}
       renderItem={(item) => (
         <PaginationItem
-          {...item} component={PaginationLink} data-index={item.page}
+          {...item}
+          component={PaginationLink}
+          data-index={item.page}
           href={item.page > 1 ? `/entities?page=${item.page}` : router.pathname}
         />
-      )} {...childProps}
+      )}
+      {...childProps}
     />
   );
 }
 
 export default function Entities({ entitiesData }) {
-  const entities = entitiesData['results'] || [];
+  const entities = entitiesData["results"] || [];
 
   const entityCards = entities.map((entity) => (
-    <Grid item key={entity['pk']}
-      xs={6} sm={4} md={3}>
-      <a href={`entities/${entity['pk']}`}>
+    <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
+      <a href={`entities/${entity["pk"]}`}>
         <Card>
-          <CardHeader title={entity['name']} />
-          {entity['serialized_images'].length > 0 &&
+          <CardHeader title={entity["name"]} />
+          {entity["serialized_images"].length > 0 && (
             <CardMedia
-              style={{ height: 0, paddingTop: '100%' }}
-              image={entity['serialized_images'][0]['src_url']}
-            />}
-          <CardContent
-            dangerouslySetInnerHTML={{ __html: entity['description'] }}
-          />
+              style={{ height: 0, paddingTop: "100%" }}
+              image={entity["serialized_images"][0]["src_url"]}
+            />
+          )}
+          <CardContent dangerouslySetInnerHTML={{ __html: entity["description"] }} />
         </Card>
       </a>
     </Grid>
@@ -80,7 +85,7 @@ export default function Entities({ entitiesData }) {
   return (
     <Layout title={"Entities"}>
       <Container>
-        <EntitiesPagination count={entitiesData['total_pages']} />
+        <EntitiesPagination count={entitiesData["total_pages"]} />
         <Grid container spacing={2}>
           {entityCards}
         </Grid>
@@ -90,19 +95,19 @@ export default function Entities({ entitiesData }) {
   );
 }
 
-
+// https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export async function getServerSideProps(context) {
   const q = context.query;
   let entitiesData = {};
 
-  await axios.get(
-    "http://django:8000/api/entities/" +
-    ('page' in q ? `?page=${q['page']}` : "")
-  ).then((response) => {
-    entitiesData = response.data;
-  }).catch((error) => {
-    // console.error(error);
-  });
+  await axios
+    .get("http://django:8000/api/entities/" + ("page" in q ? `?page=${q["page"]}` : ""))
+    .then((response) => {
+      entitiesData = response.data;
+    })
+    .catch((error) => {
+      // console.error(error);
+    });
 
   return {
     props: {

@@ -10,7 +10,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 import sys
-from datetime import timedelta
 from os.path import join
 from typing import Any, Dict
 
@@ -33,11 +32,8 @@ DEBUG = IS_DEV
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-secret-key
-SECRET_KEY = config('SECRET_KEY', default='f67EPexT9Tmwnt71kcGPk')
-
 # --- URL MODIFICATION SETTINGS ---
-# Do not prepend `www.` to `modularhistory.com`; in production,
+# Do not prepend `www.` to `modularhistory.com`;
 # the Nginx reverse proxy chops off the `www.` from all incoming requests.
 # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
 PREPEND_WWW = False
@@ -48,10 +44,12 @@ APPEND_SLASH = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy in prod.
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
+SESSION_COOKIE_HTTPONLY = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings/#session-cookie-samesite
-SESSION_COOKIE_SAMESITE = 'Lax' if IS_PROD else 'None'
+SESSION_COOKIE_SAMESITE = 'Lax' if (IS_PROD or DOCKERIZED) else 'None'
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-csrf-cookie-secure
 CSRF_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-referrer-policy
@@ -80,25 +78,8 @@ ADMINS = (
     else []
 )
 
-REDIS_HOST = 'redis' if DOCKERIZED else 'localhost'
-REDIS_PORT = '6379'
-REDIS_BASE_URL = REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
-
-# https://channels.readthedocs.io/en/latest/
-ASGI_APPLICATION = 'modularhistory.asgi.application'
-WSGI_APPLICATION = 'modularhistory.wsgi.application'  # unused
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [(REDIS_HOST, 6379)],
-            'symmetric_encryption_keys': [SECRET_KEY],
-        },
-    },
-}
-
 INSTALLED_APPS = [
-    # admin_tools and its modules must come before django.contrib.admin
+    # Note: admin_tools and its modules must come before django.contrib.admin.
     'admin_tools',  # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
     'admin_tools.menu',
     # 'admin_tools.theming',
@@ -143,16 +124,30 @@ INSTALLED_APPS = [
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'meta',  # https://django-meta.readthedocs.io/en/latest/
-    # 'menu',
     'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
-    'rest_framework',  # https://github.com/encode/django-rest-framework
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
-    'webpack_loader',  # https://github.com/owais/django-webpack-loader
+    'webpack_loader',  # https://github.com/owais/django-webpack-loader  # TODO
+    # DRF apps
+    'rest_framework',  # https://github.com/encode/django-rest-framework
+    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
+    # Note: dj_rest_auth must be loaded after rest_framework.
+    'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
+    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.  # noqa: E501
+    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    'allauth.account',
+    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.discord',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
+    # In-project apps
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
@@ -252,31 +247,14 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'modularhistory.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
 }
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': False,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    # Whatever value is set for AUTH_HEADER_TYPES must be reflected in React’s headers.
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-}
-JWT_COOKIE_NAME = 'jwt_token'
-JWT_COOKIE_SAMESITE = 'Strict' if IS_PROD else 'None'
-JWT_COOKIE_SECURE = IS_PROD
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -403,49 +381,6 @@ RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default='')
 
 # https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
 SITE_ID = 1
-
-# Caching settings
-use_dummy_cache = config('DUMMY_CACHE', cast=bool, default=False)
-Cache = Dict[str, Any]
-CACHES: Dict[str, Cache]
-
-# https://github.com/jazzband/django-redis
-if IS_DEV and use_dummy_cache:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        }
-    }
-else:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': f'{REDIS_BASE_URL}/0',
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            },
-        }
-    }
-    # https://github.com/jazzband/django-redis
-    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-    SESSION_CACHE_ALIAS = 'default'
-
-# https://github.com/jazzband/django-defender
-USE_DEFENDER = False  # TODO
-if USE_DEFENDER:
-    DEFENDER_REDIS_URL = f'{REDIS_BASE_URL}/0'
-    if IS_PROD or DOCKERIZED:
-        # https://github.com/jazzband/django-defender#customizing-django-defender
-        DEFENDER_BEHIND_REVERSE_PROXY = True
-
-# https://docs.celeryproject.org/en/stable/django/
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_BROKER_URL = f'{REDIS_BASE_URL}/0'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-# https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html#django-celery-results-using-the-django-orm-cache-as-a-result-backend
-CELERY_RESULT_BACKEND = 'django-cache'
-CELERY_CACHE_BACKEND = 'default'
 
 CONFIG_DIR = join(BASE_DIR, '.config')
 

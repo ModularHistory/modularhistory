@@ -29,6 +29,8 @@ from watchman.views import bare_status
 
 from admin.model_admin import admin_site
 from apps.search.views import SearchResultsView
+from apps.users.api.views import set_csrf_token
+
 from modularhistory import errors
 
 
@@ -42,9 +44,6 @@ _api = 'apps.{}.api.urls'.format  # noqa: P103
 
 # fmt: off
 urlpatterns = [
-    # Users
-    path('api/users/', include(_api('users'), namespace='users_api')),
-    path('users/', include(('apps.users.urls', 'users'), namespace='users')),
     # Admin
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
@@ -83,19 +82,23 @@ urlpatterns = [
     # Topics
     path('api/topics/', include(_api('topics'), namespace='topics_api')),
     path('topics/', include('apps.topics.urls', namespace='topics')),
+    # Users
+    path('api/users/', include(_api('users'), namespace='users_api')),
+    path('api/csrf/set', set_csrf_token),
+    path('users/', include('apps.users.urls', namespace='users')),
     # Third-party apps
     path('api-auth/', include('rest_framework.urls')),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),  # https://github.com/iMerica/dj-rest-auth  # noqa: E501
     path('ht/', include('health_check.urls')),
     path('martor/', include('martor.urls')),
     path('select2/', include('django_select2.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('watchman/', include('watchman.urls')),
-    # Basic healthcheck
-    path('healthcheck/', bare_status),
+    path('healthcheck/', bare_status),  # basic healthcheck
     # Home
     path('', include('apps.home.urls')),
     # robots.txt
-    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),  # noqa: E501
     # Debug toolbar: https://django-debug-toolbar.readthedocs.io/en/latest/
     path('__debug__', include(debug_toolbar.urls)),
     # Errors (for debugging)
@@ -110,7 +113,7 @@ urlpatterns = [
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# https://docs.djangoproject.com/en/3.1/ref/contrib/staticfiles/#django.contrib.staticfiles.urls.staticfiles_urlpatterns
+# https://docs.djangoproject.com/en/3.1/ref/contrib/staticfiles/#django.contrib.staticfiles.urls.staticfiles_urlpatterns  # noqa: E501
 urlpatterns += staticfiles_urlpatterns()
 
 handler400 = 'modularhistory.errors.bad_request'
