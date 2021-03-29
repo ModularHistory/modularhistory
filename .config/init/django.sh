@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sleep 3 && wait-for-it.sh postgres:5432 -- 
-writable_dirs=( ".backups" "media" "static" )
+writable_dirs=( ".backups" "media" ".static" )
 for writable_dir in "${writable_dirs[@]}"; do
     # Must be run by a www-data user:
     test -w "/modularhistory/$writable_dir" || {
