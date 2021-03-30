@@ -1,10 +1,10 @@
 // https://nextjs.org/docs/advanced-features/custom-document
 
-import React from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
 import { ServerStyleSheets } from "@material-ui/styles";
+import BaseDocument, { Head, Html, Main, NextScript } from "next/document";
+import React from "react";
 
-class MyDocument extends Document {
+class Document extends BaseDocument {
   static async getInitialProps(ctx) {
     // Copied from https://github.com/mui-org/material-ui/blob/master/examples/nextjs/
     // Synchronizes server & client CSS for initial SSR
@@ -18,7 +18,7 @@ class MyDocument extends Document {
         enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
       });
 
-    const initialProps = await Document.getInitialProps(ctx);
+    const initialProps = await BaseDocument.getInitialProps(ctx);
 
     return {
       ...initialProps,
@@ -47,9 +47,15 @@ class MyDocument extends Document {
           {/* Font Awesome */}
           <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
           {/* Latest compiled and minified Bootstrap CSS */}
-          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+          <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          />
           {/* Material Design Bootstrap CSS */}
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/css/mdb.min.css" />
+          <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/css/mdb.min.css"
+          />
 
           {/*Inheriting templates can add <link rel="stylesheet"> and/or <style> elements with the styles block.*/}
           {/*{% block styles %}{% endblock %}*/}
@@ -60,8 +66,6 @@ class MyDocument extends Document {
           <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" />
           {/* Latest compiled Bootstrap JavaScript */}
           <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" />
-          {/* Material Design Bootstrap core JavaScript */}
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/js/mdb.min.js" />
 
           {/* PDF.js */}
           {/* TODO: replace with node package and import where used
@@ -90,4 +94,4 @@ class MyDocument extends Document {
   }
 }
 
-export default MyDocument;
+export default Document;

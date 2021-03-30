@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -11,7 +12,6 @@ class VerifiableModel(Model):
     """An item that can, hopefully, be researched and verified."""
 
     verified = models.BooleanField(verbose_name=_('verified'), default=False)
-
     verifications = GenericRelation('verifications.Verification')
 
     class Meta:
@@ -28,7 +28,7 @@ class Verification(ContentInteraction):
     """A verification of the veracity of a verifiable model instance's content."""
 
     verifier = models.ForeignKey(
-        to='users.User',
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='verifications',
         verbose_name=_('verifier'),

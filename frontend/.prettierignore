@@ -1,0 +1,4 @@
+.next/
+.npm/
+.venv/
+node_modules/

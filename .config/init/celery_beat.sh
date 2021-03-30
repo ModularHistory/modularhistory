@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 wait-for-it.sh redis:6379 -- 
 celery -A modularhistory beat -l INFO \

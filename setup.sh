@@ -165,6 +165,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # Other packages
   brew_install openssl@1.1
   brew_install rust
+  brew_install graphviz
   brew install libjpeg zlib grep gnu-sed jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
@@ -180,23 +181,19 @@ elif [[ "$os" == "$LINUX" ]]; then
   # All other dependencies
   sudo apt update -y
   sudo apt install -y --allow-downgrades \
-  make \
   build-essential \
-  libssl-dev \
-  zlib1g-dev \
-  libbz2-dev \
+  make \
+  graphviz graphviz-dev \
+  libbz2-dev libffi-dev liblzma-dev libssl-dev \
   libreadline-dev \
   libsqlite3-dev \
+  libncurses5-dev libncursesw5-dev \
   llvm \
-  libncurses5-dev \
-  libncursesw5-dev \
-  xz-utils \
-  tk-dev \
-  libffi-dev \
-  liblzma-dev \
+  postgresql-client-common postgresql-client-13 \
   python-openssl \
-  postgresql-client-common \
-  postgresql-client-13 || _error "Unable to install one or more required packages."
+  tk-dev \
+  xz-utils \
+  zlib1g-dev || _error "Unable to install one or more required packages."
 fi
 
 # Note: These are referenced multiple times in this script.

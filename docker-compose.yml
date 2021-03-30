@@ -11,7 +11,17 @@ services:
       - django
       - flower
       - react
-      - redisinsight
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    healthcheck:
+      # NOTE: This check will only work in dev environment.
+      test: ["CMD", "curl", "--fail", "http://localhost"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    hostname: modularhistory.dev.net
     image: nginx
     ports:
       - "80:80"
@@ -23,11 +33,15 @@ services:
         ipv4_address: 172.27.0.5
 
   celery:
-    command: sh .config/init/celery.sh
+    command: bash .config/init/celery.sh
     depends_on:
       - django
       - redis
       - postgres
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
     env_file: .env
     environment: *common-env-vars
     healthcheck:
@@ -36,38 +50,44 @@ services:
       interval: 20s
       retries: 3
       start_period: 15s
-    image: "$BACKEND_IMAGE:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.11
-    restart: on-failure
     user: www-data
     volumes:
-      - ./static:/modularhistory/static
-      - ./media:/modularhistory/media
       - ./.backups:/modularhistory/.backups
       - ./.init:/modularhistory/.init
+      - ./.static:/modularhistory/.static
+      - ./media:/modularhistory/media
 
   celery_beat:
-    command: sh .config/init/celery_beat.sh
+    command: bash .config/init/celery_beat.sh
     depends_on:
       - celery
       - django
       - redis
       - postgres
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
     env_file: .env
     environment: *common-env-vars
-    image: "$BACKEND_IMAGE:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.12
-    restart: on-failure
   
   django:
-    command: sh .config/init/django.sh
+    command: bash .config/init/django.sh
     depends_on:
       - postgres
       - redis
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 2
     env_file: .env
     environment:
       <<: *common-env-vars
@@ -75,16 +95,15 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:8000/healthcheck/ || exit 1"]
       timeout: 7s
-      interval: 10s
-      retries: 3
-      start_period: 15s
-    image: "$BACKEND_IMAGE:$SHA"
+      interval: 20s
+      retries: 2
+      start_period: 10s
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.8
     ports:
       - "8000:8000"
-    restart: "unless-stopped"
     user: www-data
     volumes:
       - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
@@ -92,31 +111,37 @@ services:
       # both in the container and on the host machine. Permissions to write in
       # the container are granted in Dockerfile.django. Permissions to write on
       # the host machine have been granted manually; e.g.,
-      #     sudo chown -R www-data:www-data .backups
-      #     sudo chmod g+w -R .backups
-      - ./static:/modularhistory/static
-      - ./media:/modularhistory/media
+      #     sudo chown -R www-data:www-data .backups && sudo chmod g+w -R .backups
       - ./.backups:/modularhistory/.backups
       - ./.init:/modularhistory/.init
+      - ./.static:/modularhistory/.static
+      - ./media:/modularhistory/media
 
   flower:
-    command: sh .config/init/flower.sh
+    command: bash .config/init/flower.sh
     depends_on:
       - celery
       - celery_beat
       - django
       - redis
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
     env_file: .env
     environment: *common-env-vars
-    image: "$BACKEND_IMAGE:$SHA"
+    image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.13
     ports:
       - "5555:5555"
-    restart: "unless-stopped"
 
   mongo:
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
     env_file: .env
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
@@ -127,11 +152,13 @@ services:
     image: mongo
     ports:
       - "27017:27017"
-    restart: "always"
     volumes:
       - data:/data
   
   postgres:
+    deploy:
+      restart_policy:
+        condition: any
     env_file: .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -144,7 +171,6 @@ services:
         ipv4_address: 172.27.0.6
     ports:
       - "5432:5432"
-    restart: "always"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./.init:/docker-entrypoint-initdb.d
@@ -153,18 +179,31 @@ services:
     command: npm run start
     depends_on:
       - django
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
     env_file: .env
+    environment:
+      NEXTAUTH_URL: 'https://modularhistory.com'
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3000/ || exit 1"]
+      timeout: 7s
+      interval: 7s
+      retries: 3
+      start_period: 12s
     image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.9
     ports:
       - "3000:3000"
-    restart: "unless-stopped"
-    volumes:
-      - ./.env:/modularhistory/.env
   
   redis:
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 20s
@@ -176,13 +215,16 @@ services:
         ipv4_address: 172.27.0.7
     ports:
       - "6379:6379"
-    restart: "always"
     volumes:
       - "data:/data"
 
   redisinsight:
     depends_on:
       - redis
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
     env_file: .env
     environment:
       REDIS_HOSTS: 'local:redis:6379'
@@ -196,7 +238,6 @@ services:
       default:
         ipv4_address: 172.27.0.14
     image: redislabs/redisinsight:latest
-    restart: "unless-stopped"
     ports:
       - "8001:8001"
     volumes:

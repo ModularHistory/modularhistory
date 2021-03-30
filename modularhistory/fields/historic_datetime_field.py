@@ -22,7 +22,7 @@ class HistoricDateTimeField(DateTimeField):
     year: int
 
     def formfield(self, **kwargs) -> Field:
-        """TODO: add docstring."""
+        """Return the form field to be used for historic datetimes."""
         return super(DateTimeField, self).formfield(
             **{
                 'form_class': HistoricDateFormField,
@@ -42,6 +42,9 @@ class HistoricDateTimeField(DateTimeField):
         """
         if datetime_value is None:
             return datetime_value
+        # TODO: consider effect of timezones
+        if settings.USE_TZ and is_naive(datetime_value):
+            datetime_value = make_aware(datetime_value)
         return HistoricDateTime(
             datetime_value.year,
             datetime_value.month,
@@ -66,6 +69,9 @@ class HistoricDateTimeField(DateTimeField):
         elif isinstance(historic_datetime, HistoricDateTime):
             return historic_datetime
         elif isinstance(historic_datetime, datetime):
+            # TODO: consider effect of timezones
+            if settings.USE_TZ and is_naive(historic_datetime):
+                historic_datetime = make_aware(historic_datetime)
             return HistoricDateTime(
                 historic_datetime.year,
                 historic_datetime.month,
@@ -87,11 +93,7 @@ class HistoricDateTimeField(DateTimeField):
 
         `value` is the current value of the model’s attribute.
         """
-        if not historic_datetime:
-            return None
-        preprep_value: Union[HistoricDateTime, DateTime] = self.to_python(
-            historic_datetime
-        )
-        if preprep_value and settings.USE_TZ and is_naive(preprep_value):
-            preprep_value = make_aware(preprep_value)
-        return super().get_prep_value(preprep_value)
+        preprep_value = self.to_python(historic_datetime)
+        if preprep_value:
+            return super().get_prep_value(preprep_value)
+        return None
