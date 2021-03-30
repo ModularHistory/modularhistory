@@ -21,6 +21,7 @@ from modularhistory.utils import github as github_utils
 
 from .command import command
 
+NEWLINE = '\n'
 GITHUB_ACTIONS_BASE_URL = github_utils.GITHUB_ACTIONS_BASE_URL
 SEEDS = {'env-file': '.env', 'init-sql': os.path.join(settings.DB_INIT_DIR, 'init.sql')}
 
@@ -150,22 +151,32 @@ def seed(
 @command
 def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
-    hosts_filepaths = ['/etc/hosts']
+    hosts_filepath = '/etc/hosts'
     wsl_windows_hosts_filepath = '/mnt/c/Windows/System32/drivers/etc/hosts'
+    print(f'Reading {hosts_filepath} ...')
+    with open(hosts_filepath, 'r') as hosts_file:
+        hosts = hosts_file.read()
+    with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
+        extra_hosts = [host for host in hosts_file.readlines() if host]
     if os.path.exists(wsl_windows_hosts_filepath):
-        hosts_filepaths.append(wsl_windows_hosts_filepath)
-    for hosts_filepath in hosts_filepaths:
-        print(f'Reading {hosts_filepath} ...')
-        with open(hosts_filepath, 'r') as hosts_file:
-            hosts = hosts_file.read()
-        with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
-            extra_hosts = [host for host in hosts_file.readlines() if host]
-        hosts_to_write = [host for host in extra_hosts if host not in hosts]
-        if hosts_to_write:
-            print('Updating /etc/hosts ...')
-            for host in hosts_to_write:
-                context.run(f'sudo echo "{host}" | sudo tee -a /etc/hosts')
-        print(f'{hosts_filepath} is up to date.')
+        with open(wsl_windows_hosts_filepath, 'r') as hosts_file:
+            windows_hosts = hosts_file.read()
+            hosts_to_write = [host for host in extra_hosts if host not in windows_hosts]
+            write_required = bool(hosts_to_write)
+            while write_required:
+                input(
+                    'Your hosts file is missing some required entries. '
+                    'Please update your hosts file to include the following:\n\n'
+                    f'{NEWLINE.split(hosts_to_write)}\n\n'
+                    'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
+                    'After updating your hosts file, press any key to continue. '
+                )
+    hosts_to_write = [host for host in extra_hosts if host not in hosts]
+    if hosts_to_write:
+        print('Updating /etc/hosts ...')
+        for host in hosts_to_write:
+            context.run(f'sudo echo "{host}" | sudo tee -a /etc/hosts')
+    print(f'{hosts_filepath} is up to date.')
 
 
 @command
