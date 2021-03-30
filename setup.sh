@@ -223,6 +223,10 @@ if [[ "$os" == "$LINUX" ]]; then
     # shellcheck disable=SC2010
     echo "Checking write permissions for $writable_dir ..."
     sudo -u www-data test -w "$writable_dir" || {
+      ls -ld "$writable_dir" | grep -q "$USER www-data" || {
+        echo "Granting ownership of $writable_dir to ${USER}:www-data ..."
+        sudo chown -R "$USER":www-data "$writable_dir"
+      }
       echo "Granting the www-data group permission to write in $writable_dir ..."
       sudo chmod g+w -R "$writable_dir"
       rerun_required="true"
