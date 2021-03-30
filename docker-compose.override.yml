@@ -31,6 +31,15 @@ services:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
+  github_workflow_preprocessor:
+    command: python -m actions_includes ./.github/workflows-src/integration.yml ./.github/tmp/integration.yml
+    entrypoint: ''
+    image: ghcr.io/mithro/actions-includes/image:main
+    user: root
+    volumes:
+      - .:/github/workspace
+      - ./.git:/github/workspace/.git
+
   react:
     build:
       context: .
