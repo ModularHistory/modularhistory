@@ -6,6 +6,7 @@ import { csrfToken, providers, signIn, signOut, useSession } from "next-auth/cli
 import { useRouter } from 'next/router';
 import PropTypes from "prop-types";
 import React from "react";
+// https://www.npmjs.com/package/react-social-login-buttons
 import { DiscordLoginButton, FacebookLoginButton, GithubLoginButton, GoogleLoginButton, TwitterLoginButton } from "react-social-login-buttons";
 import Layout from "../../components/layout";
 
@@ -31,7 +32,7 @@ export default function SignIn({ providers, csrfToken }) {
       SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
       socialAuthLoginComponents.push(
         <div key={provider.name} className="provider">
-          <SocialLoginButton onClick={() => signIn(provider.id)}>
+          <SocialLoginButton style={{minWidth: "245px"}} onClick={() => signIn(provider.id)}>
             Sign in with {provider.name}
           </SocialLoginButton>
         </div>
