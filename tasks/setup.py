@@ -93,7 +93,7 @@ def seed(
 ):
     """Seed a dev database, media directory, and env file."""
     n_expected_artifacts = 2
-    db = db and input('Seed db? [Y/n] ') != NEGATIVE
+    db = db and input('Seed database? [Y/n] ') != NEGATIVE
     env_file = env_file and input('Seed .env file? [Y/n] ') != NEGATIVE
     username, pat = github_utils.accept_credentials(username, pat)
     session = github_utils.initialize_session(username=username, pat=pat)
@@ -151,7 +151,7 @@ def seed(
             dest_dir, filename = settings.BASE_DIR, dest_path
         if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
-    if input('Seed database? [Y/n] ') != NEGATIVE:
+    if db:
         # Seed the db
         db_utils.seed(context)
     print('Finished.')
