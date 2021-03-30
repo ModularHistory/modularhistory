@@ -1,19 +1,43 @@
 import { Box, Button, Paper, TextField } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import Alert from '@material-ui/lab/Alert';
 import { csrfToken, providers, signIn, signOut, useSession } from "next-auth/client";
+import { useRouter } from 'next/router';
 import PropTypes from "prop-types";
 import React from "react";
+import { DiscordLoginButton, FacebookLoginButton, GithubLoginButton, GoogleLoginButton, TwitterLoginButton } from "react-social-login-buttons";
 import Layout from "../../components/layout";
 
+
 const CREDENTIALS_KEY = "credentials";
+const SOCIAL_LOGIN_BUTTONS = {
+  facebook: FacebookLoginButton,
+  discord: DiscordLoginButton,
+  google: GoogleLoginButton,
+  twitter: TwitterLoginButton,
+  github: GithubLoginButton,
+};
 
 export default function SignIn({ providers, csrfToken }) {
   const [session, loading] = useSession();
+  const router = useRouter();
   const credentialsAuthProvider = providers[CREDENTIALS_KEY];
-  // Clone the providers object and remove the credentials provider.
-  const socialAuthProviders = JSON.parse(JSON.stringify(providers));
-  delete socialAuthProviders[CREDENTIALS_KEY];
+  const socialAuthLoginComponents = [];
+  let SocialLoginButton;
+  Object.entries(providers).forEach(
+    ([, provider]) => {
+      if (provider.id === CREDENTIALS_KEY) { return null }
+      SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
+      socialAuthLoginComponents.push(
+        <div key={provider.name} className="provider">
+          <SocialLoginButton onClick={() => signIn(provider.id)}>
+            Sign in with {provider.name}
+          </SocialLoginButton>
+        </div>
+      )
+    }
+  );
   return (
     <Layout title={"Sign in"}>
       <Container>
@@ -39,6 +63,12 @@ export default function SignIn({ providers, csrfToken }) {
           {!loading && !session && (
             <>
               <div key={credentialsAuthProvider.name} className="provider">
+                {router.query?.error && (
+                  <>
+                    <Alert severity="error">Invalid credentials.</Alert>
+                    <br />
+                  </>
+                )}
                 <form method="post" action="/api/auth/callback/credentials">
                   <input type="hidden" name="csrfToken" value={csrfToken} />
                   <Grid container spacing={3}>
@@ -75,14 +105,9 @@ export default function SignIn({ providers, csrfToken }) {
                   </Grid>
                 </form>
               </div>
+              <hr />
               <>
-                {Object.values(socialAuthProviders).map((provider) => (
-                  <div key={provider.name} className="provider">
-                    <Button variant="outlined" onClick={() => signIn(provider.id)}>
-                      Sign in with {provider.name}
-                    </Button>
-                  </div>
-                ))}
+                {socialAuthLoginComponents}
               </>
             </>
           )}

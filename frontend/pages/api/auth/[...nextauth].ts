@@ -33,30 +33,30 @@ interface User extends NextAuthUser {
 const providers = [
   // TODO: https://next-auth.js.org/providers/discord
   // TODO: https://modularhistory.atlassian.net/browse/MH-136
-  // Providers.Discord({
-  //   clientId: process.env.SOCIAL_AUTH_DISCORD_CLIENT_ID,
-  //   clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET
-  // }),
-  // // TODO: https://next-auth.js.org/providers/facebook
-  // Providers.Facebook({
-  //   clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
-  // }),
-  // // TODO: https://next-auth.js.org/providers/google
-  // Providers.Google({
-  //   clientId: process.env.SOCIAL_AUTH_GOOGLE_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_GOOGLE_SECRET,
-  // }),
-  // // TODO: https://next-auth.js.org/providers/twitter
-  // Providers.Twitter({
-  //   clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
-  // }),
-  // // TODO: https://next-auth.js.org/providers/github
-  // Providers.GitHub({
-  //   clientId: process.env.SOCIAL_AUTH_GITHUB_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
-  // }),
+  Providers.Discord({
+    clientId: process.env.SOCIAL_AUTH_DISCORD_CLIENT_ID,
+    clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET
+  }),
+  // TODO: https://next-auth.js.org/providers/facebook
+  Providers.Facebook({
+    clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
+    clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
+  }),
+  // TODO: https://next-auth.js.org/providers/google
+  Providers.Google({
+    clientId: process.env.SOCIAL_AUTH_GOOGLE_KEY,
+    clientSecret: process.env.SOCIAL_AUTH_GOOGLE_SECRET,
+  }),
+  // TODO: https://next-auth.js.org/providers/twitter
+  Providers.Twitter({
+    clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
+    clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
+  }),
+  // TODO: https://next-auth.js.org/providers/github
+  Providers.GitHub({
+    clientId: process.env.SOCIAL_AUTH_GITHUB_KEY,
+    clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
+  }),
   // TODO: https://next-auth.js.org/providers/credentials
   Providers.Credentials({
     id: "credentials",
