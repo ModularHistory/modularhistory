@@ -31,70 +31,42 @@ interface User extends NextAuthUser {
 
 // https://next-auth.js.org/configuration/providers
 const providers = [
-  // TODO: https://next-auth.js.org/providers/discord
-  // TODO: https://modularhistory.atlassian.net/browse/MH-136
+  // https://next-auth.js.org/providers/discord
   Providers.Discord({
     clientId: process.env.SOCIAL_AUTH_DISCORD_CLIENT_ID,
-    clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET
+    clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET,
+    scope: 'identity email'
   }),
-  // TODO: https://next-auth.js.org/providers/facebook
+  // https://next-auth.js.org/providers/facebook
   Providers.Facebook({
     clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
     clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
   }),
-  // TODO: https://next-auth.js.org/providers/google
+  // https://next-auth.js.org/providers/google
   Providers.Google({
     clientId: process.env.SOCIAL_AUTH_GOOGLE_KEY,
     clientSecret: process.env.SOCIAL_AUTH_GOOGLE_SECRET,
   }),
-  // TODO: https://next-auth.js.org/providers/twitter
+  // https://next-auth.js.org/providers/twitter
   Providers.Twitter({
     clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
     clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
   }),
-  // TODO: https://next-auth.js.org/providers/github
+  // https://next-auth.js.org/providers/github
   Providers.GitHub({
-    clientId: process.env.SOCIAL_AUTH_GITHUB_KEY,
+    clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
     clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
   }),
-  // TODO: https://next-auth.js.org/providers/credentials
+  // https://next-auth.js.org/providers/credentials
   Providers.Credentials({
     id: "credentials",
-    // The name to display on the sign-in form (i.e., 'Sign in with ...')
-    name: "Credentials",
-    // The fields expected to be submitted in the sign-in form
-    credentials: {
+    name: "Credentials",  // name to display on the sign-in form ('Sign in with ____')
+    credentials: {  // fields expected to be submitted in the sign-in form
       username: { label: "Username", type: "text", placeholder: "" },
       password: { label: "Password", type: "password" },
     },
     async authorize(credentials) {
-      const url = makeDjangoApiUrl("/users/auth/login/");
-      // TODO: Use state? See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js.
-      let user;
-      await axios
-        .post(url, {
-          username: credentials.username,
-          password: credentials.password,
-        })
-        .then(function (response: AxiosResponse) {
-          user = response.data["user"];
-          if (!user) {
-            console.log("Response did not contain user data.");
-            return Promise.resolve(null);
-          }
-          /*
-            Attach necessary values to the user object.
-            Subsequently, the JWT callback reads these values from the user object
-            and attaches them to the token object that it returns.
-          */
-          user.accessToken = response.data.access_token;
-          user.refreshToken = response.data.refresh_token;
-          user.cookies = response.headers["set-cookie"];
-        })
-        .catch(function (error) {
-          console.error(`Failed to authenticate due to error: ${error}`);
-          return Promise.resolve(null);
-        });
+      const user = await authenticateWithDjangoServer('credentials', credentials);
       return Promise.resolve(user);
     },
   }),
@@ -121,6 +93,7 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
     cookies = user.cookies;
   } else {
     let socialUser;
+    console.log('logging in via ', provider);
     switch (provider.id) {
       case "discord": // https://next-auth.js.org/providers/discord
         socialUser = {
@@ -138,17 +111,17 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
           avatar: user.image,
         };
         break;
-      case "github": // https://next-auth.js.org/providers/github
-        // TODO: https://modularhistory.atlassian.net/browse/MH-136
+      case "github": { // https://next-auth.js.org/providers/github
         // https://getstarted.sh/bulletproof-next/add-social-authentication/5
-        // const emailRes = await fetch('https://api.github.com/user/emails', {
-        //   headers: {
-        //     'Authorization': `token ${account.accessToken}`
-        //   }
-        // })
-        // const emails = await emailRes.json()
-        // const primaryEmail = emails.find(e => e.primary).email;
-        // user.email = primaryEmail;
+
+        const emailRes = await fetch('https://api.github.com/user/emails', {
+          headers: {
+            'Authorization': `token ${provider.accessToken}`
+          }
+        })
+        const emails = await emailRes.json()
+        const primaryEmail = emails.find(emails => emails.primary).email;
+        user.email = primaryEmail;
         socialUser = {
           id: data.id,
           login: data.login,
@@ -156,6 +129,7 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
           avatar: user.image,
         };
         break;
+      }
       case "google": // https://next-auth.js.org/providers/google
         socialUser = {
           id: data.id,
@@ -175,8 +149,7 @@ callbacks.signIn = async function signIn(user: User, provider, data) {
       default:
         return false;
     }
-    accessToken = accessToken || null; // TODO: https://modularhistory.atlassian.net/browse/MH-136: await getTokenFromYourAPIServer(account.provider, socialUser);
-    refreshToken = refreshToken || null; // TODO: https://modularhistory.atlassian.net/browse/MH-136: await getTokenFromYourAPIServer(account.provider, socialUser);
+    [accessToken, refreshToken] = await getTokenFromYourAPIServer(account.provider, socialUser);
     cookies = cookies || null;
   }
   user.accessToken = accessToken;
@@ -293,23 +266,54 @@ const authHandler: NextApiHandler = (req: NextApiRequest, res: NextApiResponse) 
 export default authHandler;
 
 // TODO: https://modularhistory.atlassian.net/browse/MH-136
-// async function getTokenFromDjangoServer(user: User) {
-//   const url = makeDjangoApiUrl("/token/obtain");
-//   const response = await axios
-//     .post(url, {
-//       username: credentials.username,
-//       password: credentials.password,
-//     })
-//     .then(function (response) {
-//       // handle success
-//       console.log(response);
-//     })
-//     .catch(function (error) {
-//       // handle error
-//       console.error(error);
-//     });
-//   return response;
-// }
+async function authenticateWithDjangoServer(providerId, credentials) {
+  if (providerId === 'credentials') {
+    const url = makeDjangoApiUrl("/users/auth/login/");
+    // TODO: Use state? See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js.
+    let user;
+    await axios
+      .post(url, {
+        username: credentials.username,
+        password: credentials.password,
+      })
+      .then(function (response: AxiosResponse) {
+        user = response.data["user"];
+        if (!user) {
+          console.log("Response did not contain user data.");
+          return Promise.resolve(null);
+        }
+        /*
+          Attach necessary values to the user object.
+          Subsequently, the JWT callback reads these values from the user object
+          and attaches them to the token object that it returns.
+        */
+        user.accessToken = response.data.access_token;
+        user.refreshToken = response.data.refresh_token;
+        user.cookies = response.headers["set-cookie"];
+      })
+      .catch(function (error) {
+        console.error(`Failed to authenticate due to error: ${error}`);
+        return Promise.resolve(null);
+      });
+    return Promise.resolve(user);
+  } else {
+    const url = makeDjangoApiUrl("/token/obtain");
+    const response = await axios
+      .post(url, {
+        username: credentials.username,
+        password: credentials.password,
+      })
+      .then(function (response) {
+        // handle success
+        console.log(response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.error(error);
+      });
+    return response;
+  }
+}
 
 // https://next-auth.js.org/tutorials/refresh-token-rotation
 async function refreshAccessToken(jwt: JWT) {

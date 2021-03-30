@@ -2,7 +2,12 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, Permission
-
+from allauth.socialaccount.admin import (
+    SocialAppAdmin,
+    SocialTokenAdmin,
+    SocialAccountAdmin,
+)
+from allauth.socialaccount.models import SocialApp, SocialAccount, SocialToken
 from admin import admin_site
 
 User = get_user_model()
@@ -264,7 +269,9 @@ class UserAdmin(BaseUserAdmin):
 
     filter_horizontal = ()
 
-    inlines = []
-
 
 admin_site.register(User, UserAdmin)
+
+admin_site.register(SocialApp, SocialAppAdmin)
+admin_site.register(SocialToken, SocialTokenAdmin)
+admin_site.register(SocialAccount, SocialAccountAdmin)

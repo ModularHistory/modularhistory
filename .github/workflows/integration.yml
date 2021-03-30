@@ -35,12 +35,15 @@ env:
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   SHA: ${{ github.sha }}
-  SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
-  SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+  SOCIAL_AUTH_DISCORD_CLIENT_ID: ${SOCIAL_AUTH_DISCORD_CLIENT_ID}
+  SOCIAL_AUTH_DISCORD_KEY: ${SOCIAL_AUTH_DISCORD_KEY}
+  SOCIAL_AUTH_DISCORD_SECRET: ${SOCIAL_AUTH_DISCORD_SECRET}
   SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
   SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
-  SOCIAL_AUTH_GITHUB_KEY: ${{ secrets.SOCIAL_AUTH_GITHUB_KEY }}
+  SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
   SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+  SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+  SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
   X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
 
 jobs:
@@ -73,7 +76,7 @@ jobs:
     - name: Run setup script
       run: bash setup.sh
       shell: bash
-    
+
   test-app:
     name: Test application
     # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
@@ -214,7 +217,7 @@ jobs:
       with:
         image: ghcr.io/modularhistory/django:${{ github.sha }}
         args: --file=Dockerfile.django
-  
+
   analyze:
     name: CodeQL Analysis
     runs-on: ubuntu-latest

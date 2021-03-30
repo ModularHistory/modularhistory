@@ -142,8 +142,9 @@ def seed(
             dest_dir, filename = settings.BASE_DIR, dest_path
         if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
-    # Seed the db
-    db_utils.seed(context)
+    if input('Seed database? [Y/n] ') != NEGATIVE:
+        # Seed the db
+        db_utils.seed(context)
     print('Finished.')
 
 

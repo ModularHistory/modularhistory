@@ -57,14 +57,13 @@ SOCIALACCOUNT_PROVIDERS = {
     'discord': {
         'APP': {
             'client_id': config('SOCIAL_AUTH_DISCORD_CLIENT_ID', default=''),
-            'key': config('SOCIAL_AUTH_DISCORD_PUBLIC_KEY', default=''),
+            'key': config('SOCIAL_AUTH_DISCORD_KEY', default=''),
             'secret': config('SOCIAL_AUTH_DISCORD_SECRET', default=''),
         }
     },
     'github': {
         'APP': {
-            'client_id': '123',
-            'key': config('SOCIAL_AUTH_GITHUB_KEY', default=''),
+            'client_id': config('SOCIAL_AUTH_GITHUB_CLIENT_ID', default=''),
             'secret': config('SOCIAL_AUTH_GITHUB_SECRET', default=''),
         }
     },
