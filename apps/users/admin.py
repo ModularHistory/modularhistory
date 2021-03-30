@@ -117,7 +117,7 @@ class UserCreationForm(forms.ModelForm):
         password2 = self.cleaned_data.get('password2')
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError('Passwords do not match.')
-        return password2
+        return self.cleaned_data
 
     def save(self, commit=True):
         """Process the user creation from; save the user to the database."""
