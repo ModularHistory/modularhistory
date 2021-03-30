@@ -153,15 +153,14 @@ def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
     hosts_filepath = '/etc/hosts'
     wsl_windows_hosts_filepath = '/mnt/c/Windows/System32/drivers/etc/hosts'
-    print(f'Reading {hosts_filepath} ...')
-    with open(hosts_filepath, 'r') as hosts_file:
-        hosts = hosts_file.read()
     with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
-        extra_hosts = [host for host in hosts_file.readlines() if host]
+        required_hosts = [host for host in hosts_file.readlines() if host]
     if os.path.exists(wsl_windows_hosts_filepath):
         with open(wsl_windows_hosts_filepath, 'r') as hosts_file:
             windows_hosts = hosts_file.read()
-            hosts_to_write = [host for host in extra_hosts if host not in windows_hosts]
+            hosts_to_write = [
+                host for host in required_hosts if host not in windows_hosts
+            ]
             write_required = bool(hosts_to_write)
             while write_required:
                 input(
@@ -171,7 +170,10 @@ def update_hosts(context):
                     'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
                     'After updating your hosts file, press any key to continue. '
                 )
-    hosts_to_write = [host for host in extra_hosts if host not in hosts]
+    print(f'Reading {hosts_filepath} ...')
+    with open(hosts_filepath, 'r') as hosts_file:
+        hosts = hosts_file.read()
+    hosts_to_write = [host for host in required_hosts if host not in hosts]
     if hosts_to_write:
         print('Updating /etc/hosts ...')
         for host in hosts_to_write:
