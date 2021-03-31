@@ -5,7 +5,6 @@ import Alert from '@material-ui/lab/Alert';
 import axios from "axios";
 import { csrfToken, providers, signIn, signOut, useSession } from "next-auth/client";
 import { Providers } from 'next-auth/providers';
-import Head from "next/head";
 import { useRouter } from 'next/router';
 import React, { FunctionComponent, useState } from "react";
 // https://www.npmjs.com/package/react-social-login-buttons
@@ -27,26 +26,6 @@ const SOCIAL_LOGIN_BUTTONS = {
   github: GithubLoginButton,
 };
 
-const Redirect: React.FunctionComponent = () => {
-  const router = useRouter();
-  const [_session, loading] = useSession();
-
-  return (
-    <>
-      {!loading && (
-        <Head>
-          <meta httpEquiv="refresh" content={`3; URL=${baseUrl}${path}`} />
-        </Head>
-      )}
-      <Layout title={"Redirect"} canonicalUrl="/redirect">
-        <Container>
-          <p className="lead text-center">Redirecting...</p>
-        </Container>
-      </Layout>
-    </>
-  );
-};
-
 interface SignInFormProps {
   csrfToken: string
 }
@@ -57,7 +36,6 @@ export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: Si
   const [password, setPassword] = useState("");
   let error = router.query?.error;
   const path = router.query.path ?? "/";
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const handleSubmit = async (event) => {
     event.preventDefault();
     const response = await signIn('credentials',
@@ -74,10 +52,10 @@ export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: Si
       // Response contains `error`, `status`, and `url` (intended redirect url).
       error = response.error;
     } else {
-      // Response contains `ok` and `url` (redirect url).
+      // Response contains `ok` and `url` (intended redirect url).
       console.log(response);
       // const redirectUrl = router.query?.callbackUrl ? `${router.query.callbackUrl}` : response.url;
-      window.location.replace(`${baseUrl}${path}`);
+      window.location.replace(`${window.location.origin}${path}`);
     }
   };
   return (
