@@ -17,8 +17,7 @@ repos:
       - id: expand-github-workflows
         # https://github.com/mithro/actions-includes
         name: Expand GitHub workflows
-        entry: bash -c "echo 'Expand GitHub workflows from workflows-src.'"
-        # entry: bash -c 'python -m actions_includes ./.github/workflows-src/workflow-a.yml ./.github/workflows/workflow-a.yml'
+        entry: bash -c "docker-compose up github_workflow_preprocessor"
         language: system
-        types: [python]
+        always_run: true
         pass_filenames: false
