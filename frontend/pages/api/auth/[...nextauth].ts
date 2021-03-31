@@ -78,46 +78,43 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
   let accessToken: string;
   let refreshToken: string;
   let cookies: Array<string>;
-  if (provider.id === "credentials") {
-    /*
-      Coming from the credentials provider, `data` is of this form:
-      {
-        csrfToken: 'example',
-        username: 'example',
-        password: 'example'
+  switch (provider.id) {
+    case "credentials":
+      accessToken = user.accessToken;
+      refreshToken = user.refreshToken;
+      cookies = user.cookies;
+      break;
+    case "discord": // https://next-auth.js.org/providers/discord
+      console.log('Signing in with Discord...');
+      break;
+    case "facebook": // https://next-auth.js.org/providers/facebook
+      break;
+    case "github": { // https://next-auth.js.org/providers/github
+      // Retrieve email address, if necessary.
+      if (!user.email) {
+        const emailRes = await fetch('https://api.github.com/user/emails', {
+          headers: {'Authorization': `token ${provider.accessToken}`}
+        })
+        const emails = await emailRes.json();
+        const primaryEmail = emails.find(emails => emails.primary).email;
+        user.email = primaryEmail;
       }
-    */
-    accessToken = user.accessToken;
-    refreshToken = user.refreshToken;
-    cookies = user.cookies;
-  } else {
-    switch (provider.id) {
-      case "discord": // https://next-auth.js.org/providers/discord
-        break;
-      case "facebook": // https://next-auth.js.org/providers/facebook
-        break;
-      case "github": { // https://next-auth.js.org/providers/github
-        // Retrieve email address, if necessary.
-        if (!user.email) {
-          const emailRes = await fetch('https://api.github.com/user/emails', {
-            headers: {'Authorization': `token ${provider.accessToken}`}
-          })
-          const emails = await emailRes.json();
-          const primaryEmail = emails.find(emails => emails.primary).email;
-          user.email = primaryEmail;
-        }
-        break;
-      }
-      case "google": // https://next-auth.js.org/providers/google
-        break;
-      case "twitter": // https://next-auth.js.org/providers/twitter
-        break;
-      default:
-        return false;
+      break;
     }
-    [accessToken, refreshToken] = await authenticateWithSocialMediaAccount(user, provider);
-    cookies = cookies || null;
+    case "google": // https://next-auth.js.org/providers/google
+      break;
+    case "twitter": // https://next-auth.js.org/providers/twitter
+      break;
+    default:
+      return false;
   }
+  if (provider.id != 'credentials') {
+    console.log('Calling authenticateWithSocialMediaAccount');
+    const response = await authenticateWithSocialMediaAccount(user, provider);
+    accessToken = response.accessToken;
+    refreshToken = response.refreshToken;
+  }
+  cookies = cookies || null;
   user.accessToken = accessToken;
   user.refreshToken = refreshToken;
   user.cookies = cookies;
@@ -233,8 +230,8 @@ export default authHandler;
 
 async function authenticateWithCredentials(credentials) {
   const url = makeDjangoApiUrl("/users/auth/login/");
-  // TODO: Use state? See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js.
   let user;
+  console.log(credentials.username, credentials.password)
   await axios
     .post(url, {
       username: credentials.username,
@@ -256,9 +253,10 @@ async function authenticateWithCredentials(credentials) {
       user.cookies = response.headers["set-cookie"];
     })
     .catch(function (error) {
-      console.error(`Failed to authenticate due to error: ${error}`);
+      console.error(`${error}`);
       return Promise.resolve(null);
     });
+  console.log('Returning ', user);
   return Promise.resolve(user);
 }
 
@@ -271,6 +269,7 @@ interface SocialMediaAccountCredentials {
 
 async function authenticateWithSocialMediaAccount(user, provider) {
   const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
+  console.log('Going to make request to ', url);
   const credentials: SocialMediaAccountCredentials = {};
   switch (provider.provider) {
     case "discord": // https://next-auth.js.org/providers/discord
@@ -289,12 +288,13 @@ async function authenticateWithSocialMediaAccount(user, provider) {
     .post(url, credentials)
     .then(function (response) {
       // handle success
-      console.log(response);
+      console.log('Response from Django server: ', response);
     })
     .catch(function (error) {
       // handle error
       console.error(error);
     });
+  console.log('Got response from Django: ', response)
   return response;
 }
 

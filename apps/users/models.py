@@ -39,7 +39,7 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         """Return a string representation of the user."""
-        return self.name
+        return self.name or self.username
 
     @property
     def name(self) -> str:

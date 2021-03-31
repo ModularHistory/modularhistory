@@ -1,11 +1,11 @@
 import { Box, Button } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import { useSession } from "next-auth/client";
-import React, { useEffect } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { handleLogout } from "../../auth";
 import Layout from "../../components/layout";
 
-export default function SignOut() {
+const SignOut: FunctionComponent = () => {
   const [session] = useSession();
 
   const logout = (e) => {
@@ -33,7 +33,9 @@ export default function SignOut() {
   );
 }
 
-export function PagelessSignOut() {
+export default SignOut;
+
+export const PagelessSignOut: FunctionComponent = () => {
   const [session, loading] = useSession();
   useEffect(() => {
     if (!loading) {

@@ -4,11 +4,17 @@ import { WithAdditionalParams } from 'next-auth/_utils';
 import { Router } from 'next/router';
 import axios from './axios';
 
-export const djangoLogoutUrl = '/api/users/auth/logout/';
+export const DJANGO_LOGOUT_URL = '/api/users/auth/logout/';
+export const NEXT_AUTH_CSRF_COOKIE_NAME = 'next-auth.csrf-token';
 export const AUTH_COOKIES = [
   'next-auth.session-token',
   'next-auth.callback-url'
 ]
+
+export interface Credentials {
+  username: string
+  password: string
+}
 
 export const handleLogin = (router: Router): void => {
   // If not already on the sign-in page, initiate the sign-in process.
@@ -23,7 +29,7 @@ export const handleLogout = (session: WithAdditionalParams<Session>): void => {
   if (session) {
     axios
       .post(
-        djangoLogoutUrl,
+        DJANGO_LOGOUT_URL,
         { refresh: session.refreshToken },
         {
           headers: {
