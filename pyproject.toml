@@ -3,8 +3,20 @@ requires = ["poetry>=1.0.5"]
 build-backend = "poetry.masonry.api"
 
 [tool.black]
+# https://black.readthedocs.io/en/stable/pyproject_toml.html
 line-length = 88
 skip-string-normalization = true
+include = '\.py$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.mypy_cache
+    | \.venv
+  )/
+)
+'''
 
 [tool.coverage.run]
 # https://coverage.readthedocs.io/en/latest/config.html#run
@@ -176,6 +188,7 @@ safety = "^1.9"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
+pre-commit = "^2.11.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
