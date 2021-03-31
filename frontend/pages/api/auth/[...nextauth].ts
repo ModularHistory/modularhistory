@@ -75,51 +75,38 @@ const providers = [
 const callbacks: CallbacksOptions = {};
 
 callbacks.signIn = async function signIn(user: User, provider, _data) {
-  let accessToken: string;
-  let refreshToken: string;
-  let cookies: Array<string>;
-  switch (provider.id) {
-    case "credentials":
-      accessToken = user.accessToken;
-      refreshToken = user.refreshToken;
-      cookies = user.cookies;
-      break;
-    case "discord": // https://next-auth.js.org/providers/discord
-      console.log('Signing in with Discord...');
-      break;
-    case "facebook": // https://next-auth.js.org/providers/facebook
-      break;
-    case "github": { // https://next-auth.js.org/providers/github
-      // Retrieve email address, if necessary.
-      if (!user.email) {
-        const emailRes = await fetch('https://api.github.com/user/emails', {
-          headers: {'Authorization': `token ${provider.accessToken}`}
-        })
-        const emails = await emailRes.json();
-        const primaryEmail = emails.find(emails => emails.primary).email;
-        user.email = primaryEmail;
+  // let accessToken: string;
+  // let refreshToken: string;
+  // let cookies: Array<string>;
+  if (provider.type != 'credentials') {
+    switch (provider.provider) {
+      case "discord": // https://next-auth.js.org/providers/discord
+        break;
+      case "facebook": // https://next-auth.js.org/providers/facebook
+        break;
+      case "github": { // https://next-auth.js.org/providers/github
+        // Retrieve email address, if necessary.
+        if (!user.email) {
+          console.log('Retrieving user email address via GitHub API...');
+          const emailRes = await fetch('https://api.github.com/user/emails', {
+            headers: {'Authorization': `token ${provider.accessToken}`}
+          })
+          const emails = await emailRes.json();
+          const primaryEmail = emails.find(emails => emails.primary).email;
+          user.email = primaryEmail;
+        }
+        break;
       }
-      break;
+      case "google": // https://next-auth.js.org/providers/google
+        break;
+      case "twitter": // https://next-auth.js.org/providers/twitter
+        break;
+      default:
+        console.error('Unrecognized auth provider:', provider);
+        return false;
     }
-    case "google": // https://next-auth.js.org/providers/google
-      break;
-    case "twitter": // https://next-auth.js.org/providers/twitter
-      break;
-    default:
-      return false;
+    user = await authenticateWithSocialMediaAccount(user, provider);
   }
-  if (provider.id != 'credentials') {
-    console.log('Calling authenticateWithSocialMediaAccount');
-    const response = await authenticateWithSocialMediaAccount(user, provider);
-    console.log('Got response: ', response)
-    // accessToken = response.accessToken;
-    // refreshToken = response?.refreshToken;
-    return false;
-  }
-  cookies = cookies || null;
-  user.accessToken = accessToken;
-  user.refreshToken = refreshToken;
-  user.cookies = cookies;
   return true;
 };
 
@@ -127,11 +114,10 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
 callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNewUser?: boolean) {
   // The arguments user, account, profile and isNewUser are only passed the first time
   // this callback is called on a new session, after the user signs in.
-  if (user && account) {
-    // initial sign in
-    token.accessToken = user.accessToken || account.accessToken; // TODO: https://modularhistory.atlassian.net/browse/MH-136
+  if (user && account) { // initial sign in
+    token.accessToken = user.accessToken;
     token.cookies = user.cookies;
-    token.refreshToken = user.refreshToken || account.refresh_token; // TODO: https://modularhistory.atlassian.net/browse/MH-136
+    token.refreshToken = user.refreshToken;
   }
   if (token.cookies) {
     let sessionTokenCookie;
@@ -233,7 +219,6 @@ export default authHandler;
 async function authenticateWithCredentials(credentials) {
   const url = makeDjangoApiUrl("/users/auth/login/");
   let user;
-  console.log(credentials.username, credentials.password)
   await axios
     .post(url, {
       username: credentials.username,
@@ -258,7 +243,6 @@ async function authenticateWithCredentials(credentials) {
       console.error(`${error}`);
       return Promise.resolve(null);
     });
-  console.log('Returning ', user);
   return Promise.resolve(user);
 }
 
@@ -269,9 +253,8 @@ interface SocialMediaAccountCredentials {
   refresh_token?: string
 }
 
-async function authenticateWithSocialMediaAccount(user, provider) {
+async function authenticateWithSocialMediaAccount(user: User, provider) {
   const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
-  console.log('Going to make request to ', url);
   const credentials: SocialMediaAccountCredentials = {};
   switch (provider.provider) {
     case "discord": // https://next-auth.js.org/providers/discord
@@ -283,21 +266,26 @@ async function authenticateWithSocialMediaAccount(user, provider) {
       credentials.refresh_token = provider.refreshToken;
       break;
     default:
-      console.error('Unsupported provider: ', provider.provider);
-      return false;
+      console.error('Unsupported provider:', provider.provider);
+      return user;
   }
-  const response = await axios
+  await axios
     .post(url, credentials)
     .then(function (response) {
-      // handle success
-      console.log('Response from Django server: ', response);
+      /*
+        Attach necessary values to the user object.
+        Subsequently, the JWT callback reads these values from the user object
+        and attaches them to the token object that it returns.
+      */
+      user.accessToken = response.data.access_token;
+      user.refreshToken = response.data.refresh_token;
+      user.cookies = response.headers["set-cookie"];
     })
     .catch(function (error) {
       // handle error
       console.error(error);
     });
-  console.log('Got response from Django: ', response)
-  return response;
+  return Promise.resolve(user);
 }
 
 // https://next-auth.js.org/tutorials/refresh-token-rotation

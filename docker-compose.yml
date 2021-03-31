@@ -14,7 +14,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-        max_attempts: 3
+        # max_attempts: 9
     healthcheck:
       # NOTE: This check will only work in dev environment.
       test: ["CMD", "curl", "--fail", "http://localhost"]
@@ -41,7 +41,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-        max_attempts: 3
+        # max_attempts: 3
     env_file: .env
     environment: *common-env-vars
     healthcheck:
@@ -71,7 +71,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-        max_attempts: 3
+        max_attempts: 5
     env_file: .env
     environment: *common-env-vars
     image: "ghcr.io/modularhistory/django:$SHA"
@@ -87,7 +87,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-        max_attempts: 2
+        # max_attempts: 5
     env_file: .env
     environment:
       <<: *common-env-vars
@@ -131,7 +131,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-        max_attempts: 3
+        max_attempts: 5
     env_file: .env
     environment: *common-env-vars
     image: "ghcr.io/modularhistory/django:$SHA"
@@ -186,7 +186,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-        max_attempts: 3
+        # max_attempts: 3
     env_file: .env
     environment:
       NEXTAUTH_URL: "https://modularhistory.com"

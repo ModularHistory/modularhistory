@@ -5,6 +5,8 @@ import { Router } from 'next/router';
 import axios from './axios';
 
 export const DJANGO_LOGOUT_URL = '/api/users/auth/logout/';
+export const LOGIN_PAGE_PATH = '/auth/signin';
+export const AUTH_REDIRECT_PATH = '/auth/redirect';
 export const NEXT_AUTH_CSRF_COOKIE_NAME = 'next-auth.csrf-token';
 export const AUTH_COOKIES = [
   'next-auth.session-token',

@@ -18,7 +18,7 @@ export default function Layout({ title, canonicalUrl, children }) {
       if (session.cookies) {
         session.cookies.forEach((cookie) => {
           document.cookie = cookie;
-          console.log(`Updated ${cookie.split(";")[0]} cookie.`);
+          console.log(`Updated ${cookie.split(";")[0].split("=")[0]} cookie.`);
         });
       }
     } else if (!loading) {

@@ -32,12 +32,16 @@ DEBUG = IS_DEV
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Use the BASE_URL setting to build absolute URLs when necessary.
+BASE_URL = config('BASE_URL', default='http://localhost')
+
 # --- URL MODIFICATION SETTINGS ---
-# Do not prepend `www.` to `modularhistory.com`;
-# the Nginx reverse proxy chops off the `www.` from all incoming requests.
 # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
+# Do not prepend www to modularhistory.com.
+# The Nginx reverse proxy chops off the "www." from incoming requests.
 PREPEND_WWW = False
-APPEND_SLASH = True
+# When running in Docker, delegate slash appendage to the Nginx reverse proxy server.
+APPEND_SLASH = not DOCKERIZED
 
 # --- SECURITY SETTINGS ---
 # https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header

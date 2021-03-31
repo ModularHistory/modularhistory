@@ -7,7 +7,8 @@ from modularhistory.environment import IS_PROD
 AUTH_USER_MODEL = 'users.User'
 
 # https://django-allauth.readthedocs.io/en/latest/
-# TODO
+# https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration
+ACCOUNT_EMAIL_REQUIRED = True
 
 # https://dj-rest-auth.readthedocs.io/en/latest/configuration.html#configuration
 REST_AUTH_SERIALIZERS = {

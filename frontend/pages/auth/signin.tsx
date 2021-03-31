@@ -5,12 +5,15 @@ import Alert from '@material-ui/lab/Alert';
 import axios from "axios";
 import { csrfToken, providers, signIn, signOut, useSession } from "next-auth/client";
 import { Providers } from 'next-auth/providers';
+import Head from "next/head";
 import { useRouter } from 'next/router';
 import React, { FunctionComponent, useState } from "react";
 // https://www.npmjs.com/package/react-social-login-buttons
 import { DiscordLoginButton, FacebookLoginButton, GithubLoginButton, GoogleLoginButton, TwitterLoginButton } from "react-social-login-buttons";
 import { NEXT_AUTH_CSRF_COOKIE_NAME } from '../../auth';
 import Layout from "../../components/layout";
+
+
 
 axios.defaults.xsrfCookieName = NEXT_AUTH_CSRF_COOKIE_NAME;
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -24,6 +27,26 @@ const SOCIAL_LOGIN_BUTTONS = {
   github: GithubLoginButton,
 };
 
+const Redirect: React.FunctionComponent = () => {
+  const router = useRouter();
+  const [_session, loading] = useSession();
+
+  return (
+    <>
+      {!loading && (
+        <Head>
+          <meta httpEquiv="refresh" content={`3; URL=${baseUrl}${path}`} />
+        </Head>
+      )}
+      <Layout title={"Redirect"} canonicalUrl="/redirect">
+        <Container>
+          <p className="lead text-center">Redirecting...</p>
+        </Container>
+      </Layout>
+    </>
+  );
+};
+
 interface SignInFormProps {
   csrfToken: string
 }
@@ -32,26 +55,39 @@ export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: Si
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const handleSubmit = (event) => {
+  let error = router.query?.error;
+  const path = router.query.path ?? "/";
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    signIn('credentials',
+    const response = await signIn('credentials',
       {
         username,
         password,
+        // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
+        redirect: false,
         // Redirect after a successful login.
-        callbackUrl: `${window.location.origin}`
+        // callbackUrl: `${window.location.origin}`
       }
-    )
+    );
+    if (response['error']) {
+      // Response contains `error`, `status`, and `url` (intended redirect url).
+      error = response.error;
+    } else {
+      // Response contains `ok` and `url` (redirect url).
+      console.log(response);
+      // const redirectUrl = router.query?.callbackUrl ? `${router.query.callbackUrl}` : response.url;
+      window.location.replace(`${baseUrl}${path}`);
+    }
   };
   return (
-    <>
-    {router.query?.error && (
-      <>
-        <Alert severity="error">Invalid credentials.</Alert>
-        <br />
-      </>
-    )}
     <form method="post" onSubmit={handleSubmit}>
+      {error && (
+        <>
+          <Alert severity="error">Invalid credentials.</Alert>
+          <br />
+        </>
+      )}
       <input type="hidden" name="csrfToken" value={csrfToken} />
       <Grid container spacing={3}>
         <Grid item xs={12}>
@@ -88,7 +124,6 @@ export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: Si
         </Grid>
       </Grid>
     </form>
-    </>
   )
 }
 
@@ -129,7 +164,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
           {!loading && session?.user && (
             <Paper className="p-4 text-center">
               <p className="lead">
-                You are logged in as <strong>{session.user.email}</strong>.
+                You are logged in as <strong>{session.user.username || session.user.email}</strong>.
               </p>
               <br />
               <Button variant="outlined" color="primary" size="large" onClick={() => signOut()}>

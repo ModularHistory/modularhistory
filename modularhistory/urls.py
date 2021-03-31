@@ -88,7 +88,6 @@ urlpatterns = [
     path('users/', include('apps.users.urls', namespace='users')),
     # Third-party apps
     path('api-auth/', include('rest_framework.urls')),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),  # https://github.com/iMerica/dj-rest-auth  # noqa: E501
     path('ht/', include('health_check.urls')),
     path('martor/', include('martor.urls')),
     path('select2/', include('django_select2.urls')),

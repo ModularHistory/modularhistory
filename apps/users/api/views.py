@@ -6,11 +6,15 @@ from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
-from dj_rest_auth.registration.views import SocialConnectView, SocialLoginView
+from dj_rest_auth.registration.views import (
+    SocialConnectView,
+    SocialLoginView as BaseSocialLoginView,
+)
 from dj_rest_auth.social_serializers import (
     TwitterConnectSerializer,
     TwitterLoginSerializer,
 )
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -20,6 +24,14 @@ from rest_framework.permissions import IsAuthenticated
 from apps.users.api import serializers
 
 User = get_user_model()
+
+
+class SocialLoginView(BaseSocialLoginView):
+    """Base class for social login views."""
+
+    def process_login(self):
+        """Override process_login to create accounts in the db when necessary."""
+        super().process_login()
 
 
 class DiscordMixin:
@@ -64,7 +76,9 @@ class GithubMixin:
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
 
     adapter_class = GitHubOAuth2Adapter
-    callback_url = None  # CALLBACK_URL_YOU_SET_ON_GITHUB
+    # Callback URL must match the setting in GitHub:
+    # https://github.com/organizations/ModularHistory/settings/applications/1489184
+    callback_url = f'{settings.BASE_URL}/api/auth/callback/github/'
     client_class = OAuth2Client
 
 
@@ -84,7 +98,9 @@ class GoogleMixin:
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
 
     adapter_class = GoogleOAuth2Adapter
-    callback_url = None  # CALLBACK_URL_YOU_SET_ON_GOOGLE
+    # Callback URL must match the setting in Google:
+    # TODO: paste Google settings URL here.
+    callback_url = f'{settings.BASE_URL}/api/auth/callback/google/'
     client_class = OAuth2Client
 
 
