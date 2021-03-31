@@ -111,8 +111,9 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
   if (provider.id != 'credentials') {
     console.log('Calling authenticateWithSocialMediaAccount');
     const response = await authenticateWithSocialMediaAccount(user, provider);
-    accessToken = response.accessToken;
-    refreshToken = response.refreshToken;
+    // accessToken = response.accessToken;
+    // refreshToken = response?.refreshToken;
+    return response;
   }
   cookies = cookies || null;
   user.accessToken = accessToken;
