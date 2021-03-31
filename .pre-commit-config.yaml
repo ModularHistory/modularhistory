@@ -19,5 +19,5 @@ repos:
         name: Expand GitHub workflows
         entry: bash -c "docker-compose up github_workflow_preprocessor"
         language: system
-        types: [python]
+        always_run: true
         pass_filenames: false
