@@ -4,8 +4,8 @@ import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import React, { useEffect } from "react";
 import { AUTH_COOKIES } from "../auth";
-import Footer from "./footer";
-import Navbar from "./navbar";
+import Footer from "./Footer";
+import Navbar from "./Navbar";
 
 export default function Layout({ title, canonicalUrl, children }) {
   const router = useRouter();

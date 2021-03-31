@@ -12,7 +12,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { forwardRef, useState } from "react";
-import Layout from "../../components/layout";
+import Layout from "../../components/Layout";
 
 const PaginationLink = forwardRef(({ href, ...childProps }, ref) => (
   <Link href={href}>

@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import { csrfToken, providers, signIn, signOut, useSession } from "next-auth/client";
 import PropTypes from "prop-types";
 import React from "react";
-import Layout from "../../components/layout";
+import Layout from "../../components/Layout";
 
 const CREDENTIALS_KEY = "credentials";
 

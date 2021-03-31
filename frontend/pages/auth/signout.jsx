@@ -3,7 +3,7 @@ import Container from "@material-ui/core/Container";
 import { useSession } from "next-auth/client";
 import React, { useEffect } from "react";
 import { handleLogout } from "../../auth";
-import Layout from "../../components/layout";
+import Layout from "../../components/Layout";
 
 export default function SignOut() {
   const [session] = useSession();
