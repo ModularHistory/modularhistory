@@ -1,3 +1,5 @@
+import ImageCard from "../modulecards/ImageCard";
+
 export default function QuoteDetail({quote}) {
   const superUserEditButton = (
     // TODO: implement condition render with NextAuth's useSession()
@@ -10,6 +12,9 @@ export default function QuoteDetail({quote}) {
     // {% endif %}
   );
 
+  let titleHtml = quote['attributee_html'];
+  if (quote['date_html']) titleHtml += `, ${quote['date_html']}`;
+
   const firstImage = quote['serialized_images']?.[0];
 
   return (
@@ -20,16 +25,13 @@ export default function QuoteDetail({quote}) {
       </a>
 
       <h2 className="text-center card-title"
-          dangerouslySetInnerHTML={{
-            __html: quote['attributee_html'] + (quote['date_html'] ? quote['date_html'] : "")
-          }}
+          dangerouslySetInnerHTML={{__html: titleHtml}}
       />
 
       <div className="card-text">
         {firstImage && (
           <div className="img-container" style={{maxWidth: "44%"}}>
-            {/*{{quote.serialized_images | first | get_html_for_view:"card"}}*/}
-            {/* <ImageCard image={firstImage}/> */}
+            <ImageCard image={firstImage}/>
           </div>
         )}
 

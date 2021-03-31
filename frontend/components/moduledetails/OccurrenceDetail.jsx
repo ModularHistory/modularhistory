@@ -1,23 +1,27 @@
+import ImageCard from "../modulecards/ImageCard";
+
 export default function OccurrenceDetail({occurrence}) {
   return (
     <div className="detail">
-      <a href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}"
-         target="_blank" className="edit-object-button" rel="noopener noreferrer"
-         style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>
-        <i className="fa fa-edit"/>
-      </a>
+      {/*<a href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}"*/}
+      {/*   target="_blank" className="edit-object-button" rel="noopener noreferrer"*/}
+      {/*   style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>*/}
+      {/*  <i className="fa fa-edit"/>*/}
+      {/*</a>*/}
+
       {occurrence['verified'] || (
         <span style={{display: "inline-block", position: "absolute", top: "1px", right: "1px", fontWeight: "bold"}}>
             UNVERIFIED
         </span>
       )}
+
       <p className="text-center card-title lead"
          dangerouslySetInnerHTML={{__html: occurrence['date_html']}}/>
       <div className="card-text">
         {occurrence['serialized_images'].map((image) => (
           occurrence['description'].includes(image['src_url']) || (
             <div className="img-container" style={{maxWidth: "44%"}}>
-              {'{{image | get_html_for_view:"card"}}'}
+              <ImageCard image={image}/>
             </div>
           )
         ))}
@@ -31,6 +35,7 @@ export default function OccurrenceDetail({occurrence}) {
         {occurrence['tags_html'] && (
           <ul className="tags" dangerouslySetInnerHTML={{__html: occurrence['tags_html']}}/>
         )}
+
         <footer className="footer sources-footer">
           <ol className="citations">
             {occurrence['serialized_citations'].map((citation) => {
