@@ -1,9 +1,11 @@
-import Container from "@material-ui/core/Container";
+import { Box, Container, Typography } from '@material-ui/core';
 import { useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import Layout from "../../components/layout";
+
+
 
 const Redirect: React.FunctionComponent = () => {
   const router = useRouter();
@@ -20,7 +22,18 @@ const Redirect: React.FunctionComponent = () => {
       )}
       <Layout title={"Redirect"} canonicalUrl="/redirect">
         <Container>
-          <p className="lead text-center">Redirecting...</p>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            m={5}
+            p={5}
+            flexDirection="column"
+          >
+            {!loading && (
+              <Typography className="text-center">Redirecting...</Typography>
+            )}
+          </Box>
         </Container>
       </Layout>
     </>

@@ -1,4 +1,4 @@
-import { Box, Button, Paper, TextField } from "@material-ui/core";
+import { Box, Button, Divider, Paper, TextField } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Alert from '@material-ui/lab/Alert';
@@ -6,7 +6,7 @@ import axios from "axios";
 import { csrfToken, providers, signIn, signOut, useSession } from "next-auth/client";
 import { Providers } from 'next-auth/providers';
 import { useRouter } from 'next/router';
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 // https://www.npmjs.com/package/react-social-login-buttons
 import { DiscordLoginButton, FacebookLoginButton, GithubLoginButton, GoogleLoginButton, TwitterLoginButton } from "react-social-login-buttons";
 import { NEXT_AUTH_CSRF_COOKIE_NAME } from '../../auth';
@@ -31,40 +31,51 @@ interface SignInFormProps {
 
 export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: SignInFormProps) => {
   const router = useRouter();
+  const [error, setError] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  let error = router.query?.error;
   const callbackUrl = `${router.query?.callbackUrl}`;
   const redirectUrl = callbackUrl || process.env.BASE_URL;
   const handleSubmit = async (event) => {
     event.preventDefault();
-    let response;
-    try {
-      response = await signIn('credentials',
-        {
-          username,
-          password,
-          callbackUrl: redirectUrl,
-          // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
-          redirect: false
-        }
-      );
-    } catch (error) {
-      response = {error: `${error}`}
-    }
-    if (response['error']) {
-      // Response contains `error`, `status`, and `url` (intended redirect url).
-      error = response.error;
+    console.log(username, password);
+    if (!username || !password) {
+      setError("You must enter your username and password.")
     } else {
-      // Response contains `ok` and `url` (intended redirect url).
-      window.location.replace(`${response.url ?? redirectUrl ?? window.location.origin}`);
+      console.log('Posting credentials...');
+      let response;
+      try {
+        response = await signIn('credentials',
+          {
+            username,
+            password,
+            callbackUrl: redirectUrl,
+            // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
+            redirect: false
+          }
+        );
+      } catch (error) {
+        response = {error: `${error}`}
+      }
+      if (response['error']) {
+        // Response contains `error`, `status`, and `url` (intended redirect url).
+        setError("Invalid credentials.");
+      } else {
+        // Response contains `ok` and `url` (intended redirect url).
+        window.location.replace(`${response.url ?? redirectUrl ?? window.location.origin}`);
+      }
     }
   };
+  useEffect(() => {
+    if (router.query?.error) {
+      setError(`${router.query?.error}`);
+    }
+  }, []);
   return (
     <form method="post" onSubmit={handleSubmit}>
       {error && (
         <>
-          <Alert severity="error">Invalid credentials.</Alert>
+          <Alert severity="error">{error}</Alert>
           <br />
         </>
       )}
@@ -99,7 +110,7 @@ export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: Si
         </Grid>
         <Grid item xs={12}>
           <Button color="primary" fullWidth type="submit" variant="contained">
-            Log in
+            Sign in
           </Button>
         </Grid>
       </Grid>
@@ -133,11 +144,12 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   return (
     <Layout title={"Sign in"}>
       <Container>
+        <h1 className="page-title text-center" style={{margin: "1rem"}}>Sign in</h1>
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
-          m={5}
+          m={2}
           p={5}
           flexDirection="column"
         >
@@ -154,13 +166,11 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
           )}
           {!loading && !session && (
             <>
-              <div key={credentialsAuthProvider.name} className="provider">
+              <div key={credentialsAuthProvider.name}>
                 <SignInForm csrfToken={csrfToken} />
               </div>
-              <hr />
-              <>
-                {socialAuthLoginComponents}
-              </>
+              <Divider style={{width: "100%", margin: "2rem"}} />
+              {socialAuthLoginComponents}
             </>
           )}
         </Box>

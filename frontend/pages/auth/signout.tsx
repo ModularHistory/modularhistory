@@ -1,5 +1,4 @@
-import { Box } from "@material-ui/core";
-import Container from "@material-ui/core/Container";
+import { Box, Container, Typography } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import React, { FunctionComponent, useEffect } from "react";
 import { handleLogout } from "../../auth";
@@ -26,9 +25,7 @@ const SignOut: FunctionComponent = () => {
           flexDirection="column"
         >
           {!loading && (
-            <p>
-              Signing out...
-            </p>
+            <Typography className="text-center">Signing out...</Typography>
           )}
         </Box>
       </Container>
