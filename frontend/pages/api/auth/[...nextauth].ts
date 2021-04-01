@@ -37,11 +37,12 @@ const providers = [
     clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET,
     scope: 'identify email',
   }),
-  // https://next-auth.js.org/providers/facebook
-  Providers.Facebook({
-    clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
-    clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
-  }),
+  // TODO: Enable Facebook login?
+  // // https://next-auth.js.org/providers/facebook
+  // Providers.Facebook({
+  //   clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
+  //   clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
+  // }),
   // https://next-auth.js.org/providers/google
   Providers.Google({
     clientId: process.env.SOCIAL_AUTH_GOOGLE_KEY,
@@ -52,11 +53,12 @@ const providers = [
     clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
     clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
   }),
-  // https://next-auth.js.org/providers/github
-  Providers.GitHub({
-    clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
-    clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
-  }),
+  // TODO: Someday, enable troublesome GitHub login?
+  // // https://next-auth.js.org/providers/github
+  // Providers.GitHub({
+  //   clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
+  //   clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
+  // }),
   // https://next-auth.js.org/providers/credentials
   Providers.Credentials({
     id: "credentials",
@@ -75,9 +77,6 @@ const providers = [
 const callbacks: CallbacksOptions = {};
 
 callbacks.signIn = async function signIn(user: User, provider, _data) {
-  // let accessToken: string;
-  // let refreshToken: string;
-  // let cookies: Array<string>;
   if (provider.type != 'credentials') {
     switch (provider.provider) {
       case "discord": // https://next-auth.js.org/providers/discord
@@ -87,13 +86,13 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
       case "github": { // https://next-auth.js.org/providers/github
         // Retrieve email address, if necessary.
         if (!user.email) {
-          console.log('Retrieving user email address via GitHub API...');
           const emailRes = await fetch('https://api.github.com/user/emails', {
             headers: {'Authorization': `token ${provider.accessToken}`}
           })
           const emails = await emailRes.json();
-          const primaryEmail = emails.find(emails => emails.primary).email;
-          user.email = primaryEmail;
+          if (emails?.length != 0) {
+            user.email = emails.find(emails => emails.primary).email;
+          }
         }
         break;
       }
@@ -107,7 +106,11 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
     }
     user = await authenticateWithSocialMediaAccount(user, provider);
   }
-  return true;
+  const allowLogin = user ? true : false;
+  if (!allowLogin) {
+    console.log('Rejected login.');
+  }
+  return allowLogin;
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback
@@ -157,20 +160,22 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
         console.error("Session got an expired access token.");
       }
       sessionPlus.cookies = cookies;
-      let userData;
-      await axios
-        .get(makeDjangoApiUrl("/users/me/"), {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then(function (response: AxiosResponse) {
-          userData = response.data;
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
-      sessionPlus.user = userData;
+      if (!sessionPlus.user) {
+        let userData;
+        await axios
+          .get(makeDjangoApiUrl("/users/me/"), {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(function (response: AxiosResponse) {
+            userData = response.data;
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+        sessionPlus.user = userData;
+      }
     }
   }
   return sessionPlus;
@@ -182,8 +187,9 @@ callbacks.redirect = async function redirect(url, baseUrl) {
   const reactPattern = /\/(entities\/?|other_react_pattern\/?)/;
   if (!url.includes("/auth/redirect/")) {
     if (!reactPattern.test(url)) {
-      const path = url.replace(baseUrl, "");
-      url = `${baseUrl}/auth/redirect/${path}`;
+      const path = url.replace(baseUrl, "").replace('/auth/signin', "");
+      // Remove duplicate slashes.
+      url = `${baseUrl}/auth/redirect/${path}`.replace(/([^:]\/)\/+/g, "$1");
     }
   }
   return url;
@@ -251,11 +257,13 @@ interface SocialMediaAccountCredentials {
   code?: string
   token_secret?: string
   refresh_token?: string
+  user: User
 }
 
 async function authenticateWithSocialMediaAccount(user: User, provider) {
   const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
-  const credentials: SocialMediaAccountCredentials = {};
+  const credentials: SocialMediaAccountCredentials = {user: user};
+  console.log('user:', user, '\nprovider:', provider);
   switch (provider.provider) {
     case "discord": // https://next-auth.js.org/providers/discord
     case "facebook": // https://next-auth.js.org/providers/facebook
@@ -284,6 +292,7 @@ async function authenticateWithSocialMediaAccount(user: User, provider) {
     .catch(function (error) {
       // handle error
       console.error(error);
+      return Promise.resolve(null);
     });
   return Promise.resolve(user);
 }

@@ -44,7 +44,6 @@ export const handleLogout = (session: WithAdditionalParams<Session>): void => {
       })
       .catch(function (error) {
         console.error(`Failed to sign out due to error: ${error}`);
-        throw new Error(`${error}`);
       });
   }
   // Remove cookies by setting their expiry to a past date.

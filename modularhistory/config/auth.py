@@ -6,9 +6,8 @@ from modularhistory.environment import IS_PROD
 
 AUTH_USER_MODEL = 'users.User'
 
-# https://django-allauth.readthedocs.io/en/latest/
-# https://django-allauth.readthedocs.io/en/latest/configuration.html#configuration
-ACCOUNT_EMAIL_REQUIRED = True
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+SOCIALACCOUNT_QUERY_EMAIL = True
 
 # https://dj-rest-auth.readthedocs.io/en/latest/configuration.html#configuration
 REST_AUTH_SERIALIZERS = {
@@ -50,9 +49,6 @@ AUTHENTICATION_BACKENDS = (
 
 # Provider specific settings:
 # https://django-allauth.readthedocs.io/en/latest/providers.html
-# TODO: For each OAuth based provider, either add a ``SocialApp``
-# (``socialaccount`` app) containing the required client
-# credentials, or list them here:
 SOCIALACCOUNT_PROVIDERS = {
     # https://django-allauth.readthedocs.io/en/latest/providers.html#discord
     'discord': {
@@ -66,25 +62,28 @@ SOCIALACCOUNT_PROVIDERS = {
         'APP': {
             'client_id': config('SOCIAL_AUTH_GITHUB_CLIENT_ID', default=''),
             'secret': config('SOCIAL_AUTH_GITHUB_SECRET', default=''),
-        }
+        },
+        'SCOPE': ['user'],
+        'VERIFIED_EMAIL': True,
     },
     'facebook': {
+        # https://django-allauth.readthedocs.io/en/latest/providers.html#facebook
         'APP': {
-            'client_id': '123',
             'key': config('SOCIAL_AUTH_FACEBOOK_KEY', default=''),
             'secret': config('SOCIAL_AUTH_FACEBOOK_SECRET', default=''),
-        }
+        },
+        'EXCHANGE_TOKEN': True,
+        'SCOPE': ['email', 'public_profile'],
     },
     'google': {
         'APP': {
-            'client_id': '123',
-            'key': config('SOCIAL_AUTH_GOOGLE_OAUTH_KEY', default=''),
-            'secret': config('SOCIAL_AUTH_GOOGLE_OAUTH_SECRET', default=''),
-        }
+            'key': config('SOCIAL_AUTH_GOOGLE_KEY', default=''),
+            'secret': config('SOCIAL_AUTH_GOOGLE_SECRET', default=''),
+        },
+        'SCOPE': ['profile', 'email'],
     },
     'twitter': {
         'APP': {
-            'client_id': '123',
             'key': config('SOCIAL_AUTH_TWITTER_KEY', default=''),
             'secret': config('SOCIAL_AUTH_TWITTER_SECRET', default=''),
         }

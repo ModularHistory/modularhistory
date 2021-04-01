@@ -13,7 +13,6 @@ import { NEXT_AUTH_CSRF_COOKIE_NAME } from '../../auth';
 import Layout from "../../components/layout";
 
 
-
 axios.defaults.xsrfCookieName = NEXT_AUTH_CSRF_COOKIE_NAME;
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
@@ -35,27 +34,30 @@ export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: Si
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   let error = router.query?.error;
-  const path = router.query.path ?? "/";
+  const callbackUrl = `${router.query?.callbackUrl}`;
+  const redirectUrl = callbackUrl || process.env.BASE_URL;
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const response = await signIn('credentials',
-      {
-        username,
-        password,
-        // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
-        redirect: false,
-        // Redirect after a successful login.
-        // callbackUrl: `${window.location.origin}`
-      }
-    );
+    let response;
+    try {
+      response = await signIn('credentials',
+        {
+          username,
+          password,
+          callbackUrl: redirectUrl,
+          // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
+          redirect: false
+        }
+      );
+    } catch (error) {
+      response = {error: `${error}`}
+    }
     if (response['error']) {
       // Response contains `error`, `status`, and `url` (intended redirect url).
       error = response.error;
     } else {
       // Response contains `ok` and `url` (intended redirect url).
-      console.log(response);
-      // const redirectUrl = router.query?.callbackUrl ? `${router.query.callbackUrl}` : response.url;
-      window.location.replace(`${window.location.origin}${path}`);
+      window.location.replace(`${response.url ?? redirectUrl ?? window.location.origin}`);
     }
   };
   return (

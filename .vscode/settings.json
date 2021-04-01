@@ -38,7 +38,7 @@
         "**/templates/**/*": "django-txt"
     },
     "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 7000,
+    "files.autoSaveDelay": 5000,
     "files.eol": "\n",
     "files.exclude": {
         "**/.git": true,

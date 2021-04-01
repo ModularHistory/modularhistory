@@ -15,7 +15,7 @@ const Redirect: React.FunctionComponent = () => {
     <>
       {!loading && (
         <Head>
-          <meta httpEquiv="refresh" content={`3; URL=${baseUrl}${path}`} />
+          <meta httpEquiv="refresh" content={`1; URL=${baseUrl}${path}`} />
         </Head>
       )}
       <Layout title={"Redirect"} canonicalUrl="/redirect">

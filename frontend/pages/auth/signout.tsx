@@ -1,4 +1,4 @@
-import { Box, Button } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import { useSession } from "next-auth/client";
 import React, { FunctionComponent, useEffect } from "react";
@@ -6,12 +6,13 @@ import { handleLogout } from "../../auth";
 import Layout from "../../components/layout";
 
 const SignOut: FunctionComponent = () => {
-  const [session] = useSession();
+  const [session, loading] = useSession();
 
-  const logout = (e) => {
-    e.preventDefault();
-    handleLogout(session);
-  };
+  useEffect(() => {
+    if (!loading) {
+      handleLogout(session);
+    }
+  }, [loading]);
 
   return (
     <Layout title={"Sign out"}>
@@ -24,9 +25,11 @@ const SignOut: FunctionComponent = () => {
           p={5}
           flexDirection="column"
         >
-          <Button variant="outlined" color="primary" onClick={logout}>
-            Sign Out
-          </Button>
+          {!loading && (
+            <p>
+              Signing out...
+            </p>
+          )}
         </Box>
       </Container>
     </Layout>
@@ -35,12 +38,12 @@ const SignOut: FunctionComponent = () => {
 
 export default SignOut;
 
-export const PagelessSignOut: FunctionComponent = () => {
-  const [session, loading] = useSession();
-  useEffect(() => {
-    if (!loading) {
-      handleLogout(session);
-    }
-  }, [loading]);
-  return null;
-}
+// export const PagelessSignOut: FunctionComponent = () => {
+//   const [session, loading] = useSession();
+//   useEffect(() => {
+//     if (!loading) {
+//       handleLogout(session);
+//     }
+//   }, [loading]);
+//   return null;
+// }
