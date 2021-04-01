@@ -263,7 +263,6 @@ interface SocialMediaAccountCredentials {
 async function authenticateWithSocialMediaAccount(user: User, provider) {
   const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
   const credentials: SocialMediaAccountCredentials = {user: user};
-  console.log('user:', user, '\nprovider:', provider);
   switch (provider.provider) {
     case "discord": // https://next-auth.js.org/providers/discord
     case "facebook": // https://next-auth.js.org/providers/facebook
