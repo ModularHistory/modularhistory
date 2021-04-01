@@ -4,13 +4,13 @@ import NextAuth, {
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
-  Session,
+  Session as NextAuthSession,
   User as NextAuthUser
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
-import { WithAdditionalParams } from "next-auth/_utils";
 import axios from "../../../axios";
+import { Session } from '../../auth';
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -140,8 +140,8 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
 };
 
 // https://next-auth.js.org/configuration/callbacks#session-callback
-callbacks.session = async function session(session: Session, jwt: JWT) {
-  const sessionPlus: WithAdditionalParams<Session> = { ...session };
+callbacks.session = async function session(session: NextAuthSession, jwt: JWT) {
+  const sessionPlus: Session = { ...session };
   if (jwt) {
     const accessToken = jwt.accessToken;
     const cookies = jwt.cookies;

@@ -1,6 +1,5 @@
-import { Session } from 'next-auth';
+import { Session as NextAuthSession } from 'next-auth';
 import { signIn, signOut } from 'next-auth/client';
-import { WithAdditionalParams } from 'next-auth/_utils';
 import { Router } from 'next/router';
 import axios from './axios';
 
@@ -12,6 +11,10 @@ export const AUTH_COOKIES = [
   'next-auth.session-token',
   'next-auth.callback-url'
 ]
+
+interface Session extends NextAuthSession {
+  refreshToken?: string
+}
 
 export interface Credentials {
   username: string
@@ -26,7 +29,7 @@ export const handleLogin = (router: Router): void => {
   }
 };
 
-export const handleLogout = (session: WithAdditionalParams<Session>): void => {
+export const handleLogout = (session: Session): void => {
   // Sign out of the back end.
   if (session) {
     axios
