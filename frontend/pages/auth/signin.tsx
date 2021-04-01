@@ -1,6 +1,5 @@
-import { Box, Button, Divider, Paper, TextField } from "@material-ui/core";
+import { Box, Button, Divider, Grid, Paper, TextField } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
 import Alert from '@material-ui/lab/Alert';
 import axios from "axios";
 import { csrfToken, providers, signIn, signOut, useSession } from "next-auth/client";
@@ -25,24 +24,36 @@ const SOCIAL_LOGIN_BUTTONS = {
   github: GithubLoginButton,
 };
 
-interface SignInFormProps {
+interface SignInProps {
+  providers: Providers
   csrfToken: string
 }
 
-export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: SignInFormProps) => {
+const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignInProps) => {
   const router = useRouter();
-  const [error, setError] = useState("");
+  const [session, loading] = useSession();
+  const [redirecting, setRedirecting] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  useEffect(() => {
+    if (router.query?.error) {
+      setError(`${router.query?.error}`);
+    }
+  }, []);
+  useEffect(() => {
+    if (redirecting) {
+      const url = redirectUrl ?? window.location.origin;
+      window.location.replace(url);
+    }
+  }, [redirecting]);
   const callbackUrl = `${router.query?.callbackUrl}`;
   const redirectUrl = callbackUrl || process.env.BASE_URL;
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(username, password);
     if (!username || !password) {
       setError("You must enter your username and password.")
     } else {
-      console.log('Posting credentials...');
       let response;
       try {
         response = await signIn('credentials',
@@ -62,70 +73,10 @@ export const SignInForm: FunctionComponent<SignInFormProps> = ({ csrfToken }: Si
         setError("Invalid credentials.");
       } else {
         // Response contains `ok` and `url` (intended redirect url).
-        window.location.replace(`${response.url ?? redirectUrl ?? window.location.origin}`);
+        setRedirecting(true);
       }
     }
   };
-  useEffect(() => {
-    if (router.query?.error) {
-      setError(`${router.query?.error}`);
-    }
-  }, []);
-  return (
-    <form method="post" onSubmit={handleSubmit}>
-      {error && (
-        <>
-          <Alert severity="error">{error}</Alert>
-          <br />
-        </>
-      )}
-      <input type="hidden" name="csrfToken" value={csrfToken} />
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                id="username"
-                name="username"
-                label="Username or email address"
-                variant="outlined"
-                size="small"
-                fullWidth
-                onChange={event => setUsername(event.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id="password"
-                name="password"
-                label="Password"
-                variant="outlined"
-                type="password"
-                size="small"
-                fullWidth
-                onChange={event => setPassword(event.target.value)}
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Button color="primary" fullWidth type="submit" variant="contained">
-            Sign in
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
-  )
-}
-
-interface SignInProps {
-  providers: Providers
-  csrfToken: string
-}
-
-const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignInProps) => {
-  const [session, loading] = useSession();
-  const credentialsAuthProvider = providers[CREDENTIALS_KEY];
   const socialAuthLoginComponents = [];
   let SocialLoginButton;
   Object.entries(providers).forEach(
@@ -133,18 +84,16 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       if (provider.id === CREDENTIALS_KEY) { return null }
       SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
       socialAuthLoginComponents.push(
-        <div key={provider.name} className="provider">
-          <SocialLoginButton style={{minWidth: "245px"}} onClick={() => signIn(provider.id)}>
-            Sign in with {provider.name}
-          </SocialLoginButton>
-        </div>
-      )
+        <SocialLoginButton key={provider.name} style={{minWidth: "245px", maxWidth: "245px"}} onClick={() => signIn(provider.id)}>
+          Sign in with {provider.name}
+        </SocialLoginButton>
+      );
     }
   );
+  if (loading) return null;
   return (
     <Layout title={"Sign in"}>
       <Container>
-        <h1 className="page-title text-center" style={{margin: "1rem"}}>Sign in</h1>
         <Box
           display="flex"
           justifyContent="center"
@@ -153,7 +102,13 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
           p={5}
           flexDirection="column"
         >
-          {!loading && session?.user && (
+          {error && !redirecting && (
+            <>
+              <Alert severity="error">{error}</Alert>
+              <br />
+            </>
+          )}
+          {session?.user && !redirecting && (
             <Paper className="p-4 text-center">
               <p className="lead">
                 You are logged in as <strong>{session.user.username || session.user.email}</strong>.
@@ -164,14 +119,54 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
               </Button>
             </Paper>
           )}
-          {!loading && !session && (
-            <>
-              <div key={credentialsAuthProvider.name}>
-                <SignInForm csrfToken={csrfToken} />
-              </div>
-              <Divider style={{width: "100%", margin: "2rem"}} />
-              {socialAuthLoginComponents}
-            </>
+          {/* Show the sign-in form if:
+           (A) the user is unauthenticated or
+           (B) the user just submitted the sign-in form and is being redirected. */}
+          {redirecting || !session?.user && (
+            <div id="sign-in">
+              <h1 className="page-title text-center" style={{margin: "1rem"}}>Sign in</h1>
+              <form method="post" onSubmit={handleSubmit}>
+                <input type="hidden" name="csrfToken" value={csrfToken} />
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <TextField
+                          id="username"
+                          name="username"
+                          label="Username or email address"
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                          onChange={event => setUsername(event.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          id="password"
+                          name="password"
+                          label="Password"
+                          variant="outlined"
+                          type="password"
+                          size="small"
+                          fullWidth
+                          onChange={event => setPassword(event.target.value)}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button color="primary" fullWidth type="submit" variant="contained">
+                      Sign in
+                    </Button>
+                  </Grid>
+                </Grid>
+              </form>
+              <Divider style={{width: "100%", marginTop: "2rem", marginBottom: "2rem"}} />
+              <Grid id="social-sign-in" container justify="center">
+                {socialAuthLoginComponents}
+              </Grid>
+            </div>
           )}
         </Box>
       </Container>

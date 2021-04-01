@@ -6,13 +6,12 @@ import Layout from "../../components/layout";
 
 const SignOut: FunctionComponent = () => {
   const [session, loading] = useSession();
-
   useEffect(() => {
-    if (!loading) {
+    if (session) {
       handleLogout(session);
     }
-  }, [loading]);
-
+  }, [session]);
+  if (loading) return null;
   return (
     <Layout title={"Sign out"}>
       <Container>

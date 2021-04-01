@@ -183,13 +183,24 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
 
 callbacks.redirect = async function redirect(url, baseUrl) {
   url = url.startsWith(baseUrl) ? url : baseUrl;
-  // TODO: refactor
+  // Strip /auth/signin from the redirect URL if necessary,
+  // so that the user is instead redirected to the homepage.
+  const path = url.replace(baseUrl, "").replace('/auth/signin', "");
+  // Determine whether the redirect URL is to a React or to a non-React page.
   const reactPattern = /\/(entities\/?|other_react_pattern\/?)/;
-  if (!url.includes("/auth/redirect/")) {
-    if (!reactPattern.test(url)) {
-      const path = url.replace(baseUrl, "").replace('/auth/signin', "");
+  if (reactPattern.test(url)) { // If redirecting to a React page,
+    // Strip /auth/redirect from the redirect URL if necessary.
+    if (url.includes("/auth/redirect/")) {
+      url = url.replace("/auth/redirect", "");
+    }
+  } else { // If redirecting to a non-React page,
+    // Add /auth/redirect to the redirect URL if necessary.
+    // This will cause the user to first be routed to the "redirect page," where
+    // Next.js can set or remove cookies before routing the user to the callback URL.
+    if (!url.includes("/auth/redirect/")) {
+      url = `${baseUrl}/auth/redirect/${path}`;
       // Remove duplicate slashes.
-      url = `${baseUrl}/auth/redirect/${path}`.replace(/([^:]\/)\/+/g, "$1");
+      url = url.replace(/([^:]\/)\/+/g, "$1");
     }
   }
   return url;
