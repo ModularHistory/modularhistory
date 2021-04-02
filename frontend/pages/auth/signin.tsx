@@ -1,19 +1,24 @@
 import { Box, Button, Divider, Grid, Paper, TextField } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import Alert from '@material-ui/lab/Alert';
+import Alert from "@material-ui/lab/Alert";
 import axios from "axios";
 import { csrfToken, providers, signIn, useSession } from "next-auth/client";
-import { Providers } from 'next-auth/providers';
-import { useRouter } from 'next/router';
+import { Providers } from "next-auth/providers";
+import { useRouter } from "next/router";
 import React, { FunctionComponent, useEffect, useState } from "react";
 // https://www.npmjs.com/package/react-social-login-buttons
-import { DiscordLoginButton, FacebookLoginButton, GithubLoginButton, GoogleLoginButton, TwitterLoginButton } from "react-social-login-buttons";
-import { handleLogout, NEXT_AUTH_CSRF_COOKIE_NAME } from '../../auth';
+import {
+  DiscordLoginButton,
+  FacebookLoginButton,
+  GithubLoginButton,
+  GoogleLoginButton,
+  TwitterLoginButton,
+} from "react-social-login-buttons";
+import { handleLogout, NEXT_AUTH_CSRF_COOKIE_NAME } from "../../auth";
 import Layout from "../../components/layout";
 
-
 axios.defaults.xsrfCookieName = NEXT_AUTH_CSRF_COOKIE_NAME;
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 const CREDENTIALS_KEY = "credentials";
 const SOCIAL_LOGIN_BUTTONS = {
@@ -25,8 +30,8 @@ const SOCIAL_LOGIN_BUTTONS = {
 };
 
 interface SignInProps {
-  providers: Providers
-  csrfToken: string
+  providers: Providers;
+  csrfToken: string;
 }
 
 const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignInProps) => {
@@ -52,23 +57,21 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   const handleCredentialLogin = async (event) => {
     event.preventDefault();
     if (!username || !password) {
-      setError("You must enter your username and password.")
+      setError("You must enter your username and password.");
     } else {
       let response;
       try {
-        response = await signIn('credentials',
-          {
-            username,
-            password,
-            callbackUrl: redirectUrl,
-            // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
-            redirect: false
-          }
-        );
+        response = await signIn("credentials", {
+          username,
+          password,
+          callbackUrl: redirectUrl,
+          // https://next-auth.js.org/getting-started/client#using-the-redirect-false-option
+          redirect: false,
+        });
       } catch (error) {
-        response = {error: `${error}`}
+        response = { error: `${error}` };
       }
-      if (response['error']) {
+      if (response["error"]) {
         // Response contains `error`, `status`, and `url` (intended redirect url).
         setError("Invalid credentials.");
       } else {
@@ -78,26 +81,30 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
     }
   };
   const handleSocialLogin = async (provider_id: string) => {
-    console.log('>>>>> handling social login');
+    console.log(">>>>> handling social login");
     try {
       signIn(provider_id);
     } catch (error) {
       setError(`${error}`);
     }
-  }
+  };
   const socialAuthLoginComponents = [];
   let SocialLoginButton;
-  Object.entries(providers).forEach(
-    ([, provider]) => {
-      if (provider.id === CREDENTIALS_KEY) { return null }
-      SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
-      socialAuthLoginComponents.push(
-        <SocialLoginButton key={provider.name} style={{minWidth: "245px", maxWidth: "245px"}} onClick={() => handleSocialLogin(provider.id)}>
-          Sign in with {provider.name}
-        </SocialLoginButton>
-      );
+  Object.entries(providers).forEach(([, provider]) => {
+    if (provider.id === CREDENTIALS_KEY) {
+      return null;
     }
-  );
+    SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
+    socialAuthLoginComponents.push(
+      <SocialLoginButton
+        key={provider.name}
+        style={{ minWidth: "245px", maxWidth: "245px" }}
+        onClick={() => handleSocialLogin(provider.id)}
+      >
+        Sign in with {provider.name}
+      </SocialLoginButton>
+    );
+  });
   if (loading) return null;
   return (
     <Layout title={"Sign in"}>
@@ -122,62 +129,70 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                 You are logged in as <strong>{session.user.username || session.user.email}</strong>.
               </p>
               <br />
-              <Button variant="outlined" color="primary" size="large" onClick={() => handleLogout(session)}>
+              <Button
+                variant="outlined"
+                color="primary"
+                size="large"
+                onClick={() => handleLogout(session)}
+              >
                 Sign Out
               </Button>
             </Paper>
           )}
-          {redirecting || !session?.user && (
-            <div id="sign-in">
-              <h1 className="page-title text-center" style={{margin: "1rem"}}>Sign in</h1>
-              <form method="post" onSubmit={handleCredentialLogin}>
-                <input type="hidden" name="csrfToken" value={csrfToken} />
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <TextField
-                          id="username"
-                          name="username"
-                          label="Username or email address"
-                          variant="outlined"
-                          size="small"
-                          fullWidth
-                          onChange={event => setUsername(event.target.value)}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          id="password"
-                          name="password"
-                          label="Password"
-                          variant="outlined"
-                          type="password"
-                          size="small"
-                          fullWidth
-                          onChange={event => setPassword(event.target.value)}
-                        />
+          {redirecting ||
+            (!session?.user && (
+              <div id="sign-in">
+                <h1 className="page-title text-center" style={{ margin: "1rem" }}>
+                  Sign in
+                </h1>
+                <form method="post" onSubmit={handleCredentialLogin}>
+                  <input type="hidden" name="csrfToken" value={csrfToken} />
+                  <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <TextField
+                            id="username"
+                            name="username"
+                            label="Username or email address"
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            onChange={(event) => setUsername(event.target.value)}
+                          />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <TextField
+                            id="password"
+                            name="password"
+                            label="Password"
+                            variant="outlined"
+                            type="password"
+                            size="small"
+                            fullWidth
+                            onChange={(event) => setPassword(event.target.value)}
+                          />
+                        </Grid>
                       </Grid>
                     </Grid>
+                    <Grid item xs={12}>
+                      <Button color="primary" fullWidth type="submit" variant="contained">
+                        Sign in
+                      </Button>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12}>
-                    <Button color="primary" fullWidth type="submit" variant="contained">
-                      Sign in
-                    </Button>
-                  </Grid>
+                </form>
+                <Divider style={{ width: "100%", marginTop: "2rem", marginBottom: "2rem" }} />
+                <Grid id="social-sign-in" container justify="center">
+                  {socialAuthLoginComponents}
                 </Grid>
-              </form>
-              <Divider style={{width: "100%", marginTop: "2rem", marginBottom: "2rem"}} />
-              <Grid id="social-sign-in" container justify="center">
-                {socialAuthLoginComponents}
-              </Grid>
-            </div>
-          )}
+              </div>
+            ))}
         </Box>
       </Container>
     </Layout>
   );
-}
+};
 
 export default SignIn;
 

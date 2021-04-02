@@ -1,11 +1,9 @@
-import { Box, Container, Typography } from '@material-ui/core';
+import { Box, Container, Typography } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import Layout from "../../components/layout";
-
-
 
 const Redirect: React.FunctionComponent = () => {
   const router = useRouter();
@@ -30,9 +28,7 @@ const Redirect: React.FunctionComponent = () => {
             p={5}
             flexDirection="column"
           >
-            {!loading && (
-              <Typography className="text-center">Redirecting...</Typography>
-            )}
+            {!loading && <Typography className="text-center">Redirecting...</Typography>}
           </Box>
         </Container>
       </Layout>

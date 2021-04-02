@@ -23,14 +23,12 @@ const SignOut: FunctionComponent = () => {
           p={5}
           flexDirection="column"
         >
-          {!loading && (
-            <Typography className="text-center">Signing out...</Typography>
-          )}
+          {!loading && <Typography className="text-center">Signing out...</Typography>}
         </Box>
       </Container>
     </Layout>
   );
-}
+};
 
 export default SignOut;
 

@@ -76,8 +76,13 @@ export default function GlobalNavbar({ menuItems }) {
     handleLogout(session);
   };
 
-  const hideAccountControls = router.pathname === LOGIN_PAGE_PATH || router.pathname === AUTH_REDIRECT_PATH;
-  let accountControls = hideAccountControls ? null : <Nav.Link onClick={login} href="/api/auth/signin">Sign in</Nav.Link>;
+  const hideAccountControls =
+    router.pathname === LOGIN_PAGE_PATH || router.pathname === AUTH_REDIRECT_PATH;
+  let accountControls = hideAccountControls ? null : (
+    <Nav.Link onClick={login} href="/api/auth/signin">
+      Sign in
+    </Nav.Link>
+  );
   let accountDropdownIcon = <i className="fas fa-user" />;
 
   if (session?.user) {
@@ -93,12 +98,7 @@ export default function GlobalNavbar({ menuItems }) {
     }
     if (session.user.is_superuser) {
       accountControls = (
-        <NavDropdown
-          id="accountDropdown"
-          title={accountDropdownIcon}
-          renderMenuOnMount
-          alignRight
-        >
+        <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
           <NavDropdown.Item href="/users/profile">Profile</NavDropdown.Item>
           <NavDropdown.Item href="/users/setting">Settings</NavDropdown.Item>
           <NavDropdown.Item href="/admin/">Administrate</NavDropdown.Item>
@@ -112,12 +112,7 @@ export default function GlobalNavbar({ menuItems }) {
       );
     } else {
       accountControls = (
-        <NavDropdown
-          id="accountDropdown"
-          title={accountDropdownIcon}
-          renderMenuOnMount
-          alignRight
-        >
+        <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
           <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
@@ -150,9 +145,7 @@ export default function GlobalNavbar({ menuItems }) {
             )
           )}
         </Nav>
-        <Nav>
-          {!loading && accountControls}
-        </Nav>
+        <Nav>{!loading && accountControls}</Nav>
       </Navbar.Collapse>
     </Navbar>
   );

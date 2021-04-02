@@ -5,12 +5,12 @@ import NextAuth, {
   NextAuthOptions,
   PagesOptions,
   Session as NextAuthSession,
-  User as NextAuthUser
+  User as NextAuthUser,
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 import axios from "../../../axios";
-import { Session } from '../../auth';
+import { Session } from "../../auth";
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -36,7 +36,7 @@ const providers = [
   Providers.Discord({
     clientId: process.env.SOCIAL_AUTH_DISCORD_CLIENT_ID,
     clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET,
-    scope: 'identify email',
+    scope: "identify email",
   }),
   // TODO: Enable Facebook login?
   // // https://next-auth.js.org/providers/facebook
@@ -63,8 +63,9 @@ const providers = [
   // https://next-auth.js.org/providers/credentials
   Providers.Credentials({
     id: "credentials",
-    name: "Credentials",  // name to display on the sign-in form ('Sign in with ____')
-    credentials: {  // fields expected to be submitted in the sign-in form
+    name: "Credentials", // name to display on the sign-in form ('Sign in with ____')
+    credentials: {
+      // fields expected to be submitted in the sign-in form
       username: { label: "Username", type: "text", placeholder: "" },
       password: { label: "Password", type: "password" },
     },
@@ -78,21 +79,22 @@ const providers = [
 const callbacks: CallbacksOptions = {};
 
 callbacks.signIn = async function signIn(user: User, provider, _data) {
-  if (provider.type != 'credentials') {
+  if (provider.type != "credentials") {
     switch (provider.provider) {
       case "discord": // https://next-auth.js.org/providers/discord
         break;
       case "facebook": // https://next-auth.js.org/providers/facebook
         break;
-      case "github": { // https://next-auth.js.org/providers/github
+      case "github": {
+        // https://next-auth.js.org/providers/github
         // Retrieve email address, if necessary.
         if (!user.email) {
-          const emailRes = await fetch('https://api.github.com/user/emails', {
-            headers: {'Authorization': `token ${provider.accessToken}`}
-          })
+          const emailRes = await fetch("https://api.github.com/user/emails", {
+            headers: { Authorization: `token ${provider.accessToken}` },
+          });
           const emails = await emailRes.json();
           if (emails?.length != 0) {
-            user.email = emails.find(emails => emails.primary).email;
+            user.email = emails.find((emails) => emails.primary).email;
           }
         }
         break;
@@ -102,14 +104,14 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
       case "twitter": // https://next-auth.js.org/providers/twitter
         break;
       default:
-        console.error('Unrecognized auth provider:', provider);
+        console.error("Unrecognized auth provider:", provider);
         return false;
     }
     user = await authenticateWithSocialMediaAccount(user, provider);
   }
   const allowLogin = user.error ? false : true;
   if (!allowLogin) {
-    console.log('Rejected login.');
+    console.log("Rejected login.");
   }
   return allowLogin;
 };
@@ -118,7 +120,8 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
 callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNewUser?: boolean) {
   // The arguments user, account, profile and isNewUser are only passed the first time
   // this callback is called on a new session, after the user signs in.
-  if (user && account) { // initial sign in
+  if (user && account) {
+    // initial sign in
     token.accessToken = user.accessToken;
     token.cookies = user.cookies;
     token.refreshToken = user.refreshToken;
@@ -186,15 +189,17 @@ callbacks.redirect = async function redirect(url, baseUrl) {
   url = url.startsWith(baseUrl) ? url : baseUrl;
   // Strip /auth/signin from the redirect URL if necessary,
   // so that the user is instead redirected to the homepage.
-  const path = url.replace(baseUrl, "").replace('/auth/signin', "");
+  const path = url.replace(baseUrl, "").replace("/auth/signin", "");
   // Determine whether the redirect URL is to a React or to a non-React page.
   const reactPattern = /\/(entities\/?|other_react_pattern\/?)/;
-  if (reactPattern.test(url)) { // If redirecting to a React page,
+  if (reactPattern.test(url)) {
+    // If redirecting to a React page,
     // Strip /auth/redirect from the redirect URL if necessary.
     if (url.includes("/auth/redirect/")) {
       url = url.replace("/auth/redirect", "");
     }
-  } else { // If redirecting to a non-React page,
+  } else {
+    // If redirecting to a non-React page,
     // Add /auth/redirect to the redirect URL if necessary.
     // This will cause the user to first be routed to the "redirect page," where
     // Next.js can set or remove cookies before routing the user to the callback URL.
@@ -266,16 +271,16 @@ async function authenticateWithCredentials(credentials) {
 }
 
 interface SocialMediaAccountCredentials {
-  access_token?: string
-  code?: string
-  token_secret?: string
-  refresh_token?: string
-  user: User
+  access_token?: string;
+  code?: string;
+  token_secret?: string;
+  refresh_token?: string;
+  user: User;
 }
 
 async function authenticateWithSocialMediaAccount(user: User, provider) {
   const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
-  const credentials: SocialMediaAccountCredentials = {user: user};
+  const credentials: SocialMediaAccountCredentials = { user: user };
   switch (provider.provider) {
     case "discord": // https://next-auth.js.org/providers/discord
     case "facebook": // https://next-auth.js.org/providers/facebook
@@ -286,7 +291,7 @@ async function authenticateWithSocialMediaAccount(user: User, provider) {
       credentials.refresh_token = provider.refreshToken;
       break;
     default:
-      console.error('Unsupported provider:', provider.provider);
+      console.error("Unsupported provider:", provider.provider);
       return user;
   }
   await axios
@@ -303,7 +308,7 @@ async function authenticateWithSocialMediaAccount(user: User, provider) {
     })
     .catch(function (error) {
       user.error = `${error}`;
-      console.error('Attached error to user: ', error);
+      console.error("Attached error to user: ", error);
     });
   return Promise.resolve(user);
 }
