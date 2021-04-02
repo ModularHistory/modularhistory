@@ -9,7 +9,7 @@ export const AUTH_REDIRECT_PATH = "/auth/redirect";
 export const NEXT_AUTH_CSRF_COOKIE_NAME = "next-auth.csrf-token";
 export const AUTH_COOKIES = ["next-auth.session-token", "next-auth.callback-url"];
 
-interface Session extends NextAuthSession {
+export interface Session extends NextAuthSession {
   refreshToken?: string;
 }
 

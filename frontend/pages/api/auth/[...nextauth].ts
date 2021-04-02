@@ -9,8 +9,8 @@ import NextAuth, {
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
+import { Session } from "../../../auth";
 import axios from "../../../axios";
-import { Session } from "../../auth";
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
 
