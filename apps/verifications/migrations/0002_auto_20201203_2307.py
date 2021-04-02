@@ -16,6 +16,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='verification',
             name='verifier',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='verifications', to=settings.AUTH_USER_MODEL, verbose_name='verifier'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='verifications',
+                to=settings.AUTH_USER_MODEL,
+                verbose_name='verifier',
+            ),
         ),
     ]

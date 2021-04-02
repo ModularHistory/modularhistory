@@ -22,11 +22,21 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='entityidea',
             name='entity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entity_ideas', to='entities.entity', verbose_name='entity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='entity_ideas',
+                to='entities.entity',
+                verbose_name='entity',
+            ),
         ),
         migrations.AlterField(
             model_name='entityidea',
             name='idea',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entity_ideas', to='entities.idea', verbose_name='idea'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='entity_ideas',
+                to='entities.idea',
+                verbose_name='idea',
+            ),
         ),
     ]

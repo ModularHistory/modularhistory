@@ -14,11 +14,23 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='image',
             name='slug',
-            field=autoslug.fields.AutoSlugField(editable=True, null=True, populate_from='get_slug', unique=True, verbose_name='slug'),
+            field=autoslug.fields.AutoSlugField(
+                editable=True,
+                null=True,
+                populate_from='get_slug',
+                unique=True,
+                verbose_name='slug',
+            ),
         ),
         migrations.AlterField(
             model_name='video',
             name='slug',
-            field=autoslug.fields.AutoSlugField(editable=True, null=True, populate_from='get_slug', unique=True, verbose_name='slug'),
+            field=autoslug.fields.AutoSlugField(
+                editable=True,
+                null=True,
+                populate_from='get_slug',
+                unique=True,
+                verbose_name='slug',
+            ),
         ),
     ]

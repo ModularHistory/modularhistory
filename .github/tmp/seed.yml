@@ -1,0 +1,156 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+# !! WARNING !!
+# Do not modify this file directly!
+# !! WARNING !!
+#
+# It is generated from: ../workflows-src/seed.yml
+# using the script from https://github.com/mithro/actions-includes@main
+
+name: seed
+on: workflow_dispatch
+env:
+  ENVIRONMENT: dev
+  SHA: latest
+
+jobs:
+  db_init_file:
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      ADMINS: ${{ github.actor }}, ${{ github.actor }}@users.noreply.github.com
+      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+      SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+      SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
+      SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+      X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/tmp/seed.yml
+    - name: Check out main branch
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+    ##### TODO: Move to composite action when possible #####
+    ##### https://github.com/actions/runner/issues/646 #####
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.2
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2.1.4
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      name: Install dependencies
+      run: poetry install
+    ########################################################
+    ########################################################
+    - name: Get db backup file
+      if: ${{ success() }}
+      run: poetry run invoke db.get-backup
+    - name: Upload init.sql artifact
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: init-sql
+        path: .init/init.sql
+        retention-days: 1
+
+  env_file:
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      ADMINS: ${{ secrets.ADMINS }}
+      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+      SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+      SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+      SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
+      SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+      RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
+      X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/tmp/seed.yml
+    - name: Check out main branch
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+    ##### TODO: Move to composite action when possible #####
+    ##### https://github.com/actions/runner/issues/646 #####
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.2
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2.1.4
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      name: Install dependencies
+      run: poetry install
+    ########################################################
+    ########################################################
+    - name: Inject environment vars
+      if: ${{ success() }}
+      run: poetry run invoke setup.write-env-file --dev
+    - name: Archive .env file
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: env-file
+        path: .env
+        retention-days: 1

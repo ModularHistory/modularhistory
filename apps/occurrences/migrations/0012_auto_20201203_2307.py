@@ -16,11 +16,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='description',
-            field=modularhistory.fields.HTMLField(paragraphed=True, processor=modularhistory.fields.html_field.process, verbose_name='description'),
+            field=modularhistory.fields.HTMLField(
+                paragraphed=True,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='description',
+            ),
         ),
         migrations.AlterField(
             model_name='occurrence',
             name='summary',
-            field=modularhistory.fields.HTMLField(paragraphed=False, processor=modularhistory.fields.html_field.process, verbose_name='summary'),
+            field=modularhistory.fields.HTMLField(
+                paragraphed=False,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='summary',
+            ),
         ),
     ]

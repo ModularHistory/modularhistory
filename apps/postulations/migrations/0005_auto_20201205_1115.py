@@ -16,21 +16,41 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='postulation',
             name='related_entities',
-            field=models.ManyToManyField(related_name='postulations', through='postulations.EntityFactRelation', to='entities.Entity', verbose_name='related entities'),
+            field=models.ManyToManyField(
+                related_name='postulations',
+                through='postulations.EntityFactRelation',
+                to='entities.Entity',
+                verbose_name='related entities',
+            ),
         ),
         migrations.AlterField(
             model_name='postulation',
             name='related_occurrences',
-            field=models.ManyToManyField(related_name='postulations', through='postulations.OccurrenceFactRelation', to='occurrences.Occurrence', verbose_name='related occurrences'),
+            field=models.ManyToManyField(
+                related_name='postulations',
+                through='postulations.OccurrenceFactRelation',
+                to='occurrences.Occurrence',
+                verbose_name='related occurrences',
+            ),
         ),
         migrations.AlterField(
             model_name='postulation',
             name='related_topics',
-            field=models.ManyToManyField(related_name='postulations', through='postulations.TopicFactRelation', to='topics.Topic', verbose_name='related topics'),
+            field=models.ManyToManyField(
+                related_name='postulations',
+                through='postulations.TopicFactRelation',
+                to='topics.Topic',
+                verbose_name='related topics',
+            ),
         ),
         migrations.AlterField(
             model_name='postulation',
             name='supportive_facts',
-            field=models.ManyToManyField(related_name='supported_postulations', through='postulations.PostulationSupport', to='postulations.Postulation', verbose_name='supportive facts'),
+            field=models.ManyToManyField(
+                related_name='supported_postulations',
+                through='postulations.PostulationSupport',
+                to='postulations.Postulation',
+                verbose_name='supportive facts',
+            ),
         ),
     ]

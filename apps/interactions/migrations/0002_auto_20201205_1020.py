@@ -13,16 +13,28 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='comment',
             name='attribute_name',
-            field=models.CharField(help_text='The name of the attribute that maps to the interacted content', max_length=20, verbose_name='attribute name'),
+            field=models.CharField(
+                help_text='The name of the attribute that maps to the interacted content',
+                max_length=20,
+                verbose_name='attribute name',
+            ),
         ),
         migrations.AlterField(
             model_name='edit',
             name='attribute_name',
-            field=models.CharField(help_text='The name of the attribute that maps to the interacted content', max_length=20, verbose_name='attribute name'),
+            field=models.CharField(
+                help_text='The name of the attribute that maps to the interacted content',
+                max_length=20,
+                verbose_name='attribute name',
+            ),
         ),
         migrations.AlterField(
             model_name='highlight',
             name='attribute_name',
-            field=models.CharField(help_text='The name of the attribute that maps to the interacted content', max_length=20, verbose_name='attribute name'),
+            field=models.CharField(
+                help_text='The name of the attribute that maps to the interacted content',
+                max_length=20,
+                verbose_name='attribute name',
+            ),
         ),
     ]

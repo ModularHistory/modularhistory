@@ -25,11 +25,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='image',
             name='key',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name='key'),
+            field=models.UUIDField(
+                default=uuid.uuid4, editable=False, unique=True, verbose_name='key'
+            ),
         ),
         migrations.AlterField(
             model_name='video',
             name='key',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name='key'),
+            field=models.UUIDField(
+                default=uuid.uuid4, editable=False, unique=True, verbose_name='key'
+            ),
         ),
     ]

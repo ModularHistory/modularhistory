@@ -15,6 +15,18 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='related',
-            field=gm2m.fields.GM2MField('quotes.Quote', 'occurrences.Occurrence', blank=True, related_name='sources', through='sources.Citation', through_fields=['source', 'content_object', 'content_type', 'object_id']),
+            field=gm2m.fields.GM2MField(
+                'quotes.Quote',
+                'occurrences.Occurrence',
+                blank=True,
+                related_name='sources',
+                through='sources.Citation',
+                through_fields=[
+                    'source',
+                    'content_object',
+                    'content_type',
+                    'object_id',
+                ],
+            ),
         ),
     ]

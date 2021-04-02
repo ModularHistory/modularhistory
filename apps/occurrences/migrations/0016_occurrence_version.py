@@ -14,6 +14,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='occurrence',
             name='version',
-            field=concurrency.fields.IntegerVersionField(default=0, help_text='record revision number'),
+            field=concurrency.fields.IntegerVersionField(
+                default=0, help_text='record revision number'
+            ),
         ),
     ]

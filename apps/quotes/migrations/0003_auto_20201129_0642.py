@@ -20,6 +20,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quote',
             name='key',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name='key'),
+            field=models.UUIDField(
+                default=uuid.uuid4, editable=False, unique=True, verbose_name='key'
+            ),
         ),
     ]

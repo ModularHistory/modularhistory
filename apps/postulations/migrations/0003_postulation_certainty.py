@@ -13,7 +13,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='postulation',
             name='certainty',
-            field=models.PositiveSmallIntegerField(choices=[(0, 'No credible evidence'), (1, 'Some credible evidence'), (2, 'A preponderance of evidence'), (3, 'Beyond reasonable doubt'), (4, 'Beyond any shadow of a doubt')], default=1, verbose_name='certainty'),
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (0, 'No credible evidence'),
+                    (1, 'Some credible evidence'),
+                    (2, 'A preponderance of evidence'),
+                    (3, 'Beyond reasonable doubt'),
+                    (4, 'Beyond any shadow of a doubt'),
+                ],
+                default=1,
+                verbose_name='certainty',
+            ),
             preserve_default=False,
         ),
     ]

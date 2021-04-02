@@ -15,11 +15,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True, verbose_name='date'),
+            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                blank=True, null=True, verbose_name='date'
+            ),
         ),
         migrations.AlterField(
             model_name='occurrence',
             name='end_date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True, verbose_name='end date'),
+            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                blank=True, null=True, verbose_name='end date'
+            ),
         ),
     ]

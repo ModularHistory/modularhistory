@@ -33,13 +33,9 @@ class DiscordMixin:
 class DiscordLogin(DiscordMixin, SocialLoginView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
 
-    pass
-
 
 class DiscordConnect(DiscordMixin, SocialConnectView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    pass
 
 
 class FacebookMixin:
@@ -51,13 +47,9 @@ class FacebookMixin:
 class FacebookLogin(FacebookMixin, SocialLoginView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
 
-    pass
-
 
 class FacebookConnect(FacebookMixin, SocialConnectView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    pass
 
 
 class GithubMixin:
@@ -71,13 +63,9 @@ class GithubMixin:
 class GithubLogin(GithubMixin, SocialLoginView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
 
-    pass
-
 
 class GithubConnect(GithubMixin, SocialConnectView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    pass
 
 
 class GoogleMixin:
@@ -91,13 +79,9 @@ class GoogleMixin:
 class GoogleLogin(GoogleMixin, SocialLoginView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
 
-    pass
-
 
 class GoogleConnect(GoogleMixin, SocialConnectView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    pass
 
 
 class TwitterMixin:

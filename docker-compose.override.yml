@@ -32,11 +32,7 @@ services:
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
   github_workflow_preprocessor:
-    command: >
-      python -m actions_includes ./.github/workflows-src/cleanup.yml ./.github/workflows/integration.yml
-      && python -m actions_includes ./.github/workflows-src/delivery.yml ./.github/workflows/integration.yml
-      && python -m actions_includes ./.github/workflows-src/integration.yml ./.github/workflows/integration.yml
-      && python -m actions_includes ./.github/workflows-src/seed.yml ./.github/workflows/integration.yml
+    command: sh .github/preprocess.sh
     entrypoint: ''
     image: ghcr.io/mithro/actions-includes/image:main
     user: root

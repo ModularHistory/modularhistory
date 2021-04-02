@@ -14,6 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='pagerange',
             name='citation',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pages', to='sources.citation', verbose_name='citation'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='pages',
+                to='sources.citation',
+                verbose_name='citation',
+            ),
         ),
     ]

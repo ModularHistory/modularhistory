@@ -13,6 +13,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quote',
             name='hidden',
-            field=models.BooleanField(blank=True, default=False, help_text='Hide this item from search results.'),
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='Hide this item from search results.',
+            ),
         ),
     ]

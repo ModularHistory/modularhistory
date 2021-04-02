@@ -1,22 +1,28 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-name: integration
+# !! WARNING !!
+# Do not modify this file directly!
+# !! WARNING !!
+#
+# It is generated from: ../workflows-src/integration.yml
+# using the script from https://github.com/mithro/actions-includes@main
 
+name: integration
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
   push:
-    branches: [ main ]
+    branches: [main]
     paths-ignore:
-      - '.gitignore'
-      - '.github/**'
-      - '!.github/integration.yml'
-      - '.idea/**'
-      - '.vscode/**'
-      - '**.md'
-      - '**.rst'
+    - .gitignore
+    - .github/**
+    - '!.github/integration.yml'
+    - .idea/**
+    - .vscode/**
+    - '**.md'
+    - '**.rst'
   schedule:
-    - cron: '0 9 * * *'
+  - cron: 0 9 * * *
 
 env:
   ADMINS: ${{ secrets.ADMINS }}
@@ -52,7 +58,7 @@ jobs:
       matrix:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
         # NOTE: Services (running in Docker containers) only work on ubuntu.
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os: [macos-latest, ubuntu-latest, windows-latest]
     environment: dev
     env:
       TESTING: true
@@ -61,6 +67,12 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/tmp/integration.yml
     - uses: actions/checkout@v2
     - name: Cache virtual environment
       uses: actions/cache@v2.1.4
@@ -76,14 +88,13 @@ jobs:
 
   test-app:
     name: Test application
-    # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 3
       matrix:
         # services (running in Docker containers) only work on ubuntu
-        os: [ ubuntu-latest ]
-        python-version: [ 3.7 ]
+        os: [ubuntu-latest]
+        python-version: [3.7]
     services:
       postgres:
         image: postgres
@@ -92,7 +103,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
-          - 5432:5432
+        - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -102,7 +113,7 @@ jobs:
       redis:
         image: redis
         ports:
-          - 6379:6379
+        - 6379:6379
         # Set health checks to wait until redis has started
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     environment: integration
@@ -112,8 +123,15 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/tmp/integration.yml
     - uses: actions/checkout@v2
-    - includes: ./.github/actions/setup
+    - id: setup
+      uses: ./.github/actions/setup
       with:
         os: ${{ matrix.os }}
         python-version: ${{ matrix.python-version }}
@@ -131,8 +149,8 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ 3.7 ]
+        os: [ubuntu-latest]
+        python-version: [3.7]
     environment: integration
     env:
       POSTGRES_HOST: postgres
@@ -140,30 +158,31 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    -
-      name: Check out main branch
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/tmp/integration.yml
+    - name: Check out main branch
       uses: actions/checkout@v2
     ##### TODO: Move to composite action when possible #####
     ##### https://github.com/actions/runner/issues/646 #####
-    -
-      name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    -
-      name: Add hosts to /etc/hosts
+    - name: Add hosts to /etc/hosts
       run: |
         sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
-    -
-      name: Install and configure Poetry
+    - name: Install and configure Poetry
       uses: snok/install-poetry@v1.1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    -
-      name: Cache Python virtual environment
+    - name: Cache Python virtual environment
       uses: actions/cache@v2.1.4
       id: cache
       with:
@@ -171,37 +190,31 @@ jobs:
           .venv
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    -
-      name: Install dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get install -y graphviz graphviz-dev
         poetry install
       if: steps.cache.outputs.cache-hit != 'true'
     ########################################################
     ########################################################
-    -
-      name: Inject environment vars
+    - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
-    -
-      name: Set up Docker Buildx
+    - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
-    -
-      name: Cache Docker layers
+    - name: Cache Docker layers
       uses: actions/cache@v2
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
-    -
-      name: Login to GitHub Container Registry
+    - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-    -
-      name: Build Django image
+    - name: Build Django image
       uses: docker/build-push-action@v2
       with:
         push: false
@@ -214,8 +227,7 @@ jobs:
         context: .
         cache-from: type=local,src=/tmp/.buildx-cache/django
         cache-to: type=local,dest=/tmp/.buildx-cache-new/django
-    -
-      name: Build React image
+    - name: Build React image
       uses: docker/build-push-action@v2
       with:
         push: false
@@ -228,16 +240,14 @@ jobs:
         context: .
         cache-from: type=local,src=/tmp/.buildx-cache/react
         cache-to: type=local,dest=/tmp/.buildx-cache-new/react
-    -
-      name: Move cache
+    - name: Move cache
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
       run: |
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-    -
-      name: Run Snyk to check Docker image for vulnerabilities
+    - name: Run Snyk to check Docker image for vulnerabilities
       # Snyk can be used to break the build when it detects vulnerabilities.
       # In this case, we want to upload the issues to GitHub Code Scanning.
       continue-on-error: true
@@ -254,10 +264,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript', 'python' ]
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
-        # Learn more: https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+        language: [javascript, python]
     steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/tmp/integration.yml
     - name: Checkout repository
       uses: actions/checkout@v2
     # Initializes the CodeQL tools for scanning.
@@ -277,11 +291,14 @@ jobs:
 
   OSSAR-Scan:
     name: OSSAR Scan
-    # OSSAR runs on windows-latest.
-    # ubuntu-latest and macos-latest support coming soon.
     runs-on: windows-latest
     steps:
-    # Checkout your code repository to scan
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/tmp/integration.yml
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
