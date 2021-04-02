@@ -1,8 +1,9 @@
 import os
 from getpass import getpass
 from typing import Optional, Tuple
-from django.conf import settings
+
 import requests
+from django.conf import settings
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'

@@ -1,13 +1,14 @@
+from allauth.socialaccount.admin import (
+    SocialAccountAdmin,
+    SocialAppAdmin,
+    SocialTokenAdmin,
+)
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, Permission
-from allauth.socialaccount.admin import (
-    SocialAppAdmin,
-    SocialTokenAdmin,
-    SocialAccountAdmin,
-)
-from allauth.socialaccount.models import SocialApp, SocialAccount, SocialToken
+
 from admin import admin_site
 
 User = get_user_model()
