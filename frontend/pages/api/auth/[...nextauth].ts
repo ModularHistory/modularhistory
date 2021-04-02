@@ -5,10 +5,11 @@ import NextAuth, {
   NextAuthOptions,
   PagesOptions,
   Session as NextAuthSession,
-  User as NextAuthUser,
+  User as NextAuthUser
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
+import { WithAdditionalParams } from "next-auth/_utils";
 import { Session } from "../../../auth";
 import axios from "../../../axios";
 
@@ -144,8 +145,8 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
 };
 
 // https://next-auth.js.org/configuration/callbacks#session-callback
-callbacks.session = async function session(session: NextAuthSession, jwt: JWT) {
-  const sessionPlus: Session = { ...session };
+callbacks.session = async function session(session: Session, jwt: JWT) {
+  const sessionPlus: WithAdditionalParams<Session> = { ...session };
   if (jwt) {
     const accessToken = jwt.accessToken;
     const cookies = jwt.cookies;
