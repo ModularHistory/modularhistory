@@ -4,7 +4,7 @@ import NextAuth, {
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
-  User as NextAuthUser,
+  User as NextAuthUser
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
@@ -38,12 +38,11 @@ const providers = [
     clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET,
     scope: "identify email",
   }),
-  // TODO: Enable Facebook login?
-  // // https://next-auth.js.org/providers/facebook
-  // Providers.Facebook({
-  //   clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
-  // }),
+  // https://next-auth.js.org/providers/facebook
+  Providers.Facebook({
+    clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
+    clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
+  }),
   // https://next-auth.js.org/providers/google
   Providers.Google({
     clientId: process.env.SOCIAL_AUTH_GOOGLE_CLIENT_ID,
