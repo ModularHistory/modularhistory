@@ -38,32 +38,16 @@ class SocialLoginView(BaseSocialLoginView):
 
     def post(self, request: Request, *args, **kwargs):
         """Override the post method to save data from the social media account."""
+        # TODO: https://modularhistory.atlassian.net/browse/MH-155
+        # Check if account with same email address already exists,
+        # and respond appropriately.
+        # https://github.com/Tivix/django-rest-auth/issues/409
+        # user_data = request.data.get('user')
         response = super().post(request, *args, **kwargs)
-        user_data = request.data.get('user')
-        if self.user and user_data:
-            email = user_data.get('email')
-            if email and not self.user.email:
-                try:
-                    # Find and update an existing user with the email address.
-                    user: User = User.objects.get(email=email)
-                    print(f'Found existing user with email address {email}')
-                    try:
-                        for social_account in SocialAccount.objects.filter(
-                            user_id=self.user.pk
-                        ):
-                            social_account.user = user
-                            social_account.save()
-                    except Exception as err:
-                        # TODO: Catch a more specific Exception type
-                        logging.error(err)
-                    # TODO: add celery task to delete
-                    self.user.delete()
-                except ObjectDoesNotExist:
-                    self.user.email = email
-                    self.user.save()
-            # TODO: Update name and image appropriately.
-            # image = user_data.get('image')
-            # name = user_data.get('name')
+        # TODO: Update email, name, and image appropriately.
+        # image = user_data.get('image')
+        # image = user_data.get('image')
+        # name = user_data.get('name')
         return response
 
 
