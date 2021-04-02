@@ -1,30 +1,27 @@
-import { Session as NextAuthSession } from 'next-auth';
-import { signIn, signOut } from 'next-auth/client';
-import { Router } from 'next/router';
-import axios from './axios';
+import { Session as NextAuthSession } from "next-auth";
+import { signIn, signOut } from "next-auth/client";
+import { Router } from "next/router";
+import axios from "./axios";
 
-export const DJANGO_LOGOUT_URL = '/api/users/auth/logout/';
-export const LOGIN_PAGE_PATH = '/auth/signin';
-export const AUTH_REDIRECT_PATH = '/auth/redirect';
-export const NEXT_AUTH_CSRF_COOKIE_NAME = 'next-auth.csrf-token';
-export const AUTH_COOKIES = [
-  'next-auth.session-token',
-  'next-auth.callback-url'
-]
+export const DJANGO_LOGOUT_URL = "/api/users/auth/logout/";
+export const LOGIN_PAGE_PATH = "/auth/signin";
+export const AUTH_REDIRECT_PATH = "/auth/redirect";
+export const NEXT_AUTH_CSRF_COOKIE_NAME = "next-auth.csrf-token";
+export const AUTH_COOKIES = ["next-auth.session-token", "next-auth.callback-url"];
 
 interface Session extends NextAuthSession {
-  refreshToken?: string
+  refreshToken?: string;
 }
 
 export interface Credentials {
-  username: string
-  password: string
+  username: string;
+  password: string;
 }
 
 export const handleLogin = (router: Router): void => {
   // If not already on the sign-in page, initiate the sign-in process.
   // (This prevents messing up the callbackUrl by reloading the sign-in page.)
-  if (router.pathname != '/auth/signin') {
+  if (router.pathname != "/auth/signin") {
     signIn();
   }
 };
@@ -38,12 +35,12 @@ export const handleLogout = (session: Session): void => {
         { refresh: session.refreshToken },
         {
           headers: {
-            Authorization: `Bearer ${session.accessToken}`
-          }
+            Authorization: `Bearer ${session.accessToken}`,
+          },
         }
       )
       .then(function () {
-        console.log('Signed out.');
+        console.log("Signed out.");
       })
       .catch(function (error) {
         console.error(`Failed to sign out due to error: ${error}`);
