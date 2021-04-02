@@ -4,8 +4,7 @@ import NextAuth, {
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
-  Session as NextAuthSession,
-  User as NextAuthUser
+  User as NextAuthUser,
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
