@@ -2,13 +2,13 @@ import { Box, Button, Divider, Grid, Paper, TextField } from "@material-ui/core"
 import Container from "@material-ui/core/Container";
 import Alert from '@material-ui/lab/Alert';
 import axios from "axios";
-import { csrfToken, providers, signIn, signOut, useSession } from "next-auth/client";
+import { csrfToken, providers, signIn, useSession } from "next-auth/client";
 import { Providers } from 'next-auth/providers';
 import { useRouter } from 'next/router';
 import React, { FunctionComponent, useEffect, useState } from "react";
 // https://www.npmjs.com/package/react-social-login-buttons
 import { DiscordLoginButton, FacebookLoginButton, GithubLoginButton, GoogleLoginButton, TwitterLoginButton } from "react-social-login-buttons";
-import { NEXT_AUTH_CSRF_COOKIE_NAME } from '../../auth';
+import { handleLogout, NEXT_AUTH_CSRF_COOKIE_NAME } from '../../auth';
 import Layout from "../../components/layout";
 
 
@@ -49,7 +49,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   }, [redirecting]);
   const callbackUrl = `${router.query?.callbackUrl}`;
   const redirectUrl = callbackUrl || process.env.BASE_URL;
-  const handleSubmit = async (event) => {
+  const handleCredentialLogin = async (event) => {
     event.preventDefault();
     if (!username || !password) {
       setError("You must enter your username and password.")
@@ -77,6 +77,14 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       }
     }
   };
+  const handleSocialLogin = async (provider_id: string) => {
+    console.log('>>>>> handling social login');
+    try {
+      signIn(provider_id);
+    } catch (error) {
+      setError(`${error}`);
+    }
+  }
   const socialAuthLoginComponents = [];
   let SocialLoginButton;
   Object.entries(providers).forEach(
@@ -84,7 +92,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       if (provider.id === CREDENTIALS_KEY) { return null }
       SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
       socialAuthLoginComponents.push(
-        <SocialLoginButton key={provider.name} style={{minWidth: "245px", maxWidth: "245px"}} onClick={() => signIn(provider.id)}>
+        <SocialLoginButton key={provider.name} style={{minWidth: "245px", maxWidth: "245px"}} onClick={() => handleSocialLogin(provider.id)}>
           Sign in with {provider.name}
         </SocialLoginButton>
       );
@@ -114,18 +122,15 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                 You are logged in as <strong>{session.user.username || session.user.email}</strong>.
               </p>
               <br />
-              <Button variant="outlined" color="primary" size="large" onClick={() => signOut()}>
+              <Button variant="outlined" color="primary" size="large" onClick={() => handleLogout(session)}>
                 Sign Out
               </Button>
             </Paper>
           )}
-          {/* Show the sign-in form if:
-           (A) the user is unauthenticated or
-           (B) the user just submitted the sign-in form and is being redirected. */}
           {redirecting || !session?.user && (
             <div id="sign-in">
               <h1 className="page-title text-center" style={{margin: "1rem"}}>Sign in</h1>
-              <form method="post" onSubmit={handleSubmit}>
+              <form method="post" onSubmit={handleCredentialLogin}>
                 <input type="hidden" name="csrfToken" value={csrfToken} />
                 <Grid container spacing={3}>
                   <Grid item xs={12}>

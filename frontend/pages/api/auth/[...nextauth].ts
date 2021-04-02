@@ -27,6 +27,7 @@ interface User extends NextAuthUser {
   accessToken: string;
   refreshToken: string;
   cookies: Array<string>;
+  error?: string;
 }
 
 // https://next-auth.js.org/configuration/providers
@@ -45,7 +46,7 @@ const providers = [
   // }),
   // https://next-auth.js.org/providers/google
   Providers.Google({
-    clientId: process.env.SOCIAL_AUTH_GOOGLE_KEY,
+    clientId: process.env.SOCIAL_AUTH_GOOGLE_CLIENT_ID,
     clientSecret: process.env.SOCIAL_AUTH_GOOGLE_SECRET,
   }),
   // https://next-auth.js.org/providers/twitter
@@ -106,7 +107,7 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
     }
     user = await authenticateWithSocialMediaAccount(user, provider);
   }
-  const allowLogin = user ? true : false;
+  const allowLogin = user.error ? false : true;
   if (!allowLogin) {
     console.log('Rejected login.');
   }
@@ -208,6 +209,7 @@ callbacks.redirect = async function redirect(url, baseUrl) {
 
 // https://next-auth.js.org/configuration/pages
 const pages: PagesOptions = {
+  error: "/auth/signin",
   signIn: "/auth/signin",
   signOut: "/auth/signout",
 };
@@ -300,9 +302,8 @@ async function authenticateWithSocialMediaAccount(user: User, provider) {
       user.cookies = response.headers["set-cookie"];
     })
     .catch(function (error) {
-      // handle error
-      console.error(error);
-      return Promise.resolve(null);
+      user.error = `${error}`;
+      console.error('Attached error to user: ', error);
     });
   return Promise.resolve(user);
 }
