@@ -78,7 +78,7 @@ export default function GlobalNavbar({ menuItems }) {
 
   const hideAccountControls =
     router.pathname === LOGIN_PAGE_PATH || router.pathname === AUTH_REDIRECT_PATH;
-  let accountControls = hideAccountControls ? null : (
+  let accountControls = (
     <Nav.Link onClick={login} href="/api/auth/signin">
       Sign in
     </Nav.Link>
@@ -120,7 +120,7 @@ export default function GlobalNavbar({ menuItems }) {
       );
     }
   }
-
+  if (loading) return null;
   return (
     <Navbar
       id="global-nav"
@@ -145,7 +145,7 @@ export default function GlobalNavbar({ menuItems }) {
             )
           )}
         </Nav>
-        <Nav>{!loading && accountControls}</Nav>
+        <Nav>{!hideAccountControls && accountControls}</Nav>
       </Navbar.Collapse>
     </Navbar>
   );

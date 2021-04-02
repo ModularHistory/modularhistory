@@ -5,13 +5,12 @@ import { handleLogout } from "../../auth";
 import Layout from "../../components/layout";
 
 const SignOut: FunctionComponent = () => {
-  const [session, loading] = useSession();
+  const [session, _loading] = useSession();
   useEffect(() => {
     if (session) {
       handleLogout(session);
     }
   }, [session]);
-  if (loading) return null;
   return (
     <Layout title={"Sign out"}>
       <Container>
@@ -23,7 +22,7 @@ const SignOut: FunctionComponent = () => {
           p={5}
           flexDirection="column"
         >
-          {!loading && <Typography className="text-center">Signing out...</Typography>}
+          <Typography className="text-center">Signing out...</Typography>
         </Box>
       </Container>
     </Layout>
@@ -31,13 +30,3 @@ const SignOut: FunctionComponent = () => {
 };
 
 export default SignOut;
-
-// export const PagelessSignOut: FunctionComponent = () => {
-//   const [session, loading] = useSession();
-//   useEffect(() => {
-//     if (!loading) {
-//       handleLogout(session);
-//     }
-//   }, [loading]);
-//   return null;
-// }

@@ -10,7 +10,6 @@ const Redirect: React.FunctionComponent = () => {
   const [_session, loading] = useSession();
   const path = router.query.path ?? "/";
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-
   return (
     <>
       {!loading && (
@@ -28,7 +27,7 @@ const Redirect: React.FunctionComponent = () => {
             p={5}
             flexDirection="column"
           >
-            {!loading && <Typography className="text-center">Redirecting...</Typography>}
+            <Typography className="text-center">Redirecting...</Typography>
           </Box>
         </Container>
       </Layout>
