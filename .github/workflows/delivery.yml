@@ -1,21 +1,27 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
-name: delivery
+# !! WARNING !!
+# Do not modify this file directly!
+# !! WARNING !!
+#
+# It is generated from: ../workflows-src/delivery.yml
+# using the script from https://github.com/mithro/actions-includes@main
 
+name: delivery
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths-ignore:
-      - '.gitignore'
-      - '.github/**'
-      - '!.github/delivery.yml'
-      - '.idea/**'
-      - '.vscode/**'
-      - '**.md'
-      - '**.rst'
-      - '**.txt'
-      - 'tests.py'
-      - 'setup.sh'
+    - .gitignore
+    - .github/**
+    - '!.github/delivery.yml'
+    - .idea/**
+    - .vscode/**
+    - '**.md'
+    - '**.rst'
+    - '**.txt'
+    - tests.py
+    - setup.sh
 
 env:
   ENVIRONMENT: prod
@@ -32,7 +38,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
-          - 5432:5432
+        - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       ADMINS: ${{ secrets.ADMINS }}
@@ -57,27 +63,26 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SERVER: kfred.dyndns.org
-      SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
-      SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
-      SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
       SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
       SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
       SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
       SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
-      SOCIAL_AUTH_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
-      SOCIAL_AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
       SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
       SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
     environment: prod
     steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/delivery.yml
     - name: Check out main branch
       uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
-    ##### TODO: Move to composite action when possible #####
-    ##### https://github.com/actions/runner/issues/646 #####
     - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
@@ -100,20 +105,17 @@ jobs:
           .venv
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    - if: steps.cache.outputs.cache-hit != 'true'
-      name: Install dependencies
+    - name: Install dependencies
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
       run: |
         sudo apt-get install -y graphviz graphviz-dev
         poetry install
-    ########################################################
-    ########################################################
     - name: Inject environment vars
       if: ${{ success() }}
       run: poetry run invoke setup.write-env-file
     - name: Build and push Docker images
       if: ${{ success() }}
-      run: |
-        poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
     - name: Deploy images to server
       id: deploy-image
       if: ${{ success() }}
@@ -124,7 +126,6 @@ jobs:
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"
         echo "Transferring files to $SERVER..."
-        ls -alt frontend
         scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./templates/error.htm ./.config/nginx/prod/nginx.conf ./.config modularhistory@$SERVER:~/
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
@@ -134,7 +135,7 @@ jobs:
           echo "" && echo "Logging in to the container registry..."
           docker login ghcr.io -u iacobfred -p $CR_PAT
           echo "Pulling images to $SERVER..."
-          docker-compose pull --include-deps django flower react
+          docker-compose pull
           echo "" && echo "Restarting server..."
           docker-compose down --remove-orphans
           docker-compose up -d django flower react
@@ -155,4 +156,4 @@ jobs:
         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
         SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
       with:
-        environment: 'prod'
+        environment: prod
