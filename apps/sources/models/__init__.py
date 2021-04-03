@@ -2,7 +2,7 @@
 
 from .citation import Citation
 from .page_range import PageRange
-from .publication import Journal, Magazine, Newspaper, Publication
+from .publication import Journal, Magazine, Newspaper, Publication, Website
 from .source import Source
 from .source_attribution import SourceAttribution
 from .source_containment import SourceContainment
