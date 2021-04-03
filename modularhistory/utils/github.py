@@ -3,12 +3,13 @@ from getpass import getpass
 from typing import Optional, Tuple
 
 import requests
+from django.conf import settings
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'
 REPO = 'modularhistory'
 GITHUB_ACTIONS_BASE_URL = f'{GITHUB_API_BASE_URL}/repos/{OWNER}/{REPO}/actions'
-GITHUB_CREDENTIALS_FILE = '.github/.credentials'
+GITHUB_CREDENTIALS_FILE = os.path.join(settings.BASE_DIR, '.github/.credentials')
 
 
 def pat_is_valid(username: str, pat: str) -> bool:

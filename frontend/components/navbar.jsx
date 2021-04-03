@@ -6,7 +6,7 @@ import React from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { handleLogin, handleLogout } from "../auth";
+import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "../auth";
 
 const logoImageSrc = "/static/logo_head_white.png";
 const globalMenuItems = [
@@ -76,25 +76,29 @@ export default function GlobalNavbar({ menuItems }) {
     handleLogout(session);
   };
 
-  let accountDropdownIcon;
-  if (session?.user && session.user["avatar"]) {
-    accountDropdownIcon = (
-      <img
-        src={session.user.avatar}
-        className="rounded-circle z-depth-0"
-        alt={session.user.name}
-        height="35"
-      />
-    );
-  } else {
-    accountDropdownIcon = <i className="fas fa-user" />;
-  }
+  const hideAccountControls =
+    router.pathname === LOGIN_PAGE_PATH || router.pathname === AUTH_REDIRECT_PATH;
+  let accountControls = (
+    <Nav.Link onClick={login} href="/api/auth/signin">
+      Sign in
+    </Nav.Link>
+  );
+  let accountDropdownIcon = <i className="fas fa-user" />;
 
-  let accountControls;
   if (session?.user) {
+    if (session.user["avatar"]) {
+      accountDropdownIcon = (
+        <img
+          src={session.user.avatar}
+          className="rounded-circle z-depth-0"
+          alt={session.user.name}
+          height="35"
+        />
+      );
+    }
     if (session.user.is_superuser) {
       accountControls = (
-        <>
+        <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
           <NavDropdown.Item href="/users/profile">Profile</NavDropdown.Item>
           <NavDropdown.Item href="/users/setting">Settings</NavDropdown.Item>
           <NavDropdown.Item href="/admin/">Administrate</NavDropdown.Item>
@@ -104,27 +108,19 @@ export default function GlobalNavbar({ menuItems }) {
           <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
-        </>
+        </NavDropdown>
       );
     } else {
       accountControls = (
-        <>
+        <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
           <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
-        </>
+        </NavDropdown>
       );
     }
-  } else {
-    accountControls = (
-      <>
-        {/* TODO */}
-        {/* <NavDropdown.Item href="/users/register">Create an account</NavDropdown.Item> */}
-        <NavDropdown.Item onClick={login}>Log in</NavDropdown.Item>
-      </>
-    );
   }
-
+  if (loading) return null;
   return (
     <Navbar
       id="global-nav"
@@ -149,17 +145,7 @@ export default function GlobalNavbar({ menuItems }) {
             )
           )}
         </Nav>
-        <Nav>
-          <NavDropdown
-            id="accountDropdown"
-            title={accountDropdownIcon}
-            renderMenuOnMount
-            alignRight
-          >
-            {/* {accountControls} */}
-            {!loading && accountControls}
-          </NavDropdown>
-        </Nav>
+        <Nav>{!hideAccountControls && accountControls}</Nav>
       </Navbar.Collapse>
     </Navbar>
   );

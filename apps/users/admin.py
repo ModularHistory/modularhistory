@@ -1,3 +1,9 @@
+from allauth.socialaccount.admin import (
+    SocialAccountAdmin,
+    SocialAppAdmin,
+    SocialTokenAdmin,
+)
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -264,7 +270,9 @@ class UserAdmin(BaseUserAdmin):
 
     filter_horizontal = ()
 
-    inlines = []
-
 
 admin_site.register(User, UserAdmin)
+
+admin_site.register(SocialApp, SocialAppAdmin)
+admin_site.register(SocialToken, SocialTokenAdmin)
+admin_site.register(SocialAccount, SocialAccountAdmin)
