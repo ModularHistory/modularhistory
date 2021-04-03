@@ -2,6 +2,7 @@ import { Provider } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import React, { useEffect } from "react";
+import "../styles/globals.css";
 import "../../modularhistory/static/styles/base.scss";
 
 const App = ({ Component, pageProps }: AppProps) => {
@@ -17,6 +18,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     // const url = "/api/csrf/set";
     // axios.get(url).then(console.log);
   }, []);
+
   return (
     <>
       <Head>

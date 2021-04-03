@@ -20,10 +20,6 @@ const useStyles = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     marginTop: "1.5rem",
-    // backgroundImage: url('{% static "topic_cloud.png" %}'),
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    backgroundSize: "contain",
   }
 })
 
@@ -72,7 +68,7 @@ export default function Home() {
   );
 
   return (
-    <Layout>
+    <Layout title={"Home"}>
       <div className={classes.root}>
         <Card elevation={5}>
           <CardContent>

@@ -52,13 +52,10 @@ class Document extends BaseDocument {
             href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           />
           {/* Material Design Bootstrap CSS */}
-          <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/css/mdb.min.css"
-          />
-
-          {/*Inheriting templates can add <link rel="stylesheet"> and/or <style> elements with the styles block.*/}
-          {/*{% block styles %}{% endblock %}*/}
+          {/*<link*/}
+          {/*  rel="stylesheet"*/}
+          {/*  href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/css/mdb.min.css"*/}
+          {/*/>*/}
 
           {/* jQuery library */}
           <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" />
@@ -67,13 +64,13 @@ class Document extends BaseDocument {
           {/* Latest compiled Bootstrap JavaScript */}
           <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" />
 
-          {/* PDF.js */}
-          {/* TODO: replace with node package and import where used
-                    https://www.npmjs.com/package/pdfjs-dist */}
-          <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js" defer />
-          {/* Epub.js */}
-          {/* TODO: likewise, https://www.npmjs.com/package/epubjs */}
-          <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js" defer />
+          {/*/!* PDF.js *!/*/}
+          {/*/!* TODO: replace with node package and import where used*/}
+          {/*          https://www.npmjs.com/package/pdfjs-dist *!/*/}
+          {/*<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js" defer />*/}
+          {/*/!* Epub.js *!/*/}
+          {/*/!* TODO: likewise, https://www.npmjs.com/package/epubjs *!/*/}
+          {/*<script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js" defer />*/}
 
           {/*{% if request.user.is_superuser %}*/}
           {/*    <style>*/}
@@ -81,9 +78,6 @@ class Document extends BaseDocument {
           {/*    </style>*/}
           {/*{% endif %}*/}
           {/*<script type="text/javascript" src='{% static "scripts/base.js" %}' defer></script>*/}
-          <style>
-            {"#__next {display: flex; flex-direction: column; min-height: 100%}"}
-          </style>
         </Head>
         <body>
           <Main />

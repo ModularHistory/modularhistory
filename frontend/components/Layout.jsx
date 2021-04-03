@@ -39,7 +39,7 @@ export default function Layout({ title, canonicalUrl, children }) {
 
       <Navbar />
 
-      <div className="main-content">{children}</div>
+      <div className={`main-content `}>{children}</div>
 
       <Footer />
       {/* Removed scripts template tag.
