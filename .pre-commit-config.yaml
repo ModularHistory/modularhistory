@@ -10,6 +10,7 @@ repos:
         entry: bash -c "poetry --help 2> /dev/null && [[ -d ".venv" ]] && poetry run invoke qa.autoformat"
         language: system
         pass_filenames: false
+        stages: [push]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
@@ -23,6 +24,6 @@ repos:
         # https://github.com/mithro/actions-includes
         name: Expand GitHub workflows
         entry: bash -c "docker-compose up github_workflow_preprocessor"
-        files: '.github/workflows-src/*.yml'
         language: system
         pass_filenames: false
+        stages: [push]
