@@ -91,9 +91,13 @@ def seed(
     context,
     username: Optional[str] = None,
     pat: Optional[str] = None,
+    db: bool = True,
+    env_file: bool = True,
 ):
     """Seed a dev database, media directory, and env file."""
     n_expected_artifacts = 2
+    env_file = env_file and input('Seed .env file? [Y/n] ') != NEGATIVE
+    db = db and input('Seed database? [Y/n] ') != NEGATIVE
     username, pat = github_utils.accept_credentials(username, pat)
     session = github_utils.initialize_session(username=username, pat=pat)
     print('Dispatching workflow...')
@@ -117,10 +121,15 @@ def seed(
     for artifact in artifacts:
         artifact_name = artifact['name']
         if artifact_name not in SEEDS:
-            logging.error(f'Unexpected artifact name: "{artifact_name}"')
+            logging.error(f'Unexpected artifact: "{artifact_name}"')
             continue
         dl_urls[artifact_name] = artifact[zip_dl_url_key]
     for seed_name, dest_path in SEEDS.items():
+        # TODO: Refactor
+        if seed_name == 'env-file' and not env_file:
+            continue
+        elif seed_name == 'init-sql' and not db:
+            continue
         zip_file = f'{seed_name}.zip'
         context.run(
             f'curl -u {username}:{pat} -L {dl_urls[seed_name]} --output {zip_file} '
@@ -145,8 +154,9 @@ def seed(
             dest_dir, filename = settings.BASE_DIR, dest_path
         if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
-    # Seed the db
-    db_utils.seed(context)
+    if db:
+        # Seed the db
+        db_utils.seed(context)
     print('Finished.')
 
 

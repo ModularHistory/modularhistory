@@ -4,12 +4,12 @@ import NextAuth, {
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
-  Session,
   User as NextAuthUser
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 import { WithAdditionalParams } from "next-auth/_utils";
+import { Session } from "../../../auth";
 import axios from "../../../axios";
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
@@ -27,75 +27,49 @@ interface User extends NextAuthUser {
   accessToken: string;
   refreshToken: string;
   cookies: Array<string>;
+  error?: string;
 }
 
 // https://next-auth.js.org/configuration/providers
 const providers = [
-  // TODO: https://next-auth.js.org/providers/discord
-  // TODO: https://modularhistory.atlassian.net/browse/MH-136
-  // Providers.Discord({
-  //   clientId: process.env.SOCIAL_AUTH_DISCORD_CLIENT_ID,
-  //   clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET
-  // }),
-  // // TODO: https://next-auth.js.org/providers/facebook
-  // Providers.Facebook({
-  //   clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
-  // }),
-  // // TODO: https://next-auth.js.org/providers/google
-  // Providers.Google({
-  //   clientId: process.env.SOCIAL_AUTH_GOOGLE_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_GOOGLE_SECRET,
-  // }),
-  // // TODO: https://next-auth.js.org/providers/twitter
-  // Providers.Twitter({
-  //   clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
-  //   clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
-  // }),
-  // // TODO: https://next-auth.js.org/providers/github
+  // https://next-auth.js.org/providers/discord
+  Providers.Discord({
+    clientId: process.env.SOCIAL_AUTH_DISCORD_CLIENT_ID,
+    clientSecret: process.env.SOCIAL_AUTH_DISCORD_SECRET,
+    scope: "identify email",
+  }),
+  // https://next-auth.js.org/providers/facebook
+  Providers.Facebook({
+    clientId: process.env.SOCIAL_AUTH_FACEBOOK_KEY,
+    clientSecret: process.env.SOCIAL_AUTH_FACEBOOK_SECRET,
+  }),
+  // https://next-auth.js.org/providers/google
+  Providers.Google({
+    clientId: process.env.SOCIAL_AUTH_GOOGLE_CLIENT_ID,
+    clientSecret: process.env.SOCIAL_AUTH_GOOGLE_SECRET,
+  }),
+  // https://next-auth.js.org/providers/twitter
+  Providers.Twitter({
+    clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
+    clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
+  }),
+  // TODO: Someday, enable troublesome GitHub login?
+  // // https://next-auth.js.org/providers/github
   // Providers.GitHub({
-  //   clientId: process.env.SOCIAL_AUTH_GITHUB_KEY,
+  //   clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
   //   clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
   // }),
-  // TODO: https://next-auth.js.org/providers/credentials
+  // https://next-auth.js.org/providers/credentials
   Providers.Credentials({
     id: "credentials",
-    // The name to display on the sign-in form (i.e., 'Sign in with ...')
-    name: "Credentials",
-    // The fields expected to be submitted in the sign-in form
+    name: "Credentials", // name to display on the sign-in form ('Sign in with ____')
     credentials: {
+      // fields expected to be submitted in the sign-in form
       username: { label: "Username", type: "text", placeholder: "" },
       password: { label: "Password", type: "password" },
     },
     async authorize(credentials) {
-      const url = makeDjangoApiUrl("/users/auth/login/");
-      // TODO: Use state? See https://github.com/iMerica/dj-rest-auth/blob/master/demo/react-spa/src/App.js.
-      let user;
-      await axios
-        .post(url, {
-          username: credentials.username,
-          password: credentials.password,
-        })
-        .then(function (response: AxiosResponse) {
-          user = response.data["user"];
-          if (!user) {
-            console.log("Response did not contain user data.");
-            return Promise.resolve(null);
-          }
-          /*
-            Attach necessary values to the user object.
-            Subsequently, the JWT callback reads these values from the user object
-            and attaches them to the token object that it returns.
-          */
-          user.accessToken = response.data.access_token;
-          user.refreshToken = response.data.refresh_token;
-          user.cookies = response.headers["set-cookie"];
-        })
-        .catch(function (error) {
-          console.error(`Failed to authenticate due to error: ${error}`);
-          return Promise.resolve(null);
-        });
-      return Promise.resolve(user);
+      return await authenticateWithCredentials(credentials);
     },
   }),
 ];
@@ -103,86 +77,42 @@ const providers = [
 // https://next-auth.js.org/configuration/callbacks
 const callbacks: CallbacksOptions = {};
 
-callbacks.signIn = async function signIn(user: User, provider, data) {
-  let accessToken: string;
-  let refreshToken: string;
-  let cookies: Array<string>;
-  if (provider.id === "credentials") {
-    /*
-      Coming from the credentials provider, `data` is of this form:
-      {
-        csrfToken: 'example',
-        username: 'example',
-        password: 'example'
-      }
-    */
-    accessToken = user.accessToken;
-    refreshToken = user.refreshToken;
-    cookies = user.cookies;
-  } else {
-    let socialUser;
-    switch (provider.id) {
+callbacks.signIn = async function signIn(user: User, provider, _data) {
+  if (provider.type != "credentials") {
+    switch (provider.provider) {
       case "discord": // https://next-auth.js.org/providers/discord
-        socialUser = {
-          id: data.id,
-          login: data.login,
-          name: data.name,
-          avatar: user.image,
-        };
         break;
       case "facebook": // https://next-auth.js.org/providers/facebook
-        socialUser = {
-          id: data.id,
-          login: data.login,
-          name: data.name,
-          avatar: user.image,
-        };
         break;
-      case "github": // https://next-auth.js.org/providers/github
-        // TODO: https://modularhistory.atlassian.net/browse/MH-136
-        // https://getstarted.sh/bulletproof-next/add-social-authentication/5
-        // const emailRes = await fetch('https://api.github.com/user/emails', {
-        //   headers: {
-        //     'Authorization': `token ${account.accessToken}`
-        //   }
-        // })
-        // const emails = await emailRes.json()
-        // const primaryEmail = emails.find(e => e.primary).email;
-        // user.email = primaryEmail;
-        socialUser = {
-          id: data.id,
-          login: data.login,
-          name: data.name,
-          avatar: user.image,
-        };
+      case "github": {
+        // https://next-auth.js.org/providers/github
+        // Retrieve email address, if necessary.
+        if (!user.email) {
+          const emailRes = await fetch("https://api.github.com/user/emails", {
+            headers: { Authorization: `token ${provider.accessToken}` },
+          });
+          const emails = await emailRes.json();
+          if (emails?.length != 0) {
+            user.email = emails.find((emails) => emails.primary).email;
+          }
+        }
         break;
+      }
       case "google": // https://next-auth.js.org/providers/google
-        socialUser = {
-          id: data.id,
-          login: data.login,
-          name: data.name,
-          avatar: user.image,
-        };
         break;
       case "twitter": // https://next-auth.js.org/providers/twitter
-        socialUser = {
-          id: data.id,
-          login: data.login,
-          name: data.name,
-          avatar: user.image,
-        };
         break;
       default:
+        console.error("Unrecognized auth provider:", provider);
         return false;
     }
-    accessToken = accessToken || null; // TODO: https://modularhistory.atlassian.net/browse/MH-136: await getTokenFromYourAPIServer(account.provider, socialUser);
-    refreshToken = refreshToken || null; // TODO: https://modularhistory.atlassian.net/browse/MH-136: await getTokenFromYourAPIServer(account.provider, socialUser);
-    cookies = cookies || null;
+    user = await authenticateWithSocialMediaAccount(user, provider);
   }
-  user.accessToken = accessToken;
-  user.refreshToken = refreshToken;
-  user.cookies = cookies;
-  return true;
+  const allowLogin = user.error ? false : true;
+  if (!allowLogin) {
+    console.log("Rejected login.");
+  }
+  return allowLogin;
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback
@@ -191,9 +121,9 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
   // this callback is called on a new session, after the user signs in.
   if (user && account) {
     // initial sign in
-    token.accessToken = user.accessToken || account.accessToken; // TODO: https://modularhistory.atlassian.net/browse/MH-136
+    token.accessToken = user.accessToken;
     token.cookies = user.cookies;
-    token.refreshToken = user.refreshToken || account.refresh_token; // TODO: https://modularhistory.atlassian.net/browse/MH-136
+    token.refreshToken = user.refreshToken;
   }
   if (token.cookies) {
     let sessionTokenCookie;
@@ -233,20 +163,22 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
         console.error("Session got an expired access token.");
       }
       sessionPlus.cookies = cookies;
-      let userData;
-      await axios
-        .get(makeDjangoApiUrl("/users/me/"), {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then(function (response: AxiosResponse) {
-          userData = response.data;
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
-      sessionPlus.user = userData;
+      if (!sessionPlus.user) {
+        let userData;
+        await axios
+          .get(makeDjangoApiUrl("/users/me/"), {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(function (response: AxiosResponse) {
+            userData = response.data;
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+        sessionPlus.user = userData;
+      }
     }
   }
   return sessionPlus;
@@ -254,12 +186,26 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
 
 callbacks.redirect = async function redirect(url, baseUrl) {
   url = url.startsWith(baseUrl) ? url : baseUrl;
-  // TODO: refactor
+  // Strip /auth/signin from the redirect URL if necessary,
+  // so that the user is instead redirected to the homepage.
+  const path = url.replace(baseUrl, "").replace("/auth/signin", "");
+  // Determine whether the redirect URL is to a React or to a non-React page.
   const reactPattern = /\/(entities\/?|other_react_pattern\/?)/;
-  if (!url.includes("/auth/redirect/")) {
-    if (!reactPattern.test(url)) {
-      const path = url.replace(baseUrl, "");
+  if (reactPattern.test(url)) {
+    // If redirecting to a React page,
+    // Strip /auth/redirect from the redirect URL if necessary.
+    if (url.includes("/auth/redirect/")) {
+      url = url.replace("/auth/redirect", "");
+    }
+  } else {
+    // If redirecting to a non-React page,
+    // Add /auth/redirect to the redirect URL if necessary.
+    // This will cause the user to first be routed to the "redirect page," where
+    // Next.js can set or remove cookies before routing the user to the callback URL.
+    if (!url.includes("/auth/redirect/")) {
       url = `${baseUrl}/auth/redirect/${path}`;
+      // Remove duplicate slashes.
+      url = url.replace(/([^:]\/)\/+/g, "$1");
     }
   }
   return url;
@@ -267,6 +213,7 @@ callbacks.redirect = async function redirect(url, baseUrl) {
 
 // https://next-auth.js.org/configuration/pages
 const pages: PagesOptions = {
+  error: "/auth/signin",
   signIn: "/auth/signin",
   signOut: "/auth/signout",
 };
@@ -292,24 +239,78 @@ const authHandler: NextApiHandler = (req: NextApiRequest, res: NextApiResponse) 
 
 export default authHandler;
 
-// TODO: https://modularhistory.atlassian.net/browse/MH-136
-// async function getTokenFromDjangoServer(user: User) {
-//   const url = makeDjangoApiUrl("/token/obtain");
-//   const response = await axios
-//     .post(url, {
-//       username: credentials.username,
-//       password: credentials.password,
-//     })
-//     .then(function (response) {
-//       // handle success
-//       console.log(response);
-//     })
-//     .catch(function (error) {
-//       // handle error
-//       console.error(error);
-//     });
-//   return response;
-// }
+async function authenticateWithCredentials(credentials) {
+  const url = makeDjangoApiUrl("/users/auth/login/");
+  let user;
+  await axios
+    .post(url, {
+      username: credentials.username,
+      password: credentials.password,
+    })
+    .then(function (response: AxiosResponse) {
+      user = response.data["user"];
+      if (!user) {
+        console.log("Response did not contain user data.");
+        return Promise.resolve(null);
+      }
+      /*
+        Attach necessary values to the user object.
+        Subsequently, the JWT callback reads these values from the user object
+        and attaches them to the token object that it returns.
+      */
+      user.accessToken = response.data.access_token;
+      user.refreshToken = response.data.refresh_token;
+      user.cookies = response.headers["set-cookie"];
+    })
+    .catch(function (error) {
+      console.error(`${error}`);
+      return Promise.resolve(null);
+    });
+  return Promise.resolve(user);
+}
+
+interface SocialMediaAccountCredentials {
+  access_token?: string;
+  code?: string;
+  token_secret?: string;
+  refresh_token?: string;
+  user: User;
+}
+
+async function authenticateWithSocialMediaAccount(user: User, provider) {
+  const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
+  const credentials: SocialMediaAccountCredentials = { user: user };
+  switch (provider.provider) {
+    case "discord": // https://next-auth.js.org/providers/discord
+    case "facebook": // https://next-auth.js.org/providers/facebook
+    case "github": // https://next-auth.js.org/providers/github
+    case "google": // https://next-auth.js.org/providers/google
+    case "twitter": // https://next-auth.js.org/providers/twitter
+      credentials.access_token = provider.accessToken;
+      credentials.refresh_token = provider.refreshToken;
+      break;
+    default:
+      console.error("Unsupported provider:", provider.provider);
+      return user;
+  }
+  await axios
+    .post(url, credentials)
+    .then(function (response) {
+      /*
+        Attach necessary values to the user object.
+        Subsequently, the JWT callback reads these values from the user object
+        and attaches them to the token object that it returns.
+      */
+      user.accessToken = response.data.access_token;
+      user.refreshToken = response.data.refresh_token;
+      user.cookies = response.headers["set-cookie"];
+    })
+    .catch(function (error) {
+      user.error = `${error}`;
+      console.error("Attached error to user: ", error);
+    });
+  return Promise.resolve(user);
+}
 
 // https://next-auth.js.org/tutorials/refresh-token-rotation
 async function refreshAccessToken(jwt: JWT) {
@@ -325,14 +326,14 @@ async function refreshAccessToken(jwt: JWT) {
     })
     .then(function (response: AxiosResponse) {
       if (response.data.access && response.data.access_token_expiration) {
-        /*
-        If the refresh token was valid, the API responds:
-        {
-          "access": "eyJ0eXAiOiJKV1QiLCJhbGciOzODQzLCJqdGkiOngly0HZdKFEXgsq3J_XsjG66ic",
-          "access_token_expiration": "2021-03-25T20:24:03.605165Z"
-        }
-      */
         console.log("Refreshed access token.");
+        /*
+          Example response:
+          {
+            "access": "eyJ0eXAiOiJKV1QiLCJhbGciOzODQzLCJqdGkiOngly0HZdG66ic",
+            "access_token_expiration": "2021-03-25T20:24:03.605165Z"
+          }
+        */
         const accessTokenExpiry = Date.parse(response.data.access_token_expiration);
         const cookies = response.headers["set-cookie"];
         if (Date.now() > accessTokenExpiry) {
@@ -349,14 +350,14 @@ async function refreshAccessToken(jwt: JWT) {
           exp: accessTokenExpiry / 1000,
         };
       } else if (response.data.code === "token_not_valid") {
-        /*
-        If the refresh token was invalid, the API responds:
-        {
-          "detail": "Token is invalid or expired",
-          "code": "token_not_valid"
-        }
-      */
         console.log("Refresh token expired.");
+        /*
+          Example response:
+          {
+            "detail": "Token is invalid or expired",
+            "code": "token_not_valid"
+          }
+        */
       } else {
         console.error(`Failed to parse response: ${response.data}`);
       }

@@ -1,4 +1,4 @@
-import Container from "@material-ui/core/Container";
+import { Box, Container, Typography } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -10,17 +10,25 @@ const Redirect: React.FunctionComponent = () => {
   const [_session, loading] = useSession();
   const path = router.query.path ?? "/";
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-
   return (
     <>
       {!loading && (
         <Head>
-          <meta httpEquiv="refresh" content={`3; URL=${baseUrl}${path}`} />
+          <meta httpEquiv="refresh" content={`1; URL=${baseUrl}${path}`} />
         </Head>
       )}
       <Layout title={"Redirect"} canonicalUrl="/redirect">
         <Container>
-          <p className="lead text-center">Redirecting...</p>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            m={5}
+            p={5}
+            flexDirection="column"
+          >
+            <Typography className="text-center">Redirecting...</Typography>
+          </Box>
         </Container>
       </Layout>
     </>
