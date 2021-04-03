@@ -24,5 +24,3 @@ class SearchableDatedModel(SearchableModel, DatedModel):
 
     class FieldNames(SearchableModel.FieldNames, DatedModel.FieldNames):
         """Field names used by SearchableDatedModel."""
-
-        pass

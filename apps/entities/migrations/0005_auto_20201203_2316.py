@@ -15,12 +15,27 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='category',
             name='part_of_speech',
-            field=models.CharField(choices=[('noun', 'noun'), ('adj', 'adjective'), ('any', 'noun / adjective')], default='adj', max_length=9, verbose_name='part of speech'),
+            field=models.CharField(
+                choices=[
+                    ('noun', 'noun'),
+                    ('adj', 'adjective'),
+                    ('any', 'noun / adjective'),
+                ],
+                default='adj',
+                max_length=9,
+                verbose_name='part of speech',
+            ),
         ),
         migrations.AlterField(
             model_name='entity',
             name='aliases',
-            field=modularhistory.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None, verbose_name='aliases'),
+            field=modularhistory.fields.array_field.ArrayField(
+                base_field=models.CharField(max_length=100),
+                blank=True,
+                null=True,
+                size=None,
+                verbose_name='aliases',
+            ),
         ),
         migrations.AlterField(
             model_name='entity',

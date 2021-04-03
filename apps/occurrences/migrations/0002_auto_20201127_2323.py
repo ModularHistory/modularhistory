@@ -20,72 +20,127 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='occurrencequoterelation',
             name='quote',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='quote_occurrence_relations', to='quotes.quote'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='quote_occurrence_relations',
+                to='quotes.quote',
+            ),
         ),
         migrations.AddField(
             model_name='occurrencelocation',
             name='location',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='location_occurrences', to='places.place'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='location_occurrences',
+                to='places.place',
+            ),
         ),
         migrations.AddField(
             model_name='occurrencelocation',
             name='occurrence',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='occurrences.occurrence'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='occurrences.occurrence'
+            ),
         ),
         migrations.AddField(
             model_name='occurrenceimage',
             name='image',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='occurrence_relations', to='images.image'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name='occurrence_relations',
+                to='images.image',
+            ),
         ),
         migrations.AddField(
             model_name='occurrenceimage',
             name='occurrence',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='image_relations', to='occurrences.occurrence'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='image_relations',
+                to='occurrences.occurrence',
+            ),
         ),
         migrations.AddField(
             model_name='occurrenceentityinvolvement',
             name='entity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='occurrence_involvements', to='entities.entity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='occurrence_involvements',
+                to='entities.entity',
+            ),
         ),
         migrations.AddField(
             model_name='occurrenceentityinvolvement',
             name='occurrence',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='occurrences.occurrence'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='occurrences.occurrence'
+            ),
         ),
         migrations.AddField(
             model_name='occurrencechaininclusion',
             name='chain',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='occurrence_inclusions', to='occurrences.occurrencechain'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='occurrence_inclusions',
+                to='occurrences.occurrencechain',
+            ),
         ),
         migrations.AddField(
             model_name='occurrencechaininclusion',
             name='occurrence',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='chain_inclusions', to='occurrences.occurrence'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='chain_inclusions',
+                to='occurrences.occurrence',
+            ),
         ),
         migrations.AddField(
             model_name='occurrencechain',
             name='parent_chain',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sub_chains', to='occurrences.occurrencechain'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='sub_chains',
+                to='occurrences.occurrencechain',
+            ),
         ),
         migrations.AddField(
             model_name='occurrence',
             name='chains',
-            field=models.ManyToManyField(related_name='occurrences', through='occurrences.OccurrenceChainInclusion', to='occurrences.OccurrenceChain'),
+            field=models.ManyToManyField(
+                related_name='occurrences',
+                through='occurrences.OccurrenceChainInclusion',
+                to='occurrences.OccurrenceChain',
+            ),
         ),
         migrations.AddField(
             model_name='occurrence',
             name='images',
-            field=models.ManyToManyField(blank=True, related_name='occurrences', through='occurrences.OccurrenceImage', to='images.Image'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='occurrences',
+                through='occurrences.OccurrenceImage',
+                to='images.Image',
+            ),
         ),
         migrations.AddField(
             model_name='occurrence',
             name='involved_entities',
-            field=models.ManyToManyField(blank=True, related_name='involved_occurrences', through='occurrences.OccurrenceEntityInvolvement', to='entities.Entity'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='involved_occurrences',
+                through='occurrences.OccurrenceEntityInvolvement',
+                to='entities.Entity',
+            ),
         ),
         migrations.AddField(
             model_name='occurrence',
             name='locations',
-            field=models.ManyToManyField(blank=True, related_name='occurrences', through='occurrences.OccurrenceLocation', to='places.Place'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='occurrences',
+                through='occurrences.OccurrenceLocation',
+                to='places.Place',
+            ),
         ),
         migrations.AlterUniqueTogether(
             name='occurrencequoterelation',

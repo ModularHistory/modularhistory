@@ -13,6 +13,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quote',
             name='date_is_circa',
-            field=models.BooleanField(blank=True, default=False, verbose_name='date is circa'),
+            field=models.BooleanField(
+                blank=True, default=False, verbose_name='date is circa'
+            ),
         ),
     ]

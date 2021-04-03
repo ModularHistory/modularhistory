@@ -16,36 +16,67 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='categorization',
             name='category',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='categorizations', to='entities.category', verbose_name='category'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='categorizations',
+                to='entities.category',
+                verbose_name='category',
+            ),
         ),
         migrations.AlterField(
             model_name='categorization',
             name='date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True, verbose_name='date'),
+            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                blank=True, null=True, verbose_name='date'
+            ),
         ),
         migrations.AlterField(
             model_name='categorization',
             name='end_date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True, verbose_name='end date'),
+            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                blank=True, null=True, verbose_name='end date'
+            ),
         ),
         migrations.AlterField(
             model_name='categorization',
             name='entity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categorizations', to='entities.entity', verbose_name='entity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='categorizations',
+                to='entities.entity',
+                verbose_name='entity',
+            ),
         ),
         migrations.AlterField(
             model_name='role',
             name='organization',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='roles', to='entities.entity', verbose_name='organization'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='roles',
+                to='entities.entity',
+                verbose_name='organization',
+            ),
         ),
         migrations.AlterField(
             model_name='rolefulfillment',
             name='affiliation',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='role_fulfillments', to='entities.affiliation', verbose_name='affiliation'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='role_fulfillments',
+                to='entities.affiliation',
+                verbose_name='affiliation',
+            ),
         ),
         migrations.AlterField(
             model_name='rolefulfillment',
             name='role',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fulfillments', to='entities.role', verbose_name='role'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='fulfillments',
+                to='entities.role',
+                verbose_name='role',
+            ),
         ),
     ]

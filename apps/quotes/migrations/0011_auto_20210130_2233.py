@@ -15,11 +15,21 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quoteimage',
             name='image',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='quote_relations', to='images.image', verbose_name='image'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name='quote_relations',
+                to='images.image',
+                verbose_name='image',
+            ),
         ),
         migrations.AlterField(
             model_name='quoteimage',
             name='quote',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='image_relations', to='quotes.quote', verbose_name='quote'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='image_relations',
+                to='quotes.quote',
+                verbose_name='quote',
+            ),
         ),
     ]

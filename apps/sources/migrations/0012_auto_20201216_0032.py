@@ -12,8 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.CreateModel(
             name='Website',
-            fields=[
-            ],
+            fields=[],
             options={
                 'proxy': True,
                 'indexes': [],
@@ -24,6 +23,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='publication',
             name='type',
-            field=models.CharField(choices=[('sources.journal', 'journal'), ('sources.magazine', 'magazine'), ('sources.newspaper', 'newspaper'), ('sources.website', 'website')], db_index=True, max_length=255),
+            field=models.CharField(
+                choices=[
+                    ('sources.journal', 'journal'),
+                    ('sources.magazine', 'magazine'),
+                    ('sources.newspaper', 'newspaper'),
+                    ('sources.website', 'website'),
+                ],
+                db_index=True,
+                max_length=255,
+            ),
         ),
     ]

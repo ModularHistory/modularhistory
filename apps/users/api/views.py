@@ -1,8 +1,5 @@
 """API views for the account app."""
 
-import json
-import logging
-from typing import TYPE_CHECKING, Optional
 
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.discord.views import DiscordOAuth2Adapter
@@ -20,7 +17,7 @@ from dj_rest_auth.social_serializers import (
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, HttpRequest, JsonResponse
+from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -63,13 +60,9 @@ class DiscordMixin:
 class DiscordLogin(DiscordMixin, SocialLoginView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
 
-    pass
-
 
 class DiscordConnect(DiscordMixin, SocialConnectView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    pass
 
 
 class FacebookMixin:
@@ -81,13 +74,9 @@ class FacebookMixin:
 class FacebookLogin(FacebookMixin, SocialLoginView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#facebook."""
 
-    pass
-
 
 class FacebookConnect(FacebookMixin, SocialConnectView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    pass
 
 
 class GithubMixin:
@@ -103,13 +92,9 @@ class GithubMixin:
 class GithubLogin(GithubMixin, SocialLoginView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#github."""
 
-    pass
-
 
 class GithubConnect(GithubMixin, SocialConnectView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    pass
 
 
 class GoogleMixin:
@@ -125,13 +110,9 @@ class GoogleMixin:
 class GoogleLogin(GoogleMixin, SocialLoginView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html."""
 
-    pass
-
 
 class GoogleConnect(GoogleMixin, SocialConnectView):
     """See https://dj-rest-auth.readthedocs.io/en/latest/installation.html#additional-social-connect-views."""  # noqa: E501
-
-    pass
 
 
 class TwitterMixin:

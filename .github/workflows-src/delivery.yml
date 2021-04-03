@@ -57,10 +57,15 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SERVER: kfred.dyndns.org
+      SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
+      SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
+      SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
       SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
       SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
       SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
       SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+      SOCIAL_AUTH_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
+      SOCIAL_AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
       SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
       SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -71,37 +76,10 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
-    ##### TODO: Move to composite action when possible #####
-    ##### https://github.com/actions/runner/issues/646 #####
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+    - includes: ./.github/actions/setup
       with:
+        os: ${{ runner.os }}
         python-version: 3.7
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-      shell: bash
-    - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.2
-      with:
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-    - name: Cache Python virtual environment
-      uses: actions/cache@v2.1.4
-      id: cache
-      with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    - if: steps.cache.outputs.cache-hit != 'true'
-      name: Install dependencies
-      run: |
-        sudo apt-get install -y graphviz graphviz-dev
-        poetry install
-    ########################################################
-    ########################################################
     - name: Inject environment vars
       if: ${{ success() }}
       run: poetry run invoke setup.write-env-file
@@ -127,7 +105,7 @@ jobs:
           echo "" && echo "Logging in to the container registry..."
           docker login ghcr.io -u iacobfred -p $CR_PAT
           echo "Pulling images to $SERVER..."
-          docker-compose pull
+          docker-compose pull --include-deps django flower react
           echo "" && echo "Restarting server..."
           docker-compose down --remove-orphans
           docker-compose up -d django flower react

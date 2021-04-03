@@ -14,16 +14,31 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='affiliation',
             name='affiliated_entity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='entities.entity', verbose_name='affiliated entity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='entities.entity',
+                verbose_name='affiliated entity',
+            ),
         ),
         migrations.AlterField(
             model_name='affiliation',
             name='entity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='affiliations', to='entities.entity', verbose_name='entity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='affiliations',
+                to='entities.entity',
+                verbose_name='entity',
+            ),
         ),
         migrations.AlterField(
             model_name='affiliation',
             name='roles',
-            field=models.ManyToManyField(blank=True, related_name='affiliations', through='entities.RoleFulfillment', to='entities.Role', verbose_name='roles'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='affiliations',
+                through='entities.RoleFulfillment',
+                to='entities.Role',
+                verbose_name='roles',
+            ),
         ),
     ]

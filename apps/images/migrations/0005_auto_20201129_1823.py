@@ -13,11 +13,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='image',
             name='hidden',
-            field=models.BooleanField(blank=True, default=False, help_text='Hide this item from search results.'),
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='Hide this item from search results.',
+            ),
         ),
         migrations.AlterField(
             model_name='video',
             name='hidden',
-            field=models.BooleanField(blank=True, default=False, help_text='Hide this item from search results.'),
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='Hide this item from search results.',
+            ),
         ),
     ]

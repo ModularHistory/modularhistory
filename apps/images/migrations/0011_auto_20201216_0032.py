@@ -13,16 +13,35 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='image',
             name='height',
-            field=models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='height'),
+            field=models.PositiveSmallIntegerField(
+                blank=True, null=True, verbose_name='height'
+            ),
         ),
         migrations.AlterField(
             model_name='image',
             name='image_type',
-            field=models.CharField(choices=[('image', 'Image'), ('photo', 'Photo'), ('illustration', 'Illustration'), ('painting', 'Painting'), ('portrait', 'Portrait'), ('diagram', 'Diagram'), ('reconstruction', 'Reconstruction'), ('photomontage', 'Photomontage'), ('model', 'Model')], default='image', max_length=14, verbose_name='image type'),
+            field=models.CharField(
+                choices=[
+                    ('image', 'Image'),
+                    ('photo', 'Photo'),
+                    ('illustration', 'Illustration'),
+                    ('painting', 'Painting'),
+                    ('portrait', 'Portrait'),
+                    ('diagram', 'Diagram'),
+                    ('reconstruction', 'Reconstruction'),
+                    ('photomontage', 'Photomontage'),
+                    ('model', 'Model'),
+                ],
+                default='image',
+                max_length=14,
+                verbose_name='image type',
+            ),
         ),
         migrations.AlterField(
             model_name='image',
             name='width',
-            field=models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='width'),
+            field=models.PositiveSmallIntegerField(
+                blank=True, null=True, verbose_name='width'
+            ),
         ),
     ]

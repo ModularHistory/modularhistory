@@ -11,29 +11,70 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='EntityFactRelation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='OccurrenceFactRelation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='Postulation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('verified', models.BooleanField(default=False, verbose_name='verified')),
-                ('summary', modularhistory.fields.HTMLField(paragraphed=False, processor=modularhistory.fields.html_field.process, unique=True)),
-                ('elaboration', modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=True, processor=modularhistory.fields.html_field.process)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'verified',
+                    models.BooleanField(default=False, verbose_name='verified'),
+                ),
+                (
+                    'summary',
+                    modularhistory.fields.HTMLField(
+                        paragraphed=False,
+                        processor=modularhistory.fields.html_field.process,
+                        unique=True,
+                    ),
+                ),
+                (
+                    'elaboration',
+                    modularhistory.fields.HTMLField(
+                        blank=True,
+                        null=True,
+                        paragraphed=True,
+                        processor=modularhistory.fields.html_field.process,
+                    ),
+                ),
             ],
             options={
                 'abstract': False,
@@ -42,7 +83,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PostulationSupport',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
             ],
             options={
                 'abstract': False,
@@ -51,8 +100,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TopicFactRelation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('fact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_topic_relations', to='postulations.postulation')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'fact',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='fact_topic_relations',
+                        to='postulations.postulation',
+                    ),
+                ),
             ],
         ),
     ]

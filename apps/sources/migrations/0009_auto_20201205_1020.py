@@ -14,11 +14,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='title',
-            field=models.CharField(blank=True, max_length=250, null=True, verbose_name='title'),
+            field=models.CharField(
+                blank=True, max_length=250, null=True, verbose_name='title'
+            ),
         ),
         migrations.AlterField(
             model_name='sourceattribution',
             name='source',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='attributions', to='sources.source', verbose_name='source'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='attributions',
+                to='sources.source',
+                verbose_name='source',
+            ),
         ),
     ]

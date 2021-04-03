@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import sys
 from os.path import join
-from typing import Any, Dict
+from typing import Dict
 
 from decouple import config
 from django.conf.locale.en import formats as en_formats

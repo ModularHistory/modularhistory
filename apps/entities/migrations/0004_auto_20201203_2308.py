@@ -15,6 +15,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='category',
             name='aliases',
-            field=modularhistory.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None, verbose_name='aliases'),
+            field=modularhistory.fields.array_field.ArrayField(
+                base_field=models.CharField(max_length=100),
+                blank=True,
+                null=True,
+                size=None,
+                verbose_name='aliases',
+            ),
         ),
     ]

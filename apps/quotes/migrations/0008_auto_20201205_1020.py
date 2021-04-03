@@ -16,21 +16,45 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quote',
             name='bite',
-            field=modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=None, processor=modularhistory.fields.html_field.process, verbose_name='bite'),
+            field=modularhistory.fields.HTMLField(
+                blank=True,
+                null=True,
+                paragraphed=None,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='bite',
+            ),
         ),
         migrations.AlterField(
             model_name='quote',
             name='context',
-            field=modularhistory.fields.HTMLField(blank=True, help_text='Content to be displayed after the quote', null=True, paragraphed=True, processor=modularhistory.fields.html_field.process, verbose_name='context'),
+            field=modularhistory.fields.HTMLField(
+                blank=True,
+                help_text='Content to be displayed after the quote',
+                null=True,
+                paragraphed=True,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='context',
+            ),
         ),
         migrations.AlterField(
             model_name='quote',
             name='pretext',
-            field=modularhistory.fields.HTMLField(blank=True, help_text='Content to be displayed before the quote', null=True, paragraphed=False, processor=modularhistory.fields.html_field.process, verbose_name='pretext'),
+            field=modularhistory.fields.HTMLField(
+                blank=True,
+                help_text='Content to be displayed before the quote',
+                null=True,
+                paragraphed=False,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='pretext',
+            ),
         ),
         migrations.AlterField(
             model_name='quote',
             name='text',
-            field=modularhistory.fields.HTMLField(paragraphed=True, processor=modularhistory.fields.html_field.process, verbose_name='text'),
+            field=modularhistory.fields.HTMLField(
+                paragraphed=True,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='text',
+            ),
         ),
     ]

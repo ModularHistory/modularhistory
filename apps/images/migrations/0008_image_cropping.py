@@ -14,6 +14,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='cropping',
-            field=image_cropping.fields.ImageRatioField('image', '0x0', adapt_rotation=False, allow_fullsize=True, free_crop=True, help_text='Not yet fully implemented.', hide_image_field=False, size_warning=False, verbose_name='cropping'),
+            field=image_cropping.fields.ImageRatioField(
+                'image',
+                '0x0',
+                adapt_rotation=False,
+                allow_fullsize=True,
+                free_crop=True,
+                help_text='Not yet fully implemented.',
+                hide_image_field=False,
+                size_warning=False,
+                verbose_name='cropping',
+            ),
         ),
     ]

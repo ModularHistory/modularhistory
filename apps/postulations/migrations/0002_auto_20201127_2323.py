@@ -19,57 +19,101 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='topicfactrelation',
             name='topic',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='topic_fact_relations', to='topics.topic'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='topic_fact_relations',
+                to='topics.topic',
+            ),
         ),
         migrations.AddField(
             model_name='postulationsupport',
             name='supported_fact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supported_fact_supports', to='postulations.postulation'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='supported_fact_supports',
+                to='postulations.postulation',
+            ),
         ),
         migrations.AddField(
             model_name='postulationsupport',
             name='supportive_fact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='supportive_fact_supports', to='postulations.postulation'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='supportive_fact_supports',
+                to='postulations.postulation',
+            ),
         ),
         migrations.AddField(
             model_name='postulation',
             name='related_entities',
-            field=models.ManyToManyField(related_name='postulations', through='postulations.EntityFactRelation', to='entities.Entity'),
+            field=models.ManyToManyField(
+                related_name='postulations',
+                through='postulations.EntityFactRelation',
+                to='entities.Entity',
+            ),
         ),
         migrations.AddField(
             model_name='postulation',
             name='related_occurrences',
-            field=models.ManyToManyField(related_name='postulations', through='postulations.OccurrenceFactRelation', to='occurrences.Occurrence'),
+            field=models.ManyToManyField(
+                related_name='postulations',
+                through='postulations.OccurrenceFactRelation',
+                to='occurrences.Occurrence',
+            ),
         ),
         migrations.AddField(
             model_name='postulation',
             name='related_topics',
-            field=models.ManyToManyField(related_name='postulations', through='postulations.TopicFactRelation', to='topics.Topic'),
+            field=models.ManyToManyField(
+                related_name='postulations',
+                through='postulations.TopicFactRelation',
+                to='topics.Topic',
+            ),
         ),
         migrations.AddField(
             model_name='postulation',
             name='supportive_facts',
-            field=models.ManyToManyField(related_name='supported_postulations', through='postulations.PostulationSupport', to='postulations.Postulation'),
+            field=models.ManyToManyField(
+                related_name='supported_postulations',
+                through='postulations.PostulationSupport',
+                to='postulations.Postulation',
+            ),
         ),
         migrations.AddField(
             model_name='occurrencefactrelation',
             name='fact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_occurrence_relations', to='postulations.postulation'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='fact_occurrence_relations',
+                to='postulations.postulation',
+            ),
         ),
         migrations.AddField(
             model_name='occurrencefactrelation',
             name='occurrence',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='occurrence_fact_relations', to='occurrences.occurrence'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='occurrence_fact_relations',
+                to='occurrences.occurrence',
+            ),
         ),
         migrations.AddField(
             model_name='entityfactrelation',
             name='entity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entity_fact_relations', to='entities.entity'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='entity_fact_relations',
+                to='entities.entity',
+            ),
         ),
         migrations.AddField(
             model_name='entityfactrelation',
             name='fact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fact_entity_relations', to='postulations.postulation'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='fact_entity_relations',
+                to='postulations.postulation',
+            ),
         ),
         migrations.AlterUniqueTogether(
             name='topicfactrelation',

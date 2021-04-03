@@ -14,6 +14,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='entity',
             name='slug',
-            field=autoslug.fields.AutoSlugField(blank=True, editable=True, null=True, populate_from='get_slug', unique=True, verbose_name='slug'),
+            field=autoslug.fields.AutoSlugField(
+                blank=True,
+                editable=True,
+                null=True,
+                populate_from='get_slug',
+                unique=True,
+                verbose_name='slug',
+            ),
         ),
     ]

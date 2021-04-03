@@ -53,11 +53,6 @@ def process_flake8_output(output: str, interactive: bool = False):
         _process_flake8_message(location, filename, code, message, options)
         if code in AUTOFORMAT_TRIGGERS:
             files_to_autoformat.add(filename)
-    print()
-    if interactive:
-        if len(files_to_autoformat) and input('Autoformat files? [Y/n] ') != 'n':
-            autoformat(files=files_to_autoformat)
-            flake8()
 
 
 def _process_flake8_message(location, filename, code, message, options):

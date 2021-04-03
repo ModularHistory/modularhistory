@@ -16,7 +16,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='summary',
-            field=modularhistory.fields.HTMLField(default='', paragraphed=False, processor=modularhistory.fields.html_field.process, verbose_name='Summary'),
+            field=modularhistory.fields.HTMLField(
+                default='',
+                paragraphed=False,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='Summary',
+            ),
             preserve_default=False,
         ),
     ]

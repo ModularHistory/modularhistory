@@ -1,19 +1,14 @@
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
 
+# !! WARNING !!
+# Do not modify this file directly!
+# !! WARNING !!
+#
+# It is generated from: ../workflows-src/seed.yml
+# using the script from https://github.com/mithro/actions-includes@main
+
 name: seed
-
 on: workflow_dispatch
-  # workflow_dispatch:
-  #   inputs:
-  #     name:
-  #       description: 'Person to greet'
-  #       required: true
-  #       default: 'Mona the Octocat'
-  #     home:
-  #       description: 'location'
-  #       required: false
-  #       default: 'The Octoverse'
-
 env:
   ENVIRONMENT: dev
   SHA: latest
@@ -23,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-      ADMINS: "${{ github.actor }}, ${{ github.actor }}@users.noreply.github.com"
+      ADMINS: ${{ github.actor }}, ${{ github.actor }}@users.noreply.github.com
       ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
@@ -49,16 +44,25 @@ jobs:
       SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
     steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/seed.yml
     - name: Check out main branch
       uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
-    ##### TODO: Move to composite action when possible #####
-    ##### https://github.com/actions/runner/issues/646 #####
     - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.1.2
       with:
@@ -72,11 +76,11 @@ jobs:
           .venv
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    - if: steps.cache.outputs.cache-hit != 'true'
-      name: Install dependencies
-      run: poetry install
-    ########################################################
-    ########################################################
+    - name: Install dependencies
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      run: |
+        sudo apt-get install -y graphviz graphviz-dev
+        poetry install
     - name: Get db backup file
       if: ${{ success() }}
       run: poetry run invoke db.get-backup
@@ -92,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-      ADMINS: ${{ secrets.ADMINS }}
+      ADMINS: ${{ github.actor }}, ${{ github.actor }}@users.noreply.github.com
       ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
@@ -100,35 +104,39 @@ jobs:
       EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
       IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
       IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
-      SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
-      SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
+      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
       SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
       SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
       SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
       SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
-      SOCIAL_AUTH_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
-      SOCIAL_AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
-      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
-      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
       RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
     steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/seed.yml
     - name: Check out main branch
       uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
-    ##### TODO: Move to composite action when possible #####
-    ##### https://github.com/actions/runner/issues/646 #####
     - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.1.2
       with:
@@ -142,11 +150,11 @@ jobs:
           .venv
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    - if: steps.cache.outputs.cache-hit != 'true'
-      name: Install dependencies
-      run: poetry install
-    ########################################################
-    ########################################################
+    - name: Install dependencies
+      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+      run: |
+        sudo apt-get install -y graphviz graphviz-dev
+        poetry install
     - name: Inject environment vars
       if: ${{ success() }}
       run: poetry run invoke setup.write-env-file --dev
