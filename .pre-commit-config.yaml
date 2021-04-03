@@ -5,7 +5,7 @@ repos:
     hooks:
       - id: autoformat
         name: Autoformat code
-        entry: bash -c "[[ $(docker images -q django:latest 2> /dev/null) == '' ]] && docker image build -t django:latest -f Dockerfile.django; docker run -v $HOME/modularhistory:/modularhistory django:latest invoke qa.autoformat"
+        entry: bash -c "poetry --help 2> /dev/null && [[ -d ".venv" ]] && poetry run invoke qa.autoformat || [[ $(docker images -q django:latest 2> /dev/null) == '' ]] && docker image build -t django:latest -f Dockerfile.django; docker run -v $HOME/modularhistory:/modularhistory django:latest invoke qa.autoformat"
         language: system
         pass_filenames: false
   - repo: https://github.com/pre-commit/pre-commit-hooks
