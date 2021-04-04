@@ -5,6 +5,21 @@ import {useState} from "react";
 
 import ModuleCard from "../components/modulecards/ModuleCard";
 import ModuleDetail from "../components/moduledetails/ModuleDetail";
+import SearchForm from "../components/search/SearchForm";
+
+import {
+  Container,
+  Drawer,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid, InputLabel, MenuItem,
+  Radio,
+  RadioGroup, Select,
+  TextField,
+} from "@material-ui/core";
+
+import {makeStyles} from "@material-ui/styles";
 
 function useTwoPaneState(...args) {
   const [moduleIndex, setModuleIndex] = useState(...args);
@@ -15,12 +30,27 @@ function useTwoPaneState(...args) {
   }];
 }
 
+const useStyles = makeStyles({
+  root: {
+    maxWidth: "230px",
+    paddingTop: "20px",
+    // marginRight: "12px",
+  },
+  paper: {
+    backgroundColor: "whitesmoke",
+  },
+  input: {
+    backgroundColor: "white"
+  }
+});
+
 export default function Search({searchResults}) {
   const router = useRouter();
   const query = router.query['query'];
-  const modules = searchResults['results'];
+  const modules = searchResults['results'] || [];
 
   const [moduleIndex, setModuleIndex] = useTwoPaneState(0);
+  const [isSearchOpen, setIsSearchOpen] = useState(true);
 
   const pageHeader = (
     <h1 className='my-0 py-1'>
@@ -42,7 +72,6 @@ export default function Search({searchResults}) {
             </p>
             <div className="row">
               <div className="col-12 col-md-6 mx-auto my-3 py-3">
-                {/*{% crispy search_form %}*/}
                 <p>{"<Crispy Search Form>"}</p>
               </div>
             </div>
@@ -52,16 +81,23 @@ export default function Search({searchResults}) {
     );
   }
 
+  const classes = useStyles();
+
   return (
     <Layout title={"SERCH"}>
       <div className="serp-container">
-
-        {/*{% with display_option=request.GET.display %}*/}
-        <div id="slider" className="refinements-container side closed">
-          {/*{% crispy search_form %}*/}
+        <Drawer open={isSearchOpen} anchor={"left"} onClose={() => setIsSearchOpen(false)}
+                PaperProps={{className: classes.paper}}>
+          <SearchForm/>
+        </Drawer>
+        <div id="slider"
+             className={`refinements-container side ${isSearchOpen ? "open" : "closed"}`}>
+          {"/*{% crispy search_form %}*/"}
           <p>crispy</p>
         </div>
-        <button id="sliderToggle" className="toggle-button btn btn-md btn-outline-black">
+        <button id="sliderToggle"
+                className="toggle-button btn btn-md btn-outline-black"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}>
           <i className="fas fa-filter"/>
         </button>
 
@@ -124,7 +160,7 @@ export default function Search({searchResults}) {
 
 export async function getServerSideProps(context) {
   let searchResults = {};
-  // convert query object into url query string
+// convert query object into url query string
   const query = (
     Object.entries(context.query).map(([k, v]) => `${k}=${v}`).join('&')
   );
@@ -134,7 +170,7 @@ export async function getServerSideProps(context) {
   ).then((response) => {
     searchResults = response.data;
   }).catch((error) => {
-    // console.error(error);
+// console.error(error);
   });
 
   return {

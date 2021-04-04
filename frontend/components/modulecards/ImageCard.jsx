@@ -13,7 +13,7 @@ export default function ImageCard({image}) {
       {/* TODO: add "alt" tag to img element */}
       <img className="card-img-top lazy"
            src={image['src_url']} />
-      <a href="#" onClick="return false">
+      <a href="#" onClick={(e) => e.preventDefault()}>
         <div className="mask rgba-white-slight"/>
       </a>
     </div>

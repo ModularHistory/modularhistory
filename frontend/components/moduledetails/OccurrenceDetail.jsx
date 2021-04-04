@@ -20,7 +20,7 @@ export default function OccurrenceDetail({occurrence}) {
       <div className="card-text">
         {occurrence['serialized_images'].map((image) => (
           occurrence['description'].includes(image['src_url']) || (
-            <div className="img-container" style={{maxWidth: "44%"}}>
+            <div className="img-container" style={{maxWidth: "44%"}} key={image['src_url']}>
               <ImageCard image={image}/>
             </div>
           )

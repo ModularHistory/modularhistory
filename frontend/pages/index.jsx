@@ -8,7 +8,7 @@ import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -29,14 +29,31 @@ function useQueryState(...args) {
 }
 
 export default function Home() {
-  // TODO: show loading state during transition to search page
-
   const classes = useStyles();
   const router = useRouter();
   const [query, setQuery] = useQueryState("");
+  const [isLoading, setLoading] = useState(false);
+
+  // NextJS router event subscriptions as a placeholder
+  // for a more complex loading indicator
+  // https://nextjs.org/docs/api-reference/next/router
+  // https://github.com/vercel/next.js/blob/canary/docs/api-reference/next/router.md
+  useEffect(() => {
+    const handleRouteChangeStart = () => setLoading(true);
+    const handleRouteChangeComplete = () => setLoading(false);
+    const handleRouteChangeError = () => setLoading(false);
+    router.events.on("routeChangeStart", handleRouteChangeStart);
+    router.events.on("routeChangeComplete", handleRouteChangeComplete);
+    router.events.on("routeChangeError", handleRouteChangeError);
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChangeStart);
+      router.events.off("routeChangeComplete", handleRouteChangeComplete);
+      router.events.off("routeChangeError", handleRouteChangeError);
+    }
+  }, []);
 
   const search = ({key}) => {
-    if (key !== "Enter") return;
+    if (key && key !== "Enter") return;
     router.push({
       pathname: "/search/",
       query: {query}
@@ -56,13 +73,11 @@ export default function Home() {
         />
       </Grid>
       <Grid item>
-        <Link href={`/search/?query=${query}`} passHref>
-          <Button variant={"contained"} color={"primary"}
-                  size={"large"} component={'a'}
-          >
-            Search
-          </Button>
-        </Link>
+        <Button variant={"contained"} color={"primary"}
+                size={"large"} onClick={search} disabled={isLoading}
+        >
+          {isLoading ? "Loading" : "Search"}
+        </Button>
       </Grid>
     </Grid>
   );
