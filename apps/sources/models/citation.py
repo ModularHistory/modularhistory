@@ -46,7 +46,7 @@ class PlaceholderGroups(DefaultPlaceholderGroups):
     QUOTATION = 'quotation'
 
 
-PAGE_STRING_GROUP = rf'(?P<{PlaceholderGroups.PAGE_STRING}>pp?\.\ [\d-–]+)'
+PAGE_STRING_GROUP = rf'(?P<{PlaceholderGroups.PAGE_STRING}>pp?\.\ [\d-]+)'
 QUOTATION_GROUP = rf'(?P<{PlaceholderGroups.QUOTATION}>\".+?\")'
 HTML_GROUP = rf'(?P<{PlaceholderGroups.HTML}>\S.+?)'
 citation_placeholder_pattern = rf'\ ?{OBJECT_PLACEHOLDER_REGEX}'.replace(
