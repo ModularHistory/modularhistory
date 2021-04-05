@@ -4,10 +4,10 @@ from rest_framework import routers
 from apps.stories.api import views
 
 router = routers.DefaultRouter()
-router.register(r'stories', views.PostulationViewSet)
+router.register(r'stories', views.StoryViewSet)
 
 app_name = 'stories'
 
 urlpatterns = [
-    path('', views.PostulationListAPIView.as_view()),
+    path('', views.StoryListAPIView.as_view()),
 ]
