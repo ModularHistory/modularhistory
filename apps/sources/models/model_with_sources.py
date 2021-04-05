@@ -8,6 +8,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from modularhistory.constants.strings import EMPTY_STRING
+from modularhistory.fields import HTMLField
 from modularhistory.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
@@ -26,6 +27,9 @@ class ModelWithSources(Model):
 
     citations = GenericRelation('sources.Citation')
     sources: 'RelatedManager[Source]'
+
+    # Admin-facing notes (not to be displayed to users)
+    notes = HTMLField(null=True, blank=True, paragraphed=True)
 
     class Meta:
         abstract = True
