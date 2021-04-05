@@ -18,11 +18,9 @@ class EntityImage(Model):
     )
 
     class Meta:
-        """
-        Meta options for the EntityImage model.
+        """Meta options for the EntityImage model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         unique_together = ['entity', 'image']
 

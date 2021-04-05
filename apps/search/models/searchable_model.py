@@ -57,11 +57,9 @@ class SearchableModel(
         hidden = 'hidden'
 
     class Meta:
-        """
-        Meta options for SearchableModel.
+        """Meta options for SearchableModel."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True
 

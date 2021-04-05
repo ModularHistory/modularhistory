@@ -15,11 +15,9 @@ class VerifiableModel(Model):
     verifications = GenericRelation('verifications.Verification')
 
     class Meta:
-        """
-        Meta options for VerifiableModel.
+        """Meta options for VerifiableModel."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True
 

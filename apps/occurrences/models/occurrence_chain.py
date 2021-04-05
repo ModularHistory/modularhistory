@@ -38,11 +38,9 @@ class OccurrenceChainInclusion(Model):
     )
 
     class Meta:
-        """
-        Meta options for OccurrenceChainInclusion.
+        """Meta options for OccurrenceChainInclusion."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         unique_together: List[str] = ['chain', 'occurrence']
 

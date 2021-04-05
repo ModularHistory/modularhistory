@@ -17,11 +17,9 @@ class QuoteRelation(PositionedRelation):
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     class Meta:
-        """
-        Meta options for QuoteRelation.
+        """Meta options for QuoteRelation."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         unique_together = ['quote', 'content_type', 'object_id', 'position']
         ordering = ['position', 'quote']

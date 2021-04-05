@@ -82,11 +82,9 @@ class Entity(
     )
 
     class Meta:
-        """
-        Meta options for the Entity model.
+        """Meta options for the Entity model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Entities'
         ordering = ['name']
@@ -189,11 +187,9 @@ class Person(Entity):
     """A person."""
 
     class Meta:
-        """
-        Meta options for the Person model.
+        """Meta options for the Person model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'People'
 
@@ -202,11 +198,9 @@ class Deity(Entity):
     """A deity."""
 
     class Meta:
-        """
-        Meta options for the Deity model.
+        """Meta options for the Deity model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Deities'
 
@@ -215,11 +209,9 @@ class Group(Entity):
     """A group of people."""
 
     class Meta:
-        """
-        Meta options for the Group model.
+        """Meta options for the Group model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Groups'
 
@@ -228,11 +220,9 @@ class Organization(Entity):
     """An organization."""
 
     class Meta:
-        """
-        Meta options for the Organization model.
+        """Meta options for the Organization model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Organizations'
 
