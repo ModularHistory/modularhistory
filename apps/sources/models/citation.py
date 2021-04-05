@@ -1,9 +1,9 @@
 """Model class for citations."""
 
 import logging
-import re
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Match, Optional, Union
 
+import regex as re
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -46,7 +46,10 @@ class PlaceholderGroups(DefaultPlaceholderGroups):
     QUOTATION = 'quotation'
 
 
-PAGE_STRING_GROUP = rf'(?P<{PlaceholderGroups.PAGE_STRING}>pp?\.\ [\d-]+)'
+HYPHEN_OR_EN_DASH = r'\p{Pd}'
+PAGE_STRING_GROUP = (
+    rf'(?P<{PlaceholderGroups.PAGE_STRING}>pp?\.\ [\d{HYPHEN_OR_EN_DASH}]+)'
+)
 QUOTATION_GROUP = rf'(?P<{PlaceholderGroups.QUOTATION}>\".+?\")'
 HTML_GROUP = rf'(?P<{PlaceholderGroups.HTML}>\S.+?)'
 citation_placeholder_pattern = rf'\ ?{OBJECT_PLACEHOLDER_REGEX}'.replace(
@@ -256,9 +259,7 @@ class Citation(PositionedRelation):
         )
 
     @classmethod
-    def get_object_html(
-        cls, match: re.Match, use_preretrieved_html: bool = False
-    ) -> Optional[str]:
+    def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
         """Return the object's HTML based on a placeholder in the admin."""
         if not re.match(citation_placeholder_pattern, match.group(0)):
             raise ValueError(f'{match} does not match {citation_placeholder_pattern}')
@@ -272,7 +273,7 @@ class Citation(PositionedRelation):
             citation = cls.objects.get(pk=key)
         except ObjectDoesNotExist:
             logging.error(f'Unable to retrieve citation: {key}')
-            return None
+            return ''
         source_string = str(citation)
         page_string = match.group(PlaceholderGroups.PAGE_STRING)
         quotation = match.group(PlaceholderGroups.QUOTATION)
@@ -297,7 +298,7 @@ class Citation(PositionedRelation):
         return citation_link
 
     @classmethod
-    def get_updated_placeholder(cls, match: re.Match) -> str:
+    def get_updated_placeholder(cls, match: Match) -> str:
         """Return an up-to-date placeholder for a citation included in an HTML field."""
         placeholder = match.group(0)
         appendage = match.group(7)

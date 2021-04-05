@@ -1,8 +1,7 @@
 """Model classes for the quotes app."""
 
 import logging
-import re
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Match, Optional
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -261,9 +260,7 @@ class Quote(
             self.bite = text  # type: ignore  # TODO: remove type ignore
 
     @classmethod
-    def get_object_html(
-        cls, match: re.Match, use_preretrieved_html: bool = False
-    ) -> str:
+    def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
         """Return the obj's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)

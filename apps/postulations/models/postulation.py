@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import Optional
+from typing import Match, Optional
 
 from django.db import models
 from django.urls import reverse
@@ -107,9 +107,7 @@ class Postulation(VerifiableModel, ModelWithSources):
         return summary_link
 
     @classmethod
-    def get_object_html(
-        cls, match: re.Match, use_preretrieved_html: bool = False
-    ) -> str:
+    def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
         """Return the obj's HTML based on a placeholder in the admin."""
         if not match:
             logging.error('fact.get_object_html was called without a match')
@@ -123,7 +121,7 @@ class Postulation(VerifiableModel, ModelWithSources):
         return fact.summary_link
 
     @classmethod
-    def get_updated_placeholder(cls, match: re.Match) -> str:
+    def get_updated_placeholder(cls, match: Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = match.group(0)
         logging.debug(f'Looking at {truncate(placeholder)}')

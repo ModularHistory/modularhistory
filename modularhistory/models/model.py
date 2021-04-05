@@ -1,10 +1,10 @@
 """Base model classes for ModularHistory."""
 
 import logging
-import re
 from pprint import pformat
 from typing import Any, ClassVar, Dict, List, Match, Optional, Pattern, Tuple, Type
 
+import regex
 import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
@@ -73,7 +73,7 @@ class Model(DjangoModel):
                 rf'(?P<{PlaceholderGroups.MODEL_NAME}>{content_type})',
             )
             logging.debug(f'Calculated placeholder regex for {content_type}: {pattern}')
-        return re.compile(pattern)
+        return regex.compile(pattern)
 
     @classmethod
     def get_searchable_fields(cls) -> FieldList:
@@ -176,7 +176,7 @@ class Model(DjangoModel):
     @classmethod
     def get_object_html(
         cls,
-        match: re.Match,
+        match: Match,
         use_preretrieved_html: bool = False,
     ) -> str:
         """Return a model instance's HTML based on a placeholder in the admin."""
