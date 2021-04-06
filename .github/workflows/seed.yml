@@ -58,31 +58,42 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    # Modify hosts file.
     - name: Add hosts to /etc/hosts
       run: |
         sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
+    # Install and configure Poetry.
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - name: Create .venv if necessary
-      run: mkdir -p "$GITHUB_WORKSPACE/.venv"
+    # Load cached .venv, if it exists.
     - name: Cache Python virtual environment
       uses: actions/cache@v2.1.4
-      id: cache
+      id: venv-cache
       with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install dependencies
-      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        path: .venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Cache node modules
+      uses: actions/cache@v2.1.4
+      id: node-modules-cache
+      with:
+        path: frontend/node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' }}
       run: |
         sudo apt-get install -y graphviz graphviz-dev
         poetry install
+    - name: Install JavaScript dependencies
+      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
+      run: |
+        cd frontend
+        npm ci
+        cd ..
     - name: Get db backup file
       if: ${{ success() }}
       run: poetry run invoke db.get-backup
@@ -134,31 +145,42 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    # Modify hosts file.
     - name: Add hosts to /etc/hosts
       run: |
         sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
+    # Install and configure Poetry.
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - name: Create .venv if necessary
-      run: mkdir -p "$GITHUB_WORKSPACE/.venv"
+    # Load cached .venv, if it exists.
     - name: Cache Python virtual environment
       uses: actions/cache@v2.1.4
-      id: cache
+      id: venv-cache
       with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install dependencies
-      if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        path: .venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Cache node modules
+      uses: actions/cache@v2.1.4
+      id: node-modules-cache
+      with:
+        path: frontend/node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' }}
       run: |
         sudo apt-get install -y graphviz graphviz-dev
         poetry install
+    - name: Install JavaScript dependencies
+      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
+      run: |
+        cd frontend
+        npm ci
+        cd ..
     - name: Inject environment vars
       if: ${{ success() }}
       run: poetry run invoke setup.write-env-file --dev
