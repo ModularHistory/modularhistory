@@ -3,7 +3,7 @@
 import logging
 from typing import TYPE_CHECKING, Match, Optional, Union
 
-import regex as re
+import regex
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -33,10 +33,9 @@ from modularhistory.utils.html import (
 )
 
 if TYPE_CHECKING:
-    from django.db.models.manager import RelatedManager
+    pass
 
     from apps.quotes.models import Quote
-    from apps.sources.models import PageRange
 
 
 class PlaceholderGroups(DefaultPlaceholderGroups):
@@ -103,18 +102,16 @@ class Citation(PositionedRelation):
         related_name='citations',
         on_delete=models.PROTECT,
     )
-    pages2 = JSONField(schema=PAGES_SCHEMA)
+    pages = JSONField(schema=PAGES_SCHEMA)
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
-
-    pages: 'RelatedManager[PageRange]'
 
     class Meta:
         unique_together = ['source', 'content_type', 'object_id', 'position']
         ordering = ['position', 'source']
 
-    page_string_regex = re.compile(PAGE_STRING_REGEX)
+    page_string_regex = regex.compile(PAGE_STRING_REGEX)
     placeholder_regex = citation_placeholder_pattern
     serializer = CitationSerializer
 
@@ -196,22 +193,33 @@ class Citation(PositionedRelation):
     def primary_page_number(self) -> Optional[int]:
         """Return the page number of the citation's primary page range."""
         try:
-            return self.pages.first().page_number  # type: ignore
-        except (ObjectDoesNotExist, AttributeError):
+            return self.pages[0][0]
+        except IndexError:
             return None
 
     @property
     def page_number_html(self) -> Optional[str]:
         """Return the HTML representation of the citation's page numbers."""
         html = None
-        page_number_strings = [
-            page_range.unprefixed_html for page_range in self.pages.all().iterator()
-        ]
+        page_number_strings = []
+        for page_range in self.pages:
+            pn, end_pn = page_range[0], page_range[1] if len(page_range) > 1 else None
+            pn_url = self.get_page_number_url(pn)
+            pn_html = self.get_page_number_link(pn, pn_url) or str(pn)
+            if end_pn:
+                end_pn_url = self.get_page_number_url(end_pn)
+                end_pn_html = self.get_page_number_link(end_pn, end_pn_url) or str(
+                    end_pn
+                )
+                pn_html = f'{pn_html}–{end_pn_html}'
+            else:
+                pn_html = f'{pn_html}'
+            page_number_strings.append(pn_html)
         n_strings = len(page_number_strings)
         if n_strings > 1:
             html = f'pp. {", ".join(page_number_strings)}'
         elif n_strings:
-            if re.search(r'(?:–|&ndash;)', page_number_strings[0]):
+            if regex.search(r'(?:–|&ndash;)', page_number_strings[0]):
                 html = f'pp. {", ".join(page_number_strings)}'
             else:
                 html = f'p. {", ".join(page_number_strings)}'
@@ -238,7 +246,7 @@ class Citation(PositionedRelation):
                 if pdf.url_specifies_page(file_url):
                     pattern = rf'{pdf.PAGE_KEY}=\d+'
                     replacement = f'{pdf.PAGE_KEY}={self.source_file_page_number}'
-                    file_url = re.sub(pattern, replacement, file_url)
+                    file_url = regex.sub(pattern, replacement, file_url)
                 else:
                     file_url = (
                         f'{file_url}#{pdf.PAGE_KEY}={self.source_file_page_number}'
@@ -258,7 +266,7 @@ class Citation(PositionedRelation):
                 return None
             page_number += source_file.page_offset
             if pdf.url_specifies_page(file_url):
-                page_number_url = re.sub(
+                page_number_url = regex.sub(
                     rf'{pdf.PAGE_KEY}=\d+', f'{pdf.PAGE_KEY}={page_number}', file_url
                 )
             else:
@@ -280,7 +288,7 @@ class Citation(PositionedRelation):
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
         """Return the object's HTML based on a placeholder in the admin."""
-        if not re.match(citation_placeholder_pattern, match.group(0)):
+        if not regex.match(citation_placeholder_pattern, match.group(0)):
             raise ValueError(f'{match} does not match {citation_placeholder_pattern}')
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
@@ -327,6 +335,6 @@ class Citation(PositionedRelation):
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
-            stem = re.sub(rf' ?{END_PATTERN}', '', placeholder)
+            stem = regex.sub(rf' ?{END_PATTERN}', '', placeholder)
             updated_placeholder = f'{stem}{updated_appendage} ]]'
         return updated_placeholder
