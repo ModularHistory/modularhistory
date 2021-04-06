@@ -102,7 +102,7 @@ class Citation(PositionedRelation):
         related_name='citations',
         on_delete=models.PROTECT,
     )
-    pages = JSONField(schema=PAGES_SCHEMA)
+    pages = JSONField(schema=PAGES_SCHEMA, default=list)
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
@@ -194,7 +194,7 @@ class Citation(PositionedRelation):
         """Return the page number of the citation's primary page range."""
         try:
             return self.pages[0][0]
-        except IndexError:
+        except (IndexError, KeyError):
             return None
 
     @property
