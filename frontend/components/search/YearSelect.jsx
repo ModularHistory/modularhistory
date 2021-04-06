@@ -1,11 +1,15 @@
 import TextField from "./StyledTextField";
 import {Grid, MenuItem} from "@material-ui/core";
+import {useContext} from "react";
+import {SearchFormContext} from "./SearchForm";
 
-export default function YearSelect({label, name, state, setState}) {
+export default function YearSelect({label, name}) {
+  const [state, setState] = useContext(SearchFormContext);
+
   const valueName = `${name}_0`;
   const typeName = `${name}_1`;
 
-  const yearValue = state[valueName] ?? 0;
+  const yearValue = state[valueName] ?? "";
   const yearType = state[typeName] ?? "CE";
 
   return (

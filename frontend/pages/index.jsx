@@ -6,9 +6,9 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import SearchButton from "../components/search/SearchButton";
 
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useRouter} from "next/router";
 import {makeStyles} from "@material-ui/core/styles";
 
@@ -32,25 +32,6 @@ export default function Home() {
   const classes = useStyles();
   const router = useRouter();
   const [query, setQuery] = useQueryState("");
-  const [isLoading, setLoading] = useState(false);
-
-  // NextJS router event subscriptions as a placeholder
-  // for a more complex loading indicator
-  // https://nextjs.org/docs/api-reference/next/router
-  // https://github.com/vercel/next.js/blob/canary/docs/api-reference/next/router.md
-  useEffect(() => {
-    const handleRouteChangeStart = () => setLoading(true);
-    const handleRouteChangeComplete = () => setLoading(false);
-    const handleRouteChangeError = () => setLoading(false);
-    router.events.on("routeChangeStart", handleRouteChangeStart);
-    router.events.on("routeChangeComplete", handleRouteChangeComplete);
-    router.events.on("routeChangeError", handleRouteChangeError);
-    return () => {
-      router.events.off("routeChangeStart", handleRouteChangeStart);
-      router.events.off("routeChangeComplete", handleRouteChangeComplete);
-      router.events.off("routeChangeError", handleRouteChangeError);
-    }
-  }, []);
 
   const search = ({key}) => {
     if (key && key !== "Enter") return;
@@ -73,11 +54,7 @@ export default function Home() {
         />
       </Grid>
       <Grid item>
-        <Button variant={"contained"} color={"primary"}
-                size={"large"} onClick={search} disabled={isLoading}
-        >
-          {isLoading ? "Loading" : "Search"}
-        </Button>
+        <SearchButton onClick={search}/>
       </Grid>
     </Grid>
   );

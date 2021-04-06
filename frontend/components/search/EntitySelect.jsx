@@ -1,24 +1,27 @@
-import {useState} from 'react';
-import {makeStyles, useTheme} from '@material-ui/core/styles';
+import {useContext} from 'react';
+import {makeStyles} from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
+import {SearchFormContext} from "./SearchForm";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
+    "& .MuiSelect-root": {
+      backgroundColor: "white",
+    },
   },
   chips: {
     display: 'flex',
     flexWrap: 'wrap',
   },
   chip: {
-    margin: 2,
+    margin: 1,
+    fontSize: "11px",
+    height: "24px",
   },
   noLabel: {
     marginTop: theme.spacing(3),
@@ -49,32 +52,20 @@ const names = [
   'Kelly Snyder',
 ];
 
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
-
-export default function EntitySelect() {
+export default function EntitySelect({label, name}) {
   const classes = useStyles();
-  const theme = useTheme();
-  const [personName, setPersonName] = useState([]);
-
-  const handleChange = (event) => {
-    setPersonName(event.target.value);
-  };
+  const [state, setState] = useContext(SearchFormContext);
+  const value = state[name] || [];
 
   return (
-    <FormControl className={classes.formControl} variant={"outlined"}>
-      <InputLabel id="entity-selection">Entities</InputLabel>
+    <FormControl className={classes.formControl} variant={"outlined"} fullWidth>
+      <InputLabel id="entity-selection">{label}</InputLabel>
       <Select
         labelId="entity-selection"
         multiple
-        value={personName}
-        onChange={handleChange}
+        name={name}
+        value={value}
+        onChange={setState}
         input={<Input id="select-multiple-chip"/>}
         renderValue={(selected) => (
           <div className={classes.chips}>
@@ -86,7 +77,7 @@ export default function EntitySelect() {
         MenuProps={MenuProps}
       >
         {names.map((name) => (
-          <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+          <MenuItem key={name} value={name}>
             {name}
           </MenuItem>
         ))}

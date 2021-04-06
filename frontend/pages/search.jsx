@@ -7,17 +7,7 @@ import ModuleCard from "../components/modulecards/ModuleCard";
 import ModuleDetail from "../components/moduledetails/ModuleDetail";
 import SearchForm from "../components/search/SearchForm";
 
-import {
-  Container,
-  Drawer,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Grid, InputLabel, MenuItem,
-  Radio,
-  RadioGroup, Select,
-  TextField,
-} from "@material-ui/core";
+import {Drawer} from "@material-ui/core";
 
 import {makeStyles} from "@material-ui/styles";
 
@@ -34,23 +24,20 @@ const useStyles = makeStyles({
   root: {
     maxWidth: "230px",
     paddingTop: "20px",
-    // marginRight: "12px",
   },
   paper: {
     backgroundColor: "whitesmoke",
   },
-  input: {
-    backgroundColor: "white"
-  }
 });
 
 export default function Search({searchResults}) {
   const router = useRouter();
-  const query = router.query['query'];
-  const modules = searchResults['results'] || [];
-
   const [moduleIndex, setModuleIndex] = useTwoPaneState(0);
   const [isSearchOpen, setIsSearchOpen] = useState(true);
+  const classes = useStyles();
+
+  const query = router.query['query'];
+  const modules = searchResults['results'] || [];
 
   const pageHeader = (
     <h1 className='my-0 py-1'>
@@ -81,12 +68,13 @@ export default function Search({searchResults}) {
     );
   }
 
-  const classes = useStyles();
-
   return (
     <Layout title={"SERCH"}>
       <div className="serp-container">
-        <Drawer open={isSearchOpen} anchor={"left"} onClose={() => setIsSearchOpen(false)}
+        <Drawer open={isSearchOpen}
+                anchor={"left"}
+                variant={"persistent"}
+                onClose={() => setIsSearchOpen(false)}
                 PaperProps={{className: classes.paper}}>
           <SearchForm/>
         </Drawer>
@@ -160,18 +148,15 @@ export default function Search({searchResults}) {
 
 export async function getServerSideProps(context) {
   let searchResults = {};
-// convert query object into url query string
-  const query = (
-    Object.entries(context.query).map(([k, v]) => `${k}=${v}`).join('&')
-  );
 
-  await axios.get(
-    `http://django:8000/api/search/${query && `?${query}`}`
-  ).then((response) => {
-    searchResults = response.data;
-  }).catch((error) => {
-// console.error(error);
-  });
+  await axios
+    .get("http://django:8000/api/search/", {params: context.query})
+    .then((response) => {
+      searchResults = response.data;
+    })
+    .catch((error) => {
+      // console.error(error);
+    });
 
   return {
     props: {
