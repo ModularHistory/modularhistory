@@ -2,7 +2,7 @@ import ImageCard from "../modulecards/ImageCard";
 
 export default function OccurrenceDetail({occurrence}) {
   return (
-    <div className="detail">
+    <>
       {/*<a href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}"*/}
       {/*   target="_blank" className="edit-object-button" rel="noopener noreferrer"*/}
       {/*   style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>*/}
@@ -48,6 +48,6 @@ export default function OccurrenceDetail({occurrence}) {
           </ol>
         </footer>
       </div>
-    </div>
+    </>
   );
 }

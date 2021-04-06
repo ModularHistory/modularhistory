@@ -18,7 +18,7 @@ export default function QuoteDetail({quote}) {
   const firstImage = quote['serialized_images']?.[0];
 
   return (
-    <div className="detail">
+    <>
       <a className="edit-object-button float-right" target="_blank"
          href="{% url 'admin:quotes_quote_change' quote.pk %}">
         <i className="fa fa-edit"/>
@@ -54,6 +54,6 @@ export default function QuoteDetail({quote}) {
 
         </footer>
       </div>
-    </div>
+    </>
   );
 }

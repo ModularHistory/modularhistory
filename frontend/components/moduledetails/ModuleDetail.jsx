@@ -1,13 +1,33 @@
 import OccurrenceDetail from "./OccurrenceDetail";
 import QuoteDetail from "./QuoteDetail";
+import {createRef, useLayoutEffect} from "react";
 
 export default function ModuleDetail({module}) {
+  const ref = createRef();
+  useLayoutEffect(() => {
+    // After the DOM has rendered, check for lazy images
+    // and set their `src` to the correct value.
+    const images = ref.current.getElementsByTagName("img");
+    for (const img of images) {
+      if (img.dataset["src"]) img.src = img.dataset["src"];
+    }
+  });
+
+  let details;
   switch (module['model']) {
     case 'occurrences.occurrence':
-      return <OccurrenceDetail occurrence={module} />;
+      details = <OccurrenceDetail occurrence={module}/>;
+      break;
     case 'quotes.quote':
-      return <QuoteDetail quote={module} />;
+      details = <QuoteDetail quote={module}/>;
+      break;
     default:
-      return <pre>{JSON.stringify(module)}</pre>
+      details = <pre>{JSON.stringify(module)}</pre>;
   }
+
+  return (
+    <div className="detail" ref={ref}>
+      {details}
+    </div>
+  );
 }

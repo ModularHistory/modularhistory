@@ -22,10 +22,10 @@ export default function ImageCard({image}) {
   return (
     <BaseCard module={image} cardClass={cardClass} cardStyles={cardStyles} top={top}>
       {image['caption_html'] && (
-        <div class="card-text">
+        <div className="card-text">
           <div dangerouslySetInnerHTML={{__html: image['caption_html']}}/>
           {image['provider_string'] && (
-            <div class="image-credit float-right">
+            <div className="image-credit float-right">
               <p>
                 {image['provider_string']}
               </p>
