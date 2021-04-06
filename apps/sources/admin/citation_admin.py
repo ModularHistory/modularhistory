@@ -65,15 +65,6 @@ class CitationAdmin(ModelAdmin):
         return qs
 
 
-class PagesInline(TabularInline):
-    """Inline admin for a citation's page numbers/ranges."""
-
-    model = models.PageRange
-    verbose_name = 'page range'
-    verbose_name_plural = 'pages'
-    exclude = ['computations']
-
-
 class CitationsInline(GenericTabularInline):
     """Inline admin for citations."""
 
@@ -83,8 +74,6 @@ class CitationsInline(GenericTabularInline):
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
     exclude = ['computations']
-
-    inlines = [PagesInline]
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'

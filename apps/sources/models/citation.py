@@ -13,6 +13,7 @@ from django.utils.safestring import SafeString
 
 from apps.sources.serializers import CitationSerializer
 from modularhistory.constants.content_types import ContentTypes, get_ct_id
+from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
 from modularhistory.fields.html_field import (
     APPENDAGE_GROUP,
     END_PATTERN,
@@ -69,6 +70,23 @@ CITATION_PHRASE_OPTIONS = (
 )
 CITATION_PHRASE_MAX_LENGTH: int = 25
 
+# https://json-schema.org/understanding-json-schema/reference/array.html#tuple-validation
+PAGES_SCHEMA = {
+    "type": "array",
+    "items": {"$ref": "#/$definitions/page_range"},
+    "uniqueItems": True,
+    "$definitions": {
+        "page_range": {
+            "type": "array",
+            "items": [
+                {"type": "number"},  # start page number
+                {"type": "number"},  # end page number
+            ],
+            "additionalItems": False,
+        }
+    },
+}
+
 
 class Citation(PositionedRelation):
     """A reference to a source (from any other model)."""
@@ -85,6 +103,7 @@ class Citation(PositionedRelation):
         related_name='citations',
         on_delete=models.PROTECT,
     )
+    pages2 = JSONField(schema=PAGES_SCHEMA)
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
