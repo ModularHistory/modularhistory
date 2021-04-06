@@ -86,7 +86,6 @@ django-lockdown = "^3.0.0"
 django-mass-edit = "^3.2"
 django-meta = "^2.0.0"
 django-nested-admin = "^3.3"
-django-prettyjson = "^0.4"
 django-redis = "^4.12.1"
 django-reverse-admin = "^2.9"
 django-sass-processor = "==0.8.2"
@@ -146,6 +145,7 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
+django-flat-json-widget = "^0.1.2"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"

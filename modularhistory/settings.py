@@ -118,6 +118,7 @@ INSTALLED_APPS = [
     'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
+    'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.migrations',
@@ -128,7 +129,6 @@ INSTALLED_APPS = [
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'meta',  # https://django-meta.readthedocs.io/en/latest/
-    'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'sass_processor',  # https://github.com/jrief/django-sass-processor

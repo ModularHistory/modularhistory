@@ -787,6 +787,17 @@ python-versions = ">=3.5"
 Django = ">=2.2"
 
 [[package]]
+name = "django-flat-json-widget"
+version = "0.1.2"
+description = "Django Flat JSON Key/Value Widget"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+test = ["django-extensions (>=3.0,<4.0)", "openwisp-utils[qa] (>=0.7,<1.0)"]
+
+[[package]]
 name = "django-gm2m"
 version = "1.1.1"
 description = "Django generic many-to-many field"
@@ -3287,7 +3298,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.9"
-content-hash = "7f38d7851db6ee1e432bb8ea76d7ef053afff9c3d317061952a6cbab89a610cf"
+content-hash = "4c6352df2ae24a1d3c12a9f20f9de5316adc9a0fe570e8f30b1919a9d31239b8"
 
 [metadata.files]
 aenum = [
@@ -3737,6 +3748,10 @@ django-extra-views = [
 django-filter = [
     {file = "django-filter-2.4.0.tar.gz", hash = "sha256:84e9d5bb93f237e451db814ed422a3a625751cbc9968b484ecc74964a8696b06"},
     {file = "django_filter-2.4.0-py3-none-any.whl", hash = "sha256:e00d32cebdb3d54273c48f4f878f898dced8d5dfaad009438fe61ebdf535ace1"},
+]
+django-flat-json-widget = [
+    {file = "django-flat-json-widget-0.1.2.tar.gz", hash = "sha256:32630ccd6284f6e1c83412d443dcf8ffe8d3302392bcf1bd4d5b198053494933"},
+    {file = "django_flat_json_widget-0.1.2-py2.py3-none-any.whl", hash = "sha256:421e8fd0a479fb8f2f84ac27f06d69b767162ea669fb292982448d13b5bad93a"},
 ]
 django-gm2m = [
     {file = "django-gm2m-1.1.1.tar.gz", hash = "sha256:5aa629264f6b3706f9ec933296fcf5ea77e2afccd05d5055fe20de655d8b01cb"},
