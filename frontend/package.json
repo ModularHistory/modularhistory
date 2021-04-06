@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "prepare": "cd .. && husky install frontend/.husky",
     "start": "next start"
   },
   "dependencies": {
