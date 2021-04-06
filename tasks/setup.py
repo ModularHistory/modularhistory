@@ -155,7 +155,7 @@ def seed(
         if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
     if db:
-        # Seed the db
+        # Seed the db.
         db_utils.seed(context)
     print('Finished.')
 
