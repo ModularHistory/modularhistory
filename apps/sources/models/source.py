@@ -10,6 +10,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
+from pydantic import BaseModel, Field
 from typedmodels.models import TypedModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
@@ -112,7 +113,9 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         'sources.Publication', null=True, blank=True, on_delete=models.CASCADE
     )
 
-    extra = JSONField(null=True, blank=True, default=dict, schema='extra_field_schema')
+    extra = JSONField(
+        null=True, blank=True, default=dict, schema='get_extra_field_schema'
+    )
 
     class Meta:
         ordering = ['creators', '-date']
@@ -133,11 +136,18 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     objects: SourceManager = SourceManager()
 
-    extra_field_schema: Dict[str, str] = {}
+    extra_field_schema: dict = {}
     inapplicable_fields: List[str] = []
     searchable_fields = [FieldNames.string, FieldNames.description]
     serializer = SourceSerializer
     slug_base_field = 'title'
+
+    class ExtraFieldSchema(BaseModel):
+        """Schema for the `extra` JSON field."""
+
+    @classmethod
+    def get_extra_field_schema(cls):
+        return cls.ExtraFieldSchema.schema()
 
     def __str__(self):
         """Return the source's string representation."""

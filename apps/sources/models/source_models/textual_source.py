@@ -1,6 +1,7 @@
 from typing import Optional
 
 from django.db.models import SET_NULL, ForeignKey
+from pydantic import BaseModel, Field
 
 from apps.sources.models.source import Source
 from modularhistory.fields import ExtraField, HistoricDateTimeField
@@ -24,6 +25,9 @@ class TextualSource(Source):
     original_publication_date = HistoricDateTimeField(null=True, blank=True)
 
     editors = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
+
+    class ExtraFieldSchema(BaseModel):
+        editors: str = Field(default=None)
 
     extra_field_schema = {
         'editors': STRING,

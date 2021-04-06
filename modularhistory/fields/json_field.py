@@ -56,8 +56,11 @@ class JSONField(BaseJSONField):
         schema = self.schema
         if schema:
             if isinstance(schema, str):
-                if hasattr(model_instance, schema):
-                    schema = getattr(model_instance, schema, {})
+                schema_attribute = getattr(model_instance, schema, {})
+                if callable(schema_attribute):
+                    schema = schema_attribute()
+                else:
+                    schema = schema_attribute or schema
             return json.loads(schema) if isinstance(schema, str) else schema
         return None
 

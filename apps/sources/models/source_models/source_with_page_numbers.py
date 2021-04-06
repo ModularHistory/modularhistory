@@ -1,5 +1,7 @@
 from typing import Optional
 
+from pydantic import BaseModel, Field
+
 from modularhistory.fields import ExtraField
 
 from .textual_source import TextualSource
@@ -28,6 +30,10 @@ class SourceWithPageNumbers(TextualSource):
         'end_page_number': 'number',
         **TextualSource.extra_field_schema,
     }
+
+    class ExtraFieldSchema(TextualSource.ExtraFieldSchema):
+        page_number: int = Field(default=None)
+        end_page_number: int = Field(default=None)
 
     @property
     def file_page_number(self) -> Optional[int]:
