@@ -73,6 +73,12 @@ def build(
 
 
 @command
+def debug(context):
+    """Print a message for debugging purposes."""
+    context.run('echo "Success."')
+
+
+@command
 def generate_artifacts(context):
     """Generate artifacts."""
     from django.db.models import Count
