@@ -149,6 +149,8 @@ jobs:
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
+    - name: Create .venv if necessary
+      run: mkdir -p "$GITHUB_WORKSPACE/.venv"
     - name: Cache Python virtual environment
       uses: actions/cache@v2.1.4
       id: cache
