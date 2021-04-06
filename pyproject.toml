@@ -78,6 +78,7 @@ django-debug-toolbar = "^3.2"
 django-extensions = "^3.1.1"
 django-extra-views = "==0.13.0"
 django-filter = "==2.4.0"
+django-flat-json-widget = "^0.1.2"
 django-gm2m = "^1.1"
 django-health-check = "^3.16.1"
 django-imagekit = "^4.0.2"
@@ -145,7 +146,6 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
-django-flat-json-widget = "^0.1.2"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
