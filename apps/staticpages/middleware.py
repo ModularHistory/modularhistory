@@ -8,7 +8,12 @@ HTTP404_RESPONSE_CODE = 404
 
 
 class StaticPageFallbackMiddleware(FlatpageFallbackMiddleware):
-    """TODO: add docstring."""
+    """
+    Override FlatpageFallbackMiddleware to use our staticpage view.
+
+    This middleware tries to serve a static page matching the request URL,
+    if no code-defined URL patterns matched the request.
+    """
 
     def process_response(self, request, response):
         """Attempt to fall back on a static page."""
