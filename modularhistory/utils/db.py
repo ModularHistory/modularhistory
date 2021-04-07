@@ -1,11 +1,10 @@
 import logging
 import os
+import re
 from glob import glob, iglob
 from os.path import join
 from typing import Optional
 from zipfile import ZipFile
-import re
-
 
 from django.conf import settings
 from django.db import transaction
