@@ -57,6 +57,16 @@ git --help &>/dev/null || {
   _error "Git is not installed."
 }
 
+# Update git hooks.
+for filepath in .config/hooks/*; do
+  filename=$(basename "$filepath")
+  cmp --silent ".git/hooks/$filename" "$filepath" || {
+    cat "$filepath" > ".git/hooks/$filename"
+    sudo chmod +x ".git/hooks/$filename"
+    echo "Updated $filename hook."
+  }
+done
+
 branch=$(git branch --show-current)
 # When run in GitHub Actions), the code is in detached HEAD state, 
 # but the branch name can be extracted from GITHUB_REF.

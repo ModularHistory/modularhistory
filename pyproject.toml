@@ -2,6 +2,10 @@
 requires = ["poetry>=1.0.5"]
 build-backend = "poetry.masonry.api"
 
+[tool.autohooks]
+mode = "poetry"
+pre-commit = ["autohooks.plugins.black", "autohooks.plugins.isort"]
+
 [tool.black]
 # https://black.readthedocs.io/en/stable/pyproject_toml.html
 line-length = 88
@@ -59,7 +63,7 @@ beautifulsoup4 = "==4.9.3"
 celery = "<5.0.0"
 channels = "^3.0"
 channels-redis = "^3.2.0"
-django = "^3.1"
+django = "~3.1"
 djangorestframework = "^3.12"
 djangorestframework-simplejwt = "^4.6.0"
 django_replicated = "==2.7"
@@ -123,6 +127,7 @@ pexpect = "==4.8.0"
 Pillow = "^8.0"
 psutil = "^5.7.3"
 psycopg2-binary = "^2.8"
+pydantic = "^1.8.1"
 pyenchant = "^3.2.0"
 PyGithub = "^1.54"
 pygraphviz = "^1.7"
@@ -146,10 +151,10 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
-pydantic = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
+autohooks = "^21.3.0"
 binaryornot = "^0.4"
 coverage = { extras = ["toml"], version = "^5.3" }
 coverage-badge = "^1.0"
@@ -190,7 +195,6 @@ safety = "^1.9"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
-pre-commit = "^2.11.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

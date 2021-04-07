@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# For debugging:
+echo "Successfully pulled to $(pwd)."
+
+changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+
+# Print a warning if the setup script has been changed.
+echo "$changed_files" | grep --quiet 'setup.sh' && echo "
+  The setup script has been updated. Please run it:
+    bash setup.sh
+"

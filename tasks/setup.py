@@ -155,7 +155,7 @@ def seed(
         if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
     if db:
-        # Seed the db
+        # Seed the db.
         db_utils.seed(context)
     print('Finished.')
 
@@ -164,7 +164,7 @@ def seed(
 def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
     with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
-        required_hosts = [host for host in HOSTS_FILEPATH.readlines() if host]
+        required_hosts = [host for host in hosts_file.readlines() if host]
     print(f'Reading {HOSTS_FILEPATH} ...')
     with open(HOSTS_FILEPATH, 'r') as hosts_file:
         hosts = hosts_file.read()
