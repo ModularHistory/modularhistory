@@ -31,10 +31,6 @@ parallel = true
 # https://coverage.readthedocs.io/en/latest/config.html#html
 directory = ".coverage_html"
 
-[tool.githooks]
-pre-commit = "black ."
-post-merge = "invoke debug"
-
 [tool.isort]
 # https://github.com/timothycrosley/isort/wiki/isort-Settings
 atomic = true
@@ -157,6 +153,7 @@ youtube-dl = "^2020.7.28"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
+autohooks = "^21.3.0"
 binaryornot = "^0.4"
 coverage = { extras = ["toml"], version = "^5.3" }
 coverage-badge = "^1.0"
@@ -197,11 +194,6 @@ safety = "^1.9"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
-pre-commit = "^2.11.1"
-autohooks = "^21.3.0"
-autohooks-plugin-black = "^1.2.0"
-autohooks-plugin-isort = "^1.0.0"
-poetry-githooks = "^1.1.3"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

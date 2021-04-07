@@ -1,0 +1,7 @@
+#!/bin/bash
+
+poetry --help 2> /dev/null && [[ -d ".venv" ]] && {
+    poetry run invoke qa.autoformat
+}
+
+docker-compose up github_workflow_preprocessor
