@@ -4,6 +4,8 @@ from glob import glob, iglob
 from os.path import join
 from typing import Optional
 from zipfile import ZipFile
+import re
+
 
 from django.conf import settings
 from django.db import transaction
@@ -16,7 +18,7 @@ from modularhistory.constants.misc import (
     MIGRATIONS_DIRNAME,
     SQUASHED_MIGRATIONS_DIRNAME,
 )
-from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE, NEW_LINE
+from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from modularhistory.utils.files import relativize, upload_to_mega
 
 CONTEXT = Context()
@@ -43,37 +45,25 @@ def backup(
         backup_filename = backup_filename.replace(
             os.path.basename(backup_filename), filename
         )
-    print('Processing backup file ...')
-    dropped_lines = []
     with open(temp_file, 'r') as unprocessed_backup:
         if os.path.isdir(backup_filename):
             os.rmdir(backup_filename)
         with open(backup_filename, 'w') as processed_backup:
-            previous_line = ''  # falsy; compatible with `startswith`
+            previous_line = ''  # falsy and compatible with `startswith`
             for line in unprocessed_backup:
-                drop_line = any(
-                    [
-                        line.startswith('ALTER ') and ' DROP ' in line,
-                        line.startswith('ALTER ') and ' OWNER TO ' in line,
-                        line.startswith('DROP '),
-                        line == '\n' == previous_line,
-                        all(
-                            [
-                                redact,
-                                previous_line.startswith('COPY public.users_user')
-                                or 'user_id' in previous_line,
-                                not line.startswith(r'\.'),
-                            ]
-                        ),
-                    ]
-                )
-                if drop_line:
-                    dropped_lines.append(line)
+                discard_conditions = [
+                    line == '\n' and re.match(r'(\n|--\n)', previous_line),
+                    re.match(r'(.*DROP\ |--\n?$)', line),
+                    # fmt: off
+                    redact and not line.startswith(r'\.') and re.match(
+                        r'COPY public\.(users_user|.+user_id)', previous_line
+                    )
+                    # fmt: on
+                ]
+                if any(discard_conditions):
                     continue
                 processed_backup.write(line)
                 previous_line = line
-    delimiter = '\n\t'
-    print(f'Dropped lines:\n\t{delimiter.join(dropped_lines)}')
     context.run(f'rm {temp_file}')
     if zip:
         print(f'Zipping up {backup_filename} ...')

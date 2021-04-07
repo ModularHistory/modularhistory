@@ -176,6 +176,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew_install openssl@1.1
   brew_install rust
   brew_install graphviz
+  brew_install ctags
   brew install libjpeg zlib grep gnu-sed jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
@@ -183,7 +184,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && sudo apt upgrade -y
   # Basic dev dependencies
-  sudo apt install -y bash-completion curl git wget vim
+  sudo apt install -y bash-completion curl git wget vim ctags
   # PostgreSQL
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" |
@@ -391,6 +392,9 @@ nvm --version &>/dev/null || {
 echo "Installing Node modules ..."
 npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
+
+# Update ctags
+ctags -R -f .vscode/tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" --exclude="**/libraries/**" &>/dev/null
 
 # Set up Rclone (https://rclone.org/).
 rclone version &>/dev/null || {
