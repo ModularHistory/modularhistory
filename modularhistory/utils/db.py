@@ -16,7 +16,7 @@ from modularhistory.constants.misc import (
     MIGRATIONS_DIRNAME,
     SQUASHED_MIGRATIONS_DIRNAME,
 )
-from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE
+from modularhistory.constants.strings import BASH_PLACEHOLDER, NEGATIVE, NEW_LINE
 from modularhistory.utils.files import relativize, upload_to_mega
 
 CONTEXT = Context()
@@ -44,6 +44,7 @@ def backup(
             os.path.basename(backup_filename), filename
         )
     print('Processing backup file ...')
+    dropped_lines = []
     with open(temp_file, 'r') as unprocessed_backup:
         if os.path.isdir(backup_filename):
             os.rmdir(backup_filename)
@@ -67,9 +68,12 @@ def backup(
                     ]
                 )
                 if drop_line:
+                    dropped_lines.append(line)
                     continue
                 processed_backup.write(line)
                 previous_line = line
+    delimiter = '\n\t'
+    print(f'Dropped lines:\n\t{delimiter.join(dropped_lines)}')
     context.run(f'rm {temp_file}')
     if zip:
         print(f'Zipping up {backup_filename} ...')
