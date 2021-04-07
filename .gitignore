@@ -42,7 +42,7 @@ node_modules/
 *$py.class
 
 # Ctags
-.tags
+.vscode/.tags
 
 # Legacy requirements
 # Note: Python packages should be managed through pyproject.toml
