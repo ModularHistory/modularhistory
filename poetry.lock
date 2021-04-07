@@ -185,30 +185,6 @@ packaging = ">=20.3,<21.0"
 tomlkit = ">=0.5.11"
 
 [[package]]
-name = "autohooks-plugin-black"
-version = "1.2.0"
-description = "Autohooks plugin for code formatting via black"
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-autohooks = ">=1.1"
-black = "*"
-
-[[package]]
-name = "autohooks-plugin-isort"
-version = "1.0.0"
-description = "Autohooks plugin for include sorting via isort"
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-autohooks = ">=1.1"
-isort = "*"
-
-[[package]]
 name = "automat"
 version = "20.2.0"
 description = "Self-service finite-state machines for the programmer on the go."
@@ -560,7 +536,7 @@ six = "*"
 
 [[package]]
 name = "daphne"
-version = "3.0.1"
+version = "3.0.2"
 description = "Django ASGI (HTTP/WebSocket) server"
 category = "main"
 optional = false
@@ -1958,7 +1934,7 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
 [[package]]
 name = "martor"
-version = "1.6.1"
+version = "1.6.2"
 description = "Django Markdown Editor"
 category = "main"
 optional = false
@@ -3252,7 +3228,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.9"
-content-hash = "44968be2b0616f74aab915a79712124276dc305b78faded6eb6ae473f78bc96e"
+content-hash = "ab663f2ef3812e89995ab80ed774b59d6d4a102bbe5b2d8e1adb497f55694ea3"
 
 [metadata.files]
 aenum = [
@@ -3349,14 +3325,6 @@ autoflake = [
 autohooks = [
     {file = "autohooks-21.3.0-py3-none-any.whl", hash = "sha256:7674ff73741825de83a5b3a5fb701528571810e8d67d3800f4d9167be43f1550"},
     {file = "autohooks-21.3.0.tar.gz", hash = "sha256:9759b446f4f14712f87b1ce30f9d3cb37a78168e75235b381772cc2356296c6d"},
-]
-autohooks-plugin-black = [
-    {file = "autohooks-plugin-black-1.2.0.tar.gz", hash = "sha256:e69a18209f3fd584da903e87faf0e3685caa4d51a9e870ddb3c2b1aef93387b8"},
-    {file = "autohooks_plugin_black-1.2.0-py3-none-any.whl", hash = "sha256:5099f620e01d3fcfd70195e63f101d003528b40475e921829a9ebde000f2c5ee"},
-]
-autohooks-plugin-isort = [
-    {file = "autohooks-plugin-isort-1.0.0.tar.gz", hash = "sha256:3308b24fa60562c3193c6bc443051e213986216155b37d0550443db337f0f90b"},
-    {file = "autohooks_plugin_isort-1.0.0-py3-none-any.whl", hash = "sha256:a43442277aa2c1f4c9d6ac57ccbb87cc2508b1f29ab2e621a2f0b599773c250f"},
 ]
 automat = [
     {file = "Automat-20.2.0-py2.py3-none-any.whl", hash = "sha256:b6feb6455337df834f6c9962d6ccf771515b7d939bca142b29c20c2376bc6111"},
@@ -3625,8 +3593,8 @@ cycler = [
     {file = "cycler-0.10.0.tar.gz", hash = "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"},
 ]
 daphne = [
-    {file = "daphne-3.0.1-py3-none-any.whl", hash = "sha256:0052c9887600c57054a5867d4b0240159fa009faa3bcf6a1627271d9cdcb005a"},
-    {file = "daphne-3.0.1.tar.gz", hash = "sha256:c22b692707f514de9013651ecb687f2abe4f35cf6fe292ece634e9f1737bc7e3"},
+    {file = "daphne-3.0.2-py3-none-any.whl", hash = "sha256:a9af943c79717bc52fe64a3c236ae5d3adccc8b5be19c881b442d2c3db233393"},
+    {file = "daphne-3.0.2.tar.gz", hash = "sha256:76ffae916ba3aa66b46996c14fa713e46004788167a4873d647544e750e0e99f"},
 ]
 darglint = [
     {file = "darglint-1.8.0-py3-none-any.whl", hash = "sha256:ac6797bcc918cd8d8f14c168a4a364f54e1aeb4ced59db58e7e4c6dfec2fe15c"},
@@ -4265,7 +4233,7 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
 ]
 martor = [
-    {file = "martor-1.6.1.tar.gz", hash = "sha256:f8e023ab8940aaa5b13bb38d75ccfc9d54b6bcca2116890fd99d7eb74a7ae3e4"},
+    {file = "martor-1.6.2.tar.gz", hash = "sha256:1d6f61eb48263e09818bb1bd674601865228ad72b12280a1bd0ca50e3d816366"},
 ]
 matplotlib = [
     {file = "matplotlib-3.4.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:7a54efd6fcad9cb3cd5ef2064b5a3eeb0b63c99f26c346bdcf66e7c98294d7cc"},
