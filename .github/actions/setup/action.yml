@@ -47,7 +47,6 @@ runs:
       id: venv-test
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
-      continue-on-error: true
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
