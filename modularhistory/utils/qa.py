@@ -1,6 +1,10 @@
 from typing import Iterable, Optional
 
-from autohooks.api.git import get_staged_status, stash_unstaged_changes
+try:
+    from autohooks.api.git import get_staged_status, stash_unstaged_changes
+except ModuleNotFoundError:
+    print('Skipped importing nonexistent autohooks module.')
+    get_staged_status, stash_unstaged_changes = None, None
 from django.conf import settings
 from invoke.context import Context
 
@@ -13,6 +17,10 @@ def autoformat(
     staged: bool = False,
 ):
     """Autoformat all of ModularHistory's Python code."""
+    if get_staged_status is not None and stash_unstaged_changes is not None:
+        pass
+    else:
+        print('Cannot autoformat; missing required autohooks module.')
     commands = [
         # https://isort.readthedocs.io/en/latest/
         'isort',

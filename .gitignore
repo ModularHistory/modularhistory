@@ -41,6 +41,9 @@ node_modules/
 *.py[cod]
 *$py.class
 
+# Ctags
+.vscode/.tags
+
 # Legacy requirements
 # Note: Python packages should be managed through pyproject.toml
 requirements.txt

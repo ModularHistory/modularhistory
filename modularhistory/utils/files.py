@@ -55,22 +55,25 @@ def relativize(path: str):
     return join('.', path)
 
 
-def upload_to_mega(file: str, account: str = 'default'):
+def upload_to_mega(filepath: str, account: str = 'default'):
     """Upload a file to Mega."""
     from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
 
     mega_client = mega_clients[account]
-    logging.info(f'Pushing {file} to Mega ({account}) ...')
-    extant_file = mega_client.find(file, exclude_deleted=True)
+    filename = os.path.basename(filepath)
+    logging.info(f'Pushing {filepath} to Mega ({account}) ...')
+    extant_file = mega_client.find(filename, exclude_deleted=True)
     if extant_file:
         logging.info(f'Deleting extant backup ({extant_file}) ...')
         try:
-            mega_client.delete(file)
+            mega_client.delete(filename)
         except Exception as err:
-            logging.error(f'Unable to delete {file} from Mega; {err}')
-    result = mega_client.upload(file)
+            logging.error(f'Unable to delete {filename} from Mega; {err}')
+    result = mega_client.upload(filepath)
     logging.info(f'Upload result: {pformat(result)}')
-    uploaded_file = mega_client.find(os.path.basename(file))
+    uploaded_file = mega_client.find(filename)
     if not uploaded_file:
-        raise Exception(f'{file} was not found in Mega ({account}) after uploading.')
+        raise Exception(
+            f'Could not find {filename} in Mega ({account}) after uploading.'
+        )
     return uploaded_file

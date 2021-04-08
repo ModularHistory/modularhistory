@@ -1,7 +1,13 @@
 #!/bin/bash
 
-poetry --help 2> /dev/null && [[ -d ".venv" ]] && {
+poetry --help &>/dev/null && [[ -d ".venv" ]] && {
     poetry run invoke qa.autoformat
 }
 
-docker-compose up github_workflow_preprocessor
+cd frontend && npx lint-staged && cd ..
+
+docker-compose up github_workflow_preprocessor || {
+    echo "Failed to pre-process workflow files."
+    echo "For more output, try running the following:"
+    echo "  docker-compose up github_workflow_preprocessor"
+}

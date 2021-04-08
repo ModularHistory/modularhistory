@@ -2,7 +2,6 @@ import logging
 import os
 
 from celery import Celery
-from invoke.context import Context
 
 from modularhistory.utils import db, media
 
@@ -19,8 +18,6 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
-CONTEXT = Context()
-
 
 @app.task(bind=True)
 def debug(self):
@@ -31,12 +28,16 @@ def debug(self):
 @app.task(bind=True)
 def dbbackup(self, *args, **kwargs):
     """Create a database backup file."""
-    logging.info(f'dbbackup received request: {self.request!r}')
     db.backup(*args, **kwargs)
 
 
 @app.task(bind=True)
 def mediabackup(self, *args, **kwargs):
     """Create a media backup file."""
-    logging.info(f'mediabackup received request: {self.request!r}')
     media.backup(*args, **kwargs)
+
+
+@app.task(bind=True)
+def make_seed(self, *args, **kwargs):
+    """Make and upload a db seed file."""
+    db.backup(*args, redact=True, push=True, filename='init.sql', **kwargs)

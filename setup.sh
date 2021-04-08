@@ -52,6 +52,15 @@ else
   " && exit
 fi
 
+while getopts j: flag
+do
+    case "${flag}" in
+        j) just_do_it=true;;
+        # Note: flag value can be referenced as ${OPTARG}
+        *) _error "An invalid flag was used.";;
+    esac
+done
+
 # Make sure Git is properly installed.
 git --help &>/dev/null || {
   _error "Git is not installed."
@@ -83,12 +92,17 @@ echo "On branch '${branch}'."
 
 # Make sure this script is being run in the 'main' branch, if not running in CI.
 if [[ -z $GITHUB_REF ]]; then
-  if [[ ! "$branch" = "main" ]]; then
-    _error "
+  if [[ ! "$branch" = "main" ]] && [[ ! "$just_do_it" = true ]]; then
+    _print_red "
       Check out the main branch before running this script.
       You can use the following command to check out the main branch:
         git checkout main
     "
+    echo "
+      Alternatively, if you know what you are doing, you can run 
+      this script from a non-main branch with the the -j flag.
+    "
+    exit 1
   fi
   # Make sure the latest updates have been pulled.
   if ! git diff --quiet origin/main; then
@@ -176,6 +190,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew_install openssl@1.1
   brew_install rust
   brew_install graphviz
+  brew_install ctags
   brew install libjpeg zlib grep gnu-sed jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
@@ -183,7 +198,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && sudo apt upgrade -y
   # Basic dev dependencies
-  sudo apt install -y bash-completion curl git wget vim
+  sudo apt install -y bash-completion curl git wget vim ctags
   # PostgreSQL
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" |
@@ -391,6 +406,9 @@ nvm --version &>/dev/null || {
 echo "Installing Node modules ..."
 npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
+
+# Update ctags
+ctags -R -f .vscode/.tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" --exclude="**/libraries/**" &>/dev/null
 
 # Set up Rclone (https://rclone.org/).
 rclone version &>/dev/null || {
