@@ -150,6 +150,7 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
+django-polymorphic = "^3.0.0"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"

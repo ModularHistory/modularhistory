@@ -10,6 +10,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
+from polymorphic.models import PolymorphicModel
 from typedmodels.models import TypedModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
@@ -41,6 +42,12 @@ CITATION_PHRASE_OPTIONS = (
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in'),
 )
+
+
+class PolymorphicSource(
+    PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities
+):
+    """A source of content or information."""
 
 
 class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
