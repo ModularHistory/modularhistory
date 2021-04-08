@@ -64,11 +64,7 @@ def upload_to_mega(filepath: str, account: str = 'default'):
     logging.info(f'Pushing {filepath} to Mega ({account}) ...')
     extant_file = mega_client.find(filename, exclude_deleted=True)
     if extant_file:
-        logging.info(f'Deleting extant backup ({extant_file}) ...')
-        try:
-            mega_client.delete(filename)
-        except Exception as err:
-            logging.error(f'Unable to delete {filename} from Mega; {err}')
+        logging.info(f'Extant backup ({extant_file}) must be deleted.')
     result = mega_client.upload(filepath)
     logging.info(f'Upload result: {pformat(result)}')
     uploaded_file = mega_client.find(filename)
