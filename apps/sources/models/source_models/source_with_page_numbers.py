@@ -25,12 +25,6 @@ class SourceWithPageNumbers(TextualSource):
         blank=True,
     )
 
-    extra_field_schema = {
-        'page_number': 'number',
-        'end_page_number': 'number',
-        **TextualSource.extra_field_schema,
-    }
-
     class ExtraFieldSchema(TextualSource.ExtraFieldSchema):
         page_number: int = Field(default=None)
         end_page_number: int = Field(default=None)

@@ -73,7 +73,7 @@ def backup(
     print(f'Finished creating backup file: {backup_filename}')
     if push:
         print(f'Uploading {backup_filename} to Mega ...')
-        upload_to_mega(file=backup_filename, account=Environments.DEV)
+        upload_to_mega(backup_filename, account=Environments.DEV)
         print(f'Finished uploading {backup_filename} to Mega.')
     # Remove old backup files
     logging.info('Removing old backup files ...')

@@ -29,10 +29,6 @@ class TextualSource(Source):
     class ExtraFieldSchema(BaseModel):
         editors: str = Field(default=None)
 
-    extra_field_schema = {
-        'editors': STRING,
-    }
-
     @property
     def file_page_number(self) -> Optional[int]:
         """TODO: write docstring."""

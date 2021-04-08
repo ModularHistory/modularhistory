@@ -1,6 +1,7 @@
 """Model classes for affidavits (as sources)."""
 
 from django.core.exceptions import ValidationError
+from pydantic import BaseModel, Field
 
 from modularhistory.fields import ExtraField
 
@@ -26,10 +27,9 @@ class Affidavit(DocumentSource):
     class FieldNames(DocumentSource.FieldNames):
         certifier = 'certifier'
 
-    extra_field_schema = {
-        **DocumentSource.extra_field_schema,
-        FieldNames.certifier: 'string',
-    }
+    class ExtraFieldSchema(DocumentSource.ExtraFieldSchema):
+        certifier: str = Field(default=None)
+
     inapplicable_fields = [
         FieldNames.publication,
     ]

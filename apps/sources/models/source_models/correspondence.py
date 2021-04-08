@@ -1,5 +1,7 @@
 """Model classes for correspondence (as sources)."""
 
+from pydantic import BaseModel, Field
+
 from modularhistory.fields import ExtraField
 
 from .document import DocumentSource
@@ -33,10 +35,9 @@ class Correspondence(DocumentSource):
     class FieldNames(DocumentSource.FieldNames):
         recipient = 'recipient'
 
-    extra_field_schema = {
-        **DocumentSource.extra_field_schema,
-        FieldNames.recipient: 'string',
-    }
+    class ExtraFieldSchema(DocumentSource.ExtraFieldSchema):
+        recipient: str = Field(default=None)
+
     inapplicable_fields = [
         FieldNames.publication,
     ]

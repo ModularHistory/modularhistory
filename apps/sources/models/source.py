@@ -136,7 +136,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     objects: SourceManager = SourceManager()
 
-    extra_field_schema: dict = {}
     inapplicable_fields: List[str] = []
     searchable_fields = [FieldNames.string, FieldNames.description]
     serializer = SourceSerializer

@@ -43,7 +43,7 @@ def backup(
         backup_file = join(backups_dir, filename)
     print(f'Finished creating backup file: {backup_file}')
     if push:
-        upload_to_mega(file=backup_file, account=Environments.DEV)
+        upload_to_mega(backup_file, account=Environments.DEV)
 
 
 def sync(context: Context = CONTEXT, push: bool = False):

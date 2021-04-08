@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from humanize import ordinal
+from pydantic import BaseModel, Field
 
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ExtraField
@@ -62,15 +63,13 @@ class Book(TextualSource):
         printing_number = 'printing_number'
         volume_number = 'volume_number'
 
-    extra_field_schema = {
-        **TextualSource.extra_field_schema,
-        FieldNames.translator: STRING,
-        FieldNames.publisher: STRING,
-        FieldNames.edition_number: NUMBER,
-        FieldNames.edition_year: NUMBER,
-        FieldNames.printing_number: NUMBER,
-        FieldNames.volume_number: NUMBER,
-    }
+    class ExtraFieldSchema(TextualSource.ExtraFieldSchema):
+        translator: str = Field(default=None)
+        publisher: str = Field(default=None)
+        edition_number: int = Field(default=None)
+        edition_year: int = Field(default=None)
+        printing_number: int = Field(default=None)
+        volume_number: int = Field(default=None)
 
     @property
     def edition_string(self) -> Optional[str]:

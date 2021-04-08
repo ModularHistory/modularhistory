@@ -3,6 +3,7 @@
 from typing import List, Optional
 
 from django.core.exceptions import ValidationError
+from pydantic import BaseModel, Field
 
 from modularhistory.fields import ExtraField
 
@@ -21,11 +22,10 @@ class Article(SourceWithPageNumbers):
         number = 'number'
         volume = 'volume'
 
-    extra_field_schema = {
-        FieldNames.volume: 'number',
-        FieldNames.number: 'number',
-        **SourceWithPageNumbers.extra_field_schema,
-    }
+    class ExtraFieldSchema(SourceWithPageNumbers.ExtraFieldSchema):
+        volume: int = Field(default=None)
+        number: int = Field(default=None)
+
     inapplicable_fields = [
         FieldNames.collection,
     ]
