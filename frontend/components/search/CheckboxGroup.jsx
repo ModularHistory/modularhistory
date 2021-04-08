@@ -18,7 +18,6 @@ export default function CheckboxGroup({label, name, children}) {
       checkedItems = [...new Set(checkedItems)];
     } else {
       const index = checkedItems.findIndex((item) => item === target.name);
-      console.log(checkedItems, index)
       if (index >= 0) checkedItems.splice(index, 1);
     }
     setState((prevState) => ({...prevState, [name]: checkedItems}));

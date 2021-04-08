@@ -57,3 +57,8 @@ class EntitySerializer(ModelSerializer):
     def get_serialized_death_date(self, instance: 'Entity'):
         """Return the entity's death date, serialized."""
         return instance.death_date.serialize() if instance.death_date else None
+
+
+class EntityPartialDictSerializer:
+    def __init__(self, queryset, *args, **kwargs):
+        self.data = list(queryset)

@@ -36,19 +36,21 @@ export default function QuoteDetail({quote}) {
         )}
 
         {superUserEditButton}
-        <div dangerouslySetInnerHTML={{__html: quote['html']}}/>
+        <div dangerouslySetInnerHTML={{__html: quote["html"]}}/>
         {superUserEditButton}
 
-        {quote['tags_html'] && (
-          <ul className="tags" dangerouslySetInnerHTML={{__html: quote['tags_html']}}/>
+        {quote["tags_html"] && (
+          <ul className="tags" dangerouslySetInnerHTML={{__html: quote["tags_html"]}}/>
         )}
 
         <footer className="footer sources-footer">
 
           <ol className="citations">
             {quote['serialized_citations'].map((citation) => (
-              <li className="source" id={`citation-${citation['pk']}`}
-                  dangerouslySetInnerHTML={{__html: citation['html']}}/>
+              <li key={citation["pk"]}
+                  className="source"
+                  id={`citation-${citation["pk"]}`}
+                  dangerouslySetInnerHTML={{__html: citation["html"]}}/>
             ))}
           </ol>
 

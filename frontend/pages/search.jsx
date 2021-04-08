@@ -1,3 +1,4 @@
+import qs from "qs";
 import Layout from "../components/Layout";
 import axios from "axios";
 import {useRouter} from "next/router";
@@ -21,19 +22,21 @@ function useTwoPaneState(...args) {
 }
 
 const useStyles = makeStyles({
-  root: {
-    maxWidth: "230px",
-    paddingTop: "20px",
+  drawer: {
+    maxWidth: "min(230px, 50vw)",
   },
   paper: {
     backgroundColor: "whitesmoke",
+    boxShadow: "4px 0 10px -5px #888",
+    position: "sticky",
+    maxHeight: "100vh",
   },
 });
 
 export default function Search({searchResults}) {
   const router = useRouter();
   const [moduleIndex, setModuleIndex] = useTwoPaneState(0);
-  const [isSearchOpen, setIsSearchOpen] = useState(true);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const classes = useStyles();
 
   const query = router.query['query'];
@@ -75,14 +78,10 @@ export default function Search({searchResults}) {
                 anchor={"left"}
                 variant={"persistent"}
                 onClose={() => setIsSearchOpen(false)}
+                className={classes.drawer}
                 PaperProps={{className: classes.paper}}>
           <SearchForm/>
         </Drawer>
-        <div id="slider"
-             className={`refinements-container side ${isSearchOpen ? "open" : "closed"}`}>
-          {"/*{% crispy search_form %}*/"}
-          <p>crispy</p>
-        </div>
         <button id="sliderToggle"
                 className="toggle-button btn btn-md btn-outline-black"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}>
@@ -150,9 +149,15 @@ export async function getServerSideProps(context) {
   let searchResults = {};
 
   await axios
-    .get("http://django:8000/api/search/", {params: context.query})
+    .get("http://django:8000/api/search/", {
+      params: context.query,
+      paramsSerializer: (params) => (
+        qs.stringify(params, {arrayFormat: "repeat"})
+      ),
+    })
     .then((response) => {
       searchResults = response.data;
+      console.info(response);
     })
     .catch((error) => {
       // console.error(error);

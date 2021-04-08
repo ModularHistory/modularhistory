@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import YearSelect from "./YearSelect";
 import TextField from "./StyledTextField";
 import RadioGroup from "./RadioGroup";
@@ -6,7 +8,7 @@ import {useRouter} from "next/router";
 import {Container, Grid} from "@material-ui/core";
 import {useState, createContext, useCallback} from "react";
 import {makeStyles} from "@material-ui/styles";
-import EntitySelect from "./EntitySelect";
+import MultiSelect from "./MultiSelect";
 import CheckboxGroup from "./CheckboxGroup";
 import SearchButton from "./SearchButton";
 
@@ -14,7 +16,6 @@ export const SearchFormContext = createContext([]);
 
 function useFormState(initialState) {
   const [state, setState] = useState(initialState);
-  console.log(state);
   const setStateFromEvent = useCallback(({target}) => setState(
     (prevState) => ({...prevState, [target.name]: target.value})
   ), []);
@@ -23,7 +24,6 @@ function useFormState(initialState) {
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: "230px",
     paddingTop: "20px",
     // marginRight: "12px",
     "& input": {
@@ -36,6 +36,8 @@ const useStyles = makeStyles({
       marginBottom: "-9px",
       marginTop: "-9px",
     },
+    // to prevent hidden search button when navbar is visible
+    "&:last-child": { marginBottom: "50px" }
   },
 });
 
@@ -48,7 +50,7 @@ export default function SearchForm() {
   return (
     <SearchFormContext.Provider value={[state, setStateFromEvent, setState]}>
       <Container className={classes.root}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField label="Query"
                        name="query"
@@ -67,7 +69,16 @@ export default function SearchForm() {
           <YearSelect label={"End year"} name={"end_year"}/>
 
           <Grid item xs={12}>
-            <EntitySelect label={"Entities"} name={"entities"}/>
+            <MultiSelect label={"Entities"} name={"entities"}>
+              {() => axios
+                .get("/api/entities/?attributes=id&attributes=name")
+                .then(response => response.data["results"])
+              }
+            </MultiSelect>
+          </Grid>
+
+          <Grid item xs={12}>
+            {/*<MultiSelect label={"Topics"} name={"topics"}/>*/}
           </Grid>
 
           <Grid item xs={12}>

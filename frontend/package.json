@@ -18,6 +18,7 @@
     "next-auth": "^3.1.0",
     "next-cookies": "^2.0.3",
     "prop-types": "^15.7.2",
+    "qs": "^6.10.1",
     "react": "17.0.1",
     "react-bootstrap": "^1.4.3",
     "react-dom": "17.0.1",
