@@ -27,7 +27,7 @@ class TextualSource(Source):
     editors = ExtraField(json_field_name=JSON_FIELD_NAME, null=True, blank=True)
 
     class ExtraFieldSchema(BaseModel):
-        editors: str = Field(default=None)
+        editors: Optional[str] = Field(default=None)
 
     @property
     def file_page_number(self) -> Optional[int]:

@@ -80,10 +80,7 @@ class JSONField(BaseJSONField):
                     jsonschema_exceptions.ValidationError,
                     jsonschema_exceptions.SchemaError,
                 ) as error:
-                    raise ValidationError(
-                        f'JSON schema validation failed with {type(error)}; {error}\n'
-                        f'\nEnsure the value complies with its schema:\n{schema_data}'
-                    )
+                    raise ValidationError(f'{error}')
 
 
 class ExtraField:

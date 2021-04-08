@@ -26,8 +26,8 @@ class SourceWithPageNumbers(TextualSource):
     )
 
     class ExtraFieldSchema(TextualSource.ExtraFieldSchema):
-        page_number: int = Field(default=None)
-        end_page_number: int = Field(default=None)
+        page_number: Optional[int] = Field(default=None)
+        end_page_number: Optional[int] = Field(default=None)
 
     @property
     def file_page_number(self) -> Optional[int]:
