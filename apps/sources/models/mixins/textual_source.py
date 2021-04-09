@@ -2,7 +2,6 @@ from typing import Optional
 
 from django.db import models
 
-from apps.sources.models.source import Source
 from modularhistory.fields import ExtraField, HistoricDateTimeField
 
 JSON_FIELD_NAME = 'extra'
