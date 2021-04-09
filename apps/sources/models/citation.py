@@ -97,6 +97,12 @@ class Citation(PositionedRelation):
         null=True,
         blank=True,
     )
+    polymorphic_source = models.ForeignKey(
+        to='sources.PolymorphicSource',
+        related_name='citations',
+        on_delete=models.PROTECT,
+        null=True,
+    )
     source = models.ForeignKey(
         to='sources.Source',
         related_name='citations',

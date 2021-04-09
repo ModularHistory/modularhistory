@@ -28,9 +28,21 @@ class SourceContainment(PositionedRelation):
         on_delete=CASCADE,
         related_name='source_containments',
     )
+    polymorphic_source = ForeignKey(
+        to='sources.PolymorphicSource',
+        on_delete=CASCADE,
+        null=True,
+        related_name='source_containments',
+    )
     container = ForeignKey(
         to='sources.Source',
         on_delete=CASCADE,
+        related_name='container_containments',
+    )
+    polymorphic_container = ForeignKey(
+        to='sources.PolymorphicSource',
+        on_delete=CASCADE,
+        null=True,
         related_name='container_containments',
     )
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)

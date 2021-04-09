@@ -28,7 +28,8 @@ if TYPE_CHECKING:
     from apps.entities.models import Entity
     from apps.sources.models.source_containment import SourceContainment
 
-MAX_DB_STRING_LENGTH: int = 500
+MAX_CITATION_STRING_LENGTH: int = 500
+MAX_CITATION_HTML_LENGTH: int = 1000
 MAX_URL_LENGTH: int = 100
 MAX_CREATOR_STRING_LENGTH: int = 100
 MAX_TITLE_LENGTH: int = 250
@@ -49,13 +50,51 @@ class PolymorphicSource(
 ):
     """A source of content or information."""
 
+    citation_string = models.CharField(
+        max_length=MAX_CITATION_STRING_LENGTH,
+        null=False,
+        blank=True,
+        unique=True,
+    )
+    citation_html = models.TextField(null=False, blank=True)
+    date = HistoricDateTimeField(null=True, blank=True)
+    title = models.CharField(
+        verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
+    )
+    attributee_string = models.CharField(
+        max_length=MAX_CREATOR_STRING_LENGTH, null=True, blank=True
+    )
+    description = HTMLField(null=True, blank=True, paragraphed=True)
+    url = models.URLField(
+        max_length=MAX_URL_LENGTH,
+        null=True,
+        blank=True,
+        help_text='URL where the source can be accessed online',
+    )
+    publication_date = HistoricDateTimeField(null=True, blank=True)
+    location = models.ForeignKey(
+        to='places.Place', null=True, blank=True, on_delete=models.SET_NULL
+    )
+    file = models.ForeignKey(
+        to=SourceFile,
+        related_name='polymorphic_sources',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name='file',
+    )
+
+    def __str__(self):
+        """Return the source's string representation."""
+        return self.citation_string
+
 
 class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source for quotes or historical information."""
 
     full_string = models.CharField(
         verbose_name='searchable string',
-        max_length=MAX_DB_STRING_LENGTH,
+        max_length=MAX_CITATION_STRING_LENGTH,
         null=False,
         blank=True,
         unique=True,

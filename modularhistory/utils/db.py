@@ -230,7 +230,7 @@ def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
     print()
 
 
-def seed(context: Context = CONTEXT):
+def seed(context: Context = CONTEXT, migrate: bool = False):
     """Seed the database."""
     db_volume = 'modularhistory_postgres_data'
     if not os.path.isfile(settings.DB_INIT_FILEPATH):
@@ -242,6 +242,9 @@ def seed(context: Context = CONTEXT):
     # Start up the postgres container to automatically run init.sql
     print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
+    if migrate:
+        context.run('docker-compose run django python manage.py migrate')
+    context.run('docker-compose up -d dev')
 
 
 def squash_migrations(context: Context = CONTEXT, dry: bool = True):
