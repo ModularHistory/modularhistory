@@ -11,14 +11,13 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 from polymorphic.models import PolymorphicModel
-from typedmodels.models import TypedModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
 from apps.sources.manager import PolymorphicSourceManager
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
-from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
+from modularhistory.fields import HistoricDateTimeField, HTMLField
 from modularhistory.models import retrieve_or_compute
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from modularhistory.utils.html import NEW_TAB, components_to_html, compose_link, soupify
