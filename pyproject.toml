@@ -151,7 +151,6 @@ uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
 django-cachalot = "^2.3.5"
-Werkzeug = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
@@ -196,6 +195,7 @@ safety = "^1.9"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
+Werkzeug = "^1.0.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

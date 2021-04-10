@@ -3173,7 +3173,7 @@ tests = ["nose (<1.3.0)", "coverage", "mock", "pastedeploy", "wsgiproxy2", "pyqu
 name = "werkzeug"
 version = "1.0.1"
 description = "The comprehensive WSGI web application library."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -3251,7 +3251,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.9"
-content-hash = "0cf34970a7eb3792842678641f1d1be5eef5bfdf0c072c844681d292c70443f4"
+content-hash = "cf80f447881b290bc486075951c45ac61a42ad55ef007ac5a575ad95e87a5749"
 
 [metadata.files]
 aenum = [
