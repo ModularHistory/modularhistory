@@ -83,10 +83,36 @@ class PolymorphicSource(
         on_delete=models.SET_NULL,
         verbose_name='file',
     )
+    attributees = models.ManyToManyField(
+        to='entities.Entity',
+        through='SourceAttribution',
+        related_name='attributed_polymorphic_sources',
+        # Some sources may not have attributees.
+        blank=True,
+    )
+
+    searchable_fields = ['citation_string', 'description']
 
     def __str__(self):
         """Return the source's string representation."""
         return self.citation_string
+
+    @property
+    def admin_source_link(self) -> SafeString:
+        """Return a file link to display in the admin."""
+        element = ''
+        if self.file:
+            element = compose_link(
+                '<i class="fa fa-search"></i>',
+                href=self.url,
+                klass='btn btn-small btn-default display-source',
+                target=NEW_TAB,
+            )
+        return format_html(element)
+
+    @property
+    def escaped_citation_html(self) -> SafeString:
+        return format_html(self.citation_html)
 
 
 class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):

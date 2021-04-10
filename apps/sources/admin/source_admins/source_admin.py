@@ -2,6 +2,7 @@ import logging
 from typing import Dict, Optional
 
 from django.forms import ModelForm
+from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from admin import TabularInline, admin_site
 from apps.search.admin import SearchableModelAdmin
@@ -18,8 +19,13 @@ from apps.sources.admin.source_inlines import (
     AttributeesInline,
     ContainedSourcesInline,
     ContainersInline,
+    PolymorphicAttributeesInline,
+    PolymorphicContainedSourcesInline,
+    PolymorphicContainersInline,
     RelatedInline,
 )
+from apps.sources.models.sources.article import PolymorphicArticle
+from apps.sources.models.sources.book import PolymorphicBook
 
 INITIAL = 'initial'
 
@@ -53,6 +59,73 @@ class SourceForm(ModelForm):
             initial[models.Source.FieldNames.extra] = initial_extra_fields
         kwargs[INITIAL] = initial
         super().__init__(*args, **kwargs)
+
+
+class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
+
+    base_model = models.PolymorphicSource
+    child_models = (
+        models.PolymorphicAffidavit,
+        models.PolymorphicArticle,
+        models.PolymorphicBook,
+        models.PolymorphicCorrespondence,
+        models.PolymorphicDocument,
+        models.PolymorphicFilm,
+        models.PolymorphicInterview,
+        models.PolymorphicJournalEntry,
+        models.PolymorphicPiece,
+        models.PolymorphicSection,
+        models.PolymorphicSpeech,
+        models.PolymorphicWebPage,
+    )
+    list_display = [
+        'pk',
+        'escaped_citation_html',
+        'date_string',
+        'admin_source_link',
+        'slug',
+        'polymorphic_ctype',
+    ]
+    list_filter = [
+        models.Source.FieldNames.verified,
+        # HasContainerFilter,
+        # HasFileFilter,
+        # HasFilePageOffsetFilter,
+        # ImpreciseDateFilter,
+        # models.Source.FieldNames.hidden,
+        # AttributeeFilter,
+        # TypeFilter,
+    ]
+    ordering = ['date', 'citation_string']
+    search_fields = base_model.searchable_fields
+
+
+class ChildSourceAdmin(PolymorphicChildModelAdmin):
+    """ Base admin class for all child models """
+
+    base_model = models.PolymorphicSource
+
+    # # By using these `base_...` attributes instead of the regular ModelAdmin `form` and `fieldsets`,
+    # # the additional fields of the child models are automatically added to the admin form.
+    # base_form = ...
+    # base_fieldsets = ...
+
+    exclude = [
+        'citation_html',
+        'citation_string',
+    ]
+    inlines = [
+        PolymorphicAttributeesInline,
+        PolymorphicContainersInline,
+        PolymorphicContainedSourcesInline,
+        RelatedInline,
+    ]
+    readonly_fields = SearchableModelAdmin.readonly_fields + [
+        'escaped_citation_html',
+        'citation_string',
+        'computations',
+    ]
+    search_fields = base_model.searchable_fields
 
 
 class SourceAdmin(SearchableModelAdmin):
@@ -149,6 +222,21 @@ class SourcesInline(TabularInline):
         'publication_date',
     ]
 
+
+admin_site.register(models.PolymorphicSource, PolymorphicSourceAdmin)
+
+admin_site.register(models.PolymorphicAffidavit, ChildSourceAdmin)
+admin_site.register(models.PolymorphicArticle, ChildSourceAdmin)
+admin_site.register(models.PolymorphicBook, ChildSourceAdmin)
+admin_site.register(models.PolymorphicCorrespondence, ChildSourceAdmin)
+admin_site.register(models.PolymorphicDocument, ChildSourceAdmin)
+admin_site.register(models.PolymorphicFilm, ChildSourceAdmin)
+admin_site.register(models.PolymorphicInterview, ChildSourceAdmin)
+admin_site.register(models.PolymorphicJournalEntry, ChildSourceAdmin)
+admin_site.register(models.PolymorphicPiece, ChildSourceAdmin)
+admin_site.register(models.PolymorphicSection, ChildSourceAdmin)
+admin_site.register(models.PolymorphicSpeech, ChildSourceAdmin)
+admin_site.register(models.PolymorphicWebPage, ChildSourceAdmin)
 
 admin_site.register(models.Source, SourceAdmin)
 admin_site.register(models.Documentary, SourceAdmin)
