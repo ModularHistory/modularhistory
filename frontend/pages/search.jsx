@@ -1,6 +1,9 @@
 import qs from "qs";
-import Layout from "../components/Layout";
 import axios from "axios";
+
+import Layout from "../components/Layout";
+import Pagination from "../components/Pagination";
+
 import {useRouter} from "next/router";
 import {useState, useEffect} from "react";
 
@@ -8,7 +11,7 @@ import ModuleCard from "../components/modulecards/ModuleCard";
 import ModuleDetail from "../components/moduledetails/ModuleDetail";
 import SearchForm from "../components/search/SearchForm";
 
-import {Drawer, Grid} from "@material-ui/core";
+import {Drawer, Grid, Container, Box} from "@material-ui/core";
 import {makeStyles} from "@material-ui/styles";
 
 function useTwoPaneState(...args) {
@@ -25,13 +28,13 @@ const useStyles = makeStyles({
     maxWidth: "0px",
     transition: "max-width .15s",
     zIndex: 2,
-    "&.open": { maxWidth: "230px" },
+    "&.open": {maxWidth: "230px"},
   },
   drawerButton: {
     border: "2px solid black",
     zIndex: "10000",
     transition: "transform .15s",
-    "&.open": { transform: "translateX(229px)" },
+    "&.open": {transform: "translateX(229px)"},
   },
   paper: {
     backgroundColor: "whitesmoke",
@@ -72,9 +75,7 @@ export default function Search({searchResults}) {
               {/*<div className="col-12 col-md-6 mx-auto my-3 py-3">*/}
               {/*  <p>{"<Crispy Search Form>"}</p>*/}
               {/*</div>*/}
-              <Grid>
-                <SearchForm />
-              </Grid>
+              <SearchForm/>
             </div>
           </div>
         </div>
@@ -99,25 +100,25 @@ export default function Search({searchResults}) {
           <i className="fas fa-filter"/>
         </button>
 
-        <div className="display-options">
-          {/*{% with selected_option=display_option %}*/}
-          {/*<span className="display-option">*/}
-          {/*                      <input type="radio" id="2pane-option" name="display" value="2pane"*/}
-          {/*                             {% if selected_option == '2pane' or not selected_option %} checked{% endif %} />*/}
-          {/*                      <label htmlFor="2pane-option"><i className="fas fa-list"></i></label>*/}
-          {/*                  </span>*/}
-          {/*<span className="display-option">*/}
-          {/*                      <input type="radio" id="rows-option" name="display" value="rows"*/}
-          {/*                             {% if selected_option == 'rows' %} checked{% endif %} />*/}
-          {/*                      <label htmlFor="rows-option"><i className="fas fa-bars"></i></label>*/}
-          {/*                  </span>*/}
-          {/*<span className="display-option">*/}
-          {/*                      <input type="radio" id="timeline-option" name="display" value="timeline"*/}
-          {/*                             {% if selected_option == 'timeline' %} checked{% endif %} />*/}
-          {/*                      <label htmlFor="timeline-option"><i className="fas fa-columns"></i></label>*/}
-          {/*                  </span>*/}
-          {/*{% endwith %}*/}
-        </div>
+        {/*<div className="display-options">*/}
+        {/*{% with selected_option=display_option %}*/}
+        {/*<span className="display-option">*/}
+        {/*                      <input type="radio" id="2pane-option" name="display" value="2pane"*/}
+        {/*                             {% if selected_option == '2pane' or not selected_option %} checked{% endif %} />*/}
+        {/*                      <label htmlFor="2pane-option"><i className="fas fa-list"></i></label>*/}
+        {/*                  </span>*/}
+        {/*<span className="display-option">*/}
+        {/*                      <input type="radio" id="rows-option" name="display" value="rows"*/}
+        {/*                             {% if selected_option == 'rows' %} checked{% endif %} />*/}
+        {/*                      <label htmlFor="rows-option"><i className="fas fa-bars"></i></label>*/}
+        {/*                  </span>*/}
+        {/*<span className="display-option">*/}
+        {/*                      <input type="radio" id="timeline-option" name="display" value="timeline"*/}
+        {/*                             {% if selected_option == 'timeline' %} checked{% endif %} />*/}
+        {/*                      <label htmlFor="timeline-option"><i className="fas fa-columns"></i></label>*/}
+        {/*                  </span>*/}
+        {/*{% endwith %}*/}
+        {/*</div>*/}
 
         <div className="results-container">
           {pageHeader}
@@ -152,6 +153,9 @@ export default function Search({searchResults}) {
           {/*{% endif %}*/}
         </div>
       </div>
+      <Container>
+        <Pagination count={searchResults["total_pages"]}/>
+      </Container>
     </Layout>
   );
 }
