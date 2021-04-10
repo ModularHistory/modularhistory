@@ -5,8 +5,7 @@ from django.core.exceptions import MiddlewareNotUsed
 from django.template.base import Template
 from pympler import classtracker, muppy, tracker
 
-ENABLE = False
-
+PYMPLER_ENABLED = False
 
 class PymplerMiddleware:
     """Run Pympler (memory profiler)."""
@@ -17,7 +16,7 @@ class PymplerMiddleware:
 
     def __init__(self, get_response):
         """Construct and configure the middleware, one time."""
-        if ENABLE and not settings.DEBUG:
+        if PYMPLER_ENABLED and not settings.DEBUG:
             self.memory_tracker = tracker.SummaryTracker()
             self.class_tracker = classtracker.ClassTracker()
             self.class_tracker.track_class(Template)
