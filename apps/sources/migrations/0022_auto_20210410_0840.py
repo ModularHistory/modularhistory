@@ -63,7 +63,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='polymorphicsource',
             name='containers',
-            field=models.ManyToManyField(blank=True, related_name='contained_sources', through='sources.SourceContainment', to='sources.PolymorphicSource'),
+            field=models.ManyToManyField(
+                blank=True,
+                related_name='contained_sources',
+                through='sources.SourceContainment',
+                to='sources.PolymorphicSource',
+            ),
         ),
         migrations.DeleteModel(
             name='Source',
