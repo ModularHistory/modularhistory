@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import React, {useContext, useState, useEffect} from 'react';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {makeStyles} from '@material-ui/core/styles';
@@ -26,7 +25,7 @@ const useStyles = makeStyles({
 
 export default function MultiSelect({label, name, keyName, valueName, children}) {
   const classes = useStyles();
-  const [state, _, setState] = useContext(SearchFormContext);
+  const {state, setState, disabled} = useContext(SearchFormContext);
   let value = state[name] || [];
   if (!Array.isArray(value)) value = [value];
 
@@ -60,6 +59,7 @@ export default function MultiSelect({label, name, keyName, valueName, children})
         ChipProps={{size: "small"}}
         onChange={handleChange}
         className={classes.root}
+        disabled={disabled}
         renderInput={(params) => (
           <TextField {...params}
                      variant="outlined"

@@ -9,7 +9,7 @@ import {useContext} from "react";
 import {SearchFormContext} from "./SearchForm";
 
 export default function CheckboxGroup({label, name, children}) {
-  const [state, _, setState] = useContext(SearchFormContext);
+  const {state, setState, disabled} = useContext(SearchFormContext);
   let checkedItems = state[name] || children.map(({key}) => key);
 
   const handleChange = ({target}) => {
@@ -24,7 +24,7 @@ export default function CheckboxGroup({label, name, children}) {
   };
 
   return (
-    <FormControl component="fieldset">
+    <FormControl component="fieldset" disabled={disabled}>
       <FormLabel component="legend">{label}</FormLabel>
       <FormGroup>
         {children.map(({label, key}) => (

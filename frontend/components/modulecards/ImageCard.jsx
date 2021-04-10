@@ -1,6 +1,6 @@
 import BaseCard from "./BaseCard";
 
-export default function ImageCard({image}) {
+export default function ImageCard({image, ...childProps}) {
   const cardClass = "image-card";
   const cardStyles = {maxWidth: `${image["width"]}px`}
 
@@ -9,7 +9,7 @@ export default function ImageCard({image}) {
     maxHeight: image["height"],
   }
   const top = (
-    <div className="view overlay" style={topStyles}>
+    <div className="view overlay" style={topStyles} {...childProps}>
       {/* TODO: add "alt" tag to img element */}
       <img className="card-img-top lazy"
            src={image['src_url']} />

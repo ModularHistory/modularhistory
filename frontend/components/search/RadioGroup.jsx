@@ -8,20 +8,20 @@ import {
 import {useContext} from "react";
 import {SearchFormContext} from "./SearchForm";
 
-export default function RadioGroup({label, children, disabled}) {
-  const [state, setState] = useContext(SearchFormContext);
-  const name = label.toLowerCase();
+export default function RadioGroup({label, name, children}) {
+  const {state, setStateFromEvent, disabled} = useContext(SearchFormContext);
+
   const value = state[name] || children[0].toLowerCase();
 
   return (
-    <FormControl component="fieldset">
+    <FormControl component="fieldset" disabled={disabled}>
       <FormLabel component="legend">{label}</FormLabel>
-      <MuiRadioGroup name={name} value={value} onChange={setState}>
+      <MuiRadioGroup name={name} value={value} onChange={setStateFromEvent}>
         {children.map((opt) => (
           <FormControlLabel label={opt}
                             key={opt}
                             value={opt.toLowerCase()}
-                            control={<Radio color={"primary"} disabled={disabled}/>}
+                            control={<Radio color={"primary"}/>}
           />
         ))}
       </MuiRadioGroup>

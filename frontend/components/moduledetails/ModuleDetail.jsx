@@ -11,10 +11,12 @@ export default function ModuleDetail({module}) {
     // after redesigning how backend HTML is served.
     const images = ref.current.getElementsByTagName("img");
     for (const img of images) {
-      console.log(img);
       if (img.dataset["src"]) img.src = img.dataset["src"];
     }
-  });
+    // force switching between modules to scroll
+    // to the top of the new module
+    ref.current.parentElement.scrollTop = 0;
+  }, [module]);
 
   let details;
   switch (module['model']) {

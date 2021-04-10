@@ -5,7 +5,7 @@ import Layout from "../components/Layout";
 import Pagination from "../components/Pagination";
 
 import {useRouter} from "next/router";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 
 import ModuleCard from "../components/modulecards/ModuleCard";
 import ModuleDetail from "../components/moduledetails/ModuleDetail";
@@ -16,11 +16,12 @@ import {makeStyles} from "@material-ui/styles";
 
 function useTwoPaneState(...args) {
   const [moduleIndex, setModuleIndex] = useState(...args);
-  return [moduleIndex, (e) => {
+  const setModuleIndexFromEvent = useCallback((e) => {
     if (e.ctrlKey || e.metaKey) return;
     e.preventDefault();
     setModuleIndex(e.currentTarget.dataset.index);
-  }];
+  }, []);
+  return {moduleIndex, setModuleIndex, setModuleIndexFromEvent};
 }
 
 const useStyles = makeStyles({
@@ -42,30 +43,48 @@ const useStyles = makeStyles({
     position: "sticky",
     maxHeight: "100vh",
   },
+  cards: {
+    "& .selected": {
+      border: "3px solid black",
+      borderRight: "none",
+    }
+  }
 });
 
 export default function Search({searchResults}) {
   const router = useRouter();
-  const [moduleIndex, setModuleIndex] = useTwoPaneState(0);
+  const {
+    moduleIndex,
+    setModuleIndex,
+    setModuleIndexFromEvent
+  } = useTwoPaneState(0);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const classes = useStyles();
 
-  const query = router.query['query'];
-  const modules = searchResults['results'] || [];
+  useEffect(() => {
+    const handle = () => setModuleIndex(0);
+    router.events.on("routeChangeStart", handle);
+    return () => router.events.off("routeChangeStart", handle);
+  }, [])
+
+  const query = router.query["query"];
+  const modules = searchResults["results"] || [];
 
   const pageHeader = (
     <h1 className='my-0 py-1'>
       {query ?
-        <small>{searchResults['count']} results for <b>{query}</b></small>
+        <small>{searchResults["count"]} results for <b>{query}</b></small>
         :
-        <small>{searchResults['count']} items</small>
+        <small>{searchResults["count"]} items</small>
       }
     </h1>
   );
 
+  const title = `${query || "Historical"} occurrences, quotes, sources, and more`;
+
   if (modules?.length === 0) {
     return (
-      <Layout title={"SERCH"}>
+      <Layout title={title}>
         <div className="serp-container">
           <div className="container">
             <p className="lead text-center my-3 py-3">
@@ -84,7 +103,7 @@ export default function Search({searchResults}) {
   }
 
   return (
-    <Layout title={"SERCH"}>
+    <Layout title={title}>
       <div className="serp-container">
         <Drawer open={isSearchOpen}
                 anchor={"left"}
@@ -92,7 +111,7 @@ export default function Search({searchResults}) {
                 onClose={() => setIsSearchOpen(false)}
                 className={`${classes.drawer} ${isSearchOpen ? "open" : ""}`}
                 PaperProps={{className: classes.paper}}>
-          <SearchForm/>
+          <SearchForm contained/>
         </Drawer>
         <button id="sliderToggle"
                 className={`btn ${classes.drawerButton} ${isSearchOpen ? "open" : ""}`}
@@ -124,14 +143,15 @@ export default function Search({searchResults}) {
           {pageHeader}
           {/*{% if display_option == '2pane' or not display_option %}*/}
           <div className="two-pane-container">
-            <div className="results result-cards">
+            <div className={`results result-cards ${classes.cards}`}>
               {modules.map((module, index) => (
                 <a href={module['absolute_url']} className="result 2pane-result"
                    data-href={module['absolute_url']} data-key={module['slug']}
                    key={module['absolute_url']} data-index={index}
-                   onClick={setModuleIndex}
+                   onClick={setModuleIndexFromEvent}
                 >
-                  <ModuleCard module={module}/>
+                  <ModuleCard module={module}
+                              cardClass={index == moduleIndex ? "selected" : ""}/>
                 </a>
               ))}
             </div>
