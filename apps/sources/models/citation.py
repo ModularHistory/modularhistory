@@ -103,19 +103,19 @@ class Citation(PositionedRelation):
         on_delete=models.PROTECT,
         null=True,
     )
-    source = models.ForeignKey(
-        to='sources.Source',
-        related_name='citations',
-        on_delete=models.PROTECT,
-    )
     pages = JSONField(schema=PAGES_SCHEMA, default=list)
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     class Meta:
-        unique_together = ['source', 'content_type', 'object_id', 'position']
-        ordering = ['position', 'source']
+        unique_together = [
+            'polymorphic_source',
+            'content_type',
+            'object_id',
+            'position',
+        ]
+        ordering = ['position', 'polymorphic_source']
 
     page_string_regex = regex.compile(PAGE_STRING_REGEX)
     placeholder_regex = citation_placeholder_pattern

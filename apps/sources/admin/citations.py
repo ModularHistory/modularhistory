@@ -73,7 +73,7 @@ class CitationsInline(GenericTabularInline):
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
-    exclude = ['computations', 'source']
+    exclude = ['computations']
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
