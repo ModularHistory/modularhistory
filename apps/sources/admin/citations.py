@@ -42,8 +42,9 @@ class CitationAdmin(ModelAdmin):
 
     model = models.Citation
 
+    autocomplete_fields = ['polymorphic_source']
     list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
-    search_fields = ['source__citation_string']
+    search_fields = ['polymorphic_source__citation_string']
     list_filter = [ContentTypeFilter]
     list_per_page = 10
     ordering = ['pk']
@@ -56,7 +57,7 @@ class CitationAdmin(ModelAdmin):
         """
         qs = (
             models.Citation.objects.all()
-            .select_related('source', f'source__file')
+            .select_related('polymorphic_source', f'polymorphic_source__file')
             .prefetch_related('content_object')
         )
         ordering = self.get_ordering(request)
@@ -69,11 +70,12 @@ class CitationsInline(GenericTabularInline):
     """Inline admin for citations."""
 
     model = models.Citation
+
     autocomplete_fields = ['polymorphic_source']
+    exclude = ['computations', 'position']
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
-    exclude = ['computations']
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
