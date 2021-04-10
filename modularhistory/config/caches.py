@@ -10,7 +10,7 @@ use_dummy_cache = config('DUMMY_CACHE', cast=bool, default=False)
 Cache = Dict[str, Any]
 CACHES: Dict[str, Cache]
 
-redisCache = {
+REDIS_CACHE = {
     'BACKEND': 'django_redis.cache.RedisCache',
     'LOCATION': f'{REDIS_BASE_URL}/0',
     'OPTIONS': {
@@ -24,11 +24,11 @@ if IS_DEV and use_dummy_cache:
         'default': {
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         },
-        'cachalot': redisCache,
+        'cachalot': REDIS_CACHE,
     }
 else:
     CACHES = {
-        'default': redisCache
+        'default': REDIS_CACHE,
     }
     # https://github.com/jazzband/django-redis
     # https://docs.djangoproject.com/en/3.1/topics/http/sessions/#using-cached-sessions
