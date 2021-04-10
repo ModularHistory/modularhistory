@@ -17,7 +17,9 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='citation',
-            unique_together={('polymorphic_source', 'content_type', 'object_id', 'position')},
+            unique_together={
+                ('polymorphic_source', 'content_type', 'object_id', 'position')
+            },
         ),
         migrations.RemoveField(
             model_name='citation',

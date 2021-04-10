@@ -8,9 +8,9 @@ from admin import TabularInline, admin_site
 from apps.search.admin import SearchableModelAdmin
 from apps.sources import models
 from apps.sources.admin.inlines import (
-    PolymorphicAttributeesInline,
-    PolymorphicContainedSourcesInline,
-    PolymorphicContainersInline,
+    AttributeesInline,
+    ContainedSourcesInline,
+    ContainersInline,
     RelatedInline,
 )
 
@@ -139,9 +139,9 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
         'citation_string',
     ]
     inlines = [
-        PolymorphicAttributeesInline,
-        PolymorphicContainersInline,
-        PolymorphicContainedSourcesInline,
+        AttributeesInline,
+        ContainersInline,
+        ContainedSourcesInline,
         RelatedInline,
     ]
     list_display = [
