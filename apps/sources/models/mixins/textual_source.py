@@ -35,7 +35,7 @@ class TextualSourceMixin(models.Model):
 
     @property
     def file_page_number(self) -> Optional[int]:
-        """TODO: write docstring."""
+        """Return the page number to which the source file should be opened."""
         file = self.source_file
         if file:
             if self.containment and self.containment.page_number:
@@ -45,7 +45,7 @@ class TextualSourceMixin(models.Model):
 
     @property
     def source_file_url(self) -> Optional[str]:
-        """TODO: write docstring."""
+        """Return the URL to be used to open the source file."""
         file_url = super().source_file_url
         if file_url and self.file_page_number:
             file_url = f'{file_url}#page={self.file_page_number}'

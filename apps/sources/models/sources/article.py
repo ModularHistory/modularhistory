@@ -28,12 +28,7 @@ class PolymorphicArticle(PolymorphicSource, PageNumbersMixin):
             raise ValidationError('Article must have an associated publication.')
 
     def __html__(self) -> str:
-        """
-        Return the article's HTML string representation.
-
-        The string has the following form:
-            ... TODO
-        """
+        """Return the article's citation HTML string."""
         title = self.linked_title.replace('"', "'") if self.linked_title else ''
         components: List[Optional[str]] = [
             self.attributee_html,
