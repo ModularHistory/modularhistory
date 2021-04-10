@@ -15,7 +15,7 @@ from typedmodels.models import TypedModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
-from apps.sources.manager import SourceManager
+from apps.sources.manager import PolymorphicSourceManager
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
@@ -90,7 +90,18 @@ class PolymorphicSource(
         # Some sources may not have attributees.
         blank=True,
     )
+    related = GenericManyToManyField(
+        'quotes.Quote',
+        'occurrences.Occurrence',
+        through='sources.Citation',
+        related_name='sources',
+        blank=True,
+    )
 
+    class Meta:
+        ordering = ['-date']
+
+    objects = PolymorphicSourceManager()
     searchable_fields = ['citation_string', 'description']
 
     def __str__(self):
@@ -117,6 +128,28 @@ class PolymorphicSource(
     @property
     def escaped_citation_html(self) -> SafeString:
         return format_html(self.citation_html)
+
+    @property
+    def linked_title(self) -> Optional[SafeString]:
+        """Return the source's title as a link."""
+        if not self.title:
+            return None
+        html = (
+            compose_link(
+                self.title,
+                href=self.href,
+                klass='source-title display-source',
+                target=NEW_TAB,
+            )
+            if self.href
+            else self.title
+        )
+        return format_html(html)
+
+    @staticmethod
+    def components_to_html(components: Sequence[Optional[str]]):
+        """Combine a list of HTML components into an HTML string."""
+        return components_to_html(components, delimiter=COMPONENT_DELIMITER)
 
 
 class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
@@ -169,13 +202,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         symmetrical=False,
         blank=True,
     )
-    related = GenericManyToManyField(
-        'quotes.Quote',
-        'occurrences.Occurrence',
-        through='sources.Citation',
-        related_name='sources',
-        blank=True,
-    )
     # TODO: make many to many
     collection = models.ForeignKey(
         to='sources.Collection',
@@ -206,8 +232,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         title = 'title'
         type = 'type'
         url = 'url'
-
-    objects: SourceManager = SourceManager()
 
     extra_field_schema: Dict[str, str] = {}
     inapplicable_fields: List[str] = []
@@ -366,8 +390,8 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
             # Include the page number
             if containment.page_number:
                 page_number_html = _get_page_number_html(
-                    containment.source,
-                    containment.source.source_file,
+                    containment.polymorphic_source,
+                    containment.polymorphic_source.source_file,
                     containment.page_number,
                     containment.end_page_number,
                 )
@@ -471,28 +495,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
     def string(self) -> str:
         """Return the source's string representation, including its containers."""
         return soupify(self.html).get_text()  # type: ignore
-
-    @property
-    def linked_title(self) -> Optional[SafeString]:
-        """Return the source's title as a link."""
-        if not self.title:
-            return None
-        html = (
-            compose_link(
-                self.title,
-                href=self.href,
-                klass='source-title display-source',
-                target=NEW_TAB,
-            )
-            if self.href
-            else self.title
-        )
-        return format_html(html)
-
-    @staticmethod
-    def components_to_html(components: Sequence[Optional[str]]):
-        """Combine a list of HTML components into an HTML string."""
-        return components_to_html(components, delimiter=COMPONENT_DELIMITER)
 
     def get_date(self) -> Optional[HistoricDateTime]:
         """Get the source's date."""  # TODO: prefetch container?

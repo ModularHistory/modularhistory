@@ -29,7 +29,7 @@ class ContentTypes(Constant):
     occurrence = 'occurrences.occurrence'
     place = 'places.place'
     quote = 'quotes.quote'
-    source = 'sources.source'
+    source = 'sources.polymorphicsource'
     topic = 'topics.topic'
     postulation = 'postulations.postulation'
 

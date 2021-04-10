@@ -15,7 +15,7 @@ from apps.sources.admin.filters import (
     ImpreciseDateFilter,
     TypeFilter,
 )
-from apps.sources.admin.source_inlines import (
+from apps.sources.admin.inlines import (
     AttributeesInline,
     ContainedSourcesInline,
     ContainersInline,
@@ -59,6 +59,33 @@ class SourceForm(ModelForm):
         super().__init__(*args, **kwargs)
 
 
+def rearrange_fields(fields):
+    """Return reordered fields to be displayed in the admin."""
+    # Fields to display at the top, in order
+    top_fields = ('full_string', 'creators', 'title')
+    # Fields to display at the bottom, in order
+    bottom_fields = (
+        'volume',
+        'number',
+        'page_number',
+        'end_page_number',
+        'container',
+        'description',
+        'citations',
+    )
+    index: int = 0
+    for top_field in top_fields:
+        if top_field in fields:
+            fields.remove(top_field)
+            fields.insert(index, top_field)
+            index += 1
+    for bottom_field in bottom_fields:
+        if bottom_field in fields:
+            fields.remove(bottom_field)
+            fields.append(bottom_field)
+    return fields
+
+
 class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
 
     base_model = models.PolymorphicSource
@@ -76,6 +103,7 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         models.PolymorphicSpeech,
         models.PolymorphicWebPage,
     )
+
     list_display = [
         'pk',
         'escaped_citation_html',
@@ -95,8 +123,15 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         # AttributeeFilter,
         # TypeFilter,
     ]
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    list_per_page = 10
     ordering = ['date', 'citation_string']
     search_fields = base_model.searchable_fields
+
+    def get_fields(self, request, model_instance=None):
+        """Return reordered fields to be displayed in the admin."""
+        fields: list(super().get_fields(request, model_instance))
+        return rearrange_fields(fields)
 
 
 class ChildSourceAdmin(PolymorphicChildModelAdmin):
@@ -109,6 +144,7 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
     # base_form = ...
     # base_fieldsets = ...
 
+    autocomplete_fields = ['file', 'location']
     exclude = [
         'citation_html',
         'citation_string',
@@ -122,91 +158,24 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
     list_display = [
         item for item in PolymorphicSourceAdmin.list_display if item != 'ctype'
     ]
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    list_per_page = 15
+    ordering = PolymorphicSourceAdmin.ordering
     readonly_fields = SearchableModelAdmin.readonly_fields + [
         'escaped_citation_html',
         'citation_string',
         'computations',
     ]
-    search_fields = base_model.searchable_fields
-
-
-class SourceAdmin(SearchableModelAdmin):
-    """Admin for sources."""
-
-    model = models.Source
-    form = SourceForm
-    list_display = [
-        model.FieldNames.pk,
-        'html',
-        'date_string',
-        model.FieldNames.location,
-        'admin_source_link',
-        'slug',
-        'type',
-    ]
-    list_filter = [
-        model.FieldNames.verified,
-        HasContainerFilter,
-        HasFileFilter,
-        HasFilePageOffsetFilter,
-        ImpreciseDateFilter,
-        model.FieldNames.hidden,
-        AttributeeFilter,
-        TypeFilter,
-    ]
-    readonly_fields = SearchableModelAdmin.readonly_fields + [
-        model.FieldNames.string,
-        'computations',
-    ]
-    search_fields = models.Source.searchable_fields
-    ordering = ['date', model.FieldNames.string]
-    inlines = [
-        AttributeesInline,
-        ContainersInline,
-        ContainedSourcesInline,
-        RelatedInline,
-    ]
-    autocomplete_fields = [model.FieldNames.file, model.FieldNames.location]
-
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
-    list_per_page = 10
-
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
     save_as = True
-
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
     save_as_continue = True
+    search_fields = base_model.searchable_fields
 
-    def get_fields(self, request, model_instance: Optional[models.Source] = None):
+    def get_fields(self, request, model_instance=None):
         """Return reordered fields to be displayed in the admin."""
-        fields = list(super().get_fields(request, model_instance))
-        inapplicable_fields = getattr(model_instance, 'inapplicable_fields', [])
-        for field in inapplicable_fields:
-            try:
-                fields.remove(field)
-            except Exception as err:
-                logging.error(f'{err}')
-        fields_to_move = (models.Source.FieldNames.string,)
-        for field in fields_to_move:
-            if field in fields:
-                fields.remove(field)
-                fields.insert(0, field)
-        return fields
-
-
-class SpeechForm(SourceForm):
-    """Form for adding/editing speeches."""
-
-    model = models.Speech
-
-
-class SpeechAdmin(SourceAdmin):
-    """Admin for speeches."""
-
-    model = models.Speech
-    form = SpeechForm
-    list_display = ['string', model.FieldNames.location, 'date_string']
-    search_fields = [model.FieldNames.string, 'location__name']
+        fields: list(super().get_fields(request, model_instance))
+        return rearrange_fields(fields)
 
 
 class SourcesInline(TabularInline):
@@ -239,8 +208,3 @@ admin_site.register(models.PolymorphicPiece, ChildSourceAdmin)
 admin_site.register(models.PolymorphicSection, ChildSourceAdmin)
 admin_site.register(models.PolymorphicSpeech, ChildSourceAdmin)
 admin_site.register(models.PolymorphicWebPage, ChildSourceAdmin)
-
-admin_site.register(models.Source, SourceAdmin)
-admin_site.register(models.Documentary, SourceAdmin)
-admin_site.register(models.Speech, SpeechAdmin)
-admin_site.register(models.Interview, SpeechAdmin)

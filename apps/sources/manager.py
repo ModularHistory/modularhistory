@@ -1,14 +1,18 @@
 from typing import List, Optional
 
 from django.db.models import Q
+from polymorphic.managers import PolymorphicManager, PolymorphicQuerySet
+from polymorphic.models import PolymorphicModel
 
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
 from modularhistory.models.manager import TypedModelManager
 
 
-class SourceManager(TypedModelManager, SearchableModelManager):
-    """Manager for sources."""
+class SourceQuerySet(PolymorphicQuerySet, SearchableModelQuerySet):
+    """Add search capability to PolymorphicQuerySet."""
 
+
+class PolymorphicSourceManager(PolymorphicManager, SearchableModelManager):
     def search(
         self,
         query: Optional[str] = None,
@@ -19,10 +23,12 @@ class SourceManager(TypedModelManager, SearchableModelManager):
         rank: bool = False,
         suppress_unverified: bool = True,
         suppress_hidden: bool = True,
-    ) -> 'SearchableModelQuerySet':
+    ) -> 'SourceQuerySet':
         """Return search results from apps.sources."""
         qs = (
             super()
+            # https://django-polymorphic.readthedocs.io/en/stable/advanced.html?highlight=non_polymorphic#non-polymorphic-queries
+            .non_polymorphic()
             .search(
                 query=query,
                 suppress_unverified=suppress_unverified,

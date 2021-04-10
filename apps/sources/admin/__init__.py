@@ -1,3 +1,5 @@
-from .citation_admin import CitationAdmin, CitationsInline
-from .source_admins.source_admin import SourceAdmin, SourcesInline, SpeechAdmin
-from .source_file_admin import SourceFileAdmin
+from .citations import CitationAdmin, CitationsInline
+from .collections import CollectionAdmin, RepositoryAdmin
+from .publications import PublicationAdmin
+from .source_files import SourceFileAdmin
+from .sources import ChildSourceAdmin, PolymorphicSourceAdmin

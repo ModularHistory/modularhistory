@@ -69,11 +69,11 @@ class CitationsInline(GenericTabularInline):
     """Inline admin for citations."""
 
     model = models.Citation
-    autocomplete_fields = ['source']
+    autocomplete_fields = ['polymorphic_source']
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
-    exclude = ['computations']
+    exclude = ['computations', 'source']
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'

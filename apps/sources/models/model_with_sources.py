@@ -14,7 +14,7 @@ from modularhistory.models import Model, retrieve_or_compute
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
 
-    from apps.sources.models import Citation, Source
+    from apps.sources.models import Citation, PolymorphicSource
 
 
 class ModelWithSources(Model):
@@ -26,7 +26,7 @@ class ModelWithSources(Model):
     """
 
     citations = GenericRelation('sources.Citation')
-    sources: 'RelatedManager[Source]'
+    sources: 'RelatedManager[PolymorphicSource]'
 
     # Admin-facing notes (not to be displayed to users)
     notes = HTMLField(null=True, blank=True, paragraphed=True)

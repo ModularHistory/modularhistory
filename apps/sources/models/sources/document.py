@@ -6,18 +6,14 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.sources.models import PolymorphicSource
-from apps.sources.models.sources.source_with_page_numbers import (
-    PageNumbersMixin,
-    SourceWithPageNumbers,
-)
-from modularhistory.fields import ExtraField
+from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 from modularhistory.models import ModelWithComputations, retrieve_or_compute
 from modularhistory.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400
 DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
-URL_MAX_LENGTH: int = 100
+URL_MAX_LENGTH: int = 200
 
 JSON_FIELD_NAME = 'extra'
 
@@ -45,13 +41,13 @@ class DocumentMixin(PageNumbersMixin):
         ),
     )
     descriptive_phrase = models.CharField(
-        max_length=100,
+        max_length=DESCRIPTIVE_PHRASE_MAX_LENGTH,
         null=True,
         blank=True,
         help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
     )
     information_url = models.CharField(
-        max_length=200,
+        max_length=URL_MAX_LENGTH,
         null=True,
         blank=True,
         help_text='URL for information regarding the document',
@@ -79,45 +75,6 @@ class PolymorphicDocument(PolymorphicSource, DocumentMixin):
         return self.components_to_html(components)
 
 
-class DocumentSource(SourceWithPageNumbers):
-    """A historical document (as a source)."""
-
-    collection_number = ExtraField(
-        json_field_name=JSON_FIELD_NAME,
-        null=True,
-        blank=True,
-        help_text='aka acquisition number',
-    )
-    location_info = ExtraField(
-        json_field_name=JSON_FIELD_NAME,
-        null=True,
-        blank=True,
-        help_text=(
-            'Ex: John Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
-        ),
-    )
-    descriptive_phrase = ExtraField(
-        json_field_name=JSON_FIELD_NAME,
-        null=True,
-        blank=True,
-        help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
-    )
-    information_url = ExtraField(
-        json_field_name=JSON_FIELD_NAME,
-        null=True,
-        blank=True,
-        help_text='URL for information regarding the document',
-    )
-
-    class FieldNames(SourceWithPageNumbers.FieldNames):
-        collection_number = 'collection_number'
-        location_info = 'location_info'
-
-    inapplicable_fields = [
-        FieldNames.publication,
-    ]
-
-
 class Collection(ModelWithComputations):
     """A collection of documents."""
 
@@ -128,7 +85,9 @@ class Collection(ModelWithComputations):
         blank=True,
     )
     repository = ForeignKey(
-        'sources.Repository', on_delete=CASCADE, help_text='the collecting institution'
+        'sources.Repository',
+        on_delete=CASCADE,
+        help_text='the library or institution housing the collection',
     )
     url = models.URLField(max_length=URL_MAX_LENGTH, null=True, blank=True)
 
@@ -151,7 +110,7 @@ class Collection(ModelWithComputations):
             f'{self.name}' if self.name else '',
             f'{self.repository}',
         ]
-        return DocumentSource.components_to_html(components)
+        return ', '.join([component for component in components if component])
 
 
 class Repository(ModelWithComputations):
@@ -195,18 +154,3 @@ class Repository(ModelWithComputations):
         location_string = self.location.string if self.location else None
         components = [self.name, self.owner, location_string]
         return ', '.join([component for component in components if component])
-
-
-class Document(DocumentSource):
-    """A historical document (as a source)."""
-
-    def __html__(self) -> str:
-        """Return the repository's HTML representation."""
-        components = [
-            self.attributee_html,
-            self.linked_title if self.title else 'untitled document',
-            self.date.string if self.date else 'date unknown',
-            self.descriptive_phrase,
-            f'archived in {self.collection}' if self.collection else '',
-        ]
-        return self.components_to_html(components)

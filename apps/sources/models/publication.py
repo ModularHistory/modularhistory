@@ -94,9 +94,3 @@ class Newspaper(Publication):
     """A newspaper that publishes articles."""
 
     pass  # noqa: WPS604
-
-
-class Website(Publication):
-    """A website that publishes articles."""
-
-    pass  # noqa: WPS604

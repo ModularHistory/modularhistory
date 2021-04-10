@@ -16,7 +16,7 @@ from apps.occurrences.admin.occurrence_inlines import (
 )
 from apps.quotes.admin.related_quotes_inline import RelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
-from apps.sources.admin import CitationsInline
+from apps.sources.admin.citations import CitationsInline
 from apps.sources.admin.filters import HasMultipleCitationsFilter, HasSourceFilter
 from apps.topics.admin import RelatedTopicsInline
 from apps.topics.models.taggable_model import TopicFilter
