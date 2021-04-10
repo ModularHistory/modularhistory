@@ -16,7 +16,23 @@ PUBLICATION_TYPES = (
 )
 
 
-class Publication(TypedModel, Model):
+class AbstractPublication(Model):
+
+    name = models.CharField(
+        verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
+    )
+    aliases = models.CharField(
+        verbose_name=_('aliases'), max_length=100, null=True, blank=True
+    )
+    description = HTMLField(
+        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Publication(TypedModel, AbstractPublication):
     """A publication, such as a newspaper, magazine, journal, or website."""
 
     name = models.CharField(

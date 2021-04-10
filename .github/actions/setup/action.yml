@@ -48,7 +48,7 @@ runs:
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
         sudo apt-get install -y graphviz graphviz-dev
         poetry install
