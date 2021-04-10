@@ -2,10 +2,15 @@ from typing import Optional
 
 from django.db import models
 
-from modularhistory.fields import HistoricDateTimeField
+from modularhistory.fields import ExtraField, HistoricDateTimeField
+
+JSON_FIELD_NAME = 'extra'
+
+STRING = 'string'
+NUMBER = 'number'
 
 
-class TextualMixin(models.Model):
+class TextualSourceMixin(models.Model):
     """Mixin model for textual sources."""
 
     editors = models.CharField(

@@ -7,8 +7,6 @@ from django.db import models
 from apps.sources.models import PolymorphicSource
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
-JSON_FIELD_NAME = 'extra'
-
 
 class PolymorphicArticle(PolymorphicSource, PageNumbersMixin):
     """An article published by a journal, magazine, or newspaper."""

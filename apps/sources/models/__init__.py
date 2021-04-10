@@ -11,9 +11,9 @@ from .sources.article import PolymorphicArticle
 from .sources.book import PolymorphicBook, PolymorphicSection
 from .sources.correspondence import PolymorphicCorrespondence
 from .sources.document import Collection, PolymorphicDocument, Repository
+from .sources.film import PolymorphicFilm
 from .sources.interview import PolymorphicInterview
 from .sources.journal import PolymorphicJournalEntry
 from .sources.piece import PolymorphicPiece
 from .sources.speech import PolymorphicSpeech
-from .sources.video_source import PolymorphicFilm
 from .sources.webpage import PolymorphicWebPage, Website2
