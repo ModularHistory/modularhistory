@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.places.models import Venue
-from apps.sources.models.source import PolymorphicSource, Source
+from apps.sources.models.source import PolymorphicSource
 from modularhistory.fields import ExtraField
 
 SPEECH_TYPES = (

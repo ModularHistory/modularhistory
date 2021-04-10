@@ -7,18 +7,7 @@ from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModel
 from admin import TabularInline, admin_site
 from apps.search.admin import SearchableModelAdmin
 from apps.sources import models
-from apps.sources.admin.filters import (
-    AttributeeFilter,
-    HasContainerFilter,
-    HasFileFilter,
-    HasFilePageOffsetFilter,
-    ImpreciseDateFilter,
-    TypeFilter,
-)
 from apps.sources.admin.inlines import (
-    AttributeesInline,
-    ContainedSourcesInline,
-    ContainersInline,
     PolymorphicAttributeesInline,
     PolymorphicContainedSourcesInline,
     PolymorphicContainersInline,

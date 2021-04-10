@@ -19,7 +19,7 @@ from apps.occurrences.models import Occurrence
 from apps.quotes.models import Quote
 from apps.search.forms import SearchForm
 from apps.search.models import SearchableDatedModel
-from apps.sources.models import PolymorphicSource, Source
+from apps.sources.models import PolymorphicSource
 from apps.topics.models import Topic
 from modularhistory.constants.content_types import ContentTypes, get_ct_id
 from modularhistory.models import Model
