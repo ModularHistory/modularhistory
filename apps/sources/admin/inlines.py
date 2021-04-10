@@ -1,6 +1,6 @@
 from admin import GenericTabularInline, TabularInline
 from apps.sources import models
-from apps.sources.models import PolymorphicSource, Source
+from apps.sources.models import PolymorphicSource
 
 
 class AttributeesInline(TabularInline):
@@ -19,7 +19,7 @@ class ContainersInline(TabularInline):
 
     verbose_name = 'container'
     verbose_name_plural = 'containers'
-    model = Source.containers.through
+    model = PolymorphicSource.containers.through
     fk_name = 'polymorphic_source'
     extra = 0
     autocomplete_fields = ['polymorphic_container']
@@ -30,7 +30,7 @@ class ContainedSourcesInline(TabularInline):
 
     verbose_name = 'contained source'
     verbose_name_plural = 'contained sources'
-    model = Source.containers.through
+    model = PolymorphicSource.containers.through
     fk_name = 'polymorphic_container'
     extra = 0
     autocomplete_fields = ['polymorphic_source']

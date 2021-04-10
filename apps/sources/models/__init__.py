@@ -2,7 +2,7 @@
 
 from .citation import Citation
 from .publication import Journal, Magazine, Newspaper, Publication
-from .source import PolymorphicSource, Source
+from .source import PolymorphicSource
 from .source_attribution import SourceAttribution
 from .source_containment import SourceContainment
 from .source_file import SourceFile

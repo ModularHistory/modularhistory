@@ -1,7 +1,3 @@
-import logging
-from typing import Dict, Optional
-
-from django.forms import ModelForm
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from admin import TabularInline, admin_site
@@ -13,39 +9,6 @@ from apps.sources.admin.inlines import (
     ContainersInline,
     RelatedInline,
 )
-
-INITIAL = 'initial'
-
-
-class SourceForm(ModelForm):
-    """Form for adding/editing sources."""
-
-    model = models.Source
-
-    class Meta:
-        model = models.Source
-        exclude = model.inapplicable_fields
-
-    def __init__(self, *args, **kwargs):
-        """Construct the source form."""
-        instance: Optional[models.Source] = kwargs.get('instance', None)
-        schema: Dict = (
-            instance.extra_field_schema if instance else self.model.extra_field_schema
-        )
-        initial = kwargs.pop(INITIAL, {})
-        if instance is None:
-            source_type = f'sources.{self.model.__name__.lower()}'
-            logging.debug(f'Setting initial type to {source_type}')
-            initial['type'] = source_type
-        if schema:
-            extra: Dict = (instance.extra or {}) if instance else {}
-            initial_extra_fields = initial.get(self.model.FieldNames.extra, {})
-            for key in schema:
-                initial_value = extra.get(key, None) if instance else None
-                initial_extra_fields[key] = initial_value
-            initial[models.Source.FieldNames.extra] = initial_extra_fields
-        kwargs[INITIAL] = initial
-        super().__init__(*args, **kwargs)
 
 
 def rearrange_fields(fields):
@@ -103,7 +66,7 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         'ctype',
     ]
     list_filter = [
-        models.Source.FieldNames.verified,
+        'verified',
         # HasContainerFilter,
         # HasFileFilter,
         # HasFilePageOffsetFilter,
@@ -170,14 +133,14 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
 class SourcesInline(TabularInline):
     """Inline admin for sources."""
 
-    model = models.Source
+    model = models.PolymorphicSource
     extra = 0
     fields = [
         'verified',
         'hidden',
         'date_is_circa',
         'creators',
-        model.FieldNames.url,
+        'url',
         'date',
         'publication_date',
     ]
