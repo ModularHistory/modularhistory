@@ -69,16 +69,27 @@ export default function SearchForm() {
           <YearSelect label={"End year"} name={"end_year"}/>
 
           <Grid item xs={12}>
-            <MultiSelect label={"Entities"} name={"entities"}>
+            <MultiSelect label={"Entities"}
+                         name={"entities"}
+                         keyName={"id"}
+                         valueName={"name"}>
               {() => axios
-                .get("/api/entities/?attributes=id&attributes=name")
+                .get("/api/entities/partial/?attributes=id&attributes=name")
                 .then(response => response.data["results"])
               }
             </MultiSelect>
           </Grid>
 
           <Grid item xs={12}>
-            {/*<MultiSelect label={"Topics"} name={"topics"}/>*/}
+            <MultiSelect label={"Topics"}
+                         name={"topics"}
+                         keyName={"pk"}
+                         valueName={"key"}>
+              {() => axios
+                .get("/api/topics/partial/")
+                .then(response => response.data["results"])
+              }
+            </MultiSelect>
           </Grid>
 
           <Grid item xs={12}>

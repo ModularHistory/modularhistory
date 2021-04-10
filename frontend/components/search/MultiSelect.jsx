@@ -15,7 +15,7 @@ const useStyles = makeStyles({
         paddingLeft: "6px",
         paddingRight: "8px"
       },
-      "& .MuiChip-deleteIcon" : {
+      "& .MuiChip-deleteIcon": {
         height: "18px",
         width: "18px",
         marginRight: "2px",
@@ -24,18 +24,28 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MultiSelect({label, name, children}) {
+export default function MultiSelect({label, name, keyName, valueName, children}) {
   const classes = useStyles();
   const [state, _, setState] = useContext(SearchFormContext);
   let value = state[name] || [];
   if (!Array.isArray(value)) value = [value];
 
-  const [selectItems, setSelectItems] = useState([]);
+  const [options, setOptions] = useState({});
+  const [orderedKeys, setOrderedKeys] = useState([]);
   useEffect(() => {
-    children().then(setSelectItems)
+    children()
+      .then((results) => {
+        setOptions(Object.fromEntries(
+          results.map(opt => [opt[keyName], opt[valueName]])
+        ));
+        setOrderedKeys(
+          results.map(opt => opt[keyName])
+        );
+      })
+      .catch(console.error)
   }, [])
 
-  const handleChange = (event, value, reason) => {
+  const handleChange = (event, value) => {
     setState((prevState) => ({...prevState, [name]: value}));
   }
 
@@ -44,8 +54,8 @@ export default function MultiSelect({label, name, children}) {
       <Autocomplete
         multiple
         limitTags={5}
-        options={Object.keys(entities)}
-        getOptionLabel={(option) => entities[option]}
+        options={orderedKeys}
+        getOptionLabel={optionKey => options[optionKey]}
         value={value}
         ChipProps={{size: "small"}}
         onChange={handleChange}
@@ -60,8 +70,3 @@ export default function MultiSelect({label, name, children}) {
     </div>
   );
 }
-
-const entities = {
-  7: "Joseph Smith",
-  8: "Brigham Young",
-};

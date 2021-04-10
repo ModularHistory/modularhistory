@@ -24,6 +24,11 @@ export default function SearchButton(props) {
     }
   }, []);
 
+  // asynchronously download JS for the search page
+  useEffect(() => {
+    router.prefetch("/search");
+  }, []);
+
   return (
     <Button variant={"contained"}
             color={"primary"}

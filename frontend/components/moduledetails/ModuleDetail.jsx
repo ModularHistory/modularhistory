@@ -1,20 +1,25 @@
 import OccurrenceDetail from "./OccurrenceDetail";
 import QuoteDetail from "./QuoteDetail";
-import {createRef, useEffect} from "react";
+import {createRef, useLayoutEffect} from "react";
 
 export default function ModuleDetail({module}) {
   const ref = createRef();
-  useEffect(() => {
+  useLayoutEffect(() => {
     // After the DOM has rendered, check for lazy images
     // and set their `src` to the correct value.
+    // This is not an optimal solution, and will likely change
+    // after redesigning how backend HTML is served.
     const images = ref.current.getElementsByTagName("img");
     for (const img of images) {
+      console.log(img);
       if (img.dataset["src"]) img.src = img.dataset["src"];
     }
-  }, []);
+  });
 
   let details;
   switch (module['model']) {
+    // TODO: add more models here as soon as they
+    //       may appear on the SERP.
     case 'occurrences.occurrence':
       details = <OccurrenceDetail occurrence={module}/>;
       break;

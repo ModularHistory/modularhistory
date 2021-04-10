@@ -16,7 +16,8 @@ module.exports = {
   plugins: ['react'],
   rules: {
     'no-unused-vars': ['warn', { varsIgnorePattern: '^_' }],
-    '@typescript-eslint/no-unused-vars': ['warn', { varsIgnorePattern: '^_' }]
+    '@typescript-eslint/no-unused-vars': ['warn', { varsIgnorePattern: '^_' }],
+    'react/react-in-jsx-scope': ['off'],
   },
   overrides: [
     {

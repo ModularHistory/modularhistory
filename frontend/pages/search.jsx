@@ -2,14 +2,13 @@ import qs from "qs";
 import Layout from "../components/Layout";
 import axios from "axios";
 import {useRouter} from "next/router";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 import ModuleCard from "../components/modulecards/ModuleCard";
 import ModuleDetail from "../components/moduledetails/ModuleDetail";
 import SearchForm from "../components/search/SearchForm";
 
-import {Drawer} from "@material-ui/core";
-
+import {Drawer, Grid} from "@material-ui/core";
 import {makeStyles} from "@material-ui/styles";
 
 function useTwoPaneState(...args) {
@@ -23,7 +22,16 @@ function useTwoPaneState(...args) {
 
 const useStyles = makeStyles({
   drawer: {
-    maxWidth: "min(230px, 50vw)",
+    maxWidth: "0px",
+    transition: "max-width .15s",
+    zIndex: 2,
+    "&.open": { maxWidth: "230px" },
+  },
+  drawerButton: {
+    border: "2px solid black",
+    zIndex: "10000",
+    transition: "transform .15s",
+    "&.open": { transform: "translateX(229px)" },
   },
   paper: {
     backgroundColor: "whitesmoke",
@@ -61,9 +69,12 @@ export default function Search({searchResults}) {
               There are no results for your search. Please try a different search.
             </p>
             <div className="row">
-              <div className="col-12 col-md-6 mx-auto my-3 py-3">
-                <p>{"<Crispy Search Form>"}</p>
-              </div>
+              {/*<div className="col-12 col-md-6 mx-auto my-3 py-3">*/}
+              {/*  <p>{"<Crispy Search Form>"}</p>*/}
+              {/*</div>*/}
+              <Grid>
+                <SearchForm />
+              </Grid>
             </div>
           </div>
         </div>
@@ -78,12 +89,12 @@ export default function Search({searchResults}) {
                 anchor={"left"}
                 variant={"persistent"}
                 onClose={() => setIsSearchOpen(false)}
-                className={classes.drawer}
+                className={`${classes.drawer} ${isSearchOpen ? "open" : ""}`}
                 PaperProps={{className: classes.paper}}>
           <SearchForm/>
         </Drawer>
         <button id="sliderToggle"
-                className="toggle-button btn btn-md btn-outline-black"
+                className={`btn ${classes.drawerButton} ${isSearchOpen ? "open" : ""}`}
                 onClick={() => setIsSearchOpen(!isSearchOpen)}>
           <i className="fas fa-filter"/>
         </button>
@@ -157,7 +168,6 @@ export async function getServerSideProps(context) {
     })
     .then((response) => {
       searchResults = response.data;
-      console.info(response);
     })
     .catch((error) => {
       // console.error(error);

@@ -60,5 +60,9 @@ class EntitySerializer(ModelSerializer):
 
 
 class EntityPartialDictSerializer:
+    """Serializer for topics retrieved from ORM with .values()"""
+
+    # TODO: This currently will break if given
+    #       unserializable fields, e.g. html.
     def __init__(self, queryset, *args, **kwargs):
         self.data = list(queryset)
