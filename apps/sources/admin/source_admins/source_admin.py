@@ -24,8 +24,6 @@ from apps.sources.admin.source_inlines import (
     PolymorphicContainersInline,
     RelatedInline,
 )
-from apps.sources.models.sources.article import PolymorphicArticle
-from apps.sources.models.sources.book import PolymorphicBook
 
 INITIAL = 'initial'
 
@@ -81,10 +79,11 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
     list_display = [
         'pk',
         'escaped_citation_html',
+        'attributee_string',
         'date_string',
         'admin_source_link',
         'slug',
-        'polymorphic_ctype',
+        'ctype',
     ]
     list_filter = [
         models.Source.FieldNames.verified,
@@ -119,6 +118,9 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
         PolymorphicContainersInline,
         PolymorphicContainedSourcesInline,
         RelatedInline,
+    ]
+    list_display = [
+        item for item in PolymorphicSourceAdmin.list_display if item != 'ctype'
     ]
     readonly_fields = SearchableModelAdmin.readonly_fields + [
         'escaped_citation_html',

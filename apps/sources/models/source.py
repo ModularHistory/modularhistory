@@ -111,6 +111,10 @@ class PolymorphicSource(
         return format_html(element)
 
     @property
+    def ctype(self):
+        return self.polymorphic_ctype
+
+    @property
     def escaped_citation_html(self) -> SafeString:
         return format_html(self.citation_html)
 
