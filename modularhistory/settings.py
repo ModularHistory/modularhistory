@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'meta',  # https://django-meta.readthedocs.io/en/latest/
+    'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'sass_processor',  # https://github.com/jrief/django-sass-processor
