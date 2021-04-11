@@ -102,7 +102,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
-    'cachalot', # https://django-cachalot.readthedocs.io/
+    'cachalot',  # https://django-cachalot.readthedocs.io/
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
     'corsheaders',  # https://github.com/adamchainz/django-cors-headers
