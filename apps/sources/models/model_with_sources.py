@@ -4,7 +4,6 @@ import logging
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 

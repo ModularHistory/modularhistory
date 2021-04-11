@@ -7,6 +7,7 @@ from pympler import classtracker, muppy, tracker
 
 PYMPLER_ENABLED = False
 
+
 class PymplerMiddleware:
     """Run Pympler (memory profiler)."""
 
