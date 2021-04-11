@@ -9,5 +9,5 @@ router.register(r'sources', views.SourceViewSet)
 app_name = 'sources'
 
 urlpatterns = [
-    path('', views.SourceListAPIView.as_view(), name='list'),
+    path('', views.SourceListAPIView.as_view(), name='index'),
 ]

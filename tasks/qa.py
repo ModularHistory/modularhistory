@@ -49,7 +49,7 @@ def lint(context, *args):
 
 
 @command
-def test(context, docker=False):
+def test(context, docker=True):
     """Run tests."""
     pytest_args = [
         '-v',
@@ -59,12 +59,8 @@ def test(context, docker=False):
         # '--hypothesis-show-statistics',
     ]
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
-    if settings.ENVIRONMENT == Environments.DEV:
-        input('Make sure the dev server is running, then hit Enter/Return.')
     print(command)
     if docker:
-        context.run(
-            'docker build -t modularhistory/modularhistory . && docker-compose up'
-        )
+        context.run('docker-compose up -d dev')
     context.run(command)
     context.run('coverage combine')
