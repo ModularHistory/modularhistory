@@ -14,7 +14,7 @@ from modularhistory.models import Model, retrieve_or_compute
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
 
-    from apps.sources.models import Citation, PolymorphicSource
+    from apps.sources.models import Citation
 
 
 class ModelWithSources(Model):
