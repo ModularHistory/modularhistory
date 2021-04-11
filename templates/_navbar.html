@@ -30,12 +30,11 @@
                             <a href="/admin/" class="dropdown-item" >Administrate</a>
                             <a href="" class="dropdown-item hide-admin-controls">Hide admin controls</a>
                         {% endif %}
-                        <a href="{% url 'users:logout' %}" class="dropdown-item">
+                        <a href="/api/auth/signout" class="dropdown-item">
                             <span class="glyphicon glyphicon-log-out"></span> Logout
                         </a>
                     {% else %}
-                        <a href="{% url 'users:register' %}" class="dropdown-item">Create an account</a>
-                        <a href="{% url 'users:login' %}" class="dropdown-item">Login</a>
+                        <a href="/api/auth/signin" class="dropdown-item">Login</a>
                     {% endif %}
                 </div>
             </li>

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 wait-for-it.sh redis:6379 -- 
 until timeout 15 celery -A modularhistory inspect ping; do

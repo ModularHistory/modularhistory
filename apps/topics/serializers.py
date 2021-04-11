@@ -13,3 +13,9 @@ class TopicSerializer(ModelSerializer):
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of serialized topics."""
         return 'topics.topic'
+
+
+class TopicDictSerializer:
+    """Serializer for topics retrieved from ORM with .values()"""
+    def __init__(self, queryset, *args, **kwargs):
+        self.data = list(queryset)
