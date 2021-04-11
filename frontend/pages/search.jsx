@@ -121,7 +121,7 @@ export default function Search({searchResults}) {
                 onClose={() => setIsSearchOpen(false)}
                 className={`${classes.drawer} ${isSearchOpen ? "open" : ""}`}
                 PaperProps={{className: classes.paper}}>
-          <SearchForm contained/>
+          <SearchForm inSidebar/>
         </Drawer>
         <button id="sliderToggle"
                 className={`btn ${classes.drawerButton} ${isSearchOpen ? "open" : ""}`}

@@ -22,9 +22,15 @@ import PageTransitionContext from "../PageTransitionContext";
 
 export const SearchFormContext = createContext({});
 
+/**
+ * This hook is used to centralize the state of all search form inputs.
+ * Returns an object containing:
+ *   `state`: the current values for all inputs.
+ *   `setState`: function that directly sets the state.
+ *   `setStateFromEvent`: function that accepts an event and extracts
+ *                        the new state from the event.
+ */
 function useSearchFormState() {
-  // This hook is used to centralize the state of all search form inputs.
-
   const router = useRouter();
 
   // load the initial state from url query params
@@ -42,7 +48,7 @@ function useSearchFormState() {
     setState(query);
   }, [router.query]);
 
-  // used to disable the entire form when page transition are occurring
+  // Disable the entire form when page transition are occurring
   const isLoading = useContext(PageTransitionContext);
 
   return {state, setState, setStateFromEvent, disabled: isLoading};
@@ -51,7 +57,7 @@ function useSearchFormState() {
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: "20px",
-    maxWidth: ({contained}) => contained ? undefined : theme.breakpoints.values.sm,
+    maxWidth: ({inSidebar}) => inSidebar ? undefined : theme.breakpoints.values.sm,
     "& input": {
       backgroundColor: "white",
     },
@@ -67,15 +73,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SearchForm({contained}) {
-  const classes = useStyles({contained});
+
+/**
+ * A component for an advanced/full search form.
+ * `inSidebar` is a boolean determining whether the form should be
+ *    forced to display vertically, as when constrained by a sidebar.
+ *    If false, the inputs may be rendered side-by-side.
+ */
+export default function SearchForm({inSidebar}) {
+  const classes = useStyles({inSidebar});
   const router = useRouter();
   const formState = useSearchFormState();
 
-  // This value is used to change how the form is displayed
-  // in a sidebar vs when loaded by itself.
+  // When `sm` is 6, inputs may be rendered side-by-side.
   // See: https://material-ui.com/components/grid/#grid-with-breakpoints
-  const sm = contained ? 12 : 6;
+  const sm = inSidebar ? 12 : 6;
 
   return (
     <SearchFormContext.Provider value={formState}>
