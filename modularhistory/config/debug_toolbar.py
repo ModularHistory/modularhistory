@@ -14,7 +14,6 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.request.RequestPanel',
     'debug_toolbar.panels.headers.HeadersPanel',
     'debug_toolbar.panels.sql.SQLPanel',
-    # 'pympler.panels.MemoryPanel',
     'debug_toolbar.panels.staticfiles.StaticFilesPanel',
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',
@@ -24,4 +23,6 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.profiling.ProfilingPanel',
     'debug_toolbar.panels.settings.SettingsPanel',
     'debug_toolbar.panels.versions.VersionsPanel',
+    'cachalot.panels.CachalotPanel', # https://django-cachalot.readthedocs.io/en/latest/quickstart.html
+    # 'pympler.panels.MemoryPanel', #https://pympler.readthedocs.io/en/latest/django.html#django
 ]
