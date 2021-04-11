@@ -11,6 +11,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RenameField(
+            model_name='citation',
+            old_name='polymorphic_source',
+            new_name='source',
+        ),
         migrations.AlterField(
             model_name='citation',
             name='source',
@@ -19,5 +24,13 @@ class Migration(migrations.Migration):
                 related_name='citations',
                 to='sources.polymorphicsource',
             ),
+        ),
+        migrations.AlterModelOptions(
+            name='citation',
+            options={'ordering': ['position', 'source']},
+        ),
+        migrations.AlterUniqueTogether(
+            name='citation',
+            unique_together={('source', 'content_type', 'object_id', 'position')},
         ),
     ]

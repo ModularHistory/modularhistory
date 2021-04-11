@@ -125,18 +125,13 @@ class Citation(PositionedRelation):
         try:
             return soupify(self.html).get_text()
         except Exception as error:
-            print(f'{error}')
             return f'citation {self.pk}'
 
     # TODO: refactor
     @property  # type: ignore
     def html(self) -> SafeString:
         """Return the citation's HTML representation."""
-        try:
-            html = f'{self.source.citation_html}'
-        except Exception as error:
-            print(f'>>> {error}')
-            return f'citation {self.pk}'
+        html = f'{self.source.citation_html}'
         if self.primary_page_number:
             page_string = self.page_number_html or ''
             # Replace the source's page string if it exists
