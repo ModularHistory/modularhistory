@@ -7,7 +7,7 @@ from apps.sources.models import PolymorphicSource
 INTERVIEWERS_MAX_LENGTH: int = 200
 
 
-class PolymorphicInterview(PolymorphicSource):
+class Interview(PolymorphicSource):
     """An interview."""
 
     interviewers = models.CharField(

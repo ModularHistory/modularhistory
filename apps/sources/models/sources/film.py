@@ -8,7 +8,7 @@ from apps.sources.models.source import PolymorphicSource
 FILM_TYPES = (('documentary', 'Documentary'),)
 
 
-class PolymorphicFilm(PolymorphicSource):
+class Film(PolymorphicSource):
     """A video source."""
 
     type = models.CharField(

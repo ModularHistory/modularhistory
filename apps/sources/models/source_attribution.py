@@ -7,14 +7,7 @@ from modularhistory.models.positioned_relation import PositionedRelation
 class SourceAttribution(PositionedRelation):
     """An entity (e.g., a writer or organization) to which a source is attributed."""
 
-    polymorphic_source = models.ForeignKey(
-        to='sources.PolymorphicSource',
-        on_delete=models.CASCADE,
-        related_name='attributions',
-        null=True,
-        verbose_name=_('source'),
-    )
-    polymorphic_source = models.ForeignKey(
+    source = models.ForeignKey(
         to='sources.PolymorphicSource',
         on_delete=models.CASCADE,
         related_name='attributions',

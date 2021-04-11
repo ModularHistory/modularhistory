@@ -38,22 +38,22 @@ def rearrange_fields(fields):
     return fields
 
 
-class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
+class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
 
     base_model = models.PolymorphicSource
     child_models = (
-        models.PolymorphicAffidavit,
-        models.PolymorphicArticle,
-        models.PolymorphicBook,
-        models.PolymorphicCorrespondence,
-        models.PolymorphicDocument,
-        models.PolymorphicFilm,
-        models.PolymorphicInterview,
-        models.PolymorphicJournalEntry,
-        models.PolymorphicPiece,
-        models.PolymorphicSection,
-        models.PolymorphicSpeech,
-        models.PolymorphicWebPage,
+        models.Affidavit,
+        models.Article,
+        models.Book,
+        models.Correspondence,
+        models.Document,
+        models.Film,
+        models.Interview,
+        models.JournalEntry,
+        models.Piece,
+        models.Section,
+        models.Speech,
+        models.WebPage,
     )
 
     list_display = [
@@ -71,7 +71,7 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         # HasFileFilter,
         # HasFilePageOffsetFilter,
         # ImpreciseDateFilter,
-        # models.Source.FieldNames.hidden,
+        # models.PolymorphicSource.FieldNames.hidden,
         # AttributeeFilter,
         # TypeFilter,
     ]
@@ -107,12 +107,10 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
         ContainedSourcesInline,
         RelatedInline,
     ]
-    list_display = [
-        item for item in PolymorphicSourceAdmin.list_display if item != 'ctype'
-    ]
+    list_display = [item for item in SourceAdmin.list_display if item != 'ctype']
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 15
-    ordering = PolymorphicSourceAdmin.ordering
+    ordering = SourceAdmin.ordering
     readonly_fields = SearchableModelAdmin.readonly_fields + [
         'escaped_citation_html',
         'citation_string',
@@ -146,17 +144,17 @@ class SourcesInline(TabularInline):
     ]
 
 
-admin_site.register(models.PolymorphicSource, PolymorphicSourceAdmin)
+admin_site.register(models.PolymorphicSource, SourceAdmin)
 
-admin_site.register(models.PolymorphicAffidavit, ChildSourceAdmin)
-admin_site.register(models.PolymorphicArticle, ChildSourceAdmin)
-admin_site.register(models.PolymorphicBook, ChildSourceAdmin)
-admin_site.register(models.PolymorphicCorrespondence, ChildSourceAdmin)
-admin_site.register(models.PolymorphicDocument, ChildSourceAdmin)
-admin_site.register(models.PolymorphicFilm, ChildSourceAdmin)
-admin_site.register(models.PolymorphicInterview, ChildSourceAdmin)
-admin_site.register(models.PolymorphicJournalEntry, ChildSourceAdmin)
-admin_site.register(models.PolymorphicPiece, ChildSourceAdmin)
-admin_site.register(models.PolymorphicSection, ChildSourceAdmin)
-admin_site.register(models.PolymorphicSpeech, ChildSourceAdmin)
-admin_site.register(models.PolymorphicWebPage, ChildSourceAdmin)
+admin_site.register(models.Affidavit, ChildSourceAdmin)
+admin_site.register(models.Article, ChildSourceAdmin)
+admin_site.register(models.Book, ChildSourceAdmin)
+admin_site.register(models.Correspondence, ChildSourceAdmin)
+admin_site.register(models.Document, ChildSourceAdmin)
+admin_site.register(models.Film, ChildSourceAdmin)
+admin_site.register(models.Interview, ChildSourceAdmin)
+admin_site.register(models.JournalEntry, ChildSourceAdmin)
+admin_site.register(models.Piece, ChildSourceAdmin)
+admin_site.register(models.Section, ChildSourceAdmin)
+admin_site.register(models.Speech, ChildSourceAdmin)
+admin_site.register(models.WebPage, ChildSourceAdmin)

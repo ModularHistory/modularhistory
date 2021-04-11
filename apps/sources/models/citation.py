@@ -97,11 +97,10 @@ class Citation(PositionedRelation):
         null=True,
         blank=True,
     )
-    polymorphic_source = models.ForeignKey(
+    source = models.ForeignKey(
         to='sources.PolymorphicSource',
         related_name='citations',
         on_delete=models.PROTECT,
-        null=True,
     )
     pages = JSONField(schema=PAGES_SCHEMA, default=list)
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
@@ -110,12 +109,12 @@ class Citation(PositionedRelation):
 
     class Meta:
         unique_together = [
-            'polymorphic_source',
+            'source',
             'content_type',
             'object_id',
             'position',
         ]
-        ordering = ['position', 'polymorphic_source']
+        ordering = ['position', 'source']
 
     page_string_regex = regex.compile(PAGE_STRING_REGEX)
     placeholder_regex = citation_placeholder_pattern
@@ -129,7 +128,7 @@ class Citation(PositionedRelation):
     @property  # type: ignore
     def html(self) -> SafeString:
         """Return the citation's HTML representation."""
-        html = f'{self.polymorphic_source.citation_html}'
+        html = f'{self.source.citation_html}'
         if self.primary_page_number:
             page_string = self.page_number_html or ''
             # Replace the source's page string if it exists
@@ -139,13 +138,10 @@ class Citation(PositionedRelation):
                 html = html.replace(default_page_string, page_string)
             else:
                 html = f'{html}, {page_string}'
-        if self.pk and self.polymorphic_source.attributees.exists():
+        if self.pk and self.source.attributees.exists():
             if self.content_type_id == get_ct_id(ContentTypes.quote):
                 quote: Quote = self.content_object  # type: ignore
-                if (
-                    quote.ordered_attributees
-                    != self.polymorphic_source.ordered_attributees
-                ):
+                if quote.ordered_attributees != self.source.ordered_attributees:
                     source_html = html
                     if quote.citations.filter(position__lt=self.position).exists():
                         prior_citations = quote.citations.filter(
@@ -175,14 +171,11 @@ class Citation(PositionedRelation):
                     f'</a>'
                 )
             elif (
-                self.polymorphic_source.url
-                or self.polymorphic_source.containment
-                and self.polymorphic_source.containment.container.url
+                self.source.url
+                or self.source.containment
+                and self.source.containment.container.url
             ):
-                link = (
-                    self.polymorphic_source.url
-                    or self.polymorphic_source.containment.container.url
-                )
+                link = self.source.url or self.source.containment.container.url
                 if self.page_number:
                     if 'www.sacred-texts.com' in link:
                         link = f'{link}#page_{self.page_number}'
@@ -240,20 +233,20 @@ class Citation(PositionedRelation):
     @property
     def source_file_page_number(self) -> Optional[int]:
         """Return the page number of the citation's source file."""
-        file = self.polymorphic_source.source_file
+        file = self.source.source_file
         if file:
             if self.primary_page_number:
                 return self.primary_page_number + file.page_offset
-            elif getattr(self.polymorphic_source, 'file_page_number', None):
-                return self.polymorphic_source.file_page_number
+            elif getattr(self.source, 'file_page_number', None):
+                return self.source.file_page_number
         return None
 
     @property
     def source_file_url(self) -> Optional[str]:
         """Return the URL of the citation's source file."""
         file_url = None
-        if self.polymorphic_source.source_file:
-            file_url = self.polymorphic_source.source_file.url
+        if self.source.source_file:
+            file_url = self.source.source_file.url
             if file_url and self.source_file_page_number:
                 if pdf.url_specifies_page(file_url):
                     pattern = rf'{pdf.PAGE_KEY}=\d+'
@@ -269,7 +262,7 @@ class Citation(PositionedRelation):
         """Return a URL to a specific page of the citation's source file."""
         page_number = int(page_number)
         try:
-            source_file = self.polymorphic_source.source_file
+            source_file = self.source.source_file
         except (AttributeError, ObjectDoesNotExist):
             return None
         if source_file:

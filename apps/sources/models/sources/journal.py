@@ -4,7 +4,7 @@ from apps.sources.models import PolymorphicSource
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
 
-class PolymorphicJournalEntry(PolymorphicSource, PageNumbersMixin):
+class JournalEntry(PolymorphicSource, PageNumbersMixin):
     "A journal entry."
 
     class Meta:

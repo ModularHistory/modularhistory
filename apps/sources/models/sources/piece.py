@@ -8,7 +8,7 @@ PIECE_TYPES = (('essay', 'Essay'),)
 TYPE_MAX_LENGTH: int = 10
 
 
-class PolymorphicPiece(PolymorphicSource, PageNumbersMixin):
+class Piece(PolymorphicSource, PageNumbersMixin):
     """A piece (e.g., essay)."""
 
     type = models.CharField(

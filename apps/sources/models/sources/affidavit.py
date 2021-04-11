@@ -10,7 +10,7 @@ from .document import DocumentMixin
 NAME_MAX_LENGTH: int = 100
 
 
-class PolymorphicAffidavit(PolymorphicSource, DocumentMixin):
+class Affidavit(PolymorphicSource, DocumentMixin):
     """An affidavit."""
 
     certifier = models.CharField(

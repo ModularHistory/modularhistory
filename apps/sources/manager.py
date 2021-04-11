@@ -12,7 +12,7 @@ class SourceQuerySet(PolymorphicQuerySet, SearchableModelQuerySet):
     """Add search capability to PolymorphicQuerySet."""
 
 
-class PolymorphicSourceManager(PolymorphicManager, SearchableModelManager):
+class SourceManager(PolymorphicManager, SearchableModelManager):
     def search(
         self,
         query: Optional[str] = None,

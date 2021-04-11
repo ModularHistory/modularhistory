@@ -8,7 +8,7 @@ from apps.sources.models.publication import AbstractPublication
 from apps.sources.models.source import PolymorphicSource
 
 
-class Website2(AbstractPublication):
+class Website(AbstractPublication):
     """A website."""
 
     owner = models.CharField(
@@ -16,11 +16,11 @@ class Website2(AbstractPublication):
     )
 
 
-class PolymorphicWebPage(PolymorphicSource, TextualMixin):
+class WebPage(PolymorphicSource, TextualMixin):
     """A web page."""
 
     website = models.ForeignKey(
-        'sources.Website2', null=True, blank=True, on_delete=models.CASCADE
+        'sources.Website', null=True, blank=True, on_delete=models.CASCADE
     )
 
     def __html__(self) -> str:

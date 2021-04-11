@@ -23,13 +23,13 @@ CONTAINMENT_PHRASES = (
 class SourceContainment(PositionedRelation):
     """A source containment."""
 
-    polymorphic_source = ForeignKey(
+    source = ForeignKey(
         to='sources.PolymorphicSource',
         on_delete=CASCADE,
         null=True,
         related_name='source_containments',
     )
-    polymorphic_container = ForeignKey(
+    container = ForeignKey(
         to='sources.PolymorphicSource',
         on_delete=CASCADE,
         null=True,
@@ -45,7 +45,7 @@ class SourceContainment(PositionedRelation):
     )
 
     class Meta:
-        ordering = ['position', 'polymorphic_source']
+        ordering = ['position', 'source']
 
     serializer = ContainmentSerializer
 

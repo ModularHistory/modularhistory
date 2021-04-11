@@ -14,7 +14,7 @@ from polymorphic.models import PolymorphicModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
-from apps.sources.manager import PolymorphicSourceManager
+from apps.sources.manager import SourceManager
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from modularhistory.fields import HistoricDateTimeField, HTMLField
@@ -76,7 +76,7 @@ class PolymorphicSource(
     )
     file = models.ForeignKey(
         to=SourceFile,
-        related_name='polymorphic_sources',
+        related_name='sources',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -85,14 +85,14 @@ class PolymorphicSource(
     attributees = models.ManyToManyField(
         to='entities.Entity',
         through='SourceAttribution',
-        related_name='attributed_polymorphic_sources',
+        related_name='attributed_sources',
         # Some sources may not have attributees.
         blank=True,
     )
     containers = models.ManyToManyField(
         to='self',
         through='sources.SourceContainment',
-        through_fields=('polymorphic_source', 'polymorphic_container'),
+        through_fields=('source', 'container'),
         related_name='contained_sources',
         symmetrical=False,
         blank=True,
@@ -108,7 +108,7 @@ class PolymorphicSource(
     class Meta:
         ordering = ['-date']
 
-    objects = PolymorphicSourceManager()
+    objects = SourceManager()
     searchable_fields = ['citation_string', 'description']
     serializer = SourceSerializer
     slug_base_field = 'title'
@@ -275,8 +275,8 @@ class PolymorphicSource(
             # Include the page number
             if containment.page_number:
                 page_number_html = _get_page_number_html(
-                    containment.polymorphic_source,
-                    containment.polymorphic_source.source_file,
+                    containment.source,
+                    containment.source.source_file,
                     containment.page_number,
                     containment.end_page_number,
                 )

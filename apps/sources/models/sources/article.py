@@ -8,7 +8,7 @@ from apps.sources.models import PolymorphicSource
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
 
-class PolymorphicArticle(PolymorphicSource, PageNumbersMixin):
+class Article(PolymorphicSource, PageNumbersMixin):
     """An article published by a journal, magazine, or newspaper."""
 
     publication = models.ForeignKey(to='sources.Publication', on_delete=models.PROTECT)

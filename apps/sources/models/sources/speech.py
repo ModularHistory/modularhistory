@@ -5,7 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.places.models import Venue
 from apps.sources.models.source import PolymorphicSource
-from modularhistory.fields import ExtraField
 
 SPEECH_TYPES = (
     ('speech', 'Speech'),
@@ -17,7 +16,7 @@ SPEECH_TYPES = (
 )
 
 
-class PolymorphicSpeech(PolymorphicSource):
+class Speech(PolymorphicSource):
     """Spoken words (e.g., a speech, lecture, or discourse)."""
 
     type = models.CharField(

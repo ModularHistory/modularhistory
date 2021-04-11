@@ -11,7 +11,7 @@ from apps.sources.models.mixins.textual import TextualMixin
 from modularhistory.constants.strings import EMPTY_STRING
 
 
-class PolymorphicBook(PolymorphicSource, TextualMixin):
+class Book(PolymorphicSource, TextualMixin):
     """A book."""
 
     translator = models.CharField(
@@ -128,7 +128,7 @@ SECTION_TYPES = (
 )
 
 
-class PolymorphicSection(PolymorphicSource):
+class Section(PolymorphicSource):
     """A section or chapter of a book."""
 
     type = models.CharField(
@@ -138,13 +138,14 @@ class PolymorphicSection(PolymorphicSource):
         default=SECTION_TYPES[0][0],
     )
 
-    book = models.ForeignKey(to='sources.PolymorphicBook', on_delete=models.CASCADE)
+    # `book` would clash with the 1-to-1 reverse accessor of PolymorphicSource.
+    work = models.ForeignKey(to='sources.Book', on_delete=models.CASCADE)
 
     def __html__(self) -> str:
         """Return the section/chapter's HTML representation."""
         components = [
             self.attributee_html if self.attributee_html else EMPTY_STRING,
             f'"{self.linked_title}"' if self.title else EMPTY_STRING,
-            self.book.citation_html.lstrip(self.attributee_html),
+            self.work.citation_html.lstrip(self.attributee_html),
         ]
         return self.components_to_html(components)

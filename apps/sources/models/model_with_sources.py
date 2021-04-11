@@ -26,7 +26,7 @@ class ModelWithSources(Model):
     """
 
     citations = GenericRelation('sources.Citation')
-    sources: 'RelatedManager[PolymorphicSource]'
+    sources: 'RelatedManager[Source]'
 
     # Admin-facing notes (not to be displayed to users)
     notes = HTMLField(null=True, blank=True, paragraphed=True)

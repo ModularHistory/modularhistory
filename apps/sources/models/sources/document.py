@@ -15,15 +15,13 @@ LOCATION_INFO_MAX_LENGTH: int = 400
 DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
 URL_MAX_LENGTH: int = 200
 
-JSON_FIELD_NAME = 'extra'
-
 
 class DocumentMixin(PageNumbersMixin):
     """A historical document (as a source)."""
 
     collection = models.ForeignKey(
         to='sources.Collection',
-        related_name='polymoprhic_%(class)s',
+        related_name='%(class)s',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -60,7 +58,7 @@ class DocumentMixin(PageNumbersMixin):
         abstract = True
 
 
-class PolymorphicDocument(PolymorphicSource, DocumentMixin):
+class Document(PolymorphicSource, DocumentMixin):
     """A historical or contemporary document held in a collection."""
 
     def __html__(self) -> str:

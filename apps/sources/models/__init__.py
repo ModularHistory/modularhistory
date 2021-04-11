@@ -6,14 +6,14 @@ from .source import PolymorphicSource
 from .source_attribution import SourceAttribution
 from .source_containment import SourceContainment
 from .source_file import SourceFile
-from .sources.affidavit import PolymorphicAffidavit
-from .sources.article import PolymorphicArticle
-from .sources.book import PolymorphicBook, PolymorphicSection
-from .sources.correspondence import PolymorphicCorrespondence
-from .sources.document import Collection, PolymorphicDocument, Repository
-from .sources.film import PolymorphicFilm
-from .sources.interview import PolymorphicInterview
-from .sources.journal import PolymorphicJournalEntry
-from .sources.piece import PolymorphicPiece
-from .sources.speech import PolymorphicSpeech
-from .sources.webpage import PolymorphicWebPage, Website2
+from .sources.affidavit import Affidavit
+from .sources.article import Article
+from .sources.book import Book, Section
+from .sources.correspondence import Correspondence
+from .sources.document import Collection, Document, Repository
+from .sources.film import Film
+from .sources.interview import Interview
+from .sources.journal import JournalEntry
+from .sources.piece import Piece
+from .sources.speech import Speech
+from .sources.webpage import WebPage, Website

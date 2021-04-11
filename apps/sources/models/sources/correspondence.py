@@ -17,7 +17,7 @@ CORRESPONDENCE_TYPES = (
 )
 
 
-class PolymorphicCorrespondence(PolymorphicSource, DocumentMixin):
+class Correspondence(PolymorphicSource, DocumentMixin):
     """Correspondence from one entity to another."""
 
     type = models.CharField(
