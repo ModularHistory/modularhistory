@@ -43,11 +43,12 @@ class CitationAdmin(ModelAdmin):
     model = models.Citation
 
     autocomplete_fields = ['source']
-    list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
-    search_fields = ['source__citation_string']
+    exclude = ['position']
+    list_display = ['pk', 'html', 'content_object', 'content_type']
     list_filter = [ContentTypeFilter]
     list_per_page = 10
     ordering = ['pk']
+    search_fields = ['source__citation_string']
 
     def get_queryset(self, request) -> 'QuerySet[models.Citation]':
         """
@@ -72,7 +73,7 @@ class CitationsInline(GenericTabularInline):
     model = models.Citation
 
     autocomplete_fields = ['source']
-    exclude = ['computations', 'position']
+    exclude = ['computations']
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'

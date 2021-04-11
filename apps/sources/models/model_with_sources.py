@@ -1,5 +1,6 @@
 """Classes for models with relations to sources."""
 
+import logging
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
@@ -62,6 +63,7 @@ class ModelWithSources(Model):
             citation_html = '; '.join(
                 citation['html'] for citation in self.serialized_citations
             )
-        except (ObjectDoesNotExist, AttributeError, ValueError, TypeError):
+        except Exception as err:
+            logging.error(f'{err}')
             citation_html = EMPTY_STRING
         return format_html(citation_html)

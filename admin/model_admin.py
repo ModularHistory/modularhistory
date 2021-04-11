@@ -14,6 +14,7 @@ from django_celery_beat.models import (
     PeriodicTask,
     SolarSchedule,
 )
+from django_celery_results.admin import TaskResult, TaskResultAdmin
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
@@ -129,5 +130,5 @@ admin_site.register(Site, SiteAdmin)
 admin_site.register(IntervalSchedule)
 admin_site.register(CrontabSchedule)
 admin_site.register(SolarSchedule)
-admin_site.register(ClockedSchedule, ClockedScheduleAdmin)
 admin_site.register(PeriodicTask, PeriodicTaskAdmin)
+admin_site.register(TaskResult, TaskResultAdmin)
