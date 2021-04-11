@@ -33,6 +33,7 @@ export default function Home() {
   const router = useRouter();
   const [query, setQuery] = useQueryState("");
 
+  // event handler for pressing enter or clicking search button
   const search = ({key}) => {
     if (key && key !== "Enter") return;
     router.push({

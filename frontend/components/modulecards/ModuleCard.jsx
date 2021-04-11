@@ -3,6 +3,8 @@ import QuoteCard from "./QuoteCard";
 import ImageCard from "./ImageCard";
 
 export default function ModuleCard({module, ...childProps}) {
+  // ModuleCard is a generic component for rendering cards of any
+  // model type, removing the need to import every card component.
   switch (module['model']) {
     case 'occurrences.occurrence':
       return <OccurrenceCard occurrence={module} {...childProps}/>

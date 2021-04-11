@@ -1,6 +1,10 @@
 import {createContext, useEffect, useState} from "react";
 import {useRouter} from "next/router";
 
+// By placing `PageTransitionContext.Provider` at the root of
+// the application (pages/_app.tsx), any component can
+// use this context to react to page transitions without
+// creating additional event callbacks.
 const PageTransitionContext = createContext(false);
 export default PageTransitionContext;
 

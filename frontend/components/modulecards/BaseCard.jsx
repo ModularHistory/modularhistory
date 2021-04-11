@@ -1,4 +1,7 @@
 export default function BaseCard({module, cardClass, cardStyles, top, children}) {
+  // BaseCard is extended by module-specific cards.
+  // The code is mostly copied from the `_card.html` Django template.
+
   const isImage = module['model'] === 'images.Image';
   let bgImage;
   if (!isImage) {

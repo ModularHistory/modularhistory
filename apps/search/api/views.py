@@ -52,37 +52,6 @@ class SearchResultsAPIView(ListAPIView):
         self.places = None
         self.results_count = 0
 
-    # def get_context_data(self, *args, **kwargs) -> Dict:
-    #     """Return the context dictionary used to render the view."""
-    #     context = super().get_context_data(*args, **kwargs)
-    #     context['object_list'] = [
-    #         instance.serialize() for instance in context['object_list'] if instance
-    #     ]
-    #     context['count'] = self.results_count or 0
-    #     query = self.request.GET.get(QUERY_KEY)
-    #     context[QUERY_KEY] = query
-    #
-    #     initial_data: Dict[str, Any] = {}
-    #     search_form = SearchForm(
-    #         request=self.request,
-    #         query=query,
-    #         suppress_unverified=self.suppress_unverified,
-    #         order_by_relevance=self.sort_by_relevance,
-    #         excluded_content_types=self.excluded_content_types,
-    #         entities=self.entities,
-    #         topics=self.topics,
-    #         initial=initial_data,
-    #     )
-    #     context['search_form'] = search_form
-    #     title = f'{query or "Historical"} occurrences, quotes, sources, and more | ModularHistory'
-    #     context['meta'] = Meta(
-    #         title=title,
-    #         description=(
-    #             f'{title}, filterable by topic, date, entity, and content type.'
-    #         ),
-    #     )
-    #     return context
-
     def order_queryset(self, queryset_chain):
         """Return an ordered queryset based on a queryset chain."""
         key = rank_sorter if self.sort_by_relevance else date_sorter

@@ -23,8 +23,14 @@ import PageTransitionContext from "../PageTransitionContext";
 export const SearchFormContext = createContext({});
 
 function useSearchFormState() {
+  // This hook is used to centralize the state of all search form inputs.
+
   const router = useRouter();
+
+  // load the initial state from url query params
   const [state, setState] = useState(router.query);
+
+  // event handler used by several inputs to set their state
   const setStateFromEvent = useCallback(({target}) => setState(
     (prevState) => ({...prevState, [target.name]: target.value})
   ), []);
@@ -36,6 +42,7 @@ function useSearchFormState() {
     setState(query);
   }, [router.query]);
 
+  // used to disable the entire form when page transition are occurring
   const isLoading = useContext(PageTransitionContext);
 
   return {state, setState, setStateFromEvent, disabled: isLoading};
@@ -65,6 +72,9 @@ export default function SearchForm({contained}) {
   const router = useRouter();
   const formState = useSearchFormState();
 
+  // This value is used to change how the form is displayed
+  // in a sidebar vs when loaded by itself.
+  // See: https://material-ui.com/components/grid/#grid-with-breakpoints
   const sm = contained ? 12 : 6;
 
   return (
@@ -137,7 +147,7 @@ export default function SearchForm({contained}) {
           <Grid item xs={12}>
             <SearchButton
               onClick={
-                () => router.push({pathname: "/search", query: formState.state})
+                () => router.push({query: formState.state})
               }
             />
           </Grid>

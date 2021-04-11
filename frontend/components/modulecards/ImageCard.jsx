@@ -1,6 +1,7 @@
 import BaseCard from "./BaseCard";
 
 export default function ImageCard({image, ...childProps}) {
+  // Mostly copied from `apps/images/templates/images/_card.html`
   const cardClass = "image-card";
   const cardStyles = {maxWidth: `${image["width"]}px`}
 

@@ -24,6 +24,13 @@ class EntityListAPIView(ListAPIView):
 
 
 class EntityPartialAPIView(ListAPIView):
+    """API view for listing client-selected attributes of entities.
+
+    Desired attributes are specified with the `attributes` query
+    parameter, and only these attributes are retrieved.
+    The client can use the `page_size` parameter to guarantee all
+    results are in a single response.
+    """
 
     pagination_class = VariableSizePagination
     serializer_class = EntityPartialDictSerializer
