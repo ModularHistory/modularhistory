@@ -14,6 +14,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='slug',
-            field=autoslug.fields.AutoSlugField(editable=True, null=True, populate_from='get_slug', unique=True, verbose_name='slug'),
+            field=autoslug.fields.AutoSlugField(
+                editable=True,
+                null=True,
+                populate_from='get_slug',
+                unique=True,
+                verbose_name='slug',
+            ),
         ),
     ]

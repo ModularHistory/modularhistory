@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='date_is_circa',
-            field=models.BooleanField(blank=True, default=False, help_text='whether the date is estimated/imprecise', verbose_name='date is circa'),
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='whether the date is estimated/imprecise',
+                verbose_name='date is circa',
+            ),
         ),
     ]

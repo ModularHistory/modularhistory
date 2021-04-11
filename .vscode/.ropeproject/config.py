@@ -14,8 +14,16 @@ def set_prefs(prefs):
     # '.svn': matches 'pkg/.svn' and all of its children
     # 'build/*.o': matches 'build/lib.o' but not 'build/sub/lib.o'
     # 'build//*.o': matches 'build/lib.o' and 'build/sub/lib.o'
-    prefs['ignored_resources'] = ['*.pyc', '*~', '.ropeproject',
-                                  '.hg', '.svn', '_svn', '.git', '.tox']
+    prefs['ignored_resources'] = [
+        '*.pyc',
+        '*~',
+        '.ropeproject',
+        '.hg',
+        '.svn',
+        '_svn',
+        '.git',
+        '.tox',
+    ]
 
     # Specifies which files should be considered python files.  It is
     # useful when you have scripts inside your project.  Only files
@@ -105,8 +113,9 @@ def set_prefs(prefs):
     # listed in module rope.base.oi.type_hinting.providers.interfaces
     # For example, you can add you own providers for Django Models, or disable
     # the search type-hinting in a class hierarchy, etc.
-    prefs['type_hinting_factory'] = (
-        'rope.base.oi.type_hinting.factory.default_type_hinting_factory')
+    prefs[
+        'type_hinting_factory'
+    ] = 'rope.base.oi.type_hinting.factory.default_type_hinting_factory'
 
 
 def project_opened(project):

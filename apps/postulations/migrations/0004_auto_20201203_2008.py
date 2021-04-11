@@ -16,11 +16,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='postulation',
             name='elaboration',
-            field=modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=True, processor=modularhistory.fields.html_field.process, verbose_name='elaboration'),
+            field=modularhistory.fields.HTMLField(
+                blank=True,
+                null=True,
+                paragraphed=True,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='elaboration',
+            ),
         ),
         migrations.AlterField(
             model_name='postulation',
             name='summary',
-            field=modularhistory.fields.HTMLField(paragraphed=False, processor=modularhistory.fields.html_field.process, unique=True, verbose_name='statement'),
+            field=modularhistory.fields.HTMLField(
+                paragraphed=False,
+                processor=modularhistory.fields.html_field.process,
+                unique=True,
+                verbose_name='statement',
+            ),
         ),
     ]

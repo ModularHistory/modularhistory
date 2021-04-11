@@ -1,12 +1,33 @@
 """Model classes for web pages."""
 
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
+from apps.sources.models.mixins.textual_source import TextualSourceMixin
+from apps.sources.models.publication import AbstractPublication
+from apps.sources.models.source import PolymorphicSource
 from modularhistory.fields import ExtraField
 
 from .textual_source import TextualSource
 
 JSON_FIELD_NAME = 'extra'
+
+
+class Website2(AbstractPublication):
+    """A website."""
+
+    owner = models.CharField(
+        verbose_name=_('owner'), max_length=100, null=True, blank=True
+    )
+
+
+class PolymorphicWebPage(PolymorphicSource, TextualSourceMixin):
+    """A web page."""
+
+    website = models.ForeignKey(
+        'sources.Website2', null=True, blank=True, on_delete=models.CASCADE
+    )
 
 
 class WebPage(TextualSource):

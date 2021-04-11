@@ -1,6 +1,5 @@
 import logging
-import re
-from typing import Optional
+from typing import Match, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -211,9 +210,7 @@ class Image(MediaModel):
         return 'center'
 
     @classmethod
-    def get_object_html(
-        cls, match: re.Match, use_preretrieved_html: bool = False
-    ) -> str:
+    def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
         """Return the image's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)

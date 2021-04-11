@@ -16,22 +16,68 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Video',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('computations', modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'computations',
+                    modularhistory.fields.json_field.JSONField(
+                        blank=True, default=dict, null=True
+                    ),
+                ),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
-                ('date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('verified', models.BooleanField(default=False, verbose_name='verified')),
-                ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
-                ('caption', modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=None, processor=modularhistory.fields.html_field.process)),
-                ('description', modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=None, processor=modularhistory.fields.html_field.process)),
+                (
+                    'date',
+                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    'verified',
+                    models.BooleanField(default=False, verbose_name='verified'),
+                ),
+                (
+                    'key',
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    'hidden',
+                    models.BooleanField(
+                        blank=True,
+                        default=False,
+                        help_text="Don't let this item appear in search results.",
+                    ),
+                ),
+                (
+                    'caption',
+                    modularhistory.fields.HTMLField(
+                        blank=True,
+                        null=True,
+                        paragraphed=None,
+                        processor=modularhistory.fields.html_field.process,
+                    ),
+                ),
+                (
+                    'description',
+                    modularhistory.fields.HTMLField(
+                        blank=True,
+                        null=True,
+                        paragraphed=None,
+                        processor=modularhistory.fields.html_field.process,
+                    ),
+                ),
                 ('provider', models.CharField(blank=True, max_length=200, null=True)),
                 ('title', models.CharField(max_length=200, null=True)),
                 ('url', models.URLField(null=True, unique=True)),
@@ -45,18 +91,94 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Image',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('computations', modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'computations',
+                    modularhistory.fields.json_field.JSONField(
+                        blank=True, default=dict, null=True
+                    ),
+                ),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
-                ('date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('verified', models.BooleanField(default=False, verbose_name='verified')),
-                ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
-                ('caption', modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=None, processor=modularhistory.fields.html_field.process)),
-                ('description', modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=None, processor=modularhistory.fields.html_field.process)),
+                (
+                    'date',
+                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    'verified',
+                    models.BooleanField(default=False, verbose_name='verified'),
+                ),
+                (
+                    'key',
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    'hidden',
+                    models.BooleanField(
+                        blank=True,
+                        default=False,
+                        help_text="Don't let this item appear in search results.",
+                    ),
+                ),
+                (
+                    'caption',
+                    modularhistory.fields.HTMLField(
+                        blank=True,
+                        null=True,
+                        paragraphed=None,
+                        processor=modularhistory.fields.html_field.process,
+                    ),
+                ),
+                (
+                    'description',
+                    modularhistory.fields.HTMLField(
+                        blank=True,
+                        null=True,
+                        paragraphed=None,
+                        processor=modularhistory.fields.html_field.process,
+                    ),
+                ),
                 ('provider', models.CharField(blank=True, max_length=200, null=True)),
-                ('image', models.ImageField(height_field='height', null=True, upload_to=functools.partial(modularhistory.fields.file_field._generate_upload_path, *(), **{'path': 'images/'}), width_field='width')),
-                ('image_type', models.CharField(choices=[('image', 'Image'), ('photo', 'Photo'), ('illustration', 'Illustration'), ('painting', 'Painting'), ('portrait', 'Portrait'), ('diagram', 'Diagram'), ('reconstruction', 'Reconstruction'), ('photomontage', 'Photomontage'), ('model', 'Model')], default='image', max_length=14)),
+                (
+                    'image',
+                    models.ImageField(
+                        height_field='height',
+                        null=True,
+                        upload_to=functools.partial(
+                            modularhistory.fields.file_field._generate_upload_path,
+                            *(),
+                            **{'path': 'images/'}
+                        ),
+                        width_field='width',
+                    ),
+                ),
+                (
+                    'image_type',
+                    models.CharField(
+                        choices=[
+                            ('image', 'Image'),
+                            ('photo', 'Photo'),
+                            ('illustration', 'Illustration'),
+                            ('painting', 'Painting'),
+                            ('portrait', 'Portrait'),
+                            ('diagram', 'Diagram'),
+                            ('reconstruction', 'Reconstruction'),
+                            ('photomontage', 'Photomontage'),
+                            ('model', 'Model'),
+                        ],
+                        default='image',
+                        max_length=14,
+                    ),
+                ),
                 ('links', models.JSONField(blank=True, default=dict)),
                 ('width', models.PositiveSmallIntegerField(blank=True, null=True)),
                 ('height', models.PositiveSmallIntegerField(blank=True, null=True)),

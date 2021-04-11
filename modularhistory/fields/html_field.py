@@ -1,7 +1,7 @@
 import logging
-import re
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Optional, Type, Union
 
+import regex as re
 from aenum import Constant
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.module_loading import import_string

@@ -16,11 +16,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='topic',
             name='aliases',
-            field=modularhistory.fields.array_field.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None, verbose_name='aliases'),
+            field=modularhistory.fields.array_field.ArrayField(
+                base_field=models.CharField(max_length=100),
+                blank=True,
+                null=True,
+                size=None,
+                verbose_name='aliases',
+            ),
         ),
         migrations.AlterField(
             model_name='topicrelation',
             name='topic',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='topic_relations', to='topics.topic', verbose_name='topic'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='topic_relations',
+                to='topics.topic',
+                verbose_name='topic',
+            ),
         ),
     ]

@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='chains',
-            field=models.ManyToManyField(related_name='occurrences', through='occurrences.OccurrenceChainInclusion', to='occurrences.OccurrenceChain', verbose_name='chains'),
+            field=models.ManyToManyField(
+                related_name='occurrences',
+                through='occurrences.OccurrenceChainInclusion',
+                to='occurrences.OccurrenceChain',
+                verbose_name='chains',
+            ),
         ),
     ]

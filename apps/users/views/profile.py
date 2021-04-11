@@ -1,8 +1,9 @@
+from typing import TYPE_CHECKING
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from apps.users.models import User

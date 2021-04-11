@@ -1,5 +1,6 @@
-# BROKEN. This composite action cannot be used until `uses` is supported:
-# https://github.com/actions/runner/issues/646
+# When composite actions support `uses` (https://github.com/actions/runner/issues/646),
+# this can be converted to a composite action. In the meantime, we are using
+# https://github.com/mithro/actions-includes to allow `uses`.
 
 name: 'Setup'
 description: 'Set up Python and install dependencies'
@@ -11,31 +12,55 @@ inputs:
     description: 'Python version'
     required: true
 runs:
-  using: "composite"
+  # https://github.com/mithro/actions-includes
+  using: "includes"
   steps:
+    # Set up Python.
     - name: Set up Python ${{ inputs.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ inputs.python-version }}
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    # Modify hosts file.
     - name: Add hosts to /etc/hosts
       run: |
         sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
+    # Install and configure Poetry.
     - name: Install and configure Poetry
-      # https://github.com/snok/install-poetry
-      uses: snok/install-poetry@v1.1.1
+      uses: snok/install-poetry@v1.1.2
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
+    # Load cached .venv, if it exists.
     - name: Cache Python virtual environment
-      uses: actions/cache@v2
-      id: cache
+      uses: actions/cache@v2.1.4
+      id: venv-cache
       with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ inputs.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install dependencies
-      run: poetry install
-      if: steps.cache.outputs.cache-hit != 'true'
+        path: .venv
+        key: venv-${{ inputs.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Test poetry environment
+      id: venv-test
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      run: |
+        sudo apt-get install -y graphviz graphviz-dev
+        poetry install
+    - name: Cache node modules
+      uses: actions/cache@v2.1.4
+      id: node-modules-cache
+      with:
+        path: frontend/node_modules
+        key: node-modules-${{ inputs.os }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install JavaScript dependencies
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
+      run: |
+        cd frontend
+        npm ci
+        cd ..

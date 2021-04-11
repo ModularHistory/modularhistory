@@ -22,6 +22,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='image',
             name='image',
-            field=models.ImageField(height_field='height', null=True, upload_to=functools.partial(modularhistory.fields.file_field._generate_upload_path, *(), **{'path': 'images/'}), verbose_name='image', width_field='width'),
+            field=models.ImageField(
+                height_field='height',
+                null=True,
+                upload_to=functools.partial(
+                    modularhistory.fields.file_field._generate_upload_path,
+                    *(),
+                    **{'path': 'images/'}
+                ),
+                verbose_name='image',
+                width_field='width',
+            ),
         ),
     ]

@@ -102,9 +102,9 @@ def restore_squashed_migrations(context):
 
 
 @command
-def seed(context):
+def seed(context, migrate: bool = False):
     """Seed the database."""
-    db.seed(context)
+    db.seed(context, migrate=migrate)
 
 
 @command

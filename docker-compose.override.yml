@@ -31,6 +31,15 @@ services:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
 
+  github_workflow_preprocessor:
+    command: sh .github/preprocess.sh
+    entrypoint: ''
+    image: ghcr.io/mithro/actions-includes/image:main
+    user: root
+    volumes:
+      - .:/github/workspace
+      - ./.git:/github/workspace/.git
+
   react:
     build:
       context: .
@@ -39,10 +48,10 @@ services:
         ENVIRONMENT: dev
     command: npm run dev
     environment:
-      NEXTAUTH_URL: 'http://modularhistory.dev.net'
-      REACT_EDITOR: 'code'
+      NEXTAUTH_URL: "http://modularhistory.dev.net"
+      REACT_EDITOR: "code"
     image: react:latest
-    user: root  # avoid permissions issues with writing in build dir
+    user: root # avoid permissions issues with writing in build dir
     volumes:
       - ./frontend:/modularhistory/frontend
       - ./frontend/node_modules:/modularhistory/frontend/node_modules

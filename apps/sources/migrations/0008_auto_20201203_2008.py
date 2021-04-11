@@ -16,16 +16,26 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='publication',
             name='aliases',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='aliases'),
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name='aliases'
+            ),
         ),
         migrations.AlterField(
             model_name='publication',
             name='description',
-            field=modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=True, processor=modularhistory.fields.html_field.process, verbose_name='description'),
+            field=modularhistory.fields.HTMLField(
+                blank=True,
+                null=True,
+                paragraphed=True,
+                processor=modularhistory.fields.html_field.process,
+                verbose_name='description',
+            ),
         ),
         migrations.AlterField(
             model_name='publication',
             name='name',
-            field=models.CharField(blank=True, max_length=100, null=True, unique=True, verbose_name='name'),
+            field=models.CharField(
+                blank=True, max_length=100, null=True, unique=True, verbose_name='name'
+            ),
         ),
     ]

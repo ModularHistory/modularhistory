@@ -15,21 +15,35 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='image',
             name='date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(null=True, verbose_name='date'),
+            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                null=True, verbose_name='date'
+            ),
         ),
         migrations.AlterField(
             model_name='image',
             name='date_is_circa',
-            field=models.BooleanField(blank=True, default=False, help_text='whether the date is estimated/imprecise', verbose_name='date is circa'),
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='whether the date is estimated/imprecise',
+                verbose_name='date is circa',
+            ),
         ),
         migrations.AlterField(
             model_name='video',
             name='date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(null=True, verbose_name='date'),
+            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                null=True, verbose_name='date'
+            ),
         ),
         migrations.AlterField(
             model_name='video',
             name='date_is_circa',
-            field=models.BooleanField(blank=True, default=False, help_text='whether the date is estimated/imprecise', verbose_name='date is circa'),
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='whether the date is estimated/imprecise',
+                verbose_name='date is circa',
+            ),
         ),
     ]

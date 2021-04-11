@@ -15,11 +15,29 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='date_is_circa',
-            field=models.BooleanField(blank=True, default=False, help_text='whether the date is estimated/imprecise', verbose_name='date is circa'),
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='whether the date is estimated/imprecise',
+                verbose_name='date is circa',
+            ),
         ),
         migrations.AlterField(
             model_name='source',
             name='related',
-            field=gm2m.fields.GM2MField('quotes.Quote', 'occurrences.Occurrence', 'postulations.Postulation', blank=True, related_name='sources', through='sources.Citation', through_fields=['source', 'content_object', 'content_type', 'object_id']),
+            field=gm2m.fields.GM2MField(
+                'quotes.Quote',
+                'occurrences.Occurrence',
+                'postulations.Postulation',
+                blank=True,
+                related_name='sources',
+                through='sources.Citation',
+                through_fields=[
+                    'source',
+                    'content_object',
+                    'content_type',
+                    'object_id',
+                ],
+            ),
         ),
     ]

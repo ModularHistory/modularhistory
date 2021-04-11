@@ -1,0 +1,277 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+name: integration
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '.gitignore'
+      - '.github/**'
+      - '!.github/integration.yml'
+      - '.idea/**'
+      - '.vscode/**'
+      - '**.md'
+      - '**.rst'
+  schedule:
+    - cron: '0 9 * * *'
+
+env:
+  ADMINS: ${{ secrets.ADMINS }}
+  ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+  ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+  CR_PAT: ${{ secrets.CR_PAT }}
+  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+  IMGUR_CLIENT_SECRET: ${IMGUR_CLIENT_SECRET}
+  MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+  MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SHA: ${{ github.sha }}
+  SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
+  SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
+  SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
+  SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+  SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+  SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
+  SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+  SOCIAL_AUTH_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
+  SOCIAL_AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
+  SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+  SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+  X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
+
+jobs:
+  test-setup:
+    name: Test setup script
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+        # NOTE: Services (running in Docker containers) only work on ubuntu.
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+    environment: dev
+    env:
+      TESTING: true
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache virtual environment
+      uses: actions/cache@v2.1.4
+      id: cache
+      with:
+        path: |
+          .venv
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Run setup script
+      run: bash setup.sh
+      shell: bash
+
+  test-app:
+    name: Test application
+    # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        # services (running in Docker containers) only work on ubuntu
+        os: [ ubuntu-latest ]
+        python-version: [ 3.7 ]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        # Set health checks to wait until redis has started
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    environment: integration
+    env:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    steps:
+    - uses: actions/checkout@v2
+    - includes: ./.github/actions/setup
+      with:
+        os: ${{ matrix.os }}
+        python-version: ${{ matrix.python-version }}
+    - name: Make sure pytest is working
+      run: |
+        echo "def test_pytest(): pass" > nothing.py
+        poetry run pytest nothing.py
+    - name: Run tests
+      if: ${{ success() }}
+      run: poetry run invoke test
+
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ 3.7 ]
+    environment: integration
+    env:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: modularhistory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    steps:
+    -
+      name: Check out main branch
+      uses: actions/checkout@v2
+    - 
+      includes: ./.github/actions/setup
+      with:
+        os: ${{ runner.os }}
+        python-version: 3.7
+    -
+      name: Inject environment vars
+      run: poetry run invoke setup.write-env-file
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    -
+      name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    -
+      name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    -
+      name: Build Django image
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        load: true
+        tags: |
+          ghcr.io/modularhistory/django:${{ github.sha }}
+          ghcr.io/modularhistory/django:latest
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./Dockerfile.django
+        context: .
+        cache-from: type=local,src=/tmp/.buildx-cache/django
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/django
+    -
+      name: Build React image
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        load: true
+        tags: |
+          ghcr.io/modularhistory/react:${{ github.sha }}
+          ghcr.io/modularhistory/react:latest
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./Dockerfile.react
+        context: .
+        cache-from: type=local,src=/tmp/.buildx-cache/react
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/react
+    -
+      name: Move cache
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    -
+      name: Run Snyk to check Docker image for vulnerabilities
+      # Snyk can be used to break the build when it detects vulnerabilities.
+      # In this case, we want to upload the issues to GitHub Code Scanning.
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: ghcr.io/modularhistory/django:${{ github.sha }}
+        args: --file=Dockerfile.django
+
+  analyze:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript', 'python' ]
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
+        # Learn more: https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
+        # If you wish to specify custom queries, you can do so here or in a config file.
+        # By default, queries listed here will override any specified in a config file.
+        # Prefix the list here with "+" to use these queries and those in the config file.
+        # queries: ./path/to/local/query, your-org/your-repo/queries@main
+    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
+
+  OSSAR-Scan:
+    name: OSSAR Scan
+    # OSSAR runs on windows-latest.
+    # ubuntu-latest and macos-latest support coming soon.
+    runs-on: windows-latest
+    steps:
+    # Checkout your code repository to scan
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
+    # If this run was triggered by a pull request event, then checkout
+    # the head of the pull request instead of the merge commit.
+    - run: git checkout HEAD^2
+      if: ${{ github.event_name == 'pull_request' }}
+    # Run open source static analysis tools
+    - name: Run OSSAR
+      uses: github/ossar-action@v1
+      id: ossar
+    # Upload results to the Security tab
+    - name: Upload OSSAR results
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ${{ steps.ossar.outputs.sarifFile }}

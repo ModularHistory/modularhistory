@@ -21,8 +21,11 @@ from modularhistory.utils import github as github_utils
 
 from .command import command
 
+NEWLINE = '\n'
 GITHUB_ACTIONS_BASE_URL = github_utils.GITHUB_ACTIONS_BASE_URL
 SEEDS = {'env-file': '.env', 'init-sql': os.path.join(settings.DB_INIT_DIR, 'init.sql')}
+HOSTS_FILEPATH = '/etc/hosts'
+WSL_HOSTS_FILEPATH = '/mnt/c/Windows/System32/drivers/etc/hosts'
 
 
 def dispatch_and_get_workflow(context, session: Session) -> dict:
@@ -88,9 +91,13 @@ def seed(
     context,
     username: Optional[str] = None,
     pat: Optional[str] = None,
+    db: bool = True,
+    env_file: bool = True,
 ):
     """Seed a dev database, media directory, and env file."""
     n_expected_artifacts = 2
+    env_file = env_file and input('Seed .env file? [Y/n] ') != NEGATIVE
+    db = db and input('Seed database? [Y/n] ') != NEGATIVE
     username, pat = github_utils.accept_credentials(username, pat)
     session = github_utils.initialize_session(username=username, pat=pat)
     print('Dispatching workflow...')
@@ -114,10 +121,15 @@ def seed(
     for artifact in artifacts:
         artifact_name = artifact['name']
         if artifact_name not in SEEDS:
-            logging.error(f'Unexpected artifact name: "{artifact_name}"')
+            logging.error(f'Unexpected artifact: "{artifact_name}"')
             continue
         dl_urls[artifact_name] = artifact[zip_dl_url_key]
     for seed_name, dest_path in SEEDS.items():
+        # TODO: Refactor
+        if seed_name == 'env-file' and not env_file:
+            continue
+        elif seed_name == 'init-sql' and not db:
+            continue
         zip_file = f'{seed_name}.zip'
         context.run(
             f'curl -u {username}:{pat} -L {dl_urls[seed_name]} --output {zip_file} '
@@ -142,30 +154,42 @@ def seed(
             dest_dir, filename = settings.BASE_DIR, dest_path
         if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
-    # Seed the db
-    db_utils.seed(context)
+    if db:
+        # Seed the db.
+        db_utils.seed(context)
     print('Finished.')
 
 
 @command
 def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
-    hosts_filepaths = ['/etc/hosts']
-    wsl_windows_hosts_filepath = '/mnt/c/Windows/System32/drivers/etc/hosts'
-    if os.path.exists(wsl_windows_hosts_filepath):
-        hosts_filepaths.append(wsl_windows_hosts_filepath)
-    for hosts_filepath in hosts_filepaths:
-        print(f'Reading {hosts_filepath} ...')
-        with open(hosts_filepath, 'r') as hosts_file:
-            hosts = hosts_file.read()
-        with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
-            extra_hosts = [host for host in hosts_file.readlines() if host]
-        hosts_to_write = [host for host in extra_hosts if host not in hosts]
-        if hosts_to_write:
-            print('Updating /etc/hosts ...')
-            for host in hosts_to_write:
-                context.run(f'sudo echo "{host}" | sudo tee -a /etc/hosts')
-        print(f'{hosts_filepath} is up to date.')
+    with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
+        required_hosts = [host for host in hosts_file.readlines() if host]
+    print(f'Reading {HOSTS_FILEPATH} ...')
+    with open(HOSTS_FILEPATH, 'r') as hosts_file:
+        hosts = hosts_file.read()
+    hosts_to_write = [host for host in required_hosts if host not in hosts]
+    if hosts_to_write:
+        print(f'Updating {HOSTS_FILEPATH} ...')
+        for host in hosts_to_write:
+            context.run(f'sudo echo "{host}" | sudo tee -a /etc/hosts')
+    if os.path.exists(WSL_HOSTS_FILEPATH):
+        while True:
+            with open(WSL_HOSTS_FILEPATH, 'r') as hosts_file:
+                windows_hosts = hosts_file.read()
+                hosts_to_write = [
+                    host for host in required_hosts if host not in windows_hosts
+                ]
+            if not hosts_to_write:
+                break
+            input(
+                'Your Windows hosts file is missing some required entries.\n'
+                'Please update your hosts file to include the following:\n\n'
+                f'{NEWLINE.join(hosts_to_write)}\n\n'
+                'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
+                'After updating your hosts file, press Enter to continue.'
+            )
+    print('Hosts file is up to date.')
 
 
 @command

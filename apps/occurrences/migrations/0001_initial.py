@@ -15,24 +15,87 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Occurrence',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('computations', modularhistory.fields.json_field.JSONField(blank=True, default=dict, null=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'computations',
+                    modularhistory.fields.json_field.JSONField(
+                        blank=True, default=dict, null=True
+                    ),
+                ),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
-                ('verified', models.BooleanField(default=False, verbose_name='verified')),
-                ('key', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('hidden', models.BooleanField(blank=True, default=False, help_text="Don't let this item appear in search results.")),
-                ('date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('end_date', modularhistory.fields.historic_datetime_field.HistoricDateTimeField(blank=True, null=True)),
-                ('summary', modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=False, processor=modularhistory.fields.html_field.process, verbose_name='Summary')),
-                ('description', modularhistory.fields.HTMLField(blank=True, null=True, paragraphed=True, processor=modularhistory.fields.html_field.process, verbose_name='Description')),
-                ('postscript', modularhistory.fields.HTMLField(blank=True, help_text='Content to be displayed below all related data', null=True, paragraphed=True, processor=modularhistory.fields.html_field.process, verbose_name='Postscript')),
+                (
+                    'verified',
+                    models.BooleanField(default=False, verbose_name='verified'),
+                ),
+                (
+                    'key',
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    'hidden',
+                    models.BooleanField(
+                        blank=True,
+                        default=False,
+                        help_text="Don't let this item appear in search results.",
+                    ),
+                ),
+                (
+                    'date',
+                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    'end_date',
+                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    'summary',
+                    modularhistory.fields.HTMLField(
+                        blank=True,
+                        null=True,
+                        paragraphed=False,
+                        processor=modularhistory.fields.html_field.process,
+                        verbose_name='Summary',
+                    ),
+                ),
+                (
+                    'description',
+                    modularhistory.fields.HTMLField(
+                        blank=True,
+                        null=True,
+                        paragraphed=True,
+                        processor=modularhistory.fields.html_field.process,
+                        verbose_name='Description',
+                    ),
+                ),
+                (
+                    'postscript',
+                    modularhistory.fields.HTMLField(
+                        blank=True,
+                        help_text='Content to be displayed below all related data',
+                        null=True,
+                        paragraphed=True,
+                        processor=modularhistory.fields.html_field.process,
+                        verbose_name='Postscript',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['-date'],
@@ -41,8 +104,24 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OccurrenceChain',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', modularhistory.fields.HTMLField(null=True, paragraphed=True, processor=modularhistory.fields.html_field.process, unique=True)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'description',
+                    modularhistory.fields.HTMLField(
+                        null=True,
+                        paragraphed=True,
+                        processor=modularhistory.fields.html_field.process,
+                        unique=True,
+                    ),
+                ),
             ],
             options={
                 'abstract': False,
@@ -51,22 +130,67 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OccurrenceChainInclusion',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='OccurrenceEntityInvolvement',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('importance', models.PositiveSmallIntegerField(choices=[(1, 'Primary'), (2, 'Secondary'), (3, 'Tertiary'), (4, 'Quaternary'), (5, 'Quinary'), (6, 'Senary'), (7, 'Septenary')], default=1)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'importance',
+                    models.PositiveSmallIntegerField(
+                        choices=[
+                            (1, 'Primary'),
+                            (2, 'Secondary'),
+                            (3, 'Tertiary'),
+                            (4, 'Quaternary'),
+                            (5, 'Quinary'),
+                            (6, 'Senary'),
+                            (7, 'Septenary'),
+                        ],
+                        default=1,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='OccurrenceImage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('is_positioned', models.BooleanField(blank=True, default=False)),
-                ('position', models.PositiveSmallIntegerField(blank=True, help_text='Set to 0 if the image is positioned manually.', null=True)),
+                (
+                    'position',
+                    models.PositiveSmallIntegerField(
+                        blank=True,
+                        help_text='Set to 0 if the image is positioned manually.',
+                        null=True,
+                    ),
+                ),
             ],
             options={
                 'ordering': ['position', 'image'],
@@ -75,16 +199,53 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OccurrenceLocation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('importance', models.IntegerField(choices=[(1, 'Primary'), (2, 'Secondary'), (3, 'Tertiary'), (4, 'Quaternary'), (5, 'Quinary'), (6, 'Senary'), (7, 'Septenary')], default=1)),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'importance',
+                    models.IntegerField(
+                        choices=[
+                            (1, 'Primary'),
+                            (2, 'Secondary'),
+                            (3, 'Tertiary'),
+                            (4, 'Quaternary'),
+                            (5, 'Quinary'),
+                            (6, 'Senary'),
+                            (7, 'Septenary'),
+                        ],
+                        default=1,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='OccurrenceQuoteRelation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('position', models.PositiveSmallIntegerField(blank=True, null=True)),
-                ('occurrence', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='occurrence_quote_relations', to='occurrences.occurrence')),
+                (
+                    'occurrence',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='occurrence_quote_relations',
+                        to='occurrences.occurrence',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['position', 'quote'],

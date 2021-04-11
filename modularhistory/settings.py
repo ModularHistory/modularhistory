@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import sys
 from os.path import join
-from typing import Any, Dict
+from typing import Dict
 
 from decouple import config
 from django.conf.locale.en import formats as en_formats
@@ -32,12 +32,16 @@ DEBUG = IS_DEV
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Use the BASE_URL setting to build absolute URLs when necessary.
+BASE_URL = config('BASE_URL', default='http://localhost')
+
 # --- URL MODIFICATION SETTINGS ---
-# Do not prepend `www.` to `modularhistory.com`;
-# the Nginx reverse proxy chops off the `www.` from all incoming requests.
 # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
+# Do not prepend www to modularhistory.com.
+# The Nginx reverse proxy chops off the "www." from incoming requests.
 PREPEND_WWW = False
-APPEND_SLASH = True
+# When running in Docker, delegate slash appendage to the Nginx reverse proxy server.
+APPEND_SLASH = not DOCKERIZED
 
 # --- SECURITY SETTINGS ---
 # https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
@@ -98,6 +102,7 @@ INSTALLED_APPS = [
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
+    'cachalot', # https://django-cachalot.readthedocs.io/
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'concurrency',  # https://github.com/saxix/django-concurrency
     'corsheaders',  # https://github.com/adamchainz/django-cors-headers
@@ -114,6 +119,7 @@ INSTALLED_APPS = [
     'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
+    'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.migrations',
@@ -124,7 +130,7 @@ INSTALLED_APPS = [
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'meta',  # https://django-meta.readthedocs.io/en/latest/
-    'prettyjson',  # https://github.com/kevinmickey/django-prettyjson
+    'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'sass_processor',  # https://github.com/jrief/django-sass-processor

@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from glob import glob, iglob
 from os.path import join
 from typing import Optional
@@ -43,30 +44,22 @@ def backup(
         backup_filename = backup_filename.replace(
             os.path.basename(backup_filename), filename
         )
-    print('Processing backup file ...')
     with open(temp_file, 'r') as unprocessed_backup:
         if os.path.isdir(backup_filename):
             os.rmdir(backup_filename)
         with open(backup_filename, 'w') as processed_backup:
-            previous_line = ''  # falsy; compatible with `startswith`
+            previous_line = ''  # falsy and compatible with `startswith`
             for line in unprocessed_backup:
-                drop_line = any(
-                    [
-                        line.startswith('ALTER ') and ' DROP ' in line,
-                        line.startswith('ALTER ') and ' OWNER TO ' in line,
-                        line.startswith('DROP '),
-                        line == '\n' == previous_line,
-                        all(
-                            [
-                                redact,
-                                previous_line.startswith('COPY public.users_user')
-                                or 'user_id' in previous_line,
-                                not line.startswith(r'\.'),
-                            ]
-                        ),
-                    ]
-                )
-                if drop_line:
+                discard_conditions = [
+                    line == '\n' and re.match(r'(\n|--\n)', previous_line),
+                    re.match(r'(.*DROP\ |--\n?$)', line),
+                    # fmt: off
+                    redact and not line.startswith(r'\.') and re.match(
+                        r'COPY public\.(users_user|.+user_id)', previous_line
+                    )
+                    # fmt: on
+                ]
+                if any(discard_conditions):
                     continue
                 processed_backup.write(line)
                 previous_line = line
@@ -80,7 +73,7 @@ def backup(
     print(f'Finished creating backup file: {backup_filename}')
     if push:
         print(f'Uploading {backup_filename} to Mega ...')
-        upload_to_mega(file=backup_filename, account=Environments.DEV)
+        upload_to_mega(backup_filename, account=Environments.DEV)
         print(f'Finished uploading {backup_filename} to Mega.')
     # Remove old backup files
     logging.info('Removing old backup files ...')
@@ -237,7 +230,7 @@ def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
     print()
 
 
-def seed(context: Context = CONTEXT):
+def seed(context: Context = CONTEXT, migrate: bool = False):
     """Seed the database."""
     db_volume = 'modularhistory_postgres_data'
     if not os.path.isfile(settings.DB_INIT_FILEPATH):
@@ -249,6 +242,9 @@ def seed(context: Context = CONTEXT):
     # Start up the postgres container to automatically run init.sql
     print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
+    if migrate:
+        context.run('docker-compose run django python manage.py migrate')
+    context.run('docker-compose up -d dev')
 
 
 def squash_migrations(context: Context = CONTEXT, dry: bool = True):

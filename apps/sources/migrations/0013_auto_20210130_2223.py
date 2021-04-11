@@ -14,11 +14,19 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='sourcecontainment',
             name='container',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='container_containments', to='sources.source'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='container_containments',
+                to='sources.source',
+            ),
         ),
         migrations.AlterField(
             model_name='sourcecontainment',
             name='source',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='source_containments', to='sources.source'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='source_containments',
+                to='sources.source',
+            ),
         ),
     ]

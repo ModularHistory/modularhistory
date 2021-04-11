@@ -2,9 +2,25 @@
 requires = ["poetry>=1.0.5"]
 build-backend = "poetry.masonry.api"
 
+[tool.autohooks]
+mode = "poetry"
+pre-commit = ["autohooks.plugins.black", "autohooks.plugins.isort"]
+
 [tool.black]
+# https://black.readthedocs.io/en/stable/pyproject_toml.html
 line-length = 88
 skip-string-normalization = true
+include = '\.py$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.mypy_cache
+    | \.venv
+  )/
+)
+'''
 
 [tool.coverage.run]
 # https://coverage.readthedocs.io/en/latest/config.html#run
@@ -47,7 +63,7 @@ beautifulsoup4 = "==4.9.3"
 celery = "<5.0.0"
 channels = "^3.0"
 channels-redis = "^3.2.0"
-django = "^3.1"
+django = "~3.1"
 djangorestframework = "^3.12"
 djangorestframework-simplejwt = "^4.6.0"
 django_replicated = "==2.7"
@@ -66,6 +82,7 @@ django-debug-toolbar = "^3.2"
 django-extensions = "^3.1.1"
 django-extra-views = "==0.13.0"
 django-filter = "==2.4.0"
+django-flat-json-widget = "^0.1.2"
 django-gm2m = "^1.1"
 django-health-check = "^3.16.1"
 django-imagekit = "^4.0.2"
@@ -74,7 +91,7 @@ django-lockdown = "^3.0.0"
 django-mass-edit = "^3.2"
 django-meta = "^2.0.0"
 django-nested-admin = "^3.3"
-django-prettyjson = "^0.4"
+django-polymorphic = "^3.0.0"
 django-redis = "^4.12.1"
 django-reverse-admin = "^2.9"
 django-sass-processor = "==0.8.2"
@@ -119,6 +136,7 @@ python-dateutil = "==2.8.1"
 python-decouple = "==3.3"
 python-dotenv = "^0.15.0"
 python-magic = "^0.4.18"
+regex = "^2021.4.4"
 requests = "==2.24.0"
 scp = "^0.13"
 sentry-sdk = "^0.19"
@@ -133,9 +151,11 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
+django-cachalot = "^2.3.5"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
+autohooks = "^21.3.0"
 binaryornot = "^0.4"
 coverage = { extras = ["toml"], version = "^5.3" }
 coverage-badge = "^1.0"
@@ -176,6 +196,7 @@ safety = "^1.9"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
+Werkzeug = "^1.0.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

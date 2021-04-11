@@ -5,6 +5,7 @@ module.exports = {
     es2021: true,
     node: true
   },
+  // https://eslint.org/docs/user-guide/configuring/configuration-files#extending-configuration-files
   extends: ['eslint:recommended', 'plugin:react/recommended'],
   parserOptions: {
     ecmaFeatures: {
@@ -19,9 +20,10 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['warn', { varsIgnorePattern: '^_' }],
     'react/react-in-jsx-scope': ['off'],
   },
+  // https://eslint.org/docs/user-guide/configuring/configuration-files#how-do-overrides-work
   overrides: [
     {
-      files: ['**/*.ts', '**/*.tsx'],
+      files: ['*.ts', '*.tsx', '**/*.ts', '**/*.tsx'],
       extends: [
         'eslint:recommended',
         'plugin:react/recommended',

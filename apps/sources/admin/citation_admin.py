@@ -57,21 +57,12 @@ class CitationAdmin(ModelAdmin):
         qs = (
             models.Citation.objects.all()
             .select_related('source', f'source__{models.Source.FieldNames.file}')
-            .prefetch_related('content_object', 'pages')
+            .prefetch_related('content_object')
         )
         ordering = self.get_ordering(request)
         if ordering and ordering != models.Citation.get_meta().ordering:
             qs = qs.order_by(*ordering)
         return qs
-
-
-class PagesInline(TabularInline):
-    """Inline admin for a citation's page numbers/ranges."""
-
-    model = models.PageRange
-    verbose_name = 'page range'
-    verbose_name_plural = 'pages'
-    exclude = ['computations']
 
 
 class CitationsInline(GenericTabularInline):
@@ -83,8 +74,6 @@ class CitationsInline(GenericTabularInline):
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
     exclude = ['computations']
-
-    inlines = [PagesInline]
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
@@ -99,7 +88,7 @@ class CitationsInline(GenericTabularInline):
 
     def get_queryset(self, request) -> QuerySet:
         """Return the queryset of citations to display in an inline admin."""
-        return super().get_queryset(request).prefetch_related('pages')
+        return super().get_queryset(request)
 
 
 admin_site.register(models.Citation, CitationAdmin)

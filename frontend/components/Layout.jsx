@@ -18,10 +18,10 @@ export default function Layout({ title, canonicalUrl, children }) {
       if (session.cookies) {
         session.cookies.forEach((cookie) => {
           document.cookie = cookie;
-          console.log(`Updated ${cookie.split(";")[0]} cookie.`);
+          console.log(`Updated ${cookie.split(";")[0].split("=")[0]} cookie.`);
         });
       }
-    } else if (!loading) {
+    } else {
       // Remove all auth cookies.
       AUTH_COOKIES.forEach((cookieName) => {
         document.cookie = `${cookieName}; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -36,11 +36,8 @@ export default function Layout({ title, canonicalUrl, children }) {
         <title>{title || "Home"} | ModularHistory</title>
         <link rel="canonical" href={canonicalUrl || router.pathname} />
       </Head>
-
       <Navbar />
-
-      <div className={`main-content `}>{children}</div>
-
+      <div className="main-content">{children}</div>
       <Footer />
       {/* Removed scripts template tag.
           Can be added to Head with defer attribute */}

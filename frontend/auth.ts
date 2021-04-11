@@ -1,42 +1,49 @@
-import { Session } from 'next-auth';
-import { signIn, signOut } from 'next-auth/client';
-import { WithAdditionalParams } from 'next-auth/_utils';
-import { Router } from 'next/router';
-import axios from './axios';
+import { Session as NextAuthSession } from "next-auth";
+import { signIn, signOut } from "next-auth/client";
+import { Router } from "next/router";
+import axios from "./axios";
 
-export const djangoLogoutUrl = '/api/users/auth/logout/';
-export const AUTH_COOKIES = [
-  'next-auth.session-token',
-  'next-auth.callback-url'
-]
+export const DJANGO_LOGOUT_URL = "/api/users/auth/logout/";
+export const LOGIN_PAGE_PATH = "/auth/signin";
+export const AUTH_REDIRECT_PATH = "/auth/redirect";
+export const NEXT_AUTH_CSRF_COOKIE_NAME = "next-auth.csrf-token";
+export const AUTH_COOKIES = ["next-auth.session-token", "next-auth.callback-url"];
+
+export interface Session extends NextAuthSession {
+  refreshToken?: string;
+}
+
+export interface Credentials {
+  username: string;
+  password: string;
+}
 
 export const handleLogin = (router: Router): void => {
   // If not already on the sign-in page, initiate the sign-in process.
   // (This prevents messing up the callbackUrl by reloading the sign-in page.)
-  if (router.pathname != '/auth/signin') {
+  if (router.pathname != "/auth/signin") {
     signIn();
   }
 };
 
-export const handleLogout = (session: WithAdditionalParams<Session>): void => {
+export const handleLogout = (session: Session): void => {
   // Sign out of the back end.
   if (session) {
     axios
       .post(
-        djangoLogoutUrl,
+        DJANGO_LOGOUT_URL,
         { refresh: session.refreshToken },
         {
           headers: {
-            Authorization: `Bearer ${session.accessToken}`
-          }
+            Authorization: `Bearer ${session.accessToken}`,
+          },
         }
       )
       .then(function () {
-        console.log('Signed out.');
+        console.log("Signed out.");
       })
       .catch(function (error) {
         console.error(`Failed to sign out due to error: ${error}`);
-        throw new Error(`${error}`);
       });
   }
   // Remove cookies by setting their expiry to a past date.
