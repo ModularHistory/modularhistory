@@ -10,7 +10,7 @@ import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 import { WithAdditionalParams } from "next-auth/_utils";
 import { Session } from "../../../auth";
-import axios from "../../../axios";
+import axios from "../../../authAxios";
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
 
@@ -190,7 +190,7 @@ callbacks.redirect = async function redirect(url, baseUrl) {
   // so that the user is instead redirected to the homepage.
   const path = url.replace(baseUrl, "").replace("/auth/signin", "");
   // Determine whether the redirect URL is to a React or to a non-React page.
-  const reactPattern = /\/(entities\/?|other_react_pattern\/?)/;
+  const reactPattern = /(\/?$|\/entities\/?|\/search\/?|\/occurrences\/?|\/quotes\/?)/;
   if (reactPattern.test(url)) {
     // If redirecting to a React page,
     // Strip /auth/redirect from the redirect URL if necessary.

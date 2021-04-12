@@ -11,7 +11,6 @@ class SourceViewSet(ModelViewSet):
 
     queryset = Source.objects.all()
     serializer_class = SourceSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class SourceListAPIView(ListAPIView):
