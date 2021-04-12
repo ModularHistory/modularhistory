@@ -142,9 +142,6 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
         // Replace the session's `user` attribute (containing only name, image, and
         // a couple other fields) with full user details from the Django API.
         let userData;
-        console.log("Expiry:", expiry);
-        console.log("Now:", Date.now());
-        console.log("Making a request to /users/me ...");
         await axios
           .get(makeDjangoApiUrl("/users/me/"), {
             headers: {
@@ -242,7 +239,6 @@ async function authenticateWithCredentials(credentials) {
         Subsequently, the JWT callback reads these values from the user object
         and attaches them to the token object that it returns.
       */
-      console.log(response.data);
       user.accessToken = response.data.access_token;
       user.refreshToken = response.data.refresh_token;
       const cookies = response.headers["set-cookie"];
@@ -310,7 +306,6 @@ async function refreshAccessToken(jwt: JWT) {
     If an error occurs, return the old token.  TODO: Add error property?
     jwt contains name, email, accessToken, clientSideCookies, refreshToken, accessTokenExpiry, iat, exp.
   */
-  console.log("Refreshing access token...");
   await axios
     .post(makeDjangoApiUrl("/users/auth/token/refresh/"), {
       refresh: jwt.refreshToken,
