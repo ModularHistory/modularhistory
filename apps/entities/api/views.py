@@ -1,11 +1,10 @@
-from django.db.models import QuerySet
 from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from modularhistory.pagination import VariableSizePagination
 
 from apps.entities.models import Entity
-from apps.entities.serializers import EntitySerializer, EntityPartialDictSerializer
+from apps.entities.serializers import EntityPartialDictSerializer, EntitySerializer
+from modularhistory.pagination import VariableSizePagination
 
 
 class EntityViewSet(ModelViewSet):
@@ -19,6 +18,7 @@ class EntityViewSet(ModelViewSet):
 class EntityListAPIView(ListAPIView):
     """API view for listing entities."""
 
+    permission_classes = [permissions.AllowAny]
     serializer_class = EntitySerializer
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
 
@@ -33,6 +33,7 @@ class EntityPartialAPIView(ListAPIView):
     """
 
     pagination_class = VariableSizePagination
+    permission_classes = [permissions.AllowAny]
     serializer_class = EntityPartialDictSerializer
 
     def get_queryset(self):
