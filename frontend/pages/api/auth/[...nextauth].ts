@@ -4,12 +4,13 @@ import NextAuth, {
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
+  Session,
   User as NextAuthUser,
 } from "next-auth";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 import { WithAdditionalParams } from "next-auth/_utils";
-import { removeServerSideCookies, Session } from "../../../auth";
+import { removeServerSideCookies } from "../../../auth";
 import axios from "../../../authAxios";
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";

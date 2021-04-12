@@ -1,4 +1,4 @@
-import { Session as NextAuthSession } from "next-auth";
+import { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/client";
 import { Router } from "next/router";
 import axios from "./authAxios";
@@ -8,10 +8,6 @@ export const LOGIN_PAGE_PATH = "/auth/signin";
 export const AUTH_REDIRECT_PATH = "/auth/redirect";
 export const NEXT_AUTH_CSRF_COOKIE_NAME = "next-auth.csrf-token";
 export const AUTH_COOKIES = ["next-auth.session-token", "next-auth.callback-url", "sessionid"];
-
-export interface Session extends NextAuthSession {
-  refreshToken?: string;
-}
 
 export interface Credentials {
   username: string;
