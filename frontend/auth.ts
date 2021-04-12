@@ -1,7 +1,7 @@
 import { Session as NextAuthSession } from "next-auth";
 import { signIn, signOut } from "next-auth/client";
 import { Router } from "next/router";
-import axios from "./axios";
+import axios from "./authAxios";
 
 export const DJANGO_LOGOUT_URL = "/api/users/auth/logout/";
 export const LOGIN_PAGE_PATH = "/auth/signin";

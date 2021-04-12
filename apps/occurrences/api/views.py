@@ -11,7 +11,6 @@ class OccurrenceViewSet(ModelViewSet):
 
     queryset = Occurrence.objects.all()
     serializer_class = OccurrenceSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class OccurrenceListAPIView(ListAPIView):

@@ -13,7 +13,6 @@ class EntityViewSet(ModelViewSet):
 
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
     serializer_class = EntitySerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class EntityListAPIView(ListAPIView):

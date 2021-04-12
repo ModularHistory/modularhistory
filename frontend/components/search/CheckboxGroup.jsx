@@ -22,6 +22,9 @@ export default function CheckboxGroup({label, name, children}) {
   // If the current state is not set, default to all options.
   // This is the default behavior expected by the API.
   let checkedItems = state[name] || children.map(({key}) => key);
+  // when the state is initially set to a single option,
+  // we must convert it to an array
+  if (!Array.isArray(checkedItems)) checkedItems = [checkedItems];
 
   // event handler for user input
   const handleChange = ({target}) => {

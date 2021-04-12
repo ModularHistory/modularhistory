@@ -13,7 +13,6 @@ class TopicViewSet(ModelViewSet):
 
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class TopicListAPIView(ListAPIView):

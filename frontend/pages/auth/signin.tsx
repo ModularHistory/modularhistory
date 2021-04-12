@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Grid, Paper, TextField } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import Alert from "@material-ui/lab/Alert";
-import axios from "axios";
+import axiosBase from "axios";
 import { csrfToken, providers, signIn, useSession } from "next-auth/client";
 import { Providers } from "next-auth/providers";
 import { useRouter } from "next/router";
@@ -17,8 +17,10 @@ import {
 import { handleLogout, NEXT_AUTH_CSRF_COOKIE_NAME } from "../../auth";
 import Layout from "../../components/Layout";
 
-axios.defaults.xsrfCookieName = NEXT_AUTH_CSRF_COOKIE_NAME;
-axios.defaults.xsrfHeaderName = "X-CSRFToken";
+const axios = axiosBase.create({
+  xsrfCookieName: NEXT_AUTH_CSRF_COOKIE_NAME,
+  xsrfHeaderName: "X-CSRFToken",
+});
 
 const CREDENTIALS_KEY = "credentials";
 const SOCIAL_LOGIN_BUTTONS = {
