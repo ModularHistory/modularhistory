@@ -3,12 +3,12 @@ import {
   FormControlLabel,
   FormLabel,
   Radio,
-  RadioGroup as MuiRadioGroup
+  RadioGroup as MuiRadioGroup,
 } from "@material-ui/core";
-import {useContext} from "react";
-import {SearchFormContext} from "./SearchForm";
+import { useContext } from "react";
+import { SearchFormContext } from "./SearchForm";
 
-export default function RadioGroup({label, name, children}) {
+export default function RadioGroup({ label, name, children }) {
   // A component for radio input in the search form.
   // `label` is displayed above the radio group.
   // `name` is the query parameter key used in the search API request.
@@ -16,7 +16,7 @@ export default function RadioGroup({label, name, children}) {
   //    The value of the option to be used in API requests is
   //    assumed to be the lowercase of each option.
 
-  const {state, setStateFromEvent, disabled} = useContext(SearchFormContext);
+  const { state, setStateFromEvent, disabled } = useContext(SearchFormContext);
 
   // if state is not specified, default to the first option
   const value = state[name] || children[0].toLowerCase();
@@ -28,10 +28,11 @@ export default function RadioGroup({label, name, children}) {
       <FormLabel component="legend">{label}</FormLabel>
       <MuiRadioGroup name={name} value={value} onChange={setStateFromEvent}>
         {children.map((opt) => (
-          <FormControlLabel label={opt}
-                            key={opt}
-                            value={opt.toLowerCase()}
-                            control={<Radio color={"primary"}/>}
+          <FormControlLabel
+            label={opt}
+            key={opt}
+            value={opt.toLowerCase()}
+            control={<Radio color={"primary"} />}
           />
         ))}
       </MuiRadioGroup>

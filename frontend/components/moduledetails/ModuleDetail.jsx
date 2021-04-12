@@ -1,8 +1,8 @@
 import OccurrenceDetail from "./OccurrenceDetail";
 import QuoteDetail from "./QuoteDetail";
-import {createRef, useLayoutEffect} from "react";
+import { createRef, useLayoutEffect } from "react";
 
-export default function ModuleDetail({module}) {
+export default function ModuleDetail({ module }) {
   const ref = createRef();
   useLayoutEffect(() => {
     // After the DOM has rendered, check for lazy images
@@ -19,14 +19,14 @@ export default function ModuleDetail({module}) {
   }, [module]);
 
   let details;
-  switch (module['model']) {
+  switch (module["model"]) {
     // TODO: add more models here as soon as they
     //       may appear on the SERP.
-    case 'occurrences.occurrence':
-      details = <OccurrenceDetail occurrence={module}/>;
+    case "occurrences.occurrence":
+      details = <OccurrenceDetail occurrence={module} />;
       break;
-    case 'quotes.quote':
-      details = <QuoteDetail quote={module}/>;
+    case "quotes.quote":
+      details = <QuoteDetail quote={module} />;
       break;
     default:
       details = <pre>{JSON.stringify(module)}</pre>;

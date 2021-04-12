@@ -1,5 +1,5 @@
-import {createContext, useEffect, useState} from "react";
-import {useRouter} from "next/router";
+import { createContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 // Because `PageTransitionContext.Provider` is placed at the root
 // of the application (pages/_app.tsx), any component can
@@ -22,13 +22,13 @@ export function usePageTransitionListener() {
       router.events.off("routeChangeStart", setLoadingTrue);
       router.events.off("routeChangeComplete", setLoadingFalse);
       router.events.off("routeChangeError", setLoadingFalse);
-    }
+    };
   }, []);
 
   return isLoading;
 }
 
-export function PageTransitionContextProvider({children}) {
+export function PageTransitionContextProvider({ children }) {
   return (
     <PageTransitionContext.Provider value={usePageTransitionListener()}>
       {children}

@@ -22,18 +22,18 @@ const globalMenuItems = [
     title: "Occurrences",
     path: "/search/?content_types=occurrences.occurrence",
     as: "/occurrences",
-    reactive: true
+    reactive: true,
   },
   {
     title: "Quotes",
     path: "/search/?content_types=quotes.quote",
     as: "/quotes",
-    reactive: true
+    reactive: true,
   },
   { title: "Entities", path: "/entities", reactive: true },
 ];
 
-function WrappedNavLink({ title, path, as, reactive}) {
+function WrappedNavLink({ title, path, as, reactive }) {
   const router = useRouter();
   const active = router.pathname === path;
 
@@ -44,7 +44,11 @@ function WrappedNavLink({ title, path, as, reactive}) {
   );
 
   if (reactive) {
-    return <Link href={path} as={as}>{navLink}</Link>;
+    return (
+      <Link href={path} as={as}>
+        {navLink}
+      </Link>
+    );
   } else {
     return navLink;
   }

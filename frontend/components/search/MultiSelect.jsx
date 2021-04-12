@@ -1,8 +1,8 @@
-import React, {useContext, useState, useEffect} from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import {makeStyles} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import {SearchFormContext} from "./SearchForm";
+import React, { useContext, useState, useEffect } from "react";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import { SearchFormContext } from "./SearchForm";
 
 const useStyles = makeStyles({
   root: {
@@ -12,18 +12,18 @@ const useStyles = makeStyles({
       height: "20px",
       "& .MuiChip-label": {
         paddingLeft: "6px",
-        paddingRight: "8px"
+        paddingRight: "8px",
       },
       "& .MuiChip-deleteIcon": {
         height: "18px",
         width: "18px",
         marginRight: "2px",
-      }
+      },
     },
   },
 });
 
-export default function MultiSelect({label, name, keyName, valueName, children}) {
+export default function MultiSelect({ label, name, keyName, valueName, children }) {
   // A component for selecting multiple options from a list.
   // `Label` is the placeholder text initially rendered in the input field.
   // `name` is the query parameter key used in API requests.
@@ -42,7 +42,7 @@ export default function MultiSelect({label, name, keyName, valueName, children})
   //  The options retain the ordering of the initial API response.
 
   const classes = useStyles();
-  const {state, setState, disabled} = useContext(SearchFormContext);
+  const { state, setState, disabled } = useContext(SearchFormContext);
 
   // `value` is currently selected options, defaulting to none
   let value = state[name] || [];
@@ -69,21 +69,17 @@ export default function MultiSelect({label, name, keyName, valueName, children})
   useEffect(() => {
     children()
       .then((results) => {
-        setOptions(Object.fromEntries(
-          results.map(opt => [opt[keyName], opt[valueName]])
-        ));
-        setOrderedKeys(
-          results.map(opt => opt[keyName])
-        );
+        setOptions(Object.fromEntries(results.map((opt) => [opt[keyName], opt[valueName]])));
+        setOrderedKeys(results.map((opt) => opt[keyName]));
       })
       // TODO: add more resilient error handling
-      .catch(console.error)
-  }, [])
+      .catch(console.error);
+  }, []);
 
   // user input event handler
   const handleChange = (event, value) => {
-    setState((prevState) => ({...prevState, [name]: value}));
-  }
+    setState((prevState) => ({ ...prevState, [name]: value }));
+  };
 
   // https://material-ui.com/components/autocomplete/
   return (
@@ -91,18 +87,13 @@ export default function MultiSelect({label, name, keyName, valueName, children})
       multiple
       limitTags={5}
       options={orderedKeys}
-      getOptionLabel={optionKey => options[optionKey]}
+      getOptionLabel={(optionKey) => options[optionKey]}
       value={value}
-      ChipProps={{size: "small"}}
+      ChipProps={{ size: "small" }}
       onChange={handleChange}
       className={classes.root}
       disabled={disabled}
-      renderInput={(params) => (
-        <TextField {...params}
-                   variant="outlined"
-                   label={label}
-        />
-      )}
+      renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}
     />
   );
 }
