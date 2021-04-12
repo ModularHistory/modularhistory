@@ -14,6 +14,7 @@ import { removeServerSideCookies } from "../../../auth";
 import axios from "../../../axiosWithAuth";
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
+const ACCESS_TOKEN_COOKIE_NAME = "access-token";
 
 const makeDjangoApiUrl = (endpoint) => {
   return `http://django:8000/api${endpoint}`;
@@ -241,11 +242,12 @@ async function authenticateWithCredentials(credentials) {
         Subsequently, the JWT callback reads these values from the user object
         and attaches them to the token object that it returns.
       */
+      console.log(response.data);
       user.accessToken = response.data.access_token;
       user.refreshToken = response.data.refresh_token;
       const cookies = response.headers["set-cookie"];
       cookies.forEach((cookie) => {
-        if (cookie.startsWith(`${SESSION_TOKEN_COOKIE_NAME}=`)) {
+        if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {
           user.accessTokenExpiry = Date.parse(cookie.match(/expires=(.+?);/)[1]);
         }
       });

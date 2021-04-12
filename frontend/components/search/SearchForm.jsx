@@ -112,6 +112,7 @@ export default function SearchForm({ inSidebar }) {
                 axiosWithoutAuth
                   .get("/api/entities/partial/?attributes=id&attributes=name")
                   .then((response) => response.data["results"])
+                  .catch((error) => console.log(">>>", error.request))
               }
             </MultiSelect>
           </Grid>
