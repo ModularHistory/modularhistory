@@ -4,15 +4,15 @@ import axios from "axios";
 import Layout from "../components/Layout";
 import Pagination from "../components/Pagination";
 
-import {useRouter} from "next/router";
-import {useState, useEffect, useCallback} from "react";
+import { useRouter } from "next/router";
+import { useState, useEffect, useCallback } from "react";
 
 import ModuleCard from "../components/modulecards/ModuleCard";
 import ModuleDetail from "../components/moduledetails/ModuleDetail";
 import SearchForm from "../components/search/SearchForm";
 
-import {Drawer, Grid, Container, Box} from "@material-ui/core";
-import {makeStyles} from "@material-ui/styles";
+import { Drawer, Grid, Container, Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 
 function useTwoPaneState(...args) {
   // This hook is used to track which card in the left pane
@@ -26,7 +26,7 @@ function useTwoPaneState(...args) {
     e.preventDefault();
     setModuleIndex(e.currentTarget.dataset.index);
   }, []);
-  return {moduleIndex, setModuleIndex, setModuleIndexFromEvent};
+  return { moduleIndex, setModuleIndex, setModuleIndexFromEvent };
 }
 
 const useStyles = makeStyles({
@@ -34,12 +34,12 @@ const useStyles = makeStyles({
     maxWidth: "0px",
     transition: "max-width .15s",
     zIndex: 2,
-    "&.open": {maxWidth: "230px"},
+    "&.open": { maxWidth: "230px" },
   },
   drawerButton: {
     border: "2px solid black",
     transition: "transform .15s",
-    "&.open": {transform: "translateX(229px)"},
+    "&.open": { transform: "translateX(229px)" },
   },
   paper: {
     backgroundColor: "whitesmoke",
@@ -51,18 +51,14 @@ const useStyles = makeStyles({
     "& .selected": {
       border: "3px solid black",
       borderRight: "none",
-    }
-  }
+    },
+  },
 });
 
-export default function Search({searchResults}) {
+export default function Search({ searchResults }) {
   const classes = useStyles();
   const router = useRouter();
-  const {
-    moduleIndex,
-    setModuleIndex,
-    setModuleIndexFromEvent
-  } = useTwoPaneState(0);
+  const { moduleIndex, setModuleIndex, setModuleIndexFromEvent } = useTwoPaneState(0);
 
   // determines whether the search filter sidebar is open
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -80,12 +76,14 @@ export default function Search({searchResults}) {
   const modules = searchResults["results"] || [];
 
   const pageHeader = (
-    <h1 className='my-0 py-1'>
-      {query ?
-        <small>{searchResults["count"]} results for <b>{query}</b></small>
-        :
+    <h1 className="my-0 py-1">
+      {query ? (
+        <small>
+          {searchResults["count"]} results for <b>{query}</b>
+        </small>
+      ) : (
         <small>{searchResults["count"]} items</small>
-      }
+      )}
     </h1>
   );
 
@@ -101,7 +99,7 @@ export default function Search({searchResults}) {
               There are no results for your search. Please try a different search.
             </p>
             <div className="row">
-              <SearchForm/>
+              <SearchForm />
             </div>
           </div>
         </div>
@@ -114,53 +112,54 @@ export default function Search({searchResults}) {
   return (
     <Layout title={title}>
       <div className="serp-container">
-
-        <Drawer open={isSearchOpen}
-                anchor={"left"}
-                variant={"persistent"}
-                onClose={() => setIsSearchOpen(false)}
-                className={`${classes.drawer} ${isSearchOpen ? "open" : ""}`}
-                PaperProps={{className: classes.paper}}>
-          <SearchForm inSidebar/>
+        <Drawer
+          open={isSearchOpen}
+          anchor={"left"}
+          variant={"persistent"}
+          onClose={() => setIsSearchOpen(false)}
+          className={`${classes.drawer} ${isSearchOpen ? "open" : ""}`}
+          PaperProps={{ className: classes.paper }}
+        >
+          <SearchForm inSidebar />
         </Drawer>
-        <button id="sliderToggle"
-                className={`btn ${classes.drawerButton} ${isSearchOpen ? "open" : ""}`}
-                onClick={() => setIsSearchOpen(!isSearchOpen)}>
-          <i className="fas fa-filter"/>
+        <button
+          id="sliderToggle"
+          className={`btn ${classes.drawerButton} ${isSearchOpen ? "open" : ""}`}
+          onClick={() => setIsSearchOpen(!isSearchOpen)}
+        >
+          <i className="fas fa-filter" />
         </button>
 
         <div className="results-container">
-
           {pageHeader}
 
           <div className="two-pane-container">
             <div className={`results result-cards ${classes.cards}`}>
-
               {modules.map((module, index) => (
-                <a href={module['absolute_url']} className="result 2pane-result"
-                   data-href={module['absolute_url']} data-key={module['slug']}
-                   key={module['absolute_url']} data-index={index}
-                   onClick={setModuleIndexFromEvent}
+                <a
+                  href={module["absolute_url"]}
+                  className="result 2pane-result"
+                  data-href={module["absolute_url"]}
+                  data-key={module["slug"]}
+                  key={module["absolute_url"]}
+                  data-index={index}
+                  onClick={setModuleIndexFromEvent}
                 >
-                  <ModuleCard module={module}
-                              cardClass={index == moduleIndex ? "selected" : ""}/>
+                  <ModuleCard module={module} cardClass={index == moduleIndex ? "selected" : ""} />
                 </a>
               ))}
-
             </div>
 
             <div className="card view-detail sticky">
-              <ModuleDetail module={modules[moduleIndex] || moduleIndex[0]}/>
+              <ModuleDetail module={modules[moduleIndex] || moduleIndex[0]} />
             </div>
-
           </div>
         </div>
       </div>
 
       <Container>
-        <Pagination count={searchResults["total_pages"]}/>
+        <Pagination count={searchResults["total_pages"]} />
       </Container>
-
     </Layout>
   );
 }
@@ -171,11 +170,10 @@ export async function getServerSideProps(context) {
   await axios
     .get("http://django:8000/api/search/", {
       params: context.query,
-      paramsSerializer: (params) => (
+      paramsSerializer: (params) =>
         // we use qs since otherwise axios formats
         // array parameters with "[]" appended.
-        qs.stringify(params, {arrayFormat: "repeat"})
-      ),
+        qs.stringify(params, { arrayFormat: "repeat" }),
     })
     .then((response) => {
       searchResults = response.data;

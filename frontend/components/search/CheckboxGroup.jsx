@@ -1,14 +1,8 @@
-import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel
-} from "@material-ui/core";
-import {useContext} from "react";
-import {SearchFormContext} from "./SearchForm";
+import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from "@material-ui/core";
+import { useContext } from "react";
+import { SearchFormContext } from "./SearchForm";
 
-export default function CheckboxGroup({label, name, children}) {
+export default function CheckboxGroup({ label, name, children }) {
   // A component for checkbox inputs in the search form.
   // `label` is displayed above the checkboxes.
   // `name` is the query parameter key used in the search API request.
@@ -17,17 +11,17 @@ export default function CheckboxGroup({label, name, children}) {
   //    `key` is the value of the option used in the API request.
 
   // get current input values
-  const {state, setState, disabled} = useContext(SearchFormContext);
+  const { state, setState, disabled } = useContext(SearchFormContext);
 
   // If the current state is not set, default to all options.
   // This is the default behavior expected by the API.
-  let checkedItems = state[name] || children.map(({key}) => key);
+  let checkedItems = state[name] || children.map(({ key }) => key);
   // when the state is initially set to a single option,
   // we must convert it to an array
   if (!Array.isArray(checkedItems)) checkedItems = [checkedItems];
 
   // event handler for user input
-  const handleChange = ({target}) => {
+  const handleChange = ({ target }) => {
     if (target.checked) {
       // add option to selected values
       checkedItems.push(target.name);
@@ -36,7 +30,7 @@ export default function CheckboxGroup({label, name, children}) {
       const index = checkedItems.findIndex((item) => item === target.name);
       if (index >= 0) checkedItems.splice(index, 1);
     }
-    setState((prevState) => ({...prevState, [name]: checkedItems}));
+    setState((prevState) => ({ ...prevState, [name]: checkedItems }));
   };
 
   // The component structure below is similar to the demo at
@@ -45,13 +39,15 @@ export default function CheckboxGroup({label, name, children}) {
     <FormControl component="fieldset" disabled={disabled}>
       <FormLabel component="legend">{label}</FormLabel>
       <FormGroup>
-        {children.map(({label, key}) => (
+        {children.map(({ label, key }) => (
           <FormControlLabel
             control={
-              <Checkbox checked={checkedItems.includes(key)}
-                        onChange={handleChange}
-                        name={key}
-                        color={"primary"}/>
+              <Checkbox
+                checked={checkedItems.includes(key)}
+                onChange={handleChange}
+                name={key}
+                color={"primary"}
+              />
             }
             label={label}
             key={key}

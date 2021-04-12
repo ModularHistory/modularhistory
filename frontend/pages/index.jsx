@@ -8,9 +8,9 @@ import CardContent from "@material-ui/core/CardContent";
 import TextField from "@material-ui/core/TextField";
 import SearchButton from "../components/search/SearchButton";
 
-import {useState} from "react";
-import {useRouter} from "next/router";
-import {makeStyles} from "@material-ui/core/styles";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   root: {
@@ -20,12 +20,12 @@ const useStyles = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     marginTop: "1.5rem",
-  }
-})
+  },
+});
 
 function useQueryState(...args) {
   const [query, setQuery] = useState(...args);
-  return [query, ({target: {value}}) => setQuery(value)];
+  return [query, ({ target: { value } }) => setQuery(value)];
 }
 
 export default function Home() {
@@ -34,28 +34,29 @@ export default function Home() {
   const [query, setQuery] = useQueryState("");
 
   // event handler for pressing enter or clicking search button
-  const search = ({key}) => {
+  const search = ({ key }) => {
     if (key && key !== "Enter") return;
     router.push({
       pathname: "/search/",
-      query: {query}
+      query: { query },
     });
   };
 
   const searchForm = (
-    <Grid
-      container direction={"column"} spacing={2}
-      alignItems={"center"} justify={"center"}
-    >
+    <Grid container direction={"column"} spacing={2} alignItems={"center"} justify={"center"}>
       <Grid item>
         <TextField
-          id={"id_query"} name={"query"} variant={"outlined"}
-          size={"small"} style={{minWidth: "280px"}}
-          onChange={setQuery} onKeyPress={search}
+          id={"id_query"}
+          name={"query"}
+          variant={"outlined"}
+          size={"small"}
+          style={{ minWidth: "280px" }}
+          onChange={setQuery}
+          onKeyPress={search}
         />
       </Grid>
       <Grid item>
-        <SearchButton onClick={search}/>
+        <SearchButton onClick={search} />
       </Grid>
     </Grid>
   );

@@ -9,7 +9,6 @@ import axios from "axios";
 import Layout from "../../components/Layout";
 import Pagination from "../../components/Pagination";
 
-
 export default function Entities({ entitiesData }) {
   const entities = entitiesData["results"] || [];
 
@@ -48,7 +47,7 @@ export async function getServerSideProps(context) {
   let entitiesData = {};
 
   await axios
-    .get("http://django:8000/api/entities/", {params: context.query})
+    .get("http://django:8000/api/entities/", { params: context.query })
     .then((response) => {
       entitiesData = response.data;
     })
