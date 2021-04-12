@@ -3,12 +3,6 @@ import ImageCard from "../modulecards/ImageCard";
 export default function OccurrenceDetail({ occurrence }) {
   return (
     <>
-      {/*<a href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}"*/}
-      {/*   target="_blank" className="edit-object-button" rel="noopener noreferrer"*/}
-      {/*   style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>*/}
-      {/*  <i className="fa fa-edit"/>*/}
-      {/*</a>*/}
-
       {occurrence["verified"] || (
         <span
           style={{

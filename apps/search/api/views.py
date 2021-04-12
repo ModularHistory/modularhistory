@@ -62,26 +62,29 @@ class SearchResultsAPIView(ListAPIView):
         Required because SearchResultsView inherits from the generic Django ListView.
         """
         request = self.request
-        self.sort_by_relevance = request.GET.get('ordering') == 'relevance'
-        self.suppress_unverified = request.GET.get('quality') == 'verified'
+        self.sort_by_relevance = request.query_params.get('ordering') == 'relevance'
+        self.suppress_unverified = request.query_params.get('quality') == 'verified'
 
-        content_types = request.GET.getlist('content_types') or []
-        start_year = request.GET.get('start_year_0', None)
-        year_type = request.GET.get('start_year_1', None)
-        if start_year and year_type:
-            # TODO: Create historic datetime obj from year and year type
-            pass
+        content_types = request.query_params.getlist('content_types') or []
 
-        entities = request.GET.getlist('entities', None)
+        start_year = request.query_params.get('start_year', None)
+        # start_year_type = request.query_params.get('start_year_type', None)
+        end_year = request.query_params.get('end_year', None)
+        # end_year_type = request.query_params.get('end_year_type', None)
+
+        # if start_year and start_year_type:
+        # TODO: Create historic datetime obj from year and year type
+
+        entities = request.query_params.getlist('entities', None)
         entity_ids = [int(entity_id) for entity_id in entities] if entities else None
 
-        topics = request.GET.getlist('topics', None)
+        topics = request.query_params.getlist('topics', None)
         topic_ids = [int(topic_id) for topic_id in topics] if topics else None
 
         search_kwargs = {
-            QUERY_KEY: request.GET.get(QUERY_KEY, None),
+            QUERY_KEY: request.query_params.get(QUERY_KEY, None),
             'start_year': start_year,
-            'end_year': request.GET.get('end_year_0', None),
+            'end_year': end_year,
             'entity_ids': entity_ids,
             'topic_ids': topic_ids,
             'rank': self.sort_by_relevance,
