@@ -132,7 +132,7 @@ export default function GlobalNavbar({ menuItems }) {
       );
     }
   }
-  if (loading) return null;
+
   return (
     <Navbar
       id="global-nav"
@@ -159,7 +159,7 @@ export default function GlobalNavbar({ menuItems }) {
             )
           )}
         </Nav>
-        <Nav>{!hideAccountControls && accountControls}</Nav>
+        <Nav>{!hideAccountControls && !loading && accountControls}</Nav>
       </Navbar.Collapse>
     </Navbar>
   );
