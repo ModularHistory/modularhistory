@@ -14,7 +14,7 @@ docker-compose up github_workflow_preprocessor || {
     echo "  docker-compose up github_workflow_preprocessor"
 }
 
-git add ./github/workflows
+git add ./.github/workflows
 
 for file in $staged_files; do
     git add "$file"
