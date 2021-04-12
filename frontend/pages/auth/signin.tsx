@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Grid, Paper, TextField } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import Alert from "@material-ui/lab/Alert";
-import axiosBase from "axios";
+import { GetServerSideProps } from "next";
 import { csrfToken, providers, signIn, useSession } from "next-auth/client";
 import { Providers } from "next-auth/providers";
 import { useRouter } from "next/router";
@@ -14,13 +14,8 @@ import {
   GoogleLoginButton,
   TwitterLoginButton,
 } from "react-social-login-buttons";
-import { handleLogout, NEXT_AUTH_CSRF_COOKIE_NAME } from "../../auth";
+import { handleLogout } from "../../auth";
 import Layout from "../../components/Layout";
-
-const axios = axiosBase.create({
-  xsrfCookieName: NEXT_AUTH_CSRF_COOKIE_NAME,
-  xsrfHeaderName: "X-CSRFToken",
-});
 
 const CREDENTIALS_KEY = "credentials";
 const SOCIAL_LOGIN_BUTTONS = {
@@ -191,11 +186,11 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
 export default SignIn;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-export async function getServerSideProps(context) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       providers: await providers(),
       csrfToken: await csrfToken(context),
     }, // passed to the page component as props
   };
-}
+};
