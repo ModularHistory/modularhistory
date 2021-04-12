@@ -3,9 +3,9 @@
 from typing import TYPE_CHECKING
 
 import serpy
+from django.template.defaultfilters import truncatechars_html
 
 from apps.search.models.searchable_model import SearchableModelSerializer
-from django.template.defaultfilters import truncatechars_html
 
 if TYPE_CHECKING:
     from apps.quotes.models import Quote
@@ -34,7 +34,11 @@ class QuoteSerializer(SearchableModelSerializer):
         """Return the user-facing bite HTML."""
         # "bite" is set to truncated text if it does not exist
         # TODO: Add "truncated" field to model to distinguish true bites from auto bites
-        return instance.bite.html if instance.bite else truncatechars_html(instance.text, 100)
+        return (
+            instance.bite.html
+            if instance.bite
+            else truncatechars_html(instance.text, 100)
+        )
 
     def get_truncated_html(self, instance: 'Quote') -> str:
         """Return truncated HTML content"""

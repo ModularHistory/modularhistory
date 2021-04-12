@@ -17,5 +17,6 @@ class TopicSerializer(ModelSerializer):
 
 class TopicDictSerializer:
     """Serializer for topics retrieved from ORM with .values()"""
+
     def __init__(self, queryset, *args, **kwargs):
         self.data = list(queryset)

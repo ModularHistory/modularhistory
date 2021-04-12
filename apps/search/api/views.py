@@ -3,6 +3,7 @@ from itertools import chain
 from typing import Dict, List, Optional, Union
 
 from django.db.models import Q, QuerySet, Subquery
+from rest_framework.generics import ListAPIView
 
 from apps.entities.models import Entity
 from apps.images.models import Image
@@ -13,9 +14,6 @@ from apps.sources.models import Source
 from apps.topics.models import Topic
 from modularhistory.constants.content_types import ContentTypes, get_ct_id
 from modularhistory.structures.historic_datetime import HistoricDateTime
-
-from rest_framework.generics import ListAPIView
-
 
 QUERY_KEY = 'query'
 N_RESULTS_PER_PAGE = 10
@@ -115,9 +113,9 @@ class SearchResultsAPIView(ListAPIView):
                     | Q(quotes__id__in=quote_result_ids)
                     # | Q(attributed_sources__id__in=source_result_ids)
                 )
-                    .order_by('id')
-                    .distinct('id')
-                    .values('pk')
+                .order_by('id')
+                .distinct('id')
+                .values('pk')
             )
         )
 
@@ -132,8 +130,8 @@ class SearchResultsAPIView(ListAPIView):
                     topic_relations__object_id__in=occurrence_result_ids,
                 )
             )
-                .order_by('key')
-                .distinct()
+            .order_by('key')
+            .distinct()
         )
 
         ordered_queryset = self.order_queryset(
@@ -173,7 +171,7 @@ def _get_quote_results(content_types, occurrence_result_ids, **search_kwargs):
 
 
 def _get_image_results(
-        content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
+    content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
     if ContentTypes.image in content_types or not content_types:
         image_results = Image.objects.search(**search_kwargs).filter(  # type: ignore
@@ -195,7 +193,7 @@ def _get_image_results(
 
 
 def _get_source_results(
-        content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
+    content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
     if ContentTypes.source in content_types or not content_types:
         source_results = Source.objects.search(**search_kwargs)  # type: ignore

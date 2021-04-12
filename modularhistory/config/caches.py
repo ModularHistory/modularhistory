@@ -41,15 +41,25 @@ CACHALOT_ENABLED = True
 CACHALOT_CACHE = 'default'  # cache name
 CACHALOT_CACHE_RANDOM = False  # caching of random order queries, i.e order_by('?')
 
-CACHALOT_UNCACHABLE_TABLES = frozenset((
-    'django_migrations',  # migrations must not be cached
-    'django_session', 'django_admin_log',
-    # celery tables
-    'django_celery_beat_clockedschedule', 'django_celery_beat_crontabschedule',
-    'django_celery_beat_crontabschedule', 'django_celery_beat_intervalschedule',
-    'django_celery_beat_intervalschedule', 'django_celery_beat_periodictask',
-    'django_celery_beat_periodictask', 'django_celery_beat_periodictasks',
-    'django_celery_beat_periodictasks', 'django_celery_beat_solarschedule',
-    'django_celery_results_chordcounter', 'django_celery_results_chordcounter',
-    'django_celery_results_taskresult', 'health_check_db_testmodel'
-))
+CACHALOT_UNCACHABLE_TABLES = frozenset(
+    (
+        'django_migrations',  # migrations must not be cached
+        'django_session',
+        'django_admin_log',
+        # celery tables
+        'django_celery_beat_clockedschedule',
+        'django_celery_beat_crontabschedule',
+        'django_celery_beat_crontabschedule',
+        'django_celery_beat_intervalschedule',
+        'django_celery_beat_intervalschedule',
+        'django_celery_beat_periodictask',
+        'django_celery_beat_periodictask',
+        'django_celery_beat_periodictasks',
+        'django_celery_beat_periodictasks',
+        'django_celery_beat_solarschedule',
+        'django_celery_results_chordcounter',
+        'django_celery_results_chordcounter',
+        'django_celery_results_taskresult',
+        'health_check_db_testmodel',
+    )
+)
