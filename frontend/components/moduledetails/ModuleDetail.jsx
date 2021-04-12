@@ -32,6 +32,16 @@ export default function ModuleDetail({ module }) {
       details = <pre>{JSON.stringify(module)}</pre>;
   }
 
+  // TODO: conditionally render edit button for super users
+  //       with NextAuth's `useSession()`.
+  // const superUserEditButton = (
+  //   <a href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}"
+  //      target="_blank" className="edit-object-button" rel="noopener noreferrer"
+  //      style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>
+  //     <i className="fa fa-edit"/>
+  //   </a>
+  // );
+
   return (
     <div className="detail" ref={ref}>
       {details}
