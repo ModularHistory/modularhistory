@@ -83,7 +83,6 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
     }
   };
   const handleSocialLogin = async (provider_id: string) => {
-    console.log(">>>>> handling social login");
     try {
       signIn(provider_id);
     } catch (error) {
@@ -111,14 +110,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   return (
     <Layout title={"Sign in"}>
       <Container>
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          m={2}
-          p={5}
-          flexDirection="column"
-        >
+        <Box m={"auto"} p={4} style={{ maxWidth: "40rem" }}>
           {error && !redirecting && (
             <>
               <Alert severity="error">{error}</Alert>

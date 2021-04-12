@@ -9,26 +9,27 @@ import Navbar from "./Navbar";
 
 export default function Layout({ title, canonicalUrl, children }) {
   const router = useRouter();
-  const [session, loading] = useSession();
+  const [session, _loading] = useSession();
 
   // https://next-auth.js.org/tutorials/refresh-token-rotation#client-side
   useEffect(() => {
-    // Set any cookies associated with the session.
+    // Set client-side cookies associated with the Django session.
     if (session) {
-      if (session.cookies) {
-        session.cookies.forEach((cookie) => {
+      if (session.clientSideCookies) {
+        session.clientSideCookies.forEach((cookie) => {
           document.cookie = cookie;
-          console.log(`Updated ${cookie.split(";")[0].split("=")[0]} cookie.`);
+          const cookieNameAndValue = cookie.split(";")[0].split("=");
+          console.log(`Updated ${cookieNameAndValue[0]} cookie to ${cookieNameAndValue[1]}.`);
         });
       }
     } else {
+      console.log("Not authenticated.");
       // Remove all auth cookies.
       AUTH_COOKIES.forEach((cookieName) => {
         document.cookie = `${cookieName}; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        console.log(`Deleted ${cookieName} cookie.`);
       });
     }
-  }, [session]);
+  }, [session?.clientSideCookies]);
 
   return (
     <>

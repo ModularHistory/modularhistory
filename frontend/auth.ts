@@ -7,7 +7,7 @@ export const DJANGO_LOGOUT_URL = "/api/users/auth/logout/";
 export const LOGIN_PAGE_PATH = "/auth/signin";
 export const AUTH_REDIRECT_PATH = "/auth/redirect";
 export const NEXT_AUTH_CSRF_COOKIE_NAME = "next-auth.csrf-token";
-export const AUTH_COOKIES = ["next-auth.session-token", "next-auth.callback-url"];
+export const AUTH_COOKIES = ["next-auth.session-token", "next-auth.callback-url", "sessionid"];
 
 export interface Session extends NextAuthSession {
   refreshToken?: string;
@@ -55,4 +55,16 @@ export const handleLogout = (session: Session): void => {
   // TODO: Save random data to the `logout` key in local storage
   // to trigger the event listener to sign out of any other open windows.
   window.localStorage.setItem("logout", `${Date.now()}`);
+};
+
+export const removeServerSideCookies = (cookies: Array<string>): Array<string> => {
+  // Given an array of cookie strings, remove any HttpOnly cookies.
+  // Return the modified array.
+  const clientSideCookies = [];
+  cookies.forEach((cookie) => {
+    if (!cookie.includes("HttpOnly;")) {
+      clientSideCookies.push(cookie);
+    }
+  });
+  return clientSideCookies;
 };

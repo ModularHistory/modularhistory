@@ -9,7 +9,7 @@ import NextAuth, {
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 import { WithAdditionalParams } from "next-auth/_utils";
-import { Session } from "../../../auth";
+import { removeServerSideCookies, Session } from "../../../auth";
 import axios from "../../../authAxios";
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
@@ -20,13 +20,13 @@ const makeDjangoApiUrl = (endpoint) => {
 
 interface JWT extends NextAuthJWT {
   accessToken: string;
-  cookies: Array<string>;
+  clientSideCookies: Array<string>;
 }
 
 interface User extends NextAuthUser {
   accessToken: string;
   refreshToken: string;
-  cookies: Array<string>;
+  clientSideCookies: Array<string>;
   error?: string;
 }
 
@@ -122,18 +122,17 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
   if (user && account) {
     // initial sign in
     token.accessToken = user.accessToken;
-    token.cookies = user.cookies;
+    token.clientSideCookies = user.clientSideCookies;
     token.refreshToken = user.refreshToken;
   }
-  if (token.cookies) {
-    let sessionTokenCookie;
-    token.cookies.forEach((cookie) => {
+  if (token.clientSideCookies) {
+    token.clientSideCookies.forEach((cookie) => {
       if (cookie.startsWith(`${SESSION_TOKEN_COOKIE_NAME}=`)) {
-        sessionTokenCookie = cookie;
+        console.error("This should not be happening.................");
+        token.accessTokenExpiry =
+          token.accessTokenExpiry ?? Date.parse(cookie.match(/expires=(.+?);/)[1]);
       }
     });
-    token.accessTokenExpiry =
-      token.accessTokenExpiry ?? Date.parse(sessionTokenCookie.match(/expires=(.+?);/)[1]);
   }
   // Refresh the access token if it is expired.
   if (Date.now() > token.accessTokenExpiry) {
@@ -147,23 +146,24 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
   const sessionPlus: WithAdditionalParams<Session> = { ...session };
   if (jwt) {
     const accessToken = jwt.accessToken;
-    const cookies = jwt.cookies;
-    let sessionTokenCookie;
-    cookies.forEach((cookie) => {
+    const clientSideCookies = jwt.clientSideCookies;
+    let expiry = jwt.accessTokenExpiry;
+    clientSideCookies.forEach((cookie) => {
       if (cookie.startsWith(`${SESSION_TOKEN_COOKIE_NAME}=`)) {
-        sessionTokenCookie = cookie;
+        expiry = expiry ?? Date.parse(cookie.match(/expires=(.+?);/)[1]);
       }
     });
-    const expiry =
-      jwt.accessTokenExpiry ?? Date.parse(sessionTokenCookie.match(/expires=(.+?);/)[1]);
     if (accessToken) {
       sessionPlus.accessToken = accessToken;
       // If the access token is expired, ...
       if (Date.now() > expiry) {
         console.error("Session got an expired access token.");
       }
-      sessionPlus.cookies = cookies;
-      if (!sessionPlus.user) {
+      sessionPlus.clientSideCookies = clientSideCookies;
+      // TODO: Refactor? The point of this is to only make the request when necessary.
+      if (!sessionPlus.user?.username) {
+        // Replace the session's `user` attribute (containing only name, image, and
+        // a couple other fields) with full user details from the Django API.
         let userData;
         await axios
           .get(makeDjangoApiUrl("/users/me/"), {
@@ -260,7 +260,7 @@ async function authenticateWithCredentials(credentials) {
       */
       user.accessToken = response.data.access_token;
       user.refreshToken = response.data.refresh_token;
-      user.cookies = response.headers["set-cookie"];
+      user.clientSideCookies = removeServerSideCookies(response.headers["set-cookie"]);
     })
     .catch(function (error) {
       console.error(`${error}`);
@@ -303,7 +303,7 @@ async function authenticateWithSocialMediaAccount(user: User, provider) {
       */
       user.accessToken = response.data.access_token;
       user.refreshToken = response.data.refresh_token;
-      user.cookies = response.headers["set-cookie"];
+      user.clientSideCookies = response.headers["set-cookie"];
     })
     .catch(function (error) {
       user.error = `${error}`;
@@ -317,7 +317,7 @@ async function refreshAccessToken(jwt: JWT) {
   /*
     Return a new token with updated `accessToken` and `accessTokenExpiry`.
     If an error occurs, return the old token.  TODO: Add error property?
-    jwt contains name, email, accessToken, cookies, refreshToken, accessTokenExpiry, iat, exp.
+    jwt contains name, email, accessToken, clientSideCookies, refreshToken, accessTokenExpiry, iat, exp.
   */
   console.log("Refreshing access token...");
   await axios
@@ -335,7 +335,7 @@ async function refreshAccessToken(jwt: JWT) {
           }
         */
         const accessTokenExpiry = Date.parse(response.data.access_token_expiration);
-        const cookies = response.headers["set-cookie"];
+        const clientSideCookies = removeServerSideCookies(response.headers["set-cookie"]);
         if (Date.now() > accessTokenExpiry) {
           console.error("New access token is already expired.");
         }
@@ -345,7 +345,7 @@ async function refreshAccessToken(jwt: JWT) {
           refreshToken: response.data.refresh_token ?? jwt.refreshToken,
           accessToken: response.data.access,
           accessTokenExpiry: accessTokenExpiry,
-          cookies: cookies,
+          clientSideCookies: clientSideCookies,
           iat: Date.now() / 1000,
           exp: accessTokenExpiry / 1000,
         };
