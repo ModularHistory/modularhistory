@@ -1,18 +1,14 @@
-import axios from "axios";
-
-import { useState, useContext, createContext, useCallback, useEffect } from "react";
+import { Container, Grid, makeStyles } from "@material-ui/core";
 import { useRouter } from "next/router";
-import { Container, Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core";
-
-import MultiSelect from "./MultiSelect";
-import CheckboxGroup from "./CheckboxGroup";
-import SearchButton from "./SearchButton";
-import YearSelect from "./YearSelect";
-import TextField from "./StyledTextField";
-import RadioGroup from "./RadioGroup";
-
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import axiosWithoutAuth from "../../axiosWithoutAuth";
 import PageTransitionContext from "../PageTransitionContext";
+import CheckboxGroup from "./CheckboxGroup";
+import MultiSelect from "./MultiSelect";
+import RadioGroup from "./RadioGroup";
+import SearchButton from "./SearchButton";
+import TextField from "./StyledTextField";
+import YearSelect from "./YearSelect";
 
 export const SearchFormContext = createContext({});
 
@@ -113,7 +109,7 @@ export default function SearchForm({ inSidebar }) {
           <Grid item xs={12} sm={sm}>
             <MultiSelect label={"Entities"} name={"entities"} keyName={"id"} valueName={"name"}>
               {() =>
-                axios
+                axiosWithoutAuth
                   .get("/api/entities/partial/?attributes=id&attributes=name")
                   .then((response) => response.data["results"])
               }
@@ -122,7 +118,11 @@ export default function SearchForm({ inSidebar }) {
 
           <Grid item xs={12} sm={sm}>
             <MultiSelect label={"Topics"} name={"topics"} keyName={"pk"} valueName={"key"}>
-              {() => axios.get("/api/topics/partial/").then((response) => response.data["results"])}
+              {() =>
+                axiosWithoutAuth
+                  .get("/api/topics/partial/")
+                  .then((response) => response.data["results"])
+              }
             </MultiSelect>
           </Grid>
 

@@ -3,15 +3,14 @@
  */
 
 import axios from "axios";
-
-const djangoCsrfCookieName = "csrftoken";
+import { DJANGO_CSRF_COOKIE_NAME } from "./auth";
 
 // Include the CSRF token from the cookie supplied by Django.
 // Create custom instance to avoid polluting global settings.
-const authAxios = axios.create({
+const axiosWithAuth = axios.create({
   xsrfHeaderName: "X-CSRFToken",
-  xsrfCookieName: djangoCsrfCookieName,
+  xsrfCookieName: DJANGO_CSRF_COOKIE_NAME,
   withCredentials: true,
 });
 
-export default authAxios;
+export default axiosWithAuth;

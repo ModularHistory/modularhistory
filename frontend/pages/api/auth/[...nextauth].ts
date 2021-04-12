@@ -5,31 +5,19 @@ import NextAuth, {
   NextAuthOptions,
   PagesOptions,
   Session,
-  User as NextAuthUser,
+  User,
 } from "next-auth";
-import { JWT as NextAuthJWT } from "next-auth/jwt";
+import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 import { WithAdditionalParams } from "next-auth/_utils";
 import { removeServerSideCookies } from "../../../auth";
-import axios from "../../../authAxios";
+import axios from "../../../axiosWithAuth";
 
 const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
 
 const makeDjangoApiUrl = (endpoint) => {
   return `http://django:8000/api${endpoint}`;
 };
-
-interface JWT extends NextAuthJWT {
-  accessToken: string;
-  clientSideCookies: Array<string>;
-}
-
-interface User extends NextAuthUser {
-  accessToken: string;
-  refreshToken: string;
-  clientSideCookies: Array<string>;
-  error?: string;
-}
 
 // https://next-auth.js.org/configuration/providers
 const providers = [
@@ -123,17 +111,9 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
   if (user && account) {
     // initial sign in
     token.accessToken = user.accessToken;
+    token.accessTokenExpiry = user.accessTokenExpiry;
     token.clientSideCookies = user.clientSideCookies;
     token.refreshToken = user.refreshToken;
-  }
-  if (token.clientSideCookies) {
-    token.clientSideCookies.forEach((cookie) => {
-      if (cookie.startsWith(`${SESSION_TOKEN_COOKIE_NAME}=`)) {
-        console.error("This should not be happening.................");
-        token.accessTokenExpiry =
-          token.accessTokenExpiry ?? Date.parse(cookie.match(/expires=(.+?);/)[1]);
-      }
-    });
   }
   // Refresh the access token if it is expired.
   if (Date.now() > token.accessTokenExpiry) {
@@ -148,12 +128,7 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
   if (jwt) {
     const accessToken = jwt.accessToken;
     const clientSideCookies = jwt.clientSideCookies;
-    let expiry = jwt.accessTokenExpiry;
-    clientSideCookies.forEach((cookie) => {
-      if (cookie.startsWith(`${SESSION_TOKEN_COOKIE_NAME}=`)) {
-        expiry = expiry ?? Date.parse(cookie.match(/expires=(.+?);/)[1]);
-      }
-    });
+    const expiry = jwt.accessTokenExpiry;
     if (accessToken) {
       sessionPlus.accessToken = accessToken;
       // If the access token is expired, ...
@@ -166,6 +141,9 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
         // Replace the session's `user` attribute (containing only name, image, and
         // a couple other fields) with full user details from the Django API.
         let userData;
+        console.log("Expiry:", expiry);
+        console.log("Now:", Date.now());
+        console.log("Making a request to /users/me ...");
         await axios
           .get(makeDjangoApiUrl("/users/me/"), {
             headers: {
@@ -176,7 +154,11 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
             userData = response.data;
           })
           .catch(function (error) {
-            console.error(error);
+            if (error.response?.data) {
+              console.error(error.response.data);
+            }
+            // return Promise.reject(error);
+            return null;
           });
         sessionPlus.user = userData;
       }
@@ -261,7 +243,13 @@ async function authenticateWithCredentials(credentials) {
       */
       user.accessToken = response.data.access_token;
       user.refreshToken = response.data.refresh_token;
-      user.clientSideCookies = removeServerSideCookies(response.headers["set-cookie"]);
+      const cookies = response.headers["set-cookie"];
+      cookies.forEach((cookie) => {
+        if (cookie.startsWith(`${SESSION_TOKEN_COOKIE_NAME}=`)) {
+          user.accessTokenExpiry = Date.parse(cookie.match(/expires=(.+?);/)[1]);
+        }
+      });
+      user.clientSideCookies = removeServerSideCookies(cookies);
     })
     .catch(function (error) {
       console.error(`${error}`);
