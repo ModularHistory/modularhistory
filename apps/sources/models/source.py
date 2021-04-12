@@ -165,8 +165,8 @@ class PolymorphicSource(
         """Return an HTML string representing the source's attributees."""
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
         has_attributees = self.attributees.exists() if self.pk else False
-        if self.creators:
-            attributee_html = self.creators
+        if self.attributee_string:
+            attributee_html = self.attributee_string
             if has_attributees:
                 for entity in self.attributees.all().iterator():
                     if entity.name in attributee_html:
@@ -189,13 +189,6 @@ class PolymorphicSource(
         elif n_attributions > 3:
             html = f'{html} et al.'
         return html
-
-    @property
-    def attributee_string(self) -> Optional[str]:
-        """Return a string representing the source's attributees."""
-        if self.attributee_html:
-            return soupify(self.attributee_html).get_text()
-        return None
 
     def calculate_citation_html(self) -> str:
         """Return the HTML representation of the source, including its containers."""
