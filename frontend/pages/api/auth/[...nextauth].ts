@@ -13,7 +13,6 @@ import { WithAdditionalParams } from "next-auth/_utils";
 import { removeServerSideCookies } from "../../../auth";
 import axios from "../../../axiosWithAuth";
 
-const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
 const ACCESS_TOKEN_COOKIE_NAME = "access-token";
 
 const makeDjangoApiUrl = (endpoint) => {
