@@ -1,10 +1,16 @@
 import { Provider } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
+import {useRouter} from "next/router";
 import React, { useEffect } from "react";
+
+import {PageTransitionContextProvider} from "../components/PageTransitionContext";
+
+import "../styles/globals.css";
 import "../../modularhistory/static/styles/base.scss";
 
 const App = ({ Component, pageProps }: AppProps) => {
+  const router = useRouter();
   useEffect(() => {
     // Remove the server-side injected CSS.
     // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.
@@ -16,7 +22,15 @@ const App = ({ Component, pageProps }: AppProps) => {
     // Get Django CSRF cookie.
     // const url = "/api/csrf/set";
     // axios.get(url).then(console.log);
+
+    // The next/Link component automatically handles page scrolling,
+    // but router.push() does not. This event listener scrolls the page
+    // any time router.push() is used.
+    const handle = () => window.scrollTo({top: 0, left: 0, behavior: "smooth"});
+    router.events.on("routeChangeComplete", handle);
+    return () => router.events.off("routerChangeComplete", handle);
   }, []);
+
   return (
     <>
       <Head>
@@ -41,7 +55,9 @@ const App = ({ Component, pageProps }: AppProps) => {
         />
       </noscript>
       <Provider session={pageProps.session}>
-        <Component {...pageProps} />
+        <PageTransitionContextProvider>
+          <Component {...pageProps} />
+        </PageTransitionContextProvider>
       </Provider>
     </>
   );

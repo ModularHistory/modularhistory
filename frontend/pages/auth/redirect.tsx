@@ -3,7 +3,7 @@ import { useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
-import Layout from "../../components/layout";
+import Layout from "../../components/Layout";
 
 const Redirect: React.FunctionComponent = () => {
   const router = useRouter();

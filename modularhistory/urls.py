@@ -28,7 +28,6 @@ from django.views.generic import TemplateView
 from watchman.views import bare_status
 
 from admin.model_admin import admin_site
-from apps.search.views import SearchResultsView
 from apps.users.api.views import set_csrf_token
 from modularhistory import errors
 
@@ -74,7 +73,6 @@ urlpatterns = [
     # Search
     path('api/search/', include(_api('search'), namespace='search_api')),
     path('search/', include('apps.search.urls', namespace='search')),
-    re_path(r'search$', SearchResultsView.as_view(), name='search'),
     # Sources
     path('api/sources/', include(_api('sources'), namespace='sources_api')),
     path('sources/', include('apps.sources.urls', namespace='sources')),

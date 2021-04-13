@@ -13,4 +13,18 @@ module.exports = {
     };
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: '/occurrences',
+        destination: '/search/?content_types=occurrences.occurrence',
+        permanent: true,
+      },
+      {
+        source: '/quotes',
+        destination: '/search/?content_types=quotes.quote',
+        permanent: true,
+      },
+    ]
+  },
 };
