@@ -1,3 +1,5 @@
+import sys
+
 from django.apps import AppConfig
 from django.contrib.auth import get_user_model
 from django.core.checks import Warning, register
@@ -8,14 +10,17 @@ from modularhistory.environment import ENVIRONMENT
 
 def superuser_check(app_configs, **kwargs):
     """Check that a superuser has been created."""
-    if ENVIRONMENT != Environments.DEV:
-        return []
-    elif get_user_model().objects.filter(is_superuser=True).exists():
+    conditions = [
+        ENVIRONMENT == Environments.DEV,
+        sys.argv[1] != 'createsuperuser',
+        not get_user_model().objects.filter(is_superuser=True).exists(),
+    ]
+    if not all(conditions):
         return []
     return [
         Warning(
             'You need to create a superuser. To do so, run this command: \n\n\t'
-            'poetry run python manage.py createsuperuser \n',
+            f'poetry run python manage.py createsuperuser \n {sys.argv[1]}',
         )
     ]
 

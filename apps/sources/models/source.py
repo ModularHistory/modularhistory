@@ -15,7 +15,7 @@ from typedmodels.models import TypedModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
-from apps.sources.manager import SourceManager
+from apps.sources.manager import PolymorphicSourceManager
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
@@ -51,41 +51,11 @@ class PolymorphicSource(
 ):
     """A source of content or information."""
 
-    citation_string = models.CharField(
-        max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,
-        blank=True,
-        unique=True,
-    )
-    citation_html = models.TextField(null=False, blank=True)
-    date = HistoricDateTimeField(null=True, blank=True)
-    title = models.CharField(
-        verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
-    )
     attributee_html = models.CharField(
         max_length=MAX_CREATOR_HTML_LENGTH, null=True, blank=True
     )
     attributee_string = models.CharField(
         max_length=MAX_CREATOR_STRING_LENGTH, null=True, blank=True
-    )
-    description = HTMLField(null=True, blank=True, paragraphed=True)
-    url = models.URLField(
-        max_length=MAX_URL_LENGTH,
-        null=True,
-        blank=True,
-        help_text='URL where the source can be accessed online',
-    )
-    publication_date = HistoricDateTimeField(null=True, blank=True)
-    location = models.ForeignKey(
-        to='places.Place', null=True, blank=True, on_delete=models.SET_NULL
-    )
-    file = models.ForeignKey(
-        to=SourceFile,
-        related_name='polymorphic_sources',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        verbose_name='file',
     )
     attributees = models.ManyToManyField(
         to='entities.Entity',
@@ -94,7 +64,38 @@ class PolymorphicSource(
         # Some sources may not have attributees.
         blank=True,
     )
+    citation_html = models.TextField(null=False, blank=True)
+    citation_string = models.CharField(
+        max_length=MAX_CITATION_STRING_LENGTH,
+        null=False,
+        blank=True,
+        unique=True,
+    )
+    date = HistoricDateTimeField(null=True, blank=True)
+    description = HTMLField(null=True, blank=True, paragraphed=True)
+    file = models.ForeignKey(
+        to=SourceFile,
+        related_name='polymorphic_sources',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name='file',
+    )
+    location = models.ForeignKey(
+        to='places.Place', null=True, blank=True, on_delete=models.SET_NULL
+    )
+    publication_date = HistoricDateTimeField(null=True, blank=True)
+    title = models.CharField(
+        verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
+    )
+    url = models.URLField(
+        max_length=MAX_URL_LENGTH,
+        null=True,
+        blank=True,
+        help_text='URL where the source can be accessed online',
+    )
 
+    objects = PolymorphicSourceManager()
     searchable_fields = ['citation_string', 'description']
 
     def __str__(self):
@@ -210,8 +211,6 @@ class Source(TypedModel, SearchableDatedModel, ModelWithRelatedEntities):
         title = 'title'
         type = 'type'
         url = 'url'
-
-    objects: SourceManager = SourceManager()
 
     extra_field_schema: Dict[str, str] = {}
     inapplicable_fields: List[str] = []

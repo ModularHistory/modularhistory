@@ -3,6 +3,7 @@ import os
 import re
 from glob import glob, iglob
 from os.path import join
+from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
@@ -245,6 +246,10 @@ def seed(context: Context = CONTEXT, migrate: bool = False):
     if migrate:
         context.run('docker-compose run django python manage.py migrate')
     context.run('docker-compose up -d dev')
+    if input('Create superuser? [Y/n] ') != NEGATIVE:
+        print('Waiting for django container to be ready...')
+        sleep(10)
+        context.run('docker-compose exec django python manage.py createsuperuser')
 
 
 def squash_migrations(context: Context = CONTEXT, dry: bool = True):

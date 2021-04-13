@@ -43,7 +43,7 @@ class CitationAdmin(ModelAdmin):
     model = models.Citation
 
     list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
-    search_fields = ['source__full_string']
+    search_fields = ['source__citation_string']
     list_filter = [ContentTypeFilter]
     list_per_page = 10
     ordering = ['pk']
@@ -56,7 +56,7 @@ class CitationAdmin(ModelAdmin):
         """
         qs = (
             models.Citation.objects.all()
-            .select_related('source', f'source__{models.Source.FieldNames.file}')
+            .select_related('source', f'source__file')
             .prefetch_related('content_object')
         )
         ordering = self.get_ordering(request)

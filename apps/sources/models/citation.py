@@ -97,13 +97,13 @@ class Citation(PositionedRelation):
         null=True,
         blank=True,
     )
-    polymorphic_source = models.ForeignKey(
+    source = models.ForeignKey(
         to='sources.PolymorphicSource',
         related_name='citations',
         on_delete=models.PROTECT,
         null=True,
     )
-    source = models.ForeignKey(
+    old_source = models.ForeignKey(
         to='sources.Source',
         related_name='citations',
         on_delete=models.PROTECT,
@@ -129,7 +129,7 @@ class Citation(PositionedRelation):
     @property  # type: ignore
     def html(self) -> SafeString:
         """Return the citation's HTML representation."""
-        html = f'{self.source.html}'
+        html = f'{self.source.citation_html}'
         if self.primary_page_number:
             page_string = self.page_number_html or ''
             # Replace the source's page string if it exists
