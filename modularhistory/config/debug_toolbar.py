@@ -22,7 +22,8 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar.panels.profiling.ProfilingPanel',
     'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.versions.VersionsPanel',
+    # 'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.history.HistoryPanel',
     'cachalot.panels.CachalotPanel',  # https://django-cachalot.readthedocs.io/en/latest/quickstart.html
     # 'pympler.panels.MemoryPanel', #https://pympler.readthedocs.io/en/latest/django.html#django
 ]
