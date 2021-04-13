@@ -189,7 +189,7 @@ jobs:
         poetry run pytest nothing.py
     - name: Run tests
       if: ${{ success() }}
-      run: poetry run invoke test
+      run: bash -c "poetry run python manage.py invalidate_cachalot && poetry run invoke test"
 
   build:
     name: Build image
