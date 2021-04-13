@@ -76,7 +76,7 @@ jobs:
         virtualenvs-in-project: true
     # Load cached .venv, if it exists.
     - name: Cache Python virtual environment
-      uses: actions/cache@v2.1.4
+      uses: actions/cache@v2.1.5
       id: venv-cache
       with:
         path: .venv
@@ -91,7 +91,7 @@ jobs:
         sudo apt-get install -y graphviz graphviz-dev
         poetry install
     - name: Cache node modules
-      uses: actions/cache@v2.1.4
+      uses: actions/cache@v2.1.5
       id: node-modules-cache
       with:
         path: frontend/node_modules
@@ -171,7 +171,7 @@ jobs:
         virtualenvs-in-project: true
     # Load cached .venv, if it exists.
     - name: Cache Python virtual environment
-      uses: actions/cache@v2.1.4
+      uses: actions/cache@v2.1.5
       id: venv-cache
       with:
         path: .venv
@@ -186,7 +186,7 @@ jobs:
         sudo apt-get install -y graphviz graphviz-dev
         poetry install
     - name: Cache node modules
-      uses: actions/cache@v2.1.4
+      uses: actions/cache@v2.1.5
       id: node-modules-cache
       with:
         path: frontend/node_modules
