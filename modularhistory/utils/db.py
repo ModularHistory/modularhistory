@@ -3,6 +3,7 @@ import os
 import re
 from glob import glob, iglob
 from os.path import join
+from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
@@ -236,12 +237,15 @@ def seed(context: Context = CONTEXT, migrate: bool = False):
     if not os.path.isfile(settings.DB_INIT_FILEPATH):
         raise Exception('Seed does not exist.')
     # Remove the data volume, if it exists
-    print('Wiping postgres data volume...')
+    print('Stopping containers...')
     context.run('docker-compose down')
+    print('Wiping postgres data volume...')
     context.run(f'docker volume rm {db_volume}', warn=True)
-    # Start up the postgres container to automatically run init.sql
+    # Start up the postgres container, automatically running init.sql.
     print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
+    print('Waiting for Postgres to finish recreating the database...')
+    sleep(10)  # Give postgres time to recreate the database.
     if migrate:
         context.run('docker-compose run django python manage.py migrate')
     context.run('docker-compose up -d dev')

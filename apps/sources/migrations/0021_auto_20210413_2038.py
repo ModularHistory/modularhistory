@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
-        ('sources', '0019_auto_20210410_0017'),
+        ('sources', '0020_polymorphicsource_attributee_html'),
     ]
 
     operations = [
