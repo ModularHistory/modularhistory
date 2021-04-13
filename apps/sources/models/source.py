@@ -32,6 +32,7 @@ MAX_CITATION_STRING_LENGTH: int = 500
 MAX_CITATION_HTML_LENGTH: int = 1000
 MAX_URL_LENGTH: int = 100
 MAX_CREATOR_STRING_LENGTH: int = 100
+MAX_CREATOR_HTML_LENGTH: int = 300
 MAX_TITLE_LENGTH: int = 250
 
 COMPONENT_DELIMITER = ', '
@@ -60,6 +61,9 @@ class PolymorphicSource(
     date = HistoricDateTimeField(null=True, blank=True)
     title = models.CharField(
         verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
+    )
+    attributee_html = models.CharField(
+        max_length=MAX_CREATOR_HTML_LENGTH, null=True, blank=True
     )
     attributee_string = models.CharField(
         max_length=MAX_CREATOR_STRING_LENGTH, null=True, blank=True
