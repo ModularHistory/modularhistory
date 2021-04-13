@@ -3,7 +3,8 @@ from typing import Any, Dict
 from decouple import config
 
 from modularhistory.config.redis import REDIS_BASE_URL
-from modularhistory.environment import IS_DEV
+from modularhistory.constants.environments import Environments
+from modularhistory.environment import ENVIRONMENT, IS_DEV
 
 # Caching settings
 use_dummy_cache = config('DUMMY_CACHE', cast=bool, default=False)
@@ -35,12 +36,11 @@ else:
     SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
     SESSION_CACHE_ALIAS = 'default'
 
-# cachalot settings
-
-CACHALOT_ENABLED = True
+# Cachalot settings:
+# https://django-cachalot.readthedocs.io/en/latest/quickstart.html#settings
+CACHALOT_ENABLED = ENVIRONMENT != Environments.GITHUB_TEST
 CACHALOT_CACHE = 'default'  # cache name
 CACHALOT_CACHE_RANDOM = False  # caching of random order queries, i.e order_by('?')
-
 CACHALOT_UNCACHABLE_TABLES = frozenset(
     (
         'django_migrations',  # migrations must not be cached
