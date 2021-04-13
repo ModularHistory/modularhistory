@@ -4,31 +4,20 @@ import NextAuth, {
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
-  User as NextAuthUser
+  Session,
+  User,
 } from "next-auth";
-import { JWT as NextAuthJWT } from "next-auth/jwt";
+import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
 import { WithAdditionalParams } from "next-auth/_utils";
-import { Session } from "../../../auth";
-import axios from "../../../axios";
+import { removeServerSideCookies } from "../../../auth";
+import axios from "../../../axiosWithAuth";
 
-const SESSION_TOKEN_COOKIE_NAME = "next-auth.session-token";
+const ACCESS_TOKEN_COOKIE_NAME = "access-token";
 
 const makeDjangoApiUrl = (endpoint) => {
   return `http://django:8000/api${endpoint}`;
 };
-
-interface JWT extends NextAuthJWT {
-  accessToken: string;
-  cookies: Array<string>;
-}
-
-interface User extends NextAuthUser {
-  accessToken: string;
-  refreshToken: string;
-  cookies: Array<string>;
-  error?: string;
-}
 
 // https://next-auth.js.org/configuration/providers
 const providers = [
@@ -122,18 +111,9 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
   if (user && account) {
     // initial sign in
     token.accessToken = user.accessToken;
-    token.cookies = user.cookies;
+    token.accessTokenExpiry = user.accessTokenExpiry;
+    token.clientSideCookies = user.clientSideCookies;
     token.refreshToken = user.refreshToken;
-  }
-  if (token.cookies) {
-    let sessionTokenCookie;
-    token.cookies.forEach((cookie) => {
-      if (cookie.startsWith(`${SESSION_TOKEN_COOKIE_NAME}=`)) {
-        sessionTokenCookie = cookie;
-      }
-    });
-    token.accessTokenExpiry =
-      token.accessTokenExpiry ?? Date.parse(sessionTokenCookie.match(/expires=(.+?);/)[1]);
   }
   // Refresh the access token if it is expired.
   if (Date.now() > token.accessTokenExpiry) {
@@ -147,23 +127,19 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
   const sessionPlus: WithAdditionalParams<Session> = { ...session };
   if (jwt) {
     const accessToken = jwt.accessToken;
-    const cookies = jwt.cookies;
-    let sessionTokenCookie;
-    cookies.forEach((cookie) => {
-      if (cookie.startsWith(`${SESSION_TOKEN_COOKIE_NAME}=`)) {
-        sessionTokenCookie = cookie;
-      }
-    });
-    const expiry =
-      jwt.accessTokenExpiry ?? Date.parse(sessionTokenCookie.match(/expires=(.+?);/)[1]);
+    const clientSideCookies = jwt.clientSideCookies;
+    const expiry = jwt.accessTokenExpiry;
     if (accessToken) {
       sessionPlus.accessToken = accessToken;
       // If the access token is expired, ...
       if (Date.now() > expiry) {
         console.error("Session got an expired access token.");
       }
-      sessionPlus.cookies = cookies;
-      if (!sessionPlus.user) {
+      sessionPlus.clientSideCookies = clientSideCookies;
+      // TODO: Refactor? The point of this is to only make the request when necessary.
+      if (!sessionPlus.user?.username) {
+        // Replace the session's `user` attribute (containing only name, image, and
+        // a couple other fields) with full user details from the Django API.
         let userData;
         await axios
           .get(makeDjangoApiUrl("/users/me/"), {
@@ -175,7 +151,11 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
             userData = response.data;
           })
           .catch(function (error) {
-            console.error(error);
+            if (error.response?.data) {
+              console.error(error.response.data);
+            }
+            // return Promise.reject(error);
+            return null;
           });
         sessionPlus.user = userData;
       }
@@ -190,7 +170,7 @@ callbacks.redirect = async function redirect(url, baseUrl) {
   // so that the user is instead redirected to the homepage.
   const path = url.replace(baseUrl, "").replace("/auth/signin", "");
   // Determine whether the redirect URL is to a React or to a non-React page.
-  const reactPattern = /\/(entities\/?|other_react_pattern\/?)/;
+  const reactPattern = /(\/?$|\/entities\/?|\/search\/?|\/occurrences\/?|\/quotes\/?)/;
   if (reactPattern.test(url)) {
     // If redirecting to a React page,
     // Strip /auth/redirect from the redirect URL if necessary.
@@ -260,7 +240,13 @@ async function authenticateWithCredentials(credentials) {
       */
       user.accessToken = response.data.access_token;
       user.refreshToken = response.data.refresh_token;
-      user.cookies = response.headers["set-cookie"];
+      const cookies = response.headers["set-cookie"];
+      cookies.forEach((cookie) => {
+        if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {
+          user.accessTokenExpiry = Date.parse(cookie.match(/expires=(.+?);/)[1]);
+        }
+      });
+      user.clientSideCookies = removeServerSideCookies(cookies);
     })
     .catch(function (error) {
       console.error(`${error}`);
@@ -303,7 +289,7 @@ async function authenticateWithSocialMediaAccount(user: User, provider) {
       */
       user.accessToken = response.data.access_token;
       user.refreshToken = response.data.refresh_token;
-      user.cookies = response.headers["set-cookie"];
+      user.clientSideCookies = response.headers["set-cookie"];
     })
     .catch(function (error) {
       user.error = `${error}`;
@@ -317,9 +303,8 @@ async function refreshAccessToken(jwt: JWT) {
   /*
     Return a new token with updated `accessToken` and `accessTokenExpiry`.
     If an error occurs, return the old token.  TODO: Add error property?
-    jwt contains name, email, accessToken, cookies, refreshToken, accessTokenExpiry, iat, exp.
+    jwt contains name, email, accessToken, clientSideCookies, refreshToken, accessTokenExpiry, iat, exp.
   */
-  console.log("Refreshing access token...");
   await axios
     .post(makeDjangoApiUrl("/users/auth/token/refresh/"), {
       refresh: jwt.refreshToken,
@@ -335,7 +320,7 @@ async function refreshAccessToken(jwt: JWT) {
           }
         */
         const accessTokenExpiry = Date.parse(response.data.access_token_expiration);
-        const cookies = response.headers["set-cookie"];
+        const clientSideCookies = removeServerSideCookies(response.headers["set-cookie"]);
         if (Date.now() > accessTokenExpiry) {
           console.error("New access token is already expired.");
         }
@@ -345,7 +330,7 @@ async function refreshAccessToken(jwt: JWT) {
           refreshToken: response.data.refresh_token ?? jwt.refreshToken,
           accessToken: response.data.access,
           accessTokenExpiry: accessTokenExpiry,
-          cookies: cookies,
+          clientSideCookies: clientSideCookies,
           iat: Date.now() / 1000,
           exp: accessTokenExpiry / 1000,
         };

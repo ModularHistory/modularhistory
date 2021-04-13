@@ -9,8 +9,8 @@ class OccurrenceSerializer(SearchableModelSerializer):
     """Serializer for occurrences."""
 
     date_html = serpy.Field()
-    summary = serpy.MethodField()
-    description = serpy.MethodField()
+    summary = serpy.Field(attr='summary.html')
+    description = serpy.Field(attr='description.html')
     postscript = serpy.MethodField()
     serialized_images = serpy.Field()
     primary_image = serpy.Field()
@@ -20,15 +20,6 @@ class OccurrenceSerializer(SearchableModelSerializer):
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
         return 'occurrences.occurrence'
-
-    def get_summary(self, instance):
-        """Return the user-facing summary HTML."""
-        return instance.summary.html
-
-    def get_description(self, instance):
-        """Return the user-facing description HTML."""
-        html = instance.description.html
-        return html
 
     def get_postscript(self, instance):
         """Return the user-facing postscript HTML."""

@@ -18,28 +18,39 @@ const globalMenuItems = [
       { title: "Manifesto", path: "/manifesto", reactive: false },
     ],
   },
-  { title: "Occurrences", path: "/occurrences", reactive: false },
-  { title: "Quotes", path: "/quotes", reactive: false },
+  {
+    title: "Occurrences",
+    path: "/search/?content_types=occurrences.occurrence",
+    as: "/occurrences",
+    reactive: true,
+  },
+  {
+    title: "Quotes",
+    path: "/search/?content_types=quotes.quote",
+    as: "/quotes",
+    reactive: true,
+  },
   { title: "Entities", path: "/entities", reactive: true },
 ];
 
-function WrappedNavLink({ title, path, reactive, ...childProps }) {
+function WrappedNavLink({ title, path, as, reactive }) {
   const router = useRouter();
   const active = router.pathname === path;
+
+  const navLink = (
+    <Nav.Link href={path} className={active ? "active" : ""}>
+      {title}
+    </Nav.Link>
+  );
+
   if (reactive) {
     return (
-      <Link href={path}>
-        <Nav.Link className={active ? "active" : ""} {...childProps}>
-          {title}
-        </Nav.Link>
+      <Link href={path} as={as}>
+        {navLink}
       </Link>
     );
   } else {
-    return (
-      <Nav.Link href={path} className={active ? "active" : ""} {...childProps}>
-        {title}
-      </Nav.Link>
-    );
+    return navLink;
   }
 }
 
@@ -54,6 +65,7 @@ function WrappedNavDropdown({ title, children, ...childProps }) {
     </NavDropdown>
   );
 }
+
 // https://reactjs.org/docs/typechecking-with-proptypes.html
 WrappedNavDropdown.propTypes = {
   title: PropTypes.string.isRequired,
@@ -100,11 +112,11 @@ export default function GlobalNavbar({ menuItems }) {
       accountControls = (
         <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
           <NavDropdown.Item href="/users/profile">Profile</NavDropdown.Item>
-          <NavDropdown.Item href="/users/setting">Settings</NavDropdown.Item>
+          {/* <NavDropdown.Item href="/users/setting">Settings</NavDropdown.Item> */}
           <NavDropdown.Item href="/admin/">Administrate</NavDropdown.Item>
-          <NavDropdown.Item href="" className="hide-admin-controls">
+          {/* <NavDropdown.Item href="" className="hide-admin-controls">
             Hide admin controls
-          </NavDropdown.Item>
+          </NavDropdown.Item> */}
           <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
@@ -120,7 +132,7 @@ export default function GlobalNavbar({ menuItems }) {
       );
     }
   }
-  if (loading) return null;
+
   return (
     <Navbar
       id="global-nav"
@@ -130,10 +142,12 @@ export default function GlobalNavbar({ menuItems }) {
       expand="md"
       collapseOnSelect
     >
-      <Navbar.Brand href="/">
-        <img alt="Logo" src={logoImageSrc} style={{ width: "2.7rem", height: "2.5rem" }} />{" "}
-        ModularHistory
-      </Navbar.Brand>
+      <Link href={"/"}>
+        <Navbar.Brand href={"/"}>
+          <img alt="Logo" src={logoImageSrc} style={{ width: "2.7rem", height: "2.5rem" }} />{" "}
+          ModularHistory
+        </Navbar.Brand>
+      </Link>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
@@ -145,7 +159,7 @@ export default function GlobalNavbar({ menuItems }) {
             )
           )}
         </Nav>
-        <Nav>{!hideAccountControls && accountControls}</Nav>
+        <Nav>{!hideAccountControls && !loading && accountControls}</Nav>
       </Navbar.Collapse>
     </Navbar>
   );
