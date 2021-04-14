@@ -5,9 +5,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.places.models import Venue
 from apps.sources.models.source import PolymorphicSource
-from modularhistory.fields import ExtraField
-
-JSON_FIELD_NAME = 'extra'
 
 SPEECH_TYPES = (
     ('speech', 'Speech'),
@@ -33,7 +30,7 @@ class PolymorphicSpeech(PolymorphicSource):
 
     def __html__(self) -> str:
         """Return the source's HTML representation."""
-        type_label = str(self.type_label)
+        type_label = self.type
         delivery_string = f'{type_label}'
         audience, location, date = self.audience, self.location, self.date
         if any([audience, location, date]):

@@ -11,7 +11,6 @@ class SourceAttribution(PositionedRelation):
         to='sources.PolymorphicSource',
         on_delete=models.CASCADE,
         related_name='attributions',
-        null=True,
         verbose_name=_('source'),
     )
     attributee = models.ForeignKey(

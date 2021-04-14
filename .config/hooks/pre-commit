@@ -2,20 +2,16 @@
 
 staged_files=$(git diff --name-only --staged)
 
+echo "Autoformatting code..."
+
+# Autoformat Python code.
 poetry --help &>/dev/null && [[ -d ".venv" ]] && {
     comma_delimited_filepaths=$(echo staged_files | tr '\n' ',')
     poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
 }
 
+# Autoformat JS & TS code.
 cd frontend && npx lint-staged && cd ..
-
-docker-compose up github_workflow_preprocessor || {
-    echo "Failed to pre-process workflow files."
-    echo "For more output, try running the following:"
-    echo "  docker-compose up github_workflow_preprocessor"
-}
-
-git add ./.github/workflows
 
 for file in $staged_files; do
     git add "$file"

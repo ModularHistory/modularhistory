@@ -28,7 +28,7 @@ class TextualSourceMixin(models.Model):
     original_publication_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
-        """Meta options for the _Engagement model."""
+        """Meta options."""
 
         # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         abstract = True

@@ -138,29 +138,14 @@ class PolymorphicSection(PolymorphicSource):
         default=SECTION_TYPES[0][0],
     )
 
-    book = models.ForeignKey(to='sources.PolymorphicBook', on_delete=models.CASCADE)
+    # `book` would clash with the 1-to-1 reverse accessor of PolymorphicSource.
+    work = models.ForeignKey(to='sources.PolymorphicBook', on_delete=models.CASCADE)
 
     def __html__(self) -> str:
         """Return the section/chapter's HTML representation."""
-        container_html = None
-        if self.containment:
-            container = self.containment.container
-            container_html = f'{container.html}'
-            if self.attributee_html:
-                if self.attributee_html == container.attributee_html:
-                    container_html = container_html.replace(
-                        f'{self.attributee_html}, ', EMPTY_STRING
-                    )
-        attributee_string: Optional[str]
-        if self.attributee_html:
-            attributee_string = self.attributee_html
-        elif self.containment:
-            attributee_string = self.containment.container.attributee_html
-        else:
-            attributee_string = None
         components = [
-            item for item in (attributee_string, f'"{self.linked_title}"') if item
+            self.attributee_html if self.attributee_html else EMPTY_STRING,
+            f'"{self.linked_title}"' if self.title else EMPTY_STRING,
+            self.work.citation_html.lstrip(self.attributee_html),
         ]
-        if container_html:
-            components.append(f'in {container_html}')
-        return ', '.join(components).replace('",', ',"')
+        return self.components_to_html(components)

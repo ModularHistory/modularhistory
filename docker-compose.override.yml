@@ -1,5 +1,10 @@
 version: "3.8"
 
+x-common-env-vars: &common-env-vars
+  DOCKERIZED: "True"
+  REDIS_HOST: "redis"
+  POSTGRES_HOST: "postgres"
+
 services:
   celery:
     image: django:latest
@@ -24,6 +29,21 @@ services:
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+
+  # You can `docker-compose run django_helper {command}` to avoid
+  # an IP address conflict with the already-running django container.
+  django_helper:
+    command: bash
+    depends_on:
+      - postgres
+    env_file: .env
+    environment:
+      <<: *common-env-vars
+      DJANGO_SETTINGS_MODULE: "modularhistory.settings"
+    image: django:latest
+    user: root
+    volumes:
+      - .:/modularhistory
 
   flower:
     image: django:latest

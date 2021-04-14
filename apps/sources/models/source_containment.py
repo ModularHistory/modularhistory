@@ -26,13 +26,11 @@ class SourceContainment(PositionedRelation):
     source = ForeignKey(
         to='sources.PolymorphicSource',
         on_delete=CASCADE,
-        null=True,
         related_name='source_containments',
     )
     container = ForeignKey(
         to='sources.PolymorphicSource',
         on_delete=CASCADE,
-        null=True,
         related_name='container_containments',
     )
     page_number = models.PositiveSmallIntegerField(null=True, blank=True)

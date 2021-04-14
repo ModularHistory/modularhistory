@@ -6,9 +6,8 @@ from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.http import HttpRequest
-from django_celery_beat.admin import ClockedScheduleAdmin, PeriodicTaskAdmin
+from django_celery_beat.admin import PeriodicTaskAdmin
 from django_celery_beat.models import (
-    ClockedSchedule,
     CrontabSchedule,
     IntervalSchedule,
     PeriodicTask,

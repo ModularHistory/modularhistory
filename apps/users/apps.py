@@ -20,7 +20,7 @@ def superuser_check(app_configs, **kwargs):
     return [
         Warning(
             'You need to create a superuser. To do so, run this command: \n\n\t'
-            f'poetry run python manage.py createsuperuser \n {sys.argv[1]}',
+            f'poetry run python manage.py createsuperuser\n',
         )
     ]
 

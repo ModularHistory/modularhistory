@@ -4,16 +4,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models import PolymorphicSource
-
-from .document import DocumentMixin
+from apps.sources.models.mixins.document import DocumentMixin
 
 NAME_MAX_LENGTH: int = 100
-LOCATION_INFO_MAX_LENGTH: int = 400
-DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
-URL_MAX_LENGTH: int = 100
-
-TYPE_MAX_LENGTH: int = 10
-
+TYPE_MAX_LENGTH: int = 14
 CORRESPONDENCE_TYPES = (
     ('correspondence', 'correspondence'),
     ('email', 'email'),
@@ -27,31 +21,24 @@ class PolymorphicCorrespondence(PolymorphicSource, DocumentMixin):
 
     type = models.CharField(
         verbose_name=_('image type'),
-        max_length=14,
+        max_length=TYPE_MAX_LENGTH,
         choices=CORRESPONDENCE_TYPES,
         default=CORRESPONDENCE_TYPES[0][0],
     )
 
     recipient = models.CharField(
-        max_length=100,
+        max_length=NAME_MAX_LENGTH,
         null=True,
         blank=True,
     )
 
     def __html__(self) -> str:
         """Return the correspondence's citation HTML string."""
-        # TODO: refactor to use components_to_string
-        html = f'{self.attributee_html}, '
-        if self.href:
-            html = f'{html}<a href="{self.href}" target="_blank">'
-        html = f'{html}{self.type_label} to {self.recipient or "<Unknown>"}'
-        if self.date:
-            html += ', dated ' if self.date.day_is_known else ', '
-            html += self.date.string
-        if self.href:
-            html = f'{html}</a>'
-        if self.descriptive_phrase:
-            html = f'{html}, {self.descriptive_phrase}'
-        if self.collection:
-            html = f'{html}, archived in {self.collection}'
-        return html
+        components = [
+            self.attributee_html,
+            f'<a href="{self.href}" target="_blank">{self.type_label} to {self.recipient or "unidentified recipient"}</a>',
+            f'dated {self.date.string}' if self.date else '',
+            self.descriptive_phrase,
+            f'archived in {self.collection}' if self.collection else '',
+        ]
+        return self.components_to_html(components)

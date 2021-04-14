@@ -3,11 +3,6 @@
 from apps.sources.models import PolymorphicSource
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
-NAME_MAX_LENGTH: int = 100
-LOCATION_INFO_MAX_LENGTH: int = 400
-DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
-URL_MAX_LENGTH: int = 100
-
 
 class PolymorphicJournalEntry(PolymorphicSource, PageNumbersMixin):
     "A journal entry."
