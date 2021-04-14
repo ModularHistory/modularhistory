@@ -128,7 +128,7 @@ jobs:
         poetry run pytest nothing.py
     - name: Run tests
       if: ${{ success() }}
-      run: poetry run invoke test
+      run: poetry run invoke test --no-docker
 
   build:
     name: Build image

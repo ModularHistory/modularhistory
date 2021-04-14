@@ -1,5 +1,7 @@
 #!/bin/bash
 
+staged_files=$(git diff --name-only --staged)
+
 poetry --help &>/dev/null && [[ -d ".venv" ]] && {
     poetry run invoke qa.autoformat
 }
@@ -11,3 +13,9 @@ docker-compose up github_workflow_preprocessor || {
     echo "For more output, try running the following:"
     echo "  docker-compose up github_workflow_preprocessor"
 }
+
+git add ./.github/workflows
+
+for file in $staged_files; do
+    git add "$file"
+done

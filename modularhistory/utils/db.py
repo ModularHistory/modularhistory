@@ -233,23 +233,33 @@ def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
 
 def seed(context: Context = CONTEXT, migrate: bool = False):
     """Seed the database."""
+    django_container_name = 'django'
     db_volume = 'modularhistory_postgres_data'
     if not os.path.isfile(settings.DB_INIT_FILEPATH):
         raise Exception('Seed does not exist.')
     # Remove the data volume, if it exists
-    print('Wiping postgres data volume...')
+    print('Stopping containers...')
     context.run('docker-compose down')
+    print('Wiping postgres data volume...')
     context.run(f'docker volume rm {db_volume}', warn=True)
-    # Start up the postgres container to automatically run init.sql
+    # Start up the postgres container, automatically running init.sql.
     print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
+    print('Waiting for Postgres to finish recreating the database...')
+    sleep(10)  # Give postgres time to recreate the database.
     if migrate:
-        context.run('docker-compose run django python manage.py migrate')
+        context.run(
+            f'docker-compose run {django_container_name} python manage.py migrate'
+        )
     context.run('docker-compose up -d dev')
     if input('Create superuser? [Y/n] ') != NEGATIVE:
-        print('Waiting for django container to be ready...')
-        sleep(10)
-        context.run('docker-compose exec django python manage.py createsuperuser')
+        print(f'Waiting for {django_container_name} container to be ready...')
+        sleep(5)
+        context.run(
+            f'docker-compose exec {django_container_name} '
+            'python manage.py createsuperuser',
+            pty=True,
+        )
 
 
 def squash_migrations(context: Context = CONTEXT, dry: bool = True):
