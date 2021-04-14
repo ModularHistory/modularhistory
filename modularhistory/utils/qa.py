@@ -13,10 +13,10 @@ CONTEXT = Context()
 
 def autoformat(
     context: Context = CONTEXT,
-    files: Optional[Iterable[str]] = None,
+    filepaths: Optional[Iterable[str]] = None,
     staged: bool = False,
 ):
-    """Autoformat all of ModularHistory's Python code."""
+    """Autoformat Python code."""
     if get_staged_status is not None and stash_unstaged_changes is not None:
         pass
     else:
@@ -29,16 +29,24 @@ def autoformat(
         # https://github.com/myint/autoflake
         'autoflake --imports=apps,django,requests,typing,urllib3 --ignore-init-module-imports -i -r',  # noqa: E501
     ]
+    filepaths: Iterable[str] = filepaths or []
     if staged:
-        files = get_staged_status()
-        if not files:
-            # no files to autoformat
-            return 0
+        staged_filepaths = get_staged_status()
+        filepaths += staged_filepaths
+    filepaths = [filepath for filepath in filepaths if filepath.endswith('.py')]
+    if filepaths:
         commands.append('unify --in-place')  # does not support recursion (directories)
-        with stash_unstaged_changes(files):
-            for file in files:
+    if staged:
+        if not filepaths:
+            return
+        with stash_unstaged_changes(staged_filepaths):
+            for filepath in filepaths:
                 for command in commands:
-                    context.run(f'{command} {file}', warn=True)
+                    context.run(f'{command} {filepath}', warn=True)
+    elif filepaths:
+        for filepath in filepaths:
+            for command in commands:
+                context.run(f'{command} {filepath}', warn=True)
     else:
         with context.cd(settings.BASE_DIR):
             for command in commands:

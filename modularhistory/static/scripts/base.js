@@ -22,8 +22,8 @@ function initializeListeners(element = null) {
                     contain arbitrary JS.
                 */
                 $.find(target_modal).find('.modal-body').html(`
-                    <div class="embed-responsive embed-responsive-210by297">
-                        <iframe class="embed-responsive-item" src="${href}" allowfullscreen></iframe>
+                    <div class='embed-responsive embed-responsive-210by297'>
+                        <iframe class='embed-responsive-item' src='${href}' allowfullscreen></iframe>
                     </div>
                 `);
             } else {
@@ -51,13 +51,13 @@ function initializeListeners(element = null) {
             event.preventDefault();
             let word = selection && selection.toString();
             if (word) {
-                console.log(`Requesting definitions for "${word}"...`);
+                console.log(`Requesting definitions for '${word}'...`);
                 let pattern = `([ >";])${word}([\\.,;:&<])`;
                 let request = {
-                    "url": `/search/words/${word}`,
-                    "crossDomain": false,
-                    "async": true,
-                    "method": "GET",
+                    'url': `/search/words/${word}`,
+                    'crossDomain': false,
+                    'async': true,
+                    'method': 'GET',
                 };
                 $.ajax(request).done(function (response) {
                     let definitions = response['definitions'];
@@ -67,8 +67,8 @@ function initializeListeners(element = null) {
                             definitions_html += `<li>${item['definition']}</li>`;
                         });
                         definitions_html += '</ol>';
-                        let word_span = `<span title="${definitions_html}" data-toggle="tooltip" data-html="true" data-trigger="dblclick">${word}</span>`;
-                        $(node).html(html.replaceAll(new RegExp(pattern, "g"), `$1${word_span}$2`));
+                        let word_span = `<span title='${definitions_html}' data-toggle='tooltip' data-html='true' data-trigger='dblclick'>${word}</span>`;
+                        $(node).html(html.replaceAll(new RegExp(pattern, 'g'), `$1${word_span}$2`));
                     } else {
                         console.log(`Failed to retrieve definitions for ${word}.`);
                     }
@@ -87,7 +87,7 @@ function setGetParam(key, value) {
     if (history.pushState) {
         let params = new URLSearchParams(window.location.search);
         params.set(key, value);
-        let newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + params.toString();
+        let newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + params.toString();
         console.log(newUrl);
         window.history.pushState({ path: newUrl }, '', newUrl);
     }
@@ -96,8 +96,8 @@ function setGetParam(key, value) {
 function lazyLoadImages(element = null) {
     let scope = element ? element : document;
     console.log(`Lazy-loading images in ${scope}.`);
-    let lazyImages = [].slice.call(scope.querySelectorAll("img.lazy,.lazy-bg"));
-    if ("IntersectionObserver" in window) {
+    let lazyImages = [].slice.call(scope.querySelectorAll('img.lazy,.lazy-bg'));
+    if ('IntersectionObserver' in window) {
         let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
@@ -111,8 +111,8 @@ function lazyLoadImages(element = null) {
                             let key = lazyElement.parentElement.dataset.key;
                             console.log(`no URL could be retrieved for lazy-bg ${lazyElement.textContent} ${key}`);
                         }
-                        lazyElement.classList.remove("lazy-bg");
-                        lazyElement.style.backgroundImage = `url("${url}")`;
+                        lazyElement.classList.remove('lazy-bg');
+                        lazyElement.style.backgroundImage = `url('${url}')`;
                     } else if (isImage) {
                         let lazyImage = lazyElement;
                         url = lazyImage.dataset.src;
@@ -121,10 +121,9 @@ function lazyLoadImages(element = null) {
                         }
                         lazyImage.src = url;
                         // lazyElement.srcset = lazyElement.dataset.srcset;
-                        lazyImage.classList.remove("lazy");
+                        lazyImage.classList.remove('lazy');
                         // lazyImageObserver.unobserve(lazyImage);
                     } else {
-                        console.log('What is this?');
                         console.log(lazyElement.dataset);
                         console.log(lazyElement.parentElement);
                     }
@@ -132,7 +131,7 @@ function lazyLoadImages(element = null) {
                 }
             });
         }, {
-            rootMargin: "0px 0px 999px 0px"
+            rootMargin: '0px 0px 999px 0px'
         });
         lazyImages.forEach(function (lazyImage) {
             lazyImageObserver.observe(lazyImage);
@@ -148,21 +147,21 @@ function lazyLoadImages(element = null) {
                         let loadImage = (
                             (lazyImage.getBoundingClientRect().top <= window.innerHeight
                                 && lazyImage.getBoundingClientRect().bottom >= 0)
-                            && getComputedStyle(lazyImage).display !== "none"
+                            && getComputedStyle(lazyImage).display !== 'none'
                         );
                         if (loadImage) {
                             lazyImage.src = lazyImage.dataset.src;
                             lazyImage.srcset = lazyImage.dataset.srcset;
-                            lazyImage.classList.remove("lazy");
+                            lazyImage.classList.remove('lazy');
 
                             lazyImages = lazyImages.filter(function (image) {
                                 return image !== lazyImage;
                             });
 
                             if (lazyImages.length === 0) {
-                                document.removeEventListener("scroll", lazyLoad);
-                                window.removeEventListener("resize", lazyLoad);
-                                window.removeEventListener("orientationchange", lazyLoad);
+                                document.removeEventListener('scroll', lazyLoad);
+                                window.removeEventListener('resize', lazyLoad);
+                                window.removeEventListener('orientationchange', lazyLoad);
                             }
                         }
                     });
@@ -170,16 +169,16 @@ function lazyLoadImages(element = null) {
                 }, 200);
             }
         };
-        document.addEventListener("scroll", lazyLoad);
-        window.addEventListener("resize", lazyLoad);
-        window.addEventListener("orientationchange", lazyLoad);
+        document.addEventListener('scroll', lazyLoad);
+        window.addEventListener('resize', lazyLoad);
+        window.addEventListener('orientationchange', lazyLoad);
     }
 }
 
-// This function is used to track the user's position in the default "rows" viewing mode.
+// This function is used to track the user's position in the default 'rows' viewing mode.
 function scrollSpy() {
-    let modules = [].slice.call(document.querySelectorAll(".result[data-key]"));
-    if ("IntersectionObserver" in window) {
+    let modules = [].slice.call(document.querySelectorAll('.result[data-key]'));
+    if ('IntersectionObserver' in window) {
         let moduleObserver = new IntersectionObserver(function (entries, observer) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
@@ -190,7 +189,7 @@ function scrollSpy() {
             });
         }, {
             // when the top of the module is 60% from the bottom of the window
-            rootMargin: "0px 0px -60% 0px"
+            rootMargin: '0px 0px -60% 0px'
         });
         modules.forEach(function (module) {
             moduleObserver.observe(module);
@@ -238,7 +237,6 @@ $(function () {
                     }
                 });
                 // $(`${display_option_selector} input:checked`).prop('checked', false);
-                console.log(`Selecting option: ${input.val()}`);
                 input.prop('checked', true);
                 let url = new URL(window.location.href);
                 url.searchParams.set('display', input.val());
@@ -282,7 +280,6 @@ $(function () {
                 let key = $(this).attr('data-key');
                 $('.view-detail').load(detail_href, function () {
                     if ($(window).width() <= mobile_width) {
-                        console.log('Mobile width detected.');
                         let content = $(this).html();
                         let modal = $('#modal');
                         let modal_body = modal.find('.modal-body');

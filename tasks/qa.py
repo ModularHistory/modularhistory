@@ -1,8 +1,8 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
-import django
+from typing import Optional
 
-from modularhistory.constants.environments import Environments
+import django
 
 try:
     from modularhistory.linters import flake8 as lint_with_flake8
@@ -19,9 +19,14 @@ from django.conf import settings  # noqa: E402
 
 
 @command
-def autoformat(context):
+def autoformat(context, filepaths: Optional[str]):
     """Safely run autoformatters against all Python files."""
-    qa.autoformat(context)
+    # Note: If we were using Invoke directly, we could use the iterable flag feature:
+    # http://docs.pyinvoke.org/en/stable/concepts/invoking-tasks.html?highlight=incrementable#iterable-flag-values
+    # However, since we're doing some funky magic on @task (--> @command) to get
+    # type annotations working, we can't give the @command decorator any arguments.
+    # So, we are using sub-string parsing instead.
+    qa.autoformat(context, filepaths=(filepaths.split(',') if filepaths else None))
 
 
 @command

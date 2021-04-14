@@ -3,7 +3,8 @@
 staged_files=$(git diff --name-only --staged)
 
 poetry --help &>/dev/null && [[ -d ".venv" ]] && {
-    poetry run invoke qa.autoformat
+    comma_delimited_filepaths=$(echo staged_files | tr '\n' ',')
+    poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
 }
 
 cd frontend && npx lint-staged && cd ..
