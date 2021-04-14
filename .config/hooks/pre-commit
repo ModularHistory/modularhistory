@@ -15,6 +15,12 @@ docker-compose up github_workflow_preprocessor || {
     echo "  docker-compose up github_workflow_preprocessor"
 }
 
+# TODO: Fail if migrations need to be created.
+# docker-compose run django python manage.py makemigrations --no-input --dry-run || {
+#     echo "Uh oh. Unable to make migrations..."
+#     exit 1
+# }
+
 git add ./.github/workflows
 
 for file in $staged_files; do

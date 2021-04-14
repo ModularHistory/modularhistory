@@ -4,20 +4,16 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.sources.models import PolymorphicSource
-
-from .document import DocumentMixin
+from apps.sources.models.mixins.document import DocumentMixin
 
 NAME_MAX_LENGTH: int = 100
-LOCATION_INFO_MAX_LENGTH: int = 400
-DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
-URL_MAX_LENGTH: int = 100
 
 
 class PolymorphicAffidavit(PolymorphicSource, DocumentMixin):
     """An affidavit."""
 
     certifier = models.CharField(
-        max_length=100,
+        max_length=NAME_MAX_LENGTH,
         null=True,
         blank=True,
     )

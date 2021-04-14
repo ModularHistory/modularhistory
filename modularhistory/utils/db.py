@@ -254,7 +254,7 @@ def seed(context: Context = CONTEXT, migrate: bool = False):
     context.run('docker-compose up -d dev')
     if input('Create superuser? [Y/n] ') != NEGATIVE:
         print(f'Waiting for {django_container_name} container to be ready...')
-        sleep(5)
+        sleep(1)
         context.run(
             f'docker-compose exec {django_container_name} '
             'python manage.py createsuperuser',

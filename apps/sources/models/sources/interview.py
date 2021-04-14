@@ -3,7 +3,6 @@
 from django.db import models
 
 from apps.sources.models import PolymorphicSource
-from modularhistory.fields import ExtraField
 
 INTERVIEWERS_MAX_LENGTH: int = 200
 
@@ -11,7 +10,9 @@ INTERVIEWERS_MAX_LENGTH: int = 200
 class PolymorphicInterview(PolymorphicSource):
     """An interview."""
 
-    interviewers = models.CharField(max_length=200, null=True, blank=True)
+    interviewers = models.CharField(
+        max_length=INTERVIEWERS_MAX_LENGTH, null=True, blank=True
+    )
 
     def __html__(self) -> str:
         """Return the interview's citation HTML string."""

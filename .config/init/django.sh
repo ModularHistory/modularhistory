@@ -24,11 +24,6 @@ python manage.py migrate || {
     exit 1
 }
 
-python manage.py makemigrations --no-input --dry-run || {
-    echo "Uh oh. Unable to make migrations..."
-    exit 1
-}
-
 python manage.py collectstatic --no-input || {
     echo "Failed to collect static files."
     exit 1

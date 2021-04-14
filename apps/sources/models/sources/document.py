@@ -6,56 +6,14 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.sources.models import PolymorphicSource
-from apps.sources.models.mixins.page_numbers import PageNumbersMixin
+from apps.sources.models.mixins.document import DocumentMixin
 from modularhistory.models import ModelWithComputations, retrieve_or_compute
 from modularhistory.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400
 DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
-URL_MAX_LENGTH: int = 100
-
-
-class DocumentMixin(PageNumbersMixin):
-    """A historical document (as a source)."""
-
-    collection = models.ForeignKey(
-        to='sources.Collection',
-        related_name='polymoprhic_%(class)s',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-    )
-    collection_number = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        help_text='aka acquisition number',
-    )
-    location_info = models.TextField(
-        null=True,
-        blank=True,
-        help_text=(
-            'Ex: John Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
-        ),
-    )
-    descriptive_phrase = models.CharField(
-        max_length=100,
-        null=True,
-        blank=True,
-        help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
-    )
-    information_url = models.CharField(
-        max_length=200,
-        null=True,
-        blank=True,
-        help_text='URL for information regarding the document',
-    )
-
-    class Meta:
-        """Meta options for the _Engagement model."""
-
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        abstract = True
+URL_MAX_LENGTH: int = 200
 
 
 class PolymorphicDocument(PolymorphicSource, DocumentMixin):
@@ -83,7 +41,9 @@ class Collection(ModelWithComputations):
         blank=True,
     )
     repository = ForeignKey(
-        'sources.Repository', on_delete=CASCADE, help_text='the collecting institution'
+        'sources.Repository',
+        on_delete=CASCADE,
+        help_text='the library or institution housing the collection',
     )
     url = models.URLField(max_length=URL_MAX_LENGTH, null=True, blank=True)
 
@@ -106,7 +66,7 @@ class Collection(ModelWithComputations):
             f'{self.name}' if self.name else '',
             f'{self.repository}',
         ]
-        return PolymorphicDocument.components_to_html(components)
+        return ', '.join([component for component in components if component])
 
 
 class Repository(ModelWithComputations):
