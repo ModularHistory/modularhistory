@@ -254,6 +254,9 @@ jobs:
     # OSSAR runs on windows-latest.
     # ubuntu-latest and macos-latest support coming soon.
     runs-on: windows-latest
+    # OSSAR is in beta and sometimes has spurious errors, so...
+    # For the time being, allow the job to complete despite any errors.
+    continue-on-error: true
     steps:
     # https://github.community/t/filename-too-long-error-for-windows-2019-checkout/16676
     - name: Support longpaths
