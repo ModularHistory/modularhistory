@@ -6,7 +6,6 @@ from crispy_forms.layout import HTML, Field, Layout, Submit
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
-from django.urls import reverse
 
 from apps.users.admin import EMAIL_FIELD, USERNAME_FIELD
 
@@ -64,7 +63,7 @@ class RegistrationForm(UserCreationForm):
             ),
             Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
             HTML(
-                f'<p>Already have an account? <a href="{reverse("users:login")}">Sign in</a></p>'
+                f'<p>Already have an account? <a href="api/auth/signin">Sign in</a></p>'
             ),
         )
 
