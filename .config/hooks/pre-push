@@ -1,0 +1,15 @@
+#!/bin/bash
+
+docker-compose run django_helper python manage.py makemigrations --check --no-input --dry-run &>/dev/null || {
+    echo "Migrations are required."; exit 1
+}
+
+docker-compose up github_workflow_preprocessor &>/dev/null || {
+    echo "Failed to pre-process workflow files."
+    echo "For more output, try running the following:"
+    echo "  docker-compose up github_workflow_preprocessor"
+}
+
+git diff --quiet .github/workflows || {
+    git add .github/workflows && git commit -m 'update workflow'
+}

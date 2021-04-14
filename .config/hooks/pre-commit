@@ -9,20 +9,6 @@ poetry --help &>/dev/null && [[ -d ".venv" ]] && {
 
 cd frontend && npx lint-staged && cd ..
 
-docker-compose up github_workflow_preprocessor || {
-    echo "Failed to pre-process workflow files."
-    echo "For more output, try running the following:"
-    echo "  docker-compose up github_workflow_preprocessor"
-}
-
-# TODO: Fail if migrations need to be created.
-# https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
-# docker-compose run django_helper python manage.py makemigrations --check --no-input --dry-run || {
-#     echo "Migrations are required."; exit 1
-# }
-
-git add ./.github/workflows
-
 for file in $staged_files; do
     git add "$file"
 done
