@@ -15,8 +15,6 @@ from .command import command
 
 django.setup()
 
-from django.conf import settings  # noqa: E402
-
 
 @command
 def autoformat(context, filepaths: Optional[str] = None):
