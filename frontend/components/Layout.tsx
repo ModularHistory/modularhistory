@@ -26,7 +26,13 @@ const Layout: FunctionComponent<LayoutProperties> = ({
       if (session.clientSideCookies) {
         session.clientSideCookies.forEach((cookie) => {
           document.cookie = cookie;
-          // console.log(`Updated ${cookie.split(";")[0].split("=")[0]} cookie to ${cookie.split(";")[0].split("=")[1]}.`);
+          const debugMessage =
+            process.env.ENVIRONMENT === "dev"
+              ? `Updated ${cookie.split(";")[0].split("=")[0]} cookie to ${
+                  cookie.split(";")[0].split("=")[1]
+                }.`
+              : `Updated ${cookie.split(";")[0].split("=")[0]} cookie.`;
+          console.log(debugMessage);
         });
       }
     } else {
