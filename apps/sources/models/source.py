@@ -17,8 +17,8 @@ from apps.search.models import SearchableDatedModel
 from apps.sources.manager import PolymorphicSourceManager
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
-from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
-from modularhistory.models import TypedModel, retrieve_or_compute
+from modularhistory.fields import HistoricDateTimeField, HTMLField
+from modularhistory.models import retrieve_or_compute
 from modularhistory.structures.historic_datetime import HistoricDateTime
 from modularhistory.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from modularhistory.utils.string import fix_comma_positions
