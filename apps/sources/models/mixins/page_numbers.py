@@ -20,7 +20,7 @@ class PageNumbersMixin(TextualMixin):
     )
 
     class Meta:
-        """Meta options for the _Engagement model."""
+        """Meta options."""
 
         # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
         abstract = True
