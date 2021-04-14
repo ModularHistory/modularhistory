@@ -60,7 +60,7 @@ class ModelWithSources(Model):
         """Return the instance's full citation HTML."""
         try:
             citation_html = '; '.join(
-                citation['html'] for citation in self.serialized_citations
+                citation.get('html') for citation in self.serialized_citations
             )
         except Exception as err:
             logging.error(f'{err}')

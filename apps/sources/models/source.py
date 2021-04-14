@@ -14,6 +14,7 @@ from polymorphic.models import PolymorphicModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
+from apps.sources.manager import PolymorphicSourceManager
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from modularhistory.fields import HistoricDateTimeField, HTMLField
@@ -60,15 +61,14 @@ class PolymorphicSource(
         through='SourceAttribution',
         related_name='attributed_sources',
         # Some sources may not have attributees.
-        blank=True,
     )
+    citation_html = models.TextField(null=False, blank=True)
     citation_string = models.CharField(
         max_length=MAX_CITATION_STRING_LENGTH,
         null=False,
         blank=True,
         unique=True,
     )
-    citation_html = models.TextField(null=False, blank=True)
     containers = models.ManyToManyField(
         to='self',
         through='sources.SourceContainment',
@@ -81,7 +81,7 @@ class PolymorphicSource(
     description = HTMLField(null=True, blank=True, paragraphed=True)
     file = models.ForeignKey(
         to=SourceFile,
-        related_name='sources',
+        related_name='polymorphic_sources',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -111,7 +111,7 @@ class PolymorphicSource(
     class Meta:
         ordering = ['-date']
 
-    # objects = PolymorphicSourceManager()  # .from_queryset(PolymorphicSourceQuerySet)()
+    objects = PolymorphicSourceManager()
     searchable_fields = ['citation_string', 'description']
     serializer = SourceSerializer
     slug_base_field = 'title'
@@ -160,7 +160,15 @@ class PolymorphicSource(
         return format_html(element)
 
     @property
-    def attributee_html(self) -> Optional[str]:
+    def ctype(self):
+        return self.polymorphic_ctype
+
+    @property
+    def escaped_citation_html(self) -> SafeString:
+        return format_html(self.citation_html)
+
+    @property
+    def calculate_attributee_html(self) -> Optional[str]:
         """Return an HTML string representing the source's attributees."""
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
         has_attributees = self.attributees.exists() if self.pk else False
@@ -238,10 +246,6 @@ class PolymorphicSource(
             return self.source_containments.first()
         except (ObjectDoesNotExist, AttributeError):
             return None
-
-    @property
-    def ctype(self):
-        return self.polymorphic_ctype
 
     @property
     def escaped_citation_html(self) -> SafeString:
@@ -396,7 +400,7 @@ def _get_page_number_link(url: str, page_number: int) -> Optional[str]:
 
 def _get_page_number_html(
     source: PolymorphicSource,
-    file: SourceFile,
+    file: Optional[SourceFile],
     page_number: int,
     end_page_number: Optional[int] = None,
 ) -> str:
