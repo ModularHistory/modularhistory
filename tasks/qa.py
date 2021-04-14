@@ -19,7 +19,7 @@ from django.conf import settings  # noqa: E402
 
 
 @command
-def autoformat(context, filepaths: Optional[str]):
+def autoformat(context, filepaths: Optional[str] = None):
     """Safely run autoformatters against all Python files."""
     # Note: If we were using Invoke directly, we could use the iterable flag feature:
     # http://docs.pyinvoke.org/en/stable/concepts/invoking-tasks.html?highlight=incrementable#iterable-flag-values
