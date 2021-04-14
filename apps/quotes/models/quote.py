@@ -102,7 +102,7 @@ class Quote(
         'context',
         'attributees__name',
         'date__year',
-        'sources__full_string',
+        'sources__citation_string',
         'tags__topic__key',
         'tags__topic__aliases',
     ]
