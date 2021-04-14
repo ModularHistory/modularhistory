@@ -2,8 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models import PolymorphicSource
-
-from .source_with_page_numbers import PageNumbersMixin, SourceWithPageNumbers
+from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
 PIECE_TYPES = (('essay', 'Essay'),)
 TYPE_MAX_LENGTH: int = 10
@@ -27,22 +26,3 @@ class PolymorphicPiece(PolymorphicSource, PageNumbersMixin):
             self.date.string if self.date else '',
         ]
         return self.components_to_html(components)
-
-
-class Piece(SourceWithPageNumbers):
-    """A piece (e.g., essay)."""
-
-    def __html__(self) -> str:
-        """TODO: write docstring."""
-        components = [
-            self.attributee_html,
-            f'"{self.linked_title}"',
-            self.date.string if self.date else '',
-        ]
-        return self.components_to_html(components)
-
-
-class Essay(Piece):
-    """An essay (as a source)."""
-
-    pass  # noqa: WPS604

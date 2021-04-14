@@ -12,7 +12,7 @@ class PublicationAdmin(ModelAdmin):
 class ArticlesInline(StackedInline):
     """Inline admin for articles."""
 
-    model = models.Article
+    model = models.PolymorphicArticle
     extra = 1
 
 
