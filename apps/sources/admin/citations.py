@@ -42,11 +42,13 @@ class CitationAdmin(ModelAdmin):
 
     model = models.Citation
 
-    list_display = ['pk', 'html', 'position', 'content_object', 'content_type']
-    search_fields = ['source__citation_string']
+    autocomplete_fields = ['source']
+    exclude = ['position']
+    list_display = ['pk', 'html', 'content_object', 'content_type']
     list_filter = [ContentTypeFilter]
     list_per_page = 10
     ordering = ['pk']
+    search_fields = ['source__citation_string']
 
     def get_queryset(self, request) -> 'QuerySet[models.Citation]':
         """
@@ -69,11 +71,12 @@ class CitationsInline(GenericTabularInline):
     """Inline admin for citations."""
 
     model = models.Citation
+
     autocomplete_fields = ['source']
+    exclude = ['computations']
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
-    exclude = ['computations']
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'

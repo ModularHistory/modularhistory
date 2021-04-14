@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models.mixins.textual_source import TextualSourceMixin
+from apps.sources.models.mixins.textual import TextualMixin
 from apps.sources.models.publication import AbstractPublication
 from apps.sources.models.source import PolymorphicSource
 from modularhistory.fields import ExtraField
@@ -14,7 +14,7 @@ from .textual_source import TextualSource
 JSON_FIELD_NAME = 'extra'
 
 
-class Website2(AbstractPublication):
+class Website(AbstractPublication):
     """A website."""
 
     owner = models.CharField(
@@ -22,11 +22,11 @@ class Website2(AbstractPublication):
     )
 
 
-class PolymorphicWebPage(PolymorphicSource, TextualSourceMixin):
+class PolymorphicWebPage(PolymorphicSource, TextualMixin):
     """A web page."""
 
     website = models.ForeignKey(
-        'sources.Website2', null=True, blank=True, on_delete=models.CASCADE
+        'sources.Website', null=True, blank=True, on_delete=models.CASCADE
     )
 
 

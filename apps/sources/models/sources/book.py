@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from humanize import ordinal
 
 from apps.sources.models import PolymorphicSource
-from apps.sources.models.mixins.textual_source import TextualSourceMixin
+from apps.sources.models.mixins.textual import TextualMixin
 from modularhistory.constants.strings import EMPTY_STRING
 from modularhistory.fields import ExtraField
 from modularhistory.models import model, retrieve_or_compute
@@ -24,7 +24,7 @@ STRING = 'string'
 NUMBER = 'number'
 
 
-class PolymorphicBook(PolymorphicSource, TextualSourceMixin):
+class PolymorphicBook(PolymorphicSource, TextualMixin):
     """A book."""
 
     translator = models.CharField(

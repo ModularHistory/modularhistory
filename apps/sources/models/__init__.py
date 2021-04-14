@@ -1,7 +1,7 @@
 """Public models of the sources app."""
 
 from .citation import Citation
-from .publication import Journal, Magazine, Newspaper, Publication, Website
+from .publication import Journal, Magazine, Newspaper, Publication
 from .source import PolymorphicSource, Source
 from .source_attribution import SourceAttribution
 from .source_containment import SourceContainment
@@ -42,9 +42,9 @@ from .sources.article import PolymorphicArticle
 from .sources.book import PolymorphicBook, PolymorphicSection
 from .sources.correspondence import PolymorphicCorrespondence
 from .sources.document import PolymorphicDocument
+from .sources.film import Film
 from .sources.interview import PolymorphicInterview
 from .sources.journal import PolymorphicJournalEntry
 from .sources.piece import PolymorphicPiece
 from .sources.spoken_source import PolymorphicSpeech
-from .sources.video_source import PolymorphicFilm
-from .sources.webpage import PolymorphicWebPage, Website2
+from .sources.webpage import PolymorphicWebPage, Website

@@ -101,12 +101,6 @@ class Citation(PositionedRelation):
         to='sources.PolymorphicSource',
         related_name='citations',
         on_delete=models.PROTECT,
-        null=True,
-    )
-    old_source = models.ForeignKey(
-        to='sources.Source',
-        related_name='citations',
-        on_delete=models.PROTECT,
     )
     pages = JSONField(schema=PAGES_SCHEMA, default=list)
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
@@ -114,7 +108,12 @@ class Citation(PositionedRelation):
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     class Meta:
-        unique_together = ['source', 'content_type', 'object_id', 'position']
+        unique_together = [
+            'source',
+            'content_type',
+            'object_id',
+            'position',
+        ]
         ordering = ['position', 'source']
 
     page_string_regex = regex.compile(PAGE_STRING_REGEX)
@@ -123,7 +122,10 @@ class Citation(PositionedRelation):
 
     def __str__(self) -> str:
         """Return the citation's string representation."""
-        return soupify(self.html).get_text()
+        try:
+            return soupify(self.html).get_text()
+        except Exception as error:
+            return f'citation {self.pk}'
 
     # TODO: refactor
     @property  # type: ignore

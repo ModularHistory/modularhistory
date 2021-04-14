@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 
 from admin.list_filters import BooleanListFilter
 from admin.list_filters import TypeFilter as BaseTypeFilter
-from apps.sources.models import Source
+from apps.sources.models import PolymorphicSource
 from modularhistory.constants.strings import EMPTY_STRING, NO, YES
 
 
@@ -31,12 +31,12 @@ class HasFileFilter(BooleanListFilter):
     def queryset(self, request, queryset):
         """Return the queryset filtered by whether source files exist."""
         if self.value() == YES:
-            filters = {f'{Source.FieldNames.file}__isnull': False}
-            exclusions = {f'{Source.FieldNames.file}__file': EMPTY_STRING}
+            filters = {f'file__isnull': False}
+            exclusions = {f'file__file': EMPTY_STRING}
             return queryset.filter(**filters).exclude(**exclusions)
         if self.value() == NO:
-            file_is_null = {f'{Source.FieldNames.file}__isnull': True}
-            file_is_empty = {f'{Source.FieldNames.file}__file': EMPTY_STRING}
+            file_is_null = {f'file__isnull': True}
+            file_is_empty = {f'file__file': EMPTY_STRING}
             return queryset.filter(Q(**file_is_null) | Q(**file_is_empty))
 
 
@@ -107,4 +107,4 @@ class ImpreciseDateFilter(BooleanListFilter):
 class TypeFilter(BaseTypeFilter):
     """Filters sources by type."""
 
-    base_model = Source
+    base_model = PolymorphicSource

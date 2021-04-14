@@ -18,4 +18,4 @@ from .spoken_source import (
 )
 from .textual_source import TextualSource
 from .video_source import Documentary, VideoSource
-from .webpage import WebPage, Website2
+from .webpage import WebPage, Website
