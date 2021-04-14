@@ -2,6 +2,8 @@
 
 staged_files=$(git diff --name-only --staged)
 
+echo "Autoformatting code..."
+
 # Autoformat Python code.
 poetry --help &>/dev/null && [[ -d ".venv" ]] && {
     comma_delimited_filepaths=$(echo staged_files | tr '\n' ',')
