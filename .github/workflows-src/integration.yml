@@ -255,6 +255,9 @@ jobs:
     # ubuntu-latest and macos-latest support coming soon.
     runs-on: windows-latest
     steps:
+    # https://github.community/t/filename-too-long-error-for-windows-2019-checkout/16676
+    - name: Support longpaths
+      run: git config --system core.longpaths true
     # Checkout your code repository to scan
     - name: Checkout repository
       uses: actions/checkout@v2
