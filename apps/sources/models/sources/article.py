@@ -2,7 +2,6 @@
 
 from typing import List, Optional
 
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.sources.models import PolymorphicSource
@@ -15,12 +14,6 @@ class PolymorphicArticle(PolymorphicSource, PageNumbersMixin):
     publication = models.ForeignKey(to='sources.Publication', on_delete=models.PROTECT)
     number = models.PositiveSmallIntegerField(null=True, blank=True)
     volume = models.PositiveSmallIntegerField(null=True, blank=True)
-
-    def clean(self):
-        """Prepare the article to be saved."""
-        super().clean()
-        if not self.publication:
-            raise ValidationError('Article must have an associated publication.')
 
     def __html__(self) -> str:
         """Return the article's citation HTML string."""
