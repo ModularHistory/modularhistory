@@ -17,9 +17,8 @@ docker-compose up github_workflow_preprocessor || {
 
 # TODO: Fail if migrations need to be created.
 # https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
-# docker-compose run django python manage.py makemigrations --check --no-input --dry-run || {
-#     echo "Migrations are required."
-#     exit 1
+# docker-compose run django_helper python manage.py makemigrations --check --no-input --dry-run || {
+#     echo "Migrations are required."; exit 1
 # }
 
 git add ./.github/workflows
