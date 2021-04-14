@@ -14,7 +14,7 @@ from apps.sources.admin.inlines import (
 def rearrange_fields(fields):
     """Return reordered fields to be displayed in the admin."""
     # Fields to display at the top, in order
-    top_fields = ('full_string', 'creators', 'title')
+    top_fields = ('citation_string', 'attributee_string', 'title')
     # Fields to display at the bottom, in order
     bottom_fields = (
         'volume',
