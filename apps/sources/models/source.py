@@ -60,7 +60,8 @@ class PolymorphicSource(
         to='entities.Entity',
         through='SourceAttribution',
         related_name='attributed_sources',
-        # Some sources may not have attributees.
+        blank=True,  # Some sources may not have attributees.
+        verbose_name=_('attributees'),
     )
     citation_html = models.TextField(null=False, blank=True)
     citation_string = models.CharField(
