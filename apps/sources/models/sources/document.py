@@ -41,7 +41,7 @@ class Collection(ModelWithComputations):
         blank=True,
     )
     repository = ForeignKey(
-        'sources.Repository',
+        to='sources.Repository',
         on_delete=CASCADE,
         help_text='the library or institution housing the collection',
     )

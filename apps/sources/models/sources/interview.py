@@ -1,6 +1,7 @@
 """Model classes for interviews."""
 
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models import PolymorphicSource
 
@@ -11,7 +12,10 @@ class PolymorphicInterview(PolymorphicSource):
     """An interview."""
 
     interviewers = models.CharField(
-        max_length=INTERVIEWERS_MAX_LENGTH, null=True, blank=True
+        verbose_name=_('interviewers'),
+        max_length=INTERVIEWERS_MAX_LENGTH,
+        null=True,
+        blank=True,
     )
 
     def __html__(self) -> str:
