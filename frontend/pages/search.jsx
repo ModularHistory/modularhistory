@@ -151,7 +151,7 @@ export default function Search({ searchResults }) {
             </div>
 
             <div className="card view-detail sticky">
-              <ModuleDetail module={modules[moduleIndex] || moduleIndex[0]} />
+              <ModuleDetail module={modules[moduleIndex] || modules[0]} />
             </div>
           </div>
         </div>
