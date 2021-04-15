@@ -158,7 +158,6 @@ jobs:
           echo "Working dir:" && pwd && echo "" && ls
           echo "" && echo "Setting environment variables..."
           set -a; source .env; set +a
-          [ $(shasum nginx.conf) = $() ]
           echo "" && echo "Logging in to the container registry..."
           docker login ghcr.io -u iacobfred -p $CR_PAT
           echo "Pulling images to $SERVER..."
@@ -169,9 +168,10 @@ jobs:
           echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
           docker image prune -a -f
           docker system prune -f
-          [ -f nginx.conf.sha ] || touch nginx.conf.sha
-          if ! cat nginx.conf.sha | grep "$(shasum nginx.conf)" > /dev/null; then echo "" && echo "Updating Nginx config..." && lxc file push nginx.conf webserver/etc/nginx/sites-available/default && echo "" && echo "Restarting Nginx server..." && lxc exec webserver -- service nginx restart; fi
-          shasum nginx.conf > nginx.conf.sha
+          echo "" && echo "Updating Nginx config..."
+          lxc file push nginx.conf webserver/etc/nginx/sites-available/default
+          echo "" && echo "Restarting Nginx server..."
+          lxc exec webserver -- service nginx restart
           echo "" && echo "Done."
         ENDSSH
     - name: Create Sentry release
