@@ -10,6 +10,7 @@ from pprint import pformat
 from typing import List, Optional
 from zipfile import BadZipFile, ZipFile
 
+from colorama import Style
 from django.conf import settings
 from dotenv import load_dotenv
 from requests import Session
@@ -165,7 +166,24 @@ def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
     with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
         required_hosts = [host for host in hosts_file.read().splitlines() if host]
-    print(f'Reading {HOSTS_FILEPATH} ...')
+    if os.path.exists(WSL_HOSTS_FILEPATH):
+        while True:
+            with open(WSL_HOSTS_FILEPATH, 'r') as hosts_file:
+                extant_hosts = hosts_file.read()
+                hosts_to_write = [
+                    host for host in required_hosts if host not in extant_hosts
+                ]
+            if hosts_to_write:
+                input(
+                    f'{Style.BRIGHT}\n'
+                    'Please update your Windows hosts file to include the following:\n'
+                    f'{NEWLINE.join(hosts_to_write)}\n\n'
+                    'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
+                    'After updating your hosts file, press Enter to continue.'
+                    f'{Style.RESET_ALL}'
+                )
+            else:
+                break
     with open(HOSTS_FILEPATH, 'r') as hosts_file:
         extant_hosts = hosts_file.read()
     hosts_to_write = [host for host in required_hosts if host not in extant_hosts]
@@ -173,22 +191,6 @@ def update_hosts(context):
         print(f'Updating {HOSTS_FILEPATH} ...')
         for host in hosts_to_write:
             context.run(f'sudo echo "{host}" | sudo tee -a /etc/hosts')
-    if os.path.exists(WSL_HOSTS_FILEPATH):
-        while True:
-            with open(WSL_HOSTS_FILEPATH, 'r') as hosts_file:
-                windows_hosts = hosts_file.read()
-                hosts_to_write = [
-                    host for host in required_hosts if host not in windows_hosts
-                ]
-            if not hosts_to_write:
-                break
-            input(
-                'Your Windows hosts file is missing some required entries.\n'
-                'Please update your hosts file to include the following:\n\n'
-                f'{NEWLINE.join(hosts_to_write)}\n\n'
-                'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
-                'After updating your hosts file, press Enter to continue.'
-            )
     print('Hosts file is up to date.')
 
 

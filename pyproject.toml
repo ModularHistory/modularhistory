@@ -46,7 +46,7 @@ use_parentheses = true
 name = "modularhistory"
 authors = [
     "Jacob Fredericksen <jacob@modularhistory.com>",
-    "Matthew Fredericksen <matthew@modularhistory.com",
+    "Matthew Fredericksen <matthew@modularhistory.com>",
 ] # TODO: Jonah
 description = "ModularHistory (https://modularhistory.com/)"
 homepage = "https://modularhistory.com/"
@@ -64,6 +64,7 @@ beautifulsoup4 = "==4.9.3"
 celery = "<5.0.0"
 channels = "^3.0"
 channels-redis = "^3.2.0"
+colorama = "^0.4.4"
 django = "~3.1"
 djangorestframework = "^3.12"
 djangorestframework-simplejwt = "^4.6.0"
@@ -73,12 +74,13 @@ django-admin-tools = "==0.9.0"
 django-allauth = "^0.44.0"
 django-autoslug = "^1.9.8"
 django-bootstrap-datepicker-plus = "==3.0.5"
+django-cachalot = "^2.3.5"
 django-concurrency = "^2.2"
 django-cors-headers = "3.6.0"
 django-crispy-forms = "^1.10"
-django-dbbackup = "^3.3"
 django-celery-beat = "^2.2.0"
 django-celery-results = "^2.0.1"
+django-dbbackup = "^3.3"
 django-debug-toolbar = "^3.2"
 django-extensions = "^3.1.1"
 django-extra-views = "==0.13.0"
@@ -152,7 +154,6 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
-django-cachalot = "^2.3.5"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
