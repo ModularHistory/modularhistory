@@ -17,6 +17,7 @@ exclude = '''
       \.eggs
     | \.git
     | \.mypy_cache
+    | \.cache
     | \.venv
   )/
 )
