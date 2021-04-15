@@ -27,7 +27,7 @@ from django.urls import include, path, re_path
 from django.views.generic import TemplateView
 from watchman.views import bare_status
 
-from admin.model_admin import admin_site
+from apps.admin.model_admin import admin_site
 from apps.users.api.views import set_csrf_token
 from core import errors
 

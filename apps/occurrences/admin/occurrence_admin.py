@@ -1,6 +1,6 @@
 """Admin classes for occurrences."""
 
-from admin import ModelAdmin, admin_site
+from apps.admin import ModelAdmin, admin_site
 from apps.occurrences import models
 from apps.occurrences.admin.occurrence_filters import (
     EntityFilter,

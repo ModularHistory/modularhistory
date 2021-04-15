@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
 from django.urls import path
 
-from admin.model_admin import ModelAdmin, admin_site
+from apps.admin.model_admin import ModelAdmin, admin_site
 from apps.entities.views import EntityCategorySearchView, EntitySearchView
 from apps.search import models
 from apps.topics.views import TagSearchView

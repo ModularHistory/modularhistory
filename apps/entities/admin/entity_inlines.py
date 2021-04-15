@@ -1,4 +1,4 @@
-from admin import TabularInline
+from apps.admin import TabularInline
 from apps.entities import models
 from apps.occurrences.models import OccurrenceEntityInvolvement
 from apps.postulations.models import EntityFactRelation

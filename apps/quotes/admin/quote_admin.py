@@ -2,7 +2,7 @@
 
 from django.db.models.query import QuerySet
 
-from admin import admin_site
+from apps.admin import admin_site
 from apps.quotes import models
 from apps.quotes.admin.quote_filters import (
     AttributeeCategoryFilter,

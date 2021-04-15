@@ -7,7 +7,7 @@ from nested_admin.nested import (
     NestedTabularInline,
 )
 
-from admin.model_admin import FORM_FIELD_OVERRIDES
+from apps.admin.model_admin import FORM_FIELD_OVERRIDES
 
 if TYPE_CHECKING:
     from core.models import Model

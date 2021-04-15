@@ -4,7 +4,7 @@ from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import QuerySet
 
-from admin import GenericTabularInline, ModelAdmin, TabularInline, admin_site
+from apps.admin import GenericTabularInline, ModelAdmin, admin_site
 from apps.sources import models
 
 if TYPE_CHECKING:

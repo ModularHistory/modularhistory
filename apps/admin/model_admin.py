@@ -17,7 +17,7 @@ from django_celery_results.admin import TaskResult, TaskResultAdmin
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
-from admin.admin_site import admin_site
+from apps.admin.admin_site import admin_site
 from core.constants.environments import Environments
 from core.fields import HistoricDateTimeField, JSONField
 from core.forms import HistoricDateWidget

@@ -1,4 +1,4 @@
-from admin import GenericTabularInline, TabularInline
+from apps.admin import GenericTabularInline, TabularInline
 from apps.sources import models
 from apps.sources.models import PolymorphicSource
 

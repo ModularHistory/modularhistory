@@ -1,4 +1,4 @@
-from admin import ModelAdmin, admin_site
+from apps.admin import ModelAdmin, admin_site
 from apps.sources import models
 
 

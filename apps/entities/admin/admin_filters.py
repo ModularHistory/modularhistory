@@ -2,7 +2,7 @@
 
 from django.urls import reverse
 
-from admin.list_filters import (
+from apps.admin.list_filters import (
     AutocompleteFilter,
     BooleanListFilter,
     ManyToManyAutocompleteFilter,

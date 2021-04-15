@@ -1,7 +1,7 @@
 from django.urls import path
 
-from admin import ModelAdmin, admin_site
-from admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
+from apps.admin import ModelAdmin, admin_site
+from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.topics import models
 from apps.topics.admin.topic_inlines import (
     ChildTopicsInline,
