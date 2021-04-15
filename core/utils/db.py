@@ -248,16 +248,11 @@ def seed(context: Context = CONTEXT, migrate: bool = False):
     print('Waiting for Postgres to finish recreating the database...')
     sleep(10)  # Give postgres time to recreate the database.
     if migrate:
-        context.run(
-            f'docker-compose run {django_container_name} python manage.py migrate'
-        )
-    context.run('docker-compose up -d dev')
+        context.run(f'docker-compose run django_helper python manage.py migrate')
     if input('Create superuser? [Y/n] ') != NEGATIVE:
-        print(f'Waiting for {django_container_name} container to be ready...')
         sleep(1)
         context.run(
-            f'docker-compose exec {django_container_name} '
-            'python manage.py createsuperuser',
+            'docker-compose run django_helper python manage.py createsuperuser',
             pty=True,
         )
 
