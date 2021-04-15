@@ -1,18 +1,24 @@
 #!/bin/bash
 
-# https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
-echo "Checking if migrations are required..."
-docker-compose run django_helper python manage.py makemigrations --check --no-input --dry-run &>/dev/null || {
-    echo "Migrations are required."; exit 1
-}
+# TODO: https://modularhistory.atlassian.net/browse/MH-189
+if true; then
+    # https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
+    echo "Checking if migrations are required..."
+    docker-compose run django_helper python manage.py makemigrations --check --no-input --dry-run &>/dev/null || {
+        echo "Migrations are required."; exit 1
+    }
+fi
 
-# Preprocess workflow YAML files.
-echo "Preprocessing workflow files..."
-docker-compose up github_workflow_preprocessor &>/dev/null || {
-    echo "Failed to pre-process workflow files."
-    echo "For more output, try running the following:"
-    echo "  docker-compose up github_workflow_preprocessor"
-}
-git diff --quiet .github/workflows || {
-    git add .github/workflows && git commit -m 'update workflow'
-}
+# TODO: https://modularhistory.atlassian.net/browse/MH-189
+if true; then
+    # Preprocess workflow YAML files.
+    echo "Preprocessing workflow files..."
+    docker-compose up github_workflow_preprocessor &>/dev/null || {
+        echo "Failed to pre-process workflow files."
+        echo "For more output, try running the following:"
+        echo "  docker-compose up github_workflow_preprocessor"
+    }
+    git diff --quiet .github/workflows || {
+        git add .github/workflows && git commit -m 'update workflow'
+    }
+fi
