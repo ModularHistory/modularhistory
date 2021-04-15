@@ -389,6 +389,7 @@ poetry install --no-root || {
   rm requirements.txt
   _error "Failed to install dependencies with Poetry."
 }
+docker-compose build django
 
 # Add container names to /etc/hosts.
 poetry run invoke setup.update-hosts
@@ -406,6 +407,7 @@ nvm --version &>/dev/null || {
 echo "Installing Node modules ..."
 npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
+docker-compose build react
 
 # Update ctags
 ctags -R -f .vscode/.tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" --exclude="**/libraries/**" &>/dev/null
@@ -507,7 +509,7 @@ docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker-compose up --build -d dev && echo 'Finished.' || {
+docker-compose up -d dev && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
