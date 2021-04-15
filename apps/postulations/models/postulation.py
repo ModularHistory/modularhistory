@@ -10,15 +10,15 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.verifications.models import VerifiableModel
-from modularhistory.fields import HTMLField
-from modularhistory.fields.html_field import (
+from core.fields import HTMLField
+from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from modularhistory.models.model import ModelSerializer
-from modularhistory.utils.html import escape_quotes
-from modularhistory.utils.string import dedupe_newlines, truncate
+from core.models.model import ModelSerializer
+from core.utils.html import escape_quotes
+from core.utils.string import dedupe_newlines, truncate
 
 fact_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>postulation)'

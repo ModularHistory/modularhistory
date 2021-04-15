@@ -3,7 +3,7 @@
 .gitignore
 
 # Media files
-/media/
+/_media/
 
 # Docker
 Dockerfile.*

@@ -39,7 +39,7 @@ services:
     env_file: .env
     environment:
       <<: *common-env-vars
-      DJANGO_SETTINGS_MODULE: "modularhistory.settings"
+      DJANGO_SETTINGS_MODULE: "core.settings"
     image: django:latest
     user: root
     volumes:

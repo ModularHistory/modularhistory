@@ -1,13 +1,11 @@
 import { Provider } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import {useRouter} from "next/router";
+import { useRouter } from "next/router";
 import React, { useEffect } from "react";
-
-import {PageTransitionContextProvider} from "../components/PageTransitionContext";
-
+import "../../core/static/styles/base.scss";
+import { PageTransitionContextProvider } from "../components/PageTransitionContext";
 import "../styles/globals.css";
-import "../../modularhistory/static/styles/base.scss";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -26,7 +24,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     // The next/Link component automatically handles page scrolling,
     // but router.push() does not. This event listener scrolls the page
     // any time router.push() is used.
-    const handle = () => window.scrollTo({top: 0, left: 0, behavior: "smooth"});
+    const handle = () => window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     router.events.on("routeChangeComplete", handle);
     return () => router.events.off("routerChangeComplete", handle);
   }, []);

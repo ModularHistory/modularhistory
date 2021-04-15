@@ -4,7 +4,7 @@ from django.contrib.admin import SimpleListFilter
 
 from apps.admin import GenericTabularInline
 from apps.topics.models import TopicRelation
-from modularhistory.constants.strings import NO, YES
+from core.constants.strings import NO, YES
 
 if TYPE_CHECKING:
     from apps.topics.models.taggable_model import TaggableModel
@@ -14,7 +14,7 @@ class RelatedTopicsInline(GenericTabularInline):
     """
     A generic inline for related topics.
 
-    Can be used by admins for models inheriting from modularhistory.models.TaggableModel.
+    Can be used by admins for models inheriting from core.models.TaggableModel.
     """
 
     model = TopicRelation

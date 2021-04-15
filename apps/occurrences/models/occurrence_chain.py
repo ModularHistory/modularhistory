@@ -4,8 +4,8 @@ from typing import List
 
 from django.db import models
 
-from modularhistory.fields import HTMLField
-from modularhistory.models import Model
+from core.fields import HTMLField
+from core.models import Model
 
 DESCRIPTION_MAX_LENGTH = 200
 

@@ -14,10 +14,10 @@ from django.conf import settings
 from dotenv import load_dotenv
 from requests import Session
 
-from modularhistory.constants.strings import NEGATIVE
-from modularhistory.utils import db as db_utils
-from modularhistory.utils import files as file_utils
-from modularhistory.utils import github as github_utils
+from core.constants.strings import NEGATIVE
+from core.utils import db as db_utils
+from core.utils import files as file_utils
+from core.utils import github as github_utils
 
 from .command import command
 

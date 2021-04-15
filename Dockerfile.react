@@ -10,8 +10,8 @@ ARG ENVIRONMENT=dev
 # Create required directories
 RUN mkdir -p -- \
   /modularhistory/modularhistory \
-  /modularhistory/.static \
-  /modularhistory/media \
+  /modularhistory/_static \
+  /modularhistory/_media \
   /modularhistory/frontend
 
 # Install project dependencies
@@ -21,7 +21,7 @@ RUN npm ci --cache .npm
 
 # Add source code
 COPY .env /modularhistory/.env
-COPY modularhistory/static /modularhistory/modularhistory/static
+COPY core/static /modularhistory/core/static
 COPY frontend /modularhistory/frontend
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 

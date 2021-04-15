@@ -2,7 +2,7 @@
 
 from django.contrib.admin import SimpleListFilter
 
-from modularhistory.constants.strings import NO, YES
+from core.constants.strings import NO, YES
 
 
 class BooleanListFilter(SimpleListFilter):

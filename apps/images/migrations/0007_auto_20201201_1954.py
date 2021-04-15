@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-import modularhistory.fields.historic_datetime_field
+import core.fields.historic_datetime_field
 
 
 class Migration(migrations.Migration):
@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='image',
             name='date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+            field=core.fields.historic_datetime_field.HistoricDateTimeField(
                 null=True, verbose_name='date'
             ),
         ),
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='video',
             name='date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+            field=core.fields.historic_datetime_field.HistoricDateTimeField(
                 null=True, verbose_name='date'
             ),
         ),

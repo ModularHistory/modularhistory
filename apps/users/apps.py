@@ -4,8 +4,8 @@ from django.apps import AppConfig
 from django.contrib.auth import get_user_model
 from django.core.checks import Warning, register
 
-from modularhistory.constants.environments import Environments
-from modularhistory.environment import ENVIRONMENT
+from core.constants.environments import Environments
+from core.environment import ENVIRONMENT
 
 
 def superuser_check(app_configs, **kwargs):

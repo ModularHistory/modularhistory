@@ -7,8 +7,8 @@ from django.utils.safestring import SafeString
 
 from apps.sources.models import PolymorphicSource
 from apps.sources.models.mixins.document import DocumentMixin
-from modularhistory.models import ModelWithComputations, retrieve_or_compute
-from modularhistory.utils.html import soupify
+from core.models import ModelWithComputations, retrieve_or_compute
+from core.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400

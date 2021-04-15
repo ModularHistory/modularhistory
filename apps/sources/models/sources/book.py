@@ -8,7 +8,7 @@ from humanize import ordinal
 
 from apps.sources.models import PolymorphicSource
 from apps.sources.models.mixins.textual import TextualMixin
-from modularhistory.constants.strings import EMPTY_STRING
+from core.constants.strings import EMPTY_STRING
 
 
 class PolymorphicBook(PolymorphicSource, TextualMixin):

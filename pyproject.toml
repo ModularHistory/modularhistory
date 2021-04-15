@@ -17,6 +17,7 @@ exclude = '''
       \.eggs
     | \.git
     | \.mypy_cache
+    | \.cache
     | \.venv
   )/
 )
@@ -200,7 +201,7 @@ Werkzeug = "^1.0.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra --ds='modularhistory.settings' --capture=no --ignore conftest.py -p no:cacheprovider --disable-warnings"
+addopts = "-ra --ds='core.settings' --capture=no --ignore conftest.py -p no:cacheprovider --disable-warnings"
 norecursedirs = ["*env", ".nox"]
 python_files = [
     "tests.py",

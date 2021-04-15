@@ -7,11 +7,11 @@ import django.db.models.deletion
 import gm2m.fields
 from django.db import migrations, models
 
-import modularhistory.fields
-import modularhistory.fields.file_field
-import modularhistory.fields.historic_datetime_field
-import modularhistory.fields.html_field
-import modularhistory.fields.json_field
+import core.fields
+import core.fields.file_field
+import core.fields.historic_datetime_field
+import core.fields.html_field
+import core.fields.json_field
 
 
 class Migration(migrations.Migration):
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
@@ -142,11 +142,11 @@ class Migration(migrations.Migration):
                 ('aliases', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'description',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
             ],
@@ -208,7 +208,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
@@ -250,35 +250,35 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'description',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
                 (
                     'date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
                 (
                     'publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
                 ('creators', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'extra',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -301,12 +301,12 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'file',
-                    modularhistory.fields.file_field.SourceFileField(
+                    core.fields.file_field.SourceFileField(
                         blank=True,
                         null=True,
                         unique=True,
                         upload_to=functools.partial(
-                            modularhistory.fields.file_field._generate_upload_path,
+                            core.fields.file_field._generate_upload_path,
                             *(),
                             **{'path': 'sources/'}
                         ),
@@ -542,7 +542,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),

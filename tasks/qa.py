@@ -5,11 +5,11 @@ from typing import Optional
 import django
 
 try:
-    from modularhistory.linters import flake8 as lint_with_flake8
-    from modularhistory.linters import mypy as lint_with_mypy
+    from core.linters import flake8 as lint_with_flake8
+    from core.linters import mypy as lint_with_mypy
 except ModuleNotFoundError:
     print('Skipped importing nonexistent linting modules.')
-from modularhistory.utils import qa
+from core.utils import qa
 
 from .command import command
 

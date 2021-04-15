@@ -3,8 +3,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.fields import HistoricDateTimeField, HTMLField
-from modularhistory.models import Model
+from core.fields import HistoricDateTimeField, HTMLField
+from core.models import Model
 
 MAX_NAME_LENGTH: int = 100
 

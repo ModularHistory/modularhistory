@@ -67,7 +67,7 @@ git --help &>/dev/null || {
 }
 
 # Update git hooks.
-for filepath in .config/hooks/*; do
+for filepath in config/hooks/*; do
   filename=$(basename "$filepath")
   cmp --silent ".git/hooks/$filename" "$filepath" || {
     cat "$filepath" > ".git/hooks/$filename"
@@ -222,7 +222,7 @@ elif [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Note: These are referenced multiple times in this script.
-writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
+writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/_media" "$PROJECT_DIR/_static" "$PROJECT_DIR/frontend/.next" )
 
 for writable_dir in "${writable_dirs[@]}"; do
   mkdir -p "$writable_dir" &>/dev/null
@@ -423,7 +423,7 @@ rclone version &>/dev/null || {
   echo "Cleaning up ..."
   rm -r .tmp
 }
-mkdir -p "$HOME/.config/rclone"
+mkdir -p "$HOME/config/rclone"
 
 # Disable THP so it doesn't cause issues for Redis containers.
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then

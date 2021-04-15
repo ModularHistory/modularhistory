@@ -7,7 +7,7 @@ from typing import Optional
 import django
 from decouple import config
 
-from modularhistory.constants.environments import Environments
+from core.constants.environments import Environments
 
 from .command import command
 
@@ -108,5 +108,5 @@ def generate_artifacts(context):
         normalize_plurals=False,
         regexp=r'\w[\w\' ]+',
     ).generate(text)
-    word_cloud.to_file(join(settings.BASE_DIR, '.static', '_topic_cloud.png'))
+    word_cloud.to_file(join(settings.BASE_DIR, '_static', '_topic_cloud.png'))
     print('Done.')

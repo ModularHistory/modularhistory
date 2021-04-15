@@ -8,7 +8,7 @@ from django.core.files import File
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.fields.file_field import upload_to
+from core.fields.file_field import upload_to
 
 AVATAR_QUALITY: int = 70
 AVATAR_WIDTH: int = 200

@@ -4,7 +4,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.topics.models import Topic
 from apps.topics.serializers import TopicDictSerializer, TopicSerializer
-from modularhistory.pagination import VariableSizePagination
+from core.pagination import VariableSizePagination
 
 
 class TopicViewSet(ModelViewSet):

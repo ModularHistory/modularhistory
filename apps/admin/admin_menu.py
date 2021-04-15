@@ -2,7 +2,7 @@
 ModularHistory's custom admin menu.
 
 This custom admin menu is activated by the following line in settings.py:
-    ADMIN_TOOLS_MENU = 'modularhistory.admin_menu.AdminMenu'
+    ADMIN_TOOLS_MENU = 'core.admin_menu.AdminMenu'
 """
 
 from typing import Iterable

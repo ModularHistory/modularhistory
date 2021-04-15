@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.models.model import Model
+from core.models.model import Model
 
 
 class ContentInteraction(Model):

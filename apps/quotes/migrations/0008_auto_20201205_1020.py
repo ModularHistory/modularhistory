@@ -2,8 +2,8 @@
 
 from django.db import migrations
 
-import modularhistory.fields
-import modularhistory.fields.html_field
+import core.fields
+import core.fields.html_field
 
 
 class Migration(migrations.Migration):
@@ -16,44 +16,44 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='quote',
             name='bite',
-            field=modularhistory.fields.HTMLField(
+            field=core.fields.HTMLField(
                 blank=True,
                 null=True,
                 paragraphed=None,
-                processor=modularhistory.fields.html_field.process,
+                processor=core.fields.html_field.process,
                 verbose_name='bite',
             ),
         ),
         migrations.AlterField(
             model_name='quote',
             name='context',
-            field=modularhistory.fields.HTMLField(
+            field=core.fields.HTMLField(
                 blank=True,
                 help_text='Content to be displayed after the quote',
                 null=True,
                 paragraphed=True,
-                processor=modularhistory.fields.html_field.process,
+                processor=core.fields.html_field.process,
                 verbose_name='context',
             ),
         ),
         migrations.AlterField(
             model_name='quote',
             name='pretext',
-            field=modularhistory.fields.HTMLField(
+            field=core.fields.HTMLField(
                 blank=True,
                 help_text='Content to be displayed before the quote',
                 null=True,
                 paragraphed=False,
-                processor=modularhistory.fields.html_field.process,
+                processor=core.fields.html_field.process,
                 verbose_name='pretext',
             ),
         ),
         migrations.AlterField(
             model_name='quote',
             name='text',
-            field=modularhistory.fields.HTMLField(
+            field=core.fields.HTMLField(
                 paragraphed=True,
-                processor=modularhistory.fields.html_field.process,
+                processor=core.fields.html_field.process,
                 verbose_name='text',
             ),
         ),

@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import QuerySet
 
-from modularhistory.models.manager import Manager
+from core.models.manager import Manager
 
 
 class SearchableModelQuerySet(QuerySet):

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import serpy
 
-from modularhistory.models.model import ModelSerializer
+from core.models.model import ModelSerializer
 
 if TYPE_CHECKING:
     from apps.entities.models import Entity

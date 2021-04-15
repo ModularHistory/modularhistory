@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from django.views.decorators.csrf import csrf_protect
 
 from apps.staticpages.models import StaticPage
-from modularhistory.constants.strings import SLASH
+from core.constants.strings import SLASH
 
 DEFAULT_TEMPLATE = 'staticpages/default.html'
 

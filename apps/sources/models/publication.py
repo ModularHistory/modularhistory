@@ -5,9 +5,9 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
-from modularhistory.fields import HTMLField
-from modularhistory.models import Model
-from modularhistory.utils.html import soupify
+from core.fields import HTMLField
+from core.models import Model
+from core.utils.html import soupify
 
 PUBLICATION_TYPES = (
     ('journal', 'Journal'),

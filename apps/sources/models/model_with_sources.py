@@ -7,9 +7,9 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.fields import HTMLField
-from modularhistory.models import Model, retrieve_or_compute
+from core.constants.strings import EMPTY_STRING
+from core.fields import HTMLField
+from core.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager

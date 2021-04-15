@@ -2,8 +2,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from modularhistory.models.positioned_relation import PositionedRelation
-from modularhistory.utils.html import soupify
+from core.models.positioned_relation import PositionedRelation
+from core.utils.html import soupify
 
 
 class QuoteRelation(PositionedRelation):

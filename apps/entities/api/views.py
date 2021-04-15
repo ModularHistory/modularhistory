@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.entities.models import Entity
 from apps.entities.serializers import EntityPartialDictSerializer, EntitySerializer
-from modularhistory.pagination import VariableSizePagination
+from core.pagination import VariableSizePagination
 
 
 class EntityViewSet(ModelViewSet):

@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 
 from django.db.models import QuerySet
 
-from modularhistory.models import Model
-from modularhistory.models.model_with_computations import retrieve_or_compute
+from core.models import Model
+from core.models.model_with_computations import retrieve_or_compute
 
 if TYPE_CHECKING:
     from apps.entities.models import Entity

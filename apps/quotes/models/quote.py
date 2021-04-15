@@ -18,16 +18,16 @@ from apps.quotes.models.quote_image import QuoteImage
 from apps.quotes.serializers import QuoteSerializer
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
-from modularhistory.constants.content_types import ContentTypes, get_ct_id
-from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.fields import HistoricDateTimeField, HTMLField
-from modularhistory.fields.html_field import (
+from core.constants.content_types import ContentTypes, get_ct_id
+from core.constants.strings import EMPTY_STRING
+from core.fields import HistoricDateTimeField, HTMLField
+from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from modularhistory.models import retrieve_or_compute
-from modularhistory.utils.html import soupify
+from core.models import retrieve_or_compute
+from core.utils.html import soupify
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

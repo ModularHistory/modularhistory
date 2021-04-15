@@ -6,8 +6,8 @@ from pprint import pprint
 
 import django
 
-from modularhistory.constants.environments import Environments
-from modularhistory.utils import media
+from core.constants.environments import Environments
+from core.utils import media
 
 from .command import command
 
@@ -37,7 +37,7 @@ def get_backup(context, env: str = Environments.DEV):
     """Seed latest media backup from remote storage."""
     context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
 
-    from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
+    from core.storage.mega_storage import mega_clients  # noqa: E402
 
     mega_client = mega_clients[env]
     pprint(mega_client.get_user())

@@ -6,8 +6,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.fields import HistoricDateTimeField
-from modularhistory.models import Model
+from core.fields import HistoricDateTimeField
+from core.models import Model
 
 CONTENT_TYPE_OPTIONS: List[Tuple[str, str]] = [
     ('occurrences.occurrence', 'Occurrences'),

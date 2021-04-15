@@ -3,7 +3,7 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import modularhistory.fields.array_field
+import core.fields.array_field
 
 
 class Migration(migrations.Migration):
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='topic',
             name='aliases',
-            field=modularhistory.fields.array_field.ArrayField(
+            field=core.fields.array_field.ArrayField(
                 base_field=models.CharField(max_length=100),
                 blank=True,
                 null=True,

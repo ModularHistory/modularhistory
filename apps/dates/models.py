@@ -5,11 +5,11 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.fields import HistoricDateTimeField
-from modularhistory.models.model import Model
-from modularhistory.models.model_with_computations import retrieve_or_compute
-from modularhistory.structures import HistoricDateTime
-from modularhistory.utils.html import soupify
+from core.fields import HistoricDateTimeField
+from core.models.model import Model
+from core.models.model_with_computations import retrieve_or_compute
+from core.structures import HistoricDateTime
+from core.utils.html import soupify
 
 CIRCA_PREFIX = 'c. '
 
