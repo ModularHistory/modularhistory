@@ -8,7 +8,7 @@ from core.utils import db, media
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
-app = Celery('modularhistory')
+app = Celery('core')
 
 # Using a string for the config object means the worker doesn't have to serialize
 # the configuration object to child processes. Setting the namespace to 'CELERY'

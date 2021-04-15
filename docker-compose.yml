@@ -43,7 +43,7 @@ services:
     env_file: .env
     environment: *common-env-vars
     healthcheck:
-      test: celery -A modularhistory inspect ping -d celery@$$HOSTNAME
+      test: celery -A core inspect ping -d celery@$$HOSTNAME
       timeout: 30s
       interval: 20s
       retries: 3
