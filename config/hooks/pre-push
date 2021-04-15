@@ -1,5 +1,7 @@
 #!/bin/bash
 
+committed_filepaths=$(git diff --stat --name-only origin/main)
+
 # https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
 echo "Checking if migrations are required..."
 docker-compose run django_helper python manage.py makemigrations --check --no-input --dry-run &>/dev/null || {
