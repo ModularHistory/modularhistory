@@ -1,6 +1,6 @@
 from typing import List
 
-from admin import GenericTabularInline
+from apps.admin import GenericTabularInline
 from apps.quotes import models
 
 

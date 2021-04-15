@@ -1,6 +1,6 @@
 from django.contrib.admin import SimpleListFilter
 
-from admin.model_admin import ModelAdmin, admin_site
+from apps.admin.model_admin import ModelAdmin, admin_site
 from apps.sources import models
 from apps.sources.admin.sources import SourcesInline
 from modularhistory.constants.strings import NO, YES

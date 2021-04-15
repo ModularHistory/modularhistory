@@ -1,4 +1,4 @@
-from admin.model_admin import ModelAdmin, admin_site
+from apps.admin.model_admin import ModelAdmin, admin_site
 from apps.entities import models
 
 CATEGORY_NAME_FIELD = 'name'

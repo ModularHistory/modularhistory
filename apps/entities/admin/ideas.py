@@ -1,4 +1,4 @@
-from admin.model_admin import ModelAdmin, admin_site
+from apps.admin.model_admin import ModelAdmin, admin_site
 from apps.entities import models
 from apps.entities.forms import IdeaForm
 

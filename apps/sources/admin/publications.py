@@ -1,4 +1,4 @@
-from admin import ModelAdmin, StackedInline, admin_site
+from apps.admin import ModelAdmin, StackedInline, admin_site
 from apps.sources import models
 
 

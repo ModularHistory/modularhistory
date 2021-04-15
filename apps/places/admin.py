@@ -1,5 +1,5 @@
-from admin import ModelAdmin, TabularInline, admin_site
-from admin.list_filters import AutocompleteFilter
+from apps.admin import ModelAdmin, TabularInline, admin_site
+from apps.admin.list_filters import AutocompleteFilter
 from apps.places import models
 from apps.places.forms import PlaceForm
 

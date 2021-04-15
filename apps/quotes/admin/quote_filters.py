@@ -7,7 +7,7 @@ from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 
-from admin.list_filters.autocomplete_filter import (
+from apps.admin.list_filters.autocomplete_filter import (
     BaseAutocompleteFilter,
     ManyToManyAutocompleteFilter,
 )

@@ -1,6 +1,6 @@
 from image_cropping import ImageCroppingMixin
 
-from admin import ModelAdmin, TabularInline, admin_site
+from apps.admin import ModelAdmin, TabularInline, admin_site
 from apps.entities.models import EntityImage
 from apps.images.models import Image, Video
 from apps.occurrences.models import OccurrenceImage

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Optional
 
 from django.contrib.admin import SimpleListFilter
 
-from admin import GenericTabularInline
+from apps.admin import GenericTabularInline
 from apps.topics.models import TopicRelation
 from modularhistory.constants.strings import NO, YES
 

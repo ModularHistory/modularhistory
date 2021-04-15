@@ -1,4 +1,4 @@
-from admin import ModelAdmin, TabularInline, admin_site
+from apps.admin import ModelAdmin, TabularInline, admin_site
 from apps.entities import models
 
 

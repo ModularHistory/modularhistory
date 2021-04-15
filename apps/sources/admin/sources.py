@@ -1,6 +1,6 @@
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
-from admin import TabularInline, admin_site
+from apps.admin import TabularInline, admin_site
 from apps.search.admin import SearchableModelAdmin
 from apps.sources import models
 from apps.sources.admin.inlines import (

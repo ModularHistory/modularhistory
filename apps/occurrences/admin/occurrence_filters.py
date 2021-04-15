@@ -1,7 +1,7 @@
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count, Q
 
-from admin.list_filters import AutocompleteFilter
+from apps.admin.list_filters import AutocompleteFilter
 from modularhistory.constants.strings import NO, YES
 
 

@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
+from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.topics.models import Topic
 from modularhistory.models.model import Model
 from modularhistory.models.model_with_computations import retrieve_or_compute

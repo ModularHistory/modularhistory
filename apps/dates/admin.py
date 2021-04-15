@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Type
 
-from admin.model_admin import ModelAdmin
+from apps.admin.model_admin import ModelAdmin
 
 if TYPE_CHECKING:
     from apps.dates.models import DatedModel

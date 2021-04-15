@@ -3,7 +3,7 @@ from django.contrib.flatpages.admin import FlatPageAdmin, FlatpageForm
 from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
 
-from admin.model_admin import admin_site
+from apps.admin.model_admin import admin_site
 from apps.staticpages.models import StaticPage
 
 

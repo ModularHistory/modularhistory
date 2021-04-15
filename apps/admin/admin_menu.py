@@ -12,7 +12,7 @@ from django.apps import apps
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from admin.admin_site import admin_site
+from apps.admin.admin_site import admin_site
 
 APPS_TO_INCLUDE = (
     'entities',
