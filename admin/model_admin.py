@@ -18,11 +18,11 @@ from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
 from admin.admin_site import admin_site
-from modularhistory.constants.environments import Environments
-from modularhistory.fields import HistoricDateTimeField, JSONField
-from modularhistory.forms import HistoricDateWidget
-from modularhistory.models import Model
-from modularhistory.widgets.json_editor_widget import JSONEditorWidget
+from core.constants.environments import Environments
+from core.fields import HistoricDateTimeField, JSONField
+from core.forms import HistoricDateWidget
+from core.models import Model
+from core.widgets.json_editor_widget import JSONEditorWidget
 
 AdminListFilter = Union[str, Type[ListFilter]]
 

@@ -5,7 +5,7 @@ from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 
 from apps.sources.serializers import ContainmentSerializer
-from modularhistory.models.positioned_relation import PositionedRelation
+from core.models.positioned_relation import PositionedRelation
 
 PHRASE_MAX_LENGTH: int = 12
 CONTAINMENT_PHRASES = (

@@ -6,7 +6,7 @@ from django.http import HttpRequest
 # TODO: this causes memory issue?
 ENABLE_AUTOCOMPLETE = False
 if ENABLE_AUTOCOMPLETE:
-    from modularhistory.constants.topics import TOPICS
+    from core.constants.topics import TOPICS
 
     AUTOCOMPLETE_CHOICES = [(topic, topic) for topic in TOPICS]
 

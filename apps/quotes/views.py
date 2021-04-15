@@ -7,7 +7,7 @@ from meta.views import Meta
 
 from apps.quotes.models import Quote
 from apps.search.forms import SearchForm
-from modularhistory.constants.content_types import ContentTypes
+from core.constants.content_types import ContentTypes
 
 
 class ListView(generic.list.ListView):

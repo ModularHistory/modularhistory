@@ -12,25 +12,18 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.sources.serializers import CitationSerializer
-from modularhistory.constants.content_types import ContentTypes, get_ct_id
-from modularhistory.fields import HistoricDateTimeField, HTMLField, JSONField
-from modularhistory.fields.html_field import (
+from core.constants.content_types import ContentTypes, get_ct_id
+from core.fields import HistoricDateTimeField, HTMLField, JSONField
+from core.fields.html_field import (
     APPENDAGE_GROUP,
     END_PATTERN,
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
 )
-from modularhistory.fields.html_field import (
-    PlaceholderGroups as DefaultPlaceholderGroups,
-)
-from modularhistory.models.positioned_relation import PositionedRelation
-from modularhistory.utils import pdf
-from modularhistory.utils.html import (
-    components_to_html,
-    compose_link,
-    escape_quotes,
-    soupify,
-)
+from core.fields.html_field import PlaceholderGroups as DefaultPlaceholderGroups
+from core.models.positioned_relation import PositionedRelation
+from core.utils import pdf
+from core.utils.html import components_to_html, compose_link, escape_quotes, soupify
 
 if TYPE_CHECKING:
     pass

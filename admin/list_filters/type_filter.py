@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Type
 from django.contrib.admin import SimpleListFilter
 
 if TYPE_CHECKING:
-    from modularhistory.models import TypedModel
+    from core.models import TypedModel
 
 
 class TypeFilter(SimpleListFilter):

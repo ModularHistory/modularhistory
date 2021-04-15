@@ -4,7 +4,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-import modularhistory.fields.historic_datetime_field
+import core.fields.historic_datetime_field
 
 
 class Migration(migrations.Migration):
@@ -38,13 +38,13 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'start_year',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
                 (
                     'end_year',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),

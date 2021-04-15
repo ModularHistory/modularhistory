@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.search.templatetags.highlight import highlight
-from modularhistory.models import Model
+from core.models import Model
 
 register = Library()
 

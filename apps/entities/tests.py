@@ -4,7 +4,7 @@ import pytest
 from django.test import Client
 from django.urls import reverse
 
-from modularhistory.tests import TestSuite
+from core.tests import TestSuite
 
 
 @pytest.mark.django_db

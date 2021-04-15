@@ -2,7 +2,7 @@ from typing import Optional
 
 from django.db import models
 
-from modularhistory.fields import HistoricDateTimeField
+from core.fields import HistoricDateTimeField
 
 
 class TextualMixin(models.Model):

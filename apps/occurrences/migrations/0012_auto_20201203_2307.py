@@ -2,8 +2,8 @@
 
 from django.db import migrations
 
-import modularhistory.fields
-import modularhistory.fields.html_field
+import core.fields
+import core.fields.html_field
 
 
 class Migration(migrations.Migration):
@@ -16,18 +16,18 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='description',
-            field=modularhistory.fields.HTMLField(
+            field=core.fields.HTMLField(
                 paragraphed=True,
-                processor=modularhistory.fields.html_field.process,
+                processor=core.fields.html_field.process,
                 verbose_name='description',
             ),
         ),
         migrations.AlterField(
             model_name='occurrence',
             name='summary',
-            field=modularhistory.fields.HTMLField(
+            field=core.fields.HTMLField(
                 paragraphed=False,
-                processor=modularhistory.fields.html_field.process,
+                processor=core.fields.html_field.process,
                 verbose_name='summary',
             ),
         ),

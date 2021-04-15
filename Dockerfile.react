@@ -10,7 +10,7 @@ ARG ENVIRONMENT=dev
 # Create required directories
 RUN mkdir -p -- \
   /modularhistory/modularhistory \
-  /modularhistory/.static \
+  /modularhistory/_static \
   /modularhistory/media \
   /modularhistory/frontend
 

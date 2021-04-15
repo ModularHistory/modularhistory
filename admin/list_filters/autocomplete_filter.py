@@ -10,7 +10,7 @@ from django.utils.html import format_html
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 
-from modularhistory.models import Model
+from core.models import Model
 
 
 class AutocompleteFilter(BaseAutocompleteFilter):

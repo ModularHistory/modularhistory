@@ -6,10 +6,10 @@ import autoslug.fields
 import django.db.models.deletion
 from django.db import migrations, models
 
-import modularhistory.fields
-import modularhistory.fields.historic_datetime_field
-import modularhistory.fields.html_field
-import modularhistory.fields.json_field
+import core.fields
+import core.fields.historic_datetime_field
+import core.fields.html_field
+import core.fields.json_field
 
 
 class Migration(migrations.Migration):
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
                 ('citation_html', models.TextField(blank=True)),
                 (
                     'date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -104,11 +104,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'description',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
                 (
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -201,11 +201,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'description',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                         verbose_name='description',
                     ),
                 ),
@@ -223,7 +223,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='citation',
             name='pages',
-            field=modularhistory.fields.json_field.JSONField(default=list),
+            field=core.fields.json_field.JSONField(default=list),
         ),
         migrations.AlterField(
             model_name='source',
@@ -280,7 +280,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -470,7 +470,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -554,7 +554,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -609,7 +609,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -654,7 +654,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -742,7 +742,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -845,7 +845,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -900,7 +900,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),

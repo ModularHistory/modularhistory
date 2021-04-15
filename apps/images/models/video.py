@@ -2,7 +2,7 @@ import pafy
 from django.core.exceptions import ValidationError
 from django.db import models
 
-# from modularhistory.settings import mega  # TODO
+# from core.settings import mega  # TODO
 from apps.images.models.media_model import MediaModel
 
 TITLE_MAX_LENGTH: int = 200

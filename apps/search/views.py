@@ -21,9 +21,9 @@ from apps.search.forms import SearchForm
 from apps.search.models import SearchableDatedModel
 from apps.sources.models import PolymorphicSource
 from apps.topics.models import Topic
-from modularhistory.constants.content_types import ContentTypes, get_ct_id
-from modularhistory.models import Model
-from modularhistory.structures.historic_datetime import HistoricDateTime
+from core.constants.content_types import ContentTypes, get_ct_id
+from core.models import Model
+from core.structures.historic_datetime import HistoricDateTime
 
 QUERY_KEY = 'query'
 N_RESULTS_PER_PAGE = 10

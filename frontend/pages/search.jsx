@@ -1,18 +1,14 @@
-import qs from "qs";
+import { Container, Drawer } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 import axios from "axios";
-
-import Layout from "../components/Layout";
-import Pagination from "../components/Pagination";
-
 import { useRouter } from "next/router";
-import { useState, useEffect, useCallback } from "react";
-
+import qs from "qs";
+import { useCallback, useEffect, useState } from "react";
+import Layout from "../components/Layout";
 import ModuleCard from "../components/modulecards/ModuleCard";
 import ModuleDetail from "../components/moduledetails/ModuleDetail";
+import Pagination from "../components/Pagination";
 import SearchForm from "../components/search/SearchForm";
-
-import { Drawer, Grid, Container, Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 
 function useTwoPaneState(...args) {
   // This hook is used to track which card in the left pane
@@ -107,7 +103,7 @@ export default function Search({ searchResults }) {
     );
   }
 
-  // This was mostly copied from `modularhistory/templates/list.html`
+  // This was mostly copied from `modularhistory/core/templates/list.html`
   // Commented blocks are retained to show what was not converted.
   return (
     <Layout title={title}>

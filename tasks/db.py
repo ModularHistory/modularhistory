@@ -11,8 +11,8 @@ from decouple import config
 from paramiko import SSHClient
 from scp import SCPClient
 
-from modularhistory.constants.environments import Environments
-from modularhistory.utils import db
+from core.constants.environments import Environments
+from core.utils import db
 
 from .command import command
 
@@ -61,7 +61,7 @@ def get_backup(context, env: str = Environments.DEV):
         print(latest_backup)
         context.run(f'cp {latest_backup} {settings.DB_INIT_FILEPATH}')
     else:
-        from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
+        from core.storage.mega_storage import mega_clients  # noqa: E402
 
         mega_client = mega_clients[env]
         pprint(mega_client.get_user())

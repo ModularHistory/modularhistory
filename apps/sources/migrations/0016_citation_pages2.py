@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-import modularhistory.fields.json_field
+import core.fields.json_field
 
 
 class Migration(migrations.Migration):
@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='citation',
             name='pages2',
-            field=modularhistory.fields.json_field.JSONField(default=dict),
+            field=core.fields.json_field.JSONField(default=dict),
         ),
     ]

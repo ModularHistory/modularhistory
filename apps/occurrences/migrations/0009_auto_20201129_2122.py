@@ -2,9 +2,9 @@
 
 from django.db import migrations
 
-import modularhistory.fields
-import modularhistory.fields.historic_datetime_field
-import modularhistory.fields.html_field
+import core.fields
+import core.fields.historic_datetime_field
+import core.fields.html_field
 
 
 class Migration(migrations.Migration):
@@ -17,17 +17,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='date',
-            field=modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+            field=core.fields.historic_datetime_field.HistoricDateTimeField(
                 blank=True, null=True, verbose_name='Date'
             ),
         ),
         migrations.AlterField(
             model_name='occurrence',
             name='description',
-            field=modularhistory.fields.HTMLField(
+            field=core.fields.HTMLField(
                 default='...',
                 paragraphed=True,
-                processor=modularhistory.fields.html_field.process,
+                processor=core.fields.html_field.process,
                 verbose_name='Description',
             ),
             preserve_default=False,

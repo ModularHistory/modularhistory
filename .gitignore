@@ -25,9 +25,8 @@ artifacts/
 *.prior
 
 # Django
-/media/
-/static/
-/.static/
+/_media/
+/_static/
 *.log
 *.pot
 *.pyc

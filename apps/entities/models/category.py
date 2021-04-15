@@ -6,8 +6,8 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.fields import ArrayField, HistoricDateTimeField
-from modularhistory.models import Model
+from core.fields import ArrayField, HistoricDateTimeField
+from core.models import Model
 
 NAME_MAX_LENGTH: int = 100
 

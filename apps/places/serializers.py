@@ -3,7 +3,7 @@
 
 import serpy
 
-from modularhistory.models.model import ModelSerializer
+from core.models.model import ModelSerializer
 
 
 class PlaceSerializer(ModelSerializer):

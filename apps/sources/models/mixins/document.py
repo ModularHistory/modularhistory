@@ -3,8 +3,8 @@
 from django.db import models
 
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
-from modularhistory.models import ModelWithComputations, retrieve_or_compute
-from modularhistory.utils.html import soupify
+from core.models import ModelWithComputations, retrieve_or_compute
+from core.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400

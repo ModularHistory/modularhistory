@@ -12,9 +12,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
-from modularhistory.models.model import ModelSerializer
-from modularhistory.models.model_with_computations import ModelWithComputations
-from modularhistory.models.slugged_model import SluggedModel
+from core.models.model import ModelSerializer
+from core.models.model_with_computations import ModelWithComputations
+from core.models.slugged_model import SluggedModel
 
 if TYPE_CHECKING:
     from apps.search.models.manager import SearchableModelManager

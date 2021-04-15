@@ -6,10 +6,10 @@ import django.db.models.deletion
 import gm2m.fields
 from django.db import migrations, models
 
-import modularhistory.fields
-import modularhistory.fields.historic_datetime_field
-import modularhistory.fields.html_field
-import modularhistory.fields.json_field
+import core.fields
+import core.fields.historic_datetime_field
+import core.fields.html_field
+import core.fields.json_field
 
 
 class Migration(migrations.Migration):
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
@@ -60,47 +60,47 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'text',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                         verbose_name='Text',
                     ),
                 ),
                 (
                     'bite',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=None,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                         verbose_name='Bite',
                     ),
                 ),
                 (
                     'pretext',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         help_text='Content to be displayed before the quote',
                         null=True,
                         paragraphed=False,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                         verbose_name='Pretext',
                     ),
                 ),
                 (
                     'context',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         help_text='Content to be displayed after the quote',
                         null=True,
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                         verbose_name='Context',
                     ),
                 ),
                 (
                     'date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         null=True
                     ),
                 ),

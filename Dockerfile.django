@@ -49,7 +49,7 @@ RUN if [ "$ENVIRONMENT" = "dev" ] ; then poetry install --no-interaction --no-an
 
 # Create required directories.
 RUN mkdir -p -- \
-  /modularhistory/.static \
+  /modularhistory/_static \
   /modularhistory/media \
   /modularhistory/.backups \
   /modularhistory/.init \
@@ -65,7 +65,7 @@ RUN python manage.py collectstatic --no-input
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/media && \
-  chmod g+w -R /modularhistory/.static && \
+  chmod g+w -R /modularhistory/_static && \
   chmod g+w -R /modularhistory/.backups && \
   chmod g+w -R /modularhistory/.init && \
   chmod +x /usr/local/bin/wait-for-it.sh

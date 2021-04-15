@@ -3,7 +3,7 @@ import os
 
 from invoke import Collection
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'modularhistory.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
 from . import db, media, qa, scm, setup, tasks  # noqa: E402
 

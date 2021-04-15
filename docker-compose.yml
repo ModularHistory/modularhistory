@@ -25,14 +25,14 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./.config/nginx/dev:/etc/nginx/conf.d
+      - ./config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
     networks:
       default:
         ipv4_address: 172.27.0.5
 
   celery:
-    command: bash .config/init/celery.sh
+    command: bash config/init/celery.sh
     depends_on:
       - django
       - redis
@@ -56,11 +56,11 @@ services:
     volumes:
       - ./.backups:/modularhistory/.backups
       - ./.init:/modularhistory/.init
-      - ./.static:/modularhistory/.static
-      - ./media:/modularhistory/media
+      - ./_static:/modularhistory/_static
+      - ./_media:/modularhistory/_media
 
   celery_beat:
-    command: bash .config/init/celery_beat.sh
+    command: bash config/init/celery_beat.sh
     depends_on:
       - celery
       - django
@@ -77,7 +77,7 @@ services:
         ipv4_address: 172.27.0.12
 
   django:
-    command: bash .config/init/django.sh
+    command: bash config/init/django.sh
     depends_on:
       - postgres
       - redis
@@ -87,7 +87,7 @@ services:
     env_file: .env
     environment:
       <<: *common-env-vars
-      DJANGO_SETTINGS_MODULE: "modularhistory.settings"
+      DJANGO_SETTINGS_MODULE: "core.settings"
     healthcheck:
       test:
         [
@@ -114,11 +114,11 @@ services:
       #     sudo chown -R www-data:www-data .backups && sudo chmod g+w -R .backups
       - ./.backups:/modularhistory/.backups
       - ./.init:/modularhistory/.init
-      - ./.static:/modularhistory/.static
+      - ./_static:/modularhistory/_static
       - ./media:/modularhistory/media
 
   flower:
-    command: bash .config/init/flower.sh
+    command: bash config/init/flower.sh
     depends_on:
       - celery
       - celery_beat

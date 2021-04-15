@@ -3,7 +3,7 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import modularhistory.fields.json_field
+import core.fields.json_field
 
 
 class Migration(migrations.Migration):
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
