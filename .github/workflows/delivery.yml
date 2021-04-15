@@ -169,7 +169,7 @@ jobs:
           docker image prune -a -f
           docker system prune -f
           [ -f nginx.conf.sha ] || touch nginx.conf.sha
-          if ! cat nginx.conf.sha | grep "$(shasum nginx.conf)" > /dev/null; then echo "" && echo "Updating Nginx config..." && lxc file push nginx.conf webserver/etc/nginx/sites-available/default && echo "" && echo "Restarting Nginx server..." && lxc exec webserver -- service nginx restart; fi
+          if ! cat nginx.conf.sha | grep "$(shasum nginx.conf)" > /dev/null; then echo "" && echo "Updating Nginx config..." && lxc file push nginx.conf webserver/etc/nginx/sites-available/default && echo "" && echo "Restarting Nginx server..." && lxc exec webserver -- service nginx reload; fi
           shasum nginx.conf > nginx.conf.sha
           echo "" && echo "Done."
         ENDSSH
