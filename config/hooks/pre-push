@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# TODO: https://modularhistory.atlassian.net/browse/MH-189
+# TODO: Only run this check if models have been updated.
+# https://modularhistory.atlassian.net/browse/MH-189
 if true; then
     # https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
     echo "Checking if migrations are required..."
@@ -9,7 +10,8 @@ if true; then
     }
 fi
 
-# TODO: https://modularhistory.atlassian.net/browse/MH-189
+# TODO: Only preprocess workflow files if they have been modified.
+# https://modularhistory.atlassian.net/browse/MH-189
 if true; then
     # Preprocess workflow YAML files.
     echo "Preprocessing workflow files..."
