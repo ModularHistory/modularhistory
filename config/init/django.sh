@@ -30,7 +30,7 @@ python manage.py collectstatic --no-input || {
 }
 
 if [ "$ENVIRONMENT" = prod ]; then
-    gunicorn modularhistory.asgi:application \
+    gunicorn core.asgi:application \
       --user www-data --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker \
       --workers 9 --max-requests 100 --max-requests-jitter 50
 else
