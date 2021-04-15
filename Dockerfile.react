@@ -11,7 +11,7 @@ ARG ENVIRONMENT=dev
 RUN mkdir -p -- \
   /modularhistory/modularhistory \
   /modularhistory/_static \
-  /modularhistory/media \
+  /modularhistory/_media \
   /modularhistory/frontend
 
 # Install project dependencies

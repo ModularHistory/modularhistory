@@ -115,7 +115,7 @@ services:
       - ./.backups:/modularhistory/.backups
       - ./.init:/modularhistory/.init
       - ./_static:/modularhistory/_static
-      - ./media:/modularhistory/media
+      - ./_media:/modularhistory/_media
 
   flower:
     command: bash config/init/flower.sh
