@@ -164,11 +164,11 @@ def seed(
 def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
     with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
-        required_hosts = [host for host in hosts_file.readlines() if host]
+        required_hosts = [host for host in hosts_file.read().splitlines() if host]
     print(f'Reading {HOSTS_FILEPATH} ...')
     with open(HOSTS_FILEPATH, 'r') as hosts_file:
-        hosts = hosts_file.read()
-    hosts_to_write = [host for host in required_hosts if host not in hosts]
+        extant_hosts = hosts_file.read()
+    hosts_to_write = [host for host in required_hosts if host not in extant_hosts]
     if hosts_to_write:
         print(f'Updating {HOSTS_FILEPATH} ...')
         for host in hosts_to_write:
