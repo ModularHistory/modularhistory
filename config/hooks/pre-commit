@@ -5,9 +5,11 @@ staged_files=$(git diff --name-only --staged)
 echo "Autoformatting code..."
 
 # Autoformat Python code.
-poetry --help &>/dev/null && [[ -d ".venv" ]] && {
-    comma_delimited_filepaths=$(echo staged_files | tr '\n' ',')
-    poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
+echo "$staged_files" | grep --quiet ".py" && {
+    poetry --help &>/dev/null && [[ -d ".venv" ]] && {
+        comma_delimited_filepaths=$(echo staged_files | grep ".py" | tr '\n' ',')
+        poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
+    }
 }
 
 # Autoformat JS & TS code.
