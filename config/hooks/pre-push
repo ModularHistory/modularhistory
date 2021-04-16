@@ -1,6 +1,6 @@
 #!/bin/bash
 
-committed_filepaths=$(git diff --stat --name-only origin/main)
+committed_filepaths="$(git diff --stat --name-only origin/main)"
 
 # If any model files have been modified, check if migrations are required.
 echo "$committed_filepaths" | grep --quiet "models" && {
@@ -23,3 +23,5 @@ echo "$committed_filepaths" | grep --quiet ".github/" && {
         git add .github/workflows && git commit -m 'update workflow'
     }
 }
+
+echo "Finished pre-push tasks."
