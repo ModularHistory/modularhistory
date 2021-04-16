@@ -151,7 +151,7 @@ jobs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.2
+      uses: snok/install-poetry@v1.1.3
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -234,7 +234,7 @@ jobs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.2
+      uses: snok/install-poetry@v1.1.3
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
