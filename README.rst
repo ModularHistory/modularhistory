@@ -46,9 +46,3 @@ You can support ModularHistory through
 `Patreon <https://www.patreon.com/modularhistory>`__.
 
 --------------
-
-License
--------
-
-ModularHistory has an `ISC
-License <https://github.com/ModularHistory/modularhistory/blob/main/LICENSE.txt>`__.
