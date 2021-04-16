@@ -697,7 +697,7 @@ class Migration(migrations.Migration):
                 editable=False,
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name='sources.source_set+',
+                related_name='polymorphic_sources.source_set+',
                 to='contenttypes.contenttype',
             ),
         ),
