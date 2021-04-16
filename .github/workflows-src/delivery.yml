@@ -16,6 +16,7 @@ on:
       - '**.txt'
       - 'tests.py'
       - 'setup.sh'
+      - 'config/hooks/**'
 
 env:
   ENVIRONMENT: prod
