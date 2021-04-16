@@ -1,19 +1,18 @@
 #!/bin/bash
 
-# TODO: Only run this check if models have been updated.
-# https://modularhistory.atlassian.net/browse/MH-189
-if true; then
+committed_filepaths=$(git diff --stat --name-only origin/main)
+
+# If any model files have been modified, check if migrations are required.
+echo "$committed_filepaths" | grep --quiet "models" && {
     # https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
     echo "Checking if migrations are required..."
     docker-compose run django_helper python manage.py makemigrations --check --no-input --dry-run &>/dev/null || {
         echo "Migrations are required."; exit 1
     }
-fi
+}
 
-# TODO: Only preprocess workflow files if they have been modified.
-# https://modularhistory.atlassian.net/browse/MH-189
-if true; then
-    # Preprocess workflow YAML files.
+# If workflow YAML files (for CI) have been modified, preprocess the files.
+echo "$committed_filepaths" | grep --quiet ".github/" && {
     echo "Preprocessing workflow files..."
     docker-compose up github_workflow_preprocessor &>/dev/null || {
         echo "Failed to pre-process workflow files."
@@ -23,4 +22,4 @@ if true; then
     git diff --quiet .github/workflows || {
         git add .github/workflows && git commit -m 'update workflow'
     }
-fi
+}
