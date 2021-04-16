@@ -6,7 +6,7 @@ staged_files="$(git diff --name-only --staged)"
 echo "$staged_files" | grep --quiet ".py" && {
     echo "Autoformatting code..."
     poetry --help &>/dev/null && [[ -d ".venv" ]] && {
-        comma_delimited_filepaths=$(echo staged_files | grep ".py" | tr '\n' ',')
+        comma_delimited_filepaths="$(echo staged_files | grep '.py' | tr '\n' ',')"
         poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
     }
 }
