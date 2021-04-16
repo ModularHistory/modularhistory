@@ -19,7 +19,7 @@ from core.constants.misc import (
     SQUASHED_MIGRATIONS_DIRNAME,
 )
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
-from core.utils.files import relativize, upload_to_mega
+from core.utils.files import upload_to_mega
 
 CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
@@ -86,19 +86,32 @@ def backup(
 
 
 def clear_migration_history(context: Context = CONTEXT):
-    """Delete all migration files."""
+    """Delete all migration files and fake reverting to migration zero."""
     with transaction.atomic():
-        for app in APPS_WITH_MIGRATIONS:
-            n_migrations = (
-                len(os.listdir(path=relativize(join(app, MIGRATIONS_DIRNAME)))) - 1
+        for app_name in APPS_WITH_MIGRATIONS:
+            migrations_dir = join(
+                settings.BASE_DIR, 'apps', app_name, MIGRATIONS_DIRNAME
             )
+            n_migrations = len(os.listdir(path=migrations_dir)) - 1
             if n_migrations > MAX_MIGRATION_COUNT:
                 # Fake reverting all migrations.
-                print(f'\n Clearing migration history for the {app} app...')
-                revert_to_migration_zero(context, app)
+                print(f'\n Clearing migration history for the {app_name} app...')
+                result = context.run(
+                    f'python manage.py migrate {app_name} zero --fake', warn=True
+                )
+                print()
+                print('Migrations after fake reversion:')
+                context.run('python manage.py showmigrations')
+                if result.ok:
+                    input('Press enter to continue.')
+                else:
+                    raise Exception(
+                        f'Failed to clear migration history for {app_name}: '
+                        f'{result.stderr}'
+                    )
             else:
                 print(
-                    f'Skipping {app} since there are only {n_migrations} migration files...'
+                    f'Skipping {app_name} since there are only {n_migrations} migration files...'
                 )
     # Remove old migration files.
     if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
@@ -143,72 +156,71 @@ def remove_migrations(
 
 
 def remove_migrations_from_app(
-    context: Context = CONTEXT, app: str = '', hard: bool = False
+    context: Context = CONTEXT, app_name: str = '', hard: bool = False
 ):
     """Remove migrations from a specific app."""
-    app = app or input('App name: ')
-    # Remove the squashed_migrations directory
-    migrations_path = relativize(join(app, MIGRATIONS_DIRNAME))
-    squashed_migrations_path = relativize(join(app, SQUASHED_MIGRATIONS_DIRNAME))
-    if os.path.exists(squashed_migrations_path):
-        print(f'Removing {squashed_migrations_path}...')
-        context.run(f'rm -r {squashed_migrations_path}')
-        print(f'Removed {squashed_migrations_path}')
-    # Clear migration files from the migrations directory
+    app_name = app_name or input('App name: ')
+    app_dir = join(settings.BASE_DIR, 'apps', app_name)
+    migrations_dir = join(app_dir, MIGRATIONS_DIRNAME)
+    squashed_migrations_dir = join(app_dir, SQUASHED_MIGRATIONS_DIRNAME)
+    # Remove the squashed_migrations directory.
+    if os.path.exists(squashed_migrations_dir):
+        print(f'Removing {squashed_migrations_dir}...')
+        context.run(f'rm -r {squashed_migrations_dir}')
+        print(f'Removed {squashed_migrations_dir}')
+    # Clear migration files from the migrations directory.
     if hard:
-        # Delete the migration files
+        # Delete the migration files.
         command = (
-            f'find {migrations_path} -type f -name "*.py" -not -name "__init__.py" '
+            f'find {migrations_dir} -type f -name "*.py" -not -name "__init__.py" '
             f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
         )
         print(command)
         context.run(command)
     else:
-        context.run(f'mkdir {squashed_migrations_path}')
-        # Move the migration files to the squashed_migrations directory
+        # Move the migration files to the squashed_migrations directory.
+        context.run(f'mkdir {squashed_migrations_dir}')
         context.run(
-            f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
+            f'find . -type f -path "{app_dir}/migrations/*.py" -not -name "__init__.py" '
             f'-exec echo "{BASH_PLACEHOLDER}" \;'  # noqa: W605
         )
-        squashed_migrations_dir = relativize(join(app, SQUASHED_MIGRATIONS_DIRNAME))
         command = (
-            f'find . -type f -path "./{app}/migrations/*.py" -not -name "__init__.py" '
+            f'find . -type f -path "{app_dir}/migrations/*.py" -not -name "__init__.py" '
             f'-exec mv {BASH_PLACEHOLDER} {squashed_migrations_dir}/ \;'  # noqa: W605
         )
         print(command)
         context.run(command)
-        if not glob(relativize(f'{join(app, SQUASHED_MIGRATIONS_DIRNAME)}/*.py')):
-            print(
-                'ERROR: Could not move migration files '
-                f'to {SQUASHED_MIGRATIONS_DIRNAME}'
-            )
+        if not glob(join(squashed_migrations_dir, '*.py')):
+            print(f'ERROR: Failed to move migration files to {squashed_migrations_dir}')
+    input('Press enter to continue.')
     command = (
-        f'find {relativize(app)} -path "migrations/*.pyc" '
+        f'find {app_dir} -path "migrations/*.pyc" '
         f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
     )
     print(command)
     context.run(command)
-    print(f'Removed migration files from {app}.')
+    print(f'Removed migration files from {app_name}.')
 
 
 def restore_squashed_migrations(context: Context = CONTEXT):
     """Restore migrations with squashed_migrations."""
-    for app in APPS_WITH_MIGRATIONS:
-        squashed_migrations_dir = relativize(join(app, SQUASHED_MIGRATIONS_DIRNAME))
+    for app_name in APPS_WITH_MIGRATIONS:
+        app_dir = join(settings.BASE_DIR, 'apps', app_name)
+        migrations_dir = join(app_dir, MIGRATIONS_DIRNAME)
+        squashed_migrations_dir = join(app_dir, SQUASHED_MIGRATIONS_DIRNAME)
         # TODO: only do this if there are files in the squashed_migrations dir
         squashed_migrations_exist = os.path.exists(
             squashed_migrations_dir
         ) and os.listdir(path=squashed_migrations_dir)
         if squashed_migrations_exist:
             # Remove the replacement migrations
-            migration_files_path = relativize(f'{app}/migrations/*.py')
+            migration_files_path = f'{migrations_dir}/*.py'
             context.run(
                 f'find . -type f -path "{migration_files_path}" '
                 f'-not -name "__init__.py" '
                 f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
             )
             # Restore the squashed migrations
-            migrations_dir = relativize(f'{join(app, MIGRATIONS_DIRNAME)}')
             context.run(
                 f'find {squashed_migrations_dir} -type f -name "*.py" '
                 f'-exec mv {BASH_PLACEHOLDER} {migrations_dir}/ \;'  # noqa: W605
@@ -216,19 +228,9 @@ def restore_squashed_migrations(context: Context = CONTEXT):
             # Remove the squashed_migrations directory
             if os.path.exists(squashed_migrations_dir):
                 context.run(f'rm -r {squashed_migrations_dir}')
-            print(f'Removed squashed migrations from {app}.')
+            print(f'Removed squashed migrations from {app_name}.')
         else:
-            print(f'There are no squashed migrations to remove from {app}.')
-
-
-def revert_to_migration_zero(context: Context = CONTEXT, app: str = ''):
-    """Spoof reverting migrations by running a fake migration to `zero`."""
-    app = app or input('App name: ')
-    context.run(f'python manage.py migrate {app} zero --fake')
-    print()
-    print('Migrations after fake reversion:')
-    context.run('python manage.py showmigrations')
-    print()
+            print(f'There are no squashed migrations to remove from {app_name}.')
 
 
 def seed(context: Context = CONTEXT, migrate: bool = False):
@@ -257,7 +259,7 @@ def seed(context: Context = CONTEXT, migrate: bool = False):
         )
 
 
-def squash_migrations(context: Context = CONTEXT, dry: bool = True):
+def squash_migrations(context: Context = CONTEXT, dry: bool = False):
     """
     Squash migrations.
 
@@ -272,10 +274,11 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
     if input('Run db migrations? [Y/n] ') != NEGATIVE:
         migrate(context, noninteractive=True)
 
-    # Clear the migrations history for each app
-    context.run('')
+    # Remove any compiled Python files.
     for pyc in iglob('**/migrations/*.pyc'):
         os.remove(pyc)
+
+    # Clear the migrations history for each app
     clear_migration_history(context)
 
     # Regenerate migration files.
@@ -291,14 +294,11 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = True):
         '--fake-initial',
         noninteractive=True,
     )
-
     if dry:
         input(
-            'Completed dry run of squashing migrations.\n'
+            'Finished squashing migrations.\n'
             'Take a minute to test the app locally, then press any key '
-            'to proceed to squash migrations for real.'
+            'to restore the squashed migrations.'
         )
         context.run('python manage.py dbrestore --database="default" --noinput')
         restore_squashed_migrations(context)
-        if input('Squash migrations for real? [Y/n] ') != NEGATIVE:
-            squash_migrations(context, dry=False)

@@ -23,7 +23,7 @@ MAX_MIGRATION_COUNT = 2
 APPS_WITH_MIGRATIONS = (
     'entities',
     'images',
-    'markup',
+    'interactions',
     'occurrences',
     'places',
     'postulations',
@@ -33,4 +33,5 @@ APPS_WITH_MIGRATIONS = (
     'staticpages',
     'topics',
     'users',
+    'verifications',
 )
