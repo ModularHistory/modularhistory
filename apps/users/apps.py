@@ -12,14 +12,14 @@ def superuser_check(app_configs, **kwargs):
     """Check that a superuser has been created."""
     conditions = [
         ENVIRONMENT == Environments.DEV,
-        sys.argv[1] != 'createsuperuser',
+        sys.argv[1] == 'runserver',
         not get_user_model().objects.filter(is_superuser=True).exists(),
     ]
     if not all(conditions):
         return []
     return [
         Warning(
-            'You need to create a superuser. To do so, run this command: \n\n\t'
+            'To create a superuser (for testing), run this command: \n\n\t'
             f'poetry run python manage.py createsuperuser\n',
         )
     ]
