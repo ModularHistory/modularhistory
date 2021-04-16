@@ -73,7 +73,8 @@ class CitationsInline(GenericTabularInline):
     model = models.Citation
 
     autocomplete_fields = ['source']
-    exclude = ['computations']
+    # TODO: fix JSON widget so pages can be included in the inline editor
+    exclude = ['computations', 'pages']
     readonly_fields = ['pk']
     verbose_name = 'citation'
     verbose_name_plural = 'citations'
