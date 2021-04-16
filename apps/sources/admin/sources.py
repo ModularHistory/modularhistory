@@ -49,7 +49,7 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         models.Document,
         models.Film,
         models.Interview,
-        models.JournalEntry,
+        models.Entry,
         models.Piece,
         models.Section,
         models.Speech,
@@ -153,7 +153,7 @@ admin_site.register(models.Correspondence, ChildSourceAdmin)
 admin_site.register(models.Document, ChildSourceAdmin)
 admin_site.register(models.Film, ChildSourceAdmin)
 admin_site.register(models.Interview, ChildSourceAdmin)
-admin_site.register(models.JournalEntry, ChildSourceAdmin)
+admin_site.register(models.Entry, ChildSourceAdmin)
 admin_site.register(models.Piece, ChildSourceAdmin)
 admin_site.register(models.Section, ChildSourceAdmin)
 admin_site.register(models.Speech, ChildSourceAdmin)

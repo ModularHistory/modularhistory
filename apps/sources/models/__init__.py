@@ -13,7 +13,7 @@ from .sources.correspondence import Correspondence
 from .sources.document import Collection, Document, Repository
 from .sources.film import Film
 from .sources.interview import Interview
-from .sources.journal import JournalEntry
+from .sources.journal import Entry
 from .sources.piece import Piece
 from .sources.speech import Speech
 from .sources.webpage import Webpage, Website
