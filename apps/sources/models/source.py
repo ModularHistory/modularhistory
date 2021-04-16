@@ -80,7 +80,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     description = HTMLField(null=True, blank=True, paragraphed=True)
     file = models.ForeignKey(
         to=SourceFile,
-        related_name='polymorphic_sources',
+        related_name='sources',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,

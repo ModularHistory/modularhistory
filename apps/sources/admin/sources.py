@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from apps.admin import TabularInline, admin_site
@@ -11,7 +13,7 @@ from apps.sources.admin.inlines import (
 )
 
 
-def rearrange_fields(fields):
+def rearrange_fields(fields: Iterable[str]):
     """Return reordered fields to be displayed in the admin."""
     # Fields to display at the top, in order
     top_fields = ('citation_string', 'attributee_string', 'title')
@@ -25,6 +27,7 @@ def rearrange_fields(fields):
         'description',
         'citations',
     )
+    fields = list(fields)
     index: int = 0
     for top_field in top_fields:
         if top_field in fields:
@@ -124,8 +127,7 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
 
     def get_fields(self, request, model_instance=None):
         """Return reordered fields to be displayed in the admin."""
-        fields: list(super().get_fields(request, model_instance))
-        return rearrange_fields(fields)
+        return rearrange_fields(super().get_fields(request, model_instance))
 
 
 class SourcesInline(TabularInline):
