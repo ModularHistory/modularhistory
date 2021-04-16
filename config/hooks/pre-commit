@@ -1,6 +1,6 @@
 #!/bin/bash
 
-staged_files=$(git diff --name-only --staged)
+staged_files="$(git diff --name-only --staged)"
 
 # Autoformat Python code.
 echo "$staged_files" | grep --quiet ".py" && {
