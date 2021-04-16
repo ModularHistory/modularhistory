@@ -16,4 +16,4 @@ from .sources.interview import Interview
 from .sources.journal import JournalEntry
 from .sources.piece import Piece
 from .sources.speech import Speech
-from .sources.webpage import WebPage, Website
+from .sources.webpage import Webpage, Website

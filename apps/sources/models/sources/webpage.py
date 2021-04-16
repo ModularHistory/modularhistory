@@ -1,4 +1,4 @@
-"""Model classes for web pages."""
+"""Model classes for webpages."""
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -16,8 +16,8 @@ class Website(AbstractPublication):
     )
 
 
-class WebPage(Source, TextualMixin):
-    """A web page."""
+class Webpage(Source, TextualMixin):
+    """A webpage."""
 
     website = models.ForeignKey(
         to='sources.Website', null=True, blank=True, on_delete=models.CASCADE

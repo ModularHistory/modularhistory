@@ -53,7 +53,7 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         models.Piece,
         models.Section,
         models.Speech,
-        models.WebPage,
+        models.Webpage,
     )
 
     list_display = [
@@ -157,4 +157,4 @@ admin_site.register(models.JournalEntry, ChildSourceAdmin)
 admin_site.register(models.Piece, ChildSourceAdmin)
 admin_site.register(models.Section, ChildSourceAdmin)
 admin_site.register(models.Speech, ChildSourceAdmin)
-admin_site.register(models.WebPage, ChildSourceAdmin)
+admin_site.register(models.Webpage, ChildSourceAdmin)

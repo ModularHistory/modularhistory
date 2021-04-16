@@ -345,14 +345,14 @@ class Migration(migrations.Migration):
             name='Film',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 (
@@ -369,20 +369,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource',),
+            bases=('sources.source',),
         ),
         migrations.CreateModel(
             name='Book',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
@@ -417,7 +417,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='subsequent_editions',
-                        to='sources.polymorphicbook',
+                        to='sources.webpagebook',
                     ),
                 ),
             ],
@@ -425,20 +425,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource', models.Model),
+            bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
             name='Interview',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 (
@@ -455,20 +455,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource',),
+            bases=('sources.source',),
         ),
         migrations.CreateModel(
             name='Speech',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 (
@@ -493,7 +493,7 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource',),
+            bases=('sources.source',),
         ),
         migrations.CreateModel(
             name='SourceContainment',
@@ -542,7 +542,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='container_containments',
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 (
@@ -550,7 +550,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='source_containments',
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
             ],
@@ -587,7 +587,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='attributions',
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                         verbose_name='source',
                     ),
                 ),
@@ -648,7 +648,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AddField(
-            model_name='polymorphicsource',
+            model_name='source',
             name='attributees',
             field=models.ManyToManyField(
                 blank=True,
@@ -659,7 +659,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicsource',
+            model_name='source',
             name='containers',
             field=models.ManyToManyField(
                 blank=True,
@@ -669,19 +669,19 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicsource',
+            model_name='source',
             name='file',
             field=models.ForeignKey(
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                related_name='polymorphic_sources',
+                related_name='webpage_sources',
                 to='sources.sourcefile',
                 verbose_name='file',
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicsource',
+            model_name='source',
             name='location',
             field=models.ForeignKey(
                 blank=True,
@@ -691,18 +691,18 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicsource',
-            name='polymorphic_ctype',
+            model_name='source',
+            name='webpage_ctype',
             field=models.ForeignKey(
                 editable=False,
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name='polymorphic_sources.polymorphicsource_set+',
+                related_name='webpage_sources.source_set+',
                 to='contenttypes.contenttype',
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicsource',
+            model_name='source',
             name='related',
             field=gm2m.fields.GM2MField(
                 'quotes.Quote',
@@ -765,7 +765,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name='citations',
-                to='sources.polymorphicsource',
+                to='sources.source',
             ),
         ),
         migrations.CreateModel(
@@ -799,17 +799,17 @@ class Migration(migrations.Migration):
             bases=('sources.publication',),
         ),
         migrations.CreateModel(
-            name='WebPage',
+            name='Webpage',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
@@ -826,7 +826,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='subsequent_editions',
-                        to='sources.polymorphicwebpage',
+                        to='sources.webpagewebpage',
                     ),
                 ),
                 (
@@ -843,20 +843,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource', models.Model),
+            bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
             name='Section',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 (
@@ -872,7 +872,7 @@ class Migration(migrations.Migration):
                     'work',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to='sources.polymorphicbook',
+                        to='sources.webpagebook',
                     ),
                 ),
             ],
@@ -880,20 +880,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource',),
+            bases=('sources.source',),
         ),
         migrations.CreateModel(
             name='Piece',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
@@ -927,7 +927,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='subsequent_editions',
-                        to='sources.polymorphicpiece',
+                        to='sources.webpagepiece',
                     ),
                 ),
             ],
@@ -935,20 +935,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource', models.Model),
+            bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
             name='JournalEntry',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
@@ -973,27 +973,27 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='subsequent_editions',
-                        to='sources.polymorphicjournalentry',
+                        to='sources.webpagejournalentry',
                     ),
                 ),
             ],
             options={
                 'verbose_name_plural': 'journal entries',
             },
-            bases=('sources.polymorphicsource', models.Model),
+            bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
             name='Document',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
@@ -1049,7 +1049,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name='polymorphicdocument',
+                        related_name='webpagedocument',
                         to='sources.collection',
                     ),
                 ),
@@ -1060,7 +1060,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='subsequent_editions',
-                        to='sources.polymorphicdocument',
+                        to='sources.webpagedocument',
                     ),
                 ),
             ],
@@ -1068,20 +1068,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource', models.Model),
+            bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
             name='Correspondence',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
@@ -1152,7 +1152,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name='polymorphiccorrespondence',
+                        related_name='webpagecorrespondence',
                         to='sources.collection',
                     ),
                 ),
@@ -1163,7 +1163,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='subsequent_editions',
-                        to='sources.polymorphiccorrespondence',
+                        to='sources.webpagecorrespondence',
                     ),
                 ),
             ],
@@ -1171,20 +1171,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource', models.Model),
+            bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
             name='Article',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
@@ -1211,7 +1211,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='subsequent_editions',
-                        to='sources.polymorphicarticle',
+                        to='sources.webpagearticle',
                     ),
                 ),
                 (
@@ -1226,20 +1226,20 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource', models.Model),
+            bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
             name='Affidavit',
             fields=[
                 (
-                    'polymorphicsource_ptr',
+                    'source_ptr',
                     models.OneToOneField(
                         auto_created=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to='sources.polymorphicsource',
+                        to='sources.source',
                     ),
                 ),
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
@@ -1296,7 +1296,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name='polymorphicaffidavit',
+                        related_name='webpageaffidavit',
                         to='sources.collection',
                     ),
                 ),
@@ -1307,7 +1307,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='subsequent_editions',
-                        to='sources.polymorphicaffidavit',
+                        to='sources.webpageaffidavit',
                     ),
                 ),
             ],
@@ -1315,7 +1315,7 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('sources.polymorphicsource', models.Model),
+            bases=('sources.source', models.Model),
         ),
         migrations.AlterUniqueTogether(
             name='citation',
