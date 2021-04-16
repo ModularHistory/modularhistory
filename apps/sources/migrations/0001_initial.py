@@ -372,7 +372,7 @@ class Migration(migrations.Migration):
             bases=('sources.source',),
         ),
         migrations.CreateModel(
-            name='PolymorphicBook',
+            name='Book',
             fields=[
                 (
                     'source_ptr',
@@ -428,7 +428,7 @@ class Migration(migrations.Migration):
             bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicInterview',
+            name='Interview',
             fields=[
                 (
                     'source_ptr',
@@ -458,7 +458,7 @@ class Migration(migrations.Migration):
             bases=('sources.source',),
         ),
         migrations.CreateModel(
-            name='PolymorphicSpeech',
+            name='Speech',
             fields=[
                 (
                     'source_ptr',
@@ -799,7 +799,7 @@ class Migration(migrations.Migration):
             bases=('sources.publication',),
         ),
         migrations.CreateModel(
-            name='PolymorphicWebPage',
+            name='Webpage',
             fields=[
                 (
                     'source_ptr',
@@ -846,7 +846,7 @@ class Migration(migrations.Migration):
             bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicSection',
+            name='Section',
             fields=[
                 (
                     'source_ptr',
@@ -883,7 +883,7 @@ class Migration(migrations.Migration):
             bases=('sources.source',),
         ),
         migrations.CreateModel(
-            name='PolymorphicPiece',
+            name='Piece',
             fields=[
                 (
                     'source_ptr',
@@ -938,7 +938,7 @@ class Migration(migrations.Migration):
             bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicEntry',
+            name='Entry',
             fields=[
                 (
                     'source_ptr',
@@ -983,7 +983,7 @@ class Migration(migrations.Migration):
             bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicDocument',
+            name='Document',
             fields=[
                 (
                     'source_ptr',
@@ -1071,7 +1071,7 @@ class Migration(migrations.Migration):
             bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicCorrespondence',
+            name='Correspondence',
             fields=[
                 (
                     'source_ptr',
@@ -1174,7 +1174,7 @@ class Migration(migrations.Migration):
             bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicArticle',
+            name='Article',
             fields=[
                 (
                     'source_ptr',
@@ -1229,7 +1229,7 @@ class Migration(migrations.Migration):
             bases=('sources.source', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicAffidavit',
+            name='Affidavit',
             fields=[
                 (
                     'source_ptr',
