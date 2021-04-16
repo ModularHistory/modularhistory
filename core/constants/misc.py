@@ -19,19 +19,3 @@ SQUASHED_MIGRATIONS_DIRNAME = 'squashed'
 LOCAL = 'local'
 PRODUCTION = 'production'
 MAX_MIGRATION_COUNT = 2
-
-APPS_WITH_MIGRATIONS = (
-    'entities',
-    'images',
-    'interactions',
-    'occurrences',
-    'places',
-    'postulations',
-    'quotes',
-    'search',
-    'sources',
-    'staticpages',
-    'topics',
-    'users',
-    'verifications',
-)

@@ -13,7 +13,6 @@ from invoke.context import Context
 
 from core.constants.environments import Environments
 from core.constants.misc import (
-    APPS_WITH_MIGRATIONS,
     MAX_MIGRATION_COUNT,
     MIGRATIONS_DIRNAME,
     SQUASHED_MIGRATIONS_DIRNAME,
@@ -85,37 +84,33 @@ def backup(
     )
 
 
-def clear_migration_history(context: Context = CONTEXT):
+def clear_migration_history(context: Context = CONTEXT, app: str = ''):
     """Delete all migration files and fake reverting to migration zero."""
+    app_name = app or input('App name: ')
     with transaction.atomic():
-        for app_name in APPS_WITH_MIGRATIONS:
-            migrations_dir = join(
-                settings.BASE_DIR, 'apps', app_name, MIGRATIONS_DIRNAME
+        migrations_dir = join(settings.BASE_DIR, 'apps', app_name, MIGRATIONS_DIRNAME)
+        n_migrations = len(os.listdir(path=migrations_dir)) - 1
+        if n_migrations > MAX_MIGRATION_COUNT:
+            # Fake reverting all migrations.
+            print(f'\n Clearing migration history for the {app_name} app...')
+            result = context.run(
+                f'python manage.py migrate {app_name} zero --fake', warn=True
             )
-            n_migrations = len(os.listdir(path=migrations_dir)) - 1
-            if n_migrations > MAX_MIGRATION_COUNT:
-                # Fake reverting all migrations.
-                print(f'\n Clearing migration history for the {app_name} app...')
-                result = context.run(
-                    f'python manage.py migrate {app_name} zero --fake', warn=True
-                )
-                print()
-                print('Migrations after fake reversion:')
-                context.run('python manage.py showmigrations')
-                if result.ok:
-                    input('Press enter to continue.')
-                else:
-                    raise Exception(
-                        f'Failed to clear migration history for {app_name}: '
-                        f'{result.stderr}'
-                    )
+            print()
+            print('Migrations after fake reversion:')
+            context.run('python manage.py showmigrations')
+            if result.ok:
+                input('Press enter to continue.')
             else:
-                print(
-                    f'Skipping {app_name} since there are only {n_migrations} migration files...'
+                raise Exception(
+                    f'Failed to clear migration history for {app_name}: '
+                    f'{result.stderr}'
                 )
+        else:
+            print(f'Skipped {app_name} because it only has {n_migrations} migrations.')
     # Remove old migration files.
     if input('\n Proceed to remove migration files? [Y/n] ') != NEGATIVE:
-        remove_migrations(context)
+        remove_migrations(context, app=app_name)
 
 
 def makemigrations(context: Context = CONTEXT, noninteractive: bool = False):
@@ -149,17 +144,7 @@ def remove_migrations(
     context: Context = CONTEXT, app: Optional[str] = None, hard: bool = False
 ):
     """Remove migration files."""
-    apps = [app] if app else APPS_WITH_MIGRATIONS
-    print(f'Removing migrations from {apps}...')
-    for app in apps:
-        remove_migrations_from_app(context, app, hard=hard)
-
-
-def remove_migrations_from_app(
-    context: Context = CONTEXT, app_name: str = '', hard: bool = False
-):
-    """Remove migrations from a specific app."""
-    app_name = app_name or input('App name: ')
+    app_name = app or input('App name: ')
     app_dir = join(settings.BASE_DIR, 'apps', app_name)
     migrations_dir = join(app_dir, MIGRATIONS_DIRNAME)
     squashed_migrations_dir = join(app_dir, SQUASHED_MIGRATIONS_DIRNAME)
@@ -259,12 +244,14 @@ def seed(context: Context = CONTEXT, migrate: bool = False):
         )
 
 
-def squash_migrations(context: Context = CONTEXT, dry: bool = False):
+def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = False):
     """
     Squash migrations.
 
     See https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html.
     """
+    app_name = app or input('App name: ')
+
     # Create a db backup
     if dry and input('Create db backup? [Y/n] ') != NEGATIVE:
         context.run('python manage.py dbbackup')
@@ -279,7 +266,7 @@ def squash_migrations(context: Context = CONTEXT, dry: bool = False):
         os.remove(pyc)
 
     # Clear the migrations history for each app
-    clear_migration_history(context)
+    clear_migration_history(context, app=app_name)
 
     # Regenerate migration files.
     makemigrations(context, noninteractive=True)
