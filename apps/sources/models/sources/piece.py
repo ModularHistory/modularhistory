@@ -1,14 +1,14 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
 PIECE_TYPES = (('essay', 'Essay'),)
 TYPE_MAX_LENGTH: int = 10
 
 
-class PolymorphicPiece(PolymorphicSource, PageNumbersMixin):
+class Piece(Source, PageNumbersMixin):
     """A piece (e.g., essay)."""
 
     type = models.CharField(

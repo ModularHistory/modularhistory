@@ -45,9 +45,7 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class PolymorphicSource(
-    PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities
-):
+class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
     attributee_html = models.CharField(
@@ -131,7 +129,7 @@ class PolymorphicSource(
                 self.file = self.containment.container.file
         if self.pk:  # If this source is not being newly created
             is_duplicate = (
-                PolymorphicSource.objects.exclude(pk=self.pk)
+                Source.objects.exclude(pk=self.pk)
                 .filter(citation_string=self.citation_string)
                 .exists()
             )
@@ -382,7 +380,7 @@ class PolymorphicSource(
 
 
 def _get_page_number_url(
-    source: PolymorphicSource, file: SourceFile, page_number: int
+    source: Source, file: SourceFile, page_number: int
 ) -> Optional[str]:
     """TODO: write docstring."""
     url = source.source_file_url or None
@@ -400,7 +398,7 @@ def _get_page_number_link(url: str, page_number: int) -> Optional[str]:
 
 
 def _get_page_number_html(
-    source: PolymorphicSource,
+    source: Source,
     file: Optional[SourceFile],
     page_number: int,
     end_page_number: Optional[int] = None,

@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models.mixins.textual import TextualMixin
 from apps.sources.models.publication import AbstractPublication
-from apps.sources.models.source import PolymorphicSource
+from apps.sources.models.source import Source
 
 
 class Website(AbstractPublication):
@@ -16,7 +16,7 @@ class Website(AbstractPublication):
     )
 
 
-class PolymorphicWebPage(PolymorphicSource, TextualMixin):
+class WebPage(Source, TextualMixin):
     """A web page."""
 
     website = models.ForeignKey(

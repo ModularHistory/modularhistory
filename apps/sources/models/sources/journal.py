@@ -1,10 +1,10 @@
 """Model classes for journals (as sources)."""
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
 
-class PolymorphicJournalEntry(PolymorphicSource, PageNumbersMixin):
+class JournalEntry(Source, PageNumbersMixin):
     "A journal entry."
 
     class Meta:

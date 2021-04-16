@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 
 from apps.admin.list_filters import BooleanListFilter
 from apps.admin.list_filters import TypeFilter as BaseTypeFilter
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from core.constants.strings import EMPTY_STRING, NO, YES
 
 
@@ -107,4 +107,4 @@ class ImpreciseDateFilter(BooleanListFilter):
 class TypeFilter(BaseTypeFilter):
     """Filters sources by type."""
 
-    base_model = PolymorphicSource
+    base_model = Source

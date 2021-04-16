@@ -6,12 +6,12 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from humanize import ordinal
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.sources.models.mixins.textual import TextualMixin
 from core.constants.strings import EMPTY_STRING
 
 
-class PolymorphicBook(PolymorphicSource, TextualMixin):
+class Book(Source, TextualMixin):
     """A book."""
 
     translator = models.CharField(
@@ -128,7 +128,7 @@ SECTION_TYPES = (
 )
 
 
-class PolymorphicSection(PolymorphicSource):
+class Section(Source):
     """A section or chapter of a book."""
 
     type = models.CharField(
@@ -138,8 +138,8 @@ class PolymorphicSection(PolymorphicSource):
         default=SECTION_TYPES[0][0],
     )
 
-    # `book` would clash with the 1-to-1 reverse accessor of PolymorphicSource.
-    work = models.ForeignKey(to='sources.PolymorphicBook', on_delete=models.CASCADE)
+    # `book` would clash with the 1-to-1 reverse accessor of Source.
+    work = models.ForeignKey(to='sources.Book', on_delete=models.CASCADE)
 
     def __html__(self) -> str:
         """Return the section/chapter's HTML representation."""

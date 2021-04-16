@@ -41,7 +41,7 @@ MODEL_CLASS_PATHS = {
     ModelNameSet.occurrence: 'apps.occurrences.models.Occurrence',
     ModelNameSet.place: 'apps.places.models.Place',
     ModelNameSet.quote: 'apps.quotes.models.Quote',
-    ModelNameSet.source: 'apps.sources.models.PolymorphicSource',
+    ModelNameSet.source: 'apps.sources.models.Source',
     ModelNameSet.fact: 'apps.postulations.models.Postulation',
     ModelNameSet.postulation: 'apps.postulations.models.Postulation',
 }

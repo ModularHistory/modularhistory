@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='PolymorphicSource',
+            name='Source',
             fields=[
                 (
                     'id',
@@ -372,7 +372,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource',),
         ),
         migrations.CreateModel(
-            name='PolymorphicBook',
+            name='Book',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -428,7 +428,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicInterview',
+            name='Interview',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -458,7 +458,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource',),
         ),
         migrations.CreateModel(
-            name='PolymorphicSpeech',
+            name='Speech',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -665,7 +665,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 related_name='contained_sources',
                 through='sources.SourceContainment',
-                to='sources.PolymorphicSource',
+                to='sources.Source',
             ),
         ),
         migrations.AddField(
@@ -799,7 +799,7 @@ class Migration(migrations.Migration):
             bases=('sources.publication',),
         ),
         migrations.CreateModel(
-            name='PolymorphicWebPage',
+            name='WebPage',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -846,7 +846,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicSection',
+            name='Section',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -883,7 +883,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource',),
         ),
         migrations.CreateModel(
-            name='PolymorphicPiece',
+            name='Piece',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -938,7 +938,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicJournalEntry',
+            name='JournalEntry',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -983,7 +983,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicDocument',
+            name='Document',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -1071,7 +1071,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicCorrespondence',
+            name='Correspondence',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -1174,7 +1174,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicArticle',
+            name='Article',
             fields=[
                 (
                     'polymorphicsource_ptr',
@@ -1229,7 +1229,7 @@ class Migration(migrations.Migration):
             bases=('sources.polymorphicsource', models.Model),
         ),
         migrations.CreateModel(
-            name='PolymorphicAffidavit',
+            name='Affidavit',
             fields=[
                 (
                     'polymorphicsource_ptr',
