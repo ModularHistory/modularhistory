@@ -21,6 +21,7 @@ on:
     - .vscode/**
     - '**.md'
     - '**.rst'
+    - config/hooks/**
   schedule:
   - cron: 0 9 * * *
 
