@@ -1,3 +1,4 @@
+# https://github.com/MichaelAquilina/flake8-spellcheck
 allauth
 ASGI
 asgiref
