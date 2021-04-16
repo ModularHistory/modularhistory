@@ -286,11 +286,8 @@ pyenv --version &>/dev/null || {
     curl https://pyenv.run | bash
   fi
 }
-echo "Ensuring pyenv is in PATH ..."
 pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
-echo "Ensuring pyenv automatic activation is enabled ..."
 echo "Using $(pyenv --version) ..."
-echo "Installing required Python versions ..."
 installed_py_versions="$(pyenv versions)"
 while IFS= read -r pyversion; do
   # shellcheck disable=SC2076
