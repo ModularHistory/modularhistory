@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='PolymorphicSource',
+            name='Source',
             fields=[
                 (
                     'id',
@@ -665,7 +665,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 related_name='contained_sources',
                 through='sources.SourceContainment',
-                to='sources.PolymorphicSource',
+                to='sources.Source',
             ),
         ),
         migrations.AddField(
