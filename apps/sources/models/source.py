@@ -146,19 +146,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                     )
 
     @property
-    def admin_source_link(self) -> SafeString:
-        """Return a file link to display in the admin."""
-        element = ''
-        if self.file:
-            element = compose_link(
-                '<i class="fa fa-search"></i>',
-                href=self.url,
-                klass='btn btn-small btn-default display-source',
-                target=NEW_TAB,
-            )
-        return format_html(element)
-
-    @property
     def ctype(self):
         return self.polymorphic_ctype
 

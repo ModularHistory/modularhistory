@@ -5,6 +5,8 @@ from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModel
 from apps.admin import TabularInline, admin_site
 from apps.search.admin import SearchableModelAdmin
 from apps.sources import models
+from apps.sources.admin.filters import AttributeeFilter, HasContainerFilter
+from apps.sources.admin.filters.simple_filters import SourceTypeFilter
 from apps.sources.admin.inlines import (
     AttributeesInline,
     ContainedSourcesInline,
@@ -64,19 +66,18 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         'escaped_citation_html',
         'attributee_string',
         'date_string',
-        'admin_source_link',
         'slug',
         'ctype',
     ]
     list_filter = [
         'verified',
-        # HasContainerFilter,
+        HasContainerFilter,
         # HasFileFilter,
         # HasFilePageOffsetFilter,
         # ImpreciseDateFilter,
-        # models.Source.FieldNames.hidden,
-        # AttributeeFilter,
-        # TypeFilter,
+        models.Source.FieldNames.hidden,
+        AttributeeFilter,
+        SourceTypeFilter,
     ]
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
@@ -110,7 +111,10 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
         ContainedSourcesInline,
         RelatedInline,
     ]
-    list_display = [item for item in SourceAdmin.list_display if item != 'ctype']
+    list_display = [field for field in SourceAdmin.list_display if field != 'ctype']
+    list_filter = [
+        filter for filter in SourceAdmin.list_filter if filter != SourceTypeFilter
+    ]
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 15
     ordering = SourceAdmin.ordering
