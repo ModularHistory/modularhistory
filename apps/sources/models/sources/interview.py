@@ -3,12 +3,12 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 
 INTERVIEWERS_MAX_LENGTH: int = 200
 
 
-class PolymorphicInterview(PolymorphicSource):
+class Interview(Source):
     """An interview."""
 
     interviewers = models.CharField(

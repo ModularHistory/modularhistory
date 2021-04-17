@@ -3,12 +3,12 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models.source import PolymorphicSource
+from apps.sources.models.source import Source
 
 FILM_TYPES = (('documentary', 'Documentary'),)
 
 
-class Film(PolymorphicSource):
+class Film(Source):
     """A video source."""
 
     type = models.CharField(

@@ -31,10 +31,26 @@ if [[ -d config/hooks ]]; then
   done
 fi
 
+# Check if migrations have changed.
+echo "$changed_files" | grep --quiet 'migrations/' && {
+  # TODO: Determine more intelligently whether seeding is required?
+  echo "
+    The database schema has been modified. You might not be able to run the
+    django container successfully until you re-seed your database. To update
+    your database, use this command:
+
+    poetry run invoke db.seed --migrate
+
+  "
+}
+
 # Prompt to rerun the setup script if necessary.
 if [[ $prompt_to_run_setup_script = true ]]; then
   echo "
-    The setup script has been updated. Please run it:
-      bash setup.sh
+    The setup script has been modified. Your dev environment might not function 
+    correctly until you run the updated script. To run it, use this command:
+    
+    bash setup.sh
+
   "
 fi

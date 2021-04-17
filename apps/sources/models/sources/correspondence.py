@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.sources.models.mixins.document import DocumentMixin
 
 NAME_MAX_LENGTH: int = 100
@@ -16,7 +16,7 @@ CORRESPONDENCE_TYPES = (
 )
 
 
-class PolymorphicCorrespondence(PolymorphicSource, DocumentMixin):
+class Correspondence(Source, DocumentMixin):
     """Correspondence from one entity to another."""
 
     type = models.CharField(

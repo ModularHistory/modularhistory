@@ -5,7 +5,7 @@ from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.sources.models.mixins.document import DocumentMixin
 from core.models import ModelWithComputations, retrieve_or_compute
 from core.utils.html import soupify
@@ -16,7 +16,7 @@ DESCRIPTIVE_PHRASE_MAX_LENGTH: int = 100
 URL_MAX_LENGTH: int = 200
 
 
-class PolymorphicDocument(PolymorphicSource, DocumentMixin):
+class Document(Source, DocumentMixin):
     """A historical or contemporary document held in a collection."""
 
     def __html__(self) -> str:

@@ -24,12 +24,12 @@ class SourceContainment(PositionedRelation):
     """A source containment."""
 
     source = ForeignKey(
-        to='sources.PolymorphicSource',
+        to='sources.Source',
         on_delete=CASCADE,
         related_name='source_containments',
     )
     container = ForeignKey(
-        to='sources.PolymorphicSource',
+        to='sources.Source',
         on_delete=CASCADE,
         related_name='container_containments',
     )
