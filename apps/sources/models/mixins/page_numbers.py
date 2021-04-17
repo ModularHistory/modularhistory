@@ -28,7 +28,7 @@ class PageNumbersMixin(TextualMixin):
     @property
     def file_page_number(self) -> Optional[int]:
         """Return the page number to use for opening the source's associated file."""
-        file = self.source_file
+        file = self.file
         if file:
             if self.page_number:
                 return self.page_number + file.page_offset

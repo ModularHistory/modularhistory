@@ -211,9 +211,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         the_code_below_is_good = False
         if the_code_below_is_good:
             # TODO: Remove search icon; insert link intelligently
-            if self.file_url:
+            if self.file:
                 html += (
-                    f'<a href="{self.file_url}" class="mx-1 display-source"'
+                    f'<a href="{self.file.url}" class="mx-1 display-source"'
                     f' data-toggle="modal" data-target="#modal">'
                     f'<i class="fas fa-search"></i>'
                     f'</a>'
@@ -240,11 +240,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     @property
     def escaped_citation_html(self) -> SafeString:
         return format_html(self.citation_html)
-
-    @property
-    def file_url(self) -> Optional[str]:
-        """Return the source file's URL, if it has one."""
-        return self.file.url if self.file else None
 
     def get_container_strings(self) -> Optional[List[str]]:
         """Return a list of strings representing the source's containers."""
@@ -301,8 +296,8 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         If the source has a file, the URL of the file is returned;
         otherwise, the source's `url` field value is returned.
         """
-        if self.file_url:
-            url = self.file_url
+        if self.file:
+            url = self.file.url
             page_number = self.file.default_page_number
             if getattr(self, 'page_number', None):
                 page_number = self.page_number + self.file.page_offset
@@ -374,7 +369,7 @@ def _get_page_number_url(
     source: Source, file: SourceFile, page_number: int
 ) -> Optional[str]:
     """TODO: write docstring."""
-    url = source.file_url or None
+    url = source.file.url or None
     if not url:
         return None
     page_number += file.page_offset
