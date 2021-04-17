@@ -95,4 +95,5 @@ class SearchableModelSerializer(ModelSerializer):
     slug = serpy.StrField()
     tags_html = serpy.StrField()
     absolute_url = serpy.StrField()
+    admin_url = serpy.StrField()
     verified = serpy.BoolField()
