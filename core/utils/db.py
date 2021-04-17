@@ -236,10 +236,16 @@ def seed(context: Context = CONTEXT, migrate: bool = False):
     sleep(10)  # Give postgres time to recreate the database.
     if migrate:
         context.run(f'docker-compose run django_helper python manage.py migrate')
-    if input('Create superuser? [Y/n] ') != NEGATIVE:
+    if input('Create a superuser (for testing the website)? [Y/n] ') != NEGATIVE:
         sleep(1)
+        instructions = (
+            'When prompted, enter the username and password you would like to use '
+            'for your superuser account.'
+        )
         context.run(
-            'docker-compose run django_helper python manage.py createsuperuser',
+            'docker-compose run django_helper bash -c \''
+            f'echo "{instructions}" && python manage.py createsuperuser'
+            '\'',
             pty=True,
         )
 
