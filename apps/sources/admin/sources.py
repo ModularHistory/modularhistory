@@ -3,6 +3,7 @@ from typing import Iterable
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from apps.admin import TabularInline, admin_site
+from apps.admin.model_admin import FORM_FIELD_OVERRIDES
 from apps.search.admin import SearchableModelAdmin
 from apps.sources import models
 from apps.sources.admin.filters import AttributeeFilter, HasContainerFilter
@@ -105,6 +106,7 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin):
         'citation_html',
         'citation_string',
     ]
+    formfield_overrides = FORM_FIELD_OVERRIDES
     inlines = [
         AttributeesInline,
         ContainersInline,
