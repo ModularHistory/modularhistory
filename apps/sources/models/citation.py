@@ -159,9 +159,9 @@ class Citation(PositionedRelation):
         # TODO: Remove search icon so citations can be joined together with semicolons
         the_following_code_is_fixed = False
         if the_following_code_is_fixed:
-            if self.source_file:
+            if self.file:
                 html += (
-                    f'<a href="{self.source_file.url}" class="display-source"'
+                    f'<a href="{self.file.url}" class="display-source"'
                     f' target="_blank" data-toggle="modal" data-target="#modal">'
                     f'<i class="fas fa-search"></i>'
                     f'</a>'

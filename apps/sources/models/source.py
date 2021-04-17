@@ -193,10 +193,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             html = f'{html}, {containers}'
         elif getattr(self, 'page_number', None):
             page_number_html = _get_page_number_html(
-                self, self.source_file, self.page_number, self.end_page_number
+                self, self.file, self.page_number, self.end_page_number
             )
             html = f'{html}, {page_number_html}'
-        if not self.source_file:
+        if not self.file:
             if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
         if getattr(self, 'information_url', None) and self.information_url:
@@ -237,6 +237,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def escaped_citation_html(self) -> SafeString:
         return format_html(self.citation_html)
 
+    @property
+    def file_url(self) -> Optional[str]:
+        """Return the source file's URL, if it has one."""
+        return self.file.url if self.file else None
+
     def get_container_strings(self) -> Optional[List[str]]:
         """Return a list of strings representing the source's containers."""
         containments = self.source_containments.order_by('position')[:2]
@@ -262,7 +267,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             if containment.page_number:
                 page_number_html = _get_page_number_html(
                     containment.source,
-                    containment.source.source_file,
+                    containment.source.file,
                     containment.page_number,
                     containment.end_page_number,
                 )
@@ -292,11 +297,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         If the source has a file, the URL of the file is returned;
         otherwise, the source's `url` field value is returned.
         """
-        if self.source_file_url:
-            url = self.source_file_url
-            page_number = self.source_file.default_page_number
+        if self.file_url:
+            url = self.file_url
+            page_number = self.file.default_page_number
             if getattr(self, 'page_number', None):
-                page_number = self.page_number + self.source_file.page_offset
+                page_number = self.page_number + self.file.page_offset
             if page_number:
                 url = _set_page_number(url, page_number)
         else:
@@ -347,11 +352,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             )
         ]
 
-    @property
-    def source_file_url(self) -> Optional[str]:
-        """Return the source file's URL, if it has one."""
-        return self.source_file.url if self.source_file else None
-
     def __html__(self) -> str:
         """
         Return the source's HTML representation, not including its containers.
@@ -370,7 +370,7 @@ def _get_page_number_url(
     source: Source, file: SourceFile, page_number: int
 ) -> Optional[str]:
     """TODO: write docstring."""
-    url = source.source_file_url or None
+    url = source.file_url or None
     if not url:
         return None
     page_number += file.page_offset
