@@ -45,9 +45,7 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class PolymorphicSource(
-    PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities
-):
+class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
     attributee_html = models.CharField(
@@ -63,11 +61,15 @@ class PolymorphicSource(
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
-    citation_html = models.TextField(null=False, blank=True)
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        null=False,  # cannot be null in db
+        blank=True,  # can be left blank in admin form
+    )
     citation_string = models.CharField(
         max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,
-        blank=True,
+        null=False,  # cannot be null in db
+        blank=True,  # can be left blank in admin form
         unique=True,
     )
     containers = models.ManyToManyField(
@@ -82,7 +84,7 @@ class PolymorphicSource(
     description = HTMLField(null=True, blank=True, paragraphed=True)
     file = models.ForeignKey(
         to=SourceFile,
-        related_name='polymorphic_sources',
+        related_name='sources',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -131,7 +133,7 @@ class PolymorphicSource(
                 self.file = self.containment.container.file
         if self.pk:  # If this source is not being newly created
             is_duplicate = (
-                PolymorphicSource.objects.exclude(pk=self.pk)
+                Source.objects.exclude(pk=self.pk)
                 .filter(citation_string=self.citation_string)
                 .exists()
             )
@@ -146,19 +148,6 @@ class PolymorphicSource(
                         f'This source cannot be contained by {container}, '
                         f'because that source is already contained by this source.'
                     )
-
-    @property
-    def admin_source_link(self) -> SafeString:
-        """Return a file link to display in the admin."""
-        element = ''
-        if self.file:
-            element = compose_link(
-                '<i class="fa fa-search"></i>',
-                href=self.url,
-                klass='btn btn-small btn-default display-source',
-                target=NEW_TAB,
-            )
-        return format_html(element)
 
     @property
     def ctype(self):
@@ -208,10 +197,10 @@ class PolymorphicSource(
             html = f'{html}, {containers}'
         elif getattr(self, 'page_number', None):
             page_number_html = _get_page_number_html(
-                self, self.source_file, self.page_number, self.end_page_number
+                self, self.file, self.page_number, self.end_page_number
             )
             html = f'{html}, {page_number_html}'
-        if not self.source_file:
+        if not self.file:
             if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
         if getattr(self, 'information_url', None) and self.information_url:
@@ -252,6 +241,11 @@ class PolymorphicSource(
     def escaped_citation_html(self) -> SafeString:
         return format_html(self.citation_html)
 
+    @property
+    def file_url(self) -> Optional[str]:
+        """Return the source file's URL, if it has one."""
+        return self.file.url if self.file else None
+
     def get_container_strings(self) -> Optional[List[str]]:
         """Return a list of strings representing the source's containers."""
         containments = self.source_containments.order_by('position')[:2]
@@ -277,7 +271,7 @@ class PolymorphicSource(
             if containment.page_number:
                 page_number_html = _get_page_number_html(
                     containment.source,
-                    containment.source.source_file,
+                    containment.source.file,
                     containment.page_number,
                     containment.end_page_number,
                 )
@@ -307,11 +301,11 @@ class PolymorphicSource(
         If the source has a file, the URL of the file is returned;
         otherwise, the source's `url` field value is returned.
         """
-        if self.source_file_url:
-            url = self.source_file_url
-            page_number = self.source_file.default_page_number
+        if self.file_url:
+            url = self.file_url
+            page_number = self.file.default_page_number
             if getattr(self, 'page_number', None):
-                page_number = self.page_number + self.source_file.page_offset
+                page_number = self.page_number + self.file.page_offset
             if page_number:
                 url = _set_page_number(url, page_number)
         else:
@@ -362,11 +356,6 @@ class PolymorphicSource(
             )
         ]
 
-    @property
-    def source_file_url(self) -> Optional[str]:
-        """Return the source file's URL, if it has one."""
-        return self.source_file.url if self.source_file else None
-
     def __html__(self) -> str:
         """
         Return the source's HTML representation, not including its containers.
@@ -382,10 +371,10 @@ class PolymorphicSource(
 
 
 def _get_page_number_url(
-    source: PolymorphicSource, file: SourceFile, page_number: int
+    source: Source, file: SourceFile, page_number: int
 ) -> Optional[str]:
     """TODO: write docstring."""
-    url = source.source_file_url or None
+    url = source.file_url or None
     if not url:
         return None
     page_number += file.page_offset
@@ -400,7 +389,7 @@ def _get_page_number_link(url: str, page_number: int) -> Optional[str]:
 
 
 def _get_page_number_html(
-    source: PolymorphicSource,
+    source: Source,
     file: Optional[SourceFile],
     page_number: int,
     end_page_number: Optional[int] = None,

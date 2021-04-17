@@ -3,13 +3,13 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.sources.models.mixins.document import DocumentMixin
 
 NAME_MAX_LENGTH: int = 100
 
 
-class PolymorphicAffidavit(PolymorphicSource, DocumentMixin):
+class Affidavit(Source, DocumentMixin):
     """An affidavit."""
 
     certifier = models.CharField(

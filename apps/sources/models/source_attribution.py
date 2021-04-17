@@ -8,7 +8,7 @@ class SourceAttribution(PositionedRelation):
     """An entity (e.g., a writer or organization) to which a source is attributed."""
 
     source = models.ForeignKey(
-        to='sources.PolymorphicSource',
+        to='sources.Source',
         on_delete=models.CASCADE,
         related_name='attributions',
         verbose_name=_('source'),

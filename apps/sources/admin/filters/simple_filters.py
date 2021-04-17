@@ -2,9 +2,8 @@
 
 from django.db.models import Count, Q
 
-from apps.admin.list_filters import BooleanListFilter
-from apps.admin.list_filters import TypeFilter as BaseTypeFilter
-from apps.sources.models import PolymorphicSource
+from apps.admin.list_filters import BooleanListFilter, ContentTypeFilter
+from apps.sources.models import Source
 from core.constants.strings import EMPTY_STRING, NO, YES
 
 
@@ -54,7 +53,7 @@ class HasFilePageOffsetFilter(BooleanListFilter):
         ids = []
         include_if_has_page_offset = self.value() == YES
         for source in sources:
-            source_file = source.source_file
+            source_file = source.file
             if bool(source_file.page_offset) == include_if_has_page_offset:
                 ids.append(source.id)
         return sources.filter(id__in=ids)
@@ -104,7 +103,7 @@ class ImpreciseDateFilter(BooleanListFilter):
         return queryset
 
 
-class TypeFilter(BaseTypeFilter):
+class SourceTypeFilter(ContentTypeFilter):
     """Filters sources by type."""
 
-    base_model = PolymorphicSource
+    base_model = Source

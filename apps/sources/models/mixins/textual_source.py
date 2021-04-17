@@ -44,9 +44,9 @@ class TextualSourceMixin(models.Model):
         return None
 
     @property
-    def source_file_url(self) -> Optional[str]:
+    def file_url(self) -> Optional[str]:
         """Return the URL to be used to open the source file."""
-        file_url = super().source_file_url
+        file_url = super().file_url
         if file_url and self.file_page_number:
             file_url = f'{file_url}#page={self.file_page_number}'
         return file_url
