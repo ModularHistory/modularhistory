@@ -474,7 +474,6 @@ if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
 fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
-  echo "Seeding database and env file ..."
   # shellcheck disable=SC2015
   poetry run invoke seed && echo "Finished seeding db and env file." || {
     _print_red "Failed to seed dev environment."
