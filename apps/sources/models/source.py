@@ -61,11 +61,15 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
-    citation_html = models.TextField(null=False, blank=True)
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        null=False,  # cannot be null in db
+        blank=True,  # can be left blank in admin form
+    )
     citation_string = models.CharField(
         max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,
-        blank=True,
+        null=False,  # cannot be null in db
+        blank=True,  # can be left blank in admin form
         unique=True,
     )
     containers = models.ManyToManyField(
