@@ -143,7 +143,7 @@ export default function GlobalNavbar({ menuItems }) {
       collapseOnSelect
     >
       <Link href={"/"}>
-        <Navbar.Brand href={"/"}>
+        <Navbar.Brand href={"/"} data-cy={"brand"}>
           <img alt="Logo" src={logoImageSrc} style={{ width: "2.7rem", height: "2.5rem" }} />{" "}
           ModularHistory
         </Navbar.Brand>
