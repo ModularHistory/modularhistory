@@ -359,9 +359,6 @@ THUMBNAIL_PROCESSORS = (
 # https://github.com/jonasundderwolf/django-image-cropping#custom-jquery
 IMAGE_CROPPING_JQUERY_URL = None
 
-# https://pypi.org/project/django-bootstrap-datepicker-plus/
-BOOTSTRAP4 = {'include_jquery': False}
-
 # https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
