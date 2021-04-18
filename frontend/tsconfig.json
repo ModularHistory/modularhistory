@@ -6,6 +6,10 @@
       "dom.iterable",
       "esnext"
     ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -23,7 +27,11 @@
     "*.ts",
     "*.tsx",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "*.js",
+    "*.jsx",
+    "**/*.js",
+    "**/*.jsx"
   ],
   "exclude": [
     "node_modules"
