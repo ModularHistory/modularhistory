@@ -4,11 +4,11 @@ from typing import List, Optional
 
 from django.db import models
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
 
-class PolymorphicArticle(PolymorphicSource, PageNumbersMixin):
+class Article(Source, PageNumbersMixin):
     """An article published by a journal, magazine, or newspaper."""
 
     publication = models.ForeignKey(to='sources.Publication', on_delete=models.PROTECT)

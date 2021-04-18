@@ -1,9 +1,12 @@
+import { useSession } from "next-auth/client";
+import { createRef, useLayoutEffect } from "react";
 import OccurrenceDetail from "./OccurrenceDetail";
 import QuoteDetail from "./QuoteDetail";
-import { createRef, useLayoutEffect } from "react";
+
 
 export default function ModuleDetail({ module }) {
   const ref = createRef();
+  const [session, loading] = useSession();
   useLayoutEffect(() => {
     // After the DOM has rendered, check for lazy images
     // and set their `src` to the correct value.
@@ -32,18 +35,15 @@ export default function ModuleDetail({ module }) {
       details = <pre>{JSON.stringify(module)}</pre>;
   }
 
-  // TODO: conditionally render edit button for super users
-  //       with NextAuth's `useSession()`.
-  // const superUserEditButton = (
-  //   <a href="{% url 'admin:occurrences_occurrence_change' occurrence.pk %}"
-  //      target="_blank" className="edit-object-button" rel="noopener noreferrer"
-  //      style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>
-  //     <i className="fa fa-edit"/>
-  //   </a>
-  // );
-
   return (
     <div className="detail" ref={ref}>
+      {!loading && session?.user?.['is_superuser'] &&  (
+        <a href={module['admin_url']}
+            target="_blank" className="edit-object-button" rel="noopener noreferrer"
+            style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>
+          <i className="fa fa-edit"/>
+        </a>
+      )}
       {details}
     </div>
   );

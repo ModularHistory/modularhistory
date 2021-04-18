@@ -286,11 +286,8 @@ pyenv --version &>/dev/null || {
     curl https://pyenv.run | bash
   fi
 }
-echo "Ensuring pyenv is in PATH ..."
 pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
-echo "Ensuring pyenv automatic activation is enabled ..."
 echo "Using $(pyenv --version) ..."
-echo "Installing required Python versions ..."
 installed_py_versions="$(pyenv versions)"
 while IFS= read -r pyversion; do
   # shellcheck disable=SC2076
@@ -477,7 +474,6 @@ if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
 fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
-  echo "Seeding database and env file ..."
   # shellcheck disable=SC2015
   poetry run invoke seed && echo "Finished seeding db and env file." || {
     _print_red "Failed to seed dev environment."

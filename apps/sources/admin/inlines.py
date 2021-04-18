@@ -1,12 +1,12 @@
 from apps.admin import GenericTabularInline, TabularInline
 from apps.sources import models
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 
 
 class AttributeesInline(TabularInline):
     """Inline admin for a source's attributees."""
 
-    model = PolymorphicSource.attributees.through
+    model = Source.attributees.through
     autocomplete_fields = ['attributee']
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
@@ -18,7 +18,7 @@ class ContainersInline(TabularInline):
 
     verbose_name = 'container'
     verbose_name_plural = 'containers'
-    model = PolymorphicSource.containers.through
+    model = Source.containers.through
     fk_name = 'source'
     extra = 0
     autocomplete_fields = ['container']
@@ -29,7 +29,7 @@ class ContainedSourcesInline(TabularInline):
 
     verbose_name = 'contained source'
     verbose_name_plural = 'contained sources'
-    model = PolymorphicSource.containers.through
+    model = Source.containers.through
     fk_name = 'container'
     extra = 0
     autocomplete_fields = ['source']

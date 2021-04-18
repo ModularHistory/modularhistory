@@ -14,7 +14,7 @@ from polymorphic.models import PolymorphicModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
-from apps.sources.manager import PolymorphicSourceManager
+from apps.sources.manager import PolymorphicSourceManager, PolymorphicSourceQuerySet
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields import HistoricDateTimeField, HTMLField
@@ -45,9 +45,7 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class PolymorphicSource(
-    PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities
-):
+class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
     attributee_html = models.CharField(
@@ -63,11 +61,15 @@ class PolymorphicSource(
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
-    citation_html = models.TextField(null=False, blank=True)
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        null=False,  # cannot be null in db
+        blank=True,  # can be left blank in admin form
+    )
     citation_string = models.CharField(
         max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,
-        blank=True,
+        null=False,  # cannot be null in db
+        blank=True,  # can be left blank in admin form
         unique=True,
     )
     containers = models.ManyToManyField(
@@ -82,7 +84,7 @@ class PolymorphicSource(
     description = HTMLField(null=True, blank=True, paragraphed=True)
     file = models.ForeignKey(
         to=SourceFile,
-        related_name='polymorphic_sources',
+        related_name='sources',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -112,7 +114,7 @@ class PolymorphicSource(
     class Meta:
         ordering = ['-date']
 
-    objects = PolymorphicSourceManager()
+    objects = PolymorphicSourceManager.from_queryset(PolymorphicSourceQuerySet)()
     searchable_fields = ['citation_string', 'description']
     serializer = SourceSerializer
     slug_base_field = 'title'
@@ -131,7 +133,7 @@ class PolymorphicSource(
                 self.file = self.containment.container.file
         if self.pk:  # If this source is not being newly created
             is_duplicate = (
-                PolymorphicSource.objects.exclude(pk=self.pk)
+                Source.objects.exclude(pk=self.pk)
                 .filter(citation_string=self.citation_string)
                 .exists()
             )
@@ -146,19 +148,6 @@ class PolymorphicSource(
                         f'This source cannot be contained by {container}, '
                         f'because that source is already contained by this source.'
                     )
-
-    @property
-    def admin_source_link(self) -> SafeString:
-        """Return a file link to display in the admin."""
-        element = ''
-        if self.file:
-            element = compose_link(
-                '<i class="fa fa-search"></i>',
-                href=self.url,
-                klass='btn btn-small btn-default display-source',
-                target=NEW_TAB,
-            )
-        return format_html(element)
 
     @property
     def ctype(self):
@@ -208,10 +197,10 @@ class PolymorphicSource(
             html = f'{html}, {containers}'
         elif getattr(self, 'page_number', None):
             page_number_html = _get_page_number_html(
-                self, self.source_file, self.page_number, self.end_page_number
+                self, self.file, self.page_number, self.end_page_number
             )
             html = f'{html}, {page_number_html}'
-        if not self.source_file:
+        if not self.file:
             if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
         if getattr(self, 'information_url', None) and self.information_url:
@@ -222,9 +211,9 @@ class PolymorphicSource(
         the_code_below_is_good = False
         if the_code_below_is_good:
             # TODO: Remove search icon; insert link intelligently
-            if self.file_url:
+            if self.file:
                 html += (
-                    f'<a href="{self.file_url}" class="mx-1 display-source"'
+                    f'<a href="{self.file.url}" class="mx-1 display-source"'
                     f' data-toggle="modal" data-target="#modal">'
                     f'<i class="fas fa-search"></i>'
                     f'</a>'
@@ -277,7 +266,7 @@ class PolymorphicSource(
             if containment.page_number:
                 page_number_html = _get_page_number_html(
                     containment.source,
-                    containment.source.source_file,
+                    containment.source.file,
                     containment.page_number,
                     containment.end_page_number,
                 )
@@ -307,11 +296,11 @@ class PolymorphicSource(
         If the source has a file, the URL of the file is returned;
         otherwise, the source's `url` field value is returned.
         """
-        if self.source_file_url:
-            url = self.source_file_url
-            page_number = self.source_file.default_page_number
+        if self.file:
+            url = self.file.url
+            page_number = self.file.default_page_number
             if getattr(self, 'page_number', None):
-                page_number = self.page_number + self.source_file.page_offset
+                page_number = self.page_number + self.file.page_offset
             if page_number:
                 url = _set_page_number(url, page_number)
         else:
@@ -362,11 +351,6 @@ class PolymorphicSource(
             )
         ]
 
-    @property
-    def source_file_url(self) -> Optional[str]:
-        """Return the source file's URL, if it has one."""
-        return self.source_file.url if self.source_file else None
-
     def __html__(self) -> str:
         """
         Return the source's HTML representation, not including its containers.
@@ -382,10 +366,10 @@ class PolymorphicSource(
 
 
 def _get_page_number_url(
-    source: PolymorphicSource, file: SourceFile, page_number: int
+    source: Source, file: SourceFile, page_number: int
 ) -> Optional[str]:
     """TODO: write docstring."""
-    url = source.source_file_url or None
+    url = source.file.url or None
     if not url:
         return None
     page_number += file.page_offset
@@ -400,7 +384,7 @@ def _get_page_number_link(url: str, page_number: int) -> Optional[str]:
 
 
 def _get_page_number_html(
-    source: PolymorphicSource,
+    source: Source,
     file: Optional[SourceFile],
     page_number: int,
     end_page_number: Optional[int] = None,

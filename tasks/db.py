@@ -108,6 +108,6 @@ def seed(context, migrate: bool = False):
 
 
 @command
-def squash_migrations(context, dry: bool = True):
+def squash_migrations(context, dry: bool = False):
     """Squash migrations."""
-    db.squash_migrations(context, dry)
+    db.squash_migrations(context, dry=dry)

@@ -6,29 +6,29 @@ from django.views.generic import TemplateView
 from meta.views import Meta
 
 from apps.quotes.models import Quote
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 
 
 class IndexView(generic.ListView):
     """Displays all sources."""
 
-    model = PolymorphicSource
+    model = Source
     template_name = 'sources/index.html'
     context_object_name = 'sources'
 
-    def get_queryset(self) -> 'QuerySet[PolymorphicSource]':
+    def get_queryset(self) -> 'QuerySet[Source]':
         """Return the last five published questions."""
-        return PolymorphicSource.objects.all()
+        return Source.objects.all()
 
 
 class BaseDetailView(generic.DetailView):
     """Abstract base view for source detail views."""
 
-    model = PolymorphicSource
+    model = Source
     context_object_name = 'source'
     query_pk_and_slug = True
 
-    object: PolymorphicSource
+    object: Source
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         """Return the context dictionary used to render the view."""

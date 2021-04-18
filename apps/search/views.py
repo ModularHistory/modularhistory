@@ -19,7 +19,7 @@ from apps.occurrences.models import Occurrence
 from apps.quotes.models import Quote
 from apps.search.forms import SearchForm
 from apps.search.models import SearchableDatedModel
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.topics.models import Topic
 from core.constants.content_types import ContentTypes, get_ct_id
 from core.models import Model
@@ -295,14 +295,14 @@ class SearchResultsView(ListView):
         quote_results, quote_result_ids = _get_quote_results(
             content_types, occurrence_result_ids, **search_kwargs
         )
+        source_results, source_result_ids = _get_source_results(
+            content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
+        )
 
         # TODO
         fixed = False
         if fixed:
             image_results = _get_image_results(
-                content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
-            )
-            source_results, source_result_ids = _get_source_results(
                 content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
             )
 
@@ -411,8 +411,9 @@ def _get_image_results(
 def _get_source_results(
     content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
+
     if ContentTypes.source in content_types or not content_types:
-        source_results = PolymorphicSource.objects.search(**search_kwargs)  # type: ignore
+        source_results = Source.objects.search(**search_kwargs)  # type: ignore
 
         # TODO: This was broken by conversion to generic relations with quotes & occurrences
         not_broken = False

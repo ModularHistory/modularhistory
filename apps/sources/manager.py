@@ -25,19 +25,19 @@ class PolymorphicSourceManager(PolymorphicManager, SearchableModelManager):
         suppress_unverified: bool = True,
         suppress_hidden: bool = True,
     ) -> 'PolymorphicSourceQuerySet':
-        """Return search results from apps.sources."""
+        """Return search results."""
         qs = (
             super()
             # https://django-polymorphic.readthedocs.io/en/stable/advanced.html?highlight=non_polymorphic#non-polymorphic-queries
-            .non_polymorphic()
             .search(
                 query=query,
                 suppress_unverified=suppress_unverified,
                 suppress_hidden=suppress_hidden,
-            )
-            .filter_by_date(start_year=start_year, end_year=end_year)
+            ).filter_by_date(start_year=start_year, end_year=end_year)
+            # Return a queryset of Source instances, not instances of child models.
+            .non_polymorphic()
         )
-        # Limit to specified entities
+        # Filter by specified entities.
         if entity_ids:
             qs = qs.filter(Q(attributees__id__in=entity_ids))
         return qs

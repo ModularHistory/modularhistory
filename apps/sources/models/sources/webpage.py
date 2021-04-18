@@ -1,11 +1,11 @@
-"""Model classes for web pages."""
+"""Model classes for webpages."""
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models.mixins.textual import TextualMixin
 from apps.sources.models.publication import AbstractPublication
-from apps.sources.models.source import PolymorphicSource
+from apps.sources.models.source import Source
 
 
 class Website(AbstractPublication):
@@ -16,8 +16,8 @@ class Website(AbstractPublication):
     )
 
 
-class PolymorphicWebPage(PolymorphicSource, TextualMixin):
-    """A web page."""
+class Webpage(Source, TextualMixin):
+    """A webpage."""
 
     website = models.ForeignKey(
         to='sources.Website', null=True, blank=True, on_delete=models.CASCADE

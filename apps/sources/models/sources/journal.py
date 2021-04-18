@@ -1,14 +1,14 @@
 """Model classes for journals (as sources)."""
 
-from apps.sources.models import PolymorphicSource
+from apps.sources.models import Source
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
 
-class PolymorphicJournalEntry(PolymorphicSource, PageNumbersMixin):
+class Entry(Source, PageNumbersMixin):
     "A journal entry."
 
     class Meta:
-        """Meta options for the JournalEntry model."""
+        """Meta options for the Entry model."""
 
         # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
         verbose_name_plural = 'journal entries'

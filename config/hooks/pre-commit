@@ -1,18 +1,24 @@
 #!/bin/bash
 
-staged_files=$(git diff --name-only --staged)
-
-echo "Autoformatting code..."
+staged_files="$(git diff --name-only --staged)"
 
 # Autoformat Python code.
-poetry --help &>/dev/null && [[ -d ".venv" ]] && {
-    comma_delimited_filepaths=$(echo staged_files | tr '\n' ',')
-    poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
+echo "$staged_files" | grep --quiet ".py" && {
+    echo "Autoformatting code..."
+    poetry --help &>/dev/null && [[ -d ".venv" ]] && {
+        comma_delimited_filepaths="$(echo staged_files | grep '.py' | tr '\n' ',')"
+        poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
+    }
+    echo "Finished autoformatting Python code."
 }
 
 # Autoformat JS & TS code.
-cd frontend && npx lint-staged && cd ..
+echo "$staged_files" | grep --quiet ".js|.ts|.jsx|.tsx" && {
+    cd frontend && npx lint-staged && cd ..
+}
 
 for file in $staged_files; do
-    git add "$file"
+    git add "$file" &>/dev/null
 done
+
+echo "Finished pre-commit tasks."

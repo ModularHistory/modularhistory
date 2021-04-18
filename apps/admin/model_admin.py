@@ -14,6 +14,7 @@ from django_celery_beat.models import (
     SolarSchedule,
 )
 from django_celery_results.admin import TaskResult, TaskResultAdmin
+from nested_admin import NestedModelAdmin, NestedPolymorphicInlineSupportMixin
 from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
@@ -42,8 +43,13 @@ else:
     ADMIN_CSS = 'styles/admin.css'
 
 
-class ModelAdmin(NestedModelAdmin):
-    """Base admin class for ModularHistory's models."""
+class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
+    """
+    Base admin class for ModularHistory's models.
+
+    Uses the NestedPolymorphicInlineSupportMixin as instructed in
+    https://django-nested-admin.readthedocs.io/en/latest/integrations.html.
+    """
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 

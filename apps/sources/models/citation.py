@@ -91,7 +91,7 @@ class Citation(PositionedRelation):
         blank=True,
     )
     source = models.ForeignKey(
-        to='sources.PolymorphicSource',
+        to='sources.Source',
         related_name='citations',
         on_delete=models.PROTECT,
     )
@@ -159,9 +159,9 @@ class Citation(PositionedRelation):
         # TODO: Remove search icon so citations can be joined together with semicolons
         the_following_code_is_fixed = False
         if the_following_code_is_fixed:
-            if self.source_file:
+            if self.file:
                 html += (
-                    f'<a href="{self.source_file.url}" class="display-source"'
+                    f'<a href="{self.file.url}" class="display-source"'
                     f' target="_blank" data-toggle="modal" data-target="#modal">'
                     f'<i class="fas fa-search"></i>'
                     f'</a>'
@@ -229,7 +229,7 @@ class Citation(PositionedRelation):
     @property
     def source_file_page_number(self) -> Optional[int]:
         """Return the page number of the citation's source file."""
-        file = self.source.source_file
+        file = self.source.file
         if file:
             if self.primary_page_number:
                 return self.primary_page_number + file.page_offset
@@ -241,8 +241,8 @@ class Citation(PositionedRelation):
     def source_file_url(self) -> Optional[str]:
         """Return the URL of the citation's source file."""
         file_url = None
-        if self.source.source_file:
-            file_url = self.source.source_file.url
+        if self.source.file:
+            file_url = self.source.file.url
             if file_url and self.source_file_page_number:
                 if pdf.url_specifies_page(file_url):
                     pattern = rf'{pdf.PAGE_KEY}=\d+'
@@ -258,7 +258,7 @@ class Citation(PositionedRelation):
         """Return a URL to a specific page of the citation's source file."""
         page_number = int(page_number)
         try:
-            source_file = self.source.source_file
+            source_file = self.source.file
         except (AttributeError, ObjectDoesNotExist):
             return None
         if source_file:
