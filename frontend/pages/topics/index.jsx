@@ -7,11 +7,16 @@ import Layout from "../../components/Layout";
 export default function Topics({ topicsData }) {
   const topics = topicsData["results"] || [];
 
-  //replace <p>{topic['name']}</p> with <a> to SERP topics in version 2
+  //Style for the anchor used in topicNames
+  const topicAnchorStyle = {
+    color: 'black',
+  }
   const topicNames = topics.map((topic) => (
-    <p>{topic['name']}</p>
+    <Grid item key={topic['key']} xs={6} sm={6} md={6}>
+      <a style={topicAnchorStyle} href={'./search?content_types=occurrences.occurrence&content_types=quotes.quote&content_types=images.image&content_types=sources.source&query=' + topic['key']}><u><strong>{topic['key']}</strong></u></a>
+    </Grid>
   ));
-
+  
   return (
     <Layout title={"Topics"}>
       <Container>
