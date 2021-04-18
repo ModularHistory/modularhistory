@@ -1,6 +1,7 @@
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
+import Link from "next/link";
 import Layout from "../../components/Layout";
 
 
@@ -11,9 +12,12 @@ export default function Topics({ topicsData }) {
   const topicAnchorStyle = {
     color: 'black',
   }
+
   const topicNames = topics.map((topic) => (
-    <Grid item key={topic['key']} xs={6} sm={6} md={6}>
-      <a style={topicAnchorStyle} href={'./search?content_types=occurrences.occurrence&content_types=quotes.quote&content_types=images.image&content_types=sources.source&query=' + topic['key']}><u><strong>{topic['key']}</strong></u></a>
+    <Grid item key={topic['key']} xs={4}>
+      <Link href={`/search?topics=${topic['pk']}`}>
+        <a style={topicAnchorStyle}><strong>{topic['key']}</strong></a>
+      </Link>
     </Grid>
   ));
   
