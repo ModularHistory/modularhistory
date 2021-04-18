@@ -14,7 +14,7 @@ from polymorphic.models import PolymorphicModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
-from apps.sources.manager import PolymorphicSourceManager
+from apps.sources.manager import PolymorphicSourceManager, PolymorphicSourceQuerySet
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields import HistoricDateTimeField, HTMLField
@@ -114,7 +114,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     class Meta:
         ordering = ['-date']
 
-    objects = PolymorphicSourceManager()
+    objects = PolymorphicSourceManager.from_queryset(PolymorphicSourceQuerySet)()
     searchable_fields = ['citation_string', 'description']
     serializer = SourceSerializer
     slug_base_field = 'title'

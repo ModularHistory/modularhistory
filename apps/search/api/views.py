@@ -98,14 +98,14 @@ class SearchResultsAPIView(ListAPIView):
         quote_results, quote_result_ids = _get_quote_results(
             content_types, occurrence_result_ids, **search_kwargs
         )
+        source_results, source_result_ids = _get_source_results(
+            content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
+        )
 
         # TODO
         fixed = False
         if fixed:
             image_results = _get_image_results(
-                content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
-            )
-            source_results, source_result_ids = _get_source_results(
                 content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
             )
 
@@ -140,7 +140,8 @@ class SearchResultsAPIView(ListAPIView):
         ordered_queryset = self.order_queryset(
             # Combine querysets
             chain(
-                occurrence_results, quote_results
+                occurrence_results,
+                quote_results,
             )  # , image_results)  # , source_results)
         )
 
