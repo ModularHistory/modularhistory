@@ -26,5 +26,3 @@ class OccurrenceAPIView(RetrieveAPIView):
     queryset = Occurrence.objects.all()
     serializer_class = OccurrenceSerializer
     lookup_field = "slug"
-    lookup_url_kwarg = "slug"
-
