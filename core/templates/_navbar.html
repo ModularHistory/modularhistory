@@ -33,7 +33,7 @@
                 </li>
             {% else %}
                 <li class="nav-item">
-                    <a href="/api/auth/signin" class="nav-link">Sign in</a>
+                    <a href="/api/auth/signin?callbackUrl={{ request.build_absolute_uri }}" class="nav-link">Sign in</a>
                 </li>
             {% endif %}
         </ul>

@@ -37,7 +37,7 @@ export default function ModuleDetail({ module }) {
 
   return (
     <div className="detail" ref={ref}>
-      {!loading && session.user && (
+      {!loading && session?.user?.['is_superuser'] &&  (
         <a href={module['admin_url']}
             target="_blank" className="edit-object-button" rel="noopener noreferrer"
             style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>
