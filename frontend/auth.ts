@@ -67,6 +67,8 @@ export const removeServerSideCookies = (cookies: Array<string>): Array<string> =
   cookies.forEach((cookie) => {
     if (!cookie.includes("HttpOnly;")) {
       clientSideCookies.push(cookie);
+    } else {
+      console.log(`Dropped ${cookie.split(";")[0].split("=")[0]} cookie.`);
     }
   });
   return clientSideCookies;
