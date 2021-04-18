@@ -43,7 +43,7 @@ export const handleLogout = (session: Session): void => {
         }
       )
       .then(function () {
-        console.log("Signed out.");
+        console.debug("Signed out.");
       })
       .catch(function (error) {
         console.error(`Failed to sign out due to error: ${error}`);
@@ -68,7 +68,7 @@ export const removeServerSideCookies = (cookies: Array<string>): Array<string> =
     if (!cookie.includes("HttpOnly;")) {
       clientSideCookies.push(cookie);
     } else {
-      console.log(`Dropped ${cookie.split(";")[0].split("=")[0]} cookie.`);
+      console.debug(`Dropped ${cookie.split(";")[0].split("=")[0]} cookie.`);
     }
   });
   return clientSideCookies;

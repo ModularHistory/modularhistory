@@ -19,6 +19,7 @@ if [[ -d config/hooks ]]; then
   for filepath in config/hooks/*; do
     filename=$(basename "$filepath")
     if [[ $filename = "post-merge" ]]; then
+      echo "The post-merge hook has changed."
       # To avoid having this hook overwrite itself, prompt to rerun the setup script.
       prompt_to_run_setup_script=true
     else
