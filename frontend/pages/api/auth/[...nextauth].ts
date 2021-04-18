@@ -1,10 +1,11 @@
 import { AxiosResponse } from "axios";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import NextAuth, {
-  CallbacksOptions, NextAuthOptions,
+  CallbacksOptions,
+  NextAuthOptions,
   PagesOptions,
   Session,
-  User
+  User,
 } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
@@ -217,7 +218,7 @@ const options: NextAuthOptions = {
   session: { jwt: true },
 };
 
-const authHandler: NextApiHandler = (req: NextApiRequest, res: NextApiResponse) => {  
+const authHandler: NextApiHandler = (req: NextApiRequest, res: NextApiResponse) => {
   return NextAuth(req, res, options);
 };
 
