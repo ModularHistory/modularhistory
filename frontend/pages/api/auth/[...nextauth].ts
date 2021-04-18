@@ -5,7 +5,7 @@ import NextAuth, {
   NextAuthOptions,
   PagesOptions,
   Session,
-  User,
+  User
 } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
@@ -99,7 +99,7 @@ callbacks.signIn = async function signIn(user: User, provider, _data) {
   }
   const allowLogin = user.error ? false : true;
   if (!allowLogin) {
-    console.log("Rejected login.");
+    console.debug("Rejected login.");
   }
   return allowLogin;
 };
@@ -112,8 +112,9 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
     // initial sign in
     token.accessToken = user.accessToken;
     token.accessTokenExpiry = user.accessTokenExpiry;
-    token.clientSideCookies = user.clientSideCookies;
     token.refreshToken = user.refreshToken;
+    token.sessionIdCookie = user.sessionIdCookie;
+    token.clientSideCookies = user.clientSideCookies;
   }
   // Refresh the access token if it is expired.
   if (Date.now() > token.accessTokenExpiry) {
@@ -127,9 +128,12 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
   const sessionPlus: WithAdditionalParams<Session> = { ...session };
   if (jwt) {
     const accessToken = jwt.accessToken;
-    const clientSideCookies = jwt.clientSideCookies;
-    const expiry = jwt.accessTokenExpiry;
+    if (jwt.sessionIdCookie) {
+      sessionPlus.sessionIdCookie = jwt.sessionIdCookie;
+    }
     if (accessToken) {
+      const clientSideCookies = jwt.clientSideCookies;
+      const expiry = jwt.accessTokenExpiry;
       sessionPlus.accessToken = accessToken;
       // If the access token is expired, ...
       if (Date.now() > expiry) {
@@ -166,19 +170,22 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
 
 callbacks.redirect = async function redirect(url, baseUrl) {
   url = url.startsWith(baseUrl) ? url : baseUrl;
+  // Regardless of whether the redirect page is a Django or React page,
+  // we have to first hit the redirect page to deal with cookies.
+  const reactPagesDoNotNeedToHitTheRedirectPage = false;
   // Strip /auth/signin from the redirect URL if necessary,
   // so that the user is instead redirected to the homepage.
   const path = url.replace(baseUrl, "").replace("/auth/signin", "");
   // Determine whether the redirect URL is to a React or to a non-React page.
   const reactPattern = /(\/?$|\/entities\/?|\/search\/?|\/occurrences\/?|\/quotes\/?)/;
-  if (reactPattern.test(url)) {
-    // If redirecting to a React page,
-    // Strip /auth/redirect from the redirect URL if necessary.
+  if (reactPagesDoNotNeedToHitTheRedirectPage && reactPattern.test(url)) {
+    // Strip /auth/redirect from the redirect URL if necessary, so that
+    // the user is redirected straight to their destination page without
+    // hitting the "redirect page."
     if (url.includes("/auth/redirect/")) {
       url = url.replace("/auth/redirect", "");
     }
   } else {
-    // If redirecting to a non-React page,
     // Add /auth/redirect to the redirect URL if necessary.
     // This will cause the user to first be routed to the "redirect page," where
     // Next.js can set or remove cookies before routing the user to the callback URL.
@@ -230,7 +237,7 @@ async function authenticateWithCredentials(credentials) {
     .then(function (response: AxiosResponse) {
       user = response.data["user"];
       if (!user) {
-        console.log("Response did not contain user data.");
+        console.debug("Response did not contain user data.");
         return Promise.resolve(null);
       }
       /*
@@ -244,6 +251,8 @@ async function authenticateWithCredentials(credentials) {
       cookies.forEach((cookie) => {
         if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {
           user.accessTokenExpiry = Date.parse(cookie.match(/expires=(.+?);/)[1]);
+        } else if (cookie.startsWith(`sessionid=`)) {
+          user.sessionIdCookie = cookie;
         }
       });
       user.clientSideCookies = removeServerSideCookies(cookies);
@@ -311,7 +320,7 @@ async function refreshAccessToken(jwt: JWT) {
     })
     .then(function (response: AxiosResponse) {
       if (response.data.access && response.data.access_token_expiration) {
-        console.log("Refreshed access token.");
+        console.debug("Refreshed access token.");
         /*
           Example response:
           {
@@ -335,7 +344,7 @@ async function refreshAccessToken(jwt: JWT) {
           exp: accessTokenExpiry / 1000,
         };
       } else if (response.data.code === "token_not_valid") {
-        console.log("Refresh token expired.");
+        console.debug("Refresh token expired.");
         /*
           Example response:
           {
