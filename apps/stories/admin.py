@@ -1,4 +1,4 @@
-from admin import ModelAdmin, StackedInline, admin_site
+from apps.admin import ModelAdmin, StackedInline, admin_site
 from apps.sources.admin import CitationsInline
 from apps.stories import models
 
