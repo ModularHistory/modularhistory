@@ -35,8 +35,8 @@ def backup(
     filename: Optional[str] = None,
 ):
     """Create a database backup file."""
-    if filename and zip and not filename.endswith('.zip'):
-        raise ValueError(f'{filename} does not have a .zip extension.')
+    if filename and not filename.endswith('.sql'):
+        raise ValueError(f'{filename} does not have a .sql extension.')
     backup_files_pattern = join(settings.BACKUPS_DIR, '*sql')
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --noinput')
@@ -75,19 +75,22 @@ def backup(
         with ZipFile(zipped_backup_file, 'x') as archive:
             archive.write(backup_filepath)
         backup_filepath = zipped_backup_file
-    print(f'Finished creating backup file: {backup_filepath}')
+    logging.info(f'Finished creating backup file: {backup_filepath}')
     if push:
         latest_backup_dir = join(settings.BACKUPS_DIR, 'latest')
         context.run(f'mkdir -p {latest_backup_dir}')
-        context.run(f'cp {backup_filepath} {join(latest_backup_dir, filename)}')
-        print(f'Uploading {latest_backup_dir} contents to remote storage ...')
+        context.run(
+            f'cp {backup_filepath} '
+            f'{join(latest_backup_dir, os.path.basename(backup_filepath))}'
+        )
+        logging.info(f'Uploading {latest_backup_dir} contents to remote storage ...')
         files.sync(
             local_dir=latest_backup_dir,
             remote_dir='/database/',
             push=True,
             storage_provider=RcloneStorageProviders.GOOGLE_DRIVE,
         )
-        print(f'Finished uploading {backup_filepath}.')
+        logging.info(f'Finished uploading {backup_filepath}.')
     # Remove old backup files
     logging.info('Removing old backup files ...')
     end = '{} \;'  # noqa: W605, P103
