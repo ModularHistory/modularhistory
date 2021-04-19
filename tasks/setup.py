@@ -96,7 +96,6 @@ def seed(
     env_file: bool = True,
 ):
     """Seed a dev database, media directory, and env file."""
-    n_expected_artifacts = 1
     env_file = env_file and input('Seed .env file? [Y/n] ') != NEGATIVE
     db = db and input('Seed database? [Y/n] ') != NEGATIVE
     username, pat = github_utils.accept_credentials(username, pat)
@@ -120,7 +119,7 @@ def seed(
             f'https://github.com/ModularHistory/modularhistory/runs/{workflow_run_id}?check_suite_focus=true'
         )
     artifacts = session.get(artifacts_url).json().get('artifacts')
-    while len(artifacts) < n_expected_artifacts:
+    while not artifacts:
         print(f'Waiting for artifacts... status: {status}')
         context.run('sleep 9')
         artifacts = session.get(artifacts_url).json().get('artifacts')
