@@ -46,3 +46,8 @@ export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
     serialized_citations: Citation[],
     summary: string,
 }
+
+export interface StaticPage {
+    title: string,
+    content: string,
+}

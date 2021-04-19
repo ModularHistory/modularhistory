@@ -1,11 +1,11 @@
 import { useSession } from "next-auth/client";
-import {createRef, FC, useLayoutEffect} from "react";
+import { createRef, FC, useLayoutEffect } from "react";
 import OccurrenceDetail from "./OccurrenceDetail";
 import QuoteDetail from "./QuoteDetail";
 import { OccurrenceModule, QuoteModule } from "@/interfaces";
 
 interface ModuleDetailProps {
-  module: OccurrenceModule | QuoteModule
+  module: OccurrenceModule | QuoteModule;
 }
 
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
@@ -42,16 +42,26 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
 
   return (
     <div className="detail" ref={ref}>
-      {!loading && session?.user?.['is_superuser'] &&  (
-        <a href={module['admin_url']}
-            target="_blank" className="edit-object-button" rel="noopener noreferrer"
-            style={{display: "inline-block", position: "absolute", top: "1px", right: "-2rem", fontWeight: "bold"}}>
-          <i className="fa fa-edit"/>
+      {!loading && session?.user?.["is_superuser"] && (
+        <a
+          href={module["admin_url"]}
+          target="_blank"
+          className="edit-object-button"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            position: "absolute",
+            top: "1px",
+            right: "-2rem",
+            fontWeight: "bold",
+          }}
+        >
+          <i className="fa fa-edit" />
         </a>
       )}
       {details}
     </div>
   );
-}
+};
 
 export default ModuleDetail;

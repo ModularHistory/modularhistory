@@ -1,33 +1,33 @@
-import {OccurrenceModule} from "@/interfaces";
-import {GetStaticPaths, GetStaticProps} from "next";
-import {FunctionComponent} from "react";
+import { OccurrenceModule } from "@/interfaces";
+import { GetStaticPaths, GetStaticProps } from "next";
+import { FC } from "react";
 
 import Layout from "@/components/Layout";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
 import axios from "axios";
 
 interface OccurrenceProps {
-  occurrence: OccurrenceModule
+  occurrence: OccurrenceModule;
 }
 
 /**
  * A page that renders the HTML of a single occurrence.
  */
-const Occurrence: FunctionComponent<OccurrenceProps> = ({occurrence}: OccurrenceProps) => {
+const Occurrence: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
   return (
     <Layout title={""}>
-      <ModuleContainer module={occurrence}/>
+      <ModuleContainer module={occurrence} />
     </Layout>
-  )
-}
+  );
+};
 export default Occurrence;
 
-export const getStaticProps: GetStaticProps = async ({params}) => {
+export const getStaticProps: GetStaticProps = async ({ params }) => {
   let occurrence = {};
-  const {slug} = params;
+  const { slug } = params;
 
   await axios
-    .get(`http://django:8000/api/occurrences/${slug}/`,)
+    .get(`http://django:8000/api/occurrences/${slug}/`)
     .then((response) => {
       occurrence = response.data;
     })
@@ -37,15 +37,15 @@ export const getStaticProps: GetStaticProps = async ({params}) => {
 
   return {
     props: {
-      occurrence
+      occurrence,
     },
     revalidate: 10,
   };
-}
+};
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [],
-    fallback: "blocking"
+    fallback: "blocking",
   };
-}
+};

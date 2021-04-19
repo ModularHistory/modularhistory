@@ -4,7 +4,7 @@ import { FC } from "react";
 import ImageCard from "../modulecards/ImageCard";
 
 interface QuoteDetailProps {
-  quote: QuoteModule
+  quote: QuoteModule;
 }
 
 const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
@@ -45,6 +45,6 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
       </div>
     </>
   );
-}
+};
 
 export default QuoteDetail;

@@ -4,7 +4,7 @@ import { FC } from "react";
 import ImageCard from "../modulecards/ImageCard";
 
 interface OccurrenceDetailProps {
-  occurrence: OccurrenceModule
+  occurrence: OccurrenceModule;
 }
 
 const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceDetailProps) => {
@@ -45,7 +45,7 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
         <div dangerouslySetInnerHTML={{ __html: occurrence["description"] }} />
 
         {occurrence["postscript"] && (
-          <p dangerouslySetInnerHTML={{__html: occurrence["postscript"]}} />
+          <p dangerouslySetInnerHTML={{ __html: occurrence["postscript"] }} />
         )}
         {occurrence["tags_html"] && (
           <ul className="tags" dangerouslySetInnerHTML={{ __html: occurrence["tags_html"] }} />
@@ -69,6 +69,6 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
       </div>
     </>
   );
-}
+};
 
 export default OccurrenceDetail;
