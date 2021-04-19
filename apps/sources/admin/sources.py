@@ -67,7 +67,7 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         'attributee_string',
         'date_string',
         'slug',
-        'ctype',
+        'ctype_name',
     ]
     list_filter = [
         'verified',
@@ -88,6 +88,9 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         """Return reordered fields to be displayed in the admin."""
         fields: list(super().get_fields(request, model_instance))
         return rearrange_fields(fields)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('polymorphic_ctype')
 
 
 class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):

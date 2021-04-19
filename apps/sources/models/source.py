@@ -4,7 +4,8 @@ import logging
 import re
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -48,11 +49,29 @@ CITATION_PHRASE_OPTIONS = (
 class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        null=False,  # cannot be null in db
+        blank=True,  # can be left blank in admin form
+    )
+    citation_string = models.CharField(
+        verbose_name=_('citation string'),
+        max_length=MAX_CITATION_STRING_LENGTH,
+        null=False,  # cannot be null in db
+        blank=True,  # can be left blank in admin form
+        unique=True,
+    )
     attributee_html = models.CharField(
-        max_length=MAX_ATTRIBUTEE_HTML_LENGTH, null=True, blank=True
+        max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
+        null=True,
+        blank=True,
+        verbose_name=_('attributee HTML'),
     )
     attributee_string = models.CharField(
-        max_length=MAX_ATTRIBUTEE_STRING_LENGTH, null=True, blank=True
+        max_length=MAX_ATTRIBUTEE_STRING_LENGTH,
+        null=True,
+        blank=True,
+        verbose_name=_('attributee string'),
     )
     attributees = models.ManyToManyField(
         to='entities.Entity',
@@ -61,16 +80,8 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
-    citation_html = models.TextField(
-        verbose_name=_('citation HTML'),
-        null=False,  # cannot be null in db
-        blank=True,  # can be left blank in admin form
-    )
-    citation_string = models.CharField(
-        max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,  # cannot be null in db
-        blank=True,  # can be left blank in admin form
-        unique=True,
+    containment_html = models.TextField(
+        verbose_name=_('containment HTML'), null=True, blank=True
     )
     containers = models.ManyToManyField(
         to='self',
@@ -79,9 +90,12 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         related_name='contained_sources',
         symmetrical=False,
         blank=True,
+        verbose_name=_('containers'),
     )
     date = HistoricDateTimeField(null=True, blank=True)
-    description = HTMLField(null=True, blank=True, paragraphed=True)
+    description = HTMLField(
+        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+    )
     file = models.ForeignKey(
         to=SourceFile,
         related_name='sources',
@@ -91,9 +105,15 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         verbose_name='file',
     )
     location = models.ForeignKey(
-        to='places.Place', null=True, blank=True, on_delete=models.SET_NULL
+        to='places.Place',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_('location'),
     )
-    publication_date = HistoricDateTimeField(null=True, blank=True)
+    publication_date = HistoricDateTimeField(
+        verbose_name=_('publication date'), null=True, blank=True
+    )
     related = GenericManyToManyField(
         'quotes.Quote',
         'occurrences.Occurrence',
@@ -105,6 +125,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
     )
     url = models.URLField(
+        verbose_name=_('URL'),
         max_length=MAX_URL_LENGTH,
         null=True,
         blank=True,
@@ -126,39 +147,49 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def clean(self):
         """Prepare the source to be saved."""
         super().clean()
-        self.citation_html = self.calculate_citation_html()
-        self.citation_string = soupify(self.citation_html).get_text()
+        self.attributee_html = self.get_attributee_html()
+        # Compute attributee_string from attributee_html only if
+        # attributee_string was not already manually set.
+        if not self.attributee_string:
+            self.attributee_string = soupify(self.attributee_html).get_text()
+        self.containment_html = self.get_containment_html()
+        self.citation_html = self.get_citation_html()
+        # Set the citation_string (used as a natural key) to the text version
+        # of citation_html, minus the containment string and anything following.
+        if self.containment_html and self.containment_html in self.citation_html:
+            index = self.citation_html.index(self.containment_html)
+            self.citation_string = soupify(
+                self.citation_html[:index].rstrip(', ')
+            ).get_text()
+        else:
+            self.citation_string = soupify(self.citation_html).get_text()
         if not self.file:
             if self.containment and self.containment.container.file:
                 self.file = self.containment.container.file
-        if self.pk:  # If this source is not being newly created
-            is_duplicate = (
-                Source.objects.exclude(pk=self.pk)
-                .filter(citation_string=self.citation_string)
-                .exists()
-            )
-            if is_duplicate:
-                raise ValidationError(
-                    f'Unable to save this source because it duplicates an existing source '
-                    f'or has an identical string: {self.citation_string}'
-                )
-            for container in self.containers.all():
-                if self in container.containers.all():
-                    raise ValidationError(
-                        f'This source cannot be contained by {container}, '
-                        f'because that source is already contained by this source.'
-                    )
 
     @property
-    def ctype(self):
+    def ctype(self) -> ContentType:
         return self.polymorphic_ctype
+
+    @property
+    def ctype_name(self) -> ContentType:
+        """Return the model instance's ContentType."""
+        return self.ctype.model
+
+    @property
+    def containment(self) -> Optional['SourceContainment']:
+        """Return the source's primary containment."""
+        try:
+            return self.source_containments.first()
+        except (ObjectDoesNotExist, AttributeError):
+            return None
 
     @property
     def escaped_citation_html(self) -> SafeString:
         return format_html(self.citation_html)
 
     @property
-    def calculate_attributee_html(self) -> Optional[str]:
+    def get_attributee_html(self) -> Optional[str]:
         """Return an HTML string representing the source's attributees."""
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
         has_attributees = self.attributees.exists() if self.pk else False
@@ -187,14 +218,13 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             html = f'{html} et al.'
         return html
 
-    def calculate_citation_html(self) -> str:
+    def get_citation_html(self) -> str:
         """Return the HTML representation of the source, including its containers."""
         # TODO: html methods should be split into different classes and/or mixins.
         html = self.__html__()
-        container_strings = self.get_container_strings()
-        if container_strings:
-            containers = ', and '.join(container_strings)
-            html = f'{html}, {containers}'
+        containment_html = self.containment_html or self.get_containment_html()
+        if containment_html:
+            html = f'{html}, {containment_html}'
         elif getattr(self, 'page_number', None):
             page_number_html = _get_page_number_html(
                 self, self.file, self.page_number, self.end_page_number
@@ -203,11 +233,13 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if not self.file:
             if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
-        if getattr(self, 'information_url', None) and self.information_url:
-            html = (
-                f'{html}, information available at '
-                f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
-            )
+        # TODO: Do something else with the information URL.
+        # It shouldn't be part of the citation string, but we should use it.
+        # if getattr(self, 'information_url', None) and self.information_url:
+        #     html = (
+        #         f'{html}, information available at '
+        #         f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
+        #     )
         the_code_below_is_good = False
         if the_code_below_is_good:
             # TODO: Remove search icon; insert link intelligently
@@ -229,26 +261,13 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                 )
         return format_html(fix_comma_positions(html))
 
-    @property
-    def containment(self) -> Optional['SourceContainment']:
-        """Return the source's primary containment."""
-        try:
-            return self.source_containments.first()
-        except (ObjectDoesNotExist, AttributeError):
-            return None
-
-    @property
-    def escaped_citation_html(self) -> SafeString:
-        return format_html(self.citation_html)
-
-    def get_container_strings(self) -> Optional[List[str]]:
+    def get_containment_html(self) -> str:
         """Return a list of strings representing the source's containers."""
         containments = self.source_containments.order_by('position')[:2]
         container_strings = []
         same_creator = True
         for containment in containments:
-            container_html = f'{containment.container.html}'
-
+            container_html = f'{containment.container.citation_html}'
             # Determine whether the container has the same attributee
             if containment.container.attributee_html != self.attributee_html:
                 same_creator = False
@@ -277,7 +296,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                 else f'in {container_html}'
             )
             container_strings.append(container_html)
-        return container_strings
+        return ', and '.join(container_strings)
 
     def get_date(self) -> Optional[HistoricDateTime]:
         """Get the source's date."""  # TODO: prefetch container?
