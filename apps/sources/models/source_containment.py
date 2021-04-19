@@ -53,7 +53,7 @@ class SourceContainment(PositionedRelation):
         return format_html(f'{self.phrase} in {self.container}')
 
     def clean(self):
-        """Prepare the source to be saved."""
+        """Prepare the containment to be saved."""
         super().clean()
         if self.source in self.container.containers.all():
             raise ValidationError(
