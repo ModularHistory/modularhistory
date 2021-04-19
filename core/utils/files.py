@@ -4,7 +4,13 @@ import re
 from copy import deepcopy
 from os.path import isfile, join
 from pprint import pformat
-from typing import Dict, List
+from typing import Dict, List, Optional
+
+from decouple import config
+from django.conf import settings
+from invoke.context import Context
+
+from core.constants.misc import RcloneStorageProviders
 
 
 def envsubst(input_file) -> str:
@@ -53,6 +59,50 @@ def get_duplicated_files(path) -> DuplicatedFiles:
 def relativize(path: str):
     """Convert the path to a relative path."""
     return join('.', path)
+
+
+def sync(
+    local_dir: str,
+    remote_dir: str,
+    push: bool = False,
+    storage_provider: str = RcloneStorageProviders.GOOGLE_DRIVE,
+    context: Optional[Context] = None,
+):
+    """Upload a file to cloud storage."""
+    if context is None:
+        context = Context()
+    if storage_provider not in RcloneStorageProviders:
+        raise ValueError(f'Unknown storage provider: {storage_provider}')
+    if storage_provider != RcloneStorageProviders.GOOGLE_DRIVE:
+        raise NotImplementedError(
+            f'Only {RcloneStorageProviders.GOOGLE_DRIVE} is supported.'
+        )
+    credentials = config('RCLONE_GDRIVE_SA_CREDENTIALS')
+    local, remote = local_dir, f'{RcloneStorageProviders.GOOGLE_DRIVE}:{remote_dir}'
+    if push:
+        source, destination = (local, remote)
+    else:
+        source, destination = (remote, local)
+    command = (
+        f'rclone sync {source} {destination} '
+        # https://rclone.org/flags/
+        f'--config {join(settings.CONFIG_DIR, "rclone/rclone.conf")} '
+        f'--exclude-from {join(settings.CONFIG_DIR, "rclone/filters.txt")} '
+        f'--order-by="size,ascending" --progress'
+    )
+    # https://rclone.org/drive/#standard-options
+    command = (
+        f"{command} --drive-service-account-credentials='{credentials}' "
+        '--drive-use-trash=false'
+    )
+    if push:
+        command = f'{command} --drive-stop-on-upload-limit'
+        context.run(f'echo "" && {command} --dry-run; echo ""')
+        print('Completed dry run. Proceeding shortly ...')
+        context.run('sleep 10')
+    else:
+        command = f'{command} --drive-stop-on-download-limit'
+    context.run(command)
 
 
 def upload_to_mega(filepath: str, account: str = 'default'):

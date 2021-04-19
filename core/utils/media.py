@@ -8,6 +8,7 @@ from django.conf import settings
 from invoke.context import Context
 
 from core.constants.environments import Environments
+from core.constants.misc import RcloneStorageProviders
 from core.utils.files import upload_to_mega
 
 CONTEXT = Context()
@@ -46,12 +47,22 @@ def backup(
         upload_to_mega(backup_file, account=Environments.DEV)
 
 
-def sync(context: Context = CONTEXT, push: bool = False):
+RCLONE_STORAGE_PROVIDERS = (
+    RcloneStorageProviders.GOOGLE_DRIVE,
+    RcloneStorageProviders.MEGA,
+)
+
+
+def sync(
+    context: Context = CONTEXT,
+    push: bool = False,
+    storage_provider: str = RcloneStorageProviders.GOOGLE_DRIVE,
+):
     """Sync media from source to destination, modifying destination only."""
-    # TODO: refactor
-    use_gdrive = True
+    if storage_provider not in RCLONE_STORAGE_PROVIDERS:
+        raise ValueError(f'Unknown storage provider: {storage_provider}')
     local_media_dir = settings.MEDIA_ROOT
-    remote_media_dir = 'gdrive:/media/' if use_gdrive else 'mega:/media/'
+    remote_media_dir = f'{storage_provider}:/media/'
     if push:
         source, destination = (local_media_dir, remote_media_dir)
     else:
@@ -63,14 +74,14 @@ def sync(context: Context = CONTEXT, push: bool = False):
         f'--exclude-from {join(settings.CONFIG_DIR, "rclone/filters.txt")} '
         f'--order-by="size,ascending" --progress'
     )
-    if use_gdrive:
+    if storage_provider == RcloneStorageProviders.GOOGLE_DRIVE:
         credentials = config('RCLONE_GDRIVE_SA_CREDENTIALS')
         # https://rclone.org/drive/#standard-options
         command = (
             f"{command} --drive-service-account-credentials='{credentials}' "
             '--drive-use-trash=false'
         )
-    else:
+    elif storage_provider == RcloneStorageProviders.MEGA:
         mega_username = config(
             'MEGA_DEV_USERNAME', default=config('MEGA_USERNAME', default=None)
         )
@@ -81,6 +92,10 @@ def sync(context: Context = CONTEXT, push: bool = False):
             f'{command} --max-transfer=5G '
             f'--mega-user={mega_username} '
             f'--mega-pass=$(echo "{mega_password}" | rclone obscure -)'
+        )
+    else:
+        raise NotImplementedError(
+            f'Syncing media with {storage_provider} is not supported.'
         )
     if push:
         command = f'{command} --drive-stop-on-upload-limit'

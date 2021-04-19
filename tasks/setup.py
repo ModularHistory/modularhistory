@@ -96,7 +96,6 @@ def seed(
     env_file: bool = True,
 ):
     """Seed a dev database, media directory, and env file."""
-    n_expected_artifacts = 2
     env_file = env_file and input('Seed .env file? [Y/n] ') != NEGATIVE
     db = db and input('Seed database? [Y/n] ') != NEGATIVE
     username, pat = github_utils.accept_credentials(username, pat)
@@ -107,57 +106,58 @@ def seed(
     workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run_id}'
     status = initial_status = workflow_run['status']
     artifacts_url = workflow_run['artifacts_url']
-    while status == initial_status != 'completed':
+    # Wait for up to 5 minutes, pinging every 9 seconds.
+    timeout, ping_interval, waited_seconds = 300, 9, 0
+    while status == initial_status != 'completed' and waited_seconds < timeout:
         print(f'Waiting for artifacts... status: {status}')
-        context.run('sleep 9')
+        context.run(f'sleep {ping_interval}')
         status = session.get(workflow_run_url).json().get('status')
+        waited_seconds += ping_interval
+    if status != 'completed':
+        raise TimeoutError(
+            'Failed to complete workflow: '
+            f'https://github.com/ModularHistory/modularhistory/runs/{workflow_run_id}?check_suite_focus=true'
+        )
     artifacts = session.get(artifacts_url).json().get('artifacts')
-    while len(artifacts) < n_expected_artifacts:
+    while not artifacts:
         print(f'Waiting for artifacts... status: {status}')
         context.run('sleep 9')
         artifacts = session.get(artifacts_url).json().get('artifacts')
         status = session.get(workflow_run_url).json().get('status')
-    dl_urls = {}
-    zip_dl_url_key = 'archive_download_url'
+    seed_name, dest_path = 'env-file', '.env'
     for artifact in artifacts:
         artifact_name = artifact['name']
-        if artifact_name not in SEEDS:
+        if artifact_name != seed_name:
             logging.error(f'Unexpected artifact: "{artifact_name}"')
             continue
-        dl_urls[artifact_name] = artifact[zip_dl_url_key]
-    for seed_name, dest_path in SEEDS.items():
-        # TODO: Refactor
-        if seed_name == 'env-file' and not env_file:
-            continue
-        elif seed_name == 'init-sql' and not db:
-            continue
-        zip_file = f'{seed_name}.zip'
-        context.run(
-            f'curl -u {username}:{pat} -L {dl_urls[seed_name]} --output {zip_file} '
-            f'&& sleep 3 && echo "Downloaded {zip_file}"'
-        )
-        try:
-            with ZipFile(zip_file, 'r') as archive:
-                soft_deleted_path = f'{dest_path}.prior'
-                if os.path.exists(dest_path):
-                    if input(f'Overwrite existing {dest_path}? [Y/n] ') != NEGATIVE:
-                        context.run(f'mv {dest_path} {soft_deleted_path}')
-                archive.extractall()
-                if os.path.exists(dest_path) and os.path.exists(soft_deleted_path):
-                    print(f'Removing prior {dest_path} ...')
-                    os.remove(soft_deleted_path)
-            context.run(f'rm {zip_file}')
-        except BadZipFile as err:
-            print(f'Could not extract from {zip_file} due to {err}')
-        if '/' in dest_path:
-            dest_dir, filename = os.path.dirname(dest_path), os.path.basename(dest_path)
-        else:
-            dest_dir, filename = settings.BASE_DIR, dest_path
-        if dest_dir != settings.BASE_DIR:
-            context.run(f'mv {filename} {dest_path}')
+        dl_url = artifact['archive_download_url']
+    zip_file = f'{seed_name}.zip'
+    context.run(
+        f'curl -u {username}:{pat} -L {dl_url} --output {zip_file} '
+        f'&& sleep 3 && echo "Downloaded {zip_file}"'
+    )
+    try:
+        with ZipFile(zip_file, 'r') as archive:
+            soft_deleted_path = f'{dest_path}.prior'
+            if os.path.exists(dest_path):
+                if input(f'Overwrite existing {dest_path}? [Y/n] ') != NEGATIVE:
+                    context.run(f'mv {dest_path} {soft_deleted_path}')
+            archive.extractall()
+            if os.path.exists(dest_path) and os.path.exists(soft_deleted_path):
+                print(f'Removing prior {dest_path} ...')
+                os.remove(soft_deleted_path)
+        context.run(f'rm {zip_file}')
+    except BadZipFile as err:
+        print(f'Could not extract from {zip_file} due to {err}')
+    if '/' in dest_path:
+        dest_dir, filename = os.path.dirname(dest_path), os.path.basename(dest_path)
+    else:
+        dest_dir, filename = settings.BASE_DIR, dest_path
+    if dest_dir != settings.BASE_DIR:
+        context.run(f'mv {filename} {dest_path}')
     if db:
-        # Seed the db.
-        db_utils.seed(context)
+        # Pull the db init file from remote storage and seed the db.
+        db_utils.seed(context, remote=True, migrate=True)
     print('Finished.')
 
 
