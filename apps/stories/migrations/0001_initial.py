@@ -28,21 +28,21 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'notes',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
                 ('handle', models.CharField(max_length=40, unique=True)),
                 (
                     'description',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                         verbose_name='description',
                     ),
                 ),
@@ -116,11 +116,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'justification',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=True,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
                 (
