@@ -83,6 +83,7 @@ def sync(
         source, destination = (local, remote)
     else:
         source, destination = (remote, local)
+    print(f'Syncing from {source} to {destination}...')
     command = (
         f'rclone sync {source} {destination} '
         # https://rclone.org/flags/
