@@ -20,7 +20,6 @@ from core.constants.misc import (
 )
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from core.utils import files
-from core.utils.files import upload_to_mega
 
 CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
@@ -36,20 +35,24 @@ def backup(
     filename: Optional[str] = None,
 ):
     """Create a database backup file."""
+    if filename and zip and not filename.endswith('.zip'):
+        raise ValueError(f'{filename} does not have a .zip extension.')
     backup_files_pattern = join(settings.BACKUPS_DIR, '*sql')
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --noinput')
     backup_files = glob(backup_files_pattern)
     temp_file = max(backup_files, key=os.path.getctime)
-    backup_filename = temp_file.replace('.psql', '.sql')
+    backup_filepath = temp_file.replace('.psql', '.sql')
     if filename:
-        backup_filename = backup_filename.replace(
-            os.path.basename(backup_filename), filename
+        backup_filepath = backup_filepath.replace(
+            os.path.basename(backup_filepath), filename
         )
+    else:
+        filename = os.path.basename(backup_filepath)
     with open(temp_file, 'r') as unprocessed_backup:
-        if os.path.isdir(backup_filename):
-            os.rmdir(backup_filename)
-        with open(backup_filename, 'w') as processed_backup:
+        if os.path.isdir(backup_filepath):
+            os.rmdir(backup_filepath)
+        with open(backup_filepath, 'w') as processed_backup:
             previous_line = ''  # falsy and compatible with `startswith`
             for line in unprocessed_backup:
                 discard_conditions = [
@@ -67,16 +70,24 @@ def backup(
                 previous_line = line
     context.run(f'rm {temp_file}')
     if zip:
-        print(f'Zipping up {backup_filename} ...')
-        zipped_backup_file = f'{backup_filename}.zip'
+        print(f'Zipping up {backup_filepath} ...')
+        zipped_backup_file = f'{backup_filepath}.zip'
         with ZipFile(zipped_backup_file, 'x') as archive:
-            archive.write(backup_filename)
-        backup_filename = zipped_backup_file
-    print(f'Finished creating backup file: {backup_filename}')
+            archive.write(backup_filepath)
+        backup_filepath = zipped_backup_file
+    print(f'Finished creating backup file: {backup_filepath}')
     if push:
-        print(f'Uploading {backup_filename} to Mega ...')
-        upload_to_mega(backup_filename, account=Environments.DEV)
-        print(f'Finished uploading {backup_filename} to Mega.')
+        latest_backup_dir = join(settings.BACKUPS_DIR, 'latest')
+        context.run(f'mkdir -p {latest_backup_dir}')
+        context.run(f'cp {backup_filepath} {join(latest_backup_dir, filename)}')
+        print(f'Uploading {latest_backup_dir} contents to remote storage ...')
+        files.sync(
+            local_dir=latest_backup_dir,
+            remote_dir='/database/',
+            push=True,
+            storage_provider=RcloneStorageProviders.GOOGLE_DRIVE,
+        )
+        print(f'Finished uploading {backup_filepath}.')
     # Remove old backup files
     logging.info('Removing old backup files ...')
     end = '{} \;'  # noqa: W605, P103

@@ -6,7 +6,10 @@
         "dbrestore",
         "envsubst",
         "gdrive",
+        "iglob",
+        "noinput",
         "noqa",
+        "psql",
         "rclone"
     ],
     "flagWords": [

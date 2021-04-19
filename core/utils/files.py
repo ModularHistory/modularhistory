@@ -78,8 +78,7 @@ def sync(
             f'Only {RcloneStorageProviders.GOOGLE_DRIVE} is supported.'
         )
     credentials = config('RCLONE_GDRIVE_SA_CREDENTIALS')
-    local = local_dir
-    remote = f'{RcloneStorageProviders.GOOGLE_DRIVE}:{remote_dir}'
+    local, remote = local_dir, f'{RcloneStorageProviders.GOOGLE_DRIVE}:{remote_dir}'
     if push:
         source, destination = (local, remote)
     else:
