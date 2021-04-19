@@ -7,11 +7,15 @@
         "envsubst",
         "gdrive",
         "graphviz",
+        "iframe",
         "iglob",
+        "jquery",
         "noinput",
         "noqa",
         "psql",
+        "pympler",
         "rclone",
+        "tinymce",
         "venv"
     ],
     "flagWords": [

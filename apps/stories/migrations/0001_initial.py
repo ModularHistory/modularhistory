@@ -3,8 +3,8 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import modularhistory.fields
-import modularhistory.fields.html_field
+import core.fields
+import core.fields.html_field
 
 
 class Migration(migrations.Migration):
