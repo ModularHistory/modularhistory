@@ -96,7 +96,7 @@ def seed(
     env_file: bool = True,
 ):
     """Seed a dev database, media directory, and env file."""
-    n_expected_artifacts = 2
+    n_expected_artifacts = 1
     env_file = env_file and input('Seed .env file? [Y/n] ') != NEGATIVE
     db = db and input('Seed database? [Y/n] ') != NEGATIVE
     username, pat = github_utils.accept_credentials(username, pat)
@@ -107,10 +107,19 @@ def seed(
     workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run_id}'
     status = initial_status = workflow_run['status']
     artifacts_url = workflow_run['artifacts_url']
-    while status == initial_status != 'completed':
+    timeout = 300  # 5 minutes
+    ping_interval = 9  # 9 seconds
+    waited_seconds = 0
+    while status == initial_status != 'completed' and waited_seconds < timeout:
         print(f'Waiting for artifacts... status: {status}')
-        context.run('sleep 9')
+        context.run(f'sleep {ping_interval}')
         status = session.get(workflow_run_url).json().get('status')
+        waited_seconds += ping_interval
+    if status != 'completed':
+        raise TimeoutError(
+            'Failed to complete workflow: '
+            f'https://github.com/ModularHistory/modularhistory/runs/{workflow_run_id}?check_suite_focus=true'
+        )
     artifacts = session.get(artifacts_url).json().get('artifacts')
     while len(artifacts) < n_expected_artifacts:
         print(f'Waiting for artifacts... status: {status}')
@@ -128,8 +137,6 @@ def seed(
     for seed_name, dest_path in SEEDS.items():
         # TODO: Refactor
         if seed_name == 'env-file' and not env_file:
-            continue
-        elif seed_name == 'init-sql' and not db:
             continue
         zip_file = f'{seed_name}.zip'
         context.run(
@@ -156,8 +163,8 @@ def seed(
         if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
     if db:
-        # Seed the db.
-        db_utils.seed(context)
+        # Pull the db init file from remote storage and seed the db.
+        db_utils.seed(context, remote=True, migrate=True)
     print('Finished.')
 
 

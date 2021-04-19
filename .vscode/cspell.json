@@ -1,14 +1,13 @@
-// cSpell Settings
 {
-    // version of the setting file (always 0.1)
     "version": "0.1",
-    // current active spelling language
     "language": "en",
-    // list of words to always consider correct
     "words": [
-        "visualstudio"
+        "dbbackup",
+        "dbrestore",
+        "gdrive",
+        "noqa",
+        "rclone"
     ],
-    // list of words to be always consider incorrect (useful for common spelling errors)
     "flagWords": [
         "hte"
     ]

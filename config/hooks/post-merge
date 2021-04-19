@@ -43,7 +43,7 @@ echo "$changed_files" | grep --quiet 'migrations/' && {
     be able to run the django container successfully until you 
     re-seed your db. To seed your db, use this command:
 
-      poetry run invoke db.seed --migrate
+      poetry run invoke db.seed --remote --migrate
 
   "
 }

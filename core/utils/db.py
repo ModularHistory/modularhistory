@@ -7,6 +7,7 @@ from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
+from decouple import config
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -16,6 +17,7 @@ from core.constants.misc import (
     MAX_MIGRATION_COUNT,
     MIGRATIONS_DIRNAME,
     SQUASHED_MIGRATIONS_DIRNAME,
+    RcloneStorageProviders,
 )
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from core.utils.files import upload_to_mega
@@ -187,42 +189,44 @@ def remove_migrations(
     print(f'Removed migration files from {app_name}.')
 
 
-def restore_squashed_migrations(context: Context = CONTEXT):
+def restore_squashed_migrations(context: Context = CONTEXT, app: str = ''):
     """Restore migrations with squashed_migrations."""
-    for app_name in APPS_WITH_MIGRATIONS:
-        app_dir = join(settings.BASE_DIR, 'apps', app_name)
-        migrations_dir = join(app_dir, MIGRATIONS_DIRNAME)
-        squashed_migrations_dir = join(app_dir, SQUASHED_MIGRATIONS_DIRNAME)
-        # TODO: only do this if there are files in the squashed_migrations dir
-        squashed_migrations_exist = os.path.exists(
-            squashed_migrations_dir
-        ) and os.listdir(path=squashed_migrations_dir)
-        if squashed_migrations_exist:
-            # Remove the replacement migrations
-            migration_files_path = f'{migrations_dir}/*.py'
-            context.run(
-                f'find . -type f -path "{migration_files_path}" '
-                f'-not -name "__init__.py" '
-                f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
-            )
-            # Restore the squashed migrations
-            context.run(
-                f'find {squashed_migrations_dir} -type f -name "*.py" '
-                f'-exec mv {BASH_PLACEHOLDER} {migrations_dir}/ \;'  # noqa: W605
-            )
-            # Remove the squashed_migrations directory
-            if os.path.exists(squashed_migrations_dir):
-                context.run(f'rm -r {squashed_migrations_dir}')
-            print(f'Removed squashed migrations from {app_name}.')
-        else:
-            print(f'There are no squashed migrations to remove from {app_name}.')
+    app_name = app or input('App name: ')
+    app_dir = join(settings.BASE_DIR, 'apps', app_name)
+    migrations_dir = join(app_dir, MIGRATIONS_DIRNAME)
+    squashed_migrations_dir = join(app_dir, SQUASHED_MIGRATIONS_DIRNAME)
+    # TODO: only do this if there are files in the squashed_migrations dir
+    squashed_migrations_exist = os.path.exists(squashed_migrations_dir) and os.listdir(
+        path=squashed_migrations_dir
+    )
+    if squashed_migrations_exist:
+        # Remove the replacement migrations
+        migration_files_path = f'{migrations_dir}/*.py'
+        context.run(
+            f'find . -type f -path "{migration_files_path}" '
+            f'-not -name "__init__.py" '
+            f'-exec rm {BASH_PLACEHOLDER} \;'  # noqa: W605
+        )
+        # Restore the squashed migrations
+        context.run(
+            f'find {squashed_migrations_dir} -type f -name "*.py" '
+            f'-exec mv {BASH_PLACEHOLDER} {migrations_dir}/ \;'  # noqa: W605
+        )
+        # Remove the squashed_migrations directory
+        if os.path.exists(squashed_migrations_dir):
+            context.run(f'rm -r {squashed_migrations_dir}')
+        print(f'Removed squashed migrations from {app_name}.')
+    else:
+        print(f'There are no squashed migrations to remove from {app_name}.')
 
 
-def seed(context: Context = CONTEXT, migrate: bool = False):
+def seed(context: Context = CONTEXT, remote: bool = False, migrate: bool = False):
     """Seed the database."""
     db_volume = 'modularhistory_postgres_data'
-    if not os.path.isfile(settings.DB_INIT_FILEPATH):
-        raise Exception('Seed does not exist.')
+    if remote:
+        sync(context=context, push=False)
+    elif not os.path.isfile(settings.DB_INIT_FILEPATH):
+        raise Exception(f'Seed does not exist at {settings.DB_INIT_FILEPATH}.')
     # Remove the data volume, if it exists
     print('Stopping containers...')
     stop_containers = context.run('docker-compose down', warn=True)
@@ -303,3 +307,37 @@ def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = Fal
         )
         context.run('python manage.py dbrestore --database="default" --noinput')
         restore_squashed_migrations(context)
+
+
+def sync(
+    context: Context = CONTEXT,
+    push: bool = False,
+):
+    """Sync the db seed from source to destination, modifying destination only."""
+    credentials = config('RCLONE_GDRIVE_SA_CREDENTIALS')
+    local_dir = settings.DB_INIT_DIR
+    remote_dir = f'{RcloneStorageProviders.GOOGLE_DRIVE}:/database/'
+    if push:
+        source, destination = (local_dir, remote_dir)
+    else:
+        source, destination = (remote_dir, local_dir)
+    command = (
+        f'rclone sync {source} {destination} '
+        # https://rclone.org/flags/
+        f'--config {join(settings.CONFIG_DIR, "rclone/rclone.conf")} '
+        f'--exclude-from {join(settings.CONFIG_DIR, "rclone/filters.txt")} '
+        f'--order-by="size,ascending" --progress'
+    )
+    # https://rclone.org/drive/#standard-options
+    command = (
+        f"{command} --drive-service-account-credentials='{credentials}' "
+        '--drive-use-trash=false'
+    )
+    if push:
+        command = f'{command} --drive-stop-on-upload-limit'
+        context.run(f'echo "" && {command} --dry-run; echo ""')
+        print('Completed dry run. Proceeding shortly ...')
+        context.run('sleep 10')
+    else:
+        command = f'{command} --drive-stop-on-download-limit'
+    context.run(command)
