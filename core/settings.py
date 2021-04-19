@@ -164,6 +164,7 @@ INSTALLED_APPS = [
     'apps.places.apps.LocationsConfig',
     'apps.quotes.apps.QuotesConfig',
     'apps.sources.apps.SourcesConfig',
+    'apps.stories.apps.StoriesConfig',
     'apps.staticpages.apps.StaticPagesConfig',
     'apps.stories.apps.StoriesConfig',
     'apps.topics.apps.TopicsConfig',
