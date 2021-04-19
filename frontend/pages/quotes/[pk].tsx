@@ -15,7 +15,9 @@ interface QuoteProps {
  */
 const Quote: FC<QuoteProps> = ({ quote }: QuoteProps) => {
   return (
-    <Layout title={""}>
+    // TODO: add attribute to Quotes for title text (not html),
+    //       or extract text from html with useRef.
+    <Layout title={`Quote ${quote["pk"]}`}>
       <ModuleContainer module={quote} />
     </Layout>
   );
