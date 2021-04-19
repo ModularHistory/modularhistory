@@ -106,18 +106,22 @@ def seed(
     workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run_id}'
     status = initial_status = workflow_run['status']
     artifacts_url = workflow_run['artifacts_url']
-    # Wait for up to 5 minutes, pinging every 9 seconds.
-    timeout, ping_interval, waited_seconds = 300, 9, 0
-    while status == initial_status != 'completed' and waited_seconds < timeout:
+    # Wait for up to 10 minutes, pinging every 9 seconds.
+    timeout, ping_interval, waited_seconds = 600, 9, 0
+    while waited_seconds < timeout and status == initial_status != 'completed':
         print(f'Waiting for artifacts... status: {status}')
         context.run(f'sleep {ping_interval}')
         status = session.get(workflow_run_url).json().get('status')
         waited_seconds += ping_interval
-    if status != 'completed':
-        raise TimeoutError(
-            'Failed to complete workflow: '
-            f'https://github.com/ModularHistory/modularhistory/runs/{workflow_run_id}?check_suite_focus=true'
-        )
+    else:
+        if status == 'completed':
+            print('Completed seed workflow.')
+        else:
+            raise TimeoutError(
+                'Failed to complete workflow: '
+                'https://github.com/ModularHistory/modularhistory'
+                f'/runs/{workflow_run_id}?check_suite_focus=true'
+            )
     artifacts = session.get(artifacts_url).json().get('artifacts')
     while not artifacts:
         print(f'Waiting for artifacts... status: {status}')
