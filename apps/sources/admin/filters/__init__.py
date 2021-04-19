@@ -6,5 +6,5 @@ from .simple_filters import (
     HasMultipleCitationsFilter,
     HasSourceFilter,
     ImpreciseDateFilter,
-    TypeFilter,
+    SourceTypeFilter,
 )

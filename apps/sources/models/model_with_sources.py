@@ -1,15 +1,15 @@
 """Classes for models with relations to sources."""
 
+import logging
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.fields import HTMLField
-from modularhistory.models import Model, retrieve_or_compute
+from core.constants.strings import EMPTY_STRING
+from core.fields import HTMLField
+from core.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
@@ -60,8 +60,9 @@ class ModelWithSources(Model):
         """Return the instance's full citation HTML."""
         try:
             citation_html = '; '.join(
-                citation['html'] for citation in self.serialized_citations
+                citation.get('html') for citation in self.serialized_citations
             )
-        except (ObjectDoesNotExist, AttributeError, ValueError, TypeError):
+        except Exception as error:
+            logging.error(f'{error}')
             citation_html = EMPTY_STRING
         return format_html(citation_html)

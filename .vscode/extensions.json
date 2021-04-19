@@ -13,7 +13,6 @@
 		"formulahendry.auto-close-tag",
 		"formulahendry.auto-rename-tag",
 		"ms-azuretools.vscode-docker",
-		"ms-python.python",
 		"ms-python.vscode-pylance",
 		"ms-vsliveshare.vsliveshare-pack",
 		"ms-vscode-remote.remote-containers",
@@ -21,20 +20,27 @@
 		"msjsdiag.debugger-for-chrome",
 		"p1c2u.docker-compose",
 		"pkief.material-icon-theme",
+		"streetsidesoftware.code-spell-checker",
 		"rvest.vs-code-prettier-eslint",
 		"tamasfe.even-better-toml",
 		"thebarkman.vscode-djaneiro",
-		"timonwong.shellcheck"
+		"timonwong.shellcheck",
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": [
 		"bajdzis.vscode-database",
+		"christian-kohler.npm-intellisense",
+		"dbaeumer.jshint",
 		"felipecaputo.git-project-manager",
 		"googlecloudtools.cloudcode",
 		"mindaro.mindaro",
 		"ms-azuretools.vscode-cosmosdb",
+		"ms-kubernetes-tools.vscode-kubernetes-tools",
 		"ms-mssql.mssql",
+		"ms-ossdata.vscode-postgresql",
+		"mtxr.sqltools",
 		"ms-vscode.azurecli",
-		"oracle.oracledevtools"
+		"oracle.oracledevtools",
+		"vscodevim.vim",
 	]
 }

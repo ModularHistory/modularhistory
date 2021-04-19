@@ -6,13 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
 from apps.topics.models.topic_relation import TopicRelation
-from modularhistory.fields import ArrayField, HTMLField
-from modularhistory.models import (
-    Model,
-    ModelWithComputations,
-    SluggedModel,
-    retrieve_or_compute,
-)
+from core.fields import ArrayField, HTMLField
+from core.models import Model, ModelWithComputations, SluggedModel, retrieve_or_compute
 
 KEY_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '

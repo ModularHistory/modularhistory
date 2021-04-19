@@ -11,7 +11,6 @@ class ImageViewSet(ModelViewSet):
 
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class ImageListAPIView(ListAPIView):

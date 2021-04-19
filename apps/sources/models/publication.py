@@ -5,9 +5,9 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
-from modularhistory.fields import HTMLField
-from modularhistory.models import Model
-from modularhistory.utils.html import soupify
+from core.fields import HTMLField
+from core.models import Model
+from core.utils.html import soupify
 
 PUBLICATION_TYPES = (
     ('journal', 'Journal'),
@@ -16,7 +16,23 @@ PUBLICATION_TYPES = (
 )
 
 
-class Publication(TypedModel, Model):
+class AbstractPublication(Model):
+
+    name = models.CharField(
+        verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
+    )
+    aliases = models.CharField(
+        verbose_name=_('aliases'), max_length=100, null=True, blank=True
+    )
+    description = HTMLField(
+        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Publication(TypedModel, AbstractPublication):
     """A publication, such as a newspaper, magazine, journal, or website."""
 
     name = models.CharField(
@@ -76,11 +92,5 @@ class Magazine(Publication):
 
 class Newspaper(Publication):
     """A newspaper that publishes articles."""
-
-    pass  # noqa: WPS604
-
-
-class Website(Publication):
-    """A website that publishes articles."""
 
     pass  # noqa: WPS604

@@ -5,11 +5,11 @@ import uuid
 
 from django.db import migrations, models
 
-import modularhistory.fields
-import modularhistory.fields.file_field
-import modularhistory.fields.historic_datetime_field
-import modularhistory.fields.html_field
-import modularhistory.fields.json_field
+import core.fields
+import core.fields.file_field
+import core.fields.historic_datetime_field
+import core.fields.html_field
+import core.fields.json_field
 
 
 class Migration(migrations.Migration):
@@ -33,14 +33,14 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
                 (
                     'date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -62,20 +62,20 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'caption',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=None,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
                 (
                     'description',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=None,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
                 ('provider', models.CharField(blank=True, max_length=200, null=True)),
@@ -102,14 +102,14 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'computations',
-                    modularhistory.fields.json_field.JSONField(
+                    core.fields.json_field.JSONField(
                         blank=True, default=dict, null=True
                     ),
                 ),
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
                 (
                     'date',
-                    modularhistory.fields.historic_datetime_field.HistoricDateTimeField(
+                    core.fields.historic_datetime_field.HistoricDateTimeField(
                         blank=True, null=True
                     ),
                 ),
@@ -131,20 +131,20 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'caption',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=None,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
                 (
                     'description',
-                    modularhistory.fields.HTMLField(
+                    core.fields.HTMLField(
                         blank=True,
                         null=True,
                         paragraphed=None,
-                        processor=modularhistory.fields.html_field.process,
+                        processor=core.fields.html_field.process,
                     ),
                 ),
                 ('provider', models.CharField(blank=True, max_length=200, null=True)),
@@ -154,7 +154,7 @@ class Migration(migrations.Migration):
                         height_field='height',
                         null=True,
                         upload_to=functools.partial(
-                            modularhistory.fields.file_field._generate_upload_path,
+                            core.fields.file_field._generate_upload_path,
                             *(),
                             **{'path': 'images/'}
                         ),

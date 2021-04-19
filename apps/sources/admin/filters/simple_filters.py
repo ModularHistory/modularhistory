@@ -2,10 +2,9 @@
 
 from django.db.models import Count, Q
 
-from admin.list_filters import BooleanListFilter
-from admin.list_filters import TypeFilter as BaseTypeFilter
+from apps.admin.list_filters import BooleanListFilter, PolymorphicContentTypeFilter
 from apps.sources.models import Source
-from modularhistory.constants.strings import EMPTY_STRING, NO, YES
+from core.constants.strings import EMPTY_STRING, NO, YES
 
 
 class HasContainerFilter(BooleanListFilter):
@@ -31,12 +30,12 @@ class HasFileFilter(BooleanListFilter):
     def queryset(self, request, queryset):
         """Return the queryset filtered by whether source files exist."""
         if self.value() == YES:
-            filters = {f'{Source.FieldNames.file}__isnull': False}
-            exclusions = {f'{Source.FieldNames.file}__file': EMPTY_STRING}
+            filters = {f'file__isnull': False}
+            exclusions = {f'file__file': EMPTY_STRING}
             return queryset.filter(**filters).exclude(**exclusions)
         if self.value() == NO:
-            file_is_null = {f'{Source.FieldNames.file}__isnull': True}
-            file_is_empty = {f'{Source.FieldNames.file}__file': EMPTY_STRING}
+            file_is_null = {f'file__isnull': True}
+            file_is_empty = {f'file__file': EMPTY_STRING}
             return queryset.filter(Q(**file_is_null) | Q(**file_is_empty))
 
 
@@ -54,7 +53,7 @@ class HasFilePageOffsetFilter(BooleanListFilter):
         ids = []
         include_if_has_page_offset = self.value() == YES
         for source in sources:
-            source_file = source.source_file
+            source_file = source.file
             if bool(source_file.page_offset) == include_if_has_page_offset:
                 ids.append(source.id)
         return sources.filter(id__in=ids)
@@ -104,7 +103,7 @@ class ImpreciseDateFilter(BooleanListFilter):
         return queryset
 
 
-class TypeFilter(BaseTypeFilter):
+class SourceTypeFilter(PolymorphicContentTypeFilter):
     """Filters sources by type."""
 
     base_model = Source

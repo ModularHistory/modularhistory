@@ -1,0 +1,20 @@
+{
+    "version": "0.1",
+    "language": "en",
+    "words": [
+        "dbbackup",
+        "dbrestore",
+        "envsubst",
+        "gdrive",
+        "graphviz",
+        "iglob",
+        "noinput",
+        "noqa",
+        "psql",
+        "rclone",
+        "venv"
+    ],
+    "flagWords": [
+        "hte"
+    ]
+}

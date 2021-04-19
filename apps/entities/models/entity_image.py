@@ -1,6 +1,6 @@
 from django.db import models
 
-from modularhistory.models import Model
+from core.models import Model
 
 NAME_MAX_LENGTH: int = 100
 

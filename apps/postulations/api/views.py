@@ -11,7 +11,6 @@ class PostulationViewSet(ModelViewSet):
 
     queryset = Postulation.objects.all()
     serializer_class = PostulationSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class PostulationListAPIView(ListAPIView):

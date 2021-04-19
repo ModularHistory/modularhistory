@@ -45,12 +45,12 @@ WORKDIR /modularhistory
 # Install project dependencies.
 COPY poetry.lock pyproject.toml /modularhistory/
 RUN poetry config virtualenvs.create false
-RUN if [ "$ENVIRONMENT" = "dev" ] ; then poetry install --no-interaction --no-ansi ; else poetry install --no-interaction --no-ansi --no-dev ; fi
+RUN if [ "$ENVIRONMENT" = "dev" ] ; then poetry install --no-interaction --no-ansi --no-root ; else poetry install --no-interaction --no-ansi --no-root --no-dev ; fi
 
 # Create required directories.
 RUN mkdir -p -- \
-  /modularhistory/.static \
-  /modularhistory/media \
+  /modularhistory/_static \
+  /modularhistory/_media \
   /modularhistory/.backups \
   /modularhistory/.init \
   /opt/atlas
@@ -64,8 +64,8 @@ RUN python manage.py collectstatic --no-input
 
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && \
-  chmod g+w -R /modularhistory/media && \
-  chmod g+w -R /modularhistory/.static && \
+  chmod g+w -R /modularhistory/_media && \
+  chmod g+w -R /modularhistory/_static && \
   chmod g+w -R /modularhistory/.backups && \
   chmod g+w -R /modularhistory/.init && \
   chmod +x /usr/local/bin/wait-for-it.sh

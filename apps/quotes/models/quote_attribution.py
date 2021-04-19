@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.models.positioned_relation import PositionedRelation
+from core.models.positioned_relation import PositionedRelation
 
 
 class QuoteAttribution(PositionedRelation):

@@ -11,7 +11,6 @@ class PlaceViewSet(ModelViewSet):
 
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class PlaceListAPIView(ListAPIView):

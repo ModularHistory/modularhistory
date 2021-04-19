@@ -15,6 +15,7 @@ on:
       - '.vscode/**'
       - '**.md'
       - '**.rst'
+      - 'config/hooks/**'
   schedule:
     - cron: '0 9 * * *'
 
@@ -57,7 +58,7 @@ jobs:
       matrix:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
         # NOTE: Services (running in Docker containers) only work on ubuntu.
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os: [ macos-latest, ubuntu-latest ]
     environment: dev
     env:
       TESTING: true
@@ -68,7 +69,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Cache virtual environment
-      uses: actions/cache@v2.1.4
+      uses: actions/cache@v2
       id: cache
       with:
         path: |
@@ -128,7 +129,7 @@ jobs:
         poetry run pytest nothing.py
     - name: Run tests
       if: ${{ success() }}
-      run: poetry run invoke test
+      run: poetry run invoke test --no-docker
 
   build:
     name: Build image
@@ -148,42 +149,11 @@ jobs:
     -
       name: Check out main branch
       uses: actions/checkout@v2
-    ##### TODO: Move to composite action when possible #####
-    ##### https://github.com/actions/runner/issues/646 #####
-    -
-      name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+    - 
+      includes: ./.github/actions/setup
       with:
-        python-version: ${{ matrix.python-version }}
-    -
-      name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
-      shell: bash
-    -
-      name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.2
-      with:
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-    -
-      name: Cache Python virtual environment
-      uses: actions/cache@v2.1.4
-      id: cache
-      with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
-    -
-      name: Install dependencies
-      run: |
-        sudo apt-get install -y graphviz graphviz-dev
-        poetry install
-      if: steps.cache.outputs.cache-hit != 'true'
-    ########################################################
-    ########################################################
+        os: ${{ runner.os }}
+        python-version: 3.7
     -
       name: Inject environment vars
       run: poetry run invoke setup.write-env-file
@@ -285,7 +255,13 @@ jobs:
     # OSSAR runs on windows-latest.
     # ubuntu-latest and macos-latest support coming soon.
     runs-on: windows-latest
+    # OSSAR is in beta and sometimes has spurious errors, so...
+    # For the time being, allow the job to complete despite any errors.
+    continue-on-error: true
     steps:
+    # https://github.community/t/filename-too-long-error-for-windows-2019-checkout/16676
+    - name: Support longpaths
+      run: git config --system core.longpaths true
     # Checkout your code repository to scan
     - name: Checkout repository
       uses: actions/checkout@v2

@@ -1,6 +1,6 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
-from modularhistory.constants.strings import NEGATIVE
+from core.constants.strings import NEGATIVE
 
 from .command import command
 

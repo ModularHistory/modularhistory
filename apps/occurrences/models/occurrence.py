@@ -16,8 +16,8 @@ from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
-from modularhistory.fields import HistoricDateTimeField, HTMLField
-from modularhistory.utils.html import soupify
+from core.fields import HistoricDateTimeField, HTMLField
+from core.utils.html import soupify
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager

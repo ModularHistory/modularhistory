@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import serpy
 
-from modularhistory.models.model import ModelSerializer
+from core.models.model import ModelSerializer
 
 if TYPE_CHECKING:
     from apps.entities.models import Entity
@@ -57,3 +57,12 @@ class EntitySerializer(ModelSerializer):
     def get_serialized_death_date(self, instance: 'Entity'):
         """Return the entity's death date, serialized."""
         return instance.death_date.serialize() if instance.death_date else None
+
+
+class EntityPartialDictSerializer:
+    """Serializer for topics retrieved from ORM with .values()"""
+
+    # TODO: This currently will break if given
+    #       unserializable fields, e.g. html.
+    def __init__(self, queryset, *args, **kwargs):
+        self.data = list(queryset)

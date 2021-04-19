@@ -3,15 +3,14 @@
 import serpy
 
 from apps.search.models.searchable_model import SearchableModelSerializer
-from modularhistory.models.model import ModelSerializer
+from core.models.model import ModelSerializer
 
 
 class SourceSerializer(SearchableModelSerializer):
     """Serializer for sources."""
 
-    html = serpy.Field()
+    citation_html = serpy.StrField()
     title = serpy.StrField()
-    full_string = serpy.StrField()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""

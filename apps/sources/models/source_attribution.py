@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from modularhistory.models.positioned_relation import PositionedRelation
+from core.models.positioned_relation import PositionedRelation
 
 
 class SourceAttribution(PositionedRelation):
@@ -11,7 +11,6 @@ class SourceAttribution(PositionedRelation):
         to='sources.Source',
         on_delete=models.CASCADE,
         related_name='attributions',
-        null=True,
         verbose_name=_('source'),
     )
     attributee = models.ForeignKey(

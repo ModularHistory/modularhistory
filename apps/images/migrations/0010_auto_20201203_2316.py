@@ -4,7 +4,7 @@ import functools
 
 from django.db import migrations, models
 
-import modularhistory.fields.file_field
+import core.fields.file_field
 
 
 class Migration(migrations.Migration):
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 height_field='height',
                 null=True,
                 upload_to=functools.partial(
-                    modularhistory.fields.file_field._generate_upload_path,
+                    core.fields.file_field._generate_upload_path,
                     *(),
                     **{'path': 'images/'}
                 ),

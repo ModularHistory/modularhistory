@@ -5,7 +5,7 @@ ModularHistory
 
 .. |integration| image:: https://github.com/modularhistory/modularhistory/workflows/integration/badge.svg
 
-.. |coverage| image:: https://raw.githubusercontent.com/modularhistory/modularhistory/main/modularhistory/static/coverage.svg
+.. |coverage| image:: https://raw.githubusercontent.com/modularhistory/modularhistory/main/core/static/coverage.svg
     
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
@@ -46,9 +46,3 @@ You can support ModularHistory through
 `Patreon <https://www.patreon.com/modularhistory>`__.
 
 --------------
-
-License
--------
-
-ModularHistory has an `ISC
-License <https://github.com/ModularHistory/modularhistory/blob/main/LICENSE.txt>`__.

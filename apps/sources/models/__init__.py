@@ -1,40 +1,19 @@
 """Public models of the sources app."""
 
 from .citation import Citation
-from .page_range import PageRange
-from .publication import Journal, Magazine, Newspaper, Publication, Website
+from .publication import Journal, Magazine, Newspaper, Publication
 from .source import Source
 from .source_attribution import SourceAttribution
 from .source_containment import SourceContainment
 from .source_file import SourceFile
-from .source_models import (
-    Address,
-    Affidavit,
-    Article,
-    Book,
-    Chapter,
-    Collection,
-    Correspondence,
-    Discourse,
-    Document,
-    Documentary,
-    DocumentSource,
-    Email,
-    Essay,
-    Interview,
-    JournalEntry,
-    Lecture,
-    Letter,
-    Memorandum,
-    Piece,
-    Repository,
-    Section,
-    SectionSource,
-    Sermon,
-    Speech,
-    SpokenSource,
-    Statement,
-    TextualSource,
-    VideoSource,
-    WebPage,
-)
+from .sources.affidavit import Affidavit
+from .sources.article import Article
+from .sources.book import Book, Section
+from .sources.correspondence import Correspondence
+from .sources.document import Collection, Document, Repository
+from .sources.film import Film
+from .sources.interview import Interview
+from .sources.journal import Entry
+from .sources.piece import Piece
+from .sources.speech import Speech
+from .sources.webpage import Webpage, Website

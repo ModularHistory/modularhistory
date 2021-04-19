@@ -12,9 +12,9 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from modularhistory.fields.file_field import SourceFileField, upload_to
-from modularhistory.models import Model
-from modularhistory.templatetags.media import media as fix_url
+from core.fields.file_field import SourceFileField, upload_to
+from core.models import Model
+from core.templatetags.media import media as fix_url
 
 
 class SourceFile(Model):

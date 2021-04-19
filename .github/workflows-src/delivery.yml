@@ -16,6 +16,7 @@ on:
       - '**.txt'
       - 'tests.py'
       - 'setup.sh'
+      - 'config/hooks/**'
 
 env:
   ENVIRONMENT: prod
@@ -96,7 +97,7 @@ jobs:
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"
         echo "Transferring files to $SERVER..."
-        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./templates/error.htm ./.config/nginx/prod/nginx.conf ./.config modularhistory@$SERVER:~/
+        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./core/templates/error.htm ./config/nginx/prod/nginx.conf ./config modularhistory@$SERVER:~/
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
           echo "Working dir:" && pwd && echo "" && ls
@@ -112,10 +113,9 @@ jobs:
           echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
           docker image prune -a -f
           docker system prune -f
-          echo "" && echo "Updating Nginx config..."
-          lxc file push nginx.conf webserver/etc/nginx/sites-available/default
-          echo "" && echo "Restarting Nginx server..."
-          lxc exec webserver -- service nginx restart
+          [ -f nginx.conf.sha ] || touch nginx.conf.sha
+          if ! cat nginx.conf.sha | grep "$(shasum nginx.conf)" > /dev/null; then echo "" && echo "Updating Nginx config..." && lxc file push nginx.conf webserver/etc/nginx/sites-available/default && echo "" && echo "Restarting Nginx server..." && lxc exec webserver -- service nginx reload; fi
+          shasum nginx.conf > nginx.conf.sha
           echo "" && echo "Done."
         ENDSSH
     - name: Create Sentry release

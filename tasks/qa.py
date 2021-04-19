@@ -1,27 +1,30 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
+from typing import Optional
+
 import django
 
-from modularhistory.constants.environments import Environments
-
 try:
-    from modularhistory.linters import flake8 as lint_with_flake8
-    from modularhistory.linters import mypy as lint_with_mypy
+    from core.linters import flake8 as lint_with_flake8
+    from core.linters import mypy as lint_with_mypy
 except ModuleNotFoundError:
     print('Skipped importing nonexistent linting modules.')
-from modularhistory.utils import qa
+from core.utils import qa
 
 from .command import command
 
 django.setup()
 
-from django.conf import settings  # noqa: E402
-
 
 @command
-def autoformat(context):
+def autoformat(context, filepaths: Optional[str] = None):
     """Safely run autoformatters against all Python files."""
-    qa.autoformat(context)
+    # Note: If we were using Invoke directly, we could use the iterable flag feature:
+    # http://docs.pyinvoke.org/en/stable/concepts/invoking-tasks.html?highlight=incrementable#iterable-flag-values
+    # However, since we're doing some funky magic on @task (--> @command) to get
+    # type annotations working, we can't give the @command decorator any arguments.
+    # So, we are using sub-string parsing instead.
+    qa.autoformat(context, filepaths=(filepaths.split(',') if filepaths else None))
 
 
 @command
@@ -49,7 +52,7 @@ def lint(context, *args):
 
 
 @command
-def test(context, docker=False):
+def test(context, docker: bool = True):
     """Run tests."""
     pytest_args = [
         '-v',
@@ -59,12 +62,8 @@ def test(context, docker=False):
         # '--hypothesis-show-statistics',
     ]
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
-    if settings.ENVIRONMENT == Environments.DEV:
-        input('Make sure the dev server is running, then hit Enter/Return.')
     print(command)
     if docker:
-        context.run(
-            'docker build -t modularhistory/modularhistory . && docker-compose up'
-        )
+        context.run('docker-compose up -d dev')
     context.run(command)
     context.run('coverage combine')

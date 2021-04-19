@@ -1,11 +1,12 @@
 """Source containments."""
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 
 from apps.sources.serializers import ContainmentSerializer
-from modularhistory.models.positioned_relation import PositionedRelation
+from core.models.positioned_relation import PositionedRelation
 
 PHRASE_MAX_LENGTH: int = 12
 CONTAINMENT_PHRASES = (
@@ -48,5 +49,14 @@ class SourceContainment(PositionedRelation):
     serializer = ContainmentSerializer
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
+        """Return the containment's string representation."""
         return format_html(f'{self.phrase} in {self.container}')
+
+    def clean(self):
+        """Prepare the containment to be saved."""
+        super().clean()
+        if self.source in self.container.containers.all():
+            raise ValidationError(
+                f'{self.source} cannot be contained by {self.container}; '
+                f'the latter is already contained by the former.'
+            )

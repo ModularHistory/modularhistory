@@ -25,9 +25,8 @@ artifacts/
 *.prior
 
 # Django
-/media/
-/static/
-/.static/
+/_media/
+/_static/
 *.log
 *.pot
 *.pyc
@@ -40,6 +39,9 @@ node_modules/
 # Python
 *.py[cod]
 *$py.class
+
+# Ctags
+.vscode/.tags
 
 # Legacy requirements
 # Note: Python packages should be managed through pyproject.toml

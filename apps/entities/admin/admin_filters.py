@@ -2,14 +2,14 @@
 
 from django.urls import reverse
 
-from admin.list_filters import (
+from apps.admin.list_filters import (
     AutocompleteFilter,
     BooleanListFilter,
     ManyToManyAutocompleteFilter,
     TypeFilter,
 )
 from apps.entities.models.entity import Entity
-from modularhistory.constants.strings import NO, YES
+from core.constants.strings import NO, YES
 
 
 class CategoriesFilter(AutocompleteFilter):

@@ -1,4 +1,4 @@
-from admin import TabularInline
+from apps.admin import TabularInline
 from apps.occurrences import models
 
 

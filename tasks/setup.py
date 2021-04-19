@@ -7,17 +7,19 @@ import re
 from datetime import datetime
 from os.path import join
 from pprint import pformat
+from time import sleep
 from typing import List, Optional
 from zipfile import BadZipFile, ZipFile
 
+from colorama import Style
 from django.conf import settings
 from dotenv import load_dotenv
 from requests import Session
 
-from modularhistory.constants.strings import NEGATIVE
-from modularhistory.utils import db as db_utils
-from modularhistory.utils import files as file_utils
-from modularhistory.utils import github as github_utils
+from core.constants.strings import NEGATIVE
+from core.utils import db as db_utils
+from core.utils import files as file_utils
+from core.utils import github as github_utils
 
 from .command import command
 
@@ -37,7 +39,7 @@ def dispatch_and_get_workflow(context, session: Session) -> dict:
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow_id}/dispatches',
         data=json.dumps({'ref': 'main'}),
     )
-    context.run('sleep 5')
+    sleep(5)
     workflow_runs: List[dict] = []
     time_waited, wait_interval, timeout = 0, 5, 30
     while not workflow_runs:
@@ -95,44 +97,50 @@ def seed(
     env_file: bool = True,
 ):
     """Seed a dev database, media directory, and env file."""
-    n_expected_artifacts = 2
     env_file = env_file and input('Seed .env file? [Y/n] ') != NEGATIVE
     db = db and input('Seed database? [Y/n] ') != NEGATIVE
-    username, pat = github_utils.accept_credentials(username, pat)
-    session = github_utils.initialize_session(username=username, pat=pat)
-    print('Dispatching workflow...')
-    workflow_run = dispatch_and_get_workflow(context=context, session=session)
-    workflow_run_id = workflow_run['id']
-    workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run_id}'
-    status = initial_status = workflow_run['status']
-    artifacts_url = workflow_run['artifacts_url']
-    while status == initial_status != 'completed':
-        print(f'Waiting for artifacts... status: {status}')
-        context.run('sleep 9')
-        status = session.get(workflow_run_url).json().get('status')
-    artifacts = session.get(artifacts_url).json().get('artifacts')
-    while len(artifacts) < n_expected_artifacts:
-        print(f'Waiting for artifacts... status: {status}')
-        context.run('sleep 9')
+    if env_file:
+        username, pat = github_utils.accept_credentials(username, pat)
+        session = github_utils.initialize_session(username=username, pat=pat)
+        print('Dispatching workflow...')
+        workflow_run = dispatch_and_get_workflow(context=context, session=session)
+        workflow_run_id = workflow_run['id']
+        workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run_id}'
+        status = workflow_run['status']
+        artifacts_url = workflow_run['artifacts_url']
+        # Wait for up to 10 minutes, pinging every 9 seconds.
+        timeout, ping_interval, waited_seconds = 600, 9, 0
+        while waited_seconds < timeout:
+            print(
+                f'Waiting for artifacts... status: {status} '
+                f'(total wait: {waited_seconds}s)'
+            )
+            sleep(ping_interval)
+            status = session.get(workflow_run_url).json().get('status')
+            if status in ('success', 'completed'):
+                break
+            waited_seconds += ping_interval
+        else:
+            raise TimeoutError(
+                'Failed to complete workflow: '
+                f'https://github.com/ModularHistory/modularhistory/runs/{workflow_run_id}'
+            )
         artifacts = session.get(artifacts_url).json().get('artifacts')
-        status = session.get(workflow_run_url).json().get('status')
-    dl_urls = {}
-    zip_dl_url_key = 'archive_download_url'
-    for artifact in artifacts:
-        artifact_name = artifact['name']
-        if artifact_name not in SEEDS:
-            logging.error(f'Unexpected artifact: "{artifact_name}"')
-            continue
-        dl_urls[artifact_name] = artifact[zip_dl_url_key]
-    for seed_name, dest_path in SEEDS.items():
-        # TODO: Refactor
-        if seed_name == 'env-file' and not env_file:
-            continue
-        elif seed_name == 'init-sql' and not db:
-            continue
+        while not artifacts:
+            print(f'Waiting for artifacts... status: {status}')
+            context.run('sleep 9')
+            artifacts = session.get(artifacts_url).json().get('artifacts')
+            status = session.get(workflow_run_url).json().get('status')
+        seed_name, dest_path = 'env-file', '.env'
+        for artifact in artifacts:
+            artifact_name = artifact['name']
+            if artifact_name != seed_name:
+                logging.error(f'Unexpected artifact: "{artifact_name}"')
+                continue
+            dl_url = artifact['archive_download_url']
         zip_file = f'{seed_name}.zip'
         context.run(
-            f'curl -u {username}:{pat} -L {dl_urls[seed_name]} --output {zip_file} '
+            f'curl -u {username}:{pat} -L {dl_url} --output {zip_file} '
             f'&& sleep 3 && echo "Downloaded {zip_file}"'
         )
         try:
@@ -155,8 +163,8 @@ def seed(
         if dest_dir != settings.BASE_DIR:
             context.run(f'mv {filename} {dest_path}')
     if db:
-        # Seed the db
-        db_utils.seed(context)
+        # Pull the db init file from remote storage and seed the db.
+        db_utils.seed(context, remote=True, migrate=True)
     print('Finished.')
 
 
@@ -164,31 +172,32 @@ def seed(
 def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
     with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
-        required_hosts = [host for host in HOSTS_FILEPATH.readlines() if host]
-    print(f'Reading {HOSTS_FILEPATH} ...')
+        required_hosts = [host for host in hosts_file.read().splitlines() if host]
+    if os.path.exists(WSL_HOSTS_FILEPATH):
+        while True:
+            with open(WSL_HOSTS_FILEPATH, 'r') as hosts_file:
+                extant_hosts = hosts_file.read()
+                hosts_to_write = [
+                    host for host in required_hosts if host not in extant_hosts
+                ]
+            if hosts_to_write:
+                input(
+                    f'{Style.BRIGHT}\n'
+                    'Please update your Windows hosts file to include the following:\n'
+                    f'{NEWLINE.join(hosts_to_write)}\n\n'
+                    'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
+                    'After updating your hosts file, press Enter to continue.'
+                    f'{Style.RESET_ALL}'
+                )
+            else:
+                break
     with open(HOSTS_FILEPATH, 'r') as hosts_file:
-        hosts = hosts_file.read()
-    hosts_to_write = [host for host in required_hosts if host not in hosts]
+        extant_hosts = hosts_file.read()
+    hosts_to_write = [host for host in required_hosts if host not in extant_hosts]
     if hosts_to_write:
         print(f'Updating {HOSTS_FILEPATH} ...')
         for host in hosts_to_write:
             context.run(f'sudo echo "{host}" | sudo tee -a /etc/hosts')
-    if os.path.exists(WSL_HOSTS_FILEPATH):
-        while True:
-            with open(WSL_HOSTS_FILEPATH, 'r') as hosts_file:
-                windows_hosts = hosts_file.read()
-                hosts_to_write = [
-                    host for host in required_hosts if host not in windows_hosts
-                ]
-            if not hosts_to_write:
-                break
-            input(
-                'Your Windows hosts file is missing some required entries.\n'
-                'Please update your hosts file to include the following:\n\n'
-                f'{NEWLINE.join(hosts_to_write)}\n\n'
-                'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
-                'After updating your hosts file, press Enter to continue.'
-            )
     print('Hosts file is up to date.')
 
 

@@ -2,7 +2,7 @@ import { Box, Container, Typography } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import React, { FunctionComponent, useEffect } from "react";
 import { handleLogout } from "../../auth";
-import Layout from "../../components/layout";
+import Layout from "../../components/Layout";
 
 const SignOut: FunctionComponent = () => {
   const [session, _loading] = useSession();

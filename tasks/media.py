@@ -2,12 +2,11 @@
 
 import os
 from os.path import join
-from pprint import pprint
 
 import django
 
-from modularhistory.constants.environments import Environments
-from modularhistory.utils import media
+from core.constants.environments import Environments
+from core.utils import media
 
 from .command import command
 
@@ -30,27 +29,6 @@ def backup(context, redact: bool = False, push: bool = False):
     """Create a media backup file."""
     # based on https://github.com/django-dbbackup/django-dbbackup#mediabackup
     media.backup(context, redact=redact, push=push)
-
-
-@command
-def get_backup(context, env: str = Environments.DEV):
-    """Seed latest media backup from remote storage."""
-    context.run(f'mkdir -p {BACKUPS_DIR}', warn=True)
-
-    from modularhistory.storage.mega_storage import mega_clients  # noqa: E402
-
-    mega_client = mega_clients[env]
-    pprint(mega_client.get_user())
-    media_archive_name = 'media.tar.gz'
-    media_archive = mega_client.find(media_archive_name, exclude_deleted=True)
-    if media_archive:
-        mega_client.download(media_archive)
-        context.run(
-            f'mv {media_archive_name} {join(BACKUPS_DIR, media_archive_name)}',
-            warn=True,
-        )
-    else:
-        print(f'Could not find {media_archive_name}')
 
 
 @command

@@ -50,7 +50,7 @@ class DetailView(BaseDetailView):
         source = self.object
         context['meta'] = Meta(
             title=source.title,
-            description=f'Quotes from and information regarding {source.full_string}',
+            description=f'Quotes from and information regarding {source.citation_string}',
             keywords=source.tag_keys,
         )
         return context

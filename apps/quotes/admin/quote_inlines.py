@@ -2,9 +2,9 @@
 
 import re
 
-from admin import GenericTabularInline, TabularInline
+from apps.admin import GenericTabularInline, TabularInline
 from apps.quotes import models
-from modularhistory.constants.content_types import ContentTypes, get_ct_id
+from core.constants.content_types import ContentTypes, get_ct_id
 
 
 class AttributeesInline(TabularInline):

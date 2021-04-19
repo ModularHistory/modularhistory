@@ -13,14 +13,14 @@ from image_cropping import ImageRatioField
 from apps.images.manager import ImageManager
 from apps.images.models.media_model import MediaModel
 from apps.images.serializers import ImageSerializer
-from modularhistory.fields import JSONField
-from modularhistory.fields.file_field import upload_to
-from modularhistory.fields.html_field import (
+from core.fields import JSONField
+from core.fields.file_field import upload_to
+from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from modularhistory.utils.string import components_to_string
+from core.utils.string import components_to_string
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
 CENTER_UPPER_WIDTH_LIMIT: int = 500

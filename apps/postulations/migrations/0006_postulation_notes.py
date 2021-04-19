@@ -2,8 +2,8 @@
 
 from django.db import migrations
 
-import modularhistory.fields
-import modularhistory.fields.html_field
+import core.fields
+import core.fields.html_field
 
 
 class Migration(migrations.Migration):
@@ -16,11 +16,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='postulation',
             name='notes',
-            field=modularhistory.fields.HTMLField(
+            field=core.fields.HTMLField(
                 blank=True,
                 null=True,
                 paragraphed=True,
-                processor=modularhistory.fields.html_field.process,
+                processor=core.fields.html_field.process,
             ),
         ),
     ]

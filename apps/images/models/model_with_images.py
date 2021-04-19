@@ -3,7 +3,7 @@
 import logging
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence
 
-from modularhistory.models import Model, retrieve_or_compute
+from core.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models import ManyToManyField

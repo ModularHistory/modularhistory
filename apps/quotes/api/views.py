@@ -11,7 +11,6 @@ class QuoteViewSet(ModelViewSet):
 
     queryset = Quote.objects.all()
     serializer_class = QuoteSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class QuoteListAPIView(ListAPIView):

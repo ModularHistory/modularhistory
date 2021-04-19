@@ -1,6 +1,10 @@
 [build-system]
-requires = ["poetry>=1.0.5"]
+requires = ["poetry>=1.1.6"]
 build-backend = "poetry.masonry.api"
+
+[tool.autohooks]
+mode = "poetry"
+pre-commit = ["autohooks.plugins.black", "autohooks.plugins.isort"]
 
 [tool.black]
 # https://black.readthedocs.io/en/stable/pyproject_toml.html
@@ -13,6 +17,7 @@ exclude = '''
       \.eggs
     | \.git
     | \.mypy_cache
+    | \.cache
     | \.venv
   )/
 )
@@ -41,14 +46,14 @@ use_parentheses = true
 name = "modularhistory"
 authors = [
     "Jacob Fredericksen <jacob@modularhistory.com>",
-    "Matthew Fredericksen <matthew@modularhistory.com",
+    "Matthew Fredericksen <matthew@modularhistory.com>",
 ] # TODO: Jonah
 description = "ModularHistory (https://modularhistory.com/)"
 homepage = "https://modularhistory.com/"
 license = "ISC"
 readme = "README.rst"
 repository = "https://github.com/ModularHistory/modularhistory"
-version = "0.1.0"
+version = "0.0.1"
 
 [tool.poetry.dependencies]
 python = "^3.7.9"
@@ -59,7 +64,8 @@ beautifulsoup4 = "==4.9.3"
 celery = "<5.0.0"
 channels = "^3.0"
 channels-redis = "^3.2.0"
-django = "^3.1"
+colorama = "^0.4.4"
+django = "~3.1"
 djangorestframework = "^3.12"
 djangorestframework-simplejwt = "^4.6.0"
 django_replicated = "==2.7"
@@ -68,16 +74,18 @@ django-admin-tools = "==0.9.0"
 django-allauth = "^0.44.0"
 django-autoslug = "^1.9.8"
 django-bootstrap-datepicker-plus = "==3.0.5"
+django-cachalot = "^2.3.5"
 django-concurrency = "^2.2"
 django-cors-headers = "3.6.0"
 django-crispy-forms = "^1.10"
-django-dbbackup = "^3.3"
 django-celery-beat = "^2.2.0"
 django-celery-results = "^2.0.1"
+django-dbbackup = "^3.3"
 django-debug-toolbar = "^3.2"
 django-extensions = "^3.1.1"
 django-extra-views = "==0.13.0"
 django-filter = "==2.4.0"
+django-flat-json-widget = "^0.1.2"
 django-gm2m = "^1.1"
 django-health-check = "^3.16.1"
 django-imagekit = "^4.0.2"
@@ -86,7 +94,7 @@ django-lockdown = "^3.0.0"
 django-mass-edit = "^3.2"
 django-meta = "^2.0.0"
 django-nested-admin = "^3.3"
-django-prettyjson = "^0.4"
+django-polymorphic = "^3.0.0"
 django-redis = "^4.12.1"
 django-reverse-admin = "^2.9"
 django-sass-processor = "==0.8.2"
@@ -149,6 +157,7 @@ youtube-dl = "^2020.7.28"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
+autohooks = "^21.3.0"
 binaryornot = "^0.4"
 coverage = { extras = ["toml"], version = "^5.3" }
 coverage-badge = "^1.0"
@@ -174,7 +183,6 @@ flake8-polyfill = "^1.0.2"
 flake8-pytest-style = "^1.3"
 flake8-quotes = "^3.2.0"
 flake8-rst-docstrings = "^0.0.14"
-flake8-spellcheck = "^0.20"
 flake8-string-format = "^0.3.0"
 hypothesis = { extras = ["datetime", "django", "pytest"], version = "^5.39" }
 isort = "^5.6.4"
@@ -189,11 +197,11 @@ safety = "^1.9"
 tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
-pre-commit = "^2.11.1"
+Werkzeug = "^1.0.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra --ds='modularhistory.settings' --capture=no --ignore conftest.py -p no:cacheprovider --disable-warnings"
+addopts = "-ra --ds='core.settings' --capture=no --ignore conftest.py -p no:cacheprovider --disable-warnings"
 norecursedirs = ["*env", ".nox"]
 python_files = [
     "tests.py",

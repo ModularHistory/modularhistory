@@ -1,7 +1,7 @@
 html,
 body {
-  padding: 0;
-  margin: 0;
+  /*padding: 0;*/
+  /*margin: 0;*/
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -14,13 +14,25 @@ body {
     Droid Sans,
     Helvetica Neue,
     sans-serif;
+  font-weight: 300;
 }
 
-a {
-  color: inherit;
+{/* Enable correct behavior for sticky footer */}
+#__next {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+#footer a {
+  color: white;
+}
+
+a:hover {
   text-decoration: none;
 }
 
 * {
   box-sizing: border-box;
 }
+

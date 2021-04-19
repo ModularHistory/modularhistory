@@ -2,7 +2,7 @@
 
 from django.db.models.query import QuerySet
 
-from admin import admin_site
+from apps.admin import admin_site
 from apps.quotes import models
 from apps.quotes.admin.quote_filters import (
     AttributeeCategoryFilter,
@@ -12,7 +12,7 @@ from apps.quotes.admin.quote_filters import (
 from apps.quotes.admin.quote_inlines import AttributeesInline, BitesInline
 from apps.quotes.admin.related_quotes_inline import RelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
-from apps.sources.admin.citation_admin import CitationsInline
+from apps.sources.admin.citations import CitationsInline
 from apps.sources.admin.filters.simple_filters import (
     HasMultipleCitationsFilter,
     HasSourceFilter,

@@ -11,9 +11,9 @@ from django_select2.forms import Select2MultipleWidget
 from apps.entities.models import Entity
 from apps.search.models import CONTENT_TYPE_OPTIONS, ORDERING_OPTIONS
 from apps.topics.models import Topic
-from modularhistory.constants.strings import EMPTY_STRING
-from modularhistory.forms import HistoricDateFormField
-from modularhistory.widgets.historic_date_widget import YearInput
+from core.constants.strings import EMPTY_STRING
+from core.forms import HistoricDateFormField
+from core.widgets.historic_date_widget import YearInput
 
 Accordion.template = 'forms/_accordion.html'
 AccordionGroup.template = 'forms/_accordion_group.html'

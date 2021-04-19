@@ -52,10 +52,29 @@ else
   " && exit
 fi
 
+while getopts j: flag
+do
+    case "${flag}" in
+        j) just_do_it=true;;
+        # Note: flag value can be referenced as ${OPTARG}
+        *) _error "An invalid flag was used.";;
+    esac
+done
+
 # Make sure Git is properly installed.
 git --help &>/dev/null || {
   _error "Git is not installed."
 }
+
+# Update git hooks.
+for filepath in config/hooks/*; do
+  filename=$(basename "$filepath")
+  cmp --silent ".git/hooks/$filename" "$filepath" || {
+    cat "$filepath" > ".git/hooks/$filename"
+    sudo chmod +x ".git/hooks/$filename"
+    echo "Updated $filename hook."
+  }
+done
 
 branch=$(git branch --show-current)
 # When run in GitHub Actions), the code is in detached HEAD state, 
@@ -73,16 +92,22 @@ echo "On branch '${branch}'."
 
 # Make sure this script is being run in the 'main' branch, if not running in CI.
 if [[ -z $GITHUB_REF ]]; then
-  if [[ ! "$branch" = "main" ]]; then
-    _error "
+  if [[ ! "$branch" = "main" ]] && [[ ! "$just_do_it" = true ]]; then
+    _print_red "
       Check out the main branch before running this script.
       You can use the following command to check out the main branch:
         git checkout main
     "
+    echo "
+      Alternatively, if you know what you are doing, you can run 
+      this script from a non-main branch with the the -j flag.
+    "
+    exit 1
   fi
   # Make sure the latest updates have been pulled.
   if ! git diff --quiet origin/main; then
     _error "
+      Your modularhistory code differs from what's in origin/main.
       Pull the latest updates, then try running this script again.
       You can use the following command to pull the latest updates:
         git pull
@@ -166,6 +191,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew_install openssl@1.1
   brew_install rust
   brew_install graphviz
+  brew_install ctags
   brew install libjpeg zlib grep gnu-sed jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
@@ -173,7 +199,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && sudo apt upgrade -y
   # Basic dev dependencies
-  sudo apt install -y bash-completion curl git wget vim
+  sudo apt install -y bash-completion curl git wget vim ctags
   # PostgreSQL
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" |
@@ -197,7 +223,7 @@ elif [[ "$os" == "$LINUX" ]]; then
 fi
 
 # Note: These are referenced multiple times in this script.
-writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/media" "$PROJECT_DIR/.static" "$PROJECT_DIR/frontend/.next" )
+writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/_media" "$PROJECT_DIR/_static" "$PROJECT_DIR/frontend/.next" )
 
 for writable_dir in "${writable_dirs[@]}"; do
   mkdir -p "$writable_dir" &>/dev/null
@@ -261,11 +287,8 @@ pyenv --version &>/dev/null || {
     curl https://pyenv.run | bash
   fi
 }
-echo "Ensuring pyenv is in PATH ..."
 pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
-echo "Ensuring pyenv automatic activation is enabled ..."
 echo "Using $(pyenv --version) ..."
-echo "Installing required Python versions ..."
 installed_py_versions="$(pyenv versions)"
 while IFS= read -r pyversion; do
   # shellcheck disable=SC2076
@@ -364,6 +387,7 @@ poetry install --no-root || {
   rm requirements.txt
   _error "Failed to install dependencies with Poetry."
 }
+docker-compose build django
 
 # Add container names to /etc/hosts.
 poetry run invoke setup.update-hosts
@@ -381,6 +405,10 @@ nvm --version &>/dev/null || {
 echo "Installing Node modules ..."
 npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
+docker-compose build react
+
+# Update ctags
+ctags -R -f .vscode/.tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" --exclude="**/libraries/**" &>/dev/null
 
 # Set up Rclone (https://rclone.org/).
 rclone version &>/dev/null || {
@@ -395,7 +423,7 @@ rclone version &>/dev/null || {
   echo "Cleaning up ..."
   rm -r .tmp
 }
-mkdir -p "$HOME/.config/rclone"
+mkdir -p "$HOME/config/rclone"
 
 # Disable THP so it doesn't cause issues for Redis containers.
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
@@ -447,7 +475,6 @@ if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
 fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
-  echo "Seeding database and env file ..."
   # shellcheck disable=SC2015
   poetry run invoke seed && echo "Finished seeding db and env file." || {
     _print_red "Failed to seed dev environment."
@@ -479,7 +506,7 @@ docker rmi $(docker images -f "dangling=true" -q) &>/dev/null
 
 echo "Spinning up containers ..."
 # shellcheck disable=SC2015
-docker-compose up --build -d dev && echo 'Finished.' || {
+docker-compose up -d dev && echo 'Finished.' || {
   _print_red "Failed to start containers."
   [[ ! $TESTING = true ]] && _prompt_to_rerun
   _print_red "
