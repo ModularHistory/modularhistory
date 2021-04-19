@@ -4,6 +4,7 @@
     "words": [
         "dbbackup",
         "dbrestore",
+        "envsubst",
         "gdrive",
         "noqa",
         "rclone"

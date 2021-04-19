@@ -7,7 +7,6 @@ from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
-from decouple import config
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -20,6 +19,7 @@ from core.constants.misc import (
     RcloneStorageProviders,
 )
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
+from core.utils import files
 from core.utils.files import upload_to_mega
 
 CONTEXT = Context()
@@ -314,30 +314,9 @@ def sync(
     push: bool = False,
 ):
     """Sync the db seed from source to destination, modifying destination only."""
-    credentials = config('RCLONE_GDRIVE_SA_CREDENTIALS')
-    local_dir = settings.DB_INIT_DIR
-    remote_dir = f'{RcloneStorageProviders.GOOGLE_DRIVE}:/database/'
-    if push:
-        source, destination = (local_dir, remote_dir)
-    else:
-        source, destination = (remote_dir, local_dir)
-    command = (
-        f'rclone sync {source} {destination} '
-        # https://rclone.org/flags/
-        f'--config {join(settings.CONFIG_DIR, "rclone/rclone.conf")} '
-        f'--exclude-from {join(settings.CONFIG_DIR, "rclone/filters.txt")} '
-        f'--order-by="size,ascending" --progress'
+    return files.sync(
+        local_dir=settings.DB_INIT_DIR,
+        remote_dir='/database/',
+        push=push,
+        context=context,
     )
-    # https://rclone.org/drive/#standard-options
-    command = (
-        f"{command} --drive-service-account-credentials='{credentials}' "
-        '--drive-use-trash=false'
-    )
-    if push:
-        command = f'{command} --drive-stop-on-upload-limit'
-        context.run(f'echo "" && {command} --dry-run; echo ""')
-        print('Completed dry run. Proceeding shortly ...')
-        context.run('sleep 10')
-    else:
-        command = f'{command} --drive-stop-on-download-limit'
-    context.run(command)
