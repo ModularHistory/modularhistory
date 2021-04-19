@@ -24,32 +24,31 @@ function useTwoPaneState(...args) {
   }, []);
   return { moduleIndex, setModuleIndex, setModuleIndexFromEvent };
 }
-
-const useStyles = makeStyles({
-  drawer: {
-    maxWidth: "0px",
-    transition: "max-width .15s",
-    zIndex: 2,
-    "&.open": { maxWidth: "230px" },
-  },
-  drawerButton: {
-    border: "2px solid black",
-    transition: "transform .15s",
-    "&.open": { transform: "translateX(229px)" },
-  },
-  paper: {
-    backgroundColor: "whitesmoke",
-    boxShadow: "4px 0 10px -5px #888",
-    position: "sticky",
-    maxHeight: "100vh",
-  },
-  cards: {
-    "& .selected": {
-      border: "3px solid black",
-      borderRight: "none",
+  const useStyles = makeStyles({
+    drawer: {
+      maxWidth: "0px",
+      transition: "max-width .15s",
+      zIndex: 2,
+      "&.open": { maxWidth: "230px" },
     },
-  },
-});
+    drawerButton: {
+      border: "2px solid black",
+      transition: "transform .15s",
+      "&.open": { transform: "translateX(229px)" },
+    },
+    paper: {
+      backgroundColor: "whitesmoke",
+      boxShadow: "4px 0 10px -5px #888",
+      position: "sticky",
+      maxHeight: "100vh",
+    },
+    cards: {
+      "& .selected": {
+        border: "3px solid black",
+        borderRight: "none",
+      },
+    },
+  });
 
 export default function Search({ searchResults }) {
   const classes = useStyles();

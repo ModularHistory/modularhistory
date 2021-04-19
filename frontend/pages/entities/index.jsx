@@ -5,9 +5,9 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
-
 import Layout from "../../components/Layout";
 import Pagination from "../../components/Pagination";
+
 
 export default function Entities({ entitiesData }) {
   const entities = entitiesData["results"] || [];
