@@ -220,13 +220,21 @@ def restore_squashed_migrations(context: Context = CONTEXT):
 
 def seed(context: Context = CONTEXT, migrate: bool = False):
     """Seed the database."""
-    django_container_name = 'django'
     db_volume = 'modularhistory_postgres_data'
     if not os.path.isfile(settings.DB_INIT_FILEPATH):
         raise Exception('Seed does not exist.')
     # Remove the data volume, if it exists
     print('Stopping containers...')
-    context.run('docker-compose down')
+    stop_containers = context.run('docker-compose down', warn=True)
+    while not stop_containers.ok:
+        input(
+            'Failed to stop containers. Something might be wrong with the Docker '
+            'environment. Here are a couple things to try (in a separate shell):\n'
+            '  - Rerun this command: docker-compose down\n'
+            '  - Manually restart docker, then try again to run the same command\n'
+            'Once `docker-compose down` is successful, hit enter to continue. '
+        )
+        stop_containers = context.run('docker-compose down', warn=True)
     print('Wiping postgres data volume...')
     context.run(f'docker volume rm {db_volume}', warn=True)
     # Start up the postgres container, automatically running init.sql.

@@ -107,6 +107,7 @@ if [[ -z $GITHUB_REF ]]; then
   # Make sure the latest updates have been pulled.
   if ! git diff --quiet origin/main; then
     _error "
+      Your modularhistory code differs from what's in origin/main.
       Pull the latest updates, then try running this script again.
       You can use the following command to pull the latest updates:
         git pull
