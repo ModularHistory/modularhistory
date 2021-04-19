@@ -107,9 +107,8 @@ def seed(
     workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run_id}'
     status = initial_status = workflow_run['status']
     artifacts_url = workflow_run['artifacts_url']
-    timeout = 300  # 5 minutes
-    ping_interval = 9  # 9 seconds
-    waited_seconds = 0
+    # Wait for up to 5 minutes, pinging every 9 seconds.
+    timeout, ping_interval, waited_seconds = 300, 9, 0
     while status == initial_status != 'completed' and waited_seconds < timeout:
         print(f'Waiting for artifacts... status: {status}')
         context.run(f'sleep {ping_interval}')
