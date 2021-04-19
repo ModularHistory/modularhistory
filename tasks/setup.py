@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 from os.path import join
 from pprint import pformat
+from time import sleep
 from typing import List, Optional
 from zipfile import BadZipFile, ZipFile
 
@@ -38,7 +39,7 @@ def dispatch_and_get_workflow(context, session: Session) -> dict:
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow_id}/dispatches',
         data=json.dumps({'ref': 'main'}),
     )
-    context.run('sleep 5')
+    sleep(5)
     workflow_runs: List[dict] = []
     time_waited, wait_interval, timeout = 0, 5, 30
     while not workflow_runs:
@@ -109,8 +110,11 @@ def seed(
     # Wait for up to 10 minutes, pinging every 9 seconds.
     timeout, ping_interval, waited_seconds = 600, 9, 0
     while waited_seconds < timeout and status == initial_status != 'completed':
-        print(f'Waiting for artifacts... status: {status}')
-        context.run(f'sleep {ping_interval}')
+        print(
+            f'Waiting for artifacts... status: {status} '
+            f'(total wait: {waited_seconds}s)'
+        )
+        sleep(ping_interval)
         status = session.get(workflow_run_url).json().get('status')
         waited_seconds += ping_interval
     else:
