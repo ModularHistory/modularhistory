@@ -6,11 +6,17 @@
         "dbrestore",
         "envsubst",
         "gdrive",
+        "graphviz",
+        "iframe",
         "iglob",
+        "jquery",
         "noinput",
         "noqa",
         "psql",
-        "rclone"
+        "pympler",
+        "rclone",
+        "tinymce",
+        "venv"
     ],
     "flagWords": [
         "hte"

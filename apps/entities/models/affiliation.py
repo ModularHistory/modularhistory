@@ -16,11 +16,9 @@ class _Engagement(Model):
     end_date = HistoricDateTimeField(null=True, blank=True)
 
     class Meta:
-        """
-        Meta options for the _Engagement model.
+        """Meta options for the _Engagement model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True
 
@@ -48,11 +46,9 @@ class Affiliation(_Engagement):
     )
 
     class Meta:
-        """
-        Meta options for the Affiliation model.
+        """Meta options for the Affiliation model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         unique_together = ['entity', 'affiliated_entity', 'start_date']
 
@@ -74,11 +70,9 @@ class Role(Model):
     )
 
     class Meta:
-        """
-        Meta options for the Role model.
+        """Meta options for the Role model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name = _('role')
 
@@ -104,11 +98,9 @@ class RoleFulfillment(_Engagement):
     )
 
     class Meta:
-        """
-        Meta options for the RoleFulfillment model.
+        """Meta options for the RoleFulfillment model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         unique_together = ['affiliation', 'role', 'start_date']
         verbose_name = _('role fulfillment')

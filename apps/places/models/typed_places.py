@@ -35,11 +35,9 @@ class Venue(Place):
     """A specific place where something happens (e.g., a university)."""
 
     class Meta:
-        """
-        Meta options for Venue.
+        """Meta options for Venue."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         constraints = [
             models.CheckConstraint(
@@ -55,11 +53,9 @@ class City(Place):
     """A city."""
 
     class Meta:
-        """
-        Meta options for City.
+        """Meta options for City."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Cities'
 
@@ -68,11 +64,9 @@ class County(Place):
     """A county."""
 
     class Meta:
-        """
-        Meta options for County.
+        """Meta options for County."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Counties'
 
@@ -81,11 +75,9 @@ class State(Place):
     """A state."""
 
     class Meta:
-        """
-        Meta options for State.
+        """Meta options for State."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'States'
 
@@ -94,11 +86,9 @@ class Region(Place):
     """A region."""
 
     class Meta:
-        """
-        Meta options for Region.
+        """Meta options for Region."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Regions'
 
@@ -107,11 +97,9 @@ class Country(Place):
     """A country."""
 
     class Meta:
-        """
-        Meta options for Country.
+        """Meta options for Country."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Countries'
 
@@ -120,10 +108,8 @@ class Continent(Place):
     """A continent."""
 
     class Meta:
-        """
-        Meta options for Continent.
+        """Meta options for Continent."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         verbose_name_plural = 'Continents'
