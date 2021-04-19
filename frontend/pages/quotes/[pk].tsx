@@ -1,16 +1,28 @@
+import { GetStaticProps, GetStaticPaths } from 'next'
+import { FunctionComponent } from "react";
+import { QuoteModule } from "@/interfaces";
+
 import Layout from "@/components/Layout";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
 import axios from "axios";
 
-export default function Quote({quote}) {
+interface QuoteProps {
+  quote: QuoteModule,
+}
+
+/**
+ * A page that renders the HTML of a single quote.
+ */
+const Quote: FunctionComponent<QuoteProps> = ({quote}: QuoteProps) => {
   return (
-    <Layout>
+    <Layout title={""}>
       <ModuleContainer module={quote}/>
     </Layout>
   )
 }
+export default Quote;
 
-export async function getStaticProps({params}) {
+export const getStaticProps: GetStaticProps = async ({params}) => {
   let quote = {};
   const {pk} = params;
 
@@ -31,7 +43,7 @@ export async function getStaticProps({params}) {
   };
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [],
     fallback: "blocking"

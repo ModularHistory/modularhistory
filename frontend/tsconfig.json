@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    // TODO: research if es2015 is supported by enough browsers
+    "target": "es2015",
     "lib": [
       "dom",
       "dom.iterable",
@@ -8,7 +9,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["./*"]
     },
     "allowJs": true,
     "skipLibCheck": true,

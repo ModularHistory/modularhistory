@@ -1,6 +1,13 @@
+import { OccurrenceModule } from "@/interfaces";
+import { FC } from "react";
+
 import ImageCard from "../modulecards/ImageCard";
 
-export default function OccurrenceDetail({ occurrence }) {
+interface OccurrenceDetailProps {
+  occurrence: OccurrenceModule
+}
+
+const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceDetailProps) => {
   return (
     <>
       {occurrence["verified"] || (
@@ -37,7 +44,9 @@ export default function OccurrenceDetail({ occurrence }) {
         />
         <div dangerouslySetInnerHTML={{ __html: occurrence["description"] }} />
 
-        {occurrence["postscript"] && <p dangerouslySetInnerHTML={occurrence["postscript"]} />}
+        {occurrence["postscript"] && (
+          <p dangerouslySetInnerHTML={{__html: occurrence["postscript"]}} />
+        )}
         {occurrence["tags_html"] && (
           <ul className="tags" dangerouslySetInnerHTML={{ __html: occurrence["tags_html"] }} />
         )}
@@ -61,3 +70,5 @@ export default function OccurrenceDetail({ occurrence }) {
     </>
   );
 }
+
+export default OccurrenceDetail;

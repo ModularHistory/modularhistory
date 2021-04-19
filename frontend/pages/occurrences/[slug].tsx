@@ -1,16 +1,28 @@
+import {OccurrenceModule} from "@/interfaces";
+import {GetStaticPaths, GetStaticProps} from "next";
+import {FunctionComponent} from "react";
+
 import Layout from "@/components/Layout";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
 import axios from "axios";
 
-export default function Occurrence({occurrence}) {
+interface OccurrenceProps {
+  occurrence: OccurrenceModule
+}
+
+/**
+ * A page that renders the HTML of a single occurrence.
+ */
+const Occurrence: FunctionComponent<OccurrenceProps> = ({occurrence}: OccurrenceProps) => {
   return (
-    <Layout>
+    <Layout title={""}>
       <ModuleContainer module={occurrence}/>
     </Layout>
   )
 }
+export default Occurrence;
 
-export async function getStaticProps({params}) {
+export const getStaticProps: GetStaticProps = async ({params}) => {
   let occurrence = {};
   const {slug} = params;
 
@@ -31,7 +43,7 @@ export async function getStaticProps({params}) {
   };
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [],
     fallback: "blocking"
