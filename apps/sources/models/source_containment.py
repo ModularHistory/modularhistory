@@ -58,5 +58,5 @@ class SourceContainment(PositionedRelation):
         if self.source in self.container.containers.all():
             raise ValidationError(
                 f'{self.source} cannot be contained by {self.container}; '
-                f'that source is contained by this source.'
+                f'the latter is already contained by the former.'
             )
