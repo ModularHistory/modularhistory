@@ -16,6 +16,7 @@
         "psql",
         "pympler",
         "rclone",
+        "soupify",
         "tinymce",
         "venv"
     ],
