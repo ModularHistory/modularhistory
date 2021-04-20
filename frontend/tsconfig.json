@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    // TODO: research if es2015 is supported by enough browsers
+    "target": "es2015",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -23,7 +28,11 @@
     "*.ts",
     "*.tsx",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "*.js",
+    "*.jsx",
+    "**/*.js",
+    "**/*.jsx"
   ],
   "exclude": [
     "node_modules"
