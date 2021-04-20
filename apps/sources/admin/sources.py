@@ -24,6 +24,11 @@ def rearrange_fields(fields: Iterable[str]):
         'attributee_string',
         'title',
         'slug',
+        'date_is_circa',
+        'date',
+        'publication_date',
+        'url',
+        'file',
     )
     # Fields to display at the bottom, in order
     bottom_fields = (
@@ -31,7 +36,6 @@ def rearrange_fields(fields: Iterable[str]):
         'number',
         'page_number',
         'end_page_number',
-        'container',
         'description',
         'citations',
     )
@@ -129,6 +133,7 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     ordering = SourceAdmin.ordering
     readonly_fields = SearchableModelAdmin.readonly_fields + [
         'escaped_citation_html',
+        'attributee_html',
         'citation_string',
         'containment_html',
         'computations',
