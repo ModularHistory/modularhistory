@@ -188,7 +188,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def escaped_citation_html(self) -> SafeString:
         return format_html(self.citation_html)
 
-    @property
     def get_attributee_html(self) -> Optional[str]:
         """Return an HTML string representing the source's attributees."""
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
