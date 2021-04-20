@@ -42,3 +42,5 @@ class Correspondence(Source, DocumentMixin):
             f'archived in {self.collection}' if self.collection else '',
         ]
         return self.components_to_html(components)
+
+    date_nullable = True

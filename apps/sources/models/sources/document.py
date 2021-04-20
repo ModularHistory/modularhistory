@@ -19,6 +19,8 @@ URL_MAX_LENGTH: int = 200
 class Document(Source, DocumentMixin):
     """A historical or contemporary document held in a collection."""
 
+    date_nullable = True
+
     def __html__(self) -> str:
         """Return the repository's HTML representation."""
         components = [
