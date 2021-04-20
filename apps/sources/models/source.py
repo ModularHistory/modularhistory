@@ -5,7 +5,7 @@ import re
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -135,6 +135,12 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     class Meta:
         ordering = ['-date']
 
+    # `date_nullable` can be overridden by child models that require the date field
+    # to be nullable for any reason (e.g., by the Webpage model, since not all
+    # webpages present their creation date, or by the Document model, since some
+    # documents cannot be dated and/or are compilations of material spanning decades).
+    date_nullable: bool = False
+
     objects = PolymorphicSourceManager.from_queryset(PolymorphicSourceQuerySet)()
     searchable_fields = ['citation_string', 'description']
     serializer = SourceSerializer
@@ -147,6 +153,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def clean(self):
         """Prepare the source to be saved."""
         super().clean()
+        if self.date:
+            pass
+        elif not self.date_nullable:
+            raise ValidationError('Date is not nullable.')
         self.attributee_html = self.get_attributee_html()
         # Compute attributee_string from attributee_html only if
         # attributee_string was not already manually set.

@@ -24,7 +24,7 @@ class Document(Source, DocumentMixin):
         components = [
             self.attributee_html,
             self.linked_title if self.title else 'untitled document',
-            self.date.string if self.date else 'date unknown',
+            self.date.string if self.date else '',
             self.descriptive_phrase,
             f'archived in {self.collection}' if self.collection else '',
         ]
