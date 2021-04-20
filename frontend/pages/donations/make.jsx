@@ -3,6 +3,7 @@ import { BraintreeHostedFields } from 'braintree-web-react';
 import $ from "jquery";
 import React from 'react';
 import Layout from "../../components/Layout";
+
 class DonateNow extends React.Component {
   constructor() {
       super();
