@@ -14,11 +14,9 @@ if TYPE_CHECKING:
 class QuoteSerializer(SearchableModelSerializer):
     """Serializer for quotes."""
 
-    text = serpy.Field(attr='text.html', required=True)
     bite = serpy.MethodField()
     html = serpy.Field()
     truncated_html = serpy.MethodField()
-    attributee_string = serpy.Field()
     has_multiple_attributees = serpy.BoolField()
     attributee_html = serpy.Field()
     date_html = serpy.Field()
@@ -37,7 +35,7 @@ class QuoteSerializer(SearchableModelSerializer):
         return (
             instance.bite.html
             if instance.bite
-            else truncatechars_html(instance.text, 100)
+            else ""
         )
 
     def get_truncated_html(self, instance: 'Quote') -> str:
