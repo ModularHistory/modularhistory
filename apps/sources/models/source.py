@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import List, Optional, Sequence, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError

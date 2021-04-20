@@ -29,6 +29,9 @@ def rearrange_fields(fields: Iterable[str]):
         'publication_date',
         'url',
         'file',
+        'editors',
+        'translator',
+        'publisher',
     )
     # Fields to display at the bottom, in order
     bottom_fields = (
