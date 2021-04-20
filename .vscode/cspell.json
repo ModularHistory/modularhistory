@@ -3,6 +3,7 @@
     "language": "en",
     "words": [
         "attributee",
+        "attributees",
         "dbbackup",
         "dbrestore",
         "envsubst",
@@ -11,6 +12,7 @@
         "iframe",
         "iglob",
         "jquery",
+        "lxml",
         "noinput",
         "noqa",
         "psql",
