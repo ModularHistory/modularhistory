@@ -16,7 +16,11 @@ export default function Donations() {
           </p>
         </div>
         <div className="pt-5 col-4 m-auto row">
+<<<<<<< HEAD
           <Link href={'/donations/make'}>
+=======
+          <Link href={'/donate-now/'}>
+>>>>>>> ef27ef3f993062fddb504c106aee856e5fa68f3b
             <button className="col btn btn-primary mr-3" type="button">Donate Now &nbsp;<i className="fa fa-dollar-sign"></i></button>
           </Link>
           {" "}
