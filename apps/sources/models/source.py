@@ -188,7 +188,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def escaped_citation_html(self) -> SafeString:
         return format_html(self.citation_html)
 
-    def get_attributee_html(self) -> Optional[str]:
+    def get_attributee_html(self) -> str:
         """Return an HTML string representing the source's attributees."""
         # Check for pk to avoid RecursionErrors with not-yet-saved objects
         has_attributees = self.attributees.exists() if self.pk else False
@@ -204,7 +204,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                 logging.info(f'Returning preset creator string: {attributee_html}')
             return format_html(attributee_html)
         elif not has_attributees:
-            return None
+            return ''
         attributees = self.ordered_attributees
         n_attributions = len(attributees)
         first_attributee = attributees[0]
