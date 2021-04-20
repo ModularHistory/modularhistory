@@ -146,6 +146,12 @@ class Section(Source):
         components = [
             self.attributee_html if self.attributee_html else EMPTY_STRING,
             f'"{self.linked_title}"' if self.title else EMPTY_STRING,
-            self.work.citation_html.lstrip(self.attributee_html),
+            self.work.citation_html.replace(self.attributee_html, '').lstrip(', '),
         ]
         return self.components_to_html(components)
+
+    def clean(self):
+        """Prepare the section to be saved."""
+        if self.work and not self.date:
+            self.date = self.work.date
+        super().clean()
