@@ -71,8 +71,9 @@ class SearchableModelManager(Manager):
         suppress_unverified: bool = True,
         suppress_hidden: bool = True,
     ) -> 'SearchableModelQuerySet':
-        """Return a queryset of search results."""
-        qs = self.get_queryset().prefetch_related('tags__topic')
+        """Return a queryset of search results, excluding any undated sources."""
+        # Exclude undated sources.
+        qs = self.get_queryset().prefetch_related('tags__topic').exclude(date=None)
         if suppress_unverified:
             qs = qs.filter(verified=True)
         if suppress_hidden:
