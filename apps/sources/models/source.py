@@ -92,7 +92,19 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,
         verbose_name=_('containers'),
     )
+
+    # `date` must be nullable at the db level (because some sources simply
+    # do not have dates), but if no date is set, we use the `clean` method
+    # to raise a ValidationError unless the child model whitelists itself
+    # by setting `date_nullable` to True.
     date = HistoricDateTimeField(null=True, blank=True)
+    # `date_nullable` can be set to True by child models that require the
+    # date field to be nullable for any reason (e.g., by the Webpage model,
+    # since not all webpages present their creation date, or by the Document
+    # model, since some documents cannot be dated and/or are compilations of
+    # material spanning decades).
+    date_nullable: bool = False
+
     description = HTMLField(
         verbose_name=_('description'), null=True, blank=True, paragraphed=True
     )
@@ -134,12 +146,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     class Meta:
         ordering = ['-date']
-
-    # `date_nullable` can be overridden by child models that require the date field
-    # to be nullable for any reason (e.g., by the Webpage model, since not all
-    # webpages present their creation date, or by the Document model, since some
-    # documents cannot be dated and/or are compilations of material spanning decades).
-    date_nullable: bool = False
 
     objects = PolymorphicSourceManager.from_queryset(PolymorphicSourceQuerySet)()
     searchable_fields = ['citation_string', 'description']
