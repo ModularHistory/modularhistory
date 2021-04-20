@@ -1,5 +1,7 @@
-from typing import Iterable
+from typing import Iterable, Optional, Tuple
 
+from django.db.models.query import QuerySet
+from django.http.request import HttpRequest
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from apps.admin import TabularInline, admin_site
@@ -97,13 +99,32 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
     ordering = ['date', 'citation_string']
     search_fields = base_model.searchable_fields
 
+    # Use `pk` to enable excluding the current source from autocomplete results.
+    pk: Optional[int] = None
+
     def get_fields(self, request, model_instance=None):
         """Return reordered fields to be displayed in the admin."""
         fields: list(super().get_fields(request, model_instance))
         return rearrange_fields(fields)
 
+    def get_form(self, request, obj: Optional[models.Source], **kwargs):
+        if obj:
+            self.pk = obj.pk
+        return super().get_form(request, obj=obj, **kwargs)
+
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('polymorphic_ctype')
+
+    def get_search_results(
+        self, request: HttpRequest, queryset: QuerySet, search_term: str
+    ) -> Tuple[QuerySet, bool]:
+        queryset, use_distinct = super().get_search_results(
+            request, queryset, search_term
+        )
+        print('>>>>>>>')
+        if self.pk:
+            queryset = queryset.exclude(pk=self.pk)
+        return queryset, use_distinct
 
 
 class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):

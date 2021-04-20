@@ -52,14 +52,16 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     citation_html = models.TextField(
         verbose_name=_('citation HTML'),
-        null=False,  # cannot be null in db
-        blank=True,  # can be left blank in admin form
+        null=False,
+        # Allow to be blank in model forms (and calculated during cleaning).
+        blank=True,
     )
     citation_string = models.CharField(
         verbose_name=_('citation string'),
         max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,  # cannot be null in db
-        blank=True,  # can be left blank in admin form
+        null=False,
+        # Allow to be blank in model forms (and calculated during cleaning).
+        blank=True,
         unique=True,
     )
     attributee_html = models.CharField(
@@ -157,17 +159,25 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         """Return the source's string representation."""
         return self.citation_string
 
-    def clean(self):
-        """Prepare the source to be saved."""
-        super().clean()
-        if not self.date and not self.date_nullable:
-            raise ValidationError('Date is not nullable.')
+    def update_calculated_fields(self):
+        """
+        Update the source's calculated fields, such as citation_html.
+        Since calculated fields may depend on many-to-many (m2m) relationships,
+        this method should not be called before m2m relationships are established;
+        i.e., this method should not be called before the model instance is
+        initially saved to the database and gains a primary key.
+        """
+        # Calculate the attributee HTML and string.
         self.attributee_html = self.get_attributee_html()
         # Compute attributee_string from attributee_html only if
         # attributee_string was not already manually set.
         if not self.attributee_string:
             self.attributee_string = soupify(self.attributee_html).get_text()
+
+        # Calculate the containment HTML.
         self.containment_html = self.get_containment_html()
+
+        # Calculate the citation HTML and string.
         self.citation_html = self.get_citation_html()
         # Set the citation_string (used as a natural key) to the text version
         # of citation_html, minus the containment string and anything following.
@@ -178,12 +188,35 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             ).get_text()
         else:
             self.citation_string = soupify(self.citation_html).get_text()
+
+        # If needed (and possible), use the container's source file.
         if not self.file:
             if self.containment and self.containment.container.file:
                 self.file = self.containment.container.file
 
+    def clean(self):
+        """Prepare the source to be saved."""
+        super().clean()
+        # Ensure a date value is set, if date is not explicitly made nullable.
+        if not self.date and not self.date_nullable:
+            raise ValidationError('Date is not nullable.')
+        # If this is not a new model instance, update its calculated fields.
+        # Otherwise, calculated fields must wait until after the initial save
+        # to the database so that m2m relationships are established.
+        if self._state.adding is False:
+            self.update_calculated_fields()
+
+    def save(self, *args, **kwargs):
+        """Save the source to the database."""
+        is_new_instance = self._state.adding
+        super().save(*args, **kwargs)
+        if is_new_instance:
+            self.update_calculated_fields()
+            super().save()
+
     @property
     def ctype(self) -> ContentType:
+        """Alias polymorphic_ctype."""
         return self.polymorphic_ctype
 
     @property
@@ -201,6 +234,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     @property
     def escaped_citation_html(self) -> SafeString:
+        """Return the escaped citation HTML (for display in the Django admin)."""
         return format_html(self.citation_html)
 
     def get_attributee_html(self) -> str:
