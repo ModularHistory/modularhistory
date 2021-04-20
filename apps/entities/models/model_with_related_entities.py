@@ -23,11 +23,9 @@ class ModelWithRelatedEntities(Model):
     """
 
     class Meta:
-        """
-        Meta options for ModelWithRelatedEntities.
+        """Meta options for ModelWithRelatedEntities."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True
 

@@ -16,10 +16,8 @@ class ModelWithRelatedQuotes(Model):
     quote_relations = GenericRelation('quotes.QuoteRelation')
 
     class Meta:
-        """
-        Meta options for ModelWithRelatedQuotes.
+        """Meta options for ModelWithRelatedQuotes."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True

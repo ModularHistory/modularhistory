@@ -53,7 +53,7 @@ homepage = "https://modularhistory.com/"
 license = "ISC"
 readme = "README.rst"
 repository = "https://github.com/ModularHistory/modularhistory"
-version = "0.1.0"
+version = "0.0.1"
 
 [tool.poetry.dependencies]
 python = "^3.7.9"

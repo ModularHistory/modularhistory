@@ -26,11 +26,9 @@ class DatedModel(Model):
     date = HistoricDateTimeField(verbose_name=_('date'), null=True)
 
     class Meta:
-        """
-        Meta options for DatedModel.
+        """Meta options for DatedModel."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True
 
