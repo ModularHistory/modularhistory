@@ -2,11 +2,12 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
+from typing import List, Optional, Sequence, TYPE_CHECKING, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
+from django.db.models.query import QuerySet
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
@@ -276,16 +277,19 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     def get_containment_html(self) -> str:
         """Return a list of strings representing the source's containers."""
-        containments = self.source_containments.order_by('position')[:2]
-        container_strings = []
+        containments: QuerySet[
+            'SourceContainment'
+        ] = self.source_containments.select_related('container').order_by('position')
+        container_strings: List[str] = []
         same_creator = True
-        for containment in containments:
-            container_html = f'{containment.container.citation_html}'
-            # Determine whether the container has the same attributee
-            if containment.container.attributee_html != self.attributee_html:
+        containment: SourceContainment
+        for containment in containments[:2]:
+            container: Source = containment.container
+            container_html = f'{container.citation_html}'
+            # Determine whether the container has the same attributee.
+            if container.attributee_string != self.attributee_string:
                 same_creator = False
-
-            # Remove redundant creator string if necessary
+            # Remove redundant creator string if necessary.
             creator_string_is_duplicated = (
                 same_creator
                 and self.attributee_html
@@ -293,8 +297,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             )
             if creator_string_is_duplicated:
                 container_html = container_html[len(f'{self.attributee_html}, ') :]
-
-            # Include the page number
+            # Include the page number.
             if containment.page_number:
                 page_number_html = _get_page_number_html(
                     containment.source,
@@ -371,17 +374,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             return [attribution.attributee for attribution in attributions]
         except (AttributeError, ObjectDoesNotExist):
             return []
-
-    @property  # type: ignore
-    @retrieve_or_compute(attribute_name='containers')
-    def serialized_containments(self) -> List[Dict]:
-        """Return the source's containers, serialized."""
-        return [
-            containment.container.serialize()
-            for containment in self.source_containments.all().select_related(
-                'container'
-            )
-        ]
 
     def __html__(self) -> str:
         """

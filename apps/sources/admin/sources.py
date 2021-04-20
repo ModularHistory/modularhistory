@@ -18,7 +18,13 @@ from apps.sources.admin.inlines import (
 def rearrange_fields(fields: Iterable[str]):
     """Return reordered fields to be displayed in the admin."""
     # Fields to display at the top, in order
-    top_fields = ('citation_string', 'attributee_string', 'title')
+    top_fields = (
+        'escaped_citation_html',
+        'citation_string',
+        'attributee_string',
+        'title',
+        'slug',
+    )
     # Fields to display at the bottom, in order
     bottom_fields = (
         'volume',
@@ -124,6 +130,7 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     readonly_fields = SearchableModelAdmin.readonly_fields + [
         'escaped_citation_html',
         'citation_string',
+        'containment_html',
         'computations',
     ]
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
