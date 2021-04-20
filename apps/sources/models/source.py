@@ -159,9 +159,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def clean(self):
         """Prepare the source to be saved."""
         super().clean()
-        if self.date:
-            pass
-        elif not self.date_nullable:
+        if not self.date and not self.date_nullable:
             raise ValidationError('Date is not nullable.')
         self.attributee_html = self.get_attributee_html()
         # Compute attributee_string from attributee_html only if
