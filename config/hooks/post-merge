@@ -18,17 +18,17 @@ echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=tr
 if [[ -d config/hooks ]]; then
   for filepath in config/hooks/*; do
     filename=$(basename "$filepath")
-    if [[ $filename = "post-merge" ]]; then
-      echo "The post-merge hook has changed."
-      # To avoid having this hook overwrite itself, prompt to rerun the setup script.
-      prompt_to_run_setup_script=true
-    else
-      cmp --silent ".git/hooks/$filename" "$filepath" || {
+    cmp --silent ".git/hooks/$filename" "$filepath" || {
+      if [[ $filename = "post-merge" ]]; then
+        echo "The post-merge hook has changed."
+        # To avoid having this hook overwrite itself, prompt to rerun the setup script.
+        prompt_to_run_setup_script=true
+      else
         cat "$filepath" > ".git/hooks/$filename"
         sudo chmod +x ".git/hooks/$filename"
         echo "Updated $filename hook."
-      }
-    fi
+      fi
+    }
   done
 fi
 
