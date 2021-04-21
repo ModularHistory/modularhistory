@@ -70,8 +70,8 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         # If the request comes from the admin edit page for a model instance,
         # exclude the model instance from the search results. This prevents
         # inline admins from displaying an unwanted value in an autocomplete
-        # field or, in the worst-case scenario, errantly creating a relationship
-        # between a model instance and itself.
+        # field or, in the worst-case scenario, letting an admin errantly
+        # create a relationship between a model instance and itself.
         referer = request.META.get('HTTP_REFERER') or ''
         match = re.match(r'.+/(\d+)/change', referer)
         if match:
@@ -110,7 +110,8 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
         RelatedInline,
     ]
     list_display = [field for field in SourceAdmin.list_display if field != 'ctype']
-    # Without a hint, mypy seems unable to infer the type of `filter` in the list comprehension.
+    # Without a hint, mypy seems unable to infer the type of `filter`
+    # in the list comprehension.
     filter: Union[str, Type[ListFilter]]
     list_filter = [
         filter for filter in SourceAdmin.list_filter if filter != SourceTypeFilter
