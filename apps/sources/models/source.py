@@ -221,6 +221,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         """Save the source to the database."""
         is_new_instance = self._state.adding
         super().save(*args, **kwargs)
+        # If this is a new model instance, update its calculated fields and
+        # re-save it. After the model instance is initially saved to the
+        # database, calculated fields are calculated during model cleaning.
         if is_new_instance:
             self.update_calculated_fields()
             super().save()
