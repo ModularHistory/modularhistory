@@ -194,10 +194,12 @@ class Citation(PositionedRelation):
         if n_strings > 1:
             html = f'pp. {", ".join(page_number_strings)}'
         elif n_strings:
-            if regex.search(r'(?:–|&ndash;)', page_number_strings[0]):
-                html = f'pp. {", ".join(page_number_strings)}'
+            page_number_string = page_number_strings[0]
+            # Match any dash or hyphen.
+            if regex.search(r'\p{Pd}', page_number_string):
+                html = f'pp. {page_number_string}'
             else:
-                html = f'p. {", ".join(page_number_strings)}'
+                html = f'p. {page_number_string}'
         return html
 
     @property
