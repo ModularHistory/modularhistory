@@ -208,14 +208,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return self.ctype.model
 
     @property
-    def containment(self) -> Optional['SourceContainment']:
-        """Return the source's primary containment."""
-        try:
-            return self.source_containments.first()
-        except (ObjectDoesNotExist, AttributeError):
-            return None
-
-    @property
     def escaped_citation_html(self) -> SafeString:
         """Return the escaped citation HTML (for display in the Django admin)."""
         return format_html(self.citation_html)
@@ -315,11 +307,17 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return ', and '.join(container_strings)
 
     def get_date(self) -> Optional[HistoricDateTime]:
-        """Get the source's date."""  # TODO: prefetch container?
+        """Get the source's date."""
         if self.date:
             return self.date
-        elif self.containment and self.containment.container.date:
-            return self.containment.container.date
+        elif not self._state.adding and self.containers.exists():
+            try:
+                containment: SourceContainment = (
+                    self.source_containments.first().select_related('container')
+                )
+                return containment.container.date
+            except Exception as err:
+                pass
         return None
 
     # TODO: after deploying to prod and copying deprecated_href to the new href field,
@@ -345,8 +343,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             url = self.url or ''
             page_number = getattr(self, 'page_number', None)
             # TODO: refactor?
-            if page_number and 'www.sacred-texts.com' in url:
-                url = f'{url}#page_{page_number}'
+            if page_number:
+                if 'www.sacred-texts.com' in url:
+                    url = f'{url}#page_{page_number}'
+                elif 'josephsmithpapers.org' in url:
+                    url = f'{url}/{page_number}'
         return url
 
     def get_page_number_html(
@@ -442,9 +443,14 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             self.attributee_string = soupify(self.attributee_html).get_text()
 
         # If needed (and possible), use the container's source file.
-        if not self.file:
-            if self.containment and self.containment.container.file:
-                self.file = self.containment.container.file
+        if not self.file and not self._state.adding:
+            try:
+                containment: SourceContainment = (
+                    self.source_containments.first().select_related('container')
+                )
+                self.file = containment.container.file
+            except Exception as err:
+                logging.debug(f'Could not set source file from container: {err}')
 
         # Calculate the containment HTML.
         self.containment_html = self.get_containment_html()
