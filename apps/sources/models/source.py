@@ -259,9 +259,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if containment_html:
             html = f'{html}, {containment_html}'
         elif getattr(self, 'page_number', None):
-            page_number_html = _get_page_number_html(
-                self, self.file, self.page_number, self.end_page_number
-            )
+            page_number_html = self.get_page_number_html()
             html = f'{html}, {page_number_html}'
         if not self.file:
             if self.link and self.link not in html:
@@ -273,25 +271,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         #         f'{html}, information available at '
         #         f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
         #     )
-        the_code_below_is_good = False
-        if the_code_below_is_good:
-            # TODO: Remove search icon; insert link intelligently
-            if self.file:
-                html += (
-                    f'<a href="{self.file.url}" class="mx-1 display-source"'
-                    f' data-toggle="modal" data-target="#modal">'
-                    f'<i class="fas fa-search"></i>'
-                    f'</a>'
-                )
-            elif self.url:
-                link = self.url
-                if self.page_number and 'www.sacred-texts.com' in link:
-                    link = f'{link}#page_{self.page_number}'
-                html += (
-                    f'<a href="{link}" class="mx-1" target="_blank">'
-                    f'<i class="fas fa-search"></i>'
-                    f'</a>'
-                )
         return format_html(fix_comma_positions(html))
 
     def get_containment_html(self) -> str:
@@ -322,11 +301,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                 container_html = container_html[len(f'{self.attributee_html}, ') :]
             # Include the page number.
             if containment.page_number:
-                page_number_html = _get_page_number_html(
-                    containment.source,
-                    containment.source.file,
-                    containment.page_number,
-                    containment.end_page_number,
+                page_number_html = container.get_page_number_html(
+                    page_number=containment.page_number,
+                    end_page_number=containment.end_page_number,
                 )
                 container_html = f'{container_html}, {page_number_html}'
             container_html = (
@@ -345,6 +322,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             return self.containment.container.date
         return None
 
+    # TODO: after deploying to prod and copying deprecated_href to the new href field,
+    # remove the @property and @retrieve_or_compute decorators and rename this method
+    # to get_href.
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='href')
     def deprecated_href(self) -> str:
@@ -363,7 +343,47 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                 url = _set_page_number(url, page_number)
         else:
             url = self.url or ''
+            page_number = getattr(self, 'page_number', None)
+            # TODO: refactor?
+            if page_number and 'www.sacred-texts.com' in url:
+                url = f'{url}#page_{page_number}'
         return url
+
+    def get_page_number_html(
+        self, page_number: Optional[int] = None, end_page_number: Optional[int] = None
+    ) -> str:
+        page_number = page_number or self.page_number
+        end_page_number = end_page_number or self.end_page_number
+        if page_number:
+            pn = self.get_page_number_link(page_number=page_number) or page_number
+            if end_page_number:
+                end_pn = (
+                    self.get_page_number_link(page_number=end_page_number)
+                    or end_page_number
+                )
+                return f'pp. {pn}–{end_pn}'
+            return f'p. {pn}'
+        return ''
+
+    def get_page_number_link(self, page_number: Optional[int] = None) -> str:
+        """Return a simple link to a specific page of the source file."""
+        page_number = page_number or self.page_number
+        url = self.get_page_number_url(page_number=page_number)
+        if url:
+            # '<a href="https://..." class="display-source" target="_blank">25</a>'
+            return compose_link(
+                page_number, href=url, klass='display-source', target=NEW_TAB
+            )
+        return ''
+
+    def get_page_number_url(self, page_number: Optional[int] = None) -> str:
+        """Return the URL for a specific page of the source file."""
+        if self.file:
+            url = self.file.url
+            page_number = page_number or self.page_number
+            page_number += self.file.page_offset
+            return _set_page_number(url, page_number)
+        return ''
 
     @property
     def link(self) -> Optional[SafeString]:
@@ -421,6 +441,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if not self.attributee_string:
             self.attributee_string = soupify(self.attributee_html).get_text()
 
+        # If needed (and possible), use the container's source file.
+        if not self.file:
+            if self.containment and self.containment.container.file:
+                self.file = self.containment.container.file
+
         # Calculate the containment HTML.
         self.containment_html = self.get_containment_html()
 
@@ -437,54 +462,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         else:
             self.citation_string = soupify(self.citation_html).get_text()
 
-        # If needed (and possible), use the container's source file.
-        if not self.file:
-            if self.containment and self.containment.container.file:
-                self.file = self.containment.container.file
-
     @staticmethod
     def components_to_html(components: Sequence[Optional[str]]):
         """Combine a list of HTML components into an HTML string."""
         return components_to_html(components, delimiter=COMPONENT_DELIMITER)
-
-
-def _get_page_number_url(
-    source: Source, file: SourceFile, page_number: int
-) -> Optional[str]:
-    """TODO: write docstring."""
-    url = source.file.url or None
-    if not url:
-        return None
-    page_number += file.page_offset
-    return _set_page_number(url, page_number)
-
-
-def _get_page_number_link(url: str, page_number: int) -> Optional[str]:
-    """TODO: write docstring."""
-    if not url:
-        return None
-    return compose_link(page_number, href=url, klass='display-source', target=NEW_TAB)
-
-
-def _get_page_number_html(
-    source: Source,
-    file: Optional[SourceFile],
-    page_number: int,
-    end_page_number: Optional[int] = None,
-) -> str:
-    """TODO: write docstring."""
-    pn_url = _get_page_number_url(source=source, file=file, page_number=page_number)
-    pn = _get_page_number_link(url=pn_url, page_number=page_number) or page_number
-    if end_page_number:
-        end_pn_url = _get_page_number_url(
-            source=source, file=file, page_number=end_page_number
-        )
-        end_pn = (
-            _get_page_number_link(url=end_pn_url, page_number=end_page_number)
-            or end_page_number
-        )
-        return f'pp. {pn}–{end_pn}'
-    return f'p. {pn}'
 
 
 def _set_page_number(url: str, page_number: Union[str, int]) -> str:
