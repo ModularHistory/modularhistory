@@ -166,44 +166,17 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     serializer = SourceSerializer
     slug_base_field = 'title'
 
+    def __html__(self) -> str:
+        """
+        Return the source's HTML representation, not including its containers.
+
+        Must be defined by models inheriting from Source.
+        """
+        raise NotImplementedError
+
     def __str__(self):
         """Return the source's string representation."""
         return self.citation_string
-
-    def update_calculated_fields(self):
-        """
-        Update the source's calculated fields, such as citation_html.
-        Since calculated fields may depend on many-to-many (m2m) relationships,
-        this method should not be called before m2m relationships are established;
-        i.e., this method should not be called before the model instance is
-        initially saved to the database and gains a primary key.
-        """
-        # Calculate the attributee HTML and string.
-        self.attributee_html = self.get_attributee_html()
-        # Compute attributee_string from attributee_html only if
-        # attributee_string was not already manually set.
-        if not self.attributee_string:
-            self.attributee_string = soupify(self.attributee_html).get_text()
-
-        # Calculate the containment HTML.
-        self.containment_html = self.get_containment_html()
-
-        # Calculate the citation HTML and string.
-        self.citation_html = self.get_citation_html()
-        # Set the citation_string (used as a natural key) to the text version
-        # of citation_html, minus the containment string and anything following.
-        if self.containment_html and self.containment_html in self.citation_html:
-            index = self.citation_html.index(self.containment_html)
-            self.citation_string = soupify(
-                self.citation_html[:index].rstrip(', ')
-            ).get_text()
-        else:
-            self.citation_string = soupify(self.citation_html).get_text()
-
-        # If needed (and possible), use the container's source file.
-        if not self.file:
-            if self.containment and self.containment.container.file:
-                self.file = self.containment.container.file
 
     def clean(self):
         """Prepare the source to be saved."""
@@ -211,22 +184,18 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         # Ensure a date value is set, if date is not explicitly made nullable.
         if not self.date and not self.date_nullable:
             raise ValidationError('Date is not nullable.')
-        # If this is not a new model instance, update its calculated fields.
-        # Otherwise, calculated fields must wait until after the initial save
-        # to the database so that m2m relationships are established.
-        if self._state.adding is False:
+        # Update the source's calculated fields.
+        try:
+            # Note: At this stage, changes to m2m relationships will not have
+            # been processed. Calculated fields must be updated again after any
+            # changes are made to the source's m2m relationships. This is handled
+            # with "signals" (see apps/sources/signals.py).
             self.update_calculated_fields()
-
-    def save(self, *args, **kwargs):
-        """Save the source to the database."""
-        is_new_instance = self._state.adding
-        super().save(*args, **kwargs)
-        # If this is a new model instance, update its calculated fields and
-        # re-save it. After the model instance is initially saved to the
-        # database, calculated fields are calculated during model cleaning.
-        if is_new_instance:
-            self.update_calculated_fields()
-            super().save()
+        except ValidationError:
+            raise  # Re-raise any validation errors.
+        except Exception as err:
+            logging.error(f'{err}')
+            raise ValidationError(f'Failed validation due to error: {err}')
 
     @property
     def ctype(self) -> ContentType:
@@ -254,33 +223,34 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def get_attributee_html(self) -> str:
         """Return an HTML string representing the source's attributees."""
         # Avoid attempting to access a m2m relationship on a not-yet-saved source.
-        has_attributees = self.attributees.exists() if not self._state.adding else False
-        if not has_attributees and not self.attributee_string:
-            return ''
-        elif self.attributee_string:
-            # Use attributee_string to generate attributee_html, if possible.
-            attributee_html = self.attributee_string
-            if has_attributees:
-                for entity in self.attributees.all().iterator():
-                    if entity.name in attributee_html:
-                        attributee_html = attributee_html.replace(
-                            entity.name, entity.name_html
-                        )
-            else:
-                logging.info(f'Returning preset creator string: {attributee_html}')
-            return format_html(attributee_html)
-        # Generate attributee_html from attributees (m2m relationship).
-        attributees = self.ordered_attributees
-        n_attributions = len(attributees)
-        first_attributee = attributees[0]
-        html = first_attributee.name_html
-        if n_attributions == 2:
-            html = f'{html} and {attributees[1].name_html}'
-        elif n_attributions == 3:
-            html = f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
-        elif n_attributions > 3:
-            html = f'{html} et al.'
-        return html
+        m2m_relation_exists = (
+            self.attributees.exists() if not self._state.adding else False
+        )
+        if m2m_relation_exists or self.attributee_string:
+            if self.attributee_string:
+                # Use attributee_string to generate attributee_html, if possible.
+                attributee_html = self.attributee_string
+                if m2m_relation_exists:
+                    logging.debug('Generating attributee HTML from preset string...')
+                    for entity in self.attributees.all().iterator():
+                        if entity.name in attributee_html:
+                            attributee_html = attributee_html.replace(
+                                entity.name, entity.name_html
+                            )
+                return format_html(attributee_html)
+            # Generate attributee_html from attributees (m2m relationship).
+            attributees = self.ordered_attributees
+            n_attributions = len(attributees)
+            first_attributee = attributees[0]
+            html = first_attributee.name_html
+            if n_attributions == 2:
+                html = f'{html} and {attributees[1].name_html}'
+            elif n_attributions == 3:
+                html = f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
+            elif n_attributions > 3:
+                html = f'{html} et al.'
+            return html
+        return ''
 
     def get_citation_html(self) -> str:
         """Return the HTML representation of the source, including its containers."""
@@ -328,7 +298,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         """Return a list of strings representing the source's containers."""
         # Avoid accessing a m2m relationship on a not-yet-saved source.
         if self._state.adding:
-            logging.info('get_containment_html was called on a not-yet-saved source.')
+            logging.debug('Containments of an unsaved source cannot be accessed.')
             return ''
         containments: QuerySet[
             'SourceContainment'
@@ -428,13 +398,49 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         except (AttributeError, ObjectDoesNotExist):
             return []
 
-    def __html__(self) -> str:
+    def update_calculated_fields(self):
         """
-        Return the source's HTML representation, not including its containers.
+        Update the source's calculated fields (e.g., citation_html).
 
-        Must be defined by models inheriting from Source.
+        Calculated fields may depend on many-to-many (m2m) relationships (as
+        well as on the source's own attributes), so this method should be called
+        not only during source cleaning/saving but also after m2m relationships
+        are added or removed (via "signals"; see apps/sources/signals.py).
+
+        However, since this method may be called on a new source before it is
+        initially saved to the database (i.e., before it gains a primary key),
+        and since attempting to access m2m relationships on a model instance that
+        has not yet been saved to the db would normally result in an error, any
+        logic contained in this method must take this into account and tolerate
+        an inability to access the source's m2m relationships.
         """
-        raise NotImplementedError
+        # Calculate the attributee HTML and string.
+        self.attributee_html = self.get_attributee_html()
+        # Compute attributee_string from attributee_html only if
+        # attributee_string was not already manually set.
+        if not self.attributee_string:
+            self.attributee_string = soupify(self.attributee_html).get_text()
+
+        # Calculate the containment HTML.
+        self.containment_html = self.get_containment_html()
+
+        # Calculate the citation HTML.
+        self.citation_html = self.get_citation_html()
+
+        # Set citation_string to the text version of citation_html.
+        if self.containment_html and self.containment_html in self.citation_html:
+            # Omit the containment string and anything following it.
+            index = self.citation_html.index(self.containment_html)
+            self.citation_string = soupify(
+                self.citation_html[:index].rstrip(', ')
+            ).get_text()
+        else:
+            self.citation_string = soupify(self.citation_html).get_text()
+
+        # If needed (and possible), use the container's source file.
+        if not self.file:
+            if self.containment and self.containment.container.file:
+                self.file = self.containment.container.file
 
     @staticmethod
     def components_to_html(components: Sequence[Optional[str]]):
