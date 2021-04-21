@@ -169,6 +169,8 @@ INSTALLED_APPS = [
     'apps.topics.apps.TopicsConfig',
     'apps.users.apps.UsersConfig',
     'apps.verifications.apps.VerificationsConfig',
+    # GraphQL
+    'graphene_django',
 ]
 
 MIDDLEWARE = [
@@ -298,6 +300,9 @@ MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 MEGA_DEV_USERNAME = config('MEGA_DEV_USERNAME', default=MEGA_USERNAME)
 MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=MEGA_PASSWORD)
+
+# GraphQL
+GRAPHENE = {'SCHEMA': ''}  # TODO INSERT SCHEMA ROUTE
 
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
