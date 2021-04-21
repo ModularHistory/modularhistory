@@ -3,6 +3,13 @@ import { BraintreeHostedFields } from 'braintree-web-react';
 import $ from "jquery";
 import React from 'react';
 import Layout from "../../components/Layout";
+<<<<<<< HEAD
+=======
+import braintree from flask;
+import Flask, { } from render_template, send_from_directory, request, redirect, jsonify;
+
+
+>>>>>>> 6a5dc71216c3619a89e09f710eee558610c161c8
 class DonateNow extends React.Component {
   constructor() {
       super();
@@ -14,8 +21,13 @@ class DonateNow extends React.Component {
   // 
   async componentDidMount() {
     try {
+<<<<<<< HEAD
       // Get a client token for authorization from your server http://django:8000/api/entities/
       const response = await axios.get('http://django:8000/api/donations/token/')
+=======
+      // Get a client token for authorization from your server
+      const response = await axios.get('http://localhost:5000/token')
+>>>>>>> 6a5dc71216c3619a89e09f710eee558610c161c8
       const clientToken = response.data
 
       this.setState({ clientToken })
@@ -33,7 +45,11 @@ class DonateNow extends React.Component {
       const { nonce } = await this.state.instance.tokenize()
 
       const response = await axios.post(
+<<<<<<< HEAD
         'http://django:8000/api/donations/proc/',
+=======
+        'http://localhost:5000/proc',
+>>>>>>> 6a5dc71216c3619a89e09f710eee558610c161c8
         { 
             paymentMethodNonce: nonce ,
             amount: $("#amount").val(),
