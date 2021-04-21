@@ -50,6 +50,9 @@ urlpatterns = [
     path('admin/', admin_site.urls),
     # Chat
     path('chat/', include('apps.chat.urls', namespace='chat')),
+    # Donations
+    path('api/donations/', include(_api('donations'), namespace='donations_api')),
+    path('donations/', include('apps.donations.urls', namespace='donations')),   
     # Entities
     path('api/entities/', include(_api('entities'), namespace='entities_api')),
     path('entities/', include('apps.entities.urls', namespace='entities')),
