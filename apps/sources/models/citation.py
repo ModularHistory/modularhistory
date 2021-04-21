@@ -191,15 +191,15 @@ class Citation(PositionedRelation):
                 pn_html = f'{pn_html}'
             page_number_strings.append(pn_html)
         n_strings = len(page_number_strings)
-        if n_strings > 1:
-            html = f'pp. {", ".join(page_number_strings)}'
-        elif n_strings:
+        if n_strings == 1:
             page_number_string = page_number_strings[0]
             # Match any dash or hyphen.
             if regex.search(r'\p{Pd}', page_number_string):
                 html = f'pp. {page_number_string}'
             else:
                 html = f'p. {page_number_string}'
+        elif n_strings:
+            html = f'pp. {", ".join(page_number_strings)}'
         return html
 
     @property
