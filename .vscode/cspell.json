@@ -8,6 +8,7 @@
         "ctype",
         "dbbackup",
         "dbrestore",
+        "dedupe",
         "envsubst",
         "gdrive",
         "graphviz",
@@ -21,6 +22,8 @@
         "psql",
         "pympler",
         "rclone",
+        "referer",
+        "serpy",
         "soupify",
         "tinymce",
         "venv"

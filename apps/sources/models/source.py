@@ -119,6 +119,15 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         on_delete=models.SET_NULL,
         verbose_name='file',
     )
+    href = models.URLField(
+        verbose_name=_('href'),
+        null=True,
+        blank=True,
+        help_text=(
+            'URL to use as the href when presenting a link to the source. This '
+            'could be the URL of the source file (if one exists) or of a webpage.'
+        ),
+    )
     location = models.ForeignKey(
         to='places.Place',
         null=True,
@@ -144,7 +153,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         max_length=MAX_URL_LENGTH,
         null=True,
         blank=True,
-        help_text='URL where the source can be accessed online',
+        help_text=(
+            'URL where the source can be accessed online (outside ModularHistory)'
+        ),
     )
 
     class Meta:
@@ -239,9 +250,12 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     def get_attributee_html(self) -> str:
         """Return an HTML string representing the source's attributees."""
-        # Check for pk to avoid RecursionErrors with not-yet-saved objects
-        has_attributees = self.attributees.exists() if self.pk else False
-        if self.attributee_string:
+        # Avoid attempting to access a m2m relationship on a not-yet-saved source.
+        has_attributees = self.attributees.exists() if not self._state.adding else False
+        if not has_attributees and not self.attributee_string:
+            return ''
+        elif self.attributee_string:
+            # Use attributee_string to generate attributee_html, if possible.
             attributee_html = self.attributee_string
             if has_attributees:
                 for entity in self.attributees.all().iterator():
@@ -252,8 +266,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             else:
                 logging.info(f'Returning preset creator string: {attributee_html}')
             return format_html(attributee_html)
-        elif not has_attributees:
-            return ''
+        # Generate attributee_html from attributees (m2m relationship).
         attributees = self.ordered_attributees
         n_attributions = len(attributees)
         first_attributee = attributees[0]
@@ -268,7 +281,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     def get_citation_html(self) -> str:
         """Return the HTML representation of the source, including its containers."""
-        # TODO: html methods should be split into different classes and/or mixins.
         html = self.__html__()
         containment_html = self.containment_html or self.get_containment_html()
         if containment_html:
@@ -311,6 +323,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     def get_containment_html(self) -> str:
         """Return a list of strings representing the source's containers."""
+        # Avoid accessing a m2m relationship on a not-yet-saved source.
+        if self._state.adding:
+            logging.info('get_containment_html was called on a not-yet-saved source.')
+            return ''
         containments: QuerySet[
             'SourceContainment'
         ] = self.source_containments.select_related('container').order_by('position')
@@ -358,7 +374,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='href')
-    def href(self) -> Optional[str]:
+    def deprecated_href(self) -> Optional[str]:
         """
         Return the href to use when providing a link to the source.
 

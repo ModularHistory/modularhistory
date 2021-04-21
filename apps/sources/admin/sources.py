@@ -1,4 +1,5 @@
-from typing import Iterable, Optional, Tuple
+import re
+from typing import Iterable, Tuple
 
 from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
@@ -15,47 +16,6 @@ from apps.sources.admin.inlines import (
     ContainersInline,
     RelatedInline,
 )
-
-
-def rearrange_fields(fields: Iterable[str]):
-    """Return reordered fields to be displayed in the admin."""
-    # Fields to display at the top, in order
-    top_fields = (
-        'escaped_citation_html',
-        'citation_string',
-        'attributee_string',
-        'title',
-        'slug',
-        'date_is_circa',
-        'date',
-        'publication_date',
-        'url',
-        'file',
-        'editors',
-        'translator',
-        'publisher',
-    )
-    # Fields to display at the bottom, in order
-    bottom_fields = (
-        'volume',
-        'number',
-        'page_number',
-        'end_page_number',
-        'description',
-        'citations',
-    )
-    fields = list(fields)
-    index: int = 0
-    for top_field in top_fields:
-        if top_field in fields:
-            fields.remove(top_field)
-            fields.insert(index, top_field)
-            index += 1
-    for bottom_field in bottom_fields:
-        if bottom_field in fields:
-            fields.remove(bottom_field)
-            fields.append(bottom_field)
-    return fields
 
 
 class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
@@ -99,32 +59,29 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
     ordering = ['date', 'citation_string']
     search_fields = base_model.searchable_fields
 
-    # Use `pk` to enable excluding the current source from autocomplete results.
-    pk: Optional[int] = None
+    def get_search_results(
+        self, request: HttpRequest, queryset: QuerySet, search_term: str
+    ) -> Tuple[QuerySet, bool]:
+        """Return source instances matching the supplied search term."""
+        queryset, use_distinct = super().get_search_results(
+            request, queryset, search_term
+        )
+        # Exclude the current model instance (being edited) from the search results.
+        # This prevents inline admins from errantly creating relationships between
+        referer = request.META.get('HTTP_REFERER')
+        match = re.match(r'.+/(\d+)/change', referer)
+        if match:
+            pk = int(match.group(1))
+            queryset = queryset.exclude(pk=pk)
+        return queryset, use_distinct
 
     def get_fields(self, request, model_instance=None):
         """Return reordered fields to be displayed in the admin."""
         fields: list(super().get_fields(request, model_instance))
         return rearrange_fields(fields)
 
-    def get_form(self, request, obj: Optional[models.Source], **kwargs):
-        if obj:
-            self.pk = obj.pk
-        return super().get_form(request, obj=obj, **kwargs)
-
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('polymorphic_ctype')
-
-    def get_search_results(
-        self, request: HttpRequest, queryset: QuerySet, search_term: str
-    ) -> Tuple[QuerySet, bool]:
-        queryset, use_distinct = super().get_search_results(
-            request, queryset, search_term
-        )
-        print('>>>>>>>')
-        if self.pk:
-            queryset = queryset.exclude(pk=self.pk)
-        return queryset, use_distinct
 
 
 class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
@@ -187,6 +144,47 @@ class SourcesInline(TabularInline):
         'date',
         'publication_date',
     ]
+
+
+def rearrange_fields(fields: Iterable[str]):
+    """Return reordered fields to be displayed in the admin."""
+    # Fields to display at the top, in order
+    top_fields = (
+        'escaped_citation_html',
+        'citation_string',
+        'attributee_string',
+        'title',
+        'slug',
+        'date_is_circa',
+        'date',
+        'publication_date',
+        'url',
+        'file',
+        'editors',
+        'translator',
+        'publisher',
+    )
+    # Fields to display at the bottom, in order
+    bottom_fields = (
+        'volume',
+        'number',
+        'page_number',
+        'end_page_number',
+        'description',
+        'citations',
+    )
+    fields = list(fields)
+    index: int = 0
+    for top_field in top_fields:
+        if top_field in fields:
+            fields.remove(top_field)
+            fields.insert(index, top_field)
+            index += 1
+    for bottom_field in bottom_fields:
+        if bottom_field in fields:
+            fields.remove(bottom_field)
+            fields.append(bottom_field)
+    return fields
 
 
 admin_site.register(models.Source, SourceAdmin)
