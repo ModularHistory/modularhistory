@@ -374,7 +374,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='href')
-    def deprecated_href(self) -> Optional[str]:
+    def deprecated_href(self) -> str:
         """
         Return the href to use when providing a link to the source.
 
@@ -389,7 +389,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             if page_number:
                 url = _set_page_number(url, page_number)
         else:
-            url = self.url
+            url = self.url or ''
         return url
 
     @property
