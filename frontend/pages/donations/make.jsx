@@ -19,7 +19,7 @@ class DonateNow extends React.Component {
   async componentDidMount() {
     try {
       // Get a client token for authorization from your server
-      const response = await axios.get('http://localhost:5000/token')
+      const response = await axios.get('http://django:8000/api/donations/token')
       const clientToken = response.data
 
       this.setState({ clientToken })
@@ -37,7 +37,7 @@ class DonateNow extends React.Component {
       const { nonce } = await this.state.instance.tokenize()
 
       const response = await axios.post(
-        'http://localhost:5000/proc',
+        'http://django:8000/api/donations/proc',
         { 
             paymentMethodNonce: nonce ,
             amount: $("#amount").val(),
