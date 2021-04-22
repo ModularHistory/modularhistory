@@ -6,13 +6,14 @@ const { withSentryConfig } = require('@sentry/nextjs');
 const {
   SENTRY_FRONTEND_DSN,
   SENTRY_FRONTEND_AUTH_TOKEN,
+  SHA,
   VERSION
 } = process.env
 
 process.env.SENTRY_AUTH_TOKEN = SENTRY_FRONTEND_AUTH_TOKEN;
 process.env.SENTRY_DSN = SENTRY_FRONTEND_DSN;
 process.env.SENTRY_PROJECT = 'frontend';
-process.env.SENTRY_RELEASE = `modularhistory@${VERSION}`
+process.env.SENTRY_RELEASE = `modularhistory@${VERSION || SHA}`
 
 const moduleExports = {
   // Delegate static file compression to Nginx in production.
