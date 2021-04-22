@@ -186,7 +186,7 @@ services:
     environment:
       NEXTAUTH_URL: "https://modularhistory.com"
       SENTRY_PROJECT: frontend
-      NEXT_PUBLIC_SENTRY_DSN: "https://054ccb00ec274cc292f2472140f8260c@o431037.ingest.sentry.io/5380934"
+      SENTRY_FRONTEND_DSN: "https://054ccb00ec274cc292f2472140f8260c@o431037.ingest.sentry.io/5380934"
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost:3000/ || exit 1"]
       timeout: 7s
