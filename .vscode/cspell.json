@@ -17,6 +17,8 @@
         "jquery",
         "klass",
         "lxml",
+        "mkdir",
+        "modularhistory",
         "noinput",
         "noqa",
         "psql",
@@ -24,9 +26,11 @@
         "rclone",
         "referer",
         "serpy",
+        "shasum",
         "soupify",
         "tinymce",
-        "venv"
+        "venv",
+        "webserver"
     ],
     "flagWords": [
         "hte"
