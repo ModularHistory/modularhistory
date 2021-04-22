@@ -4,23 +4,24 @@ import axios from "axios";
 import Link from "next/link";
 import Layout from "../../components/Layout";
 
-
 export default function Topics({ topicsData }) {
   const topics = topicsData["results"] || [];
 
   //Style for the anchor used in topicNames
   const topicAnchorStyle = {
-    color: 'black',
-  }
+    color: "black",
+  };
 
   const topicNames = topics.map((topic) => (
-    <Grid item key={topic['key']} xs={4}>
-      <Link href={`/search?topics=${topic['pk']}`}>
-        <a style={topicAnchorStyle}><strong>{topic['key']}</strong></a>
+    <Grid item key={topic["key"]} xs={4}>
+      <Link href={`/search?topics=${topic["pk"]}`}>
+        <a style={topicAnchorStyle}>
+          <strong>{topic["key"]}</strong>
+        </a>
       </Link>
     </Grid>
   ));
-  
+
   return (
     <Layout title={"Topics"}>
       <Container>

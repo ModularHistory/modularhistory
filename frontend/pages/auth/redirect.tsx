@@ -3,7 +3,7 @@ import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { setCookie } from 'nookies';
+import { setCookie } from "nookies";
 import Layout from "../../components/Layout";
 
 const Redirect: React.FunctionComponent = () => {
@@ -43,18 +43,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
   if (session) {
     const [cookieName, cookieValue] = session.sessionIdCookie.split(";")[0].split("=");
-    setCookie(context, cookieName, cookieValue, { 
-      secure: process.env.ENVIRONMENT === 'prod',
+    setCookie(context, cookieName, cookieValue, {
+      secure: process.env.ENVIRONMENT === "prod",
       // expires: Date.parse(session.sessionIdCookie.match(/expires=(.+?);/)[1]);
       maxAge: parseInt(session.sessionIdCookie.match(/Max-Age=(.+?);/)[1]),
-      sameSite: 'lax',
+      sameSite: "lax",
       httpOnly: true,
-      path: '/'
+      path: "/",
     });
   }
   return {
     props: {}, // passed to the page component as props
   };
 };
-
-
