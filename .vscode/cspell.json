@@ -19,6 +19,7 @@
         "lxml",
         "mkdir",
         "modularhistory",
+        "nextjs",
         "noinput",
         "noqa",
         "psql",
