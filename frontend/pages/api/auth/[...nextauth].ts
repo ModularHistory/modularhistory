@@ -5,7 +5,7 @@ import NextAuth, {
   NextAuthOptions,
   PagesOptions,
   Session,
-  User
+  User,
 } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
