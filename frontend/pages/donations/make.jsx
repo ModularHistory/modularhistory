@@ -1,8 +1,10 @@
-import axios from 'axios';
 import { BraintreeHostedFields } from 'braintree-web-react';
 import $ from "jquery";
 import React from 'react';
+import axiosWithoutAuth from '../../axiosWithoutAuth';
 import Layout from "../../components/Layout";
+
+
 class DonateNow extends React.Component {
   constructor() {
       super();
@@ -14,10 +16,10 @@ class DonateNow extends React.Component {
   // 
   async componentDidMount() {
     try {
-      // Get a client token for authorization from your server http://django:8000/api/entities/
-      const response = await axios.get('http://django:8000/api/donations/token/')
+      // Get a client token from the server for authorization.
+      const response = await axiosWithoutAuth.get('/api/donations/token/');
       const clientToken = response.data
-
+      console.log('clientToken:', clientToken);
       this.setState({ clientToken })
     } catch (err) {
       console.error(err)
@@ -27,12 +29,11 @@ class DonateNow extends React.Component {
   async buy(e) {
     e.preventDefault();
     try {
-      // Setting donor name to localstorage.
-      localStorage.setItem("donor", $("#name").val());
-      // Send the nonce to your server
+      // Set donor name in localstorage.
+      window.localStorage.setItem("donor", $("#name").val());
+      // Send the nonce to the server.
       const { nonce } = await this.state.instance.tokenize()
-
-      const response = await axios.post(
+      const response = await axiosWithoutAuth.post(
         'http://django:8000/api/donations/proc/',
         { 
             paymentMethodNonce: nonce ,
@@ -58,7 +59,7 @@ class DonateNow extends React.Component {
           <div className="loading-container">
             <h1>Loading...</h1>
           </div>
-          </Layout>
+        </Layout>
       )
     } else {
       return (

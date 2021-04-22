@@ -12,16 +12,16 @@ braintree.Configuration.configure(
 
 
 @api_view(['GET'])
-def get_token():
+def get_token(request):
 
     # Generate client token for the dropin ui
     client_token = braintree.ClientToken.generate({})
 
-    return client_token
+    return Response(client_token)
 
 
 @api_view(['GET', 'POST'])
-def proc():
+def proc(request):
     result = braintree.Transaction.sale(
         {
             "amount": request.json['amount'],
@@ -31,6 +31,6 @@ def proc():
     )
 
     if result.is_success:
-        return "OK"
+        return Response("OK")
     else:
-        return "NO"
+        return Response("NO")

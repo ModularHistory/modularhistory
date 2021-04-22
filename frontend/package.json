@@ -27,6 +27,7 @@
     "sass": "^1.30.0"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.5",
     "@types/next-auth": "^3.7.1",
     "@types/node": "^14.14.20",
     "@types/react": "^17.0.0",
