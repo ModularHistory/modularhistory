@@ -151,6 +151,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
+    # elasticsearch
+    'django_elasticsearch_dsl', # https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html
     # In-project apps
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',

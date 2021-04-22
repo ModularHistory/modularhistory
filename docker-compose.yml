@@ -245,6 +245,39 @@ services:
     volumes:
       - "redisinsight:/db"
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    environment:
+      - node.name=modularhistory-es
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - search-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      default:
+        ipv4_address: 172.27.0.15
+
+  kibana:
+    depends_on:
+      - elasticsearch
+    image: docker.elastic.co/kibana/kibana:7.8.1
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      default:
+        ipv4_address: 172.27.0.16
+
 networks:
   default:
     driver: bridge
@@ -256,4 +289,5 @@ volumes:
   # `data` is used by both redis and mongodb
   data:
   postgres_data:
+  search-data:
   redisinsight:
