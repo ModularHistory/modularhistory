@@ -10,6 +10,6 @@ app_name = 'donations'
 
 urlpatterns = [
     path('token/', views.get_token),
-    path('proc/', views.proc),
+    path('process/', views.process),
     # path('partial/', views.EntityPartialAPIView.as_view()),
 ]

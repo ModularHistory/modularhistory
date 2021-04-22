@@ -29,6 +29,7 @@
         "referer",
         "serpy",
         "shasum",
+        "serpy",
         "soupify",
         "tinymce",
         "venv",
@@ -36,5 +37,8 @@
     ],
     "flagWords": [
         "hte"
+    ],
+    "ignoreRegExpList": [
+        "default='.*'"
     ]
 }
