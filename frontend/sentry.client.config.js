@@ -1,5 +1,5 @@
 // This config is for initialization of Sentry on the browser.
-// It is used whenever a page is visited (for catch errors in client-side behavior).
+// It is used whenever a page is visited (to catch errors in client-side behavior).
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from '@sentry/nextjs';
