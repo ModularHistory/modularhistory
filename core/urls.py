@@ -29,6 +29,7 @@ from graphene_django.views import GraphQLView
 from watchman.views import bare_status
 
 from apps.admin.model_admin import admin_site
+from apps.topics.schema import topicsSchema
 from apps.users.api.views import set_csrf_token
 from core import errors
 
@@ -97,7 +98,7 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path('watchman/', include('watchman.urls')),
     path('healthcheck/', bare_status),  # basic healthcheck
-    path('graphql/', GraphQLView.as_view(graphiql=True)),
+    path('graphql/', GraphQLView.as_view(graphiql=True, schema=topicsSchema)),
     # Home
     path('', include('apps.home.urls')),
     # robots.txt
