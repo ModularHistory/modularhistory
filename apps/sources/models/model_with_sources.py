@@ -10,7 +10,6 @@ from django.utils.safestring import SafeString
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
 from core.models import Model, retrieve_or_compute
-from core.utils.html import soupify
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
@@ -67,8 +66,3 @@ class ModelWithSources(Model):
             logging.error(f'{error}')
             citation_html = EMPTY_STRING
         return format_html(citation_html)
-
-    @property
-    def citations_text(self) -> str:
-        """Return the citations html string representation."""
-        return soupify(self.citation_html).get_text()
