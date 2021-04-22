@@ -23,11 +23,15 @@
         "psql",
         "pympler",
         "rclone",
+        "serpy",
         "soupify",
         "tinymce",
         "venv"
     ],
     "flagWords": [
         "hte"
+    ],
+    "ignoreRegExpList": [
+        "default='.*'"
     ]
 }
