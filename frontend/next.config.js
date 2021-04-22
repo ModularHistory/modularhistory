@@ -2,23 +2,18 @@
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-const { withSentryConfig } = require('@sentry/nextjs');
-const {
-  SENTRY_FRONTEND_DSN,
-  SENTRY_FRONTEND_AUTH_TOKEN,
-  SHA,
-  VERSION
-} = process.env
+const { withSentryConfig } = require("@sentry/nextjs");
+const { SENTRY_FRONTEND_DSN, SENTRY_FRONTEND_AUTH_TOKEN, SHA, VERSION } = process.env;
 
 process.env.SENTRY_AUTH_TOKEN = SENTRY_FRONTEND_AUTH_TOKEN;
 process.env.SENTRY_DSN = SENTRY_FRONTEND_DSN;
-process.env.SENTRY_PROJECT = 'frontend';
-process.env.SENTRY_RELEASE = `modularhistory@${VERSION || SHA || "latest"}`
+process.env.SENTRY_PROJECT = "frontend";
+process.env.SENTRY_RELEASE = `modularhistory@${VERSION || SHA || "latest"}`;
 
 const moduleExports = {
   // Delegate static file compression to Nginx in production.
   // https://nextjs.org/docs/api-reference/next.config.js/compression
-  compress: process.env.ENVIRONMENT === "prod" ? false : true,
+  compress: process.env.ENVIRONMENT != "prod",
   webpackDevMiddleware: (config) => {
     // Solve compiling problem within Docker
     config.watchOptions = {
@@ -31,16 +26,16 @@ const moduleExports = {
   async redirects() {
     return [
       {
-        source: '/occurrences',
-        destination: '/search/?content_types=occurrences.occurrence',
+        source: "/occurrences",
+        destination: "/search/?content_types=occurrences.occurrence",
         permanent: true,
       },
       {
-        source: '/quotes',
-        destination: '/search/?content_types=quotes.quote',
+        source: "/quotes",
+        destination: "/search/?content_types=quotes.quote",
         permanent: true,
       },
-    ]
+    ];
   },
 };
 
