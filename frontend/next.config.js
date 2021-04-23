@@ -2,7 +2,7 @@
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-const { withSentryConfig } = require("@sentry/nextjs");
+// const { withSentryConfig } = require("@sentry/nextjs");
 require("dotenv").config({ path: "../.env" });
 const { SENTRY_FRONTEND_DSN, SENTRY_FRONTEND_AUTH_TOKEN, SHA, VERSION } = process.env;
 
@@ -45,8 +45,9 @@ const moduleExports = {
 // release, url, org, project, authToken, configFile, stripPrefix, urlPrefix, include, ignore
 // For all available options, see:
 // https://github.com/getsentry/sentry-webpack-plugin#options
-const SentryWebpackPluginOptions = {};
+// const SentryWebpackPluginOptions = {};
 
 // Ensure that adding Sentry options is the last code to run before exporting,
 // in order to ensure that source maps include changes from all other Webpack plugins.
-module.exports = withSentryConfig(moduleExports, SentryWebpackPluginOptions);
+// module.exports = withSentryConfig(moduleExports, SentryWebpackPluginOptions);
+module.exports = moduleExports;

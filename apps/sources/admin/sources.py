@@ -137,6 +137,18 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
         return rearrange_fields(super().get_fields(request, model_instance))
 
 
+class TextualSourceAdmin(ChildSourceAdmin):
+    """Admin for textual sources."""
+
+    autocomplete_fields = ChildSourceAdmin.autocomplete_fields + ['original_edition']
+
+
+class ArticleAdmin(TextualSourceAdmin):
+    """Admin for articles."""
+
+    autocomplete_fields = ChildSourceAdmin.autocomplete_fields + ['publication']
+
+
 class SourcesInline(TabularInline):
     """Inline admin for sources."""
 
@@ -197,8 +209,8 @@ def rearrange_fields(fields: Iterable[str]):
 admin_site.register(models.Source, SourceAdmin)
 
 admin_site.register(models.Affidavit, ChildSourceAdmin)
-admin_site.register(models.Article, ChildSourceAdmin)
-admin_site.register(models.Book, ChildSourceAdmin)
+admin_site.register(models.Article, ArticleAdmin)
+admin_site.register(models.Book, TextualSourceAdmin)
 admin_site.register(models.Correspondence, ChildSourceAdmin)
 admin_site.register(models.Document, ChildSourceAdmin)
 admin_site.register(models.Film, ChildSourceAdmin)
