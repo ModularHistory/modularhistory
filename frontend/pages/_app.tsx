@@ -83,11 +83,11 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
         />
       </noscript>
       <Provider session={pageProps.session}>
-        <PageTransitionContextProvider>
-          <SessionKiller>
+        <SessionKiller>
+          <PageTransitionContextProvider>
             <Component {...pageProps} err={err} />
-          </SessionKiller>
-        </PageTransitionContextProvider>
+          </PageTransitionContextProvider>
+        </SessionKiller>
       </Provider>
     </>
   );
