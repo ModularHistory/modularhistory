@@ -1,9 +1,9 @@
 import { NextPage } from "next";
-import { Provider, signOut } from "next-auth/client";
+import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
 import "../../core/static/styles/base.scss";
 import { DJANGO_CSRF_COOKIE_NAME } from "../auth";
@@ -15,6 +15,20 @@ import "../styles/globals.css";
 initializeSentry();
 
 const cookies = new Cookies();
+
+interface SessionKillerProps {
+  children: ReactElement;
+}
+
+const SessionKiller: FC<SessionKillerProps> = ({ children }: SessionKillerProps) => {
+  const [session, _loading] = useSession();
+  useEffect(() => {
+    if (session?.expired) {
+      signOut();
+    }
+  }, [session?.expired]);
+  return children;
+};
 
 interface ExtendedAppProps extends AppProps {
   err?: string;
@@ -45,11 +59,6 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
     router.events.on("routeChangeComplete", handle);
     return () => router.events.off("routerChangeComplete", handle);
   }, []);
-  useEffect(() => {
-    if (pageProps.session?.expired) {
-      signOut();
-    }
-  }, [pageProps.session?.expired]);
   return (
     <>
       <Head>
@@ -75,7 +84,9 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
       </noscript>
       <Provider session={pageProps.session}>
         <PageTransitionContextProvider>
-          <Component {...pageProps} err={err} />
+          <SessionKiller>
+            <Component {...pageProps} err={err} />
+          </SessionKiller>
         </PageTransitionContextProvider>
       </Provider>
     </>
