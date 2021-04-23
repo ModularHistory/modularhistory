@@ -98,7 +98,7 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path('watchman/', include('watchman.urls')),
     path('healthcheck/', bare_status),  # basic healthcheck
-    path('graphql/', GraphQLView.as_view(graphiql=True, schema=topicsSchema)),
+    path('graphql/', GraphQLView.as_view(graphiql=False, schema=topicsSchema)),
     # Home
     path('', include('apps.home.urls')),
     # robots.txt
