@@ -6,10 +6,10 @@ const { withSentryConfig } = require("@sentry/nextjs");
 require('dotenv').config({ path: '../.env' });
 const { SENTRY_FRONTEND_DSN, SENTRY_FRONTEND_AUTH_TOKEN, SHA, VERSION } = process.env;
 
-process.env.SENTRY_AUTH_TOKEN = SENTRY_FRONTEND_AUTH_TOKEN;
-process.env.SENTRY_DSN = SENTRY_FRONTEND_DSN;
+process.env.SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN = SENTRY_FRONTEND_DSN;
 process.env.SENTRY_ORG = "modularhistory";
 process.env.SENTRY_PROJECT = "frontend";
+process.env.SENTRY_AUTH_TOKEN = SENTRY_FRONTEND_AUTH_TOKEN;
 process.env.SENTRY_RELEASE = `modularhistory@${VERSION || SHA || "latest"}`;
 
 const moduleExports = {
