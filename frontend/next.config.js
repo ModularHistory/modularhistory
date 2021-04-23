@@ -3,7 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 const { withSentryConfig } = require("@sentry/nextjs");
-require('dotenv').config({ path: '../.env' });
+require("dotenv").config({ path: "../.env" });
 const { SENTRY_FRONTEND_DSN, SENTRY_FRONTEND_AUTH_TOKEN, SHA, VERSION } = process.env;
 
 process.env.SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN = SENTRY_FRONTEND_DSN;
@@ -40,7 +40,6 @@ const moduleExports = {
     ];
   },
 };
-
 
 // The following options are set automatically, and overriding them is not recommended:
 // release, url, org, project, authToken, configFile, stripPrefix, urlPrefix, include, ignore
