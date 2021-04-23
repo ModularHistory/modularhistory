@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Type
 
 from django.contrib.admin import SimpleListFilter
-from django.contrib.contenttypes.models import ContentType
+from polymorphic.admin import PolymorphicParentModelAdmin
 
 if TYPE_CHECKING:
     from polymorphic.models import PolymorphicModel
@@ -9,20 +9,22 @@ if TYPE_CHECKING:
     from core.models import TypedModel
 
 
-class ContentTypeFilter(SimpleListFilter):
+class PolymorphicContentTypeFilter(SimpleListFilter):
     """Filters sources by type."""
 
     title = 'content type'
     parameter_name = 'polymorphic_ctype_id'
     base_model: Type['PolymorphicModel']
 
-    def lookups(self, request, model_admin):
+    def lookups(self, request, model_admin: PolymorphicParentModelAdmin):
         """Return an iterable of tuples (value, verbose value)."""
-        return (
-            (content_type.id, content_type.name)
-            for content_type in ContentType.objects.all()
+        return sorted(
+            {
+                (instance.polymorphic_ctype_id, instance.ctype_name)
+                for instance in model_admin.get_queryset(request)
+            },
+            key=lambda ctype_tuple: ctype_tuple[1],
         )
-        # return self.base_model.get_meta().get_field('type').choices
 
     def queryset(self, request, queryset):
         """Return the queryset filtered by type."""

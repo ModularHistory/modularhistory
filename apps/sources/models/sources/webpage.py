@@ -23,6 +23,8 @@ class Webpage(Source, TextualMixin):
         to='sources.Website', null=True, blank=True, on_delete=models.CASCADE
     )
 
+    date_nullable = True
+
     def __html__(self) -> str:
         """Return the source's HTML representation."""
         components = [

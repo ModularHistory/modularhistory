@@ -19,3 +19,10 @@ SQUASHED_MIGRATIONS_DIRNAME = 'squashed'
 LOCAL = 'local'
 PRODUCTION = 'production'
 MAX_MIGRATION_COUNT = 2
+
+
+class RcloneStorageProviders(Constant):
+    """Rclone storage provider ids."""
+
+    GOOGLE_DRIVE = 'gdrive'
+    MEGA = 'mega'

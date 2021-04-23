@@ -6,6 +6,9 @@ from core.environment import IS_PROD
 
 AUTH_USER_MODEL = 'users.User'
 
+# https://docs.djangoproject.com/en/3.2/ref/settings/#login-url
+LOGIN_URL = '/api/auth/signin'
+
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 SOCIALACCOUNT_QUERY_EMAIL = True
 

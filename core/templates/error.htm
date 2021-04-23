@@ -26,11 +26,11 @@
         <div class="error">
             <div class="error-content">
                 <!--# if expr="$status = 502" -->
-                    <h1>ModularHistory is being updated</h1>
-                    <p>You will be redirected shortly...</p>
-                    <!--# else -->
+                    <h1 class="text-center" style="margin-top: 2rem">ModularHistory is being updated.</h1>
+                    <p class="text-center" style="margin-top: 2rem">You will be redirected shortly...</p>
+                <!--# else -->
                     <h1><!--# echo var="status" default="" --></h1>
-                    <h2><!--# echo var="status_text" default="An error occurred" --></h2>
+                    <h2><!--# echo var="status_text" default="An error occurred." --></h2>
                 <!--# endif -->
             </div>
         </div>

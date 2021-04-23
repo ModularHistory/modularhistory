@@ -18,39 +18,44 @@ echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=tr
 if [[ -d config/hooks ]]; then
   for filepath in config/hooks/*; do
     filename=$(basename "$filepath")
-    if [[ $filename = "post-merge" ]]; then
-      # To avoid having this hook overwrite itself, prompt to rerun the setup script.
-      prompt_to_run_setup_script=true
-    else
-      cmp --silent ".git/hooks/$filename" "$filepath" || {
+    cmp --silent ".git/hooks/$filename" "$filepath" || {
+      if [[ $filename = "post-merge" ]]; then
+        echo "The post-merge hook has changed."
+        # To avoid having this hook overwrite itself, prompt to rerun the setup script.
+        prompt_to_run_setup_script=true
+      else
         cat "$filepath" > ".git/hooks/$filename"
         sudo chmod +x ".git/hooks/$filename"
         echo "Updated $filename hook."
-      }
-    fi
+      fi
+    }
   done
 fi
+
+bold=$(tput bold)
+normal=$(tput sgr0)
 
 # Check if migrations have changed.
 echo "$changed_files" | grep --quiet 'migrations/' && {
   # TODO: Determine more intelligently whether seeding is required?
-  echo "
-    The database schema has been modified. You might not be able to run the
-    django container successfully until you re-seed your database. To update
-    your database, use this command:
+  echo "${bold}
+    The database schema has been modified.${normal} You might not 
+    be able to run the django container successfully until you 
+    re-seed your db. To seed your db, use this command:
 
-    poetry run invoke db.seed --migrate
+      poetry run invoke db.seed --remote --migrate
 
   "
 }
 
 # Prompt to rerun the setup script if necessary.
 if [[ $prompt_to_run_setup_script = true ]]; then
-  echo "
-    The setup script has been modified. Your dev environment might not function 
-    correctly until you run the updated script. To run it, use this command:
+  echo "${bold}
+    The setup script has been modified.${normal} Your dev environment 
+    might not function correctly until you run the updated 
+    script. To run it, use this command:
     
-    bash setup.sh
+      bash setup.sh
 
   "
 fi

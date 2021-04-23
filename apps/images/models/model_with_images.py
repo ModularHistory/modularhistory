@@ -24,11 +24,9 @@ class ModelWithImages(Model):
     image_relations: 'Manager'
 
     class Meta:
-        """
-        Meta options for ModelWithImages.
+        """Meta options for ModelWithImages."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True
 

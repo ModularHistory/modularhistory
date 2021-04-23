@@ -154,11 +154,13 @@ class HTMLField(MceHTMLField):
         self,
         *,
         paragraphed: Optional[bool] = None,
+        processed: bool = True,
         processor: Optional[Callable] = None,
         **kwargs,
     ):
         """Construct an HTML field instance."""
-        self.processor = processor or process
+        self.processed = processed
+        self.processor = (processor or process) if processed else None
         self.paragraphed = paragraphed
         super().__init__(**kwargs)
 
@@ -257,6 +259,7 @@ class HTMLField(MceHTMLField):
         """
         field_class = 'core.fields.HTMLField'
         name, path, args, kwargs = super().deconstruct()
+        kwargs['processed'] = getattr(self, 'processed', self.processor is not None)
         kwargs['processor'] = self.processor
         kwargs['paragraphed'] = self.paragraphed
         return name, field_class, args, kwargs
