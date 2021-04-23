@@ -15,6 +15,16 @@ process.env.SENTRY_RELEASE = `modularhistory@${VERSION || SHA || "latest"}`;
 
 const basePath = "";
 
+// Build and upload source maps to Sentry only in production
+// and only if all necessary env variables are configured.
+const uploadSourceMaps =
+  process.env.ENVIRONMENT === "prod" &&
+  process.env.SENTRY_DSN &&
+  process.env.SENTRY_ORG &&
+  process.env.SENTRY_PROJECT &&
+  process.env.SENTRY_AUTH_TOKEN &&
+  process.env.SHA;
+
 module.exports = {
   // Delegate static file compression to Nginx in production.
   // https://nextjs.org/docs/api-reference/next.config.js/compression
@@ -28,21 +38,13 @@ module.exports = {
   webpack: (config, options) => {
     if (!options.isServer) {
       config.resolve.alias["@sentry/node"] = "@sentry/browser";
-      console.debug("Aliased @sentry/node to @sentry/browser.");
     }
     config.plugins.push(
       new options.webpack.DefinePlugin({
         "process.env.NEXT_IS_SERVER": JSON.stringify(options.isServer.toString()),
       })
     );
-    if (
-      process.env.ENVIRONMENT === "prod" &&
-      process.env.SENTRY_DSN &&
-      process.env.SENTRY_ORG &&
-      process.env.SENTRY_PROJECT &&
-      process.env.SENTRY_AUTH_TOKEN &&
-      process.env.SHA
-    ) {
+    if (uploadSourceMaps) {
       config.plugins.push(
         new SentryWebpackPlugin({
           include: ".next",

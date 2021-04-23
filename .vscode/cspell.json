@@ -37,6 +37,7 @@
         "rclone",
         "referer",
         "serpy",
+        "sessionid",
         "shasum",
         "soupify",
         "tinymce",

@@ -1,6 +1,7 @@
 // https://eslint.org/docs/user-guide/configuring/
 
 const sharedRules = {
+  "no-console": "off",
   "no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
   "@typescript-eslint/no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
   "react/react-in-jsx-scope": ["off"],
