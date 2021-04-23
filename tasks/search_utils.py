@@ -17,8 +17,10 @@ django.setup()
 
 SEARCHABLE_DOCUMENTS = [OccurrenceDocument, QuoteDocument, SourceDocument, ImageDocument, EntityDocument]
 
+
 @command
-def search(context, query, all: bool = False, start: int = 0, end: int = 20):
+def search(context, query, all: bool = False, print_all: bool = False, print_sql: bool = False, start: int = 0,
+           end: int = 20):
     random_document = random.choice(SEARCHABLE_DOCUMENTS)
 
     print(f"Searching for = {query} in {'all' if all else random_document}")
@@ -29,6 +31,9 @@ def search(context, query, all: bool = False, start: int = 0, end: int = 20):
     # search = Search(using=client).query(query)
 
     tic = time.perf_counter_ns()
+
+    if print_sql:
+        from django.db import connection
 
     if all:
         queryset = chain()
@@ -41,9 +46,15 @@ def search(context, query, all: bool = False, start: int = 0, end: int = 20):
         s = random_document.search().query(query)[start:end]
         queryset = list(s.to_queryset())
 
-    toc = (time.perf_counter_ns() - tic)/1000000
+    toc = (time.perf_counter_ns() - tic) / 1000000
     print(f"Search returned n={len(queryset)}, resolved results in {toc} ms")
 
-    if len(queryset) > 0:
-        print(f"Random result item = {random.choice(queryset)}")
+    if print_sql:
+        print(connection.queries)
 
+    if len(queryset) > 0:
+        print("Results:")
+        if print_all:
+            [print(x) for x in queryset]
+        else:
+            print(f"Random result item = {random.choice(queryset)}")
