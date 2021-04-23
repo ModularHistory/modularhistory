@@ -25,6 +25,7 @@
         "lxml",
         "mkdir",
         "modularhistory",
+        "mypy",
         "nextjs",
         "noinput",
         "noqa",

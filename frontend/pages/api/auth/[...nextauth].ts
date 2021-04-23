@@ -5,7 +5,7 @@ import NextAuth, {
   NextAuthOptions,
   PagesOptions,
   Session,
-  User
+  User,
 } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
@@ -127,18 +127,23 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
 callbacks.session = async function session(session: Session, jwt: JWT) {
   const sessionPlus: WithAdditionalParams<Session> = { ...session };
   if (jwt) {
+    // If the access token is expired, ...
+    if (Date.now() > jwt.accessTokenExpiry) {
+      console.error("Session got an expired access token.");
+      jwt = await refreshAccessToken(jwt);
+      if (Date.now() > jwt.accessTokenExpiry) {
+        console.log("くそっ！ サインアウトするしかない。");
+        sessionPlus.expired = true;
+        return sessionPlus;
+      }
+    }
     const accessToken = jwt.accessToken;
     if (jwt.sessionIdCookie) {
       sessionPlus.sessionIdCookie = jwt.sessionIdCookie;
     }
     if (accessToken) {
       const clientSideCookies = jwt.clientSideCookies;
-      const expiry = jwt.accessTokenExpiry;
       sessionPlus.accessToken = accessToken;
-      // If the access token is expired, ...
-      if (Date.now() > expiry) {
-        console.error("Session got an expired access token.");
-      }
       sessionPlus.clientSideCookies = clientSideCookies;
       // TODO: Refactor? The point of this is to only make the request when necessary.
       if (!sessionPlus.user?.username) {
@@ -320,7 +325,6 @@ async function refreshAccessToken(jwt: JWT) {
     })
     .then(function (response: AxiosResponse) {
       if (response.data.access && response.data.access_token_expiration) {
-        console.debug("Refreshed access token.");
         /*
           Example response:
           {
@@ -330,9 +334,6 @@ async function refreshAccessToken(jwt: JWT) {
         */
         const accessTokenExpiry = Date.parse(response.data.access_token_expiration);
         const clientSideCookies = removeServerSideCookies(response.headers["set-cookie"]);
-        if (Date.now() > accessTokenExpiry) {
-          console.error("New access token is already expired.");
-        }
         jwt = {
           ...jwt,
           // Fall back to old refresh token if necessary.
@@ -343,6 +344,7 @@ async function refreshAccessToken(jwt: JWT) {
           iat: Date.now() / 1000,
           exp: accessTokenExpiry / 1000,
         };
+        // console.debug("Refreshed access token.");
       } else if (response.data.code === "token_not_valid") {
         console.debug("Refresh token expired.");
         /*

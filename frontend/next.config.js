@@ -3,19 +3,58 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 // const { withSentryConfig } = require("@sentry/nextjs");
+const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 require("dotenv").config({ path: "../.env" });
-const { SENTRY_FRONTEND_DSN, SENTRY_FRONTEND_AUTH_TOKEN, SHA, VERSION } = process.env;
+const { SENTRY_FRONTEND_DSN, SHA, VERSION } = process.env;
 
-process.env.SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN = SENTRY_FRONTEND_DSN;
+process.env.NEXT_PUBLIC_SENTRY_SERVER_ROOT_DIR = "/modularhistory/frontend";
+process.env.NEXT_PUBLIC_SENTRY_DSN = SENTRY_FRONTEND_DSN;
 process.env.SENTRY_ORG = "modularhistory";
 process.env.SENTRY_PROJECT = "frontend";
-process.env.SENTRY_AUTH_TOKEN = SENTRY_FRONTEND_AUTH_TOKEN;
 process.env.SENTRY_RELEASE = `modularhistory@${VERSION || SHA || "latest"}`;
 
-const moduleExports = {
+const basePath = "";
+
+module.exports = {
   // Delegate static file compression to Nginx in production.
   // https://nextjs.org/docs/api-reference/next.config.js/compression
   compress: process.env.ENVIRONMENT != "prod",
+  productionBrowserSourceMaps: true,
+  env: {
+    // Make the version accessible to clients so that Sentry events
+    // can be associated with the release they belong to.
+    NEXT_PUBLIC_VERSION: process.env.SENTRY_RELEASE,
+  },
+  webpack: (config, options) => {
+    if (!options.isServer) {
+      config.resolve.alias["@sentry/node"] = "@sentry/browser";
+      console.debug("Aliased @sentry/node to @sentry/browser.");
+    }
+    config.plugins.push(
+      new options.webpack.DefinePlugin({
+        "process.env.NEXT_IS_SERVER": JSON.stringify(options.isServer.toString()),
+      })
+    );
+    if (
+      process.env.ENVIRONMENT === "prod" &&
+      process.env.SENTRY_DSN &&
+      process.env.SENTRY_ORG &&
+      process.env.SENTRY_PROJECT &&
+      process.env.SENTRY_AUTH_TOKEN &&
+      process.env.SHA
+    ) {
+      config.plugins.push(
+        new SentryWebpackPlugin({
+          include: ".next",
+          ignore: ["node_modules"],
+          stripPrefix: ["webpack://_N_E/"],
+          urlPrefix: `~${basePath}/_next`,
+          release: process.env.SENTRY_RELEASE,
+        })
+      );
+    }
+    return config;
+  },
   webpackDevMiddleware: (config) => {
     // Solve compiling problem within Docker
     config.watchOptions = {
@@ -40,14 +79,3 @@ const moduleExports = {
     ];
   },
 };
-
-// The following options are set automatically, and overriding them is not recommended:
-// release, url, org, project, authToken, configFile, stripPrefix, urlPrefix, include, ignore
-// For all available options, see:
-// https://github.com/getsentry/sentry-webpack-plugin#options
-// const SentryWebpackPluginOptions = {};
-
-// Ensure that adding Sentry options is the last code to run before exporting,
-// in order to ensure that source maps include changes from all other Webpack plugins.
-// module.exports = withSentryConfig(moduleExports, SentryWebpackPluginOptions);
-module.exports = moduleExports;

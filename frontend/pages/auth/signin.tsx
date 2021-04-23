@@ -12,7 +12,7 @@ import {
   FacebookLoginButton,
   GithubLoginButton,
   GoogleLoginButton,
-  TwitterLoginButton
+  TwitterLoginButton,
 } from "react-social-login-buttons";
 import { handleLogout } from "../../auth";
 import Layout from "../../components/Layout";
