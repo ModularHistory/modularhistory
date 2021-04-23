@@ -7,6 +7,7 @@
         "autobuild",
         "Bennion",
         "buildx",
+        "CSRF",
         "ctype",
         "dbbackup",
         "dbrestore",
@@ -39,7 +40,8 @@
         "soupify",
         "tinymce",
         "venv",
-        "webserver"
+        "webserver",
+        "xsrf"
     ],
     "flagWords": [
         "hte"
