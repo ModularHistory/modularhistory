@@ -36,9 +36,13 @@ span.deleted {
 figcaption {
   font-size: 0.8rem; }
 
-h3, h4, h5 {
+h3,
+h4,
+h5 {
   margin-top: 1rem; }
-  h3:first-child, h4:first-child, h5:first-child {
+  h3:first-child,
+  h4:first-child,
+  h5:first-child {
     margin-top: 0; }
 
 hr {
@@ -138,9 +142,13 @@ span.deleted {
 figcaption {
   font-size: 0.8rem; }
 
-h3, h4, h5 {
+h3,
+h4,
+h5 {
   margin-top: 1rem; }
-  h3:first-child, h4:first-child, h5:first-child {
+  h3:first-child,
+  h4:first-child,
+  h5:first-child {
     margin-top: 0; }
 
 hr {
@@ -214,7 +222,7 @@ form ul {
   display: none; }
 
 .nimbus-is-editor #container #header {
-  background-color: #2B3746 !important;
+  background-color: #2b3746 !important;
   color: white !important; }
 
 tr:not(.has_original) > td.djn-td {
@@ -224,12 +232,12 @@ tr:not(.has_original) > td.djn-td {
 tbody.djn-tbody.has_original {
   border-bottom: 3px solid lightgray; }
 
-.djn-tr > td.original > p:nth-child(n+3) {
+.djn-tr > td.original > p:nth-child(n + 3) {
   display: none; }
 
-.djn-tr > td.original > p:nth-child(-n+2) {
+.djn-tr > td.original > p:nth-child(-n + 2) {
   padding-bottom: 1.4rem; }
-  .djn-tr > td.original > p:nth-child(-n+2):nth-child(2) {
+  .djn-tr > td.original > p:nth-child(-n + 2):nth-child(2) {
     margin-left: 1rem; }
 
 div.readonly {
