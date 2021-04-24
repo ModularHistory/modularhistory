@@ -12,7 +12,7 @@ import {
   FacebookLoginButton,
   GithubLoginButton,
   GoogleLoginButton,
-  TwitterLoginButton
+  TwitterLoginButton,
 } from "react-social-login-buttons";
 import { handleLogout } from "../../auth";
 import Layout from "../../components/Layout";
@@ -46,7 +46,15 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   useEffect(() => {
     if (redirecting) {
       const url = redirectUrl ?? window.location.origin;
-      window.location.replace(url);
+      // TODO: Refactor to centralize the regex test in some other module.
+      // Use Next.js router to redirect to a React page,
+      // or use window.location to redirect to a non-React page.
+      // Note: window.location is safe in any case.
+      if (/(\/?$|\/entities\/?|\/search\/?|\/occurrences\/?|\/quotes\/?)/.test(url)) {
+        router.push(url);
+      } else {
+        window.location.replace(url);
+      }
     }
   }, [redirecting]);
   const callbackUrl = `${router.query?.callbackUrl}`;
