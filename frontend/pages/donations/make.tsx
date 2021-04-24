@@ -1,10 +1,10 @@
 import Container from "@material-ui/core/Container";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
 import Layout from "../../components/Layout";
-
 interface DonateProps {
   clientToken: string;
 }
@@ -12,6 +12,7 @@ interface DonateProps {
 const Donate: FC<DonateProps> = (props: DonateProps) => {
   const [clientToken, setClientToken] = useState(props.clientToken);
   const [instance, setInstance] = useState(null);
+  const router = useRouter();
   useEffect(() => {
     async function getClientToken() {
       await axiosWithoutAuth
@@ -44,9 +45,9 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
           name: $("#name").val(),
         });
         if (response.data == "OK") {
-          location.href = "/donations/success";
+          router.push("/donations/success");
         } else {
-          location.href = "/donations/error";
+          router.push("/donations/error");
         }
       } catch (err) {
         console.error(err);

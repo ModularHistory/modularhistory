@@ -5,7 +5,6 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
-
 import Layout from "../../components/Layout";
 import Pagination from "../../components/Pagination";
 
@@ -23,7 +22,7 @@ export default function Entities({ entitiesData }) {
               image={entity["serialized_images"][0]["src_url"]}
             />
           )}
-          <CardContent dangerouslySetInnerHTML={{ __html: entity["description"] }} />
+          <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
         </Card>
       </a>
     </Grid>
