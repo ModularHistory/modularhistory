@@ -4,11 +4,12 @@
 
 @mixin mobileNavbar {
   @media only screen and (max-width: 575px) {
-    @content
+    @content;
   }
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
 }
@@ -21,7 +22,7 @@ body {
 
 .main-content {
   flex: 1;
-  >.container {
+  > .container {
     margin-top: 1.5rem;
   }
 }
@@ -31,14 +32,15 @@ body {
 }
 
 #global-nav {
-  margin-bottom: 0;  // Set margin-top on main content, instead.
+  margin-bottom: 0; // Set margin-top on main content, instead.
   .avatar {
     margin-top: auto;
     margin-bottom: auto;
   }
   &.navbar-dark.bg-dark {
-    .nav-item a, .nav-link {
-      color: rgba(255,255,255,.6);
+    .nav-item a,
+    .nav-link {
+      color: rgba(255, 255, 255, 0.6);
       &.active {
         color: white;
       }
@@ -47,7 +49,7 @@ body {
       background-color: #343a40;
       border-top: none;
       a.dropdown-item {
-        color: rgba(255,255,255,.6) !important;
+        color: rgba(255, 255, 255, 0.6) !important;
         &:hover {
           color: white !important;
           background-color: #343a40;
@@ -95,7 +97,9 @@ div.detail {
 }
 
 .citation {
-  .fa, .fab, .fas {
+  .fa,
+  .fab,
+  .fas {
     margin-left: 0.5rem;
   }
 }
@@ -109,7 +113,8 @@ div.detail {
   background-size: cover;
 }
 
-.card, .row {
+.card,
+.row {
   position: relative;
   &.image-card {
     display: inline-block;
@@ -128,7 +133,8 @@ div.detail {
     right: 2px;
     top: 2px;
   }
-  .blockquote, .blockquote > footer {
+  .blockquote,
+  .blockquote > footer {
     .edit-object-button {
       position: static;
       float: right;
@@ -147,7 +153,6 @@ ul.tags {
     display: inline;
   }
 }
-
 
 // horizontal timeline styles
 
@@ -186,7 +191,7 @@ ul.timeline {
     background: #ffd402;
     border-radius: 50%;
     left: -24px;
-    top: calc( (40 - 24) / 2 * -1px );
+    top: calc((40 - 24) / 2 * -1px);
   }
   ul .year.new {
     border-radius: 0 24px 24px 0;
@@ -236,22 +241,21 @@ ul.timeline {
 }
 
 ul.timeline > li {
-  width: calc( 100% / 6 );
+  width: calc(100% / 6);
 }
 ul.timeline > li:nth-of-type(odd) > .content {
   -webkit-transform: translateY(calc(-100% - 24px));
   transform: translateY(calc(-100% - 24px));
 }
 
-
 @media screen and (max-width: 1140px) {
   ul.timeline > li {
-    width: calc( 100% / 4 );
+    width: calc(100% / 4);
   }
 }
 @media screen and (max-width: 991px) {
   ul.timeline > li {
-    width: calc( 100% / 2 );
+    width: calc(100% / 2);
   }
 }
 @media screen and (max-width: 767px) {

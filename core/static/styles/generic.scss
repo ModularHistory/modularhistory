@@ -33,7 +33,7 @@ img {
 .img-container {
   float: right;
   clear: right;
-  max-width: 49%;  // or 300px
+  max-width: 49%; // or 300px
   margin-left: 0.9rem;
   margin-bottom: 0.8rem;
 }
@@ -46,7 +46,9 @@ figcaption {
   font-size: 0.8rem;
 }
 
-h3, h4, h5 {
+h3,
+h4,
+h5 {
   margin-top: 1rem;
   &:first-child {
     margin-top: 0;
@@ -78,7 +80,7 @@ blockquote {
       margin-bottom: 0.7rem;
       padding: 0;
     }
-    >blockquote {
+    > blockquote {
       border-left: none;
       font-size: 0.8rem;
       p {
@@ -118,7 +120,7 @@ form {
   --horizontal-margin: 1rem;
   margin-left: calc(var(--horizontal-margin) * -1);
   margin-right: calc(var(--horizontal-margin) * -1);
-  >* {
+  > * {
     margin-left: var(--horizontal-margin);
     margin-right: var(--horizontal-margin);
     min-width: 33%;

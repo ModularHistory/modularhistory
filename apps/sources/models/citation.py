@@ -156,32 +156,6 @@ class Citation(PositionedRelation):
                                 f'quoted in {source_html}',
                             ]
                         )
-        # TODO: Remove search icon so citations can be joined together with semicolons
-        the_following_code_is_fixed = False
-        if the_following_code_is_fixed:
-            if self.file:
-                html += (
-                    f'<a href="{self.file.url}" class="display-source"'
-                    f' target="_blank" data-toggle="modal" data-target="#modal">'
-                    f'<i class="fas fa-search"></i>'
-                    f'</a>'
-                )
-            elif (
-                self.source.url
-                or self.source.containment
-                and self.source.containment.container.url
-            ):
-                link = self.source.url or self.source.containment.container.url
-                if self.page_number:
-                    if 'www.sacred-texts.com' in link:
-                        link = f'{link}#page_{self.page_number}'
-                    elif 'josephsmithpapers.org' in link:
-                        link = f'{link}/{self.page_number}'
-                html += (
-                    f'<a href="{link}" target="_blank">'
-                    f'<i class="fas fa-search"></i>'
-                    f'</a>'
-                )
         html = f'<span class="citation">{html}</span>'
         return format_html(html)
 
@@ -217,13 +191,15 @@ class Citation(PositionedRelation):
                 pn_html = f'{pn_html}'
             page_number_strings.append(pn_html)
         n_strings = len(page_number_strings)
-        if n_strings > 1:
-            html = f'pp. {", ".join(page_number_strings)}'
-        elif n_strings:
-            if regex.search(r'(?:–|&ndash;)', page_number_strings[0]):
-                html = f'pp. {", ".join(page_number_strings)}'
+        if n_strings == 1:
+            page_number_string = page_number_strings[0]
+            # Match any dash or hyphen.
+            if regex.search(r'\p{Pd}', page_number_string):
+                html = f'pp. {page_number_string}'
             else:
-                html = f'p. {", ".join(page_number_strings)}'
+                html = f'p. {page_number_string}'
+        elif n_strings:
+            html = f'pp. {", ".join(page_number_strings)}'
         return html
 
     @property

@@ -32,6 +32,7 @@ const Layout: FunctionComponent<LayoutProperties> = ({
                   cookie.split(";")[0].split("=")[1]
                 }.`
               : `Updated ${cookie.split(";")[0].split("=")[0]} cookie.`;
+          // eslint-disable-next-line no-console
           console.debug(debugMessage);
         });
       }

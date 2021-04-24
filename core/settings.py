@@ -155,6 +155,7 @@ INSTALLED_APPS = [
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.entities.apps.EntitiesConfig',
+    'apps.forums.apps.ForumsConfig',
     'apps.home.apps.HomeConfig',
     'apps.interactions.apps.InteractionsConfig',
     'apps.postulations.apps.PostulationsConfig',

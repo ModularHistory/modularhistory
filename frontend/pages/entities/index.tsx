@@ -5,11 +5,16 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
-
+import { GetServerSideProps } from "next";
+import { FC } from "react";
 import Layout from "../../components/Layout";
 import Pagination from "../../components/Pagination";
 
-export default function Entities({ entitiesData }) {
+interface EntitiesProps {
+  entitiesData: any;
+}
+
+const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   const entities = entitiesData["results"] || [];
 
   const entityCards = entities.map((entity) => (
@@ -40,10 +45,12 @@ export default function Entities({ entitiesData }) {
       {/*<pre>{JSON.stringify(entitiesData, null, 4)}</pre>*/}
     </Layout>
   );
-}
+};
+
+export default Entities;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-export async function getServerSideProps(context) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   let entitiesData = {};
 
   await axios
@@ -60,4 +67,4 @@ export async function getServerSideProps(context) {
       entitiesData,
     },
   };
-}
+};

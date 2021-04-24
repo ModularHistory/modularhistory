@@ -29,7 +29,7 @@ class ModelWithSources(Model):
     sources: 'RelatedManager[Source]'
 
     # Admin-facing notes (not to be displayed to users)
-    notes = HTMLField(null=True, blank=True, paragraphed=True)
+    notes = HTMLField(null=True, blank=True, paragraphed=True, processed=False)
 
     class Meta:
         abstract = True

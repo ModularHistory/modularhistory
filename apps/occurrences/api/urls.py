@@ -10,4 +10,5 @@ app_name = 'occurrences'
 
 urlpatterns = [
     path('', views.OccurrenceListAPIView.as_view()),
+    path('<slug:slug>/', views.OccurrenceAPIView.as_view()),
 ]

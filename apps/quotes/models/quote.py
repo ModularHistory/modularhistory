@@ -50,8 +50,8 @@ class Quote(
 ):
     """A quote."""
 
-    text = HTMLField(verbose_name='text', paragraphed=True)
-    bite = HTMLField(verbose_name='bite', null=True, blank=True)
+    text = HTMLField(verbose_name='text', paragraphed=True, processed=False)
+    bite = HTMLField(verbose_name='bite', null=True, blank=True, processed=False)
     pretext = HTMLField(
         verbose_name='pretext',
         null=True,

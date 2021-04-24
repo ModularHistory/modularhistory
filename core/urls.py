@@ -79,6 +79,8 @@ urlpatterns = [
     # Sources
     path('api/sources/', include(_api('sources'), namespace='sources_api')),
     path('sources/', include('apps.sources.urls', namespace='sources')),
+    # Static Pages
+    path('api/staticpages/', include(_api('staticpages'), namespace='staticpages_api')),
     # Topics
     path('api/topics/', include(_api('topics'), namespace='topics_api')),
     path('topics/', include('apps.topics.urls', namespace='topics')),

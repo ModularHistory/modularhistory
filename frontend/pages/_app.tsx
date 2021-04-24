@@ -1,13 +1,40 @@
-import { Provider } from "next-auth/client";
+import { NextPage } from "next";
+import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import { FC, ReactElement, useEffect } from "react";
+import Cookies from "universal-cookie";
 import "../../core/static/styles/base.scss";
+import { DJANGO_CSRF_COOKIE_NAME } from "../auth";
+import axiosWithoutAuth from "../axiosWithoutAuth";
 import { PageTransitionContextProvider } from "../components/PageTransitionContext";
+import { initializeSentry } from "../sentry";
 import "../styles/globals.css";
 
-const App = ({ Component, pageProps }: AppProps) => {
+initializeSentry();
+
+const cookies = new Cookies();
+
+interface SessionKillerProps {
+  children: ReactElement;
+}
+
+const SessionKiller: FC<SessionKillerProps> = ({ children }: SessionKillerProps) => {
+  const [session, _loading] = useSession();
+  useEffect(() => {
+    if (session?.expired) {
+      signOut();
+    }
+  }, [session?.expired]);
+  return children;
+};
+
+interface ExtendedAppProps extends AppProps {
+  err?: string;
+}
+
+const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps) => {
   const router = useRouter();
   useEffect(() => {
     // Remove the server-side injected CSS.
@@ -16,19 +43,23 @@ const App = ({ Component, pageProps }: AppProps) => {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
-    // TODO: https://modularhistory.atlassian.net/browse/MH-148
-    // Get Django CSRF cookie.
-    // const url = "/api/csrf/set";
-    // axios.get(url).then(console.log);
 
-    // The next/Link component automatically handles page scrolling,
-    // but router.push() does not. This event listener scrolls the page
-    // any time router.push() is used.
+    // Set the Django CSRF cookie if necessary.
+    if (!cookies.get(DJANGO_CSRF_COOKIE_NAME)) {
+      // Get Django CSRF cookie.
+      // eslint-disable-next-line no-console
+      // console.log("Getting a CSRF cookie...");
+      const url = "/api/csrf/set";
+      axiosWithoutAuth.get(url); // .then(console.log);
+    }
+
+    // Scroll to the top of the page whenever router.push() is used.
+    // (The next/Link component automatically handles page scrolling,
+    // but router.push() does not.)
     const handle = () => window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     router.events.on("routeChangeComplete", handle);
     return () => router.events.off("routerChangeComplete", handle);
   }, []);
-
   return (
     <>
       <Head>
@@ -53,9 +84,11 @@ const App = ({ Component, pageProps }: AppProps) => {
         />
       </noscript>
       <Provider session={pageProps.session}>
-        <PageTransitionContextProvider>
-          <Component {...pageProps} />
-        </PageTransitionContextProvider>
+        <SessionKiller>
+          <PageTransitionContextProvider>
+            <Component {...pageProps} err={err} />
+          </PageTransitionContextProvider>
+        </SessionKiller>
       </Provider>
     </>
   );

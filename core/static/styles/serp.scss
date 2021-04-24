@@ -3,15 +3,15 @@ $refinements-container-bg-color: whitesmoke;
 
 @mixin mobile {
   @media only screen and (max-width: 660px) {
-    @content
+    @content;
   }
 }
 
 /* Safari 11+ */
 @mixin safari {
-  @media not all and (min-resolution:.001dpcm) {
-    @supports (-webkit-appearance:none) and (stroke-color:transparent) {
-      @content
+  @media not all and (min-resolution: 0.001dpcm) {
+    @supports (-webkit-appearance: none) and (stroke-color: transparent) {
+      @content;
     }
   }
 }
@@ -26,7 +26,7 @@ $refinements-container-bg-color: whitesmoke;
   /* Hide scrollbar for IE and Edge */
   -ms-overflow-style: none;
   p {
-    >iframe {
+    > iframe {
       margin-left: auto; // doesn't work; using iframe align attribute instead
       margin-right: auto; // doesn't work; using iframe align attribute instead
     }
@@ -139,7 +139,8 @@ $refinements-container-bg-color: whitesmoke;
         margin-top: 0;
       }
     }
-    .select2-selection__choice, input.select2-search__field {
+    .select2-selection__choice,
+    input.select2-search__field {
       margin: 2px 2px 0 2px;
     }
     input.select2-search__field {
@@ -153,7 +154,9 @@ $refinements-container-bg-color: whitesmoke;
   vertical-align: top;
   text-align: center;
   .view-detail {
-    @include mobile { display: none; }
+    @include mobile {
+      display: none;
+    }
     display: inline-block;
     width: 60%;
     max-width: 44rem;
@@ -184,13 +187,11 @@ $refinements-container-bg-color: whitesmoke;
       .result {
         &.active {
           .card {
-            box-shadow:
-                    inset 2px 1px 1px 1px black,
-                    inset 2px -1px 1px 1px black;
-            >.img-bg {
-              box-shadow:
-                      inset 1px 1px 1px 1px black,
-                      inset 1px -1px 1px 1px black;
+            box-shadow: inset 2px 1px 1px 1px black,
+              inset 2px -1px 1px 1px black;
+            > .img-bg {
+              box-shadow: inset 1px 1px 1px 1px black,
+                inset 1px -1px 1px 1px black;
               opacity: 0.7;
             }
           }
@@ -206,39 +207,20 @@ $refinements-container-bg-color: whitesmoke;
           .card-body {
             font-size: 0.8rem;
             -webkit-text-stroke: 1px black;
-            text-shadow:
-                    0 0 1px #ffffff,
-                    0 1px 1px #ffffff,
-                    1px 1px 1px #ffffff,
-                    1px 0 1px #ffffff,
-                    0 0 0.5rem #ffffff,
-                    0 1px 0.5rem #ffffff,
-                    1px 1px 0.5rem #ffffff,
-                    1px 0 0.5rem #ffffff,
-                    0 0 1rem #ffffff,
-                    0 1px 1rem #ffffff,
-                    1px 1px 1rem #ffffff,
-                    1px 0 1rem #ffffff,
-                    0 0 2rem #ffffff,
-                    0 1px 2rem #ffffff,
-                    1px 1px 2rem #ffffff,
-                    1px 0 2rem #ffffff;
+            text-shadow: 0 0 1px #ffffff, 0 1px 1px #ffffff, 1px 1px 1px #ffffff,
+              1px 0 1px #ffffff, 0 0 0.5rem #ffffff, 0 1px 0.5rem #ffffff,
+              1px 1px 0.5rem #ffffff, 1px 0 0.5rem #ffffff, 0 0 1rem #ffffff,
+              0 1px 1rem #ffffff, 1px 1px 1rem #ffffff, 1px 0 1rem #ffffff,
+              0 0 2rem #ffffff, 0 1px 2rem #ffffff, 1px 1px 2rem #ffffff,
+              1px 0 2rem #ffffff;
             @include safari {
               // On Safari, without this override,
               // the shadow goes on top of the text and makes it lighter....
-              text-shadow:
-                      0 0 1px #ffffff,
-                      0 1px 1px #ffffff,
-                      1px 1px 1px #ffffff,
-                      1px 0 1px #ffffff,
-                      0 0 0.5rem #ffffff,
-                      0 1px 0.5rem #ffffff,
-                      1px 1px 0.5rem #ffffff,
-                      1px 0 0.5rem #ffffff,
-                      0 0 1rem #ffffff,
-                      0 1px 1rem #ffffff,
-                      1px 1px 1rem #ffffff,
-                      1px 0 1rem #ffffff;
+              text-shadow: 0 0 1px #ffffff, 0 1px 1px #ffffff,
+                1px 1px 1px #ffffff, 1px 0 1px #ffffff, 0 0 0.5rem #ffffff,
+                0 1px 0.5rem #ffffff, 1px 1px 0.5rem #ffffff,
+                1px 0 0.5rem #ffffff, 0 0 1rem #ffffff, 0 1px 1rem #ffffff,
+                1px 1px 1rem #ffffff, 1px 0 1rem #ffffff;
             }
             color: black;
             .card-text {
