@@ -6,6 +6,8 @@ echo "Successfully pulled to $(pwd)."
 changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
 prompt_to_run_setup_script=false
 setup_sha_file=".venv/.setup.sha"
+bold=$(tput bold)
+normal=$(tput sgr0)
 
 # Check if the setup script hasn't yet been run.
 [[ ! -f $setup_sha_file ]] && prompt_to_run_setup_script=true
@@ -31,9 +33,6 @@ if [[ -d config/hooks ]]; then
     }
   done
 fi
-
-bold=$(tput bold)
-normal=$(tput sgr0)
 
 # Check if migrations have changed.
 echo "$changed_files" | grep --quiet 'migrations/' && {
