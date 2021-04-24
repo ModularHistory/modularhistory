@@ -140,7 +140,7 @@ export const authenticateWithSocialMediaAccount = async (
   provider: Record<string, string>
 ): Promise<User> => {
   const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
-  const credentials: SocialMediaAccountCredentials = { user: user };
+  const credentials: SocialMediaAccountCredentials = { user };
   switch (provider.provider) {
     case "github": {
       // https://next-auth.js.org/providers/github
@@ -150,7 +150,7 @@ export const authenticateWithSocialMediaAccount = async (
           headers: { Authorization: `token ${provider.accessToken}` },
         });
         const emails = await emailRes.json();
-        if (emails?.length != 0) {
+        if (emails?.length !== 0) {
           user.email = emails.find((emails) => emails.primary).email;
         }
       }
