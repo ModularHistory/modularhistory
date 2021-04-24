@@ -1,14 +1,14 @@
+import Layout from "@/components/Layout";
+import ModuleCard from "@/components/modulecards/ModuleCard";
+import ModuleDetail from "@/components/moduledetails/ModuleDetail";
+import Pagination from "@/components/Pagination";
+import SearchForm from "@/components/search/SearchForm";
 import { Container, Drawer } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import axios from "axios";
 import { useRouter } from "next/router";
 import qs from "qs";
 import { useCallback, useEffect, useState } from "react";
-import Layout from "../components/Layout";
-import ModuleCard from "../components/modulecards/ModuleCard";
-import ModuleDetail from "../components/moduledetails/ModuleDetail";
-import Pagination from "../components/Pagination";
-import SearchForm from "../components/search/SearchForm";
 
 function useTwoPaneState(...args) {
   // This hook is used to track which card in the left pane
