@@ -101,6 +101,7 @@ callbacks.signIn = async function signIn(user: User, provider: Record<string, st
   }
   const allowLogin = user.error ? false : true;
   if (!allowLogin) {
+    // eslint-disable-next-line no-console
     console.debug("Rejected login.");
   }
   return allowLogin;
@@ -134,6 +135,7 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
       console.error("Session got an expired access token.");
       jwt = await refreshAccessToken(jwt);
       if (Date.now() > jwt.accessTokenExpiry) {
+        // eslint-disable-next-line no-console
         console.log("くそっ！ サインアウトするしかない。");
         sessionPlus.expired = true;
         return sessionPlus;

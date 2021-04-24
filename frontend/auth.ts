@@ -51,9 +51,11 @@ export const handleLogout = (session: Session): void => {
         }
       )
       .then(function () {
+        // eslint-disable-next-line no-console
         // console.debug("Signed out.");
       })
       .catch(function (error) {
+        // eslint-disable-next-line no-console
         console.error(`Failed to sign out due to error: ${error}`);
       });
   }
@@ -96,6 +98,7 @@ export const authenticateWithCredentials = async (
     .then(function (response: AxiosResponse) {
       user = response.data["user"];
       if (!user) {
+        // eslint-disable-next-line no-console
         // console.log("Response did not contain user data.");
         return Promise.resolve(null);
       }
@@ -117,6 +120,7 @@ export const authenticateWithCredentials = async (
       user.clientSideCookies = removeServerSideCookies(cookies);
     })
     .catch(function (error) {
+      // eslint-disable-next-line no-console
       console.error(`${error}`);
       return Promise.resolve(null);
     });
@@ -147,6 +151,7 @@ export const authenticateWithSocialMediaAccount = async (
       credentials.refresh_token = provider.refreshToken;
       break;
     default:
+      // eslint-disable-next-line no-console
       console.error("Unsupported provider:", provider.provider);
       return user;
   }
@@ -164,7 +169,6 @@ export const authenticateWithSocialMediaAccount = async (
     })
     .catch(function (error) {
       user.error = `${error}`;
-      console.error("Attached error to user: ", error);
     });
   return Promise.resolve(user);
 };
@@ -196,8 +200,8 @@ export const refreshAccessToken = async (jwt: JWT): Promise<JWT> => {
           // Fall back to old refresh token if necessary.
           refreshToken: response.data.refresh_token ?? jwt.refreshToken,
           accessToken: response.data.access,
-          accessTokenExpiry: accessTokenExpiry,
-          clientSideCookies: clientSideCookies,
+          accessTokenExpiry,
+          clientSideCookies,
           iat: Date.now() / 1000,
           exp: accessTokenExpiry / 1000,
         };
@@ -212,10 +216,12 @@ export const refreshAccessToken = async (jwt: JWT): Promise<JWT> => {
           }
         */
       } else {
+        // eslint-disable-next-line no-console
         console.error(`Failed to parse response: ${response.data}`);
       }
     })
     .catch(function (error) {
+      // eslint-disable-next-line no-console
       console.error(`Failed to refresh auth token due to error:\n${error}`);
     });
   return jwt;
