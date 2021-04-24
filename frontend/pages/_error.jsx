@@ -1,6 +1,6 @@
 /* 
-    Based on:
-    https://github.com/vercel/next.js/blob/canary/examples/with-sentry/pages/_error.js
+  Based on:
+  https://github.com/vercel/next.js/blob/canary/examples/with-sentry/pages/_error.js
 */
 import * as Sentry from "@sentry/node";
 import NextErrorComponent from "next/error";
