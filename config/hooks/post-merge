@@ -12,7 +12,7 @@ setup_sha_file=".venv/.setup.sha"
 # Check if the setup script has been modified.
 echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=true
 # Check if last time the setup script was run was with an older version of the script.
-[[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum setup.sh | head -n1 | cut -d ' ' -f1)" ]] && prompt_to_run_setup_script=true
+[[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum setup.sh | head -n1 | cut -d ' ' -f1)" ]] || prompt_to_run_setup_script=true
 
 # Update hooks.
 if [[ -d config/hooks ]]; then
