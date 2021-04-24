@@ -69,42 +69,17 @@ const providers = [
 const callbacks: CallbacksOptions = {};
 
 callbacks.signIn = async function signIn(user: User, provider: Record<string, string>, _data) {
+  // Respond to the sign-in attempt. If the user signed in with credentials (i.e.,
+  // a username and password), authentication with the back-end Django server will
+  // have been completed before the signIn callback is reached. However, if the user
+  // signed in with a social media account, authentication with the Django server
+  // is still required.
   if (provider.type != "credentials") {
-    switch (provider.provider) {
-      case "discord": // https://next-auth.js.org/providers/discord
-        break;
-      case "facebook": // https://next-auth.js.org/providers/facebook
-        break;
-      case "github": {
-        // https://next-auth.js.org/providers/github
-        // Retrieve email address, if necessary.
-        if (!user.email) {
-          const emailRes = await fetch("https://api.github.com/user/emails", {
-            headers: { Authorization: `token ${provider.accessToken}` },
-          });
-          const emails = await emailRes.json();
-          if (emails?.length != 0) {
-            user.email = emails.find((emails) => emails.primary).email;
-          }
-        }
-        break;
-      }
-      case "google": // https://next-auth.js.org/providers/google
-        break;
-      case "twitter": // https://next-auth.js.org/providers/twitter
-        break;
-      default:
-        console.error("Unrecognized auth provider:", provider);
-        return false;
-    }
     user = await authenticateWithSocialMediaAccount(user, provider);
   }
-  const allowLogin = user.error ? false : true;
-  if (!allowLogin) {
-    // eslint-disable-next-line no-console
-    console.debug("Rejected login.");
-  }
-  return allowLogin;
+  // If there is no error, return true to permit signing in.
+  // If there is an error, return false to reject the sign-in attempt.
+  return user.error ? false : true;
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback

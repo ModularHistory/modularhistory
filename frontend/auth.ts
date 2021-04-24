@@ -142,11 +142,28 @@ export const authenticateWithSocialMediaAccount = async (
   const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
   const credentials: SocialMediaAccountCredentials = { user: user };
   switch (provider.provider) {
-    case "discord": // https://next-auth.js.org/providers/discord
-    case "facebook": // https://next-auth.js.org/providers/facebook
-    case "github": // https://next-auth.js.org/providers/github
-    case "google": // https://next-auth.js.org/providers/google
-    case "twitter": // https://next-auth.js.org/providers/twitter
+    case "github": {
+      // https://next-auth.js.org/providers/github
+      // Retrieve email address, if necessary.
+      if (!user.email) {
+        const emailRes = await fetch("https://api.github.com/user/emails", {
+          headers: { Authorization: `token ${provider.accessToken}` },
+        });
+        const emails = await emailRes.json();
+        if (emails?.length != 0) {
+          user.email = emails.find((emails) => emails.primary).email;
+        }
+      }
+    }
+    // https://next-auth.js.org/providers/discord
+    // https://next-auth.js.org/providers/facebook
+    // https://next-auth.js.org/providers/github
+    // https://next-auth.js.org/providers/google
+    // https://next-auth.js.org/providers/twitter
+    case "discord":
+    case "facebook":
+    case "google":
+    case "twitter":
       credentials.access_token = provider.accessToken;
       credentials.refresh_token = provider.refreshToken;
       break;
@@ -207,6 +224,7 @@ export const refreshAccessToken = async (jwt: JWT): Promise<JWT> => {
         };
         // console.debug("Refreshed access token.");
       } else if (response.data.code === "token_not_valid") {
+        // eslint-disable-next-line no-console
         console.debug("Refresh token expired.");
         /*
           Example response:
