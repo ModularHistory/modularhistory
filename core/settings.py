@@ -302,7 +302,7 @@ MEGA_DEV_USERNAME = config('MEGA_DEV_USERNAME', default=MEGA_USERNAME)
 MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=MEGA_PASSWORD)
 
 # GraphQL
-GRAPHENE = {'SCHEMA': 'apps.topics.models.schema.schema'}
+GRAPHENE = {'SCHEMA': 'apps.topics.models.schema'}
 
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
