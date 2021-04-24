@@ -3,7 +3,6 @@ from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.topics.models import Topic
-from apps.topics.models.schema import query_result
 from apps.topics.serializers import TopicDictSerializer, TopicSerializer
 from core.pagination import VariableSizePagination
 
@@ -31,10 +30,3 @@ class TopicPartialAPIView(ListAPIView):
     queryset = Topic.objects.values("pk", "key")
     serializer_class = TopicDictSerializer
     pagination_class = VariableSizePagination
-
-
-class TopicGraphQLView(ListAPIView):
-    permission_classes = [permissions.AllowAny]
-    pagination_class = VariableSizePagination
-    queryset = query_result()
-    serializer_class = TopicDictSerializer

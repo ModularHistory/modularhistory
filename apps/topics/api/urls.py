@@ -9,6 +9,6 @@ router.register(r'topics', views.TopicViewSet)
 app_name = 'topics'
 
 urlpatterns = [
-    path('', views.TopicGraphQLView.as_view()),
+    path('', views.TopicListAPIView.as_view()),
     path('partial/', views.TopicPartialAPIView.as_view()),
 ]
