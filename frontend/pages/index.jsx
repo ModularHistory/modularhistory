@@ -1,3 +1,5 @@
+import Layout from "@/components/Layout";
+import SearchButton from "@/components/search/SearchButton";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Container from "@material-ui/core/Container";
@@ -6,8 +8,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import Layout from "../components/Layout";
-import SearchButton from "../components/search/SearchButton";
 
 const useStyles = makeStyles({
   root: {

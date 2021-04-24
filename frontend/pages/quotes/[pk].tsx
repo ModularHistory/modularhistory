@@ -1,10 +1,9 @@
-import { GetStaticProps, GetStaticPaths } from "next";
-import { FC } from "react";
-import { QuoteModule } from "@/interfaces";
-
 import Layout from "@/components/Layout";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
+import { QuoteModule } from "@/interfaces";
 import axios from "axios";
+import { GetStaticPaths, GetStaticProps } from "next";
+import { FC } from "react";
 
 interface QuoteProps {
   quote: QuoteModule;
@@ -15,9 +14,7 @@ interface QuoteProps {
  */
 const Quote: FC<QuoteProps> = ({ quote }: QuoteProps) => {
   return (
-    // TODO: add attribute to Quotes for title text (not html),
-    //       or extract text from html with useRef.
-    <Layout title={`Quote ${quote["pk"]}`}>
+    <Layout title={quote["title"]}>
       <ModuleContainer module={quote} />
     </Layout>
   );
