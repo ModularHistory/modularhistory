@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.staticfiles.views import serve
 from django.urls import include, path, re_path
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from graphene_django.views import GraphQLView
 from watchman.views import bare_status
@@ -98,7 +99,7 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path('watchman/', include('watchman.urls')),
     path('healthcheck/', bare_status),  # basic healthcheck
-    path('graphql/', GraphQLView.as_view(graphiql=False, schema=topicsSchema)),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=False, schema=topicsSchema))),
     # Home
     path('', include('apps.home.urls')),
     # robots.txt
