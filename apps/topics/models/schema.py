@@ -24,17 +24,4 @@ class Query(graphene.ObjectType):
         return Topic.objects.all()
 
 
-topicsSchema = graphene.Schema(query=Query)
-
-
-def query_result():
-    result = topicsSchema.execute(
-        '''
-        query {
-          allTopics {
-            key
-            pk
-        }
-    }'''
-    )
-    return result.data['allTopics']
+topics_schema = graphene.Schema(query=Query)
