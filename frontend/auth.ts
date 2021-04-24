@@ -51,7 +51,7 @@ export const handleLogout = (session: Session): void => {
         }
       )
       .then(function () {
-        console.debug("Signed out.");
+        // console.debug("Signed out.");
       })
       .catch(function (error) {
         console.error(`Failed to sign out due to error: ${error}`);
@@ -96,7 +96,7 @@ export const authenticateWithCredentials = async (
     .then(function (response: AxiosResponse) {
       user = response.data["user"];
       if (!user) {
-        console.debug("Response did not contain user data.");
+        // console.log("Response did not contain user data.");
         return Promise.resolve(null);
       }
       /*

@@ -3,7 +3,7 @@ import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { FC, ReactElement, useEffect } from "react";
+import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
 import "../../core/static/styles/base.scss";
 import { DJANGO_CSRF_COOKIE_NAME } from "../auth";
