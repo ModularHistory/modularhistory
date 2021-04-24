@@ -40,6 +40,8 @@
         "sessionid",
         "shasum",
         "soupify",
+        "stylelint",
+        "testcafe",
         "tinymce",
         "venv",
         "webserver",
