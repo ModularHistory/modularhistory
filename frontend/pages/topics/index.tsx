@@ -11,7 +11,7 @@ interface TopicsProps {
 }
 
 const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
-  const topics = topicsData["results"] || [];
+  const topics = topicsData["data"]["allTopics"] || [];
 
   //Style for the anchor used in topicNames
   const topicAnchorStyle = {
@@ -46,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let topicsData = {};
 
   await axios
-    .get("http://django:8000/api/topics/", { params: context.query })
+    .get("http://django:8000/graphql/?query={allTopics{key%20pk}}", {})
     .then((response) => {
       topicsData = response.data;
     })
