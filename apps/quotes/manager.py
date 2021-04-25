@@ -35,7 +35,6 @@ class QuoteManager(SearchableModelManager):
         )
         # Limit to specified entities
         if entity_ids:
-
             qs = qs.filter(
                 Q(attributees__id__in=entity_ids)
                 | Q(
