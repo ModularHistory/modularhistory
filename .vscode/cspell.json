@@ -6,6 +6,7 @@
         "attributees",
         "autobuild",
         "Bennion",
+        "braintree",
         "buildx",
         "CSRF",
         "ctype",
@@ -21,6 +22,7 @@
         "Imgur",
         "jquery",
         "klass",
+        "localstorage",
         "longpaths",
         "lxml",
         "mkdir",
@@ -40,6 +42,7 @@
         "serpy",
         "sessionid",
         "shasum",
+        "serpy",
         "soupify",
         "stylelint",
         "testcafe",
@@ -50,5 +53,8 @@
     ],
     "flagWords": [
         "hte"
+    ],
+    "ignoreRegExpList": [
+        "default='.*'"
     ]
 }

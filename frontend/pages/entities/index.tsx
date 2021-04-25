@@ -28,7 +28,7 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
               image={entity["serialized_images"][0]["src_url"]}
             />
           )}
-          <CardContent dangerouslySetInnerHTML={{ __html: entity["description"] }} />
+          <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
         </Card>
       </a>
     </Grid>
