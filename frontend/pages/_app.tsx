@@ -1,3 +1,8 @@
+import { DJANGO_CSRF_COOKIE_NAME } from "@/auth";
+import axiosWithoutAuth from "@/axiosWithoutAuth";
+import { PageTransitionContextProvider } from "@/components/PageTransitionContext";
+import { initializeSentry } from "@/sentry";
+import "@/styles/globals.css";
 import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
@@ -6,11 +11,6 @@ import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
 import "../../core/static/styles/base.scss";
-import { DJANGO_CSRF_COOKIE_NAME } from "../auth";
-import axiosWithoutAuth from "../axiosWithoutAuth";
-import { PageTransitionContextProvider } from "../components/PageTransitionContext";
-import { initializeSentry } from "../sentry";
-import "../styles/globals.css";
 
 initializeSentry();
 
