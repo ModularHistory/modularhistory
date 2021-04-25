@@ -1,3 +1,5 @@
+import { handleLogout } from "@/auth";
+import Layout from "@/components/Layout";
 import { Box, Button, Divider, Grid, Paper, TextField } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import Alert from "@material-ui/lab/Alert";
@@ -14,8 +16,6 @@ import {
   GoogleLoginButton,
   TwitterLoginButton,
 } from "react-social-login-buttons";
-import { handleLogout } from "../../auth";
-import Layout from "../../components/Layout";
 
 const CREDENTIALS_KEY = "credentials";
 const SOCIAL_LOGIN_BUTTONS = {
