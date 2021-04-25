@@ -15,7 +15,11 @@ interface DonateProps {
 }
 
 const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
-  const [tokenize, setTokenizeFunc] = useState();
+  // Set the initial value of tokenize to be an anonymous function that returns null.
+  // Subsequently, tokenize is set by the Braintree drop-in component.
+  const [tokenize, setTokenizeFunc] = useState(() => {
+    return () => null;
+  });
   const [cardType, setCardType] = useState("");
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
@@ -34,29 +38,31 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
   const handleError = (newError) => {
     setError(newError.message || String(newError));
   };
-  const onAuthorizationSuccess = () => {
-    console.log("Authorization succeeded.");
-    numberField.current.focus();
-  };
-  const onDataCollectorInstanceReady = (collector) => {
-    // DO SOMETHING with Braintree collector as needed
-  };
-  const onFieldBlur = (field, event) => setFocusedField("");
-  const onFieldFocus = (field, event) => setFocusedField(event.emittedBy);
-  const onCardTypeChange = ({ cards }) => {
-    if (cards.length === 1) {
-      const [card] = cards;
-      setCardType(card.type);
-      if (card.code && card.code.name) {
-        cvvField.current.setPlaceholder(card.code.name);
-      } else {
-        cvvField.current.setPlaceholder("CVV");
-      }
-    } else {
-      setCardType("");
-      cvvField.current.setPlaceholder("CVV");
-    }
-  };
+
+  // TODO
+  // const onAuthorizationSuccess = () => {
+  //   console.log("Authorization succeeded.");
+  //   numberField.current.focus();
+  // };
+  // const onDataCollectorInstanceReady = (collector) => {
+  //   // DO SOMETHING with Braintree collector as needed
+  // };
+  // const onFieldBlur = (field, event) => setFocusedField("");
+  // const onFieldFocus = (field, event) => setFocusedField(event.emittedBy);
+  // const onCardTypeChange = ({ cards }) => {
+  //   if (cards.length === 1) {
+  //     const [card] = cards;
+  //     setCardType(card.type);
+  //     if (card.code && card.code.name) {
+  //       cvvField.current.setPlaceholder(card.code.name);
+  //     } else {
+  //       cvvField.current.setPlaceholder("CVV");
+  //     }
+  //   } else {
+  //     setCardType("");
+  //     cvvField.current.setPlaceholder("CVV");
+  //   }
+  // };
 
   async function makeDonation(e) {
     e.preventDefault();
@@ -95,10 +101,10 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
             <Braintree
               className="demo"
               authorization={clientToken}
-              onAuthorizationSuccess={onAuthorizationSuccess}
-              onDataCollectorInstanceReady={onDataCollectorInstanceReady}
+              // onAuthorizationSuccess={onAuthorizationSuccess}
+              // onDataCollectorInstanceReady={onDataCollectorInstanceReady}
               onError={handleError}
-              onCardTypeChange={onCardTypeChange}
+              // onCardTypeChange={onCardTypeChange}
               getNonceRef={ref => setTokenizeFunc(() => ref)} // prettier-ignore
               styles={{
                 input: {
@@ -130,8 +136,8 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
                     className={
                       focusedFieldName === "number" ? "focused form-control" : "form-control"
                     }
-                    onBlur={onFieldBlur}
-                    onFocus={onFieldFocus}
+                    // onBlur={onFieldBlur}
+                    // onFocus={onFieldFocus}
                     placeholder="4111 1111 1111 1111"
                     ref={numberField}
                   />
@@ -144,16 +150,16 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
                         ? "focused form-control"
                         : "form-control"
                     }
-                    onBlur={onFieldBlur}
-                    onFocus={onFieldFocus}
+                    // onBlur={onFieldBlur}
+                    // onFocus={onFieldFocus}
                     placeholder="Name on Card"
                     ref={cardholderNameField}
                   />
                   Date:
                   <HostedField
                     type="expirationDate"
-                    onBlur={onFieldBlur}
-                    onFocus={onFieldFocus}
+                    // onBlur={onFieldBlur}
+                    // onFocus={onFieldFocus}
                     className={
                       focusedFieldName === "expirationDate"
                         ? "focused form-control"
