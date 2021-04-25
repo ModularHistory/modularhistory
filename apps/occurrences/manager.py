@@ -31,12 +31,6 @@ class OccurrenceManager(SearchableModelManager):
             es_qs = OccurrenceDocument.search().query(es_query)[0:10000].to_queryset()
 
         qs = (
-            # super()
-            # .search(
-            #     query=query,
-            #     suppress_unverified=suppress_unverified,
-            #     suppress_hidden=suppress_hidden,
-            # )
             es_qs
             .filter(hidden=False)
             .filter_by_date(start_year=start_year, end_year=end_year)

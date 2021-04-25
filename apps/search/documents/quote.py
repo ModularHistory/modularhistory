@@ -37,6 +37,6 @@ class QuoteDocument(Document):
         related_models = [Source, Entity]
 
     def get_queryset(self):
-        return super(QuoteDocument, self).get_queryset().prefetch_related(
+        return super().get_queryset().prefetch_related(
             'attributees', 'sources', 'topics'
         )

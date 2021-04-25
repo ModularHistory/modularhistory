@@ -37,6 +37,6 @@ class OccurrenceDocument(Document):
         related_models = [Source, Entity]
 
     def get_queryset(self):
-        return super(OccurrenceDocument, self).get_queryset().prefetch_related(
+        return super().get_queryset().prefetch_related(
             'involved_entities', 'sources', 'topics'
         )
