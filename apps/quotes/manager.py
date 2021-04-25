@@ -1,5 +1,4 @@
 """Manager class for quotes."""
-import random
 from typing import List, Optional
 
 from django.db.models import Q
@@ -26,14 +25,14 @@ class QuoteManager(SearchableModelManager):
         """Return search results from apps.quotes."""
 
         if not query:
-            es_qs = super().search(suppress_unverified=suppress_unverified, suppress_hidden=suppress_hidden)
+            qs = super().search(suppress_unverified=suppress_unverified, suppress_hidden=suppress_hidden)
         else:
             es_query = Q2('simple_query_string', query=query)
             from apps.search.documents.quote import QuoteDocument
-            es_qs = QuoteDocument.search().query(es_query)[0:10000]
-            es_qs = es_qs.source(excludes=['*'])
-            es_qs = es_qs.highlight('text', number_of_fragments=1, type='plain', pre_tags=['<mark>'], post_tags=['</mark>'])
-            response = es_qs.execute()
+            qs = QuoteDocument.search().query(es_query)[0:10000]
+            qs = qs.source(excludes=['*'])
+            qs = qs.highlight('text', number_of_fragments=1, type='plain', pre_tags=['<mark>'], post_tags=['</mark>'])
+            response = qs.execute()
             print(f"Query took: {response.took} ms, results n={response.hits.total.value}")
 
             for hit in response.hits:
@@ -42,10 +41,10 @@ class QuoteManager(SearchableModelManager):
                     print(f"Item.meta: {hit.meta}")
                     if hasattr(hit.meta, 'highlight'):
                          print(f"Highlight: {hit.meta.highlight.text}")
-            es_qs = es_qs.to_queryset(keep_order=False)
+            qs = qs.to_queryset(keep_order=False)
 
         qs = (
-            es_qs
+            qs
             .filter(hidden=False)
             .filter_by_date(start_year=start_year, end_year=end_year)
         )

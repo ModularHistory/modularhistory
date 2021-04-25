@@ -24,14 +24,14 @@ class OccurrenceManager(SearchableModelManager):
         """Return search results from apps.occurrences."""
 
         if not query:
-            es_qs = super().search(suppress_unverified=suppress_unverified, suppress_hidden=suppress_hidden)
+            qs = super().search(suppress_unverified=suppress_unverified, suppress_hidden=suppress_hidden)
         else:
             es_query = Q2('simple_query_string', query=query)
             from apps.search.documents.occurrence import OccurrenceDocument
-            es_qs = OccurrenceDocument.search().query(es_query)[0:10000].to_queryset()
+            qs = OccurrenceDocument.search().query(es_query)[0:10000].to_queryset()
 
         qs = (
-            es_qs
+            qs
             .filter(hidden=False)
             .filter_by_date(start_year=start_year, end_year=end_year)
             .prefetch_related(
