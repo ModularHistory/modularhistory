@@ -6,7 +6,7 @@ $label-height: 2rem;
 .nimbus-is-editor {
   #container {
     #header {
-      background-color: #2B3746 !important;
+      background-color: #2b3746 !important;
       color: white !important;
     }
   }
@@ -24,10 +24,10 @@ tbody.djn-tbody.has_original {
 // Hide overlapping text from multiple paragraphs
 // in string representations of associations in inline admins.
 .djn-tr > td.original {
-  > p:nth-child(n+3) {
+  > p:nth-child(n + 3) {
     display: none;
   }
-  > p:nth-child(-n+2) {
+  > p:nth-child(-n + 2) {
     padding-bottom: 1.4rem;
     &:nth-child(2) {
       margin-left: 1rem;
@@ -41,10 +41,10 @@ div.readonly {
 
 .form-row > div {
   position: relative;
-  >label {
+  > label {
     z-index: 10;
   }
-  >.mce-tinymce.mce-container.mce-panel {
+  > .mce-tinymce.mce-container.mce-panel {
     margin-top: $label-height !important;
     max-width: 100% !important;
   }
@@ -71,7 +71,6 @@ td.field-source {
     margin-bottom: 0;
   }
 }
-
 
 // Admin table styles
 

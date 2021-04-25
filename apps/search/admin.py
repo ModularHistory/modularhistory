@@ -34,7 +34,13 @@ class SearchableModelAdmin(ModelAdmin):
                 suppress_unverified=False,
                 suppress_hidden=False,
             )
-        return queryset, use_distinct
+        # TODO: Use ElasticSearch in the admin.
+        # This is a workaround for a bug that's causing duplicate results.
+        # return queryset, use_distinct
+        return (
+            self.model.objects.filter(id__in={instance.id for instance in queryset}),
+            use_distinct,
+        )
 
     def get_urls(self):
         """Return URLs used by searchable model admins."""

@@ -26,6 +26,7 @@ class TopicAdmin(ModelAdmin):
     model = models.Topic
     list_display = [
         'key',
+        'slug',
         'detail_link',
         'description',
         'parent_topics_string',

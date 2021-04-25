@@ -1,11 +1,17 @@
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
+import { FC } from "react";
 import Layout from "../../components/Layout";
 
-export default function Topics({ topicsData }) {
-  const topics = topicsData["results"] || [];
+interface TopicsProps {
+  topicsData: any;
+}
+
+const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
+  const topics = topicsData["data"]["allTopics"] || [];
 
   //Style for the anchor used in topicNames
   const topicAnchorStyle = {
@@ -31,14 +37,16 @@ export default function Topics({ topicsData }) {
       </Container>
     </Layout>
   );
-}
+};
+
+export default Topics;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-export async function getServerSideProps(context) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   let topicsData = {};
 
   await axios
-    .get("http://django:8000/api/topics/", { params: context.query })
+    .get("http://django:8000/graphql/?query={allTopics{key%20pk}}", {})
     .then((response) => {
       topicsData = response.data;
     })
@@ -51,4 +59,4 @@ export async function getServerSideProps(context) {
       topicsData,
     },
   };
-}
+};

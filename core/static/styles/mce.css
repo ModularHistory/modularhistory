@@ -36,9 +36,13 @@ span.deleted {
 figcaption {
   font-size: 0.8rem; }
 
-h3, h4, h5 {
+h3,
+h4,
+h5 {
   margin-top: 1rem; }
-  h3:first-child, h4:first-child, h5:first-child {
+  h3:first-child,
+  h4:first-child,
+  h5:first-child {
     margin-top: 0; }
 
 hr {

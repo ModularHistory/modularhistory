@@ -55,8 +55,11 @@ jobs:
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
       SERVER: kfred.dyndns.org
       SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
       SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}

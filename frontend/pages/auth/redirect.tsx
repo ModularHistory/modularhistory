@@ -1,12 +1,13 @@
+import Layout from "@/components/Layout";
 import { Box, Container, Typography } from "@material-ui/core";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { setCookie } from "nookies";
-import Layout from "../../components/Layout";
+import { FC } from "react";
 
-const Redirect: React.FunctionComponent = () => {
+const Redirect: FC = () => {
   const router = useRouter();
   const [_session, loading] = useSession();
   const path = router.query.path ?? "/";
