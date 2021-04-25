@@ -11,7 +11,11 @@ from itertools import chain
 
 from .command import command
 
-from apps.search.documents import QuoteDocument, OccurrenceDocument, SourceDocument, EntityDocument, ImageDocument
+from apps.search.documents.quote import QuoteDocument
+from apps.search.documents.occurrence import OccurrenceDocument
+from apps.search.documents.source import SourceDocument
+from apps.search.documents.image import ImageDocument
+from apps.search.documents.entity import EntityDocument
 
 django.setup()
 
