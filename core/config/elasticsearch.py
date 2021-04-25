@@ -1,5 +1,7 @@
+from core.environment import DOCKERIZED
+
 ELASTICSEARCH_DSL={
     'default': {
-        'hosts': '172.27.0.15:9200'
+        'hosts': 'elasticsearch:9200' if DOCKERIZED else 'localhost:9200'
     },
 }
