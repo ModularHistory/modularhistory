@@ -19,7 +19,6 @@ import './commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-console.log(`\n\n${process.env}\n\n`)
 if (process.env.ENVIRONMENT === "dev") {
   before(() => {
     Cypress.config("defaultCommandTimeout", 15e3);
