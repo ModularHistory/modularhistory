@@ -1,7 +1,5 @@
-/// <reference types="cypress" />
-
 describe('The Home Page', () => {
-  before(() => {
+  beforeEach(() => {
     cy.visit('/');
   });
 
@@ -13,13 +11,8 @@ describe('The Home Page', () => {
     cy.intercept(
       '**/search.json*',
       {
-        body: {
-          pageProps: {
-            searchResults: {
-              results: []
-            }
-          },
-        }, delay: 500
+        fixture: "emptySearchResults.json",
+        delay: 500
       }
     );
 
@@ -37,6 +30,8 @@ describe('The Home Page', () => {
         .and("include", searchString);
 
       cy.get('[data-cy="brand"]').click()
+      cy.url()
+        .should("eq", Cypress.config().baseUrl)
     }
 
     cy.get('@queryInput')

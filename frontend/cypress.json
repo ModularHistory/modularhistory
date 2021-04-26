@@ -1,4 +1,5 @@
 {
-  "baseUrl": "http://modularhistory.dev.net",
-  "chromeWebSecurity": false
+  "baseUrl": "http://modularhistory.dev.net/",
+  "chromeWebSecurity": false,
+  "ignoreTestFiles": "**/examples/**/*"
 }

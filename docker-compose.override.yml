@@ -90,4 +90,5 @@ services:
     # share the current folder as volume to avoid copying
     working_dir: /e2e
     volumes:
-      - ./frontend/cypress:/e2e
+      - ./frontend/cypress:/e2e/cypress
+      - ./frontend/cypress.json:/e2e/cypress.json
