@@ -19,12 +19,14 @@ URL_MAX_LENGTH: int = 200
 class Document(Source, DocumentMixin):
     """A historical or contemporary document held in a collection."""
 
+    date_nullable = True
+
     def __html__(self) -> str:
         """Return the repository's HTML representation."""
         components = [
             self.attributee_html,
             self.linked_title if self.title else 'untitled document',
-            self.date.string if self.date else 'date unknown',
+            self.date.string if self.date else '',
             self.descriptive_phrase,
             f'archived in {self.collection}' if self.collection else '',
         ]

@@ -36,7 +36,7 @@ class TextualSourceMixin(models.Model):
     @property
     def file_page_number(self) -> Optional[int]:
         """Return the page number to which the source file should be opened."""
-        file = self.source_file
+        file = self.file
         if file:
             if self.containment and self.containment.page_number:
                 return self.containment.page_number + file.page_offset

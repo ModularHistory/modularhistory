@@ -52,11 +52,9 @@ class Model(DjangoModel):
     placeholder_regex: Optional[str] = None
 
     class Meta:
-        """
-        Meta options for Model.
+        """Meta options for Model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True
 

@@ -41,6 +41,8 @@ env:
   MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
   SHA: ${{ github.sha }}
   SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
   SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
@@ -152,7 +154,7 @@ jobs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.3
+      uses: snok/install-poetry@v1.1.4
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -173,7 +175,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
         sudo apt-get install -y graphviz graphviz-dev
-        poetry install
+        poetry install --no-root
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules
       uses: actions/cache@v2.1.5
@@ -235,7 +237,7 @@ jobs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.3
+      uses: snok/install-poetry@v1.1.4
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -256,7 +258,7 @@ jobs:
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
         sudo apt-get install -y graphviz graphviz-dev
-        poetry install
+        poetry install --no-root
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules
       uses: actions/cache@v2.1.5

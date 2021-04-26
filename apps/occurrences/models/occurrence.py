@@ -35,7 +35,7 @@ class Occurrence(
 
     date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
     end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
-    summary = HTMLField(verbose_name=_('summary'), paragraphed=False)
+    summary = HTMLField(verbose_name=_('summary'), paragraphed=False, processed=False)
     description = HTMLField(verbose_name=_('description'), paragraphed=True)
     postscript = HTMLField(
         verbose_name=_('postscript'),
@@ -76,11 +76,9 @@ class Occurrence(
     )
 
     class Meta:
-        """
-        Meta options for the Category model.
+        """Meta options for the Category model."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         unique_together = ['summary', 'date']
         ordering = ['date']

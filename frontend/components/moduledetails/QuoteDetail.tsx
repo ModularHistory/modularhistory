@@ -1,6 +1,13 @@
+import { QuoteModule } from "@/interfaces";
+import { FC } from "react";
+
 import ImageCard from "../modulecards/ImageCard";
 
-export default function QuoteDetail({ quote }) {
+interface QuoteDetailProps {
+  quote: QuoteModule;
+}
+
+const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
   let titleHtml = quote["attributee_html"];
   if (quote["date_html"]) {
     titleHtml += (titleHtml ? ", " : "") + quote["date_html"];
@@ -40,4 +47,6 @@ export default function QuoteDetail({ quote }) {
       </div>
     </>
   );
-}
+};
+
+export default QuoteDetail;

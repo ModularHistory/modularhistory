@@ -13,7 +13,7 @@ def soupify(html_string: str, features='lxml') -> BeautifulSoup:
 
     Specifies `lxml` as the parser.
     """
-    return BeautifulSoup(html_string, features=features)
+    return BeautifulSoup(html_string or '', features=features)
 
 
 def compose_link(text, href, klass: Optional[str] = None, **html_attributes) -> str:

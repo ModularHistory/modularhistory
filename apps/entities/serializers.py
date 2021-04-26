@@ -41,6 +41,7 @@ class EntitySerializer(ModelSerializer):
     birth_date = serpy.MethodField('get_serialized_birth_date')
     death_date = serpy.MethodField('get_serialized_death_date')
     description = serpy.Field(attr='description.html', required=False)
+    truncated_description = serpy.Field()
     serialized_images = serpy.Field()
     categorizations = CategorizationSerializer(
         many=True, attr='categorizations.all', call=True

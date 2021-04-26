@@ -57,11 +57,9 @@ class SearchableModel(
         hidden = 'hidden'
 
     class Meta:
-        """
-        Meta options for SearchableModel.
+        """Meta options for SearchableModel."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         abstract = True
 
@@ -92,7 +90,9 @@ class SearchableModel(
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
+    absolute_url = serpy.StrField()
+    admin_url = serpy.StrField()
     slug = serpy.StrField()
     tags_html = serpy.StrField()
-    absolute_url = serpy.StrField()
+    title = serpy.StrField()
     verified = serpy.BoolField()

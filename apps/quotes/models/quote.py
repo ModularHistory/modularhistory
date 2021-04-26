@@ -50,8 +50,8 @@ class Quote(
 ):
     """A quote."""
 
-    text = HTMLField(verbose_name='text', paragraphed=True)
-    bite = HTMLField(verbose_name='bite', null=True, blank=True)
+    text = HTMLField(verbose_name='text', paragraphed=True, processed=False)
+    bite = HTMLField(verbose_name='bite', null=True, blank=True, processed=False)
     pretext = HTMLField(
         verbose_name='pretext',
         null=True,
@@ -86,11 +86,9 @@ class Quote(
     )
 
     class Meta:
-        """
-        Meta options for Quote.
+        """Meta options for Quote."""
 
-        See https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
-        """
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
 
         unique_together = ['date', 'bite']
         ordering = ['date']

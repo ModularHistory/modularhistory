@@ -1,11 +1,13 @@
+import Layout from "@/components/Layout";
 import { Box, Container, Typography } from "@material-ui/core";
-import { useSession } from "next-auth/client";
+import { GetServerSideProps } from "next";
+import { getSession, useSession } from "next-auth/client";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React from "react";
-import Layout from "../../components/Layout";
+import { setCookie } from "nookies";
+import { FC } from "react";
 
-const Redirect: React.FunctionComponent = () => {
+const Redirect: FC = () => {
   const router = useRouter();
   const [_session, loading] = useSession();
   const path = router.query.path ?? "/";
@@ -36,3 +38,22 @@ const Redirect: React.FunctionComponent = () => {
 };
 
 export default Redirect;
+
+// https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (session) {
+    const [cookieName, cookieValue] = session.sessionIdCookie.split(";")[0].split("=");
+    setCookie(context, cookieName, cookieValue, {
+      secure: process.env.ENVIRONMENT === "prod",
+      // expires: Date.parse(session.sessionIdCookie.match(/expires=(.+?);/)[1]);
+      maxAge: parseInt(session.sessionIdCookie.match(/Max-Age=(.+?);/)[1]),
+      sameSite: "lax",
+      httpOnly: true,
+      path: "/",
+    });
+  }
+  return {
+    props: {}, // passed to the page component as props
+  };
+};

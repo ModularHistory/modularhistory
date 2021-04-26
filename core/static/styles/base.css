@@ -37,9 +37,13 @@ span.deleted {
 figcaption {
   font-size: 0.8rem; }
 
-h3, h4, h5 {
+h3,
+h4,
+h5 {
   margin-top: 1rem; }
-  h3:first-child, h4:first-child, h5:first-child {
+  h3:first-child,
+  h4:first-child,
+  h5:first-child {
     margin-top: 0; }
 
 hr {
@@ -132,16 +136,16 @@ body,
   background-color: rgba(0, 0, 0, 0.3); }
 
 .top-nav-collapse {
-  background-color: #1C2331; }
+  background-color: #1c2331; }
 
 /* Adding color to the Navbar on mobile */
 @media only screen and (max-width: 768px) {
   .navbar {
-    background-color: #1C2331; } }
+    background-color: #1c2331; } }
 
 /* Footer color for sake of consistency with Navbar */
 .page-footer {
-  background-color: #1C2331; }
+  background-color: #1c2331; }
 
 /* Safari 11+ */
 .view-detail {
@@ -242,7 +246,8 @@ body,
     padding: 0; }
     .refinements-container .select2.select2-container ul.select2-selection__rendered li.select2-search.select2-search--inline {
       margin-top: 0; }
-  .refinements-container .select2.select2-container .select2-selection__choice, .refinements-container .select2.select2-container input.select2-search__field {
+  .refinements-container .select2.select2-container .select2-selection__choice,
+  .refinements-container .select2.select2-container input.select2-search__field {
     margin: 2px 2px 0 2px; }
   .refinements-container .select2.select2-container input.select2-search__field {
     margin-bottom: 2px; }
@@ -391,7 +396,8 @@ body,
 .display-options label:last-of-type {
   border-radius: 0 4px 4px 0; }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%; }
 
@@ -413,9 +419,11 @@ body {
   #global-nav .avatar {
     margin-top: auto;
     margin-bottom: auto; }
-  #global-nav.navbar-dark.bg-dark .nav-item a, #global-nav.navbar-dark.bg-dark .nav-link {
+  #global-nav.navbar-dark.bg-dark .nav-item a,
+  #global-nav.navbar-dark.bg-dark .nav-link {
     color: rgba(255, 255, 255, 0.6); }
-    #global-nav.navbar-dark.bg-dark .nav-item a.active, #global-nav.navbar-dark.bg-dark .nav-link.active {
+    #global-nav.navbar-dark.bg-dark .nav-item a.active,
+    #global-nav.navbar-dark.bg-dark .nav-link.active {
       color: white; }
   #global-nav.navbar-dark.bg-dark .dropdown-menu.show {
     background-color: #343a40;
@@ -455,7 +463,9 @@ div.detail {
 .edit-object-button {
   display: none; }
 
-.citation .fa, .citation .fab, .citation .fas {
+.citation .fa,
+.citation .fab,
+.citation .fas {
   margin-left: 0.5rem; }
 
 .img-bg {
@@ -466,22 +476,30 @@ div.detail {
   background-position: center;
   background-size: cover; }
 
-.card, .row {
+.card,
+.row {
   position: relative; }
-  .card.image-card, .row.image-card {
+  .card.image-card,
+  .row.image-card {
     display: inline-block; }
-    .card.image-card .image-credit, .row.image-card .image-credit {
+    .card.image-card .image-credit,
+    .row.image-card .image-credit {
       font-size: 0.6rem; }
-    .card.image-card .card-body, .row.image-card .card-body {
+    .card.image-card .card-body,
+    .row.image-card .card-body {
       font-size: 0.9rem;
       padding-top: 1rem !important;
       padding-bottom: 0 !important; }
-  .card .edit-object-button, .row .edit-object-button {
+  .card .edit-object-button,
+  .row .edit-object-button {
     clear: right;
     position: absolute;
     right: 2px;
     top: 2px; }
-  .card .blockquote .edit-object-button, .card .blockquote > footer .edit-object-button, .row .blockquote .edit-object-button, .row .blockquote > footer .edit-object-button {
+  .card .blockquote .edit-object-button,
+  .card .blockquote > footer .edit-object-button,
+  .row .blockquote .edit-object-button,
+  .row .blockquote > footer .edit-object-button {
     position: static;
     float: right; }
 
@@ -527,7 +545,7 @@ ul.timeline {
     background: #ffd402;
     border-radius: 50%;
     left: -24px;
-    top: calc( (40 - 24) / 2 * -1px); }
+    top: calc((40 - 24) / 2 * -1px); }
   ul.timeline ul .year.new {
     border-radius: 0 24px 24px 0; }
   ul.timeline ul .year.new::after {
@@ -569,7 +587,7 @@ ul.timeline {
     top: 8px; }
 
 ul.timeline > li {
-  width: calc( 100% / 6); }
+  width: calc(100% / 6); }
 
 ul.timeline > li:nth-of-type(odd) > .content {
   -webkit-transform: translateY(calc(-100% - 24px));
@@ -577,11 +595,11 @@ ul.timeline > li:nth-of-type(odd) > .content {
 
 @media screen and (max-width: 1140px) {
   ul.timeline > li {
-    width: calc( 100% / 4); } }
+    width: calc(100% / 4); } }
 
 @media screen and (max-width: 991px) {
   ul.timeline > li {
-    width: calc( 100% / 2); } }
+    width: calc(100% / 2); } }
 
 @media screen and (max-width: 767px) {
   ul.timeline {

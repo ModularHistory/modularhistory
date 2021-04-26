@@ -18,6 +18,7 @@ class TopicListAPIView(ListAPIView):
     """API view for listing topics."""
 
     permission_classes = [permissions.AllowAny]
+    pagination_class = VariableSizePagination
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
 

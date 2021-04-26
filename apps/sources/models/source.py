@@ -2,10 +2,12 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, List, Optional, Sequence, Union
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
+from django.db.models.query import QuerySet
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
@@ -14,7 +16,7 @@ from polymorphic.models import PolymorphicModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
-from apps.sources.manager import PolymorphicSourceManager
+from apps.sources.manager import PolymorphicSourceManager, PolymorphicSourceQuerySet
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields import HistoricDateTimeField, HTMLField
@@ -48,11 +50,31 @@ CITATION_PHRASE_OPTIONS = (
 class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        null=False,
+        # Allow to be blank in model forms (and calculated during cleaning).
+        blank=True,
+    )
+    citation_string = models.CharField(
+        verbose_name=_('citation string'),
+        max_length=MAX_CITATION_STRING_LENGTH,
+        null=False,
+        # Allow to be blank in model forms (and calculated during cleaning).
+        blank=True,
+        unique=True,
+    )
     attributee_html = models.CharField(
-        max_length=MAX_ATTRIBUTEE_HTML_LENGTH, null=True, blank=True
+        max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
+        null=True,
+        blank=True,
+        verbose_name=_('attributee HTML'),
     )
     attributee_string = models.CharField(
-        max_length=MAX_ATTRIBUTEE_STRING_LENGTH, null=True, blank=True
+        max_length=MAX_ATTRIBUTEE_STRING_LENGTH,
+        null=True,
+        blank=True,
+        verbose_name=_('attributee string'),
     )
     attributees = models.ManyToManyField(
         to='entities.Entity',
@@ -61,16 +83,8 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
-    citation_html = models.TextField(
-        verbose_name=_('citation HTML'),
-        null=False,  # cannot be null in db
-        blank=True,  # can be left blank in admin form
-    )
-    citation_string = models.CharField(
-        max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,  # cannot be null in db
-        blank=True,  # can be left blank in admin form
-        unique=True,
+    containment_html = models.TextField(
+        verbose_name=_('containment HTML'), null=True, blank=True
     )
     containers = models.ManyToManyField(
         to='self',
@@ -79,9 +93,24 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         related_name='contained_sources',
         symmetrical=False,
         blank=True,
+        verbose_name=_('containers'),
     )
+
+    # `date` must be nullable at the db level (because some sources simply
+    # do not have dates), but if no date is set, we use the `clean` method
+    # to raise a ValidationError unless the child model whitelists itself
+    # by setting `date_nullable` to True.
     date = HistoricDateTimeField(null=True, blank=True)
-    description = HTMLField(null=True, blank=True, paragraphed=True)
+    # `date_nullable` can be set to True by child models that require the
+    # date field to be nullable for any reason (e.g., by the Webpage model,
+    # since not all webpages present their creation date, or by the Document
+    # model, since some documents cannot be dated and/or are compilations of
+    # material spanning decades).
+    date_nullable: bool = False
+
+    description = HTMLField(
+        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+    )
     file = models.ForeignKey(
         to=SourceFile,
         related_name='sources',
@@ -90,10 +119,25 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         on_delete=models.SET_NULL,
         verbose_name='file',
     )
-    location = models.ForeignKey(
-        to='places.Place', null=True, blank=True, on_delete=models.SET_NULL
+    href = models.URLField(
+        verbose_name=_('href'),
+        null=True,
+        blank=True,
+        help_text=(
+            'URL to use as the href when presenting a link to the source. This '
+            'could be the URL of the source file (if one exists) or of a webpage.'
+        ),
     )
-    publication_date = HistoricDateTimeField(null=True, blank=True)
+    location = models.ForeignKey(
+        to='places.Place',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_('location'),
+    )
+    publication_date = HistoricDateTimeField(
+        verbose_name=_('publication date'), null=True, blank=True
+    )
     related = GenericManyToManyField(
         'quotes.Quote',
         'occurrences.Occurrence',
@@ -105,19 +149,30 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
     )
     url = models.URLField(
+        verbose_name=_('URL'),
         max_length=MAX_URL_LENGTH,
         null=True,
         blank=True,
-        help_text='URL where the source can be accessed online',
+        help_text=(
+            'URL where the source can be accessed online (outside ModularHistory)'
+        ),
     )
 
     class Meta:
         ordering = ['-date']
 
-    objects = PolymorphicSourceManager()
+    objects = PolymorphicSourceManager.from_queryset(PolymorphicSourceQuerySet)()
     searchable_fields = ['citation_string', 'description']
     serializer = SourceSerializer
     slug_base_field = 'title'
+
+    def __html__(self) -> str:
+        """
+        Return the source's HTML representation, not including its containers.
+
+        Must be defined by models inheriting from Source.
+        """
+        raise NotImplementedError
 
     def __str__(self):
         """Return the source's string representation."""
@@ -126,139 +181,109 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def clean(self):
         """Prepare the source to be saved."""
         super().clean()
-        self.citation_html = self.calculate_citation_html()
-        self.citation_string = soupify(self.citation_html).get_text()
-        if not self.file:
-            if self.containment and self.containment.container.file:
-                self.file = self.containment.container.file
-        if self.pk:  # If this source is not being newly created
-            is_duplicate = (
-                Source.objects.exclude(pk=self.pk)
-                .filter(citation_string=self.citation_string)
-                .exists()
-            )
-            if is_duplicate:
-                raise ValidationError(
-                    f'Unable to save this source because it duplicates an existing source '
-                    f'or has an identical string: {self.citation_string}'
-                )
-            for container in self.containers.all():
-                if self in container.containers.all():
-                    raise ValidationError(
-                        f'This source cannot be contained by {container}, '
-                        f'because that source is already contained by this source.'
-                    )
+        # Ensure a date value is set, if date is not explicitly made nullable.
+        if not self.date and not self.date_nullable:
+            raise ValidationError('Date is not nullable.')
+        # Update the source's calculated fields.
+        try:
+            # Note: At this stage, changes to m2m relationships will not have
+            # been processed. Calculated fields must be updated again after any
+            # changes are made to the source's m2m relationships. This is handled
+            # with "signals" (see apps/sources/signals.py).
+            self.update_calculated_fields()
+        except ValidationError:
+            raise  # Re-raise any validation errors.
+        except Exception as err:
+            logging.error(f'{err}')
+            raise ValidationError(f'Failed validation due to error: {err}')
 
     @property
-    def ctype(self):
+    def ctype(self) -> ContentType:
+        """Alias polymorphic_ctype."""
         return self.polymorphic_ctype
 
     @property
-    def escaped_citation_html(self) -> SafeString:
-        return format_html(self.citation_html)
+    def ctype_name(self) -> ContentType:
+        """Return the model instance's ContentType."""
+        return self.ctype.model
 
     @property
-    def calculate_attributee_html(self) -> Optional[str]:
-        """Return an HTML string representing the source's attributees."""
-        # Check for pk to avoid RecursionErrors with not-yet-saved objects
-        has_attributees = self.attributees.exists() if self.pk else False
-        if self.attributee_string:
-            attributee_html = self.attributee_string
-            if has_attributees:
-                for entity in self.attributees.all().iterator():
-                    if entity.name in attributee_html:
-                        attributee_html = attributee_html.replace(
-                            entity.name, entity.name_html
-                        )
-            else:
-                logging.info(f'Returning preset creator string: {attributee_html}')
-            return format_html(attributee_html)
-        elif not has_attributees:
-            return None
-        attributees = self.ordered_attributees
-        n_attributions = len(attributees)
-        first_attributee = attributees[0]
-        html = first_attributee.name_html
-        if n_attributions == 2:
-            html = f'{html} and {attributees[1].name_html}'
-        elif n_attributions == 3:
-            html = f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
-        elif n_attributions > 3:
-            html = f'{html} et al.'
-        return html
+    def escaped_citation_html(self) -> SafeString:
+        """Return the escaped citation HTML (for display in the Django admin)."""
+        return format_html(self.citation_html)
 
-    def calculate_citation_html(self) -> str:
+    def get_attributee_html(self) -> str:
+        """Return an HTML string representing the source's attributees."""
+        # Avoid attempting to access a m2m relationship on a not-yet-saved source.
+        m2m_relation_exists = (
+            self.attributees.exists() if not self._state.adding else False
+        )
+        if m2m_relation_exists or self.attributee_string:
+            if self.attributee_string:
+                # Use attributee_string to generate attributee_html, if possible.
+                attributee_html = self.attributee_string
+                if m2m_relation_exists:
+                    logging.debug('Generating attributee HTML from preset string...')
+                    for entity in self.attributees.all().iterator():
+                        if entity.name in attributee_html:
+                            attributee_html = attributee_html.replace(
+                                entity.name, entity.name_html
+                            )
+                return format_html(attributee_html)
+            # Generate attributee_html from attributees (m2m relationship).
+            attributees = self.ordered_attributees
+            n_attributions = len(attributees)
+            first_attributee = attributees[0]
+            html = first_attributee.name_html
+            if n_attributions == 2:
+                html = f'{html} and {attributees[1].name_html}'
+            elif n_attributions == 3:
+                html = f'{html}, {attributees[1].name_html}, and {attributees[2].name_html}'
+            elif n_attributions > 3:
+                html = f'{html} et al.'
+            return html
+        return ''
+
+    def get_citation_html(self) -> str:
         """Return the HTML representation of the source, including its containers."""
-        # TODO: html methods should be split into different classes and/or mixins.
         html = self.__html__()
-        container_strings = self.get_container_strings()
-        if container_strings:
-            containers = ', and '.join(container_strings)
-            html = f'{html}, {containers}'
+        containment_html = self.containment_html or self.get_containment_html()
+        if containment_html:
+            html = f'{html}, {containment_html}'
         elif getattr(self, 'page_number', None):
-            page_number_html = _get_page_number_html(
-                self, self.file, self.page_number, self.end_page_number
-            )
+            page_number_html = self.get_page_number_html()
             html = f'{html}, {page_number_html}'
         if not self.file:
             if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
-        if getattr(self, 'information_url', None) and self.information_url:
-            html = (
-                f'{html}, information available at '
-                f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
-            )
-        the_code_below_is_good = False
-        if the_code_below_is_good:
-            # TODO: Remove search icon; insert link intelligently
-            if self.file_url:
-                html += (
-                    f'<a href="{self.file_url}" class="mx-1 display-source"'
-                    f' data-toggle="modal" data-target="#modal">'
-                    f'<i class="fas fa-search"></i>'
-                    f'</a>'
-                )
-            elif self.url:
-                link = self.url
-                if self.page_number and 'www.sacred-texts.com' in link:
-                    link = f'{link}#page_{self.page_number}'
-                html += (
-                    f'<a href="{link}" class="mx-1" target="_blank">'
-                    f'<i class="fas fa-search"></i>'
-                    f'</a>'
-                )
+        # TODO: Do something else with the information URL.
+        # It shouldn't be part of the citation string, but we should use it.
+        # if getattr(self, 'information_url', None) and self.information_url:
+        #     html = (
+        #         f'{html}, information available at '
+        #         f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
+        #     )
         return format_html(fix_comma_positions(html))
 
-    @property
-    def containment(self) -> Optional['SourceContainment']:
-        """Return the source's primary containment."""
-        try:
-            return self.source_containments.first()
-        except (ObjectDoesNotExist, AttributeError):
-            return None
-
-    @property
-    def escaped_citation_html(self) -> SafeString:
-        return format_html(self.citation_html)
-
-    @property
-    def file_url(self) -> Optional[str]:
-        """Return the source file's URL, if it has one."""
-        return self.file.url if self.file else None
-
-    def get_container_strings(self) -> Optional[List[str]]:
+    def get_containment_html(self) -> str:
         """Return a list of strings representing the source's containers."""
-        containments = self.source_containments.order_by('position')[:2]
-        container_strings = []
+        # Avoid accessing a m2m relationship on a not-yet-saved source.
+        if self._state.adding:
+            logging.debug('Containments of an unsaved source cannot be accessed.')
+            return ''
+        containments: QuerySet[
+            'SourceContainment'
+        ] = self.source_containments.select_related('container').order_by('position')
+        container_strings: List[str] = []
         same_creator = True
-        for containment in containments:
-            container_html = f'{containment.container.html}'
-
-            # Determine whether the container has the same attributee
-            if containment.container.attributee_html != self.attributee_html:
+        containment: SourceContainment
+        for containment in containments[:2]:
+            container: Source = containment.container
+            container_html = f'{container.citation_html}'
+            # Determine whether the container has the same attributee.
+            if container.attributee_string != self.attributee_string:
                 same_creator = False
-
-            # Remove redundant creator string if necessary
+            # Remove redundant creator string if necessary.
             creator_string_is_duplicated = (
                 same_creator
                 and self.attributee_html
@@ -266,14 +291,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             )
             if creator_string_is_duplicated:
                 container_html = container_html[len(f'{self.attributee_html}, ') :]
-
-            # Include the page number
+            # Include the page number.
             if containment.page_number:
-                page_number_html = _get_page_number_html(
-                    containment.source,
-                    containment.source.file,
-                    containment.page_number,
-                    containment.end_page_number,
+                page_number_html = container.get_page_number_html(
+                    page_number=containment.page_number,
+                    end_page_number=containment.end_page_number,
                 )
                 container_html = f'{container_html}, {page_number_html}'
             container_html = (
@@ -282,35 +304,87 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                 else f'in {container_html}'
             )
             container_strings.append(container_html)
-        return container_strings
+        return ', and '.join(container_strings)
 
     def get_date(self) -> Optional[HistoricDateTime]:
-        """Get the source's date."""  # TODO: prefetch container?
+        """Get the source's date."""
         if self.date:
             return self.date
-        elif self.containment and self.containment.container.date:
-            return self.containment.container.date
+        elif not self._state.adding and self.containers.exists():
+            try:
+                containment: SourceContainment = (
+                    self.source_containments.first().select_related('container')
+                )
+                return containment.container.date
+            except Exception as err:
+                pass
         return None
 
+    # TODO: after deploying to prod and copying deprecated_href to the new href field,
+    # remove the @property and @retrieve_or_compute decorators and rename this method
+    # to get_href.
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='href')
-    def href(self) -> Optional[str]:
+    def deprecated_href(self) -> str:
         """
         Return the href to use when providing a link to the source.
 
         If the source has a file, the URL of the file is returned;
         otherwise, the source's `url` field value is returned.
         """
-        if self.file_url:
-            url = self.file_url
+        if self.file:
+            url = self.file.url
             page_number = self.file.default_page_number
             if getattr(self, 'page_number', None):
                 page_number = self.page_number + self.file.page_offset
             if page_number:
                 url = _set_page_number(url, page_number)
         else:
-            url = self.url
+            url = self.url or ''
+            page_number = getattr(self, 'page_number', None)
+            # TODO: refactor?
+            if page_number:
+                if 'www.sacred-texts.com' in url:
+                    url = f'{url}#page_{page_number}'
+                elif 'josephsmithpapers.org' in url:
+                    url = f'{url}/{page_number}'
         return url
+
+    def get_page_number_html(
+        self, page_number: Optional[int] = None, end_page_number: Optional[int] = None
+    ) -> str:
+        page_number = page_number or self.page_number
+        end_page_number = end_page_number or self.end_page_number
+        if page_number:
+            pn = self.get_page_number_link(page_number=page_number) or page_number
+            if end_page_number:
+                end_pn = (
+                    self.get_page_number_link(page_number=end_page_number)
+                    or end_page_number
+                )
+                return f'pp. {pn}–{end_pn}'
+            return f'p. {pn}'
+        return ''
+
+    def get_page_number_link(self, page_number: Optional[int] = None) -> str:
+        """Return a simple link to a specific page of the source file."""
+        page_number = page_number or self.page_number
+        url = self.get_page_number_url(page_number=page_number)
+        if url:
+            # '<a href="https://..." class="display-source" target="_blank">25</a>'
+            return compose_link(
+                page_number, href=url, klass='display-source', target=NEW_TAB
+            )
+        return ''
+
+    def get_page_number_url(self, page_number: Optional[int] = None) -> str:
+        """Return the URL for a specific page of the source file."""
+        if self.file:
+            url = self.file.url
+            page_number = page_number or self.page_number
+            page_number += self.file.page_offset
+            return _set_page_number(url, page_number)
+        return ''
 
     @property
     def link(self) -> Optional[SafeString]:
@@ -345,68 +419,59 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         except (AttributeError, ObjectDoesNotExist):
             return []
 
-    @property  # type: ignore
-    @retrieve_or_compute(attribute_name='containers')
-    def serialized_containments(self) -> List[Dict]:
-        """Return the source's containers, serialized."""
-        return [
-            containment.container.serialize()
-            for containment in self.source_containments.all().select_related(
-                'container'
-            )
-        ]
-
-    def __html__(self) -> str:
+    def update_calculated_fields(self):
         """
-        Return the source's HTML representation, not including its containers.
+        Update the source's calculated fields (e.g., citation_html).
 
-        Must be defined by models inheriting from Source.
+        Calculated fields may depend on many-to-many (m2m) relationships (as
+        well as on the source's own attributes), so this method should be called
+        not only during source cleaning/saving but also after m2m relationships
+        are added or removed (via "signals"; see apps/sources/signals.py).
+
+        However, since this method may be called on a new source before it is
+        initially saved to the database (i.e., before it gains a primary key),
+        and since attempting to access m2m relationships on a model instance that
+        has not yet been saved to the db would normally result in an error, any
+        logic contained in this method must take this into account and tolerate
+        an inability to access the source's m2m relationships.
         """
-        raise NotImplementedError
+        # Calculate the attributee HTML and string.
+        self.attributee_html = self.get_attributee_html()
+        # Compute attributee_string from attributee_html only if
+        # attributee_string was not already manually set.
+        if not self.attributee_string:
+            self.attributee_string = soupify(self.attributee_html).get_text()
+
+        # If needed (and possible), use the container's source file.
+        if not self.file and not self._state.adding:
+            try:
+                containment: SourceContainment = (
+                    self.source_containments.first().select_related('container')
+                )
+                self.file = containment.container.file
+            except Exception as err:
+                logging.debug(f'Could not set source file from container: {err}')
+
+        # Calculate the containment HTML.
+        self.containment_html = self.get_containment_html()
+
+        # Calculate the citation HTML.
+        self.citation_html = self.get_citation_html()
+
+        # Set citation_string to the text version of citation_html.
+        if self.containment_html and self.containment_html in self.citation_html:
+            # Omit the containment string and anything following it.
+            index = self.citation_html.index(self.containment_html)
+            self.citation_string = soupify(
+                self.citation_html[:index].rstrip(', ')
+            ).get_text()
+        else:
+            self.citation_string = soupify(self.citation_html).get_text()
 
     @staticmethod
     def components_to_html(components: Sequence[Optional[str]]):
         """Combine a list of HTML components into an HTML string."""
         return components_to_html(components, delimiter=COMPONENT_DELIMITER)
-
-
-def _get_page_number_url(
-    source: Source, file: SourceFile, page_number: int
-) -> Optional[str]:
-    """TODO: write docstring."""
-    url = source.file_url or None
-    if not url:
-        return None
-    page_number += file.page_offset
-    return _set_page_number(url, page_number)
-
-
-def _get_page_number_link(url: str, page_number: int) -> Optional[str]:
-    """TODO: write docstring."""
-    if not url:
-        return None
-    return compose_link(page_number, href=url, klass='display-source', target=NEW_TAB)
-
-
-def _get_page_number_html(
-    source: Source,
-    file: Optional[SourceFile],
-    page_number: int,
-    end_page_number: Optional[int] = None,
-) -> str:
-    """TODO: write docstring."""
-    pn_url = _get_page_number_url(source=source, file=file, page_number=page_number)
-    pn = _get_page_number_link(url=pn_url, page_number=page_number) or page_number
-    if end_page_number:
-        end_pn_url = _get_page_number_url(
-            source=source, file=file, page_number=end_page_number
-        )
-        end_pn = (
-            _get_page_number_link(url=end_pn_url, page_number=end_page_number)
-            or end_page_number
-        )
-        return f'pp. {pn}–{end_pn}'
-    return f'p. {pn}'
 
 
 def _set_page_number(url: str, page_number: Union[str, int]) -> str:

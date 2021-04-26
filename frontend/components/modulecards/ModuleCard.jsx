@@ -1,6 +1,7 @@
+import BaseCard from "./BaseCard";
+import ImageCard from "./ImageCard";
 import OccurrenceCard from "./OccurrenceCard";
 import QuoteCard from "./QuoteCard";
-import ImageCard from "./ImageCard";
 
 export default function ModuleCard({ module, ...childProps }) {
   // ModuleCard is a generic component for rendering cards of any
@@ -13,6 +14,6 @@ export default function ModuleCard({ module, ...childProps }) {
     case "images.image":
       return <ImageCard image={module} {...childProps} />;
     default:
-      return <pre>{JSON.stringify(module, null, 2)}</pre>;
+      return <BaseCard module={module} {...childProps} />;
   }
 }

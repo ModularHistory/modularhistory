@@ -2,7 +2,7 @@
 
 from django.db.models import Count, Q
 
-from apps.admin.list_filters import BooleanListFilter, ContentTypeFilter
+from apps.admin.list_filters import BooleanListFilter, PolymorphicContentTypeFilter
 from apps.sources.models import Source
 from core.constants.strings import EMPTY_STRING, NO, YES
 
@@ -103,7 +103,7 @@ class ImpreciseDateFilter(BooleanListFilter):
         return queryset
 
 
-class SourceTypeFilter(ContentTypeFilter):
+class SourceTypeFilter(PolymorphicContentTypeFilter):
     """Filters sources by type."""
 
     base_model = Source

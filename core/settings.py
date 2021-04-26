@@ -48,8 +48,6 @@ APPEND_SLASH = not DOCKERIZED
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy in prod.
-# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
-SESSION_COOKIE_HTTPONLY = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
 # https://docs.djangoproject.com/en/3.1/ref/settings/#session-cookie-samesite
@@ -156,7 +154,9 @@ INSTALLED_APPS = [
     # In-project apps
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
+    'apps.donations.apps.DonationsConfig',
     'apps.entities.apps.EntitiesConfig',
+    'apps.forums.apps.ForumsConfig',
     'apps.home.apps.HomeConfig',
     'apps.interactions.apps.InteractionsConfig',
     'apps.postulations.apps.PostulationsConfig',
@@ -167,9 +167,12 @@ INSTALLED_APPS = [
     'apps.quotes.apps.QuotesConfig',
     'apps.sources.apps.SourcesConfig',
     'apps.staticpages.apps.StaticPagesConfig',
+    'apps.stories.apps.StoriesConfig',
     'apps.topics.apps.TopicsConfig',
     'apps.users.apps.UsersConfig',
     'apps.verifications.apps.VerificationsConfig',
+    # GraphQL
+    'graphene_django',
 ]
 
 MIDDLEWARE = [
@@ -300,6 +303,9 @@ MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 MEGA_DEV_USERNAME = config('MEGA_DEV_USERNAME', default=MEGA_USERNAME)
 MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=MEGA_PASSWORD)
 
+# GraphQL
+GRAPHENE = {'SCHEMA': 'apps.topics.models.schema'}
+
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_URL = '/static/'
@@ -358,9 +364,6 @@ THUMBNAIL_PROCESSORS = (
 ) + ThumbnailSettings.THUMBNAIL_PROCESSORS
 # https://github.com/jonasundderwolf/django-image-cropping#custom-jquery
 IMAGE_CROPPING_JQUERY_URL = None
-
-# https://pypi.org/project/django-bootstrap-datepicker-plus/
-BOOTSTRAP4 = {'include_jquery': False}
 
 # https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
