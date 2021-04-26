@@ -55,6 +55,7 @@
         "hte"
     ],
     "ignoreRegExpList": [
-        "default='.*'"
+        "default='.*'",
+        "[A-Z_]+=.*"
     ]
 }
