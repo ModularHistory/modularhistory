@@ -77,6 +77,8 @@ htmlcov/
 *.cover
 coverage.xml
 nosetests.xml
+**/cypress/screenshots/
+**/cypress/videos/
 
 # Celery
 celerybeat-schedule.*

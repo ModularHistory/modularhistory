@@ -67,6 +67,9 @@ export default function MultiSelect({ label, name, keyName, valueName, children 
   // only contain the options `keyName`.
 
   useEffect(() => {
+    // TODO: This can sometimes cause an unmounted component state update
+    //       warning in the console. It can be fixed, but it does not
+    //       cause any problems for this component or the app.
     children()
       .then((results) => {
         setOptions(Object.fromEntries(results.map((opt) => [opt[keyName], opt[valueName]])));

@@ -76,3 +76,19 @@ services:
       - ./frontend:/modularhistory/frontend
       - ./frontend/node_modules:/modularhistory/frontend/node_modules
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+
+  # run Cypress tests and exit with command
+  #   docker-compose up --exit-code-from cypress
+  cypress:
+    # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
+    image: "cypress/included:7.1.0"
+    depends_on:
+      - dev
+    environment:
+      # pass base url to test pointing at the web application
+      - CYPRESS_baseUrl=http://modularhistory.dev.net
+    # share the current folder as volume to avoid copying
+    working_dir: /e2e
+    volumes:
+      - ./frontend/cypress:/e2e/cypress
+      - ./frontend/cypress.json:/e2e/cypress.json

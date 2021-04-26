@@ -9,7 +9,9 @@ interface QuoteDetailProps {
 
 const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
   let titleHtml = quote["attributee_html"];
-  if (quote["date_html"]) titleHtml += `, ${quote["date_html"]}`;
+  if (quote["date_html"]) {
+    titleHtml += (titleHtml ? ", " : "") + quote["date_html"];
+  }
 
   const firstImage = quote["serialized_images"]?.[0];
 
