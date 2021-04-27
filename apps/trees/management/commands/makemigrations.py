@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.management.commands.makemigrations import (
     Command as CoreMakeMigrationsCommand,
 )
-from django.db.migrations.operations.fields import AddField
+from django.db.migrations.operations import AddField, CreateModel
 
 from apps.trees.fields import LtreeField
 
@@ -17,7 +17,7 @@ DEPENDENCIES_PATTERN = r'dependencies = \['
 # Match content beginning with `operations = [` and ending before the linebreak
 # and closing bracket of the operations list in a migration file.
 # `migrations.RunSQL` operations are appended to the matched content.
-OPERATIONS_PATTERN = r'operations = \[[\s\n]+((migrations.[A-Z][\s\S]+?(?=migrations.[A-Z]\w+|\n?\s*\]))+)'
+OPERATIONS_PATTERN = r'operations = \[(?!\w+\ =)[\s\S]+(?=\n\s+\])'
 
 
 def get_sql(app_name: str, model_name: str):
@@ -70,7 +70,7 @@ def insert_run_sql_operation(
             operations_content,
             f'{operations_content}\n'
             '        '
-            f'migrations.RunSQL("""\n{sql}"""\n'
+            f'migrations.RunSQL("""\n{sql}\n"""\n'
             '        ),',
         )
     else:
@@ -91,12 +91,26 @@ class Command(CoreMakeMigrationsCommand):
             migration_filepath = max(migration_files, key=os.path.getctime)
             for app_change in app_changes:
                 for operation in app_change.operations:
-                    adding_an_ltree_field = isinstance(
-                        operation, AddField
-                    ) and isinstance(operation.__dict__.get('field'), LtreeField)
+                    adding_an_ltree_field = False
+                    if isinstance(operation, CreateModel):
+                        adding_an_ltree_field = any(
+                            isinstance(field, LtreeField)
+                            for _, field in operation.fields
+                        )
+                        model_name = operation.name_lower
+                    elif isinstance(operation, AddField):
+                        adding_an_ltree_field = isinstance(
+                            operation.__dict__['field'], LtreeField
+                        )
+                        model_name = operation.model_name_lower
                     if not adding_an_ltree_field:
                         continue
-                    model_name = operation.model_name_lower
+                    if self.dry_run:
+                        print(
+                            'The migration file will need to be modified '
+                            'to accommodate our TreeModel fields.'
+                        )
+                        return
                     with open(migration_filepath, 'r') as migration_file:
                         migration_file_content = migration_file.read()
                     migration_file_content = insert_trees_dependency(

@@ -15,6 +15,7 @@
         "dedupe",
         "deduping",
         "envsubst",
+        "epub",
         "fdupes",
         "gdrive",
         "ghcr",
@@ -66,8 +67,8 @@
     ],
     "ignoreRegExpList": [
         "default='.*'",
-        "[A-Z_]+=.*",
-        "[A-Z_]+: .*",
-        "from .+ import .+"
+        "[A-Z_]+(=|: ).*",
+        "from .+ import .+",
+        "'//.+"
     ]
 }
