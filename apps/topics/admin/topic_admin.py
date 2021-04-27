@@ -27,6 +27,7 @@ class TopicAdmin(ModelAdmin):
     list_display = [
         'name',
         'slug',
+        'path',
         'detail_link',
         'description',
         'parent_topics_string',
@@ -35,9 +36,10 @@ class TopicAdmin(ModelAdmin):
     ]
     list_filter = [RelatedTopicFilter]
     list_per_page = 20
-    readonly_fields = ['pretty_computations']
+    readonly_fields = ['pretty_computations', 'slug', 'key']
     search_fields = ['name', 'aliases', 'description']
-    ordering = ['name']
+    autocomplete_fields = ['parent']
+    ordering = ['name', 'path']
 
     inlines = [
         ParentTopicsInline,

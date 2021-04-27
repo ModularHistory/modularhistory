@@ -1,5 +1,7 @@
 """Based on https://github.com/peopledoc/django-ltree-demo."""
 
+import regex
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -13,6 +15,7 @@ class TreeModel(Model):
     parent = models.ForeignKey(
         to='self',
         null=True,
+        blank=True,
         # Direct children can be accessed via the `children` property.
         related_name='children',
         on_delete=models.CASCADE,
@@ -21,7 +24,13 @@ class TreeModel(Model):
     name = models.TextField(verbose_name=_('name'))
     # The `key` field is a unique identifier for the node.
     # It is derived from the `name` field.
-    key = models.CharField(max_length=32, unique=True, null=True)
+    key = models.CharField(
+        max_length=32,
+        unique=True,
+        null=True,
+        validators=[RegexValidator(regex=r'\w*')],
+        verbose_name=_('key'),
+    )
     # The `path` field represents the path from the root to the node,
     # where each node is represented by its key.
     path = LtreeField()
@@ -41,4 +50,9 @@ class TreeModel(Model):
     def set_key(self):
         """Set the model instance's key value based on its name."""
         name: str = self.name
-        self.key = name.lower().replace(' ', '_')
+        key = name.lower().replace('&', 'and')
+        # Replace spaces and any kind of hyphen/dash with an underscore.
+        key = regex.sub(r'(?:\ |\p{Pd})', '_', key)
+        # Remove any other non-alphanumeric characters.
+        key = regex.sub(r'\W', '', key)
+        self.key = key
