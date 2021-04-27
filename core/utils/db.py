@@ -7,6 +7,7 @@ from time import sleep
 from typing import Optional
 from zipfile import ZipFile
 
+from celery import shared_task
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -21,10 +22,25 @@ from core.constants.misc import (
 from core.constants.strings import BASH_PLACEHOLDER, NEGATIVE
 from core.utils import files
 
-CONTEXT = Context()
 DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400
 SECONDS_TO_KEEP_BACKUP = DAYS_TO_KEEP_BACKUP * SECONDS_IN_DAY
+BACKUP_FILES_PATTERN = join(settings.BACKUPS_DIR, '*sql')
+
+CONTEXT = Context()
+
+
+@shared_task
+def groom_backup_files():
+    """Remove old and/or duplicate db backup files."""
+    logging.info('Deduping backup files ...')
+    Context().run(f'fdupes -rdN {settings.BACKUPS_DIR}', warn=True)
+    logging.info('Removing old backup files ...')
+    end = '{} \;'  # noqa: W605, P103
+    Context().run(
+        f'find {BACKUP_FILES_PATTERN} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}',
+        warn=True,
+    )
 
 
 def backup(
@@ -37,10 +53,9 @@ def backup(
     """Create a database backup file."""
     if filename and not filename.endswith('.sql'):
         raise ValueError(f'{filename} does not have a .sql extension.')
-    backup_files_pattern = join(settings.BACKUPS_DIR, '*sql')
     # https://github.com/django-dbbackup/django-dbbackup#dbbackup
     context.run('python manage.py dbbackup --noinput')
-    backup_files = glob(backup_files_pattern)
+    backup_files = glob(BACKUP_FILES_PATTERN)
     temp_file = max(backup_files, key=os.path.getctime)
     backup_filepath = temp_file.replace('.psql', '.sql')
     if filename:
@@ -91,13 +106,8 @@ def backup(
             storage_provider=RcloneStorageProviders.GOOGLE_DRIVE,
         )
         logging.info(f'Finished uploading {backup_filepath}.')
-    # Remove old backup files
-    logging.info('Removing old backup files ...')
-    end = '{} \;'  # noqa: W605, P103
-    context.run(
-        f'find {backup_files_pattern} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}',
-        warn=True,
-    )
+    # Asynchronously remove duplicate and/or old backup files.
+    groom_backup_files.delay()
 
 
 def clear_migration_history(context: Context = CONTEXT, app: str = ''):

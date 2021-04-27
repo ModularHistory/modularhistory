@@ -7,9 +7,9 @@ import gm2m.fields
 from django.db import migrations, models
 
 import core.fields
-import core.fields.historic_datetime_field
 import core.fields.html_field
 import core.fields.json_field
+from apps.dates.fields import HistoricDateTimeField
 
 
 class Migration(migrations.Migration):
@@ -100,9 +100,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        null=True
-                    ),
+                    HistoricDateTimeField(null=True),
                 ),
             ],
             options={

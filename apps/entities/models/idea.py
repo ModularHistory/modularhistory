@@ -21,7 +21,7 @@ class Idea(Model):
     class Meta:
         """Meta options for the Idea model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name = _('idea')
 
@@ -49,7 +49,7 @@ class EntityIdea(Model):
     class Meta:
         """Meta options for the EntityIdea model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['entity', 'idea']
         verbose_name = _('entity idea')

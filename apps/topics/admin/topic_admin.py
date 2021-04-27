@@ -25,7 +25,7 @@ class TopicAdmin(ModelAdmin):
 
     model = models.Topic
     list_display = [
-        'key',
+        'name',
         'slug',
         'detail_link',
         'description',
@@ -36,8 +36,8 @@ class TopicAdmin(ModelAdmin):
     list_filter = [RelatedTopicFilter]
     list_per_page = 20
     readonly_fields = ['pretty_computations']
-    search_fields = ['key', 'aliases', 'description']
-    ordering = ['key']
+    search_fields = ['name', 'aliases', 'description']
+    ordering = ['name']
 
     inlines = [
         ParentTopicsInline,

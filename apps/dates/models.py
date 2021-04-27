@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
-from core.fields import HistoricDateTimeField
+from apps.dates.fields import HistoricDateTimeField
 from core.models.model import Model
 from core.models.model_with_computations import retrieve_or_compute
 from core.structures import HistoricDateTime
@@ -28,7 +28,7 @@ class DatedModel(Model):
     class Meta:
         """Meta options for DatedModel."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         abstract = True
 

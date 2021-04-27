@@ -29,7 +29,7 @@ class OccurrenceLocation(Model):
     class Meta:
         """Meta options for OccurrenceLocation."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['occurrence', 'location']
 
@@ -57,7 +57,7 @@ class OccurrenceQuoteRelation(PositionedRelation):
     class Meta:
         """Meta options for OccurrenceQuoteRelation."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['occurrence', 'quote']
         ordering = ['position', 'quote']
@@ -88,7 +88,7 @@ class OccurrenceEntityInvolvement(Model):
     class Meta:
         """Meta options for OccurrenceEntityInvolvement."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['occurrence', 'entity']
 

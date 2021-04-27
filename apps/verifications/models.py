@@ -17,7 +17,7 @@ class VerifiableModel(Model):
     class Meta:
         """Meta options for VerifiableModel."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         abstract = True
 

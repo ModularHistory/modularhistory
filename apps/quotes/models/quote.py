@@ -10,6 +10,7 @@ from django.utils.safestring import SafeString
 from django.utils.text import slugify
 from gm2m import GM2MField as GenericManyToManyField
 
+from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import ModelWithImages
 from apps.quotes.manager import QuoteManager
@@ -20,7 +21,7 @@ from apps.search.models import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
 from core.constants.content_types import ContentTypes, get_ct_id
 from core.constants.strings import EMPTY_STRING
-from core.fields import HistoricDateTimeField, HTMLField
+from core.fields import HTMLField
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
@@ -88,7 +89,7 @@ class Quote(
     class Meta:
         """Meta options for Quote."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['date', 'bite']
         ordering = ['date']

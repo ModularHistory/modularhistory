@@ -6,7 +6,8 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.utils.translation import ugettext_lazy as _
 
-from core.fields import ArrayField, HistoricDateTimeField
+from apps.dates.fields import HistoricDateTimeField
+from core.fields import ArrayField
 from core.models import Model
 
 NAME_MAX_LENGTH: int = 100
@@ -46,7 +47,7 @@ class Category(Model):
     class Meta:
         """Meta options for the Category model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'categories'
         ordering = [Lower('name')]
@@ -77,7 +78,7 @@ class Categorization(Model):
     class Meta:
         """Meta options for the Categorization model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['entity', 'category']
 

@@ -27,6 +27,6 @@ class TopicPartialAPIView(ListAPIView):
     """API view for listing selected topic attributes."""
 
     permission_classes = [permissions.AllowAny]
-    queryset = Topic.objects.values("pk", "key")
+    queryset = Topic.objects.values('pk', 'name')
     serializer_class = TopicDictSerializer
     pagination_class = VariableSizePagination
