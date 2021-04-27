@@ -1114,17 +1114,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "django-treebeard"
-version = "4.5.1"
-description = "Efficient tree implementations for Django"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-Django = ">=2.2"
-
-[[package]]
 name = "django-typed-models"
 version = "0.10.0"
 description = "Sane single table model inheritance for Django"
@@ -3407,7 +3396,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.9"
-content-hash = "01c9ba4ad15644eb74693b05986885fe085034264104fa2e1f279f1c0fb88961"
+content-hash = "265f6af4253d193f1a72ff9012c25a0622070e03a48ea874e1343176170921ab"
 
 [metadata.files]
 aenum = [
@@ -3960,10 +3949,6 @@ django-timezone-field = [
 django-tinymce = [
     {file = "django-tinymce-3.3.0.tar.gz", hash = "sha256:77cca137e97e92e43e42c98a232df3e66b80c987ad0f03709a4b73435f8e4060"},
     {file = "django_tinymce-3.3.0-py3-none-any.whl", hash = "sha256:3684d6611162cd3566b068cfeaf9309d415f1d415191a1f8a8c9140246774679"},
-]
-django-treebeard = [
-    {file = "django-treebeard-4.5.1.tar.gz", hash = "sha256:80150017725239702054e5fa64dc66e383dc13ac262c8d47ee5a82cb005969da"},
-    {file = "django_treebeard-4.5.1-py3-none-any.whl", hash = "sha256:7c2b1cdb1e9b46d595825186064a1228bc4d00dbbc186db5b0b9412357fba91c"},
 ]
 django-typed-models = [
     {file = "django-typed-models-0.10.0.tar.gz", hash = "sha256:0682c87e5887124d4990f851d73e172103828e8b48ad2ce53ae039b1498cedb6"},
