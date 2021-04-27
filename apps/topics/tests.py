@@ -6,42 +6,44 @@ from apps.topics.models import Topic
 pytestmark = pytest.mark.django_db
 
 
-def test_create_category():
-    category = Topic.objects.create(name='Foo', key='bar')
+def test_create_topic():
+    topic = Topic.objects.create(name='Foo', key='bar')
     # Do a full refresh to get the value of the path.
-    category.refresh_from_db()
-    assert category.id > 0
-    assert category.name == 'Foo'
-    assert category.key == 'bar'
-    assert category.path == 'bar'
+    topic.refresh_from_db()
+    assert topic.id > 0
+    assert topic.name == 'Foo'
+    assert topic.key == 'bar'
+    assert topic.path == 'bar'
 
 
 def test_direct_children():
-    top = Topic.objects.create(key='top')
-    science = Topic.objects.create(key='science', parent=top)
-    sport = Topic.objects.create(key='sport', parent=top)
-    news = Topic.objects.create(key='news', parent=top)
-    Topic.objects.create(key='politics', parent=news)
+    top = Topic.objects.create(name='Top', key='top')
+    science = Topic.objects.create(name='Science', key='science', parent=top)
+    sport = Topic.objects.create(name='Sport', key='sport', parent=top)
+    news = Topic.objects.create(name='News', key='news', parent=top)
+    Topic.objects.create(name='Politics', key='politics', parent=news)
     assert list(top.children.order_by('key')) == [news, science, sport]
 
 
 def test_descendants():
-    top = Topic.objects.create(key='top')
+    top = Topic.objects.create(name='Top', key='top')
     top.refresh_from_db()
 
-    science = Topic.objects.create(key='science', parent=top)
-    Topic.objects.create(key='maths', parent=science)
-    biology = Topic.objects.create(key='biology', parent=science)
-    Topic.objects.create(key='genetics', parent=biology)
-    Topic.objects.create(key='neuroscience', parent=biology)
+    science = Topic.objects.create(name='Science', key='science', parent=top)
+    Topic.objects.create(name='Maths', key='maths', parent=science)
+    biology = Topic.objects.create(name='Biology', key='biology', parent=science)
+    Topic.objects.create(name='Genetics', key='genetics', parent=biology)
+    Topic.objects.create(name='Neuroscience', key='neuroscience', parent=biology)
 
-    sport = Topic.objects.create(key='sport', parent=top)
-    Topic.objects.create(key='rugby', parent=sport)
-    football = Topic.objects.create(key='football', parent=sport)
-    Topic.objects.create(key='champions_league', parent=football)
-    Topic.objects.create(key='world_cup', parent=football)
+    sport = Topic.objects.create(name='Sport', key='sport', parent=top)
+    Topic.objects.create(name='Rugby', key='rugby', parent=sport)
+    football = Topic.objects.create(name='Football', key='football', parent=sport)
+    Topic.objects.create(
+        name='Champions League', key='champions_league', parent=football
+    )
+    Topic.objects.create(name='World Cup', key='world_cup', parent=football)
 
-    # we can get all the ancestors of a category (including itself)
+    # we can get all the ancestors of a topic (including itself)
     assert list(
         Topic.objects.filter(path__descendant=top.path)
         .values_list('path', flat=True)
@@ -62,18 +64,20 @@ def test_descendants():
 
 
 def test_ancestors():
-    top = Topic.objects.create(key='top')
+    top = Topic.objects.create(name='Top', key='top')
     top.refresh_from_db()
 
-    Topic.objects.create(key='sport', parent=top)
-    science = Topic.objects.create(key='science', parent=top)
-    Topic.objects.create(key='maths', parent=science)
-    biology = Topic.objects.create(key='biology', parent=science)
-    Topic.objects.create(key='genetics', parent=biology)
-    neuroscience = Topic.objects.create(key='neuroscience', parent=biology)
+    Topic.objects.create(name='Sport', key='sport', parent=top)
+    science = Topic.objects.create(name='Science', key='science', parent=top)
+    Topic.objects.create(name='Maths', key='maths', parent=science)
+    biology = Topic.objects.create(name='Biology', key='biology', parent=science)
+    Topic.objects.create(name='Genetics', key='genetics', parent=biology)
+    neuroscience = Topic.objects.create(
+        name='Neuroscience', key='neuroscience', parent=biology
+    )
     neuroscience.refresh_from_db()
 
-    # we can get all the ancestors of a category (including itself)
+    # we can get all the ancestors of a topic (including itself)
     assert list(
         Topic.objects.filter(path__ancestor=neuroscience.path)
         .values_list('path', flat=True)
@@ -87,16 +91,16 @@ def test_ancestors():
 
 
 def test_update_key():
-    top = Topic.objects.create(key='top')
+    top = Topic.objects.create(name='Top', key='top')
     top.refresh_from_db()
 
-    Topic.objects.create(key='sport', parent=top)
-    science = Topic.objects.create(key='science', parent=top)
-    biology = Topic.objects.create(key='biology', parent=science)
-    Topic.objects.create(key='genetics', parent=biology)
-    Topic.objects.create(key='neuroscience', parent=biology)
+    Topic.objects.create(name='Sport', key='sport', parent=top)
+    science = Topic.objects.create(name='Science', key='science', parent=top)
+    biology = Topic.objects.create(name='Biology', key='biology', parent=science)
+    Topic.objects.create(name='Genetics', key='genetics', parent=biology)
+    Topic.objects.create(name='Neuroscience', key='neuroscience', parent=biology)
 
-    # update the key of a category, it should update its path as well as
+    # update the key of a topic, it should update its path as well as
     # the path of all of its descendants
     science.key = 'magic'
     science.save()
@@ -116,16 +120,16 @@ def test_update_key():
 
 
 def test_update_parent():
-    top = Topic.objects.create(key='top')
+    top = Topic.objects.create(name='Top', key='top')
     top.refresh_from_db()
 
-    Topic.objects.create(key='sport', parent=top)
-    science = Topic.objects.create(key='science', parent=top)
-    biology = Topic.objects.create(key='biology', parent=science)
-    Topic.objects.create(key='genetics', parent=biology)
-    Topic.objects.create(key='neuroscience', parent=biology)
+    Topic.objects.create(name='Sport', key='sport', parent=top)
+    science = Topic.objects.create(name='Science', key='science', parent=top)
+    biology = Topic.objects.create(name='Biology', key='biology', parent=science)
+    Topic.objects.create(name='Genetics', key='genetics', parent=biology)
+    Topic.objects.create(name='Neuroscience', key='neuroscience', parent=biology)
 
-    # update the parent of a category, it should update its path as well as
+    # update the parent of a topic, it should update its path as well as
     # the path of all of its descendants
     biology.parent = top
     biology.save()
@@ -145,7 +149,7 @@ def test_update_parent():
 
 
 def test_simple_recursion():
-    foo = Topic.objects.create(key='foo')
+    foo = Topic.objects.create(name='Foo', key='foo')
 
     # we cannot be our own parent...
     foo.parent = foo
@@ -154,9 +158,9 @@ def test_simple_recursion():
 
 
 def test_nested_recursion():
-    foo = Topic.objects.create(key='foo')
-    bar = Topic.objects.create(key='bar', parent=foo)
-    baz = Topic.objects.create(key='baz', parent=bar)
+    foo = Topic.objects.create(name='Foo', key='foo')
+    bar = Topic.objects.create(name='Bar', key='bar', parent=foo)
+    baz = Topic.objects.create(name='Baz', key='baz', parent=bar)
 
     # we cannot be the descendant of one of our parent
     foo.parent = baz
