@@ -58,7 +58,7 @@ class TreeModel(Model):
             self.path = re.sub(r'(.*(?:^|\.)).+$', rf'\1{self.key}', self.path)
         return super().save(*args, **kwargs)
 
-    def set_key(self):
+    def set_key(self, save: bool = False):
         """Set the model instance's key value based on its name."""
         name: str = self.name
         key = name.lower().replace('&', 'and')
@@ -67,3 +67,5 @@ class TreeModel(Model):
         # Remove any other non-alphanumeric characters.
         key = regex.sub(r'\W', '', key)
         self.key = key
+        if save:
+            self.save()
