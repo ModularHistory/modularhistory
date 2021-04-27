@@ -1,5 +1,7 @@
 """Based on https://github.com/peopledoc/django-ltree-demo."""
 
+import re
+
 import regex
 from django.core.validators import RegexValidator
 from django.db import models
@@ -43,8 +45,17 @@ class TreeModel(Model):
 
     def save(self, *args, **kwargs):
         """Save the model instance to the database."""
+        # Set the key, if necessary.
         if not self.key:
             self.set_key()
+        # If there is no path, set it equal to the key.
+        # This makes the topic a top-level (parentless) topic.
+        if not self.path:
+            self.path = self.key
+        # If the final (or only) element of the path does not match the key,
+        # update the path to use the key as its final (or only) element.
+        if self.key != self.path.split('.')[-1]:
+            self.path = re.sub(r'(.*(?:^|\.)).+$', rf'\1{self.key}')
         return super().save(*args, **kwargs)
 
     def set_key(self):

@@ -24,29 +24,29 @@ class TopicAdmin(ModelAdmin):
     """Admin for topics."""
 
     model = models.Topic
-    list_display = [
-        'name',
-        'slug',
-        'path',
-        'detail_link',
-        'description',
-        'parent_topics_string',
-        'child_topics_string',
-        'tags_string',
-    ]
-    list_filter = [RelatedTopicFilter]
-    list_per_page = 20
-    readonly_fields = ['pretty_computations', 'slug', 'key']
-    search_fields = ['name', 'aliases', 'description']
-    autocomplete_fields = ['parent']
-    ordering = ['name', 'path']
 
+    autocomplete_fields = ['parent']
     inlines = [
         ParentTopicsInline,
         ChildTopicsInline,
         TopicRelationsInline,
         # RelatedOccurrencesInline,
     ]
+    exclude = ['key']
+    list_display = [
+        'name',
+        'slug',
+        'path',
+        'detail_link',
+        'parent_topics_string',
+        'child_topics_string',
+        'tags_string',
+    ]
+    list_filter = [RelatedTopicFilter]
+    list_per_page = 25
+    ordering = ['name', 'path']
+    readonly_fields = ['pretty_computations', 'path', 'slug']
+    search_fields = ['name', 'aliases', 'description']
 
     def get_urls(self):
         """Return the list of URLs used by the topic admin."""

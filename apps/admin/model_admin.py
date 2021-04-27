@@ -1,10 +1,12 @@
-from typing import List, Optional, Type, Union
+import re
+from typing import List, Optional, Tuple, Type, Union
 
 from aenum import Constant
 from django.conf import settings
 from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from django_celery_beat.admin import PeriodicTaskAdmin
 from django_celery_beat.models import (
@@ -89,6 +91,25 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
                 if hasattr(model_instance, additional_readonly_field):  # noqa: WPS421
                     readonly_fields.append(additional_readonly_field)
         return list(set(readonly_fields))
+
+    def get_search_results(
+        self, request: HttpRequest, queryset: QuerySet, search_term: str
+    ) -> Tuple[QuerySet, bool]:
+        """Return model instances matching the supplied search term."""
+        queryset, use_distinct = super().get_search_results(
+            request, queryset, search_term
+        )
+        # If the request comes from the admin edit page for a model instance,
+        # exclude the model instance from the search results. This prevents
+        # inline admins from displaying an unwanted value in an autocomplete
+        # field or, in the worst-case scenario, letting an admin errantly
+        # create a relationship between a model instance and itself.
+        referer = request.META.get('HTTP_REFERER') or ''
+        match = re.match(r'.+/(\d+)/change', referer)
+        if match:
+            pk = int(match.group(1))
+            queryset = queryset.exclude(pk=pk)
+        return queryset, use_distinct
 
 
 class ContentTypeFields(Constant):
