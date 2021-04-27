@@ -29,7 +29,7 @@ class TaggableModel(Model):
     @retrieve_or_compute(attribute_name='tag_keys')
     def tag_keys(self) -> Optional[List[str]]:
         """Return a list of tag keys (e.g., ['race', 'religion'])."""
-        return [topic.key for topic in self._related_topics]
+        return [topic.name for topic in self._related_topics]
 
     @property
     def tags_string(self) -> Optional[str]:

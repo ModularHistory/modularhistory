@@ -92,7 +92,7 @@ def generate_artifacts(context):
         .annotate(num_quotes=Count('topic_relations'))
         .order_by('-num_quotes')
     )
-    text = '\n'.join([topic.key for topic in ordered_topics])
+    text = '\n'.join([topic.name for topic in ordered_topics])
     with open(join(settings.BASE_DIR, 'topics/topics.txt'), mode='w+') as artifact:
         artifact.write(text)
 
