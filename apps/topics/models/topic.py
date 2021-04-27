@@ -6,11 +6,10 @@ from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
 from apps.topics.models.topic_relation import TopicRelation
-from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
 from core.models import Model, ModelWithComputations, SluggedModel, retrieve_or_compute
 
-KEY_MAX_LENGTH: int = 25
+NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
 
 
@@ -50,10 +49,10 @@ class TopicParentChildRelation(Model):
         return f'{self.parent_topic} > {self.child_topic}'
 
 
-class Topic(TreeModel, SluggedModel, ModelWithComputations):
+class Topic(SluggedModel, ModelWithComputations):
     """A topic."""
 
-    name = models.CharField(max_length=KEY_MAX_LENGTH, unique=True)
+    name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     aliases = ArrayField(
         models.CharField(max_length=100),
         verbose_name=_('aliases'),
