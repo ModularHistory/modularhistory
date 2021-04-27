@@ -6,7 +6,6 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trees', '0001_initial'),
         ('topics', '0003_topic_slug'),
     ]
 
