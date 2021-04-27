@@ -133,7 +133,7 @@ class SearchResultsAPIView(ListAPIView):
                     topic_relations__object_id__in=occurrence_result_ids,
                 )
             )
-            .order_by('key')
+            .order_by('name')
             .distinct()
         )
 
