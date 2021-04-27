@@ -14,12 +14,13 @@ from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 from polymorphic.models import PolymorphicModel
 
+from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
 from apps.sources.manager import PolymorphicSourceManager, PolymorphicSourceQuerySet
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
-from core.fields import HistoricDateTimeField, HTMLField
+from core.fields import HTMLField
 from core.models import retrieve_or_compute
 from core.structures.historic_datetime import HistoricDateTime
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify

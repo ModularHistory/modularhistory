@@ -192,6 +192,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
   brew_install rust
   brew_install graphviz
   brew_install ctags
+  brew_install fdupes
   brew install libjpeg zlib grep gnu-sed jq
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
@@ -199,7 +200,7 @@ if [[ "$os" == "$MAC_OS" ]]; then
 elif [[ "$os" == "$LINUX" ]]; then
   sudo apt update -y && sudo apt upgrade -y
   # Basic dev dependencies
-  sudo apt install -y bash-completion curl git wget vim ctags
+  sudo apt install -y bash-completion curl git wget vim ctags fdupes
   # PostgreSQL
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" |

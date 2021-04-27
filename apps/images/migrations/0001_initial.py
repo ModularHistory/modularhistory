@@ -7,9 +7,9 @@ from django.db import migrations, models
 
 import core.fields
 import core.fields.file_field
-import core.fields.historic_datetime_field
 import core.fields.html_field
 import core.fields.json_field
+from apps.dates.fields import HistoricDateTimeField
 
 
 class Migration(migrations.Migration):
@@ -40,9 +40,7 @@ class Migration(migrations.Migration):
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
                 (
                     'date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'verified',
@@ -109,9 +107,7 @@ class Migration(migrations.Migration):
                 ('date_is_circa', models.BooleanField(blank=True, default=False)),
                 (
                     'date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'verified',

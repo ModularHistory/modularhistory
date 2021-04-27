@@ -2,7 +2,7 @@ from typing import Optional
 
 from django.db import models
 
-from core.fields import HistoricDateTimeField
+from apps.dates.fields import HistoricDateTimeField
 
 
 class TextualMixin(models.Model):
@@ -25,7 +25,7 @@ class TextualMixin(models.Model):
     class Meta:
         """Meta options."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
         abstract = True
 
     @property

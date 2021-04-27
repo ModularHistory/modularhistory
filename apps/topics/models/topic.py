@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
 from apps.topics.models.topic_relation import TopicRelation
+from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
 from core.models import Model, ModelWithComputations, SluggedModel, retrieve_or_compute
 
@@ -49,10 +50,10 @@ class TopicParentChildRelation(Model):
         return f'{self.parent_topic} > {self.child_topic}'
 
 
-class Topic(SluggedModel, ModelWithComputations):
+class Topic(TreeModel, SluggedModel, ModelWithComputations):
     """A topic."""
 
-    key = models.CharField(max_length=KEY_MAX_LENGTH, unique=True)
+    name = models.CharField(max_length=KEY_MAX_LENGTH, unique=True)
     aliases = ArrayField(
         models.CharField(max_length=100),
         verbose_name=_('aliases'),
@@ -83,15 +84,15 @@ class Topic(SluggedModel, ModelWithComputations):
         blank=True,
     )
 
-    searchable_fields = ['key', 'description', 'aliases']
-    slug_base_field = 'key'
+    searchable_fields = ['name', 'description', 'aliases']
+    slug_base_field = 'name'
 
     class Meta:
-        ordering = ['key']
+        ordering = ['name']
 
     def __str__(self) -> str:
         """Return the topic's string representation."""
-        return self.key
+        return self.name
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='child_topics_string')

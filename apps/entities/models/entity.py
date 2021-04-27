@@ -8,13 +8,14 @@ from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
+from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.topics.models.taggable_model import TaggableModel
 from core.constants.strings import EMPTY_STRING
-from core.fields import ArrayField, HistoricDateTimeField, HTMLField
+from core.fields import ArrayField, HTMLField
 from core.models import (
     ModelWithComputations,
     SluggedModel,
@@ -84,7 +85,7 @@ class Entity(
     class Meta:
         """Meta options for the Entity model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Entities'
         ordering = ['name']
@@ -189,7 +190,7 @@ class Person(Entity):
     class Meta:
         """Meta options for the Person model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'People'
 
@@ -200,7 +201,7 @@ class Deity(Entity):
     class Meta:
         """Meta options for the Deity model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Deities'
 
@@ -211,7 +212,7 @@ class Group(Entity):
     class Meta:
         """Meta options for the Group model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Groups'
 
@@ -222,7 +223,7 @@ class Organization(Entity):
     class Meta:
         """Meta options for the Organization model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Organizations'
 

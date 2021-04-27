@@ -19,8 +19,9 @@ from nested_admin.nested import NestedModelAdmin
 from sass_processor.processor import sass_processor
 
 from apps.admin.admin_site import admin_site
+from apps.dates.fields import HistoricDateTimeField
 from core.constants.environments import Environments
-from core.fields import HistoricDateTimeField, JSONField
+from core.fields import JSONField
 from core.forms import HistoricDateWidget
 from core.models import Model
 from core.widgets.json_editor_widget import JSONEditorWidget
