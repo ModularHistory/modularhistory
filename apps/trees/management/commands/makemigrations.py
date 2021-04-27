@@ -70,7 +70,7 @@ def insert_run_sql_operation(
             operations_content,
             f'{operations_content}\n'
             '        '
-            f'migrations.RunSQL("""\n{sql}"""\n'
+            f'migrations.RunSQL("""\n{sql}\n"""\n'
             '        ),',
         )
     else:
@@ -85,6 +85,8 @@ def insert_run_sql_operation(
 class Command(CoreMakeMigrationsCommand):
     def write_migration_files(self, changes):
         super().write_migration_files(changes)
+        if self.dry_run:
+            return
         # If adding an LtreeField, modify the migration file as necessary.
         for app, app_changes in changes.items():
             migration_files = glob(os.path.join('apps', app, 'migrations', '*.py'))
