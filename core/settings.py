@@ -180,6 +180,7 @@ INSTALLED_APPS = [
     'apps.staticpages.apps.StaticPagesConfig',
     'apps.stories.apps.StoriesConfig',
     'apps.topics.apps.TopicsConfig',
+    'apps.trees.apps.TreesConfig',
     'apps.users.apps.UsersConfig',
     'apps.verifications.apps.VerificationsConfig',
 ]

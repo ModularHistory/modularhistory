@@ -11,7 +11,7 @@ class TopicType(DjangoObjectType):
     class Meta:
         model = Topic
         fields = (
-            'key',
+            'name',
             'pk',
         )
 
