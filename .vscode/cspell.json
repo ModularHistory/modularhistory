@@ -65,6 +65,7 @@
     "ignoreRegExpList": [
         "default='.*'",
         "[A-Z_]+=.*",
+        "[A-Z_]+: .*",
         "from .+ import .+"
     ]
 }
