@@ -27,6 +27,7 @@ jobs:
       IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
       IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}

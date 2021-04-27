@@ -46,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let topicsData = {};
 
   await axios
-    .get("http://django:8000/graphql/?query={allTopics{key%20pk}}", {})
+    .get("http://django:8000/graphql/?query={allTopics{name%20pk}}", {})
     .then((response) => {
       topicsData = response.data;
     })
