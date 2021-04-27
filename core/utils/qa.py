@@ -45,9 +45,11 @@ def autoformat(
                     context.run(f'{command} {filepath}', warn=True)
     elif filepaths:
         for filepath in filepaths:
+            print(f'Autoformatting {filepath} ...')
             for command in commands:
                 context.run(f'{command} {filepath}', warn=True)
     else:
         with context.cd(settings.BASE_DIR):
             for command in commands:
                 context.run(f'{command} .')
+    print('Finished autoformatting.')

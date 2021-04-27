@@ -23,6 +23,7 @@
         "iglob",
         "Imgur",
         "Invoke's",
+        "isort",
         "jquery",
         "klass",
         "localstorage",
@@ -55,6 +56,7 @@
         "stylelint",
         "testcafe",
         "tinymce",
+        "unstaged",
         "venv",
         "webserver",
         "xsrf"
@@ -65,6 +67,7 @@
     "ignoreRegExpList": [
         "default='.*'",
         "[A-Z_]+=.*",
+        "[A-Z_]+: .*",
         "from .+ import .+"
     ]
 }

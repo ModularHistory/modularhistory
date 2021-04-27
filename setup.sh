@@ -388,7 +388,6 @@ poetry install --no-root || {
   rm requirements.txt
   _error "Failed to install dependencies with Poetry."
 }
-docker-compose build django
 
 # Add container names to /etc/hosts.
 poetry run invoke setup.update-hosts
@@ -406,7 +405,6 @@ nvm --version &>/dev/null || {
 echo "Installing Node modules ..."
 npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
-docker-compose build react
 
 # Update ctags
 ctags -R -f .vscode/.tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" --exclude="**/libraries/**" &>/dev/null
@@ -487,6 +485,9 @@ if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
     "
   }
 fi
+
+docker-compose build django
+docker-compose build react
 
 read -rp "Sync media [Y/n]? " CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
