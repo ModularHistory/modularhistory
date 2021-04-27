@@ -55,7 +55,7 @@ class TreeModel(Model):
         # If the final (or only) element of the path does not match the key,
         # update the path to use the key as its final (or only) element.
         if self.key != self.path.split('.')[-1]:
-            self.path = re.sub(r'(.*(?:^|\.)).+$', rf'\1{self.key}')
+            self.path = re.sub(r'(.*(?:^|\.)).+$', rf'\1{self.key}', self.path)
         return super().save(*args, **kwargs)
 
     def set_key(self):
