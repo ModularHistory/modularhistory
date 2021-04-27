@@ -89,7 +89,7 @@ urlpatterns = [
     path('topics/', include('apps.topics.urls', namespace='topics')),
     # Users
     path('api/users/', include(_api('users'), namespace='users_api')),
-    path('api/csrf/set', set_csrf_token),
+    re_path(r'api/csrf/set/?', set_csrf_token),
     path('users/', include('apps.users.urls', namespace='users')),
     # Third-party apps
     path('accounts/', include('allauth.urls'), name='socialaccount_signup'),
