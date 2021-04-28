@@ -1,5 +1,6 @@
 """Based on https://github.com/peopledoc/django-ltree-demo."""
 
+import logging
 import re
 
 import regex
@@ -45,9 +46,15 @@ class TreeModel(Model):
 
     def save(self, *args, **kwargs):
         """Save the model instance to the database."""
-        # Set the key, if necessary.
-        if not self.key:
-            self.set_key()
+        # Set the key.
+        key = self.get_key()
+        if self.key and self.key != key:
+            if self.__class__.objects.filter(key=key).exists():
+                logging.info(f'A topic with key={key} already exists.')
+            else:
+                self.key = key
+        elif not self.key:
+            self.key = key
         # If there is no path, set it equal to the key.
         # This makes the topic a top-level (parentless) topic.
         if not self.path:
@@ -58,14 +65,11 @@ class TreeModel(Model):
             self.path = re.sub(r'(.*(?:^|\.)).+$', rf'\1{self.key}', self.path)
         return super().save(*args, **kwargs)
 
-    def set_key(self, save: bool = False):
+    def get_key(self) -> str:
         """Set the model instance's key value based on its name."""
         name: str = self.name
         key = name.lower().replace('&', 'and')
         # Replace spaces and any kind of hyphen/dash with an underscore.
         key = regex.sub(r'(?:\ |\p{Pd})', '_', key)
         # Remove any other non-alphanumeric characters.
-        key = regex.sub(r'\W', '', key)
-        self.key = key
-        if save:
-            self.save()
+        return regex.sub(r'\W', '', key)

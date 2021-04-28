@@ -98,10 +98,9 @@ jobs:
         scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./core/templates/error.htm ./config/nginx/prod/nginx.conf ./config modularhistory@$SERVER:~/
         echo "Starting SSH session with $SERVER..."
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
-          echo "Working dir:" && pwd && echo "" && ls
           echo "" && echo "Setting environment variables..."
-          set -a; source .env; set +a
-          bash config/deploy.sh
+          set -a && source .env && echo "Finished setting environment variables."
+          set +a; bash config/deploy.sh
         ENDSSH
     - name: Create Sentry release
       uses: getsentry/action-release@v1
