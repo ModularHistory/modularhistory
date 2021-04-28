@@ -55,7 +55,6 @@ jobs:
       IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
       POSTGRES_DB: modularhistory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
