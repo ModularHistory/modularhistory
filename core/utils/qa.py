@@ -8,11 +8,9 @@ except ModuleNotFoundError:
 from django.conf import settings
 from invoke.context import Context
 
-CONTEXT = Context()
-
 
 def autoformat(
-    context: Context = CONTEXT,
+    context: Optional[Context] = None,
     filepaths: Optional[Iterable[str]] = None,
     staged_files_only: bool = False,
 ):
@@ -21,6 +19,9 @@ def autoformat(
         pass
     else:
         print('Cannot autoformat; missing required autohooks module.')
+        return
+    if context is None:
+        context = Context()
     commands = [
         # https://isort.readthedocs.io/en/latest/
         'isort',
