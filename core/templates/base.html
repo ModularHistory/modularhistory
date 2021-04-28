@@ -21,8 +21,6 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
         <!-- Latest compiled and minified Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
-        <!-- Material Design Bootstrap CSS -->
-        <link rel="stylesheet" href='{% static "libraries/mdb/css/mdb.min.css" %}' type="text/css" />
         <!-- ModularHistory styles -->
         <link rel="stylesheet"
               href="{% if settings.ENVIRONMENT == 'dev' %}{% sass_src 'styles/base.scss' %}{% else %}{% static 'styles/base.css' %}{% endif %}"
@@ -39,8 +37,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
         <!-- Latest compiled Bootstrap JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-        <!-- Material Design Bootstrap core JavaScript -->
-        <script type="text/javascript" src='{% static "libraries/mdb/js/mdb.min.js" %}'></script>
         <!-- PDF.js -->
         <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js" defer></script>
         <!-- Epub.js -->
