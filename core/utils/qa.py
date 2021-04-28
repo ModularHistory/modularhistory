@@ -41,6 +41,7 @@ def autoformat(
             return
         with stash_unstaged_changes(staged_filepaths):
             for filepath in filepaths:
+                print(f'Autoformatting {filepath} ...')
                 for command in commands:
                     context.run(f'{command} {filepath}', warn=True)
     elif filepaths:
