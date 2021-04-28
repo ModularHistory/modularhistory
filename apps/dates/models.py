@@ -6,9 +6,9 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
+from apps.dates.structures import HistoricDateTime
 from core.models.model import Model
 from core.models.model_with_computations import retrieve_or_compute
-from core.structures import HistoricDateTime
 from core.utils.html import soupify
 
 CIRCA_PREFIX = 'c. '

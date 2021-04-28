@@ -8,8 +8,8 @@ from django.db.models import DateTimeField
 from django.forms import Field
 from django.utils.timezone import is_naive, make_aware
 
+from apps.dates.structures import HistoricDateTime
 from core.forms import HistoricDateFormField
-from core.structures.historic_datetime import HistoricDateTime
 
 DateTime = datetime
 

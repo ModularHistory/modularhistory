@@ -9,6 +9,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
+from apps.dates.structures import HistoricDateTime as DateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
@@ -22,7 +23,6 @@ from core.models import (
     TypedModel,
     retrieve_or_compute,
 )
-from core.structures import HistoricDateTime as DateTime
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.views.generic import ListView
 from meta.views import Meta
 
+from apps.dates.structures import HistoricDateTime
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.occurrences.models import Occurrence
@@ -23,7 +24,6 @@ from apps.sources.models import Source
 from apps.topics.models import Topic
 from core.constants.content_types import ContentTypes, get_ct_id
 from core.models import Model
-from core.structures.historic_datetime import HistoricDateTime
 
 QUERY_KEY = 'query'
 N_RESULTS_PER_PAGE = 10
