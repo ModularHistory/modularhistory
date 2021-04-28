@@ -143,14 +143,11 @@ jobs:
         npm ci
         cd ..
     - name: Inject environment vars
-      if: ${{ success() }}
       run: poetry run invoke setup.write-env-file
     - name: Build and push Docker images
-      if: ${{ success() }}
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
     - name: Deploy images to server
       id: deploy-image
-      if: ${{ success() }}
       run: |
         echo "Adding GitHub to known hosts..."
         mkdir -p ~/.ssh
@@ -167,7 +164,6 @@ jobs:
           bash config/deploy.sh
         ENDSSH
     - name: Create Sentry release
-      if: ${{ success() }}
       uses: getsentry/action-release@v1
       env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

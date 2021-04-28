@@ -105,10 +105,8 @@ jobs:
         npm ci
         cd ..
     - name: Inject environment vars
-      if: ${{ success() }}
       run: poetry run invoke setup.write-env-file --dev
     - name: Archive .env file
-      if: ${{ success() }}
       uses: actions/upload-artifact@v2
       with:
         name: env-file
