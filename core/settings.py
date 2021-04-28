@@ -289,17 +289,6 @@ DATABASES = {
     },
 }
 
-# TODO: https://github.com/nesdis/djongo
-ENABLE_MONGO = False
-if ENABLE_MONGO:
-    DATABASES['mongo'] = {
-        'ENGINE': 'djongo',
-        'NAME': 'default',
-        'CLIENT': {
-            'host': 'your-db-host',
-        },
-    }
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 LANGUAGE_CODE = 'en-us'

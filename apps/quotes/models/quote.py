@@ -283,8 +283,8 @@ class Quote(
         )
 
 
-def quote_sorter_key(quote: Quote):
-    """TODO: add docstring."""
+def quote_sorter_key(quote: Quote) -> int:
+    """Return an integer used to position a quote relative to other quotes."""
     level_multiplier = 1000
     day_multiplier = 1000000
     month_multiplier = day_multiplier * level_multiplier

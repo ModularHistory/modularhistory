@@ -19,7 +19,13 @@ docker image prune -a -f
 docker system prune -f
 # Only reload Nginx if necessary.
 [ -f nginx.conf.sha ] || touch nginx.conf.sha
-if ! grep "$(shasum nginx.conf)" < nginx.conf.sha > /dev/null; then 
+last_conf_sha="$(cat nginx.conf.sha)"
+current_conf_sha="$(shasum nginx.conf)"
+if [[ ! "$current_conf_sha" = "$last_conf_sha" ]]; then
+    echo "
+    Current nginx.conf hash ($current_conf_sha) does not match 
+    the last hash ($last_conf_sha); i.e., the config has changed.
+    "
     echo "" && echo "Updating Nginx config..." && 
     lxc file push nginx.conf webserver/etc/nginx/sites-available/default && 
     echo "" && echo "Restarting Nginx server..." && 
