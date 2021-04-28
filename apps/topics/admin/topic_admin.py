@@ -31,7 +31,7 @@ class TopicAdmin(ModelAdmin):
         ChildTopicsInline,
         TopicRelationsInline,
     ]
-    exclude = ['key']
+    exclude = ['key', 'computations']
     list_display = [
         'name',
         'aliases',
