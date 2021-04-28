@@ -52,4 +52,4 @@ def autoformat(
         with context.cd(settings.BASE_DIR):
             for command in commands:
                 context.run(f'{command} .')
-    print('Finished autoformatting.')
+    print('Finished autoformatting Python code.')

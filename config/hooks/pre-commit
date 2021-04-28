@@ -9,7 +9,6 @@ echo "$staged_files" | grep --quiet ".py" && {
         comma_delimited_filepaths="$(echo staged_files | grep '.py' | tr '\n' ',')"
         poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
     }
-    echo "Finished autoformatting Python code."
 }
 
 # Autoformat JS & TS code.
