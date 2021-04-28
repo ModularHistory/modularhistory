@@ -19,10 +19,10 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   };
 
   const topicNames = topics.map((topic) => (
-    <Grid item key={topic["key"]} xs={4}>
+    <Grid item key={topic["name"]} xs={4}>
       <Link href={`/search?topics=${topic["pk"]}`}>
         <a style={topicAnchorStyle}>
-          <strong>{topic["key"]}</strong>
+          <strong>{topic["name"]}</strong>
         </a>
       </Link>
     </Grid>
