@@ -4,9 +4,13 @@
 # before this script is run.
 
 echo "" && echo "Logging in to the container registry..."
-echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin
+echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin || {
+    echo "GHCR login failed."; exit 1
+}
 echo "Pulling images to $SERVER..."
-docker-compose pull --include-deps django flower react
+docker-compose pull --include-deps django flower react || {
+    echo "Failed to pull required images."; exit 1
+}
 echo "" && echo "Restarting server..."
 docker-compose down --remove-orphans
 docker-compose up -d django flower react
