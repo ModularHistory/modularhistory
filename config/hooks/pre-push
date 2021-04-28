@@ -19,6 +19,7 @@ echo "$committed_filepaths" | grep --quiet "models" && {
             docker-compose run django_helper python manage.py migrate
         "; exit 1
     }
+    echo "No migrations are required."
 }
 
 # If workflow YAML files (for CI) have been modified, preprocess the files.
