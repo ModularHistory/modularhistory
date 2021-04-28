@@ -48,20 +48,20 @@ class TreeModel(Model):
         """Save the model instance to the database."""
         # Set the key.
         key = self.get_key()
-        if self.key and self.key != key:
+        if not self.key:
+            self.key = key
+        elif self.key != key:
             if self.__class__.objects.filter(key=key).exists():
                 logging.info(f'A topic with key={key} already exists.')
             else:
                 self.key = key
-        elif not self.key:
-            self.key = key
-        # If there is no path, set it equal to the key.
-        # This makes the topic a top-level (parentless) topic.
+        # If there is no path, set it equal to the key, making the topic a top-level
+        # (parentless) topic.
         if not self.path:
             self.path = self.key
         # If the final (or only) element of the path does not match the key,
         # update the path to use the key as its final (or only) element.
-        if self.key != self.path.split('.')[-1]:
+        elif self.path.split('.')[-1] != self.key:
             self.path = re.sub(r'(.*(?:^|\.)).+$', rf'\1{self.key}', self.path)
         return super().save(*args, **kwargs)
 
