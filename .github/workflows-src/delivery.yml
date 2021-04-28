@@ -47,8 +47,6 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
       IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
-      MEGA_DEV_USERNAME: ${{ secrets.MEGA_DEV_USERNAME }}
-      MEGA_DEV_PASSWORD: ${{ secrets.MEGA_DEV_PASSWORD }}
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
@@ -106,20 +104,7 @@ jobs:
           echo "Working dir:" && pwd && echo "" && ls
           echo "" && echo "Setting environment variables..."
           set -a; source .env; set +a
-          echo "" && echo "Logging in to the container registry..."
-          docker login ghcr.io -u iacobfred -p $CR_PAT
-          echo "Pulling images to $SERVER..."
-          docker-compose pull --include-deps django flower react
-          echo "" && echo "Restarting server..."
-          docker-compose down --remove-orphans
-          docker-compose up -d django flower react
-          echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
-          docker image prune -a -f
-          docker system prune -f
-          [ -f nginx.conf.sha ] || touch nginx.conf.sha
-          if ! cat nginx.conf.sha | grep "$(shasum nginx.conf)" > /dev/null; then echo "" && echo "Updating Nginx config..." && lxc file push nginx.conf webserver/etc/nginx/sites-available/default && echo "" && echo "Restarting Nginx server..." && lxc exec webserver -- service nginx reload; fi
-          shasum nginx.conf > nginx.conf.sha
-          echo "" && echo "Done."
+          bash config/deploy.sh
         ENDSSH
     - name: Create Sentry release
       if: ${{ success() }}

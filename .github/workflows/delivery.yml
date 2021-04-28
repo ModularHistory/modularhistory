@@ -53,8 +53,6 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
       IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
-      MEGA_DEV_USERNAME: ${{ secrets.MEGA_DEV_USERNAME }}
-      MEGA_DEV_PASSWORD: ${{ secrets.MEGA_DEV_PASSWORD }}
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
       MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
@@ -167,7 +165,7 @@ jobs:
           echo "" && echo "Setting environment variables..."
           set -a; source .env; set +a
           echo "" && echo "Logging in to the container registry..."
-          docker login ghcr.io -u iacobfred -p $CR_PAT
+          docker login ghcr.io -u iacobfred
           echo "Pulling images to $SERVER..."
           docker-compose pull --include-deps django flower react
           echo "" && echo "Restarting server..."
