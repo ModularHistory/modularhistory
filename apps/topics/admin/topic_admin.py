@@ -34,6 +34,7 @@ class TopicAdmin(ModelAdmin):
     exclude = ['key']
     list_display = [
         'name',
+        'aliases',
         'slug',
         'path',
         'detail_link',
@@ -45,7 +46,12 @@ class TopicAdmin(ModelAdmin):
     list_per_page = 25
     ordering = ['name', 'path']
     readonly_fields = ['pretty_computations', 'slug', 'path']
-    search_fields = ['name', 'aliases', 'description']
+    search_fields = [
+        'name',
+        'aliases',
+        'description',
+        'path',
+    ]
 
     def get_urls(self):
         """Return the list of URLs used by the topic admin."""

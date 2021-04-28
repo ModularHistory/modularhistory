@@ -7,13 +7,14 @@ pytestmark = pytest.mark.django_db
 
 
 def test_create_topic():
-    topic = Topic.objects.create(name='Foo', key='bar')
+    topic = Topic(name='Foo')
+    topic.save()
     # Do a full refresh to get the value of the path.
     topic.refresh_from_db()
     assert topic.id > 0
     assert topic.name == 'Foo'
-    assert topic.key == 'bar'
-    assert topic.path == 'bar'
+    assert topic.key == 'foo'
+    assert topic.path == 'foo'
 
 
 def test_direct_children():

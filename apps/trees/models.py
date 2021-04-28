@@ -43,6 +43,7 @@ class TreeModel(Model):
 
         # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
         abstract = True
+        ordering = ('path',)
 
     def save(self, *args, **kwargs):
         """Save the model instance to the database."""
@@ -64,6 +65,18 @@ class TreeModel(Model):
         elif self.path.split('.')[-1] != self.key:
             self.path = re.sub(r'(.*(?:^|\.)).+$', rf'\1{self.key}', self.path)
         return super().save(*args, **kwargs)
+
+    @property
+    def ancestors(self):
+        return type(self)._default_manager.filter(path__ancestor=self.path)
+
+    @property
+    def descendants(self):
+        return type(self)._default_manager.filter(path__descendant=self.path)
+
+    @property
+    def siblings(self):
+        return type(self)._default_manager.filter(parent_id=self.parent_id)
 
     def get_key(self) -> str:
         """Set the model instance's key value based on its name."""
