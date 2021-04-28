@@ -25,7 +25,7 @@ class TopicAdmin(ModelAdmin):
 
     model = models.Topic
 
-    autocomplete_fields = ['parent']
+    # autocomplete_fields = ['parent']
     inlines = [
         ParentTopicsInline,
         ChildTopicsInline,
@@ -36,16 +36,15 @@ class TopicAdmin(ModelAdmin):
     list_display = [
         'name',
         'slug',
-        'path',
         'detail_link',
         'parent_topics_string',
         'child_topics_string',
         'tags_string',
-    ]
+    ]  # 'path',
     list_filter = [RelatedTopicFilter]
     list_per_page = 25
-    ordering = ['name', 'path']
-    readonly_fields = ['pretty_computations', 'path', 'slug']
+    ordering = ['name']  # , 'path'
+    readonly_fields = ['pretty_computations', 'slug']  # , 'path'
     search_fields = ['name', 'aliases', 'description']
 
     def get_urls(self):
