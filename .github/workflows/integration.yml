@@ -195,7 +195,6 @@ jobs:
         echo "def test_pytest(): pass" > nothing.py
         poetry run pytest nothing.py
     - name: Run tests
-      if: ${{ success() }}
       run: poetry run invoke test --no-docker
 
   build:
