@@ -30,8 +30,7 @@ class TreeModel(Model):
     key = models.CharField(
         max_length=32,
         unique=True,
-        # Allow key to be blank in admin forms, since it is set automatically.
-        blank=True,
+        blank=True,  # Allow to be blank in forms (since it is set automatically).
         validators=[RegexValidator(regex=r'\w*')],
         verbose_name=_('key'),
     )

@@ -1,13 +1,12 @@
 #!/bin/bash
 
 staged_files="$(git diff --name-only --staged)"
-echo "Staged files:" && echo "$staged_files"
 
 # Autoformat Python code.
 echo "$staged_files" | grep --quiet ".py" && {
     echo "Autoformatting Python code..."
     poetry --help &>/dev/null && [[ -d ".venv" ]] && {
-        comma_delimited_filepaths="$(echo staged_files | grep '.py' | tr '\n' ',')"
+        comma_delimited_filepaths=$(echo "$staged_files" | grep '.py' | tr '\n' ',')
         poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
     }
 }
