@@ -168,6 +168,7 @@ INSTALLED_APPS = [
     'apps.donations.apps.DonationsConfig',
     'apps.entities.apps.EntitiesConfig',
     'apps.forums.apps.ForumsConfig',
+    'apps.graph.apps.GraphConfig',
     'apps.home.apps.HomeConfig',
     'apps.interactions.apps.InteractionsConfig',
     'apps.postulations.apps.PostulationsConfig',
@@ -314,7 +315,7 @@ MEGA_DEV_USERNAME = config('MEGA_DEV_USERNAME', default=MEGA_USERNAME)
 MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=MEGA_PASSWORD)
 
 # GraphQL
-GRAPHENE = {'SCHEMA': 'apps.topics.models.schema'}
+GRAPHENE = {'SCHEMA': 'apps.graph.schema.schema'}
 
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
