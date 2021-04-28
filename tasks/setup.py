@@ -168,7 +168,7 @@ def seed(
 @command
 def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
-    with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
+    with open(os.path.join(settings.CONFIG_DIR, 'hosts.txt')) as hosts_file:
         required_hosts = [host for host in hosts_file.read().splitlines() if host]
     if os.path.exists(WSL_HOSTS_FILEPATH):
         while True:
