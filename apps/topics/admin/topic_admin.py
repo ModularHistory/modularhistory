@@ -2,6 +2,7 @@ from django.urls import path
 
 from apps.admin import ModelAdmin, admin_site
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
+from apps.admin.list_filters.boolean_filters import HasRelationFilter
 from apps.topics import models
 from apps.topics.admin.topic_inlines import (
     ChildTopicsInline,
@@ -12,12 +13,20 @@ from apps.topics.views import TagSearchView
 
 
 class RelatedTopicFilter(ManyToManyAutocompleteFilter):
-    """Filter topic list by a related topic."""
+    """Filter the topic list by a related topic."""
 
     title = 'related topic'
     field_name = 'related_topics'
     _parameter_name = 'related_topics__pk__exact'
     m2m_cls = models.Topic
+
+
+class HasParentFilter(HasRelationFilter):
+    """Filter the topic list by existence of a parent topic."""
+
+    parameter_name = 'has_parent'
+    title = 'has parent'
+    relation = 'parent'
 
 
 class TopicAdmin(ModelAdmin):
@@ -42,7 +51,7 @@ class TopicAdmin(ModelAdmin):
         'child_topics_string',
         'tags_string',
     ]
-    list_filter = [RelatedTopicFilter]
+    list_filter = [RelatedTopicFilter, HasParentFilter]
     list_per_page = 25
     ordering = ['name', 'path']
     readonly_fields = ['pretty_computations', 'slug', 'path']
