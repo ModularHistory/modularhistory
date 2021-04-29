@@ -37,6 +37,7 @@
         "modularhistory",
         "mypy",
         "nextjs",
+        "nlevel",
         "noinput",
         "noqa",
         "OSSAR",

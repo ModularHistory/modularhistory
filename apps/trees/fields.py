@@ -1,7 +1,11 @@
 from django.db import models
 
+# https://www.postgresql.org/docs/8.3/ltree.html
+
 
 class LtreeField(models.TextField):
+    """A field for storing a label tree (ltree)."""
+
     description = 'ltree'
 
     def __init__(self, *args, **kwargs):
@@ -15,6 +19,11 @@ class LtreeField(models.TextField):
 
 
 class Ancestor(models.Lookup):
+    """
+    A lookup for instances that have a specified ancestor
+    (inclusive of the ancestor).
+    """
+
     lookup_name = 'ancestor'
 
     def as_sql(self, qn, connection):
@@ -25,13 +34,18 @@ class Ancestor(models.Lookup):
 
 
 class Descendant(models.Lookup):
+    """
+    A lookup for instances that have a specified descendant
+    (inclusive of the descendant).
+    """
+
     lookup_name = 'descendant'
 
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
         params = lhs_params + rhs_params
-        return f'{lhs} <@ {rhs}', params
+        return f'{lhs} @> {rhs}', params
 
 
 LtreeField.register_lookup(Ancestor)

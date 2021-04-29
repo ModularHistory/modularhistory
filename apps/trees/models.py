@@ -1,11 +1,12 @@
 """Based on https://github.com/peopledoc/django-ltree-demo."""
 
-import logging
-import re
+from typing import Type
 
 import regex
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
-from django.db import models
+from django.db import IntegrityError, connection, models
+from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 from apps.trees.fields import LtreeField
@@ -25,8 +26,7 @@ class TreeModel(Model):
         verbose_name=_('parent'),
     )
     name = models.TextField(verbose_name=_('name'))
-    # The `key` field is a unique identifier for the node.
-    # It is derived from the `name` field.
+    # The `key` field is a unique identifier derived from the `name` field.
     key = models.CharField(
         max_length=32,
         unique=True,
@@ -45,44 +45,85 @@ class TreeModel(Model):
         abstract = True
         ordering = ('path',)
 
+    def clean(self):
+        """Prepare the model instance to be saved to the database."""
+        self.validate_parent(raises=ValidationError)
+        return super().clean()
+
     def save(self, *args, **kwargs):
         """Save the model instance to the database."""
-        # Set the key.
-        key = self.get_key()
-        if not self.key:
-            self.key = key
-        elif self.key != key:
-            if self.__class__.objects.filter(key=key).exists():
-                logging.info(f'A topic with key={key} already exists.')
-            else:
-                self.key = key
-        # If there is no path, set it equal to the key, making the topic a top-level
-        # (parentless) topic.
-        if not self.path:
-            self.path = self.key
-        # If the final (or only) element of the path does not match the key,
-        # update the path to use the key as its final (or only) element.
-        elif self.path.split('.')[-1] != self.key:
-            self.path = re.sub(r'(.*(?:^|\.)).+$', rf'\1{self.key}', self.path)
-        return super().save(*args, **kwargs)
+        self.key = self.get_key()
+        self.validate_parent(raises=IntegrityError)
+        old_path, new_path = self.path, self.get_path()
+        path_changed = new_path != old_path and not self._state.adding
+        self.path = new_path
+        super().save(*args, **kwargs)
+        if path_changed:
+            # Update descendants' paths.
+            with connection.cursor() as cursor:
+                table = f'{self._meta.app_label}_{self._meta.model_name}'
+                # https://www.postgresql.org/docs/13/ltree.html
+                cursor.execute(
+                    f'UPDATE {table} '
+                    f"SET path = '{new_path}'::ltree || subpath({table}.path, nlevel('{old_path}'::ltree)) "
+                    f"WHERE {table}.path <@ '{old_path}'::ltree AND id != {self.id}"
+                )
 
     @property
-    def ancestors(self):
-        return type(self)._default_manager.filter(path__ancestor=self.path)
+    def ancestors(self) -> QuerySet:
+        return (
+            type(self)
+            ._default_manager.filter(path__descendant=self.path)
+            .exclude(pk=self.pk)
+        )
 
     @property
-    def descendants(self):
-        return type(self)._default_manager.filter(path__descendant=self.path)
+    def descendants(self) -> QuerySet:
+        return (
+            type(self)
+            ._default_manager.filter(path__ancestor=self.path)
+            .exclude(pk=self.pk)
+        )
 
     @property
-    def siblings(self):
-        return type(self)._default_manager.filter(parent_id=self.parent_id)
+    def siblings(self) -> QuerySet:
+        return (
+            type(self)
+            ._default_manager.filter(parent_id=self.parent_id)
+            .exclude(pk=self.pk)
+        )
 
     def get_key(self) -> str:
-        """Set the model instance's key value based on its name."""
+        """Calculate the model instance's key value based on its name."""
         name: str = self.name
         key = name.lower().replace('&', 'and')
         # Replace spaces and any kind of hyphen/dash with an underscore.
         key = regex.sub(r'(?:\ |\p{Pd})', '_', key)
         # Remove any other non-alphanumeric characters.
-        return regex.sub(r'\W', '', key)
+        key = regex.sub(r'\W', '', key)
+        if self.key != key:
+            if self.__class__.objects.filter(key=key).exists():
+                raise IntegrityError(
+                    f'{self.__class__.__name__} instance with key={key} already exists.'
+                )
+        return key
+
+    def get_path(self) -> str:
+        """Calculate the model instance's path value based on its key and parent."""
+        return f'{self.parent.path}.{self.key}' if self.parent else self.key
+
+    def validate_parent(self, raises: Type[Exception] = ValidationError):
+        """Validate the model instance's parent."""
+        if not self._state.adding:
+            if self.parent:
+                # Prevent the model instance from being its own parent, which would
+                # result in an infinite recursion.
+                if self.parent == self:
+                    raise raises(f'{self} cannot be its own parent.')
+                # Prevent the model instance from having one of its descendants as
+                # its parent, which would result in an infinite recursion.
+                elif self.descendants.filter(pk=self.parent.pk).exists():
+                    raise raises(
+                        f'{self} cannot have {self.parent} as its parent; '
+                        f'{self.parent} is a descendant of {self}.'
+                    )
