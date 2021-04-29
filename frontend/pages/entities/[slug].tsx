@@ -1,34 +1,34 @@
 import Layout from "@/components/Layout";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
-import { EntityModule } from "@/interfaces";
+import { OccurrenceModule } from "@/interfaces";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
-interface EntityProps {
-  entity: EntityModule;
+interface OccurrenceProps {
+  occurrence: OccurrenceModule;
 }
 
 /**
- * A page that renders the HTML of a single entity.
+ * A page that renders the HTML of a single occurrence.
  */
-const Entity: FC<EntityProps> = ({ entity }: EntityProps) => {
+const Occurrence: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
   return (
-    <Layout title={entity["name"]}>
-      <ModuleContainer module={entity} />
+    <Layout title={occurrence["title"]}>
+      <ModuleContainer module={occurrence} />
     </Layout>
   );
 };
-export default Entity;
+export default Occurrence;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let entity = {};
+  let occurrence = {};
   const { slug } = params;
 
   await axios
-    .get(`http://django:8000/api/entities/${slug}/`)
+    .get(`http://django:8000/api/occurrences/${slug}/`)
     .then((response) => {
-      entity = response.data;
+      occurrence = response.data;
     })
     .catch((error) => {
       // TODO: how should we handle errors here?
@@ -36,7 +36,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   return {
     props: {
-      entity,
+      occurrence,
     },
     revalidate: 10,
   };
