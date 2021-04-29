@@ -1,9 +1,10 @@
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Type
 
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.core.validators import URLValidator
+from django.db import IntegrityError, models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -16,7 +17,7 @@ from apps.images.models.model_with_images import ModelWithImages
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.topics.models.taggable_model import TaggableModel
 from core.constants.strings import EMPTY_STRING
-from core.fields import ArrayField, HTMLField
+from core.fields import ArrayField, HTMLField, JSONField
 from core.models import (
     ModelWithComputations,
     SluggedModel,
@@ -81,6 +82,7 @@ class Entity(
     affiliated_entities = models.ManyToManyField(
         to='self', through='entities.Affiliation', blank=True
     )
+    reference_urls = JSONField(blank=True, default=dict)
 
     class Meta:
         """Meta options for the Entity model."""
@@ -100,19 +102,21 @@ class Entity(
 
     def save(self, *args, **kwargs):
         """Save the entity to the database."""
-        self.clean()
+        self.validate_type(raises=IntegrityError)
+        if not self.unabbreviated_name:
+            self.unabbreviated_name = self.name
         super().save(*args, **kwargs)
 
     def clean(self):
         """Prepare the entity to be saved."""
+        self.validate_type(raises=ValidationError)
+        validate_url = URLValidator()
+        for key, value in self.reference_urls.items():
+            # TODO: refactor
+            if key not in ('wikipedia',):
+                raise ValidationError(f'{key} reference URL is unsupported.')
+            validate_url(value)  # raises a ValidationError
         super().clean()
-        if not self.unabbreviated_name:
-            self.unabbreviated_name = self.name
-        if self.type == 'entities.entity' or not self.type:
-            raise ValidationError('Entity must have a type.')
-        else:
-            # Prevent a RuntimeError when saving a new publication
-            self.recast(self.type)
 
     @property
     def has_quotes(self) -> bool:
@@ -182,6 +186,14 @@ class Entity(
             categorization_words = list(dict.fromkeys(categorization_words))
             return ' '.join(categorization_words)
         return EMPTY_STRING
+
+    def validate_type(self, raises: Type[Exception] = ValidationError):
+        """Validate the entity's type."""
+        if self.type == 'entities.entity' or not self.type:
+            raise raises('Entity requires a type.')
+        else:
+            # Prevent a RuntimeError when saving a new publication
+            self.recast(self.type)
 
 
 class Person(Entity):
