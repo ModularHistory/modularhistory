@@ -54,57 +54,6 @@ CREATE INDEX topics_topic_path_gist ON topics_topic USING GIST(path);
 -- Prevent a model instance from having itself as an ancestor (which would result in an infinite recursion).
 ALTER TABLE topics_topic ADD CONSTRAINT check_no_recursion
     CHECK(index(path, key::text::ltree) = (nlevel(path) - 1));
-
--- Add a function to calculate the path of a model instance.
-CREATE OR REPLACE FUNCTION _update_topics_topic_path() RETURNS TRIGGER AS
-$$
-BEGIN
-    IF NEW.parent_id IS NULL THEN
-        NEW.path = NEW.key::ltree;
-    ELSE
-        SELECT path || NEW.key
-          FROM topics_topic
-         WHERE NEW.parent_id IS NULL or id = NEW.parent_id
-          INTO NEW.path;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Add a function to update the path of the descendants of a model instance.
-CREATE OR REPLACE FUNCTION _update_descendants_topics_topic_path() RETURNS TRIGGER AS
-$$
-BEGIN
-    UPDATE topics_topic
-       SET path = NEW.path || subpath(topics_topic.path, nlevel(OLD.path))
-     WHERE topics_topic.path <@ OLD.path AND id != NEW.id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Recalculate a model instance's path whenever a new model instance is inserted.
-DROP TRIGGER IF EXISTS topics_topic_path_insert_trg ON topics_topic;
-CREATE TRIGGER topics_topic_path_insert_trg
-               BEFORE INSERT ON topics_topic
-               FOR EACH ROW
-               EXECUTE PROCEDURE _update_topics_topic_path();
-
--- Recalculate a model instance's path when its parent or key are updated.
-DROP TRIGGER IF EXISTS topics_topic_path_update_trg ON topics_topic;
-CREATE TRIGGER topics_topic_path_update_trg
-               BEFORE UPDATE ON topics_topic
-               FOR EACH ROW
-               WHEN (OLD.parent_id IS DISTINCT FROM NEW.parent_id
-                     OR OLD.key IS DISTINCT FROM NEW.key)
-               EXECUTE PROCEDURE _update_topics_topic_path();
-
--- When a path is updated, update the path of the model instance's descendants as well.
-DROP TRIGGER IF EXISTS topics_topic_path_after_trg ON topics_topic;
-CREATE TRIGGER topics_topic_path_after_trg
-               AFTER UPDATE ON topics_topic
-               FOR EACH ROW
-               WHEN (NEW.path IS DISTINCT FROM OLD.path)
-               EXECUTE PROCEDURE _update_descendants_topics_topic_path();
 """
         ),
     ]

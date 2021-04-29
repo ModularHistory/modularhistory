@@ -23,7 +23,7 @@ OPERATIONS_PATTERN = r'operations = \[(?!\w+\ =)[\s\S]+(?=\n\s+\])'
 def get_sql(app_name: str, model_name: str):
     """Return the SQL code that must be run to configure a new TreeModel."""
     sql_scripts = []
-    for filename in ('index.sql', 'constraint.sql', 'triggers.sql'):
+    for filename in ('indexes.sql', 'constraints.sql'):
         filepath = os.path.join(settings.BASE_DIR, 'apps/trees/sql', filename)
         with open(filepath) as f:
             sql_scripts.append(
