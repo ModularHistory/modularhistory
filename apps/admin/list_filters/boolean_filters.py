@@ -6,7 +6,7 @@ from core.constants.strings import NO, YES
 
 
 class BooleanListFilter(SimpleListFilter):
-    """Filters based on a boolean (yes or no) field/property."""
+    """Filters based on a boolean (yes or no) field or property."""
 
     def lookups(self, request, model_admin):
         """Return an iterable of tuples (value, verbose value) containing filter input options."""
@@ -14,7 +14,7 @@ class BooleanListFilter(SimpleListFilter):
 
 
 class HasRelationFilter(BooleanListFilter):
-    """Filters based on whether a model instance the specified relation."""
+    """Filters based on whether model instances have the specified relation."""
 
     relation: str
 
