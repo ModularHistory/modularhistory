@@ -7,10 +7,14 @@ import { useRouter } from "next/router";
 import { setCookie } from "nookies";
 import { FC } from "react";
 
-const Redirect: FC = () => {
+interface RedirectProps {
+  path: string;
+}
+
+const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
   const router = useRouter();
   const [_session, loading] = useSession();
-  const path = router.query.path ?? "/";
+  path = path ? `/${path}` : "";
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   return (
     <>
@@ -41,6 +45,7 @@ export default Redirect;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { path } = context.params;
   const session = await getSession(context);
   if (session) {
     const [cookieName, cookieValue] = session.sessionIdCookie.split(";")[0].split("=");
@@ -54,6 +59,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
   }
   return {
-    props: {}, // passed to the page component as props
+    props: { path: path || null }, // passed to the page component as props
   };
 };
