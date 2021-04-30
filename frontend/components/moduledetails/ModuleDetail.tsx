@@ -1,12 +1,13 @@
-import { EntityModule, OccurrenceModule, QuoteModule } from "@/interfaces";
+import { EntityModule, OccurrenceModule, QuoteModule, TopicModule } from "@/interfaces";
 import { useSession } from "next-auth/client";
 import { createRef, FC, useLayoutEffect } from "react";
 import EntityDetail from "./EntityDetail";
 import OccurrenceDetail from "./OccurrenceDetail";
 import QuoteDetail from "./QuoteDetail";
+import TopicDetail from "./TopicDetail";
 
 interface ModuleDetailProps {
-  module: OccurrenceModule | QuoteModule | EntityModule;
+  module: OccurrenceModule | QuoteModule | EntityModule | TopicModule;
 }
 
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
@@ -40,6 +41,9 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     case "entities.entity":
     case "entities.person":
       details = <EntityDetail entity={module as EntityModule} />;
+      break;
+    case "topics.topic":
+      details = <TopicDetail topic={module as TopicModule} />;
       break;
     default:
       details = <pre>{JSON.stringify(module)}</pre>;

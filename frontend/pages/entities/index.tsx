@@ -46,7 +46,6 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
           {entityCards}
         </Grid>
       </Container>
-      {/*<pre>{JSON.stringify(entitiesData, null, 4)}</pre>*/}
     </Layout>
   );
 };

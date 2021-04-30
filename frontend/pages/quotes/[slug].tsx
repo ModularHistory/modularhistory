@@ -26,10 +26,10 @@ export default Quote;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let quote = {};
-  const { pk } = params;
+  const { slug } = params;
 
   await axios
-    .get(`http://django:8000/api/quotes/${pk}/`)
+    .get(`http://django:8000/api/quotes/${slug}/`)
     .then((response) => {
       quote = response.data;
     })

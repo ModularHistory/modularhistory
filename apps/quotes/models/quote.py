@@ -8,6 +8,7 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
 from apps.dates.fields import HistoricDateTimeField
@@ -68,11 +69,15 @@ class Quote(
         help_text='Content to be displayed after the quote',
     )
     date = HistoricDateTimeField(null=True)
+    attributee_html = models.TextField(
+        verbose_name=_('attributee HTML'), null=True, blank=True, editable=False
+    )
     attributees = models.ManyToManyField(
         to='entities.Entity',
         through='quotes.QuoteAttribution',
         related_name='quotes',
         blank=True,
+        verbose_name=_('attributees'),
     )
     related = GenericManyToManyField(
         'occurrences.Occurrence',
@@ -138,9 +143,8 @@ class Quote(
                 QuoteImage.objects.create(quote=self, image=image)
 
     @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
-    def attributee_html(self) -> SafeString:
+    def _attributee_html(self) -> SafeString:
         """Return the HTML representing the quote's attributees."""
-        logging.debug('Computing attributee HTML...')
         attributees = self.ordered_attributees
         attributee_html = ''
         if attributees:
@@ -169,8 +173,8 @@ class Quote(
         return format_html(attributee_html)
 
     # TODO: Order by `attributee_string` instead of `attributee`
-    attributee_html.admin_order_field = 'attributee'
-    attributee_html: SafeString = property(attributee_html)  # type: ignore
+    _attributee_html.admin_order_field = 'attributee'
+    _attributee_html: SafeString = property(_attributee_html)  # type: ignore
 
     def get_slug(self) -> str:
         """Generate a slug for the quote."""

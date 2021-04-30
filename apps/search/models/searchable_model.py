@@ -1,13 +1,11 @@
 """Base classes for models that appear in ModularHistory search results."""
 
-import logging
 import uuid
 from typing import TYPE_CHECKING
 
 import serpy
 from autoslug import AutoSlugField
 from django.db import models
-from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.models.taggable_model import TaggableModel
@@ -37,15 +35,6 @@ class SearchableModel(
         editable=False,
         unique=True,
     )
-    slug = AutoSlugField(
-        verbose_name=_('slug'),
-        null=True,
-        blank=True,
-        editable=True,
-        unique=True,
-        db_index=True,
-        populate_from='get_slug',
-    )
     hidden = models.BooleanField(
         default=False,
         blank=True,
@@ -71,20 +60,6 @@ class SearchableModel(
         if not self.slug:
             self.slug = self.get_slug()
         super().clean()
-
-    def get_absolute_url(self):
-        """Return the URL for the model instance detail page."""
-        absolute_url = ''
-        if self.slug:
-            absolute_url = reverse(
-                f'{self.get_meta().app_label}:detail_slug', args=[str(self.slug)]
-            )
-        else:
-            absolute_url = reverse(
-                f'{self.get_meta().app_label}:detail', args=[str(self.pk)]
-            )
-        logging.debug(f'Determined absolute URL: {absolute_url}')
-        return absolute_url
 
 
 class SearchableModelSerializer(ModelSerializer):
