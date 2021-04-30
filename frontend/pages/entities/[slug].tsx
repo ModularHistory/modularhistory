@@ -1,42 +1,54 @@
+import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
+import EntityDetail from "@/components/moduledetails/EntityDetail";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
-import { OccurrenceModule } from "@/interfaces";
-import axios from "axios";
+import { EntityModule } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
-interface OccurrenceProps {
-  occurrence: OccurrenceModule;
+interface EntityProps {
+  entity: EntityModule;
 }
 
 /**
- * A page that renders the HTML of a single occurrence.
+ * A page that renders the HTML of a single entity.
  */
-const Occurrence: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
+const Entity: FC<EntityProps> = ({ entity }: EntityProps) => {
   return (
-    <Layout title={occurrence["title"]}>
-      <ModuleContainer module={occurrence} />
+    <Layout title={entity["name"]}>
+      <ModuleContainer>
+        <EntityDetail entity={entity} />
+      </ModuleContainer>
     </Layout>
   );
 };
-export default Occurrence;
+export default Entity;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let occurrence = {};
+  let entity = {};
   const { slug } = params;
-
-  await axios
-    .get(`http://django:8000/api/occurrences/${slug}/`)
+  const body = {
+    query: `{
+      entity(slug: "${slug}") {
+        name
+        slug
+        description
+        serializedImages
+      }
+    }`,
+  };
+  await axiosWithoutAuth
+    .post("http://django:8000/graphql/", body)
     .then((response) => {
-      occurrence = response.data;
+      entity = response.data.data.entity;
     })
     .catch((error) => {
-      // TODO: how should we handle errors here?
+      // console.error(error);
     });
 
   return {
     props: {
-      occurrence,
+      entity,
     },
     revalidate: 10,
   };

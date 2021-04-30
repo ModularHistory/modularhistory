@@ -1,10 +1,10 @@
+import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
@@ -56,7 +56,7 @@ export default Entities;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   let entitiesData = {};
 
-  await axios
+  await axiosWithoutAuth
     .get("http://django:8000/api/entities/", { params: context.query })
     .then((response) => {
       entitiesData = response.data;

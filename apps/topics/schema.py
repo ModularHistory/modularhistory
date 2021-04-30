@@ -1,15 +1,15 @@
 import graphene
-from graphene_django.types import DjangoObjectType
 
 from apps.topics.models import Topic
 from apps.topics.types import TopicType
 
 
-# GraphQL query for all Topics with the fields of 'name' and 'pk'
 class Query(graphene.ObjectType):
-    all_topics = graphene.List(TopicType)
+    """GraphQL query for all topics."""
 
-    def resolve_all_topics(self, info, **kwargs):
+    topics = graphene.List(TopicType)
+
+    def resolve_topics(self, info, **kwargs):
         return Topic.objects.all()
 
 

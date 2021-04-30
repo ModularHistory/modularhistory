@@ -1,14 +1,15 @@
 import graphene
 
-import apps.topics.schema
+from apps.entities.api import schema as entities_schema
+from apps.topics import schema as topics_schema
 
 
 # add other queries to the parameters of the following query to make additions:
-class Query(apps.topics.schema.Query, graphene.ObjectType):
+class Query(entities_schema.Query, topics_schema.Query):
     pass
 
 
-# class Mutation(apps.topics.schema.Mutation, graphene.ObjectType):
+# class Mutation(topics_schema.Mutation, graphene.ObjectType):
 #    pass
 
 
