@@ -125,6 +125,7 @@ class Quote(
 
     def save(self, *args, **kwargs):
         """Save the quote to the database."""
+        self.attributee_html = self.get_attributee_html()
         self.clean()
         super().save(*args, **kwargs)
         if not self.images.exists():
@@ -142,8 +143,7 @@ class Quote(
             if image:
                 QuoteImage.objects.create(quote=self, image=image)
 
-    @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
-    def _attributee_html(self) -> SafeString:
+    def get_attributee_html(self) -> SafeString:
         """Return the HTML representing the quote's attributees."""
         attributees = self.ordered_attributees
         attributee_html = ''
@@ -171,10 +171,6 @@ class Quote(
                 else:
                     attributee_html = f'{primary_attributee_html} et al.'
         return format_html(attributee_html)
-
-    # TODO: Order by `attributee_string` instead of `attributee`
-    _attributee_html.admin_order_field = 'attributee'
-    _attributee_html: SafeString = property(_attributee_html)  # type: ignore
 
     def get_slug(self) -> str:
         """Generate a slug for the quote."""
