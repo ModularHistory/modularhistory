@@ -2,7 +2,6 @@
 
 import pytest
 from django.test import Client
-from django.urls import reverse
 
 from core.tests import TestSuite
 
@@ -14,5 +13,5 @@ class QuotesTestSuite(TestSuite):
     def test_quotes(self):
         """Verify pages have 200 status."""
         client = Client()
-        response = client.get(reverse('quotes:index'))
+        response = client.get('/api/quotes/')
         assert response.status_code == 200

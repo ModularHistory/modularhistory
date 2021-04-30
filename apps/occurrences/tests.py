@@ -2,7 +2,6 @@
 
 import pytest
 from django.test import Client
-from django.urls import reverse
 
 from core.tests import TestSuite
 
@@ -14,5 +13,5 @@ class OccurrencesTestSuite(TestSuite):
     def test_occurrences(self):
         """Verify pages have 200 status."""
         client = Client()
-        response = client.get(reverse('occurrences:index'))
+        response = client.get('/api/occurrences/')
         assert response.status_code == 200
