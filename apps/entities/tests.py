@@ -15,8 +15,8 @@ class EntitiesTestSuite(TestSuite):
         """Verify pages have 200 status."""
         client = Client()
         person: Person = Person.objects.create(name='Albert Einstein')
-        query = (
-            '''
+        # fmt: off
+        query = '''
         {
             entity(slug: "%s") {
                 name
@@ -27,8 +27,7 @@ class EntitiesTestSuite(TestSuite):
                 adminUrl
             }
         }
-        '''
-            % person.slug
-        )
+        ''' % person.slug
+        # fmt: on
         response = client.post('/graphql/', {'query': query.strip()})
         assert response.status_code == 200
