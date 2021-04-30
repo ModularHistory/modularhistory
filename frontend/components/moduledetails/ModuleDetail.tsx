@@ -49,7 +49,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     <div className="detail" ref={ref}>
       {!loading && session?.user?.["is_superuser"] && (
         <a
-          href={module["admin_url"]}
+          href={module["admin_url"] || module["adminUrl"]}
           target="_blank"
           className="edit-object-button"
           rel="noopener noreferrer"

@@ -9,7 +9,6 @@ interface EntityDetailProps {
 const EntityDetail: FC<EntityDetailProps> = ({ entity }: EntityDetailProps) => {
   let titleHtml = entity["name"];
   const firstImage = JSON.parse(entity["serializedImages"])?.[0];
-  console.log(firstImage);
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />

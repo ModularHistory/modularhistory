@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
-import OccurrenceDetail from "@/components/moduledetails/OccurrenceDetail";
+import ModuleDetail from "@/components/moduledetails/ModuleDetail";
 import { OccurrenceModule } from "@/interfaces";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -17,7 +17,7 @@ const Occurrence: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
   return (
     <Layout title={occurrence["title"]}>
       <ModuleContainer>
-        <OccurrenceDetail occurrence={occurrence} />
+        <ModuleDetail module={occurrence} />
       </ModuleContainer>
     </Layout>
   );

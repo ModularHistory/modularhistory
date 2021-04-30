@@ -7,6 +7,7 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { FC } from "react";
 import Layout from "../../components/Layout";
 import Pagination from "../../components/Pagination";
@@ -17,7 +18,7 @@ interface EntitiesProps {
 
 const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   const entities = entitiesData["results"] || [];
-
+  const router = useRouter();
   const entityCards = entities.map((entity) => (
     <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
       <Link href={`/entities/${entity["slug"]}`}>

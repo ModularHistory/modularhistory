@@ -1,7 +1,7 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
-import EntityDetail from "@/components/moduledetails/EntityDetail";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
+import ModuleDetail from "@/components/moduledetails/ModuleDetail";
 import { EntityModule } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
@@ -17,7 +17,7 @@ const Entity: FC<EntityProps> = ({ entity }: EntityProps) => {
   return (
     <Layout title={entity["name"]}>
       <ModuleContainer>
-        <EntityDetail entity={entity} />
+        <ModuleDetail module={entity} />
       </ModuleContainer>
     </Layout>
   );
@@ -34,6 +34,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         slug
         description
         serializedImages
+        model
+        adminUrl
       }
     }`,
   };
