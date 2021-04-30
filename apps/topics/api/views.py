@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.topics.models import Topic
@@ -30,3 +30,11 @@ class TopicPartialAPIView(ListAPIView):
     queryset = Topic.objects.values('pk', 'name')
     serializer_class = TopicDictSerializer
     pagination_class = VariableSizePagination
+
+
+class TopicAPIView(RetrieveAPIView):
+    """API view for a single occurrences."""
+
+    queryset = Topic.objects.all()
+    lookup_field = 'slug'
+    serializer_class = TopicSerializer

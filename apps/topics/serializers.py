@@ -8,7 +8,7 @@ from core.models.model import ModelSerializer
 class TopicSerializer(ModelSerializer):
     """Serializer for topics."""
 
-    key = serpy.Field()
+    name = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of serialized topics."""

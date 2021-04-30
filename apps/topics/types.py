@@ -1,15 +1,13 @@
-import graphene
-from graphene_django.types import DjangoObjectType
-
+from apps.graph.types import ModuleType
 from apps.topics.models.topic import Topic
 
 
-class TopicType(DjangoObjectType):
+class TopicType(ModuleType):
     """GraphQL type for the Topic model."""
-
-    # Add primary key to the fields.
-    pk = graphene.Int(source='pk')
 
     class Meta:
         model = Topic
         exclude = ['related']
+
+    def resolve_model(self, *args) -> str:
+        return 'topics.topic'

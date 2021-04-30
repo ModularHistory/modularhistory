@@ -1,12 +1,12 @@
 export interface BaseModule {
   model: string;
   pk: number;
+  slug: string;
+  absolute_url: string;
+  admin_url: string;
 }
 
 export interface SearchableModule extends BaseModule {
-  absolute_url: string;
-  admin_url: string;
-  slug: string;
   tags_html: string;
   verified: boolean;
 }
@@ -49,6 +49,10 @@ export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
 
 export interface EntityModule extends ModuleWithImages {
   serialized_citations: Citation[];
+  description: string;
+}
+
+export interface TopicModule extends BaseModule {
   description: string;
 }
 

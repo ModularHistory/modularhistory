@@ -1,18 +1,21 @@
 """Tests for the quotes app."""
 
 import pytest
-from django.test import Client
 from django.urls import reverse
+from rest_framework.test import APIClient
 
-from core.tests import TestSuite
+
+@pytest.fixture
+def api_client():
+    return APIClient()
 
 
 @pytest.mark.django_db
-class QuotesTestSuite(TestSuite):
-    """Tests for the quotes app."""
+class TestQuotes:
+    """Test the quotes app."""
 
-    def test_quotes(self):
-        """Verify pages have 200 status."""
-        client = Client()
-        response = client.get(reverse('quotes:index'))
+    def test_api_view(self, api_client: APIClient):
+        """Test the quotes API."""
+        url = reverse('quotes_api:index')
+        response = api_client.get(url)
         assert response.status_code == 200

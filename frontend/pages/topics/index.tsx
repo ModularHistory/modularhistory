@@ -20,7 +20,7 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
 
   const topicNames = topics.map((topic) => (
     <Grid item key={topic["name"]} xs={4}>
-      <Link href={`/search?topics=${topic["pk"]}`}>
+      <Link href={`/topics/${topic["slug"]}`}>
         <a style={topicAnchorStyle}>
           <strong>{topic["name"]}</strong>
         </a>
@@ -46,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let topicsData = {};
 
   await axios
-    .get("http://django:8000/graphql/?query={topics{name%20pk}}", {})
+    .get("http://django:8000/graphql/?query={topics{name%20slug}}", {})
     .then((response) => {
       topicsData = response.data;
     })

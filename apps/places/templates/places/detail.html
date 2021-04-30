@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-
-{% load get_html_for_view %}
-
-{% block content %}
-    <div class="container">
-        {{ occurrence|get_html_for_view:"detail" }}
-    </div>
-{% endblock %}

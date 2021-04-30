@@ -1,8 +1,6 @@
-import logging
 from typing import Optional
 
 from autoslug import AutoSlugField
-from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.text import slugify
@@ -34,24 +32,10 @@ class SluggedModel(Model):
     class Meta:
         abstract = True
 
-    def get_absolute_url(self) -> str:  # noqa: DJ12
+    def get_absolute_url(self):
         """Return the URL for the model instance detail page."""
-        absolute_url = ''
         slug = getattr(self, 'slug', None)
-        try:
-            if slug:
-                absolute_url = reverse(
-                    f'{self.get_meta().app_label}:detail_slug', args=[str(slug)]
-                )
-            else:
-                absolute_url = reverse(
-                    f'{self.get_meta().app_label}:detail', args=[str(self.pk)]
-                )
-            logging.debug(f'Determined absolute URL: {absolute_url}')
-            return absolute_url
-        except Exception as err:
-            logging.error(f'{err}')
-        return absolute_url
+        return f'{self.get_meta().app_label}/{slug or self.pk}'
 
     @property
     def absolute_url(self) -> str:
@@ -66,7 +50,7 @@ class SluggedModel(Model):
     @property
     def detail_url(self) -> str:
         """Return the URL of the model instance's detail page."""
-        return reverse(f'{self.get_meta().app_label}:detail', args=[self.pk])
+        return self.absolute_url
 
     def get_detail_link(self, content: Optional[str] = None) -> SafeString:
         """Return a link to the model instance's detail page."""
