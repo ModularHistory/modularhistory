@@ -36,6 +36,7 @@ class EntitySerializer(ModelSerializer):
     """Serializer for entities."""
 
     name = serpy.Field()
+    slug = serpy.Field()
     unabbreviated_name = serpy.Field()
     aliases = serpy.Field()
     birth_date = serpy.MethodField('get_serialized_birth_date')

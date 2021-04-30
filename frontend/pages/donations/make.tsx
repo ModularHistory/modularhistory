@@ -34,7 +34,6 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
 
   const makeDonation = (e) => {
     e.preventDefault();
-    console.log("Triggered.");
     async function getNonce() {
       const { nonce } = await instance.requestPaymentMethod();
       try {

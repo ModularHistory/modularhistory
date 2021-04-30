@@ -21,6 +21,7 @@ import logging
 import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.staticfiles.views import serve
 from django.urls import include, path, re_path
@@ -104,6 +105,7 @@ urlpatterns = [
     path('watchman/', include('watchman.urls')),
     path('healthcheck/', bare_status),  # basic healthcheck
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=False))),
+    path('graphiql/', login_required(csrf_exempt(GraphQLView.as_view(graphiql=True)))),
     # Home
     path('', include('apps.home.urls')),
     # robots.txt

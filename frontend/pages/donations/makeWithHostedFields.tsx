@@ -5,7 +5,7 @@
 import Container from "@material-ui/core/Container";
 import $ from "jquery";
 import { GetServerSideProps } from "next";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 import { Braintree, HostedField } from "react-braintree-fields";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
 import Layout from "../../components/Layout";
@@ -27,10 +27,6 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
   const numberField = useRef();
   const cvvField = useRef();
   const cardholderNameField = useRef();
-
-  useEffect(() => {
-    console.log("Here");
-  });
 
   const getToken = () => {
     tokenize().then(setToken).catch(handleError);

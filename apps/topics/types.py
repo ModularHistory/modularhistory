@@ -4,13 +4,12 @@ from graphene_django.types import DjangoObjectType
 from apps.topics.models.topic import Topic
 
 
-# GraphQL type for Topic model
 class TopicType(DjangoObjectType):
-    pk = graphene.Int(source='pk')  # adding private key to the fields
+    """GraphQL type for the Topic model."""
+
+    # Add primary key to the fields.
+    pk = graphene.Int(source='pk')
 
     class Meta:
         model = Topic
-        fields = (
-            'name',
-            'pk',
-        )
+        exclude = ['related']

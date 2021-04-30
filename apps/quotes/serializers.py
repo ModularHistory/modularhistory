@@ -19,6 +19,7 @@ class QuoteSerializer(SearchableModelSerializer):
     truncated_html = serpy.MethodField()
     has_multiple_attributees = serpy.BoolField()
     attributee_html = serpy.Field()
+    attributee_string = serpy.Field()
     date_html = serpy.Field()
     serialized_images = serpy.Field()
     primary_image = serpy.Field()
@@ -32,7 +33,7 @@ class QuoteSerializer(SearchableModelSerializer):
         """Return the user-facing bite HTML."""
         # "bite" is set to truncated text if it does not exist
         # TODO: Add "truncated" field to model to distinguish true bites from auto bites
-        return instance.bite.html if instance.bite else ""
+        return instance.bite.html if instance.bite else ''
 
     def get_truncated_html(self, instance: 'Quote') -> str:
         """Return truncated HTML content"""
