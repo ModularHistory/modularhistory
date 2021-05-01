@@ -1,9 +1,9 @@
-import logging
 
 import graphene
+from django.core.exceptions import ObjectDoesNotExist
 
-from apps.topics.models import Topic
 from apps.topics.api.types import TopicType
+from apps.topics.models import Topic
 
 
 class Query(graphene.ObjectType):
@@ -18,8 +18,7 @@ class Query(graphene.ObjectType):
     def resolve_topic(self, info, slug: str):
         try:
             return Topic.objects.get(slug=slug)
-        except Exception as err:
-            logging.error(f'{err}')
+        except ObjectDoesNotExist:
             return Topic.objects.get(pk=slug)
 
 
