@@ -9,6 +9,6 @@ router.register(r'quotes', views.QuoteViewSet)
 app_name = 'quotes'
 
 urlpatterns = [
-    path('', views.QuoteListAPIView.as_view()),
-    path('<int:pk>/', views.QuoteAPIView.as_view()),
+    path('', views.QuoteListAPIView.as_view(), name='index'),
+    path('<slug:slug>/', views.QuoteAPIView.as_view()),
 ]

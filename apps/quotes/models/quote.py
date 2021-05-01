@@ -123,6 +123,19 @@ class Quote(
             string = f'{attributee_string}: {self.bite.text}'
         return string
 
+    def clean(self):
+        """Prepare the quote to be saved to the database."""
+        super().clean()
+        no_text = not self.text
+        min_text_length = 15
+        if no_text or len(f'{self.text}') < min_text_length:  # e.g., <p>&nbsp;</p>
+            raise ValidationError('The quote must have text.')
+        if not self.bite:
+            text = self.text.text
+            if len(text) > BITE_MAX_LENGTH:
+                raise ValidationError('Add a quote bite.')
+            self.bite = text  # type: ignore  # TODO: remove type ignore
+
     def save(self, *args, **kwargs):
         """Save the quote to the database."""
         self.attributee_html = self.get_attributee_html()
@@ -244,19 +257,6 @@ class Quote(
             models.Q(content_type_id=get_ct_id(ContentTypes.occurrence))
         ).values_list('id', flat=True)
         return Occurrence.objects.filter(id__in=occurrence_ids)
-
-    def clean(self):
-        """Prepare the quote to be saved to the database."""
-        super().clean()
-        no_text = not self.text
-        min_text_length = 15
-        if no_text or len(f'{self.text}') < min_text_length:  # e.g., <p>&nbsp;</p>
-            raise ValidationError('The quote must have text.')
-        if not self.bite:
-            text = self.text.text
-            if len(text) > BITE_MAX_LENGTH:
-                raise ValidationError('Add a quote bite.')
-            self.bite = text  # type: ignore  # TODO: remove type ignore
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
