@@ -11,25 +11,27 @@ import { FC } from "react";
 import Layout from "../../components/Layout";
 import Pagination from "../../components/Pagination";
 
-interface EntitiesProps {
-  entitiesData: any;
+interface OccurrencesProps {
+  occurrencesData: any;
 }
 
-const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
-  const entities = entitiesData["results"] || [];
-  const entityCards = entities.map((entity) => (
-    <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
-      <Link href={`/entities/${entity["slug"]}`}>
+const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps) => {
+  const occurrences = occurrencesData["results"] || [];
+  const occurrenceCards = occurrences.map((occurrence) => (
+    <Grid item key={occurrence["slug"]} xs={6} sm={4} md={3}>
+      <Link href={`/occurrences/${occurrence["slug"]}`}>
         <a>
           <Card>
-            <CardHeader title={entity["name"]} />
-            {entity["serialized_images"].length > 0 && (
+            <CardHeader title={occurrence["title"]} />
+            {occurrence["serialized_images"].length > 0 && (
               <CardMedia
                 style={{ height: 0, paddingTop: "100%" }}
-                image={entity["serialized_images"][0]["src_url"]}
+                image={occurrence["serialized_images"][0]["src_url"]}
               />
             )}
-            <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
+            <CardContent
+              dangerouslySetInnerHTML={{ __html: occurrence["truncated_description"] }}
+            />
           </Card>
         </a>
       </Link>
@@ -37,27 +39,27 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   ));
 
   return (
-    <Layout title={"Entities"}>
+    <Layout title={"Occurrences"}>
       <Container>
-        <Pagination count={entitiesData["total_pages"]} />
+        <Pagination count={occurrencesData["total_pages"]} />
         <Grid container spacing={2}>
-          {entityCards}
+          {occurrenceCards}
         </Grid>
       </Container>
     </Layout>
   );
 };
 
-export default Entities;
+export default Occurrences;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let entitiesData = {};
+  let occurrencesData = {};
 
   await axiosWithoutAuth
-    .get("http://django:8000/api/entities/", { params: context.query })
+    .get("http://django:8000/api/occurrences/", { params: context.query })
     .then((response) => {
-      entitiesData = response.data;
+      occurrencesData = response.data;
     })
     .catch((error) => {
       // console.error(error);
@@ -65,7 +67,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      entitiesData,
+      occurrencesData,
     },
   };
 };

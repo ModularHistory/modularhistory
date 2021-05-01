@@ -2,7 +2,6 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
-import CardMedia from "@material-ui/core/CardMedia";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -11,25 +10,19 @@ import { FC } from "react";
 import Layout from "../../components/Layout";
 import Pagination from "../../components/Pagination";
 
-interface EntitiesProps {
-  entitiesData: any;
+interface SourcesProps {
+  sourcesData: any;
 }
 
-const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
-  const entities = entitiesData["results"] || [];
-  const entityCards = entities.map((entity) => (
-    <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
-      <Link href={`/entities/${entity["slug"]}`}>
+const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
+  const sources = sourcesData["results"] || [];
+  const sourceCards = sources.map((source) => (
+    <Grid item key={source["slug"]} xs={6} sm={4} md={3}>
+      <Link href={`/sources/${source["slug"]}`}>
         <a>
           <Card>
-            <CardHeader title={entity["name"]} />
-            {entity["serialized_images"].length > 0 && (
-              <CardMedia
-                style={{ height: 0, paddingTop: "100%" }}
-                image={entity["serialized_images"][0]["src_url"]}
-              />
-            )}
-            <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
+            <CardHeader title={source["title"]} />
+            <CardContent dangerouslySetInnerHTML={{ __html: source["citationHtml"] }} />
           </Card>
         </a>
       </Link>
@@ -37,27 +30,27 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   ));
 
   return (
-    <Layout title={"Entities"}>
+    <Layout title={"Sources"}>
       <Container>
-        <Pagination count={entitiesData["total_pages"]} />
+        <Pagination count={sourcesData["total_pages"]} />
         <Grid container spacing={2}>
-          {entityCards}
+          {sourceCards}
         </Grid>
       </Container>
     </Layout>
   );
 };
 
-export default Entities;
+export default Sources;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let entitiesData = {};
+  let sourcesData = {};
 
   await axiosWithoutAuth
-    .get("http://django:8000/api/entities/", { params: context.query })
+    .get("http://django:8000/api/sources/", { params: context.query })
     .then((response) => {
-      entitiesData = response.data;
+      sourcesData = response.data;
     })
     .catch((error) => {
       // console.error(error);
@@ -65,7 +58,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      entitiesData,
+      sourcesData,
     },
   };
 };

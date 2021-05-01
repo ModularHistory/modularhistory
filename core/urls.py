@@ -21,7 +21,6 @@ import logging
 import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views.decorators.csrf import csrf_exempt
@@ -78,7 +77,7 @@ urlpatterns = [
     path('watchman/', include('watchman.urls')),
     path('healthcheck/', bare_status),  # basic healthcheck
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=False))),
-    path('graphiql/', login_required(csrf_exempt(GraphQLView.as_view(graphiql=True)))),
+    path('graphiql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
     # Debug toolbar: https://django-debug-toolbar.readthedocs.io/en/latest/
     path('__debug__', include(debug_toolbar.urls)),
     # Errors (for debugging)

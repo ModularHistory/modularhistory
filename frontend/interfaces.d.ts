@@ -47,9 +47,21 @@ export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
   summary: string;
 }
 
+export interface SourceModule extends SearchableModule {
+  citationHtml: string;
+  citationString: string;
+  description: string;
+}
+
 export interface EntityModule extends ModuleWithImages {
   serialized_citations: Citation[];
   description: string;
+}
+
+export interface PostulationModule extends BaseModule {
+  summary: string;
+  elaboration: string;
+  certainty: string;
 }
 
 export interface TopicModule extends BaseModule {

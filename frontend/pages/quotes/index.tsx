@@ -11,25 +11,25 @@ import { FC } from "react";
 import Layout from "../../components/Layout";
 import Pagination from "../../components/Pagination";
 
-interface EntitiesProps {
-  entitiesData: any;
+interface QuotesProps {
+  quotesData: any;
 }
 
-const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
-  const entities = entitiesData["results"] || [];
-  const entityCards = entities.map((entity) => (
-    <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
-      <Link href={`/entities/${entity["slug"]}`}>
+const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
+  const quotes = quotesData["results"] || [];
+  const quoteCards = quotes.map((quote) => (
+    <Grid item key={quote["slug"]} xs={6} sm={4} md={3}>
+      <Link href={`/quotes/${quote["slug"]}`}>
         <a>
           <Card>
-            <CardHeader title={entity["name"]} />
-            {entity["serialized_images"].length > 0 && (
+            <CardHeader title={quote["title"]} />
+            {quote["serialized_images"].length > 0 && (
               <CardMedia
                 style={{ height: 0, paddingTop: "100%" }}
-                image={entity["serialized_images"][0]["src_url"]}
+                image={quote["serialized_images"][0]["src_url"]}
               />
             )}
-            <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
+            <CardContent dangerouslySetInnerHTML={{ __html: quote["truncated_description"] }} />
           </Card>
         </a>
       </Link>
@@ -37,27 +37,27 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   ));
 
   return (
-    <Layout title={"Entities"}>
+    <Layout title={"Quotes"}>
       <Container>
-        <Pagination count={entitiesData["total_pages"]} />
+        <Pagination count={quotesData["total_pages"]} />
         <Grid container spacing={2}>
-          {entityCards}
+          {quoteCards}
         </Grid>
       </Container>
     </Layout>
   );
 };
 
-export default Entities;
+export default Quotes;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let entitiesData = {};
+  let quotesData = {};
 
   await axiosWithoutAuth
-    .get("http://django:8000/api/entities/", { params: context.query })
+    .get("http://django:8000/api/quotes/", { params: context.query })
     .then((response) => {
-      entitiesData = response.data;
+      quotesData = response.data;
     })
     .catch((error) => {
       // console.error(error);
@@ -65,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      entitiesData,
+      quotesData,
     },
   };
 };

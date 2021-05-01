@@ -18,19 +18,11 @@ const globalMenuItems = [
       { title: "Manifesto", path: "/manifesto", reactive: false },
     ],
   },
-  {
-    title: "Occurrences",
-    path: "/search/?content_types=occurrences.occurrence",
-    as: "/occurrences",
-    reactive: true,
-  },
-  {
-    title: "Quotes",
-    path: "/search/?content_types=quotes.quote",
-    as: "/quotes",
-    reactive: true,
-  },
   { title: "Entities", path: "/entities", reactive: true },
+  { title: "Occurrences", path: "/occurrences", reactive: true },
+  { title: "Postulations", path: "/postulations", reactive: true },
+  { title: "Quotes", path: "/quotes", reactive: true },
+  { title: "Sources", path: "/sources", reactive: true },
 ];
 
 function WrappedNavLink({ title, path, as, reactive }) {

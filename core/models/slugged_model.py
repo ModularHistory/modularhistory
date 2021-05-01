@@ -65,5 +65,5 @@ class SluggedModel(Model):
             slug_base = str(getattr(self, slug_base_field, self.pk))
             if '<' in slug_base:
                 slug_base = soupify(slug_base).get_text()
-            slug = slugify(slug_base)
+            slug = slugify(slug_base)[:75]
         return slug or self.pk
