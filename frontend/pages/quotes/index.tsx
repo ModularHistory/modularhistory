@@ -1,8 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardMedia from "@material-ui/core/CardMedia";
+import QuoteCard from "@/components/modulecards/QuoteCard";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -21,16 +18,7 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
     <Grid item key={quote["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/quotes/${quote["slug"]}`}>
         <a>
-          <Card>
-            <CardHeader title={quote["title"]} />
-            {quote["serialized_images"].length > 0 && (
-              <CardMedia
-                style={{ height: 0, paddingTop: "100%" }}
-                image={quote["serialized_images"][0]["src_url"]}
-              />
-            )}
-            <CardContent dangerouslySetInnerHTML={{ __html: quote["truncated_description"] }} />
-          </Card>
+          <QuoteCard quote={quote} />
         </a>
       </Link>
     </Grid>

@@ -1,7 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
+import PostulationCard from "@/components/modulecards/PostulationCard";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -20,10 +18,7 @@ const Postulations: FC<PostulationsProps> = ({ postulationsData }: PostulationsP
     <Grid item key={postulation["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/postulations/${postulation["slug"]}`}>
         <a>
-          <Card>
-            <CardHeader title={postulation["summary"]} />
-            <CardContent dangerouslySetInnerHTML={{ __html: postulation["elaboration"] }} />
-          </Card>
+          <PostulationCard postulation={postulation} />
         </a>
       </Link>
     </Grid>

@@ -1,8 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardMedia from "@material-ui/core/CardMedia";
+import OccurrenceCard from "@/components/modulecards/OccurrenceCard";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -21,18 +18,7 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
     <Grid item key={occurrence["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/occurrences/${occurrence["slug"]}`}>
         <a>
-          <Card>
-            <CardHeader title={occurrence["title"]} />
-            {occurrence["serialized_images"].length > 0 && (
-              <CardMedia
-                style={{ height: 0, paddingTop: "100%" }}
-                image={occurrence["serialized_images"][0]["src_url"]}
-              />
-            )}
-            <CardContent
-              dangerouslySetInnerHTML={{ __html: occurrence["truncated_description"] }}
-            />
-          </Card>
+          <OccurrenceCard occurrence={occurrence} />
         </a>
       </Link>
     </Grid>

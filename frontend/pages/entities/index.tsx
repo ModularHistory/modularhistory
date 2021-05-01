@@ -1,8 +1,9 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardMedia from "@material-ui/core/CardMedia";
+import EntityCard from "@/components/modulecards/EntityCard";
+// import Card from "@material-ui/core/Card";
+// import CardContent from "@material-ui/core/CardContent";
+// import CardHeader from "@material-ui/core/CardHeader";
+// import CardMedia from "@material-ui/core/CardMedia";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -21,7 +22,7 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
     <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
       <Link href={`/entities/${entity["slug"]}`}>
         <a>
-          <Card>
+          {/* <Card>
             <CardHeader title={entity["name"]} />
             {entity["serialized_images"].length > 0 && (
               <CardMedia
@@ -30,7 +31,8 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
               />
             )}
             <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
-          </Card>
+          </Card> */}
+          <EntityCard entity={entity} />
         </a>
       </Link>
     </Grid>

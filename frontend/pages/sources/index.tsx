@@ -1,7 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
+import SourceCard from "@/components/modulecards/SourceCard";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -20,10 +18,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
     <Grid item key={source["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/sources/${source["slug"]}`}>
         <a>
-          <Card>
-            <CardHeader title={source["title"]} />
-            <CardContent dangerouslySetInnerHTML={{ __html: source["citationHtml"] }} />
-          </Card>
+          <SourceCard source={source} />
         </a>
       </Link>
     </Grid>

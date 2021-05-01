@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
-import QuoteDetail from "@/components/moduledetails/QuoteDetail";
+import ModuleDetail from "@/components/moduledetails/ModuleDetail";
 import { QuoteModule } from "@/interfaces";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -17,7 +17,7 @@ const Quote: FC<QuoteProps> = ({ quote }: QuoteProps) => {
   return (
     <Layout title={quote["title"]}>
       <ModuleContainer>
-        <QuoteDetail quote={quote} />
+        <ModuleDetail module={quote} />
       </ModuleContainer>
     </Layout>
   );
