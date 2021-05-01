@@ -1,7 +1,7 @@
 import graphene
 
 from apps.entities.api import schema as entities_schema
-from apps.topics import schema as topics_schema
+from apps.topics.api import schema as topics_schema
 
 
 # add other queries to the parameters of the following query to make additions:
