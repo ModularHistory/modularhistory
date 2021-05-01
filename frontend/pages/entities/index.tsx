@@ -45,6 +45,7 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
         <Grid container spacing={2}>
           {entityCards}
         </Grid>
+        <Pagination count={entitiesData["total_pages"]} />
       </Container>
     </Layout>
   );

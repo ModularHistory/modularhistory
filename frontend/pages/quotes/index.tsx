@@ -31,6 +31,7 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
         <Grid container spacing={2}>
           {quoteCards}
         </Grid>
+        <Pagination count={quotesData["total_pages"]} />
       </Container>
     </Layout>
   );

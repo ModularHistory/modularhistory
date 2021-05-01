@@ -23,6 +23,7 @@ const globalMenuItems = [
   { title: "Postulations", path: "/postulations", reactive: true },
   { title: "Quotes", path: "/quotes", reactive: true },
   { title: "Sources", path: "/sources", reactive: true },
+  { title: "Topics", path: "/topics", reactive: true },
 ];
 
 function WrappedNavLink({ title, path, as, reactive }) {

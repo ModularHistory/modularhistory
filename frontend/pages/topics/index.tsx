@@ -31,6 +31,7 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   return (
     <Layout title={"Topics"}>
       <Container>
+        <h1 className="text-center">Topics</h1>
         <Grid container spacing={2}>
           {topicNames}
         </Grid>

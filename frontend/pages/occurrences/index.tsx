@@ -31,6 +31,7 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
         <Grid container spacing={2}>
           {occurrenceCards}
         </Grid>
+        <Pagination count={occurrencesData["total_pages"]} />
       </Container>
     </Layout>
   );

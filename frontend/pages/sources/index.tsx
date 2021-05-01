@@ -31,6 +31,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
         <Grid container spacing={2}>
           {sourceCards}
         </Grid>
+        <Pagination count={sourcesData["total_pages"]} />
       </Container>
     </Layout>
   );

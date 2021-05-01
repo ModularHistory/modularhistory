@@ -31,6 +31,7 @@ const Postulations: FC<PostulationsProps> = ({ postulationsData }: PostulationsP
         <Grid container spacing={2}>
           {postulationCards}
         </Grid>
+        <Pagination count={postulationsData["total_pages"]} />
       </Container>
     </Layout>
   );
