@@ -169,7 +169,6 @@ INSTALLED_APPS = [
     'apps.entities.apps.EntitiesConfig',
     'apps.forums.apps.ForumsConfig',
     'apps.graph.apps.GraphConfig',
-    'apps.home.apps.HomeConfig',
     'apps.interactions.apps.InteractionsConfig',
     'apps.postulations.apps.PostulationsConfig',
     'apps.search.apps.SearchConfig',

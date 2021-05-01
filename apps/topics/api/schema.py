@@ -3,7 +3,7 @@ import logging
 import graphene
 
 from apps.topics.models import Topic
-from apps.topics.types import TopicType
+from apps.topics.api.types import TopicType
 
 
 class Query(graphene.ObjectType):
