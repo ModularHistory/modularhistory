@@ -8,12 +8,12 @@ from apps.search.models.searchable_model import SearchableModelSerializer
 class ImageSerializer(SearchableModelSerializer):
     """Serializer for images."""
 
-    src_url = serpy.StrField()
+    srcUrl = serpy.StrField(attr='src_url')
     width = serpy.IntField()
     height = serpy.IntField()
     captionHtml = serpy.Field(attr='caption_html')
     providerString = serpy.Field(attr='provider_string')
-    bg_img_position = serpy.Field()
+    bgImgPosition = serpy.Field(attr='bg_img_position')
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""

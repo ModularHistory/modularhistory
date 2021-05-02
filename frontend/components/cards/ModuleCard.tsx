@@ -144,10 +144,10 @@ export default function ModuleCard({ module, header, content, children }: Module
       {(bgImage && (
         <div
           className="img-bg lazy-bg"
-          data-img={bgImage["src_url"]}
+          data-img={bgImage["srcUrl"]}
           style={{
-            backgroundPosition: bgImage["bg_img_position"],
-            backgroundImage: `url(${bgImage["src_url"]})`,
+            backgroundPosition: bgImage["bgImgPosition"],
+            backgroundImage: `url(${bgImage["srcUrl"]})`,
           }}
         />
       )) || (

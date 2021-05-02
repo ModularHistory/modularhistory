@@ -16,12 +16,12 @@ export interface Citation {
 }
 
 export interface ImageModule extends SearchableModule {
-  src_url: string;
+  srcUrl: string;
   width: number;
   height: number;
   captionHtml: string;
   providerString: string;
-  bg_img_position: string;
+  bgImgPosition: string;
 }
 
 export interface ModuleWithImages {
