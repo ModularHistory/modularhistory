@@ -391,7 +391,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def link(self) -> Optional[SafeString]:
         """Return an HTML link element containing the source URL, if one exists."""
         if self.url:
-            return format_html(f'<a target="_blank" href="{self.url}">{self.url}</a>')
+            return format_html(
+                f'<a href="{self.url}" class="url" target="_blank">{self.url}</a>'
+            )
         return None
 
     @property

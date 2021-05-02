@@ -421,6 +421,10 @@ div.detail {
   background-position: center;
   background-size: cover; }
 
+.url {
+  overflow-wrap: break-word;
+  word-wrap: break-word; }
+
 .card,
 .row {
   position: relative; }

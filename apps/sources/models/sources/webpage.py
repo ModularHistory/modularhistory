@@ -33,6 +33,6 @@ class Webpage(Source, TextualMixin):
             f'<i>{self.website.name}</i>',
             self.website.owner,
             self.date.string if self.date else '',
-            f'retrieved from <a target="_blank" href="{self.url}">{self.url}</a>',
+            f'retrieved from <a target="_blank" href="{self.url}" class="url">{self.url}</a>',
         ]
         return self.components_to_html(components)
