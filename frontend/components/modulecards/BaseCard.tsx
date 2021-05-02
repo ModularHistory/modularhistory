@@ -88,7 +88,7 @@ const useStyles = makeStyles({
         content: "open-quote",
         position: "absolute",
         top: "-0.25rem",
-        left: "-0.6rem",
+        left: "-0.25rem",
         fontSize: "3rem",
         fontWeight: "bold",
       },
