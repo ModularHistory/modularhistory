@@ -2,13 +2,13 @@
   Based on https://github.com/nathanstitt/react-braintree-fields/blob/master/demo/demo-functional.jsx
 */
 
+import Layout from "@/components/Layout";
 import Container from "@material-ui/core/Container";
 import $ from "jquery";
 import { GetServerSideProps } from "next";
 import { FC, useRef, useState } from "react";
 import { Braintree, HostedField } from "react-braintree-fields";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
-import Layout from "../../components/Layout";
 
 interface DonateProps {
   clientToken: string;

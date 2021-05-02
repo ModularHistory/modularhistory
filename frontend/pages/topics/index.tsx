@@ -1,10 +1,11 @@
+import Layout from "@/components/Layout";
+import PageHeader from "@/components/PageHeader";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
-import Layout from "../../components/Layout";
 
 interface TopicsProps {
   topicsData: any;
@@ -31,7 +32,7 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   return (
     <Layout title={"Topics"}>
       <Container>
-        <h1 className="text-center">Topics</h1>
+        <PageHeader>Topics</PageHeader>
         <Grid container spacing={2}>
           {topicNames}
         </Grid>

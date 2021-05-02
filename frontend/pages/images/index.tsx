@@ -1,5 +1,8 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import Layout from "@/components/Layout";
 import ImageCard from "@/components/modulecards/ImageCard";
+import PageHeader from "@/components/PageHeader";
+import Pagination from "@/components/Pagination";
 // import Card from "@material-ui/core/Card";
 // import CardContent from "@material-ui/core/CardContent";
 // import CardHeader from "@material-ui/core/CardHeader";
@@ -9,8 +12,6 @@ import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
-import Layout from "../../components/Layout";
-import Pagination from "../../components/Pagination";
 
 interface ImagesProps {
   imagesData: any;
@@ -31,6 +32,7 @@ const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
   return (
     <Layout title={"Images"}>
       <Container>
+        <PageHeader>Images</PageHeader>
         <Pagination count={imagesData["total_pages"]} />
         <Grid container spacing={2}>
           {imageCards}

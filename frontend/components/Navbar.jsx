@@ -18,12 +18,12 @@ const globalMenuItems = [
       { title: "Manifesto", path: "/manifesto", reactive: true },
     ],
   },
+  { title: "Occurrences", path: "/occurrences", reactive: true },
+  { title: "Quotes", path: "/quotes", reactive: true },
+  { title: "Postulations", path: "/postulations", reactive: true },
+  { title: "Sources", path: "/sources", reactive: true },
   { title: "Entities", path: "/entities", reactive: true },
   { title: "Images", path: "/images", reactive: true },
-  { title: "Occurrences", path: "/occurrences", reactive: true },
-  { title: "Postulations", path: "/postulations", reactive: true },
-  { title: "Quotes", path: "/quotes", reactive: true },
-  { title: "Sources", path: "/sources", reactive: true },
   { title: "Topics", path: "/topics", reactive: true },
 ];
 

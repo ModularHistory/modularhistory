@@ -1,12 +1,13 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import Layout from "@/components/Layout";
 import SourceCard from "@/components/modulecards/SourceCard";
+import PageHeader from "@/components/PageHeader";
+import Pagination from "@/components/Pagination";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
-import Layout from "../../components/Layout";
-import Pagination from "../../components/Pagination";
 
 interface SourcesProps {
   sourcesData: any;
@@ -27,6 +28,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
   return (
     <Layout title={"Sources"}>
       <Container>
+        <PageHeader>Sources</PageHeader>
         <Pagination count={sourcesData["total_pages"]} />
         <Grid container spacing={2}>
           {sourceCards}
