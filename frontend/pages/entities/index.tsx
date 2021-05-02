@@ -22,16 +22,6 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
     <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
       <Link href={`/entities/${entity["slug"]}`}>
         <a>
-          {/* <Card>
-            <CardHeader title={entity["name"]} />
-            {entity["serialized_images"].length > 0 && (
-              <CardMedia
-                style={{ height: 0, paddingTop: "100%" }}
-                image={entity["serialized_images"][0]["src_url"]}
-              />
-            )}
-            <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
-          </Card> */}
           <EntityCard entity={entity} />
         </a>
       </Link>

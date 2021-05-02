@@ -1,3 +1,4 @@
+import { Card, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles({
@@ -8,24 +9,33 @@ const useStyles = makeStyles({
     textOverflow: "ellipsis",
     minHeight: "15rem",
     color: "black",
-    // TODO: delete this if it's unnecessary
-    // "&:first-child": {
-    //   marginTop: '0 !important'
-    // },
+    "&:first-child": {
+      marginTop: "0 !important",
+    },
     "& .fa": {
       "-webkit-text-stroke": "initial",
       textShadow: "none",
     },
-    "& .card-body": {
-      fontSize: "0.8rem",
-      "-webkit-text-stroke": "1px black",
-      textShadow: `0 0 1px #ffffff, 0 1px 1px #ffffff, 1px 1px 1px #ffffff,
-        1px 0 1px #ffffff, 0 0 0.5rem #ffffff, 0 1px 0.5rem #ffffff,
-        1px 1px 0.5rem #ffffff, 1px 0 0.5rem #ffffff, 0 0 1rem #ffffff,
-        0 1px 1rem #ffffff, 1px 1px 1rem #ffffff, 1px 0 1rem #ffffff,
-        0 0 2rem #ffffff, 0 1px 2rem #ffffff, 1px 1px 2rem #ffffff,
-        1px 0 2rem #ffffff`,
-    },
+    // &.image-card {
+    //   .card-body {
+    //     p {
+    //       margin-bottom: 1rem;
+    //     }
+    //   }
+    //   .image-credit {
+    //     display: none;
+    //   }
+    // }
+  },
+  cardBody: {
+    fontSize: "0.8rem",
+    "-webkit-text-stroke": "1px black",
+    textShadow: `0 0 1px #ffffff, 0 1px 1px #ffffff, 1px 1px 1px #ffffff,
+      1px 0 1px #ffffff, 0 0 0.5rem #ffffff, 0 1px 0.5rem #ffffff,
+      1px 1px 0.5rem #ffffff, 1px 0 0.5rem #ffffff, 0 0 1rem #ffffff,
+      0 1px 1rem #ffffff, 1px 1px 1rem #ffffff, 1px 0 1rem #ffffff,
+      0 0 2rem #ffffff, 0 1px 2rem #ffffff, 1px 1px 2rem #ffffff,
+      1px 0 2rem #ffffff`,
     //   @include safari {
     //     // On Safari, without this override,
     //     // the shadow goes on top of the text and makes it lighter....
@@ -67,18 +77,21 @@ const useStyles = makeStyles({
     //     }
     //   }
     // }
-    // &.image-card {
-    //   .card-body {
-    //     p {
-    //       margin-bottom: 1rem;
-    //     }
-    //   }
-    //   .image-credit {
-    //     display: none;
-    //   }
-    // }
   },
 });
+
+{
+  /* <Card>
+  <CardHeader title={entity["name"]} />
+  {entity["serialized_images"].length > 0 && (
+    <CardMedia
+      style={{ height: 0, paddingTop: "100%" }}
+      image={entity["serialized_images"][0]["src_url"]}
+    />
+  )}
+  <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
+</Card> */
+}
 
 export default function BaseCard({ module, cardClass, cardStyles, top, children }) {
   // BaseCard is extended by module-specific cards.
@@ -92,7 +105,7 @@ export default function BaseCard({ module, cardClass, cardStyles, top, children 
   }
 
   return (
-    <div className={`card m-2 ${cardClass || classes.card || ""}`} style={cardStyles}>
+    <Card className={`m-2 ${classes.card}`} style={cardStyles}>
       {process.env.NODE_ENV != "prod" && !module["verified"] && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED
@@ -110,15 +123,17 @@ export default function BaseCard({ module, cardClass, cardStyles, top, children 
         ></div>
       )}
 
-      <div className="card-body" style={{ backgroundColor: "transparent", zIndex: "1" }}>
+      <CardContent
+        className={classes.cardBody}
+        style={{ backgroundColor: "transparent", zIndex: "1" }}
+      >
         {!isImage && module["date_html"] && (
           <p className="card-title text-center my-1">
             <small dangerouslySetInnerHTML={{ __html: module["date_html"] }} />
           </p>
         )}
-
         {children}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
