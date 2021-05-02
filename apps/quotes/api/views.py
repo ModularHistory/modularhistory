@@ -24,4 +24,5 @@ class QuoteAPIView(RetrieveAPIView):
     """API view for a single occurrences."""
 
     queryset = Quote.objects.all()
+    lookup_field = 'slug'
     serializer_class = QuoteSerializer
