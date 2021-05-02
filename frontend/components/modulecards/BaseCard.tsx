@@ -82,7 +82,7 @@ const useStyles = makeStyles({
       marginBottom: 0,
       fontSize: "0.8rem",
       borderLeft: "none",
-      padding: "0.2rem 0.2rem 0 0.5rem",
+      padding: "0.2rem 0.2rem 0 0.2rem",
       lineHeight: "1.2rem",
       "&::before": {
         content: "open-quote",
@@ -147,7 +147,7 @@ export default function BaseCard({ module, content, children }: ModuleCardProps)
           <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
         </p>
       )}
-      <div className={classes.cardBody} dangerouslySetInnerHTML={{ __html: content }} />
+      {content && <div className={classes.cardBody}>{content}</div>}
       {children}
     </Card>
   );

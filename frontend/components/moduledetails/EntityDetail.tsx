@@ -9,6 +9,16 @@ interface EntityDetailProps {
 const EntityDetail: FC<EntityDetailProps> = ({ entity }: EntityDetailProps) => {
   let titleHtml = entity["name"];
   const firstImage = JSON.parse(entity["serializedImages"])?.[0];
+  const firstImageCard = (
+    <>
+      <div dangerouslySetInnerHTML={{ __html: module["caption_html"] }} />
+      {module["provider_string"] && (
+        <div className="image-credit float-right">
+          <p>{module["provider_string"]}</p>
+        </div>
+      )}
+    </>
+  );
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
