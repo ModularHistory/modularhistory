@@ -16,8 +16,8 @@ interface PostulationsProps {
 const Postulations: FC<PostulationsProps> = ({ postulationsData }: PostulationsProps) => {
   const postulations = postulationsData["results"] || [];
   const postulationCards = postulations.map((postulation) => (
-    <Grid item key={postulation["slug"]} xs={6} sm={4} md={3}>
-      <Link href={`/postulations/${postulation["slug"]}`}>
+    <Grid item key={postulation["pk"]} xs={6} sm={4} md={3}>
+      <Link href={`/postulations/${postulation["slug"] || postulation["pk"]}`}>
         <a>
           <ModuleCard
             module={postulation}

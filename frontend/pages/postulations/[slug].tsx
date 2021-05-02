@@ -1,8 +1,8 @@
+import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import { PostulationModule } from "@/interfaces";
-import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
@@ -27,14 +27,23 @@ export default Postulation;
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let postulation = {};
   const { slug } = params;
-
-  await axios
-    .get(`http://django:8000/api/postulations/${slug}/`)
+  const body = {
+    query: `{
+      postulation(slug: "${slug}") {
+        summary
+        elaboration
+        model
+        adminUrl
+      }
+    }`,
+  };
+  await axiosWithoutAuth
+    .post("http://django:8000/graphql/", body)
     .then((response) => {
-      postulation = response.data;
+      postulation = response.data.data.postulation;
     })
     .catch((error) => {
-      // TODO: how should we handle errors here?
+      // console.error(error);
     });
 
   return {
