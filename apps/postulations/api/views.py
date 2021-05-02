@@ -18,10 +18,3 @@ class PostulationListAPIView(ListAPIView):
 
     queryset = Postulation.objects.all()
     serializer_class = PostulationSerializer
-
-
-class PostulationAPIView(RetrieveAPIView):
-    """API view for listing postulations."""
-
-    queryset = Postulation.objects.all()
-    serializer_class = PostulationSerializer
