@@ -16,20 +16,54 @@ const useStyles = makeStyles({
       "-webkit-text-stroke": "initial",
       textShadow: "none",
     },
-    // &.image-card {
-    //   .card-body {
-    //     p {
-    //       margin-bottom: 1rem;
-    //     }
-    //   }
-    //   .image-credit {
-    //     display: none;
-    //   }
-    // }
+    "&.image-card": {
+      "& .card-body": {
+        "& p": {
+          marginBottom: "1rem",
+        },
+      },
+      "& .image-credit": {
+        display: "none",
+      },
+    },
+    "& .img-bg": {
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      opacity: "0.6",
+      backgroundColor: "black",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "100% auto",
+      "&:hover": {
+        opacity: "0.7",
+      },
+    },
+  },
+  cardHeader: {
+    margin: 0,
+    position: "relative",
+    left: 0,
+    right: 0,
+    zIndex: 1,
+    display: "block",
+    backgroundImage: "linear-gradient(black, rgba(0,0,0,0.8), rgba(0,0,0,0.8), rgba(0,0,0,0))",
+    paddingBottom: "0.2rem",
+    color: "white",
+    "-webkit-text-stroke": "1px white",
   },
   cardBody: {
+    backgroundImage: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8), rgba(0,0,0,0.8), black)",
+    color: "white",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
     fontSize: "0.8rem",
-    "-webkit-text-stroke": "1px black",
+    "-webkit-text-stroke": "1px white",
+    "&:last-child": {
+      paddingBottom: "0.5rem",
+    },
     //   @include safari {
     //     // On Safari, without this override,
     //     // the shadow goes on top of the text and makes it lighter....
@@ -39,37 +73,37 @@ const useStyles = makeStyles({
     //       1px 0 0.5rem #ffffff, 0 0 1rem #ffffff, 0 1px 1rem #ffffff,
     //       1px 1px 1rem #ffffff, 1px 0 1rem #ffffff;
     //   }
-    //   .blockquote {
-    //     position: relative;
-    //     margin-bottom: 0;
-    //     font-size: 0.8rem;
-    //     border-left: none;
-    //     padding: 0.2rem 0.1rem 0 0.3rem;
-    //     line-height: 1.2rem;
-    //     &::before {
-    //       content: open-quote;
-    //       position: absolute;
-    //       top: -0.25rem;
-    //       left: -0.6rem;
-    //       font-size: 3rem;
-    //       font-weight: bold;
-    //     }
-    //     &::after {
-    //       content: no-close-quote;
-    //       position: relative;
-    //       bottom: 0;
-    //       right: 0;
-    //       font-size: 2rem;
-    //     }
-    //     p {
-    //       position: relative;
-    //       font-size: 0.8rem;
-    //     }
-    //     footer {
-    //       margin-top: 0.5rem;
-    //       text-align: center;
-    //     }
-    //   }
+    "& .blockquote": {
+      position: "relative",
+      marginBottom: 0,
+      fontSize: "0.8rem",
+      borderLeft: "none",
+      padding: "0.2rem 0.2rem 0 0.5rem",
+      lineHeight: "1.2rem",
+      "&::before": {
+        content: "open-quote",
+        position: "absolute",
+        top: "-0.25rem",
+        left: "-0.6rem",
+        fontSize: "3rem",
+        fontWeight: "bold",
+      },
+      "&::after": {
+        content: "no-close-quote",
+        position: "relative",
+        bottom: 0,
+        right: 0,
+        fontSize: "2rem",
+      },
+      "& p": {
+        position: "relative",
+        fontSize: "0.8rem",
+      },
+      "& footer": {
+        marginTop: "0.5rem",
+        textAlign: "center",
+      },
+    },
     // }
   },
 });
@@ -102,7 +136,7 @@ export default function BaseCard({ module, cardStyles, top, children }) {
         />
       )}
       {!isImage && module["dateHtml"] && (
-        <p className="text-center my-1">
+        <p className={`text-center ${classes.cardHeader}`}>
           <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
         </p>
       )}

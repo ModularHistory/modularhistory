@@ -1,6 +1,7 @@
 import PostulationDetail from "@/components/moduledetails/PostulationDetail";
 import {
   EntityModule,
+  ImageModule,
   OccurrenceModule,
   PostulationModule,
   QuoteModule,
@@ -10,13 +11,20 @@ import {
 import { useSession } from "next-auth/client";
 import { createRef, FC, useLayoutEffect } from "react";
 import EntityDetail from "./EntityDetail";
+import ImageDetail from "./ImageDetail";
 import OccurrenceDetail from "./OccurrenceDetail";
 import QuoteDetail from "./QuoteDetail";
 import SourceDetail from "./SourceDetail";
 import TopicDetail from "./TopicDetail";
 
 interface ModuleDetailProps {
-  module: OccurrenceModule | QuoteModule | EntityModule | TopicModule | PostulationModule;
+  module:
+    | OccurrenceModule
+    | QuoteModule
+    | EntityModule
+    | TopicModule
+    | PostulationModule
+    | ImageModule;
 }
 
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
@@ -43,6 +51,9 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     //       may appear on the SERP.
     case "entities.entity":
       details = <EntityDetail entity={module as EntityModule} />;
+      break;
+    case "images.image":
+      details = <ImageDetail image={module as ImageModule} />;
       break;
     case "occurrences.occurrence":
       details = <OccurrenceDetail occurrence={module as OccurrenceModule} />;

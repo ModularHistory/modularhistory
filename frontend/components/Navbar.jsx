@@ -14,11 +14,12 @@ const globalMenuItems = [
     title: "About",
     path: "/about",
     children: [
-      { title: "About Us", path: "/about", reactive: false },
-      { title: "Manifesto", path: "/manifesto", reactive: false },
+      { title: "About Us", path: "/about", reactive: true },
+      { title: "Manifesto", path: "/manifesto", reactive: true },
     ],
   },
   { title: "Entities", path: "/entities", reactive: true },
+  { title: "Images", path: "/images", reactive: true },
   { title: "Occurrences", path: "/occurrences", reactive: true },
   { title: "Postulations", path: "/postulations", reactive: true },
   { title: "Quotes", path: "/quotes", reactive: true },
@@ -51,9 +52,7 @@ function WrappedNavDropdown({ title, children, ...childProps }) {
   return (
     <NavDropdown renderMenuOnMount title={title} {...childProps}>
       {children.map((item) => (
-        <NavDropdown.Item key={item.path} href={item.path}>
-          {item.title}
-        </NavDropdown.Item>
+        <WrappedNavLink key={item.path} {...item} />
       ))}
     </NavDropdown>
   );
