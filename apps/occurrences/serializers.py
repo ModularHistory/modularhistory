@@ -8,7 +8,7 @@ from apps.search.models.searchable_model import SearchableModelSerializer
 class OccurrenceSerializer(SearchableModelSerializer):
     """Serializer for occurrences."""
 
-    date_html = serpy.Field()
+    dateHtml = serpy.Field(attr='date_html')
     summary = serpy.Field(attr='summary.html')
     description = serpy.Field(attr='description.html')
     postscript = serpy.MethodField()

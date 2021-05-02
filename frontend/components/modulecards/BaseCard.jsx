@@ -30,12 +30,6 @@ const useStyles = makeStyles({
   cardBody: {
     fontSize: "0.8rem",
     "-webkit-text-stroke": "1px black",
-    textShadow: `0 0 1px #ffffff, 0 1px 1px #ffffff, 1px 1px 1px #ffffff,
-      1px 0 1px #ffffff, 0 0 0.5rem #ffffff, 0 1px 0.5rem #ffffff,
-      1px 1px 0.5rem #ffffff, 1px 0 0.5rem #ffffff, 0 0 1rem #ffffff,
-      0 1px 1rem #ffffff, 1px 1px 1rem #ffffff, 1px 0 1rem #ffffff,
-      0 0 2rem #ffffff, 0 1px 2rem #ffffff, 1px 1px 2rem #ffffff,
-      1px 0 2rem #ffffff`,
     //   @include safari {
     //     // On Safari, without this override,
     //     // the shadow goes on top of the text and makes it lighter....
@@ -80,38 +74,23 @@ const useStyles = makeStyles({
   },
 });
 
-{
-  /* <Card>
-  <CardHeader title={entity["name"]} />
-  {entity["serialized_images"].length > 0 && (
-    <CardMedia
-      style={{ height: 0, paddingTop: "100%" }}
-      image={entity["serialized_images"][0]["src_url"]}
-    />
-  )}
-  <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
-</Card> */
-}
-
-export default function BaseCard({ module, cardClass, cardStyles, top, children }) {
-  // BaseCard is extended by module-specific cards.
-  // The code is mostly copied from the `_card.html` Django template.
+/**
+ * BaseCard is extended by module-specific cards.
+ */
+export default function BaseCard({ module, cardStyles, top, children }) {
   const classes = useStyles();
-
   const isImage = module["model"] === "images.Image";
   let bgImage;
   if (!isImage) {
     bgImage = module["serialized_images"]?.[0];
   }
-
   return (
     <Card className={`m-2 ${classes.card}`} style={cardStyles}>
-      {process.env.NODE_ENV != "prod" && !module["verified"] && (
+      {false && process.env.NODE_ENV != "prod" && !module["verified"] && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED
         </span>
       )}
-
       {bgImage && (
         <div
           className="img-bg lazy-bg"
@@ -120,18 +99,17 @@ export default function BaseCard({ module, cardClass, cardStyles, top, children 
             backgroundPosition: bgImage["bg_img_position"],
             backgroundImage: `url(${bgImage["src_url"]})`,
           }}
-        ></div>
+        />
       )}
-
+      {!isImage && module["dateHtml"] && (
+        <p className="text-center my-1">
+          <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
+        </p>
+      )}
       <CardContent
         className={classes.cardBody}
         style={{ backgroundColor: "transparent", zIndex: "1" }}
       >
-        {!isImage && module["date_html"] && (
-          <p className="card-title text-center my-1">
-            <small dangerouslySetInnerHTML={{ __html: module["date_html"] }} />
-          </p>
-        )}
         {children}
       </CardContent>
     </Card>

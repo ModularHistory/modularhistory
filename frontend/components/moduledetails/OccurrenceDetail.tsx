@@ -1,6 +1,5 @@
 import { OccurrenceModule } from "@/interfaces";
 import { FC } from "react";
-
 import ImageCard from "../modulecards/ImageCard";
 
 interface OccurrenceDetailProps {
@@ -26,7 +25,7 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
 
       <p
         className="text-center card-title lead"
-        dangerouslySetInnerHTML={{ __html: occurrence["date_html"] }}
+        dangerouslySetInnerHTML={{ __html: occurrence["dateHtml"] }}
       />
       <div className="card-text">
         {occurrence["serialized_images"].map(

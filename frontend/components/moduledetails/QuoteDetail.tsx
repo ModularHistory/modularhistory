@@ -1,6 +1,5 @@
 import { QuoteModule } from "@/interfaces";
 import { FC } from "react";
-
 import ImageCard from "../modulecards/ImageCard";
 
 interface QuoteDetailProps {
@@ -9,8 +8,8 @@ interface QuoteDetailProps {
 
 const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
   let titleHtml = quote["attributee_html"];
-  if (quote["date_html"]) {
-    titleHtml += (titleHtml ? ", " : "") + quote["date_html"];
+  if (quote["dateHtml"]) {
+    titleHtml += (titleHtml ? ", " : "") + quote["dateHtml"];
   }
 
   const firstImage = quote["serialized_images"]?.[0];

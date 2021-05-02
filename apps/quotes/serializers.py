@@ -20,7 +20,7 @@ class QuoteSerializer(SearchableModelSerializer):
     has_multiple_attributees = serpy.BoolField()
     attributee_html = serpy.Field()
     attributee_string = serpy.Field()
-    date_html = serpy.Field()
+    dateHtml = serpy.Field(attr='date_html')
     serialized_images = serpy.Field()
     primary_image = serpy.Field()
     serialized_citations = serpy.Field()
