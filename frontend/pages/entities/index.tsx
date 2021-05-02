@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
+import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
 interface EntitiesProps {
   entitiesData: any;
@@ -21,7 +22,14 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
         <a>
           <ModuleCard
             module={entity}
-            content={<div dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />}
+            header={entity["name"]}
+            content={
+              <HTMLEllipsis
+                unsafeHTML={entity["truncated_description"]}
+                maxLine="4"
+                basedOn="words"
+              />
+            }
           />
         </a>
       </Link>

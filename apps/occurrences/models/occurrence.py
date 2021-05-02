@@ -131,9 +131,12 @@ class Occurrence(
         description = soupify(self.description.html)
         if description.find('img'):
             description.find('img').decompose()
-        return format_html(
+        truncated_description = (
             truncatechars_html(description.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
+            .replace('<p>', '')
+            .replace('</p>', '')
         )
+        return format_html(truncated_description)
 
     @property
     def ordered_images(self):

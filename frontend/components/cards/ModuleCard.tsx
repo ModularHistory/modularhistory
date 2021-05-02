@@ -58,6 +58,10 @@ const useStyles = makeStyles({
     backgroundImage: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8), rgba(0,0,0,0.8), black)",
     color: "white",
     position: "absolute",
+    width: "100%",
+    maxHeight: "50%",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
     left: 0,
     right: 0,
     bottom: 0,
@@ -114,11 +118,12 @@ const useStyles = makeStyles({
 
 interface ModuleUnionCardProps {
   module: BaseModule;
+  header?: string;
   content: any;
   children?: ReactNode;
 }
 
-export default function ModuleCard({ module, content, children }: ModuleUnionCardProps) {
+export default function ModuleCard({ module, header, content, children }: ModuleUnionCardProps) {
   const classes = useStyles();
   const isImage = module["model"] === "images.Image";
   let bgImage;
@@ -142,13 +147,18 @@ export default function ModuleCard({ module, content, children }: ModuleUnionCar
           }}
         />
       )}
-      {!isImage && module["dateHtml"] && (
-        <p className={`text-center ${classes.cardHeader}`}>
-          <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
-        </p>
-      )}
+      {!isImage &&
+        ((header && (
+          <p className={`text-center ${classes.cardHeader}`}>
+            <small>{header}</small>
+          </p>
+        )) ||
+          (module["dateHtml"] && (
+            <p className={`text-center ${classes.cardHeader}`}>
+              <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
+            </p>
+          )))}
       {content && <div className={classes.cardBody}>{content}</div>}
-      {children}
     </Card>
   );
 }
