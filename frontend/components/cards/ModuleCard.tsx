@@ -49,13 +49,15 @@ const useStyles = makeStyles({
     right: 0,
     zIndex: 1,
     display: "block",
-    backgroundImage: "linear-gradient(black, rgba(0,0,0,0.8), rgba(0,0,0,0.8), rgba(0,0,0,0))",
+    backgroundImage:
+      "linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.7), rgba(0,0,0,0.6), rgba(0,0,0,0.5), rgba(0,0,0,0))",
     paddingBottom: "0.2rem",
     color: "white",
     "-webkit-text-stroke": "1px white",
   },
   cardBody: {
-    backgroundImage: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8), rgba(0,0,0,0.8), black)",
+    backgroundImage:
+      "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.5), rgba(0,0,0,0.6), rgba(0,0,0,0.7), rgba(0,0,0,0.8))",
     color: "white",
     position: "absolute",
     width: "100%",
@@ -137,7 +139,7 @@ export default function ModuleCard({ module, header, content, children }: Module
           UNVERIFIED
         </span>
       )}
-      {bgImage && (
+      {(bgImage && (
         <div
           className="img-bg lazy-bg"
           data-img={bgImage["src_url"]}
@@ -146,6 +148,9 @@ export default function ModuleCard({ module, header, content, children }: Module
             backgroundImage: `url(${bgImage["src_url"]})`,
           }}
         />
+      )) || (
+        // Note: This applies a dark background to the card.
+        <div className="img-bg" />
       )}
       {!isImage &&
         ((header && (
