@@ -244,7 +244,12 @@ def restore_squashed_migrations(context: Context = CONTEXT, app: str = ''):
         print(f'There are no squashed migrations to remove from {app_name}.')
 
 
-def seed(context: Context = CONTEXT, remote: bool = False, migrate: bool = False):
+def seed(
+    context: Context = CONTEXT,
+    remote: bool = False,
+    migrate: bool = False,
+    up: bool = False,
+):
     """Seed the database."""
     db_volume = 'modularhistory_postgres_data'
     if remote:
@@ -284,6 +289,8 @@ def seed(context: Context = CONTEXT, remote: bool = False, migrate: bool = False
             '\'',
             pty=True,
         )
+    if up:
+        context.run(f'docker-compose up -d dev')
 
 
 def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = False):
