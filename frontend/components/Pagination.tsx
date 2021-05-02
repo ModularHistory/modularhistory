@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useRouter } from "next/router";
 import MuiPagination from "@material-ui/lab/Pagination";
 import { makeStyles, useMediaQuery, useTheme } from "@material-ui/core";
+import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,17 +18,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function usePageState(...args) {
+function usePageState() {
   // This hook is used to trigger route changes
   // when a page button is clicked.
-
   const router = useRouter();
-  const [pageNum, setPageNum] = useState(...args);
+  const pageNum = Number(router.query["page"] || 1);
   const [loading, setLoading] = useState(false);
 
-  const query = { ...router.query };
   const setPage = (event, newPageNum) => {
     // remove page query param when page=1
+    const query = { ...router.query };
     if (newPageNum > 1) {
       query["page"] = newPageNum;
     } else {
@@ -38,24 +38,28 @@ function usePageState(...args) {
     // can be disabled until the transition completes.
     setLoading(true);
     router.push({ query }).then(() => setLoading(false));
-    setPageNum(newPageNum);
   };
-  return [pageNum, setPage, loading];
+
+  return { pageNum, setPage, loading };
 }
 
-export default function Pagination({ count }) {
-  const router = useRouter();
+interface PaginationProps {
+  count: number;
+}
+
+const Pagination: FC<PaginationProps> = ({ count }: PaginationProps) => {
   const theme = useTheme();
   const classes = useStyles(theme);
 
   // increase pagination size based on viewport size
-  const sibCount =
-    1 +
-    ["sm", "md"]
-      .map((size) => useMediaQuery(theme.breakpoints.up(size)))
-      .reduce((sum, current) => sum + current);
+  const breakpoints: Breakpoint[] = ["sm", "md"];
+  const sibCount = (
+    breakpoints
+      .map((breakpoint) => useMediaQuery(theme.breakpoints.up(breakpoint)))
+      .reduce((sum, current) => sum + Number(current), 1)
+  );
 
-  const [pageNum, setPageNum, loading] = usePageState(Number(router.query["page"] || 1));
+  const { pageNum, setPage, loading } = usePageState();
 
   // https://material-ui.com/api/pagination/
   return (
@@ -63,7 +67,7 @@ export default function Pagination({ count }) {
       count={count}
       page={pageNum}
       siblingCount={sibCount}
-      onChange={setPageNum}
+      onChange={setPage}
       disabled={loading}
       variant="outlined"
       shape="rounded"
@@ -71,4 +75,5 @@ export default function Pagination({ count }) {
       className={classes.root}
     />
   );
-}
+};
+export default Pagination;
