@@ -1,4 +1,4 @@
-import PostulationDetail from "@/components/moduledetails/PostulationDetail";
+import PostulationDetail from "@/components/details/PostulationDetail";
 import {
   EntityModule,
   ImageModule,

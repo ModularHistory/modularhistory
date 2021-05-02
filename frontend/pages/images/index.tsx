@@ -1,12 +1,8 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ImageCard from "@/components/cards/ImageCard";
 import Layout from "@/components/Layout";
-import ImageCard from "@/components/modulecards/ImageCard";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
-// import Card from "@material-ui/core/Card";
-// import CardContent from "@material-ui/core/CardContent";
-// import CardHeader from "@material-ui/core/CardHeader";
-// import CardMedia from "@material-ui/core/CardMedia";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";

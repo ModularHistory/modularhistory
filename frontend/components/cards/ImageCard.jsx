@@ -1,4 +1,4 @@
-import BaseCard from "./BaseCard";
+import ModuleCard from "./ModuleCard";
 
 export default function ImageCard({ image, ...childProps }) {
   // Mostly copied from `apps/images/templates/images/_card.html`
@@ -20,7 +20,7 @@ export default function ImageCard({ image, ...childProps }) {
   );
 
   return (
-    <BaseCard module={image} cardClass={cardClass} cardStyles={cardStyles} top={top}>
+    <ModuleCard module={image} cardClass={cardClass} cardStyles={cardStyles} top={top}>
       {image["caption_html"] && (
         <div className="card-text">
           <div dangerouslySetInnerHTML={{ __html: image["caption_html"] }} />
@@ -31,6 +31,6 @@ export default function ImageCard({ image, ...childProps }) {
           )}
         </div>
       )}
-    </BaseCard>
+    </ModuleCard>
   );
 }

@@ -1,6 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ModuleCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
-import BaseCard from "@/components/modulecards/BaseCard";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import Container from "@material-ui/core/Container";
@@ -19,7 +19,10 @@ const Postulations: FC<PostulationsProps> = ({ postulationsData }: PostulationsP
     <Grid item key={postulation["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/postulations/${postulation["slug"]}`}>
         <a>
-          <BaseCard module={postulation} content={postulation["summary"]} />
+          <ModuleCard
+            module={postulation}
+            content={<div dangerouslySetInnerHTML={{ __html: postulation["summary"] }} />}
+          />
         </a>
       </Link>
     </Grid>

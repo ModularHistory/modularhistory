@@ -1,6 +1,6 @@
+import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
+import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import ModuleCard from "@/components/modulecards/ModuleCard";
-import ModuleDetail from "@/components/moduledetails/ModuleDetail";
 import Pagination from "@/components/Pagination";
 import SearchForm from "@/components/search/SearchForm";
 import { Container, Drawer } from "@material-ui/core";
@@ -141,7 +141,10 @@ export default function Search({ searchResults }) {
                   data-index={index}
                   onClick={setModuleIndexFromEvent}
                 >
-                  <ModuleCard module={module} cardClass={index == moduleIndex ? "selected" : ""} />
+                  <ModuleUnionCard
+                    module={module}
+                    cardClass={index == moduleIndex ? "selected" : ""}
+                  />
                 </a>
               ))}
             </div>

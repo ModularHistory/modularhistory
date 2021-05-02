@@ -1,8 +1,8 @@
-import BaseCard from "./BaseCard";
 import ImageCard from "./ImageCard";
+import ModuleCard from "./ModuleCard";
 
-export default function ModuleCard({ module, ...childProps }) {
-  // ModuleCard is a generic component for rendering cards of any
+export default function ModuleUnionCard({ module, ...childProps }) {
+  // ModuleUnionCard is a generic component for rendering cards of any
   // model type, removing the need to import every card component.
   let content = <div />;
   switch (module["model"]) {
@@ -31,7 +31,7 @@ export default function ModuleCard({ module, ...childProps }) {
       content = <div dangerouslySetInnerHTML={{ __html: module["citationHtml"] }} />;
       break;
     default:
-      return <BaseCard module={module} content={content} {...childProps} />;
+      return <ModuleCard module={module} content={content} {...childProps} />;
   }
-  return <BaseCard module={module} content={content} {...childProps} />;
+  return <ModuleCard module={module} content={content} {...childProps} />;
 }

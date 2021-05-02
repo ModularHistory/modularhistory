@@ -1,6 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ModuleCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
-import BaseCard from "@/components/modulecards/BaseCard";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import Container from "@material-ui/core/Container";
@@ -19,7 +19,10 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
     <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
       <Link href={`/entities/${entity["slug"]}`}>
         <a>
-          <BaseCard module={entity} content={entity["truncated_description"]} />
+          <ModuleCard
+            module={entity}
+            content={<div dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />}
+          />
         </a>
       </Link>
     </Grid>

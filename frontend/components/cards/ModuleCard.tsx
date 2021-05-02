@@ -112,13 +112,13 @@ const useStyles = makeStyles({
   },
 });
 
-interface ModuleCardProps {
+interface ModuleUnionCardProps {
   module: BaseModule;
   content: any;
   children?: ReactNode;
 }
 
-export default function BaseCard({ module, content, children }: ModuleCardProps) {
+export default function ModuleCard({ module, content, children }: ModuleUnionCardProps) {
   const classes = useStyles();
   const isImage = module["model"] === "images.Image";
   let bgImage;

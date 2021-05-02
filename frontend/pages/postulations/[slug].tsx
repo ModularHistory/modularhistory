@@ -1,6 +1,6 @@
+import ModuleContainer from "@/components/details/ModuleContainer";
+import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import ModuleContainer from "@/components/moduledetails/ModuleContainer";
-import ModuleDetail from "@/components/moduledetails/ModuleDetail";
 import { PostulationModule } from "@/interfaces";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";

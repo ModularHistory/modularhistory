@@ -1,6 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ModuleCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
-import BaseCard from "@/components/modulecards/BaseCard";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import Container from "@material-ui/core/Container";
@@ -19,15 +19,15 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
     <Grid item key={quote["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/quotes/${quote["slug"]}`}>
         <a>
-          <BaseCard
+          <ModuleCard
             module={quote}
             content={
               <>
                 <blockquote className="blockquote">
-                  <div dangerouslySetInnerHTML={{ __html: module["truncated_html"] }} />
+                  <div dangerouslySetInnerHTML={{ __html: quote["truncated_html"] }} />
                   <footer
                     className="blockquote-footer"
-                    dangerouslySetInnerHTML={{ __html: module["attributee_string"] }}
+                    dangerouslySetInnerHTML={{ __html: quote["attributee_string"] }}
                   />
                 </blockquote>
               </>
