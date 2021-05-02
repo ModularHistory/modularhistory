@@ -127,10 +127,12 @@ interface ModuleUnionCardProps {
 
 export default function ModuleCard({ module, header, content, children }: ModuleUnionCardProps) {
   const classes = useStyles();
-  const isImage = module["model"] === "images.Image";
+  const isImage = module["model"] === "images.image";
   let bgImage;
   if (!isImage) {
     bgImage = module["serialized_images"]?.[0];
+  } else {
+    bgImage = module;
   }
   return (
     <Card className={`m-2 ${classes.card}`}>
@@ -152,17 +154,15 @@ export default function ModuleCard({ module, header, content, children }: Module
         // Note: This applies a dark background to the card.
         <div className="img-bg" />
       )}
-      {!isImage &&
-        ((header && (
-          <p className={`text-center ${classes.cardHeader}`}>
-            <small>{header}</small>
-          </p>
-        )) ||
-          (module["dateHtml"] && (
-            <p className={`text-center ${classes.cardHeader}`}>
-              <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
-            </p>
-          )))}
+      {header ? (
+        <p className={`text-center ${classes.cardHeader}`}>
+          <small>{header}</small>
+        </p>
+      ) : module["dateHtml"] ? (
+        <p className={`text-center ${classes.cardHeader}`}>
+          <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
+        </p>
+      ) : null}
       {content && <div className={classes.cardBody}>{content}</div>}
     </Card>
   );

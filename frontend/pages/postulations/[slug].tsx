@@ -15,7 +15,7 @@ interface PostulationProps {
  */
 const Postulation: FC<PostulationProps> = ({ postulation }: PostulationProps) => {
   return (
-    <Layout title={postulation["title"]}>
+    <Layout title={postulation["summary"]}>
       <ModuleContainer>
         <ModuleDetail module={postulation} />
       </ModuleContainer>

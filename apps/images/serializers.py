@@ -11,8 +11,8 @@ class ImageSerializer(SearchableModelSerializer):
     src_url = serpy.StrField()
     width = serpy.IntField()
     height = serpy.IntField()
-    caption_html = serpy.Field()
-    provider_string = serpy.Field()
+    captionHtml = serpy.Field(attr='caption_html')
+    providerString = serpy.Field(attr='provider_string')
     bg_img_position = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa

@@ -19,8 +19,8 @@ export interface ImageModule extends SearchableModule {
   src_url: string;
   width: number;
   height: number;
-  caption_html: string;
-  provider_string: string;
+  captionHtml: string;
+  providerString: string;
   bg_img_position: string;
 }
 

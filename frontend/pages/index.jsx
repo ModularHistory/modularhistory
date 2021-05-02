@@ -54,7 +54,7 @@ export default function Home() {
         />
       </Grid>
       <Grid item>
-        <SearchButton onClick={search} data-cy={"searchButton"}/>
+        <SearchButton onClick={search} data-cy={"searchButton"} />
       </Grid>
     </Grid>
   );
