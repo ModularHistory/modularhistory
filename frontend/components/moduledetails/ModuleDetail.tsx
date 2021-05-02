@@ -1,6 +1,8 @@
+import PostulationDetail from "@/components/moduledetails/PostulationDetail";
 import {
   EntityModule,
   OccurrenceModule,
+  PostulationModule,
   QuoteModule,
   SourceModule,
   TopicModule,
@@ -14,7 +16,7 @@ import SourceDetail from "./SourceDetail";
 import TopicDetail from "./TopicDetail";
 
 interface ModuleDetailProps {
-  module: OccurrenceModule | QuoteModule | EntityModule | TopicModule;
+  module: OccurrenceModule | QuoteModule | EntityModule | TopicModule | PostulationModule;
 }
 
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
@@ -39,14 +41,17 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
   switch (module["model"]) {
     // TODO: add more models here as soon as they
     //       may appear on the SERP.
+    case "entities.entity":
+      details = <EntityDetail entity={module as EntityModule} />;
+      break;
     case "occurrences.occurrence":
       details = <OccurrenceDetail occurrence={module as OccurrenceModule} />;
       break;
+    case "postulations.postulation":
+      details = <PostulationDetail postulation={module as PostulationModule} />;
+      break;
     case "quotes.quote":
       details = <QuoteDetail quote={module as QuoteModule} />;
-      break;
-    case "entities.entity":
-      details = <EntityDetail entity={module as EntityModule} />;
       break;
     case "sources.source":
       details = <SourceDetail source={module as SourceModule} />;
