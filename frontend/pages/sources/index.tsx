@@ -1,6 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
-import SourceCard from "@/components/modulecards/SourceCard";
+import BaseCard from "@/components/modulecards/BaseCard";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import Container from "@material-ui/core/Container";
@@ -19,7 +19,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
     <Grid item key={source["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/sources/${source["slug"]}`}>
         <a>
-          <SourceCard source={source} />
+          <BaseCard module={source} content={source["citationHtml"]} />
         </a>
       </Link>
     </Grid>

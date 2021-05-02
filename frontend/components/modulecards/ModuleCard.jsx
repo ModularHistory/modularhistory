@@ -1,7 +1,5 @@
 import BaseCard from "./BaseCard";
 import ImageCard from "./ImageCard";
-import OccurrenceCard from "./OccurrenceCard";
-import PostulationCard from "./PostulationCard";
 import QuoteCard from "./QuoteCard";
 
 export default function ModuleCard({ module, ...childProps }) {
@@ -11,13 +9,13 @@ export default function ModuleCard({ module, ...childProps }) {
     case "images.image":
       return <ImageCard image={module} {...childProps} />;
     case "occurrences.occurrence":
-      return <OccurrenceCard occurrence={module} {...childProps} />;
+      return <BaseCard module={module} content={occurrence["summary"]} {...childProps} />;
     case "postulations.postulation":
-      return <PostulationCard image={module} {...childProps} />;
+      return <BaseCard module={module} content={postulation["summary"]} {...childProps} />;
     case "quotes.quote":
       return <QuoteCard quote={module} {...childProps} />;
     case "sources.source":
-      return <SourceCard image={module} {...childProps} />;
+      return <BaseCard module={module} content={source["citationHtml"]} {...childProps} />;
     default:
       return <BaseCard module={module} {...childProps} />;
   }

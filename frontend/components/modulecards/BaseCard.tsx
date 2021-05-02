@@ -1,5 +1,7 @@
-import { Card, CardContent } from "@material-ui/core";
+import { BaseModule } from "@/interfaces";
+import { Card } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
+import { ReactNode } from "react";
 
 const useStyles = makeStyles({
   card: {
@@ -61,8 +63,10 @@ const useStyles = makeStyles({
     bottom: 0,
     fontSize: "0.8rem",
     "-webkit-text-stroke": "1px white",
+    textAlign: "center",
     "&:last-child": {
-      paddingBottom: "0.5rem",
+      padding: "0.5rem",
+      paddingBottom: "0.3rem",
     },
     //   @include safari {
     //     // On Safari, without this override,
@@ -108,10 +112,13 @@ const useStyles = makeStyles({
   },
 });
 
-/**
- * BaseCard is extended by module-specific cards.
- */
-export default function BaseCard({ module, cardStyles, top, children }) {
+interface ModuleCardProps {
+  module: BaseModule;
+  content: any;
+  children?: ReactNode;
+}
+
+export default function BaseCard({ module, content, children }: ModuleCardProps) {
   const classes = useStyles();
   const isImage = module["model"] === "images.Image";
   let bgImage;
@@ -119,8 +126,8 @@ export default function BaseCard({ module, cardStyles, top, children }) {
     bgImage = module["serialized_images"]?.[0];
   }
   return (
-    <Card className={`m-2 ${classes.card}`} style={cardStyles}>
-      {false && process.env.NODE_ENV != "prod" && !module["verified"] && (
+    <Card className={`m-2 ${classes.card}`}>
+      {false && process.env.ENVIRONMENT != "prod" && !module["verified"] && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED
         </span>
@@ -140,12 +147,8 @@ export default function BaseCard({ module, cardStyles, top, children }) {
           <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
         </p>
       )}
-      <CardContent
-        className={classes.cardBody}
-        style={{ backgroundColor: "transparent", zIndex: "1" }}
-      >
-        {children}
-      </CardContent>
+      <div className={classes.cardBody} dangerouslySetInnerHTML={{ __html: content }} />
+      {children}
     </Card>
   );
 }

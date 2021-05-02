@@ -1,6 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
-import OccurrenceCard from "@/components/modulecards/OccurrenceCard";
+import BaseCard from "@/components/modulecards/BaseCard";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
 import Container from "@material-ui/core/Container";
@@ -19,7 +19,7 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
     <Grid item key={occurrence["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/occurrences/${occurrence["slug"]}`}>
         <a>
-          <OccurrenceCard occurrence={occurrence} />
+          <BaseCard module={occurrence} content={occurrence["summary"]} />
         </a>
       </Link>
     </Grid>
