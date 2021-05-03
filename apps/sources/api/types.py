@@ -12,8 +12,7 @@ class SourceType(AbstractModuleType):
     citation_string = graphene.String()
     attributee_html = graphene.String()
     title = graphene.String()
-    model = graphene.String()
 
     @classmethod
     def resolve_model(cls, instance: Source, info):
-        return f'sources.source'
+        return 'sources.source'

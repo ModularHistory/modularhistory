@@ -276,7 +276,7 @@ def seed(
     print('Waiting for Postgres to finish recreating the database...')
     sleep(10)  # Give postgres time to recreate the database.
     if migrate:
-        context.run(f'docker-compose run django_helper python manage.py migrate')
+        context.run('docker-compose run django_helper python manage.py migrate')
     if input('Create a superuser (for testing the website)? [Y/n] ') != NEGATIVE:
         sleep(1)
         instructions = (
@@ -284,13 +284,13 @@ def seed(
             'for your superuser account.'
         )
         context.run(
-            'docker-compose run django_helper bash -c \''
+            "docker-compose run django_helper bash -c '"
             f'echo "{instructions}" && python manage.py createsuperuser'
-            '\'',
+            "'",
             pty=True,
         )
     if up:
-        context.run(f'docker-compose up -d dev')
+        context.run('docker-compose up -d dev')
 
 
 def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = False):

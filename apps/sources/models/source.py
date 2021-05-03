@@ -372,7 +372,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         page_number = page_number or self.page_number
         url = self.get_page_number_url(page_number=page_number)
         if url:
-            # '<a href="https://..." class="display-source" target="_blank">25</a>'
+            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'
             return compose_link(
                 page_number, href=url, klass='display-source', target=NEW_TAB
             )
