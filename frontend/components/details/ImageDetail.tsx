@@ -11,14 +11,12 @@ const ImageDetail: FC<ImageDetailProps> = ({ image }: ImageDetailProps) => {
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: image["name"] }} />
-      <div className="card-text">
-        {firstImage && (
-          <div className="img-container" style={{ maxWidth: "44%" }}>
-            <ImageCard image={firstImage} />
-          </div>
-        )}
-        <div dangerouslySetInnerHTML={{ __html: image["description"] }} />
-      </div>
+      {firstImage && (
+        <div className="img-container" style={{ maxWidth: "44%" }}>
+          <ImageCard image={firstImage} />
+        </div>
+      )}
+      <div dangerouslySetInnerHTML={{ __html: image["description"] }} />
     </>
   );
 };

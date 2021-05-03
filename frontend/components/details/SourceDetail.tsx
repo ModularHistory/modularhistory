@@ -10,12 +10,10 @@ const SourceDetail: FC<SourceDetailProps> = ({ source }: SourceDetailProps) => {
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
-      <div className="card-text">
-        <div dangerouslySetInnerHTML={{ __html: source["citationHtml"] }} />
-        {source["tagsHtml"] && (
-          <ul className="tags" dangerouslySetInnerHTML={{ __html: source["tagsHtml"] }} />
-        )}
-      </div>
+      <div dangerouslySetInnerHTML={{ __html: source["citationHtml"] }} />
+      {source["tagsHtml"] && (
+        <ul className="tags" dangerouslySetInnerHTML={{ __html: source["tagsHtml"] }} />
+      )}
     </>
   );
 };

@@ -10,9 +10,7 @@ const PostulationDetail: FC<PostulationDetailProps> = ({ postulation }: Postulat
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
-      <div className="card-text">
-        <div dangerouslySetInnerHTML={{ __html: postulation["elaboration"] }} />
-      </div>
+      <div dangerouslySetInnerHTML={{ __html: postulation["elaboration"] }} />
     </>
   );
 };
