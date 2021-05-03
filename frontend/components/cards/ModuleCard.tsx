@@ -1,7 +1,7 @@
 import { BaseModule } from "@/interfaces";
 import { Card } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { ReactNode } from "react";
+import { FC, ReactNode } from "react";
 
 const useStyles = makeStyles({
   card: {
@@ -118,14 +118,13 @@ const useStyles = makeStyles({
   },
 });
 
-interface ModuleUnionCardProps {
+interface ModuleCardProps {
   module: BaseModule;
   header?: string;
-  content: any;
   children?: ReactNode;
 }
 
-export default function ModuleCard({ module, header, content, children }: ModuleUnionCardProps) {
+const ModuleCard: FC<ModuleCardProps> = ({ module, header, children }: ModuleCardProps) => {
   const classes = useStyles();
   const isImage = module["model"] === "images.image";
   let bgImage;
@@ -141,6 +140,7 @@ export default function ModuleCard({ module, header, content, children }: Module
           UNVERIFIED
         </span>
       )}
+
       {(bgImage && (
         <div
           className="img-bg lazy-bg"
@@ -154,6 +154,7 @@ export default function ModuleCard({ module, header, content, children }: Module
         // Note: This applies a dark background to the card.
         <div className="img-bg" />
       )}
+
       {header ? (
         <p className={`text-center ${classes.cardHeader}`}>
           <small>{header}</small>
@@ -163,7 +164,9 @@ export default function ModuleCard({ module, header, content, children }: Module
           <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
         </p>
       ) : null}
-      {content && <div className={classes.cardBody}>{content}</div>}
+
+      {children && <div className={classes.cardBody}>{children}</div>}
     </Card>
   );
-}
+};
+export default ModuleCard;
