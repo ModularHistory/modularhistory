@@ -15,7 +15,7 @@ interface ImageProps {
  */
 const Image: FC<ImageProps> = ({ image }: ImageProps) => {
   return (
-    <Layout title={image["captionHtml"]}>
+    <Layout title={image.captionHtml}>
       <ModuleContainer>
         <ModuleDetail module={image} />
       </ModuleContainer>

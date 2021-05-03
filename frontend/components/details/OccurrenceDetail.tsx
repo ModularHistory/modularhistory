@@ -9,7 +9,7 @@ interface OccurrenceDetailProps {
 const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceDetailProps) => {
   return (
     <>
-      {occurrence["verified"] || (
+      {occurrence.verified || (
         <span
           style={{
             display: "inline-block",
@@ -28,8 +28,8 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
       />
       {occurrence.serializedImages.map(
         (image) =>
-          occurrence.description.includes(image["srcUrl"]) || (
-            <div className="img-container" style={{ maxWidth: "44%" }} key={image["srcUrl"]}>
+          occurrence.description.includes(image.srcUrl) || (
+            <div className="img-container" style={{ maxWidth: "44%" }} key={image.srcUrl}>
               <ImageCard image={image} />
             </div>
           )
@@ -38,11 +38,9 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
       <h2 className="text-center my-3" dangerouslySetInnerHTML={{ __html: occurrence.summary }} />
       <div dangerouslySetInnerHTML={{ __html: occurrence.description }} />
 
-      {occurrence["postscript"] && (
-        <p dangerouslySetInnerHTML={{ __html: occurrence["postscript"] }} />
-      )}
-      {occurrence["tagsHtml"] && (
-        <ul className="tags" dangerouslySetInnerHTML={{ __html: occurrence["tagsHtml"] }} />
+      {occurrence.postscript && <p dangerouslySetInnerHTML={{ __html: occurrence.postscript }} />}
+      {occurrence.tagsHtml && (
+        <ul className="tags" dangerouslySetInnerHTML={{ __html: occurrence.tagsHtml }} />
       )}
 
       <footer className="footer sources-footer">
