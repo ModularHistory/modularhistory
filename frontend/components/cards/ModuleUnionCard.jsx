@@ -20,10 +20,12 @@ export default function ModuleUnionCard({ module, ...childProps }) {
         <>
           <blockquote className="blockquote">
             <HTMLEllipsis unsafeHTML={module["bite"]} maxLine="4" basedOn="words" />
-            <footer
-              className="blockquote-footer"
-              dangerouslySetInnerHTML={{ __html: module["attributeeString"] }}
-            />
+            {module["attributeeString"] && (
+              <footer
+                className="blockquote-footer"
+                dangerouslySetInnerHTML={{ __html: module["attributeeString"] }}
+              />
+            )}
           </blockquote>
         </>
       );

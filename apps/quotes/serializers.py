@@ -16,7 +16,6 @@ class QuoteSerializer(SearchableModelSerializer):
 
     bite = serpy.MethodField()
     html = serpy.Field()
-    has_multiple_attributees = serpy.BoolField()
     attributeeHtml = serpy.Field(attr='attributee_html')
     attributeeString = serpy.Field(attr='attributee_string')
     dateHtml = serpy.Field(attr='date_html')

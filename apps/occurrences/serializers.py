@@ -15,7 +15,7 @@ class OccurrenceSerializer(SearchableModelSerializer):
     serializedImages = serpy.Field(attr='serialized_images')
     primaryImage = serpy.Field(attr='primary_image')
     serializedCitations = serpy.Field(attr='serialized_citations')
-    tags_html = serpy.Field()
+    tagsHtml = serpy.Field(attr='tags_html')
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""

@@ -27,11 +27,7 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
       <Link href={`/entities/${entity["slug"]}`}>
         <a>
           <ModuleCard module={entity} header={entity["name"]}>
-            <HTMLEllipsis
-              unsafeHTML={entity["truncated_description"]}
-              maxLine="4"
-              basedOn="words"
-            />
+            <HTMLEllipsis unsafeHTML={entity["truncatedDescription"]} maxLine="4" basedOn="words" />
           </ModuleCard>
         </a>
       </Link>

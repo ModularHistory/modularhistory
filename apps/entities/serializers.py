@@ -37,12 +37,12 @@ class EntitySerializer(ModelSerializer):
 
     name = serpy.Field()
     slug = serpy.Field()
-    unabbreviated_name = serpy.Field()
+    unabbreviatedName = serpy.Field()
     aliases = serpy.Field()
-    birth_date = serpy.MethodField('get_serialized_birth_date')
-    death_date = serpy.MethodField('get_serialized_death_date')
+    birthDate = serpy.MethodField('get_serialized_birth_date')
+    deathDate = serpy.MethodField('get_serialized_death_date')
     description = serpy.Field(attr='description.html', required=False)
-    truncated_description = serpy.Field()
+    truncatedDescription = serpy.Field(attr='truncated_description')
     serializedImages = serpy.Field(attr='serialized_images')
     categorizations = CategorizationSerializer(
         many=True, attr='categorizations.all', call=True

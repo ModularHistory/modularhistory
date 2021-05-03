@@ -65,9 +65,9 @@ class SearchableModel(
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
-    absolute_url = serpy.StrField()
-    admin_url = serpy.StrField()
+    absoluteUrl = serpy.StrField(attr='absolute_url')
+    adminUrl = serpy.StrField(attr='admin_url')
     slug = serpy.StrField()
-    tags_html = serpy.StrField()
+    tagsHtml = serpy.StrField(attr='tags_html')
     title = serpy.StrField()
     verified = serpy.BoolField()

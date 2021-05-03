@@ -23,10 +23,12 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
           <ModuleCard module={quote}>
             <blockquote className="blockquote">
               <HTMLEllipsis unsafeHTML={module["bite"]} maxLine="5" basedOn="words" />
-              <footer
-                className="blockquote-footer"
-                dangerouslySetInnerHTML={{ __html: quote["attributeeString"] }}
-              />
+              {quote["attributeeString"] && (
+                <footer
+                  className="blockquote-footer"
+                  dangerouslySetInnerHTML={{ __html: quote["attributeeString"] }}
+                />
+              )}
             </blockquote>
           </ModuleCard>
         </a>

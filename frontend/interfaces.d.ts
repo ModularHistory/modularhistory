@@ -33,7 +33,6 @@ export interface QuoteModule extends SearchableModule, ModuleWithImages {
   attributeeHtml: string;
   bite: string;
   date_html: string;
-  has_multiple_attributees: boolean;
   html: string;
   serializedCitations: Citation[];
 }
