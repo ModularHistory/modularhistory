@@ -15,9 +15,6 @@ const EntityDetail: FC<EntityDetailProps> = ({ entity }: EntityDetailProps) => {
         <div className="img-container" style={{ maxWidth: "44%", maxHeight: firstImage["height"] }}>
           <ImageCard image={firstImage} />
         </div>
-        // <div className="img-container" style={{ maxWidth: "44%", maxHeight: firstImage["height"] }}>
-        //   <ImageCard image={firstImage} />
-        // </div>
       )}
       <div dangerouslySetInnerHTML={{ __html: entity["description"] }} />
     </>
