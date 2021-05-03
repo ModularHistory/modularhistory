@@ -25,8 +25,8 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
 
       <div dangerouslySetInnerHTML={{ __html: quote["html"] }} />
 
-      {quote["tags_html"] && (
-        <ul className="tags" dangerouslySetInnerHTML={{ __html: quote["tags_html"] }} />
+      {quote["tagsHtml"] && (
+        <ul className="tags" dangerouslySetInnerHTML={{ __html: quote["tagsHtml"] }} />
       )}
 
       <footer className="footer sources-footer">

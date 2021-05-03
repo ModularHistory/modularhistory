@@ -44,8 +44,8 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
       {occurrence["postscript"] && (
         <p dangerouslySetInnerHTML={{ __html: occurrence["postscript"] }} />
       )}
-      {occurrence["tags_html"] && (
-        <ul className="tags" dangerouslySetInnerHTML={{ __html: occurrence["tags_html"] }} />
+      {occurrence["tagsHtml"] && (
+        <ul className="tags" dangerouslySetInnerHTML={{ __html: occurrence["tagsHtml"] }} />
       )}
 
       <footer className="footer sources-footer">
