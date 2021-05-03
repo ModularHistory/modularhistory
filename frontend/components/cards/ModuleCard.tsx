@@ -32,13 +32,13 @@ const useStyles = makeStyles({
       position: "absolute",
       width: "100%",
       height: "100%",
-      opacity: "0.6",
+      opacity: "0.7",
       backgroundColor: "black",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
       backgroundSize: "100% auto",
       "&:hover": {
-        opacity: "0.7",
+        opacity: "0.8",
       },
     },
   },
@@ -137,9 +137,8 @@ const ModuleCard: FC<ModuleCardProps> = ({
   children,
 }: ModuleCardProps) => {
   const classes = useStyles();
-  const isImage = module.model === "images.image";
   let bgImage;
-  if (!isImage) {
+  if (module.model != "images.image") {
     bgImage = module.serializedImages?.[0];
   } else {
     bgImage = module;
