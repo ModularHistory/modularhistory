@@ -17,17 +17,15 @@ export default function ModuleUnionCard({ module, ...childProps }) {
       break;
     case "quotes.quote":
       content = (
-        <>
-          <blockquote className="blockquote">
-            <HTMLEllipsis unsafeHTML={module["bite"]} maxLine="4" basedOn="words" />
-            {module["attributeeString"] && (
-              <footer
-                className="blockquote-footer"
-                dangerouslySetInnerHTML={{ __html: module["attributeeString"] }}
-              />
-            )}
-          </blockquote>
-        </>
+        <blockquote className="blockquote">
+          <HTMLEllipsis unsafeHTML={module["bite"]} maxLine="4" basedOn="words" />
+          {module["attributeeString"] && (
+            <footer
+              className="blockquote-footer"
+              dangerouslySetInnerHTML={{ __html: module["attributeeString"] }}
+            />
+          )}
+        </blockquote>
       );
       break;
     case "sources.source":
