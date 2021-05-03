@@ -74,6 +74,10 @@ const useStyles = makeStyles({
       padding: "0.5rem",
       paddingBottom: "0.3rem",
     },
+    "& p:last-child": {
+      paddingBottom: "0.3rem",
+      marginBottom: 0,
+    },
     //   @include safari {
     //     // On Safari, without this override,
     //     // the shadow goes on top of the text and makes it lighter....
@@ -120,10 +124,18 @@ const useStyles = makeStyles({
 interface ModuleCardProps {
   module: BaseModule;
   header?: string;
+  className?: string;
+  style?: Record<string, any>;
   children?: ReactNode;
 }
 
-const ModuleCard: FC<ModuleCardProps> = ({ module, header, children }: ModuleCardProps) => {
+const ModuleCard: FC<ModuleCardProps> = ({
+  module,
+  header,
+  className,
+  style,
+  children,
+}: ModuleCardProps) => {
   const classes = useStyles();
   const isImage = module["model"] === "images.image";
   let bgImage;
@@ -133,13 +145,12 @@ const ModuleCard: FC<ModuleCardProps> = ({ module, header, children }: ModuleCar
     bgImage = module;
   }
   return (
-    <Card className={`m-2 ${classes.card}`}>
+    <Card className={`m-2 ${classes.card} ${className || ""}`} style={style}>
       {false && process.env.ENVIRONMENT != "prod" && !module["verified"] && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED
         </span>
       )}
-
       {(bgImage && (
         <div
           className="img-bg lazy-bg"
@@ -153,7 +164,6 @@ const ModuleCard: FC<ModuleCardProps> = ({ module, header, children }: ModuleCar
         // Note: This applies a dark background to the card.
         <div className="img-bg" />
       )}
-
       {header ? (
         <p className={`text-center ${classes.cardHeader}`}>
           <small>{header}</small>
@@ -163,7 +173,6 @@ const ModuleCard: FC<ModuleCardProps> = ({ module, header, children }: ModuleCar
           <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
         </p>
       ) : null}
-
       {children && <div className={classes.cardBody}>{children}</div>}
     </Card>
   );

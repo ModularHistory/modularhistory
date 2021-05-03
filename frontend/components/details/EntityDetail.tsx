@@ -7,16 +7,18 @@ interface EntityDetailProps {
 }
 
 const EntityDetail: FC<EntityDetailProps> = ({ entity }: EntityDetailProps) => {
-  let titleHtml = entity["name"];
-  const firstImage = JSON.parse(entity["serializedImages"])?.[0];
+  const firstImage = entity["serializedImages"]?.[0];
   return (
     <>
-      <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
+      <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: entity["name"] }} />
       <div className="card-text">
         {firstImage && (
-          <div className="img-container" style={{ maxWidth: "44%" }}>
+          <div className="float-right" style={{ maxWidth: "50%" }}>
             <ImageCard image={firstImage} />
           </div>
+          // <div className="img-container" style={{ maxWidth: "44%", maxHeight: firstImage["height"] }}>
+          //   <ImageCard image={firstImage} />
+          // </div>
         )}
         <div dangerouslySetInnerHTML={{ __html: entity["description"] }} />
       </div>

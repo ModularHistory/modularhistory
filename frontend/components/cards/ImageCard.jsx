@@ -1,19 +1,19 @@
+import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard from "./ModuleCard";
 
 export default function ImageCard({ image, ...childProps }) {
-  const cardClass = "image-card";
-  const cardStyles = { maxWidth: `${image["width"]}px` };
+  const style = { width: `${image["width"]}px`, maxWidth: `100%` };
   return (
-    <ModuleCard module={image} cardClass={cardClass} cardStyles={cardStyles} {...childProps}>
+    <ModuleCard module={image} className={"image-card"} style={style} {...childProps}>
       {image["captionHtml"] && (
-        <div className="card-text">
-          <div dangerouslySetInnerHTML={{ __html: image["captionHtml"] }} />
+        <>
+          <HTMLEllipsis unsafeHTML={image["captionHtml"]} maxLine="3" basedOn="words" trimRight />
           {image["providerString"] && (
             <div className="image-credit float-right">
               <p>{image["providerString"]}</p>
             </div>
           )}
-        </div>
+        </>
       )}
     </ModuleCard>
   );

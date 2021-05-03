@@ -3,6 +3,7 @@ import ModuleCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
+import { EntityModule } from "@/interfaces";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -10,14 +11,19 @@ import Link from "next/link";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
+interface EntitiesDataProps {
+  total_pages: number;
+  results: Array<EntityModule>;
+}
+
 interface EntitiesProps {
-  entitiesData: any;
+  entitiesData: EntitiesDataProps;
 }
 
 const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   const entities = entitiesData["results"] || [];
   const entityCards = entities.map((entity) => (
-    <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
+    <Grid item key={entity["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/entities/${entity["slug"]}`}>
         <a>
           <ModuleCard module={entity} header={entity["name"]}>

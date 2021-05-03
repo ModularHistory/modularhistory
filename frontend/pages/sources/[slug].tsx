@@ -43,7 +43,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .post("http://django:8000/graphql/", body)
     .then((response) => {
       source = response.data.data.source;
-      console.log(">>>>", source);
     })
     .catch((error) => {
       // console.error(error);

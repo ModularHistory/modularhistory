@@ -1,4 +1,3 @@
-import logging
 
 import graphene
 
@@ -18,11 +17,7 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_entity(root, info, slug: str):
-        try:
-            return Entity.objects.get(slug=slug)
-        except Exception as err:
-            logging.error(f'{err}')
-            return Entity.objects.get(pk=slug)
+        return Entity.objects.get(slug=slug)
 
 
 # class Mutation(graphene.ObjectType):

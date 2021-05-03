@@ -7,11 +7,10 @@ interface ImageDetailProps {
 }
 
 const ImageDetail: FC<ImageDetailProps> = ({ image }: ImageDetailProps) => {
-  let titleHtml = image["name"];
-  const firstImage = JSON.parse(image["serializedImages"])?.[0];
+  const firstImage = image["serializedImages"]?.[0];
   return (
     <>
-      <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
+      <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: image["name"] }} />
       <div className="card-text">
         {firstImage && (
           <div className="img-container" style={{ maxWidth: "44%" }}>
