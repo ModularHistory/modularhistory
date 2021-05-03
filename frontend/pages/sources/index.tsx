@@ -19,10 +19,9 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
     <Grid item key={source["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/sources/${source["slug"]}`}>
         <a>
-          <ModuleCard
-            module={source}
-            content={<div dangerouslySetInnerHTML={{ __html: source["citationHtml"] }} />}
-          />
+          <ModuleCard module={source}>
+            <div dangerouslySetInnerHTML={{ __html: source["citationHtml"] }} />
+          </ModuleCard>
         </a>
       </Link>
     </Grid>

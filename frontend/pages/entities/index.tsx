@@ -20,17 +20,13 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
     <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
       <Link href={`/entities/${entity["slug"]}`}>
         <a>
-          <ModuleCard
-            module={entity}
-            header={entity["name"]}
-            content={
-              <HTMLEllipsis
-                unsafeHTML={entity["truncated_description"]}
-                maxLine="4"
-                basedOn="words"
-              />
-            }
-          />
+          <ModuleCard module={entity} header={entity["name"]}>
+            <HTMLEllipsis
+              unsafeHTML={entity["truncated_description"]}
+              maxLine="4"
+              basedOn="words"
+            />
+          </ModuleCard>
         </a>
       </Link>
     </Grid>

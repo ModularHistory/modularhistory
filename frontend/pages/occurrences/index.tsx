@@ -19,10 +19,9 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
     <Grid item key={occurrence["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/occurrences/${occurrence["slug"]}`}>
         <a>
-          <ModuleCard
-            module={occurrence}
-            content={<div dangerouslySetInnerHTML={{ __html: occurrence["summary"] }} />}
-          />
+          <ModuleCard module={occurrence}>
+            <div dangerouslySetInnerHTML={{ __html: occurrence["summary"] }} />
+          </ModuleCard>
         </a>
       </Link>
     </Grid>
