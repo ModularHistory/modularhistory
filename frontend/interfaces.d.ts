@@ -2,12 +2,12 @@ export interface BaseModule {
   model: string;
   pk: number;
   slug: string;
-  absolute_url: string;
-  admin_url: string;
+  absoluteUrl: string;
+  adminUrl: string;
 }
 
 export interface SearchableModule extends BaseModule {
-  tags_html: string;
+  tagsHtml: string;
   verified: boolean;
 }
 
@@ -32,13 +32,13 @@ export interface ModuleWithImages {
 export interface QuoteModule extends SearchableModule, ModuleWithImages {
   attributeeHtml: string;
   bite: string;
-  date_html: string;
+  dateHtml: string;
   html: string;
   serializedCitations: Citation[];
 }
 
 export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
-  date_html: string;
+  dateHtml: string;
   description: string;
   postscript: string;
   serializedCitations: Citation[];
