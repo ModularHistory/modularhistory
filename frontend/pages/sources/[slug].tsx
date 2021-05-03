@@ -15,7 +15,7 @@ interface SourceProps {
  */
 const Source: FC<SourceProps> = ({ source }: SourceProps) => {
   return (
-    <Layout title={source["title"] || source["citationString"]}>
+    <Layout title={source.title || source.citationString}>
       <ModuleContainer>
         <ModuleDetail module={source} />
       </ModuleContainer>

@@ -16,11 +16,11 @@ interface SourcesProps {
 const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
   const sources = sourcesData["results"] || [];
   const sourceCards = sources.map((source) => (
-    <Grid item key={source["slug"]} xs={6} sm={4} md={3}>
-      <Link href={`/sources/${source["slug"]}`}>
+    <Grid item key={source.slug} xs={6} sm={4} md={3}>
+      <Link href={`/sources/${source.slug}`}>
         <a>
           <ModuleCard module={source}>
-            <div dangerouslySetInnerHTML={{ __html: source["citationHtml"] }} />
+            <div dangerouslySetInnerHTML={{ __html: source.citationHtml }} />
           </ModuleCard>
         </a>
       </Link>

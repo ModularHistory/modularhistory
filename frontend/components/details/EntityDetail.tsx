@@ -7,16 +7,16 @@ interface EntityDetailProps {
 }
 
 const EntityDetail: FC<EntityDetailProps> = ({ entity }: EntityDetailProps) => {
-  const firstImage = entity["serializedImages"]?.[0];
+  const firstImage = entity.serializedImages?.[0];
   return (
     <>
-      <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: entity["name"] }} />
+      <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: entity.name }} />
       {firstImage && (
-        <div className="img-container" style={{ maxWidth: "44%", maxHeight: firstImage["height"] }}>
+        <div className="img-container" style={{ maxWidth: "44%", maxHeight: firstImage.height }}>
           <ImageCard image={firstImage} />
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: entity["description"] }} />
+      <div dangerouslySetInnerHTML={{ __html: entity.description }} />
     </>
   );
 };

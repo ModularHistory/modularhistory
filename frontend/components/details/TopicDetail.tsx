@@ -6,11 +6,10 @@ interface TopicDetailProps {
 }
 
 const TopicDetail: FC<TopicDetailProps> = ({ topic }: TopicDetailProps) => {
-  let titleHtml = topic["name"];
   return (
     <>
-      <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
-      <div dangerouslySetInnerHTML={{ __html: topic["description"] }} />
+      <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: topic.name }} />
+      <div dangerouslySetInnerHTML={{ __html: topic.description }} />
     </>
   );
 };

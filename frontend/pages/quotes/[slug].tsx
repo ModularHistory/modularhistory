@@ -15,7 +15,7 @@ interface QuoteProps {
  */
 const Quote: FC<QuoteProps> = ({ quote }: QuoteProps) => {
   return (
-    <Layout title={quote["title"]}>
+    <Layout title={quote.title}>
       <ModuleContainer>
         <ModuleDetail module={quote} />
       </ModuleContainer>

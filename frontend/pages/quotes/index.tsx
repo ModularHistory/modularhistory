@@ -17,16 +17,16 @@ interface QuotesProps {
 const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
   const quotes = quotesData["results"] || [];
   const quoteCards = quotes.map((quote) => (
-    <Grid item key={quote["slug"]} xs={6} sm={4} md={3}>
-      <Link href={`/quotes/${quote["slug"]}`}>
+    <Grid item key={quote.slug} xs={6} sm={4} md={3}>
+      <Link href={`/quotes/${quote.slug}`}>
         <a>
           <ModuleCard module={quote}>
             <blockquote className="blockquote">
-              <HTMLEllipsis unsafeHTML={module["bite"]} maxLine="5" basedOn="words" />
-              {quote["attributeeString"] && (
+              <HTMLEllipsis unsafeHTML={quote.bite} maxLine="5" basedOn="words" />
+              {quote.attributeeString && (
                 <footer
                   className="blockquote-footer"
-                  dangerouslySetInnerHTML={{ __html: quote["attributeeString"] }}
+                  dangerouslySetInnerHTML={{ __html: quote.attributeeString }}
                 />
               )}
             </blockquote>

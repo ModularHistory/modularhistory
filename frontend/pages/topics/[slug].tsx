@@ -15,7 +15,7 @@ interface TopicProps {
  */
 const Topic: FC<TopicProps> = ({ topic }: TopicProps) => {
   return (
-    <Layout title={topic["name"]}>
+    <Layout title={topic.name}>
       <ModuleContainer>
         <ModuleDetail module={topic} />
       </ModuleContainer>

@@ -16,11 +16,11 @@ interface PostulationsProps {
 const Postulations: FC<PostulationsProps> = ({ postulationsData }: PostulationsProps) => {
   const postulations = postulationsData["results"] || [];
   const postulationCards = postulations.map((postulation) => (
-    <Grid item key={postulation["pk"]} xs={6} sm={4} md={3}>
-      <Link href={`/postulations/${postulation["slug"] || postulation["pk"]}`}>
+    <Grid item key={postulation.slug} xs={6} sm={4} md={3}>
+      <Link href={`/postulations/${postulation.slug}`}>
         <a>
           <ModuleCard module={postulation}>
-            <div dangerouslySetInnerHTML={{ __html: postulation["summary"] }} />
+            <div dangerouslySetInnerHTML={{ __html: postulation.summary }} />
           </ModuleCard>
         </a>
       </Link>

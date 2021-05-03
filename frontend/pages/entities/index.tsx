@@ -23,11 +23,11 @@ interface EntitiesProps {
 const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   const entities = entitiesData["results"] || [];
   const entityCards = entities.map((entity) => (
-    <Grid item key={entity["slug"]} xs={6} sm={4} md={3}>
-      <Link href={`/entities/${entity["slug"]}`}>
+    <Grid item key={entity.slug} xs={6} sm={4} md={3}>
+      <Link href={`/entities/${entity.slug}`}>
         <a>
-          <ModuleCard module={entity} header={entity["name"]}>
-            <HTMLEllipsis unsafeHTML={entity["truncatedDescription"]} maxLine="4" basedOn="words" />
+          <ModuleCard module={entity} header={entity.name}>
+            <HTMLEllipsis unsafeHTML={entity.description} maxLine="4" basedOn="words" />
           </ModuleCard>
         </a>
       </Link>

@@ -6,7 +6,7 @@ interface PostulationDetailProps {
 }
 
 const PostulationDetail: FC<PostulationDetailProps> = ({ postulation }: PostulationDetailProps) => {
-  let titleHtml = postulation["summary"];
+  let titleHtml = postulation.summary;
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />

@@ -137,16 +137,16 @@ const ModuleCard: FC<ModuleCardProps> = ({
   children,
 }: ModuleCardProps) => {
   const classes = useStyles();
-  const isImage = module["model"] === "images.image";
+  const isImage = module.model === "images.image";
   let bgImage;
   if (!isImage) {
-    bgImage = module["serializedImages"]?.[0];
+    bgImage = module.serializedImages?.[0];
   } else {
     bgImage = module;
   }
   return (
     <Card className={`m-2 ${classes.card} ${className || ""}`} style={style}>
-      {false && process.env.ENVIRONMENT != "prod" && !module["verified"] && (
+      {false && process.env.ENVIRONMENT != "prod" && !module.verified && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED
         </span>
@@ -154,10 +154,10 @@ const ModuleCard: FC<ModuleCardProps> = ({
       {(bgImage && (
         <div
           className="img-bg lazy-bg"
-          data-img={bgImage["srcUrl"]}
+          data-img={bgImage.srcUrl}
           style={{
-            backgroundPosition: bgImage["bgImgPosition"],
-            backgroundImage: `url(${bgImage["srcUrl"]})`,
+            backgroundPosition: bgImage.bgImgPosition,
+            backgroundImage: `url(${bgImage.srcUrl})`,
           }}
         />
       )) || (
@@ -168,9 +168,9 @@ const ModuleCard: FC<ModuleCardProps> = ({
         <p className={`text-center ${classes.cardHeader}`}>
           <small>{header}</small>
         </p>
-      ) : module["dateHtml"] ? (
+      ) : module.dateHtml ? (
         <p className={`text-center ${classes.cardHeader}`}>
-          <small dangerouslySetInnerHTML={{ __html: module["dateHtml"] }} />
+          <small dangerouslySetInnerHTML={{ __html: module.dateHtml }} />
         </p>
       ) : null}
       {children && <div className={classes.cardBody}>{children}</div>}

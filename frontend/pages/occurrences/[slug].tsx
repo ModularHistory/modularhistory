@@ -15,7 +15,7 @@ interface OccurrenceProps {
  */
 const Occurrence: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
   return (
-    <Layout title={occurrence["title"]}>
+    <Layout title={occurrence.title}>
       <ModuleContainer>
         <ModuleDetail module={occurrence} />
       </ModuleContainer>

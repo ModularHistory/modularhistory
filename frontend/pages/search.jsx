@@ -133,11 +133,11 @@ export default function Search({ searchResults }) {
             <div className={`results result-cards ${classes.cards}`}>
               {modules.map((module, index) => (
                 <a
-                  href={module["absolute_url"]}
+                  href={module.absoluteUrl}
                   className="result 2pane-result"
-                  data-href={module["absolute_url"]}
-                  data-key={module["slug"]}
-                  key={module["absolute_url"]}
+                  data-href={module.absoluteUrl}
+                  data-key={module.slug}
+                  key={module.absoluteUrl}
                   data-index={index}
                   onClick={setModuleIndexFromEvent}
                 >

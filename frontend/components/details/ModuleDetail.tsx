@@ -46,7 +46,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
   }, [module]);
 
   let details;
-  switch (module["model"]) {
+  switch (module.model) {
     // TODO: add more models here as soon as they
     //       may appear on the SERP.
     case "entities.entity":
@@ -78,7 +78,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     <div className="detail" ref={ref}>
       {!loading && session?.user?.["isSuperuser"] && (
         <a
-          href={module["admin_url"] || module["adminUrl"]}
+          href={module.adminUrl}
           target="_blank"
           className="edit-object-button"
           rel="noopener noreferrer"

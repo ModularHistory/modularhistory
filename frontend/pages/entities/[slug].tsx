@@ -15,7 +15,7 @@ interface EntityProps {
  */
 const Entity: FC<EntityProps> = ({ entity }: EntityProps) => {
   return (
-    <Layout title={entity["name"]}>
+    <Layout title={entity.name}>
       <ModuleContainer>
         <ModuleDetail module={entity} />
       </ModuleContainer>

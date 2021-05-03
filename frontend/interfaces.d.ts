@@ -4,6 +4,9 @@ export interface BaseModule {
   slug: string;
   absoluteUrl: string;
   adminUrl: string;
+  serializedImages?: Array<ImageModule>;
+  verified?: boolean;
+  dateHtml?: string;
 }
 
 export interface SearchableModule extends BaseModule {
@@ -31,6 +34,7 @@ export interface ModuleWithImages {
 }
 
 export interface QuoteModule extends SearchableModule, ModuleWithImages {
+  title: string;
   attributeeHtml: string;
   bite: string;
   dateHtml: string;
@@ -39,6 +43,7 @@ export interface QuoteModule extends SearchableModule, ModuleWithImages {
 }
 
 export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
+  title: string;
   dateHtml: string;
   description: string;
   postscript: string;
@@ -47,12 +52,14 @@ export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
 }
 
 export interface SourceModule extends SearchableModule {
+  title: string;
   citationHtml: string;
   citationString: string;
   description: string;
 }
 
-export interface EntityModule extends ModuleWithImages {
+export interface EntityModule extends BaseModule, ModuleWithImages {
+  name: string;
   description: string;
 }
 
@@ -63,6 +70,7 @@ export interface PostulationModule extends BaseModule {
 }
 
 export interface TopicModule extends BaseModule {
+  name: string;
   description: string;
 }
 
