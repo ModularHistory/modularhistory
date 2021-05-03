@@ -12,7 +12,6 @@ from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
 
-from core.constants.environments import Environments
 from core.constants.misc import (
     MAX_MIGRATION_COUNT,
     MIGRATIONS_DIRNAME,

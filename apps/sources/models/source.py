@@ -317,7 +317,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                     self.source_containments.first().select_related('container')
                 )
                 return containment.container.date
-            except Exception as err:
+            except Exception:
                 pass
         return None
 

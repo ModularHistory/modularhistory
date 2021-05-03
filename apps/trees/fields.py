@@ -9,12 +9,16 @@ class LtreeField(models.TextField):
     description = 'ltree'
 
     def __init__(self, *args, **kwargs):
+        """Construct the ltree field."""
         kwargs['editable'] = False
         kwargs['null'] = True
         kwargs['default'] = None
         super().__init__(*args, **kwargs)
 
-    def db_type(self, connection):
+    def db_type(self, connection) -> str:
+        """Return the data type that the ltree field uses in the database."""
+        # Use the Postgres `ltree` type:
+        # https://www.postgresql.org/docs/current/ltree.html
         return 'ltree'
 
 
