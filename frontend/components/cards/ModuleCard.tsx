@@ -114,7 +114,6 @@ const useStyles = makeStyles({
         textAlign: "center",
       },
     },
-    // }
   },
 });
 

@@ -12,10 +12,12 @@ class Query(graphene.ObjectType):
     entities = graphene.List(EntityType)
     entity = graphene.Field(EntityType, slug=graphene.String())
 
-    def resolve_entities(self, info, **kwargs):
+    @staticmethod
+    def resolve_entities(root, info, **kwargs):
         return Entity.objects.all()
 
-    def resolve_entity(self, info, slug: str):
+    @staticmethod
+    def resolve_entity(root, info, slug: str):
         try:
             return Entity.objects.get(slug=slug)
         except Exception as err:

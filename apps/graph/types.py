@@ -13,7 +13,8 @@ class AbstractModuleType(graphene.ObjectType):
     class Meta:
         abstract = True
 
-    def resolve_model(self, *args) -> str:
+    @staticmethod
+    def resolve_model(root, *args) -> str:
         raise NotImplementedError
 
 

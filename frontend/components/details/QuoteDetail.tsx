@@ -7,11 +7,9 @@ interface QuoteDetailProps {
 }
 
 const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
-  const titleHtml = (
-    [quote["attributee_html"], quote["dateHtml"]]
-      .filter((html) => Boolean(html))
-      .join(", ")
-  );
+  const titleHtml = [quote["attributee_html"], quote["dateHtml"]]
+    .filter((html) => Boolean(html))
+    .join(", ");
 
   const firstImage = quote["serialized_images"]?.[0];
 

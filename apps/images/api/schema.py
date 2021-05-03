@@ -12,10 +12,12 @@ class Query(graphene.ObjectType):
     images = graphene.List(ImageType)
     image = graphene.Field(ImageType, slug=graphene.String())
 
-    def resolve_images(self, info, **kwargs):
+    @staticmethod
+    def resolve_images(root, info, **kwargs):
         return Image.objects.all()
 
-    def resolve_image(self, info, slug: str):
+    @staticmethod
+    def resolve_image(root, info, slug: str):
         try:
             return Image.objects.get(slug=slug)
         except Exception as err:
