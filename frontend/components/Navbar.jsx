@@ -1,4 +1,21 @@
 import { useSession } from "next-auth/client";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import React from "react";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "../auth";
+
+const logoImageSrc = "/static/logo_head_white.png";
+const globalMenuItems = [
+  {
+    title: "About",
+    path: "/about",
+    children: [
+      { title: "About Us", path: "/about", reactive: true },
+      { title: "Manifesto", path: "/manifesto", reactive: true },
     ],
   },
   { title: "Occurrences", path: "/occurrences", reactive: true },
