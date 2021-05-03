@@ -28,7 +28,7 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
         dangerouslySetInnerHTML={{ __html: occurrence["dateHtml"] }}
       />
       <div className="card-text">
-        {occurrence["serialized_images"].map(
+        {occurrence["serializedImages"].map(
           (image) =>
             occurrence["description"].includes(image["srcUrl"]) || (
               <div className="img-container" style={{ maxWidth: "44%" }} key={image["srcUrl"]}>
@@ -52,7 +52,7 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
 
         <footer className="footer sources-footer">
           <ol className="citations">
-            {occurrence["serialized_citations"].map((citation) => {
+            {occurrence["serializedCitations"].map((citation) => {
               const id = `citation-${citation["pk"]}`;
               return (
                 <li

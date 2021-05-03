@@ -128,7 +128,7 @@ const ModuleCard: FC<ModuleCardProps> = ({ module, header, children }: ModuleCar
   const isImage = module["model"] === "images.image";
   let bgImage;
   if (!isImage) {
-    bgImage = module["serialized_images"]?.[0];
+    bgImage = module["serializedImages"]?.[0];
   } else {
     bgImage = module;
   }

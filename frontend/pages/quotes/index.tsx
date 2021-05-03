@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
+import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
 interface QuotesProps {
   quotesData: any;
@@ -21,10 +22,10 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
         <a>
           <ModuleCard module={quote}>
             <blockquote className="blockquote">
-              <div dangerouslySetInnerHTML={{ __html: quote["truncated_html"] }} />
+              <HTMLEllipsis unsafeHTML={module["bite"]} maxLine="5" basedOn="words" />
               <footer
                 className="blockquote-footer"
-                dangerouslySetInnerHTML={{ __html: quote["attributee_string"] }}
+                dangerouslySetInnerHTML={{ __html: quote["attributeeString"] }}
               />
             </blockquote>
           </ModuleCard>

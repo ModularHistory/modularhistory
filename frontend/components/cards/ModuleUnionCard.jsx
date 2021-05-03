@@ -1,3 +1,4 @@
+import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ImageCard from "./ImageCard";
 import ModuleCard from "./ModuleCard";
 
@@ -18,10 +19,10 @@ export default function ModuleUnionCard({ module, ...childProps }) {
       content = (
         <>
           <blockquote className="blockquote">
-            <div dangerouslySetInnerHTML={{ __html: module["truncated_html"] }} />
+            <HTMLEllipsis unsafeHTML={module["bite"]} maxLine="4" basedOn="words" />
             <footer
               className="blockquote-footer"
-              dangerouslySetInnerHTML={{ __html: module["attributee_string"] }}
+              dangerouslySetInnerHTML={{ __html: module["attributeeString"] }}
             />
           </blockquote>
         </>

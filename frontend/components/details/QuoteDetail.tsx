@@ -7,11 +7,11 @@ interface QuoteDetailProps {
 }
 
 const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
-  const titleHtml = [quote["attributee_html"], quote["dateHtml"]]
+  const titleHtml = [quote["attributeeHtml"], quote["dateHtml"]]
     .filter((html) => Boolean(html))
     .join(", ");
 
-  const firstImage = quote["serialized_images"]?.[0];
+  const firstImage = quote["serializedImages"]?.[0];
 
   return (
     <>
@@ -32,7 +32,7 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
 
         <footer className="footer sources-footer">
           <ol className="citations">
-            {quote["serialized_citations"].map((citation) => (
+            {quote["serializedCitations"].map((citation) => (
               <li
                 key={citation["pk"]}
                 className="source"

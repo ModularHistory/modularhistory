@@ -12,9 +12,9 @@ class OccurrenceSerializer(SearchableModelSerializer):
     summary = serpy.Field(attr='summary.html')
     description = serpy.Field(attr='description.html')
     postscript = serpy.MethodField()
-    serialized_images = serpy.Field()
-    primary_image = serpy.Field()
-    serialized_citations = serpy.Field()
+    serializedImages = serpy.Field(attr='serialized_images')
+    primaryImage = serpy.Field(attr='primary_image')
+    serializedCitations = serpy.Field(attr='serialized_citations')
     tags_html = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa

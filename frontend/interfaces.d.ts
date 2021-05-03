@@ -25,25 +25,24 @@ export interface ImageModule extends SearchableModule {
 }
 
 export interface ModuleWithImages {
-  primary_image: ImageModule;
-  serialized_images: ImageModule[];
+  primaryImage: ImageModule;
+  serializedImages: ImageModule[];
 }
 
 export interface QuoteModule extends SearchableModule, ModuleWithImages {
-  attributee_html: string;
+  attributeeHtml: string;
   bite: string;
   date_html: string;
   has_multiple_attributees: boolean;
   html: string;
-  serialized_citations: Citation[];
-  truncated_html: string;
+  serializedCitations: Citation[];
 }
 
 export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
   date_html: string;
   description: string;
   postscript: string;
-  serialized_citations: Citation[];
+  serializedCitations: Citation[];
   summary: string;
 }
 
@@ -54,7 +53,6 @@ export interface SourceModule extends SearchableModule {
 }
 
 export interface EntityModule extends ModuleWithImages {
-  serialized_citations: Citation[];
   description: string;
 }
 
