@@ -1,7 +1,6 @@
 import graphene
 
 from apps.graph.types import AbstractModuleType
-from apps.sources.models import Source
 
 
 class SourceType(AbstractModuleType):
@@ -13,6 +12,6 @@ class SourceType(AbstractModuleType):
     attributee_html = graphene.String()
     title = graphene.String()
 
-    @classmethod
-    def resolve_model(cls, instance: Source, info):
+    @staticmethod
+    def resolve_model(root, *args):
         return 'sources.source'

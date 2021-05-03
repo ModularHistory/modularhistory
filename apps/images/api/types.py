@@ -11,5 +11,6 @@ class ImageType(ModuleType):
         model = Image
         exclude = []
 
-    def resolve_model(self, *args) -> str:
+    @staticmethod
+    def resolve_model(root, *args) -> str:
         return 'images.image'

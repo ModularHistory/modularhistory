@@ -1,6 +1,7 @@
 
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
+from typedmodels.models import _start_object
 
 from apps.topics.api.types import TopicType
 from apps.topics.models import Topic
@@ -12,10 +13,12 @@ class Query(graphene.ObjectType):
     topics = graphene.List(TopicType)
     topic = graphene.Field(TopicType, slug=graphene.String())
 
-    def resolve_topics(self, info, **kwargs):
+    @staticmethod
+    def resolve_topics(root, info, **kwargs):
         return Topic.objects.all()
 
-    def resolve_topic(self, info, slug: str):
+    @staticmethod
+    def resolve_topic(root, info, slug: str):
         try:
             return Topic.objects.get(slug=slug)
         except ObjectDoesNotExist:

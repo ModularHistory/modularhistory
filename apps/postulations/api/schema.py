@@ -12,10 +12,12 @@ class Query(graphene.ObjectType):
     postulations = graphene.List(PostulationType)
     postulation = graphene.Field(PostulationType, slug=graphene.String())
 
-    def resolve_postulations(self, info, **kwargs):
+    @staticmethod
+    def resolve_postulations(root, info, **kwargs):
         return Postulation.objects.all()
 
-    def resolve_postulation(self, info, slug: str):
+    @staticmethod
+    def resolve_postulation(root, info, slug: str):
         try:
             return Postulation.objects.get(slug=slug)
         except Exception as err:

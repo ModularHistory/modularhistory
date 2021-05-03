@@ -12,10 +12,12 @@ class Query(graphene.ObjectType):
     sources = graphene.List(SourceType)
     source = graphene.Field(SourceType, slug=graphene.String())
 
-    def resolve_sources(self, info, **kwargs):
+    @staticmethod
+    def resolve_sources(root, info, **kwargs):
         return Source.objects.all()
 
-    def resolve_source(self, info, slug: str):
+    @staticmethod
+    def resolve_source(root, info, slug: str):
         try:
             return Source.objects.get(slug=slug)
         except Exception as err:
