@@ -15,7 +15,7 @@ interface ImageProps {
  */
 const Image: FC<ImageProps> = ({ image }: ImageProps) => {
   return (
-    <Layout title={image["name"]}>
+    <Layout title={image["captionHtml"]}>
       <ModuleContainer>
         <ModuleDetail module={image} />
       </ModuleContainer>
@@ -30,10 +30,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const body = {
     query: `{
       image(slug: "${slug}") {
-        name
         slug
+        srcUrl
+        captionHtml
+        providerString
         description
-        serializedImages
+        width
+        height
         model
         adminUrl
       }
