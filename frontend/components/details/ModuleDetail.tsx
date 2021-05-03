@@ -24,7 +24,8 @@ interface ModuleDetailProps {
     | EntityModule
     | TopicModule
     | PostulationModule
-    | ImageModule;
+    | ImageModule
+    | SourceModule;
 }
 
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
