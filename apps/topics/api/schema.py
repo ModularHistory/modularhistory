@@ -1,7 +1,5 @@
-
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
-from typedmodels.models import _start_object
 
 from apps.topics.api.types import TopicType
 from apps.topics.models import Topic
