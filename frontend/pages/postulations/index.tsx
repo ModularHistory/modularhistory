@@ -19,10 +19,9 @@ const Postulations: FC<PostulationsProps> = ({ postulationsData }: PostulationsP
     <Grid item key={postulation["pk"]} xs={6} sm={4} md={3}>
       <Link href={`/postulations/${postulation["slug"] || postulation["pk"]}`}>
         <a>
-          <ModuleCard
-            module={postulation}
-            content={<div dangerouslySetInnerHTML={{ __html: postulation["summary"] }} />}
-          />
+          <ModuleCard module={postulation}>
+            <div dangerouslySetInnerHTML={{ __html: postulation["summary"] }} />
+          </ModuleCard>
         </a>
       </Link>
     </Grid>

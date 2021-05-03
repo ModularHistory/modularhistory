@@ -19,20 +19,15 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
     <Grid item key={quote["slug"]} xs={6} sm={4} md={3}>
       <Link href={`/quotes/${quote["slug"]}`}>
         <a>
-          <ModuleCard
-            module={quote}
-            content={
-              <>
-                <blockquote className="blockquote">
-                  <div dangerouslySetInnerHTML={{ __html: quote["truncated_html"] }} />
-                  <footer
-                    className="blockquote-footer"
-                    dangerouslySetInnerHTML={{ __html: quote["attributee_string"] }}
-                  />
-                </blockquote>
-              </>
-            }
-          />
+          <ModuleCard module={quote}>
+            <blockquote className="blockquote">
+              <div dangerouslySetInnerHTML={{ __html: quote["truncated_html"] }} />
+              <footer
+                className="blockquote-footer"
+                dangerouslySetInnerHTML={{ __html: quote["attributee_string"] }}
+              />
+            </blockquote>
+          </ModuleCard>
         </a>
       </Link>
     </Grid>

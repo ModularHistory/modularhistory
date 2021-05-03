@@ -4,7 +4,7 @@ import ModuleCard from "./ModuleCard";
 export default function ModuleUnionCard({ module, ...childProps }) {
   // ModuleUnionCard is a generic component for rendering cards of any
   // model type, removing the need to import every card component.
-  let content = <div />;
+  let content;
   switch (module["model"]) {
     case "images.image":
       return <ImageCard image={module} {...childProps} />;
@@ -30,8 +30,10 @@ export default function ModuleUnionCard({ module, ...childProps }) {
     case "sources.source":
       content = <div dangerouslySetInnerHTML={{ __html: module["citationHtml"] }} />;
       break;
-    default:
-      return <ModuleCard module={module} content={content} {...childProps} />;
   }
-  return <ModuleCard module={module} content={content} {...childProps} />;
+  return (
+    <ModuleCard module={module} {...childProps}>
+      {content}
+    </ModuleCard>
+  );
 }
