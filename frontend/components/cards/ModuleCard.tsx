@@ -1,6 +1,6 @@
 import { BaseModule } from "@/interfaces";
 import { Card } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { CSSProperties, makeStyles } from "@material-ui/styles";
 import { FC, ReactNode } from "react";
 
 const useStyles = makeStyles({
@@ -125,7 +125,7 @@ interface ModuleCardProps {
   module: BaseModule;
   header?: string;
   className?: string;
-  style?: Record<string, any>;
+  style?: CSSProperties;
   children?: ReactNode;
 }
 
