@@ -13,6 +13,5 @@ class SourceType(AbstractModuleType):
     attributee_html = graphene.String()
     title = graphene.String()
 
-    @classmethod
-    def resolve_model(cls, instance: Source, info):
+    def resolve_model(self, *args):
         return 'sources.source'
