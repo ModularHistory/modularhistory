@@ -1,5 +1,4 @@
-from rest_framework import permissions
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.postulations.models import Postulation
