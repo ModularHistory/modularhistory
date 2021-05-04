@@ -20,6 +20,8 @@ N_RESULTS_PER_PAGE = 10
 
 
 class SearchResultsSerializer:
+    """Serializer for search results."""
+
     def __init__(self, queryset, *args, **kwargs):
         self.data = [instance.serialize() for instance in queryset]
 

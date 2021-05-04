@@ -4,7 +4,7 @@ from django.db import models
 
 
 class LtreeField(models.TextField):
-    """A field for storing a label tree (ltree)."""
+    """Field for storing a label tree (ltree)."""
 
     description = 'ltree'
 
@@ -23,10 +23,7 @@ class LtreeField(models.TextField):
 
 
 class Ancestor(models.Lookup):
-    """
-    A lookup for instances that have a specified ancestor
-    (inclusive of the ancestor).
-    """
+    """Lookup for instances with the specified ancestor, inclusive."""
 
     lookup_name = 'ancestor'
 
@@ -38,10 +35,7 @@ class Ancestor(models.Lookup):
 
 
 class Descendant(models.Lookup):
-    """
-    A lookup for instances that have a specified descendant
-    (inclusive of the descendant).
-    """
+    """Lookup for instances with the specified descendant, inclusive."""
 
     lookup_name = 'descendant'
 
