@@ -32,6 +32,11 @@ class SluggedModel(Model):
     class Meta:
         abstract = True
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self.get_slug()
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         """Return the URL for the model instance detail page."""
         slug = getattr(self, 'slug', None)
