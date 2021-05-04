@@ -14,10 +14,12 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_postulations(root, info, **kwargs):
+        """Return the queryset against which a 'postulations' query should be executed."""
         return Postulation.objects.all()
 
     @staticmethod
     def resolve_postulation(root, info, slug: str):
+        """Return the postulation specified by a 'postulation' query."""
         try:
             return Postulation.objects.get(slug=slug)
         except Exception as err:

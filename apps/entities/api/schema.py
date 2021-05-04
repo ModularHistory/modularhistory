@@ -1,4 +1,3 @@
-
 import graphene
 
 from apps.entities.api.types import EntityType
@@ -13,10 +12,12 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_entities(root, info, **kwargs):
+        """Return the queryset against which an 'entities' query should be executed."""
         return Entity.objects.all()
 
     @staticmethod
     def resolve_entity(root, info, slug: str):
+        """Return the entity specified by an 'entity' query."""
         return Entity.objects.get(slug=slug)
 
 

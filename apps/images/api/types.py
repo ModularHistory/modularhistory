@@ -17,4 +17,5 @@ class ImageType(ModuleType):
 
     @staticmethod
     def resolve_model(root, *args) -> str:
+        """Return the value to be assigned to an image's `model` attribute."""
         return 'images.image'

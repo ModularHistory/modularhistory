@@ -14,10 +14,12 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_sources(root, info, **kwargs):
+        """Return the queryset against which a 'sources' query should be executed."""
         return Source.objects.all()
 
     @staticmethod
     def resolve_source(root, info, slug: str):
+        """Return the source specified by a 'source' query."""
         try:
             return Source.objects.get(slug=slug)
         except Exception as err:

@@ -72,7 +72,7 @@ class TreeModel(Model):
 
     @property
     def ancestors(self) -> QuerySet:
-        """Return the model instances's ancestors (based on its LTree field)."""
+        """Return the model instances's ancestors, based on its LTree field."""
         return (
             type(self)
             ._default_manager.filter(path__descendant=self.path)
@@ -81,7 +81,7 @@ class TreeModel(Model):
 
     @property
     def descendants(self) -> QuerySet:
-        """Return the model instances's descendants (based on its LTree field)."""
+        """Return the model instances's descendants, based on its LTree field."""
         return (
             type(self)
             ._default_manager.filter(path__ancestor=self.path)
@@ -90,7 +90,7 @@ class TreeModel(Model):
 
     @property
     def siblings(self) -> QuerySet:
-        """Return the model instances's siblings (based on its LTree field)."""
+        """Return the model instances's siblings, based on its LTree field."""
         return (
             type(self)
             ._default_manager.filter(parent_id=self.parent_id)

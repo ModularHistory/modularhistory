@@ -4,7 +4,7 @@ export interface BaseModule {
   slug: string;
   absoluteUrl: string;
   adminUrl: string;
-  serializedImages?: Array<ImageModule>;
+  serializedImages?: ImageModule[];
   verified?: boolean;
   dateHtml?: string;
 }
@@ -15,6 +15,7 @@ export interface SearchableModule extends BaseModule {
 }
 
 export interface Citation {
+  pk: string;
   html: string;
 }
 

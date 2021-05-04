@@ -13,10 +13,12 @@ class Query(graphene.ObjectType):
 
     @staticmethod
     def resolve_topics(root, info, **kwargs):
+        """Return the queryset against which a 'topics' query should be executed."""
         return Topic.objects.all()
 
     @staticmethod
     def resolve_topic(root, info, slug: str):
+        """Return the topic specified by a 'topic' query."""
         try:
             return Topic.objects.get(slug=slug)
         except ObjectDoesNotExist:

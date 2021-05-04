@@ -70,7 +70,7 @@ export const handleLogout = (session: Session): void => {
   window.localStorage.setItem("logout", `${Date.now()}`);
 };
 
-export const removeServerSideCookies = (cookies: Array<string>): Array<string> => {
+export const removeServerSideCookies = (cookies: string[]): string[] => {
   // Given an array of cookie strings, remove any HttpOnly cookies.
   // Return the modified array.
   const clientSideCookies = [];

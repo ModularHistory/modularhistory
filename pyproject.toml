@@ -199,6 +199,8 @@ tomlkit = "^0.7.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
 Werkzeug = "^1.0.1"
+types-colorama = "^0.4.0"
+graphene-types = "^0.15.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

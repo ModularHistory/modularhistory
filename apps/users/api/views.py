@@ -1,7 +1,5 @@
 """API views for the account app."""
 
-
-from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.discord.views import DiscordOAuth2Adapter
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.github.views import GitHubOAuth2Adapter
@@ -173,4 +171,4 @@ class DeletionView(generics.DestroyAPIView):
 @ensure_csrf_cookie
 def set_csrf_token(request):
     """Ensure the CSRF cookie is set correctly."""
-    return JsonResponse({"details": "CSRF cookie set"})
+    return JsonResponse({'details': 'CSRF cookie set'})

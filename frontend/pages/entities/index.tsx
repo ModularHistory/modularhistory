@@ -13,7 +13,7 @@ import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
 interface EntitiesDataProps {
   total_pages: number;
-  results: Array<EntityModule>;
+  results: EntityModule[];
 }
 
 interface EntitiesProps {

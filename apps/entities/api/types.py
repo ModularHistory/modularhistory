@@ -15,4 +15,5 @@ class EntityType(ModuleType):
 
     @staticmethod
     def resolve_model(root, *args) -> str:
+        """Return the value to be assigned to an entity's `model` attribute."""
         return 'entities.entity'

@@ -58,7 +58,7 @@ class CitationAdmin(ModelAdmin):
         """
         qs = (
             models.Citation.objects.all()
-            .select_related('source', f'source__file')
+            .select_related('source', 'source__file')
             .prefetch_related('content_object')
         )
         ordering = self.get_ordering(request)

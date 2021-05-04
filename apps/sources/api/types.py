@@ -14,4 +14,5 @@ class SourceType(AbstractModuleType):
 
     @staticmethod
     def resolve_model(root, *args):
+        """Return the value to be assigned to a source's `model` attribute."""
         return 'sources.source'

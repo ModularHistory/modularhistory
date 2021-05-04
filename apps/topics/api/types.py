@@ -11,4 +11,5 @@ class TopicType(ModuleType):
 
     @staticmethod
     def resolve_model(root, *args) -> str:
+        """Return the value to be assigned to a topic's `model` attribute."""
         return 'topics.topic'
