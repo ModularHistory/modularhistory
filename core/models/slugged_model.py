@@ -33,6 +33,7 @@ class SluggedModel(Model):
         abstract = True
 
     def save(self, *args, **kwargs):
+        """Save the model instance to the database."""
         if not self.slug:
             self.slug = self.get_slug()
         super().save(*args, **kwargs)
