@@ -81,6 +81,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - elasticsearch
     deploy:
       restart_policy:
         condition: on-failure
@@ -248,6 +249,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
     environment:
+      # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
       - node.name=modularhistory-es
       - cluster.name=es-docker-cluster
       - discovery.type=single-node
@@ -258,7 +260,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - search-data:/usr/share/elasticsearch/data
+      - search_data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
     networks:
@@ -289,5 +291,5 @@ volumes:
   # `data` is used by both redis and mongodb
   data:
   postgres_data:
-  search-data:
+  search_data:
   redisinsight:
