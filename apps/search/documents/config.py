@@ -1,6 +1,6 @@
 from elasticsearch_dsl import analyzer
 
-html_strip = analyzer(
+html_field_analyzer = analyzer(
     'html_strip',
     tokenizer="standard",
     filter=["lowercase", "stop", "porter_stem"],

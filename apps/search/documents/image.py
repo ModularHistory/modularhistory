@@ -1,7 +1,7 @@
 from django_elasticsearch_dsl import Document, fields
 from django_elasticsearch_dsl.registries import registry
 
-from apps.search.documents.config import html_strip
+from apps.search.documents.config import html_field_analyzer
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS
 
 from apps.images.models import Image
@@ -13,8 +13,8 @@ class ImageDocument(Document):
         settings = DEFAULT_INDEX_SETTINGS
         name = 'images'
 
-    caption = fields.TextField(attr='caption.text', analyzer=html_strip)
-    description = fields.TextField(attr='description.raw_value', analyzer=html_strip)
+    caption = fields.TextField(attr='caption.text', analyzer=html_field_analyzer)
+    description = fields.TextField(attr='description.raw_value', analyzer=html_field_analyzer)
     provider = fields.TextField(attr='provider')
 
     class Django:
