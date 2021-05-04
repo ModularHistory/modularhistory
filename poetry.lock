@@ -810,6 +810,22 @@ elasticsearch-dsl = ">=7.2.0"
 six = "*"
 
 [[package]]
+name = "django-elasticsearch-dsl-drf"
+version = "0.22.1"
+description = "Integrate Elasticsearch DSL with Django REST framework."
+category = "main"
+optional = false
+python-versions = ">=2.7"
+
+[package.dependencies]
+django-elasticsearch-dsl = ">=6.4.1"
+django-nine = ">=0.2"
+djangorestframework = "*"
+elasticsearch = "*"
+elasticsearch-dsl = "*"
+six = ">=1.9"
+
+[[package]]
 name = "django-extensions"
 version = "3.1.3"
 description = "Extensions for Django"
@@ -951,6 +967,17 @@ python-versions = "*"
 [package.dependencies]
 python-monkey-business = ">=1.0.0"
 six = "*"
+
+[[package]]
+name = "django-nine"
+version = "0.2.4"
+description = "Version checking library."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = "*"
 
 [[package]]
 name = "django-polymorphic"
@@ -3445,7 +3472,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.9"
-content-hash = "cec036b7f47fcff3367d9f519aae47dd7a03bf992cf62e84f6b492c9fd1dcfc7"
+content-hash = "f707e5247f5ce59a71f49375c0098ce057cace540e04d198544535563706480a"
 
 [metadata.files]
 aenum = [
@@ -3902,6 +3929,10 @@ django-elasticsearch-dsl = [
     {file = "django-elasticsearch-dsl-7.2.0.tar.gz", hash = "sha256:f9163ffe314a0562f00789d34cc923332e1d51236bf7d5a38bfa8ea72399ceac"},
     {file = "django_elasticsearch_dsl-7.2.0-py2.py3-none-any.whl", hash = "sha256:865f9f0d6aa24c923c2cc791b35f608c85cfe766edc8920d00854ced452c326a"},
 ]
+django-elasticsearch-dsl-drf = [
+    {file = "django-elasticsearch-dsl-drf-0.22.1.tar.gz", hash = "sha256:bdc88c0a3ddbcf7172d932135038b8353c39270fe1ede59127572f2c4490dbd3"},
+    {file = "django_elasticsearch_dsl_drf-0.22.1-py2.py3-none-any.whl", hash = "sha256:644c6b97adafab19620a6025d81e153a66cacf8c306febabef264a872b03a9a5"},
+]
 django-extensions = [
     {file = "django-extensions-3.1.3.tar.gz", hash = "sha256:5f0fea7bf131ca303090352577a9e7f8bfbf5489bd9d9c8aea9401db28db34a0"},
     {file = "django_extensions-3.1.3-py3-none-any.whl", hash = "sha256:50de8977794a66a91575dd40f87d5053608f679561731845edbd325ceeb387e3"},
@@ -3947,6 +3978,10 @@ django-meta = [
 django-nested-admin = [
     {file = "django-nested-admin-3.3.3.tar.gz", hash = "sha256:f1773c4d1be0a19e4b7a510734e88b81f551f831ed7b0641f63ad13cef3ee08c"},
     {file = "django_nested_admin-3.3.3-py2.py3-none-any.whl", hash = "sha256:440d06055d5c114b354c6bbd040ab878a1bfbea02692cb40ec8fd1e5a071e99b"},
+]
+django-nine = [
+    {file = "django-nine-0.2.4.tar.gz", hash = "sha256:27cb253eea230d0c792b815125c58f69bb1a3f32265c3b8585ab891f7855c0cd"},
+    {file = "django_nine-0.2.4-py2.py3-none-any.whl", hash = "sha256:296718cc75eec8fc5a4a35aa4b689ab782f4fc9d59f12515ad70abbea49a7c27"},
 ]
 django-polymorphic = [
     {file = "django-polymorphic-3.0.0.tar.gz", hash = "sha256:9d886f19f031d26bb1391c055ed9be06fb226a04a4cec1842b372c58873b3caa"},
