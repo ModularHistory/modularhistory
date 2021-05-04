@@ -11,6 +11,7 @@ declare module "next-auth" {
     refreshToken?: string;
     sessionIdCookie?: string;
     clientSideCookies?: Array<str>;
+    expired?: boolean;
   }
   export interface User extends NextAuthUser {
     accessToken: string;

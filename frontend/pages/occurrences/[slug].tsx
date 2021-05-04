@@ -1,10 +1,9 @@
-import { OccurrenceModule } from "@/interfaces";
-import { GetStaticPaths, GetStaticProps } from "next";
-import { FC } from "react";
-
 import Layout from "@/components/Layout";
 import ModuleContainer from "@/components/moduledetails/ModuleContainer";
+import { OccurrenceModule } from "@/interfaces";
 import axios from "axios";
+import { GetStaticPaths, GetStaticProps } from "next";
+import { FC } from "react";
 
 interface OccurrenceProps {
   occurrence: OccurrenceModule;
@@ -15,7 +14,7 @@ interface OccurrenceProps {
  */
 const Occurrence: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
   return (
-    <Layout title={occurrence["summary"] || occurrence["slug"]}>
+    <Layout title={occurrence["title"]}>
       <ModuleContainer module={occurrence} />
     </Layout>
   );

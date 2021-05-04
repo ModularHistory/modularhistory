@@ -46,7 +46,9 @@ class PostulationSerializer(ModelSerializer):
 class Postulation(VerifiableModel, ModelWithSources):
     """A postulation."""
 
-    summary = HTMLField(verbose_name=_('statement'), unique=True, paragraphed=False)
+    summary = HTMLField(
+        verbose_name=_('statement'), unique=True, paragraphed=False, processed=False
+    )
     elaboration = HTMLField(
         verbose_name=_('elaboration'), null=True, blank=True, paragraphed=True
     )

@@ -3,7 +3,6 @@ import ImageCard from "./ImageCard";
 import OccurrenceCard from "./OccurrenceCard";
 import QuoteCard from "./QuoteCard";
 
-
 export default function ModuleCard({ module, ...childProps }) {
   // ModuleCard is a generic component for rendering cards of any
   // model type, removing the need to import every card component.

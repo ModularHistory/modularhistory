@@ -39,7 +39,7 @@ export default function YearSelect({ label, name }) {
           name={typeName}
           value={type}
           onChange={setStateFromEvent}
-          disabled={true}  // disabled={disabled}
+          disabled={true} // disabled={disabled}
         >
           {["CE", "BCE", "YBP"].map((opt) => (
             <MenuItem value={opt} key={opt}>
