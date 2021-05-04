@@ -381,6 +381,14 @@ zookeeper = ["kazoo (>=1.3.1)"]
 zstd = ["zstandard"]
 
 [[package]]
+name = "celery-types"
+version = "0.3.0"
+description = "Type stubs for Celery and its related packages"
+category = "dev"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[[package]]
 name = "certifi"
 version = "2020.12.5"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -3388,7 +3396,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.9"
-content-hash = "d3354e275265866ca4bc0cf2ff0f0c304b47ab8257c664de95a95d1721cc35a6"
+content-hash = "687e06f5a2f67957af22aac8bc19506fdace97777f4d4f2356b2e02d3caff136"
 
 [metadata.files]
 aenum = [
@@ -3604,6 +3612,10 @@ cchardet = [
 celery = [
     {file = "celery-4.4.7-py2.py3-none-any.whl", hash = "sha256:a92e1d56e650781fb747032a3997d16236d037c8199eacd5217d1a72893bca45"},
     {file = "celery-4.4.7.tar.gz", hash = "sha256:d220b13a8ed57c78149acf82c006785356071844afe0b27012a4991d44026f9f"},
+]
+celery-types = [
+    {file = "celery-types-0.3.0.tar.gz", hash = "sha256:b1b171b9fd8600e1dea697c240d0e4f3e316e4e972fab3478e64e18a9615d37e"},
+    {file = "celery_types-0.3.0-py3-none-any.whl", hash = "sha256:4048c2069b95e82722f23d853f95421ace1cdb08d549041e7438c25390ef9989"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
