@@ -4,7 +4,6 @@ import uuid
 from typing import TYPE_CHECKING
 
 import serpy
-from autoslug import AutoSlugField
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 

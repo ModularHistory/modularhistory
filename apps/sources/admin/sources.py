@@ -20,6 +20,12 @@ from apps.sources.admin.inlines import (
 
 
 class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
+    """
+    Admin for all sources, accessible at http://localhost/admin/sources/source/.
+    This admin is not used for editing individual source instances;
+    editing of individual model instances is delegated to `ChildSourceAdmin`
+    or one of its subclasses.
+    """
 
     base_model = models.Source
     child_models = (
@@ -90,7 +96,11 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
 
 
 class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
-    """Base admin class for all child models."""
+    """
+    Admin for source models that inherit from the base `Source` model.
+    Such source models (e.g., `Article`) must be registered with `ChildSourceAdmin`
+    or with a custom admin that inherits from `ChildSourceAdmin`.
+    """
 
     base_model = models.Source
 

@@ -45,11 +45,6 @@ class TreeModel(Model):
         abstract = True
         ordering = ('path',)
 
-    def clean(self):
-        """Prepare the model instance to be saved to the database."""
-        self.validate_parent(raises=ValidationError)
-        return super().clean()
-
     def save(self, *args, **kwargs):
         """Save the model instance to the database."""
         self.key = self.get_key()
@@ -69,6 +64,11 @@ class TreeModel(Model):
                     f"subpath({table}.path, nlevel('{old_path}'::ltree)) "
                     f"WHERE {table}.path <@ '{old_path}'::ltree AND id != {self.id}"
                 )
+
+    def clean(self):
+        """Prepare the model instance to be saved to the database."""
+        self.validate_parent(raises=ValidationError)
+        return super().clean()
 
     @property
     def ancestors(self) -> QuerySet:
