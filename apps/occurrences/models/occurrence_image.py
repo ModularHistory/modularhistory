@@ -27,7 +27,7 @@ class OccurrenceImage(PositionedRelation):
     class Meta:
         """Meta options for OccurrenceImage."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['occurrence', 'image']
         ordering = ['position']

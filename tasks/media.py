@@ -5,7 +5,6 @@ from os.path import join
 
 import django
 
-from core.constants.environments import Environments
 from core.utils import media
 
 from .command import command

@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.fields import HistoricDateTimeField
+from apps.dates.fields import HistoricDateTimeField
 from core.models import Model
 
 CONTENT_TYPE_OPTIONS: List[Tuple[str, str]] = [
@@ -56,7 +56,7 @@ class Search(Model):
     class Meta:
         """Meta options for Search."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Searches'
 

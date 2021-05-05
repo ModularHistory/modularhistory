@@ -1,8 +1,6 @@
-import logging
 from typing import Optional
 
 from autoslug import AutoSlugField
-from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.text import slugify
@@ -34,24 +32,16 @@ class SluggedModel(Model):
     class Meta:
         abstract = True
 
-    def get_absolute_url(self) -> str:  # noqa: DJ12
+    def save(self, *args, **kwargs):
+        """Save the model instance to the database."""
+        if not self.slug:
+            self.slug = self.get_slug()
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
         """Return the URL for the model instance detail page."""
-        absolute_url = ''
         slug = getattr(self, 'slug', None)
-        try:
-            if slug:
-                absolute_url = reverse(
-                    f'{self.get_meta().app_label}:detail_slug', args=[str(slug)]
-                )
-            else:
-                absolute_url = reverse(
-                    f'{self.get_meta().app_label}:detail', args=[str(self.pk)]
-                )
-            logging.debug(f'Determined absolute URL: {absolute_url}')
-            return absolute_url
-        except Exception as err:
-            logging.error(f'{err}')
-        return absolute_url
+        return f'{self.get_meta().app_label}/{slug or self.pk}'
 
     @property
     def absolute_url(self) -> str:
@@ -66,7 +56,7 @@ class SluggedModel(Model):
     @property
     def detail_url(self) -> str:
         """Return the URL of the model instance's detail page."""
-        return reverse(f'{self.get_meta().app_label}:detail', args=[self.pk])
+        return self.absolute_url
 
     def get_detail_link(self, content: Optional[str] = None) -> SafeString:
         """Return a link to the model instance's detail page."""
@@ -81,5 +71,5 @@ class SluggedModel(Model):
             slug_base = str(getattr(self, slug_base_field, self.pk))
             if '<' in slug_base:
                 slug_base = soupify(slug_base).get_text()
-            slug = slugify(slug_base)
+            slug = slugify(slug_base)[:75]
         return slug or self.pk

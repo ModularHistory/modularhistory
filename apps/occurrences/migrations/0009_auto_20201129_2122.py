@@ -3,8 +3,8 @@
 from django.db import migrations
 
 import core.fields
-import core.fields.historic_datetime_field
 import core.fields.html_field
+from apps.dates.fields import HistoricDateTimeField
 
 
 class Migration(migrations.Migration):
@@ -17,9 +17,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='occurrence',
             name='date',
-            field=core.fields.historic_datetime_field.HistoricDateTimeField(
-                blank=True, null=True, verbose_name='Date'
-            ),
+            field=HistoricDateTimeField(blank=True, null=True, verbose_name='Date'),
         ),
         migrations.AlterField(
             model_name='occurrence',

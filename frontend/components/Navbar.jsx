@@ -14,23 +14,23 @@ const globalMenuItems = [
     title: "About",
     path: "/about",
     children: [
-      { title: "About Us", path: "/about", reactive: false },
-      { title: "Manifesto", path: "/manifesto", reactive: false },
+      { title: "About Us", path: "/about", reactive: true },
+      { title: "Manifesto", path: "/manifesto", reactive: true },
     ],
   },
+  { title: "Occurrences", path: "/occurrences", reactive: true },
+  { title: "Quotes", path: "/quotes", reactive: true },
+  { title: "Topics", path: "/topics", reactive: true },
   {
-    title: "Occurrences",
-    path: "/search/?content_types=occurrences.occurrence",
-    as: "/occurrences",
-    reactive: true,
+    title: "Other",
+    path: "/",
+    children: [
+      { title: "Postulations", path: "/postulations", reactive: true },
+      { title: "Sources", path: "/sources", reactive: true },
+      { title: "Entities", path: "/entities", reactive: true },
+      { title: "Images", path: "/images", reactive: true },
+    ],
   },
-  {
-    title: "Quotes",
-    path: "/search/?content_types=quotes.quote",
-    as: "/quotes",
-    reactive: true,
-  },
-  { title: "Entities", path: "/entities", reactive: true },
 ];
 
 function WrappedNavLink({ title, path, as, reactive }) {
@@ -58,9 +58,7 @@ function WrappedNavDropdown({ title, children, ...childProps }) {
   return (
     <NavDropdown renderMenuOnMount title={title} {...childProps}>
       {children.map((item) => (
-        <NavDropdown.Item key={item.path} href={item.path}>
-          {item.title}
-        </NavDropdown.Item>
+        <WrappedNavLink key={item.path} {...item} />
       ))}
     </NavDropdown>
   );
@@ -108,7 +106,7 @@ export default function GlobalNavbar({ menuItems }) {
         />
       );
     }
-    if (session.user.is_superuser) {
+    if (session.user.isSuperuser) {
       accountControls = (
         <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
           <NavDropdown.Item href="/users/profile">Profile</NavDropdown.Item>
@@ -143,7 +141,7 @@ export default function GlobalNavbar({ menuItems }) {
       collapseOnSelect
     >
       <Link href={"/"}>
-        <Navbar.Brand href={"/"}>
+        <Navbar.Brand href={"/"} data-cy={"brand"}>
           <img alt="Logo" src={logoImageSrc} style={{ width: "2.7rem", height: "2.5rem" }} />{" "}
           ModularHistory
         </Navbar.Brand>

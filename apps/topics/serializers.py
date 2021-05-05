@@ -8,7 +8,7 @@ from core.models.model import ModelSerializer
 class TopicSerializer(ModelSerializer):
     """Serializer for topics."""
 
-    key = serpy.Field()
+    name = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of serialized topics."""
@@ -16,7 +16,7 @@ class TopicSerializer(ModelSerializer):
 
 
 class TopicDictSerializer:
-    """Serializer for topics retrieved from ORM with .values()"""
+    """Serializer for topics retrieved from ORM with `.values()`."""
 
     def __init__(self, queryset, *args, **kwargs):
         self.data = list(queryset)

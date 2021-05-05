@@ -8,8 +8,10 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
+from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import ModelWithImages
 from apps.quotes.manager import QuoteManager
@@ -20,7 +22,7 @@ from apps.search.models import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
 from core.constants.content_types import ContentTypes, get_ct_id
 from core.constants.strings import EMPTY_STRING
-from core.fields import HistoricDateTimeField, HTMLField
+from core.fields import HTMLField
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
@@ -67,11 +69,15 @@ class Quote(
         help_text='Content to be displayed after the quote',
     )
     date = HistoricDateTimeField(null=True)
+    attributee_html = models.TextField(
+        verbose_name=_('attributee HTML'), null=True, blank=True, editable=False
+    )
     attributees = models.ManyToManyField(
         to='entities.Entity',
         through='quotes.QuoteAttribution',
         related_name='quotes',
         blank=True,
+        verbose_name=_('attributees'),
     )
     related = GenericManyToManyField(
         'occurrences.Occurrence',
@@ -88,7 +94,7 @@ class Quote(
     class Meta:
         """Meta options for Quote."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['date', 'bite']
         ordering = ['date']
@@ -117,8 +123,22 @@ class Quote(
             string = f'{attributee_string}: {self.bite.text}'
         return string
 
+    def clean(self):
+        """Prepare the quote to be saved to the database."""
+        super().clean()
+        no_text = not self.text
+        min_text_length = 15
+        if no_text or len(f'{self.text}') < min_text_length:  # e.g., <p>&nbsp;</p>
+            raise ValidationError('The quote must have text.')
+        if not self.bite:
+            text = self.text.text
+            if len(text) > BITE_MAX_LENGTH:
+                raise ValidationError('Add a quote bite.')
+            self.bite = text  # type: ignore  # TODO: remove type ignore
+
     def save(self, *args, **kwargs):
         """Save the quote to the database."""
+        self.attributee_html = self.get_attributee_html()
         self.clean()
         super().save(*args, **kwargs)
         if not self.images.exists():
@@ -136,10 +156,8 @@ class Quote(
             if image:
                 QuoteImage.objects.create(quote=self, image=image)
 
-    @retrieve_or_compute(attribute_name='attributee_html', caster=format_html)
-    def attributee_html(self) -> SafeString:
+    def get_attributee_html(self) -> SafeString:
         """Return the HTML representing the quote's attributees."""
-        logging.debug('Computing attributee HTML...')
         attributees = self.ordered_attributees
         attributee_html = ''
         if attributees:
@@ -167,10 +185,6 @@ class Quote(
                     attributee_html = f'{primary_attributee_html} et al.'
         return format_html(attributee_html)
 
-    # TODO: Order by `attributee_string` instead of `attributee`
-    attributee_html.admin_order_field = 'attributee'
-    attributee_html: SafeString = property(attributee_html)  # type: ignore
-
     def get_slug(self) -> str:
         """Generate a slug for the quote."""
         return slugify(self.pk)
@@ -182,11 +196,12 @@ class Quote(
 
         This method minimizes db query complexity.
         """
-        attributee_html: str = self.attributee_html  # type: ignore
-        signals = (' and ', ', ', ' et al.')
-        for signal in signals:
-            if signal in attributee_html:
-                return True
+        if self.attributee_html:
+            attributee_html: str = self.attributee_html
+            signals = (' and ', ', ', ' et al.')
+            for signal in signals:
+                if signal in attributee_html:
+                    return True
         return False
 
     @property
@@ -244,19 +259,6 @@ class Quote(
         ).values_list('id', flat=True)
         return Occurrence.objects.filter(id__in=occurrence_ids)
 
-    def clean(self):
-        """Prepare the quote to be saved to the database."""
-        super().clean()
-        no_text = not self.text
-        min_text_length = 15
-        if no_text or len(f'{self.text}') < min_text_length:  # e.g., <p>&nbsp;</p>
-            raise ValidationError('The quote must have text.')
-        if not self.bite:
-            text = self.text.text
-            if len(text) > BITE_MAX_LENGTH:
-                raise ValidationError('Add a quote bite.')
-            self.bite = text  # type: ignore  # TODO: remove type ignore
-
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
         """Return the obj's HTML based on a placeholder in the admin."""
@@ -282,8 +284,8 @@ class Quote(
         )
 
 
-def quote_sorter_key(quote: Quote):
-    """TODO: add docstring."""
+def quote_sorter_key(quote: Quote) -> int:
+    """Return an integer used to position a quote relative to other quotes."""
     level_multiplier = 1000
     day_multiplier = 1000000
     month_multiplier = day_multiplier * level_multiplier

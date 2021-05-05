@@ -3,7 +3,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.fields import HistoricDateTimeField, HTMLField
+from apps.dates.fields import HistoricDateTimeField
+from core.fields import HTMLField
 from core.models import Model
 
 MAX_NAME_LENGTH: int = 100
@@ -18,7 +19,7 @@ class _Engagement(Model):
     class Meta:
         """Meta options for the _Engagement model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         abstract = True
 
@@ -48,7 +49,7 @@ class Affiliation(_Engagement):
     class Meta:
         """Meta options for the Affiliation model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['entity', 'affiliated_entity', 'start_date']
 
@@ -72,7 +73,7 @@ class Role(Model):
     class Meta:
         """Meta options for the Role model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name = _('role')
 
@@ -100,7 +101,7 @@ class RoleFulfillment(_Engagement):
     class Meta:
         """Meta options for the RoleFulfillment model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['affiliation', 'role', 'start_date']
         verbose_name = _('role fulfillment')

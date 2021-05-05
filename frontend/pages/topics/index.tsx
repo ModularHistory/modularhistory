@@ -1,17 +1,18 @@
+import Layout from "@/components/Layout";
+import PageHeader from "@/components/PageHeader";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
-import Layout from "../../components/Layout";
 
 interface TopicsProps {
   topicsData: any;
 }
 
 const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
-  const topics = topicsData["data"]["allTopics"] || [];
+  const topics = topicsData["data"]["topics"] || [];
 
   //Style for the anchor used in topicNames
   const topicAnchorStyle = {
@@ -19,10 +20,10 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   };
 
   const topicNames = topics.map((topic) => (
-    <Grid item key={topic["key"]} xs={4}>
-      <Link href={`/search?topics=${topic["pk"]}`}>
+    <Grid item key={topic.name} xs={4}>
+      <Link href={`/topics/${topic.slug}`}>
         <a style={topicAnchorStyle}>
-          <strong>{topic["key"]}</strong>
+          <strong>{topic.name}</strong>
         </a>
       </Link>
     </Grid>
@@ -31,6 +32,7 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   return (
     <Layout title={"Topics"}>
       <Container>
+        <PageHeader>Topics</PageHeader>
         <Grid container spacing={2}>
           {topicNames}
         </Grid>
@@ -46,7 +48,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let topicsData = {};
 
   await axios
-    .get("http://django:8000/graphql/?query={allTopics{key%20pk}}", {})
+    .get("http://django:8000/graphql/?query={topics{name%20slug}}", {})
     .then((response) => {
       topicsData = response.data;
     })

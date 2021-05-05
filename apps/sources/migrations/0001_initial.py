@@ -10,9 +10,9 @@ from django.db import migrations, models
 
 import core.fields
 import core.fields.file_field
-import core.fields.historic_datetime_field
 import core.fields.html_field
 import core.fields.json_field
+from apps.dates.fields import HistoricDateTimeField
 
 
 class Migration(migrations.Migration):
@@ -145,9 +145,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'description',
@@ -160,9 +158,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'title',
@@ -388,9 +384,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 ('translator', models.CharField(blank=True, max_length=100, null=True)),
                 ('publisher', models.CharField(blank=True, max_length=100, null=True)),
@@ -815,9 +809,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'original_edition',
@@ -899,9 +891,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'page_number',
@@ -954,9 +944,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'page_number',
@@ -999,9 +987,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'page_number',
@@ -1087,9 +1073,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'page_number',
@@ -1190,9 +1174,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'page_number',
@@ -1245,9 +1227,7 @@ class Migration(migrations.Migration):
                 ('editors', models.CharField(blank=True, max_length=100, null=True)),
                 (
                     'original_publication_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'page_number',

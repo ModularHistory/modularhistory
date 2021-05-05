@@ -16,6 +16,7 @@ from core.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
+from core.models import SluggedModel
 from core.models.model import ModelSerializer
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
@@ -43,7 +44,7 @@ class PostulationSerializer(ModelSerializer):
         return 'topics.fact'
 
 
-class Postulation(VerifiableModel, ModelWithSources):
+class Postulation(SluggedModel, VerifiableModel, ModelWithSources):
     """A postulation."""
 
     summary = HTMLField(

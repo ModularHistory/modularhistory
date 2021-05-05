@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Optional, Union
 from django.db.models import Manager as ModelManager
 from typedmodels.models import TypedModelManager as BaseTypedModelManager
 
-from core.structures.historic_datetime import HistoricDateTime
+from apps.dates.structures import HistoricDateTime
 
 if TYPE_CHECKING:
     from core.models import Model

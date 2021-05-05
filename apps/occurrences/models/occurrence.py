@@ -8,6 +8,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
+from apps.dates.fields import HistoricDateTimeField
 from apps.images.models.model_with_images import ModelWithImages
 from apps.occurrences.manager import OccurrenceManager
 from apps.occurrences.models.occurrence_image import OccurrenceImage
@@ -16,7 +17,7 @@ from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
-from core.fields import HistoricDateTimeField, HTMLField
+from core.fields import HTMLField
 from core.utils.html import soupify
 
 if TYPE_CHECKING:
@@ -33,6 +34,7 @@ class Occurrence(
 ):
     """Something that happened."""
 
+    version = IntegerVersionField()
     date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
     end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
     summary = HTMLField(verbose_name=_('summary'), paragraphed=False, processed=False)
@@ -44,8 +46,6 @@ class Occurrence(
         paragraphed=True,
         help_text='Content to be displayed below all related data',
     )
-    version = IntegerVersionField()
-
     locations = models.ManyToManyField(
         to='places.Place',
         through='occurrences.OccurrenceLocation',
@@ -74,11 +74,17 @@ class Occurrence(
         related_name='occurrences',
         verbose_name=_('chains'),
     )
+    # postulation = models.OneToOneField(
+    #     to='postulations.Postulation',
+    #     on_delete=models.PROTECT,
+    #     verbose_name=_('postulation'),
+    #     null=True,  # TODO: remove null=True after setting values.
+    # )
 
     class Meta:
         """Meta options for the Category model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['summary', 'date']
         ordering = ['date']
@@ -130,9 +136,12 @@ class Occurrence(
         description = soupify(self.description.html)
         if description.find('img'):
             description.find('img').decompose()
-        return format_html(
+        truncated_description = (
             truncatechars_html(description.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
+            .replace('<p>', '')
+            .replace('</p>', '')
         )
+        return format_html(truncated_description)
 
     @property
     def ordered_images(self):

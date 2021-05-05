@@ -8,19 +8,20 @@ except ModuleNotFoundError:
 from django.conf import settings
 from invoke.context import Context
 
-CONTEXT = Context()
-
 
 def autoformat(
-    context: Context = CONTEXT,
+    context: Optional[Context] = None,
     filepaths: Optional[Iterable[str]] = None,
-    staged: bool = False,
+    staged_files_only: bool = False,
 ):
     """Autoformat Python code."""
     if get_staged_status is not None and stash_unstaged_changes is not None:
         pass
     else:
         print('Cannot autoformat; missing required autohooks module.')
+        return
+    if context is None:
+        context = Context()
     commands = [
         # https://isort.readthedocs.io/en/latest/
         'isort',
@@ -30,24 +31,19 @@ def autoformat(
         'autoflake --imports=apps,django,requests,typing,urllib3 --ignore-init-module-imports -i -r',  # noqa: E501
     ]
     filepaths: Iterable[str] = filepaths or []
-    if staged:
+    if staged_files_only:
         staged_filepaths = get_staged_status()
         filepaths += staged_filepaths
     filepaths = [filepath for filepath in filepaths if filepath.endswith('.py')]
     if filepaths:
         commands.append('unify --in-place')  # does not support recursion (directories)
-    if staged:
-        if not filepaths:
-            return
-        with stash_unstaged_changes(staged_filepaths):
-            for filepath in filepaths:
-                for command in commands:
-                    context.run(f'{command} {filepath}', warn=True)
-    elif filepaths:
         for filepath in filepaths:
+            print(f'Autoformatting {filepath} ...')
             for command in commands:
                 context.run(f'{command} {filepath}', warn=True)
-    else:
+    elif not staged_files_only:
+        print('Autoformatting all Python code ...')
         with context.cd(settings.BASE_DIR):
             for command in commands:
                 context.run(f'{command} .')
+    print('Finished autoformatting Python code.')

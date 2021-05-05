@@ -1,48 +1,49 @@
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardMedia from "@material-ui/core/CardMedia";
+import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ModuleCard from "@/components/cards/ModuleUnionCard";
+import Layout from "@/components/Layout";
+import PageHeader from "@/components/PageHeader";
+import Pagination from "@/components/Pagination";
+import { EntityModule } from "@/interfaces";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import axios from "axios";
 import { GetServerSideProps } from "next";
+import Link from "next/link";
 import { FC } from "react";
-import Layout from "../../components/Layout";
-import Pagination from "../../components/Pagination";
+import HTMLEllipsis from "react-lines-ellipsis/lib/html";
+
+interface EntitiesDataProps {
+  total_pages: number;
+  results: EntityModule[];
+}
 
 interface EntitiesProps {
-  entitiesData: any;
+  entitiesData: EntitiesDataProps;
 }
 
 const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
   const entities = entitiesData["results"] || [];
-
   const entityCards = entities.map((entity) => (
-    <Grid item key={entity["pk"]} xs={6} sm={4} md={3}>
-      <a href={`entities/${entity["pk"]}`}>
-        <Card>
-          <CardHeader title={entity["name"]} />
-          {entity["serialized_images"].length > 0 && (
-            <CardMedia
-              style={{ height: 0, paddingTop: "100%" }}
-              image={entity["serialized_images"][0]["src_url"]}
-            />
-          )}
-          <CardContent dangerouslySetInnerHTML={{ __html: entity["truncated_description"] }} />
-        </Card>
-      </a>
+    <Grid item key={entity.slug} xs={6} sm={4} md={3}>
+      <Link href={`/entities/${entity.slug}`}>
+        <a>
+          <ModuleCard module={entity} header={entity.name}>
+            <HTMLEllipsis unsafeHTML={entity.description} maxLine="4" basedOn="words" />
+          </ModuleCard>
+        </a>
+      </Link>
     </Grid>
   ));
 
   return (
     <Layout title={"Entities"}>
       <Container>
+        <PageHeader>Entities</PageHeader>
         <Pagination count={entitiesData["total_pages"]} />
         <Grid container spacing={2}>
           {entityCards}
         </Grid>
+        <Pagination count={entitiesData["total_pages"]} />
       </Container>
-      {/*<pre>{JSON.stringify(entitiesData, null, 4)}</pre>*/}
     </Layout>
   );
 };
@@ -53,7 +54,7 @@ export default Entities;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   let entitiesData = {};
 
-  await axios
+  await axiosWithoutAuth
     .get("http://django:8000/api/entities/", { params: context.query })
     .then((response) => {
       entitiesData = response.data;

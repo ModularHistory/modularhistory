@@ -49,7 +49,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
       // Get Django CSRF cookie.
       // eslint-disable-next-line no-console
       // console.log("Getting a CSRF cookie...");
-      const url = "/api/csrf/set";
+      const url = "/api/csrf/set/";
       axiosWithoutAuth.get(url); // .then(console.log);
     }
 

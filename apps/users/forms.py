@@ -63,7 +63,7 @@ class RegistrationForm(UserCreationForm):
             ),
             Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
             HTML(
-                f'<p>Already have an account? <a href="api/auth/signin">Sign in</a></p>'
+                '<p>Already have an account? <a href="api/auth/signin">Sign in</a></p>'
             ),
         )
 

@@ -11,7 +11,6 @@ from typing import Callable, Dict, List, Optional, Tuple, Union
 from core.linters.config import ConfigFileOptionsParser as BaseConfigFileOptionsParser
 from core.linters.config import LinterOptions, PerModuleOptions
 from core.utils import linting
-from core.utils.qa import autoformat
 
 StringOrCallable = Union[str, Callable]
 StringOrCallableOrDict = Union[StringOrCallable, Dict[str, StringOrCallable]]

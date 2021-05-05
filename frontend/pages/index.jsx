@@ -50,10 +50,11 @@ export default function Home() {
           style={{ minWidth: "280px" }}
           onChange={setQuery}
           onKeyPress={search}
+          data-cy={"query"}
         />
       </Grid>
       <Grid item>
-        <SearchButton onClick={search} />
+        <SearchButton onClick={search} data-cy={"searchButton"} />
       </Grid>
     </Grid>
   );

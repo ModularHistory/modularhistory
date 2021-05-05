@@ -6,9 +6,9 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 import core.fields
-import core.fields.historic_datetime_field
 import core.fields.html_field
 import core.fields.json_field
+from apps.dates.fields import HistoricDateTimeField
 
 
 class Migration(migrations.Migration):
@@ -55,15 +55,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'end_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'summary',

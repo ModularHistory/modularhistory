@@ -10,7 +10,7 @@ class StorySerializer(SearchableModelSerializer):
 
     handle = serpy.Field()
     description = serpy.MethodField()
-    serialized_citations = serpy.Field()
+    serializedCitations = serpy.Field(attr='serialized_citations')
 
     def get_model(self, instance) -> str:
         """Return the model name of the instance."""

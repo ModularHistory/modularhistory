@@ -1,6 +1,5 @@
 import braintree  # type: ignore
 from decouple import config
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -23,15 +22,16 @@ def get_token(request):
 
 @api_view(['GET', 'POST'])
 def process(request):
+    """Process a transaction."""
     result = braintree.Transaction.sale(
         {
-            "amount": request.data['amount'],
-            "payment_method_nonce": request.data['paymentMethodNonce'],
-            "customer": {"first_name": request.data['name']},
+            'amount': request.data['amount'],
+            'payment_method_nonce': request.data['paymentMethodNonce'],
+            'customer': {'first_name': request.data['name']},
         }
     )
 
     if result.is_success:
-        return Response("OK")
+        return Response('OK')
     else:
-        return Response("NO")
+        return Response('NO')

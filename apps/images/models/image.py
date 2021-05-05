@@ -83,7 +83,7 @@ class Image(MediaModel):
     class Meta:
         """Meta options for the Image model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = [IMAGE_FIELD_NAME, 'caption']
         ordering = ['date']
@@ -111,7 +111,9 @@ class Image(MediaModel):
             raise ValidationError('Image needs a caption.')
         image_is_duplicated = (
             self.caption
-            and Image.objects.filter(image=self.image, caption=self.caption).exists()
+            and Image.objects.filter(image=self.image, caption=self.caption)
+            .exclude(pk=self.pk)
+            .exists()
         )
         if image_is_duplicated:
             raise ValidationError(
@@ -215,16 +217,7 @@ class Image(MediaModel):
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
                 return preretrieved_html.strip()
-        try:
-            image = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
-        except ValueError as error:  # legacy key
-            # Update key if necessary
-            key = match.group(PlaceholderGroups.PK).strip()
-            logging.error(
-                f'ERROR: {error} resulted from attempting to retrieve image={key}'
-            )
-            image = cls.objects.get(key=key)
-            # image_placeholder = image_placeholder.replace(key, str(image.pk))  # TODO
+        image = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         if isinstance(image, dict):
             width = image['width']
         elif isinstance(image, Image):

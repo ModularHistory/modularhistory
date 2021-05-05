@@ -2,8 +2,8 @@
 
 import pytest
 from django.test import Client
-from django.urls import reverse
 
+from apps.entities.models import Person
 from core.tests import TestSuite
 
 
@@ -11,11 +11,27 @@ from core.tests import TestSuite
 class EntitiesTestSuite(TestSuite):
     """Tests for the admin app."""
 
-    def test_entities(self):
+    def test_entity_query(self):
         """Verify pages have 200 status."""
         client = Client()
-        response = client.get(reverse('entities:index'))
+        name = 'Albert Einstein'
+        person: Person = Person.objects.create(name=name)
+        # fmt: off
+        query = '''
+        {
+            entity(slug: "%s") {
+                name
+                slug
+                description
+                serializedImages
+                model
+                adminUrl
+            }
+        }
+        ''' % person.slug
+        # fmt: on
+        response = client.post('/graphql/', {'query': query.strip()})
         assert response.status_code == 200
-
-
-# TODO: test that name_html matches regex in html_field
+        response_content = f'{response.content}'
+        assert '"entity"' in response_content
+        assert f'"name":"{name}"' in response_content

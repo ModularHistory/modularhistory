@@ -36,13 +36,14 @@ class EntitySerializer(ModelSerializer):
     """Serializer for entities."""
 
     name = serpy.Field()
-    unabbreviated_name = serpy.Field()
+    slug = serpy.Field()
+    unabbreviatedName = serpy.Field(attr='unabbreviated_name')
     aliases = serpy.Field()
-    birth_date = serpy.MethodField('get_serialized_birth_date')
-    death_date = serpy.MethodField('get_serialized_death_date')
+    birthDate = serpy.MethodField('get_serialized_birth_date')
+    deathDate = serpy.MethodField('get_serialized_death_date')
     description = serpy.Field(attr='description.html', required=False)
-    truncated_description = serpy.Field()
-    serialized_images = serpy.Field()
+    truncatedDescription = serpy.Field(attr='truncated_description')
+    serializedImages = serpy.Field(attr='serialized_images')
     categorizations = CategorizationSerializer(
         many=True, attr='categorizations.all', call=True
     )
@@ -61,7 +62,7 @@ class EntitySerializer(ModelSerializer):
 
 
 class EntityPartialDictSerializer:
-    """Serializer for topics retrieved from ORM with .values()"""
+    """Serializer for topics retrieved from ORM with `.values()`."""
 
     # TODO: This currently will break if given
     #       unserializable fields, e.g. html.

@@ -4,8 +4,8 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 import core.fields
-import core.fields.historic_datetime_field
 import core.fields.html_field
+from apps.dates.fields import HistoricDateTimeField
 
 
 class Migration(migrations.Migration):
@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='source',
             name='publication_date',
-            field=core.fields.historic_datetime_field.HistoricDateTimeField(
+            field=HistoricDateTimeField(
                 blank=True, null=True, verbose_name='publication date'
             ),
         ),

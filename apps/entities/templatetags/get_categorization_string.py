@@ -9,8 +9,8 @@ from typing import Optional
 
 from django import template
 
+from apps.dates.structures import HistoricDateTime
 from apps.entities.models import Entity
-from core.structures import HistoricDateTime
 
 register = template.Library()
 

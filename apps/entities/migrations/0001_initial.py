@@ -6,9 +6,9 @@ from django.db import migrations, models
 
 import core.fields
 import core.fields.array_field
-import core.fields.historic_datetime_field
 import core.fields.html_field
 import core.fields.json_field
+from apps.dates.fields import HistoricDateTimeField
 
 
 class Migration(migrations.Migration):
@@ -34,15 +34,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'start_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'end_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
             ],
         ),
@@ -60,15 +56,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'end_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
             ],
         ),
@@ -172,15 +164,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'birth_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'death_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'description',
@@ -264,15 +252,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'start_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'end_date',
-                    core.fields.historic_datetime_field.HistoricDateTimeField(
-                        blank=True, null=True
-                    ),
+                    HistoricDateTimeField(blank=True, null=True),
                 ),
                 (
                     'affiliation',

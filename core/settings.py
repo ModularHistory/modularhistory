@@ -86,6 +86,9 @@ INSTALLED_APPS = [
     'admin_tools.menu',
     # 'admin_tools.theming',
     # 'admin_tools.dashboard',
+    # ---------------------------------
+    # Django core apps
+    # ---------------------------------
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -97,6 +100,31 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.forms',
+    # ---------------------------------
+    # DRF and auth-related apps
+    # ---------------------------------
+    'rest_framework',  # https://github.com/encode/django-rest-framework
+    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
+    # 'defender',  # https://github.com/jazzband/django-defender  # TODO
+    # Note: dj_rest_auth must be loaded after rest_framework.
+    'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
+    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.  # noqa: E501
+    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    'allauth.account',
+    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.discord',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
+    # ---------------------------------
+    # Elasticsearch
+    # ---------------------------------
+    'django_elasticsearch_dsl',  # https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html
+    # ---------------------------------
+    # Miscellaneous third-party apps
+    # ---------------------------------
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
@@ -111,7 +139,6 @@ INSTALLED_APPS = [
     'django_extensions',  # https://github.com/django-extensions/django-extensions
     'django_replicated',  # https://github.com/yandex/django_replicated
     'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
-    # 'defender',  # https://github.com/jazzband/django-defender  # TODO
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
     'decouple',  # https://github.com/henriquebastos/python-decouple/
@@ -119,6 +146,7 @@ INSTALLED_APPS = [
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
     'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
+    'graphene_django',  # https://github.com/graphql-python/graphene-django
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.migrations',
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
@@ -126,7 +154,6 @@ INSTALLED_APPS = [
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'lockdown',  # https://github.com/Dunedan/django-lockdown
     'massadmin',  # https://github.com/burke-software/django-mass-edit
-    'martor',  # https://github.com/agusmakmun/django-markdown-editor
     'meta',  # https://django-meta.readthedocs.io/en/latest/
     'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
@@ -136,30 +163,15 @@ INSTALLED_APPS = [
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
     'webpack_loader',  # https://github.com/owais/django-webpack-loader  # TODO
-    # DRF apps
-    'rest_framework',  # https://github.com/encode/django-rest-framework
-    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
-    # Note: dj_rest_auth must be loaded after rest_framework.
-    'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
-    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.  # noqa: E501
-    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
-    'allauth.account',
-    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.discord',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.github',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.twitter',
-    # elasticsearch
-    'django_elasticsearch_dsl', # https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html
+    # ---------------------------------
     # In-project apps
+    # ---------------------------------
     'apps.chat.apps.ChatConfig',
     'apps.dates.apps.DatesConfig',
     'apps.donations.apps.DonationsConfig',
     'apps.entities.apps.EntitiesConfig',
     'apps.forums.apps.ForumsConfig',
-    'apps.home.apps.HomeConfig',
+    'apps.graph.apps.GraphConfig',
     'apps.interactions.apps.InteractionsConfig',
     'apps.postulations.apps.PostulationsConfig',
     'apps.search.apps.SearchConfig',
@@ -171,10 +183,9 @@ INSTALLED_APPS = [
     'apps.staticpages.apps.StaticPagesConfig',
     'apps.stories.apps.StoriesConfig',
     'apps.topics.apps.TopicsConfig',
+    'apps.trees.apps.TreesConfig',
     'apps.users.apps.UsersConfig',
     'apps.verifications.apps.VerificationsConfig',
-    # GraphQL
-    'graphene_django',
 ]
 
 MIDDLEWARE = [
@@ -280,17 +291,6 @@ DATABASES = {
     },
 }
 
-# TODO: https://github.com/nesdis/djongo
-ENABLE_MONGO = False
-if ENABLE_MONGO:
-    DATABASES['mongo'] = {
-        'ENGINE': 'djongo',
-        'NAME': 'default',
-        'CLIENT': {
-            'host': 'your-db-host',
-        },
-    }
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 LANGUAGE_CODE = 'en-us'
@@ -302,11 +302,9 @@ USE_TZ = True
 # Mega credentials
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
-MEGA_DEV_USERNAME = config('MEGA_DEV_USERNAME', default=MEGA_USERNAME)
-MEGA_DEV_PASSWORD = config('MEGA_DEV_PASSWORD', default=MEGA_PASSWORD)
 
 # GraphQL
-GRAPHENE = {'SCHEMA': 'apps.topics.models.schema'}
+GRAPHENE = {'SCHEMA': 'apps.graph.schema.schema'}
 
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

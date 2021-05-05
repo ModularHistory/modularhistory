@@ -7,7 +7,7 @@ updates:
       interval: "daily"
   # Maintain JS dependencies
   - package-ecosystem: "npm"
-    directory: "/client/"
+    directory: "/frontend/"
     schedule:
       interval: "daily"
   # Maintain Python dependencies

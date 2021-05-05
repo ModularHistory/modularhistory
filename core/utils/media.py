@@ -82,12 +82,8 @@ def sync(
             '--drive-use-trash=false'
         )
     elif storage_provider == RcloneStorageProviders.MEGA:
-        mega_username = config(
-            'MEGA_DEV_USERNAME', default=config('MEGA_USERNAME', default=None)
-        )
-        mega_password = config(
-            'MEGA_DEV_PASSWORD', default=config('MEGA_PASSWORD', default=None)
-        )
+        mega_username = config('MEGA_USERNAME', default=None)
+        mega_password = config('MEGA_PASSWORD', default=None)
         command = (
             f'{command} --max-transfer=5G '
             f'--mega-user={mega_username} '

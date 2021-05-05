@@ -14,14 +14,15 @@ from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 from polymorphic.models import PolymorphicModel
 
+from apps.dates.fields import HistoricDateTimeField
+from apps.dates.structures import HistoricDateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.search.models import SearchableDatedModel
 from apps.sources.manager import PolymorphicSourceManager, PolymorphicSourceQuerySet
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
-from core.fields import HistoricDateTimeField, HTMLField
+from core.fields import HTMLField
 from core.models import retrieve_or_compute
-from core.structures.historic_datetime import HistoricDateTime
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -316,7 +317,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                     self.source_containments.first().select_related('container')
                 )
                 return containment.container.date
-            except Exception as err:
+            except Exception:
                 pass
         return None
 
@@ -371,7 +372,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         page_number = page_number or self.page_number
         url = self.get_page_number_url(page_number=page_number)
         if url:
-            # '<a href="https://..." class="display-source" target="_blank">25</a>'
+            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'
             return compose_link(
                 page_number, href=url, klass='display-source', target=NEW_TAB
             )
@@ -390,7 +391,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def link(self) -> Optional[SafeString]:
         """Return an HTML link element containing the source URL, if one exists."""
         if self.url:
-            return format_html(f'<a target="_blank" href="{self.url}">{self.url}</a>')
+            return format_html(
+                f'<a href="{self.url}" class="url" target="_blank">{self.url}</a>'
+            )
         return None
 
     @property

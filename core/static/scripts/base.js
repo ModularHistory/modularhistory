@@ -76,10 +76,6 @@ function initializeListeners(element = null) {
             }
         }
     });
-
-    // TODO: clean up
-    // // enable annotations
-    // $(scope).find('.detail').annotator().annotator('setupPlugins');
 }
 
 function setGetParam(key, value) {

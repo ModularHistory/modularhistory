@@ -3,8 +3,6 @@
 from django.db import models
 
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
-from core.models import ModelWithComputations, retrieve_or_compute
-from core.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
 LOCATION_INFO_MAX_LENGTH: int = 400
@@ -50,5 +48,5 @@ class DocumentMixin(PageNumbersMixin):
     class Meta:
         """Meta options."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
         abstract = True

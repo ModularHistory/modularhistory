@@ -1,14 +1,9 @@
 """Base classes for models that appear in ModularHistory search results."""
 
-import logging
-import uuid
 from typing import TYPE_CHECKING, Optional
 
 import serpy
-from autoslug import AutoSlugField
 from django.db import models
-from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
@@ -30,22 +25,6 @@ class SearchableModel(
     it must be defined as an abstract model class.
     """
 
-    key = models.UUIDField(
-        verbose_name=_('key'),
-        primary_key=False,
-        default=uuid.uuid4,
-        editable=False,
-        unique=True,
-    )
-    slug = AutoSlugField(
-        verbose_name=_('slug'),
-        null=True,
-        blank=True,
-        editable=True,
-        unique=True,
-        db_index=True,
-        populate_from='get_slug',
-    )
     hidden = models.BooleanField(
         default=False,
         blank=True,
@@ -59,7 +38,7 @@ class SearchableModel(
     class Meta:
         """Meta options for SearchableModel."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         abstract = True
 
@@ -72,20 +51,6 @@ class SearchableModel(
             self.slug = self.get_slug()
         super().clean()
 
-    def get_absolute_url(self):
-        """Return the URL for the model instance detail page."""
-        absolute_url = ''
-        if self.slug:
-            absolute_url = reverse(
-                f'{self.get_meta().app_label}:detail_slug', args=[str(self.slug)]
-            )
-        else:
-            absolute_url = reverse(
-                f'{self.get_meta().app_label}:detail', args=[str(self.pk)]
-            )
-        logging.debug(f'Determined absolute URL: {absolute_url}')
-        return absolute_url
-
 
 ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']
 
@@ -93,10 +58,10 @@ ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
-    absolute_url = serpy.StrField()
-    admin_url = serpy.StrField()
+    absoluteUrl = serpy.StrField(attr='absolute_url')
+    adminUrl = serpy.StrField(attr='admin_url')
     slug = serpy.StrField()
-    tags_html = serpy.StrField()
+    tagsHtml = serpy.StrField(attr='tags_html')
     title = serpy.StrField()
     verified = serpy.BoolField()
     meta = serpy.MethodField()

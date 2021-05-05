@@ -16,13 +16,12 @@ class QuoteSerializer(SearchableModelSerializer):
 
     bite = serpy.MethodField()
     html = serpy.Field()
-    truncated_html = serpy.MethodField()
-    has_multiple_attributees = serpy.BoolField()
-    attributee_html = serpy.Field()
-    date_html = serpy.Field()
-    serialized_images = serpy.Field()
-    primary_image = serpy.Field()
-    serialized_citations = serpy.Field()
+    attributeeHtml = serpy.Field(attr='attributee_html')
+    attributeeString = serpy.Field(attr='attributee_string')
+    dateHtml = serpy.Field(attr='date_html')
+    serializedImages = serpy.Field(attr='serialized_images')
+    primaryImage = serpy.Field(attr='primary_image')
+    serializedCitations = serpy.Field(attr='serialized_citations')
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
@@ -30,13 +29,9 @@ class QuoteSerializer(SearchableModelSerializer):
 
     def get_bite(self, instance: 'Quote') -> str:
         """Return the user-facing bite HTML."""
-        # "bite" is set to truncated text if it does not exist
-        # TODO: Add "truncated" field to model to distinguish true bites from auto bites
-        return instance.bite.html if instance.bite else ""
-
-    def get_truncated_html(self, instance: 'Quote') -> str:
-        """Return truncated HTML content"""
-        if instance.bite is not None:
-            return truncatechars_html(instance.bite, 100)
-        else:
-            return truncatechars_html(instance.text, 100)
+        # Set `bite`` to truncated text if it does not exist.
+        return (
+            instance.bite.html
+            if instance.bite
+            else truncatechars_html(instance.text, 150)
+        )

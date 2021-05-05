@@ -13,7 +13,7 @@ from django.utils.safestring import SafeString
 
 from apps.sources.serializers import CitationSerializer
 from core.constants.content_types import ContentTypes, get_ct_id
-from core.fields import HistoricDateTimeField, HTMLField, JSONField
+from core.fields import JSONField
 from core.fields.html_field import (
     APPENDAGE_GROUP,
     END_PATTERN,
@@ -64,17 +64,17 @@ CITATION_PHRASE_MAX_LENGTH: int = 25
 
 # https://json-schema.org/understanding-json-schema/reference/array.html#tuple-validation
 PAGES_SCHEMA = {
-    "type": "array",
-    "items": {"$ref": "#/$definitions/page_range"},
-    "uniqueItems": True,
-    "$definitions": {
-        "page_range": {
-            "type": "array",
-            "items": [
-                {"type": "number"},  # start page number
-                {"type": "number"},  # end page number
+    'type': 'array',
+    'items': {'$ref': '#/$definitions/page_range'},
+    'uniqueItems': True,
+    '$definitions': {
+        'page_range': {
+            'type': 'array',
+            'items': [
+                {'type': 'number'},  # start page number
+                {'type': 'number'},  # end page number
             ],
-            "additionalItems": False,
+            'additionalItems': False,
         }
     },
 }
@@ -117,7 +117,7 @@ class Citation(PositionedRelation):
         """Return the citation's string representation."""
         try:
             return soupify(self.html).get_text()
-        except Exception as error:
+        except Exception:
             return f'citation {self.pk}'
 
     # TODO: refactor

@@ -1,27 +1,29 @@
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Type
 
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.core.validators import URLValidator
+from django.db import IntegrityError, models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
+from apps.dates.fields import HistoricDateTimeField
+from apps.dates.structures import HistoricDateTime as DateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.topics.models.taggable_model import TaggableModel
 from core.constants.strings import EMPTY_STRING
-from core.fields import ArrayField, HistoricDateTimeField, HTMLField
+from core.fields import ArrayField, HTMLField, JSONField
 from core.models import (
     ModelWithComputations,
     SluggedModel,
     TypedModel,
     retrieve_or_compute,
 )
-from core.structures import HistoricDateTime as DateTime
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -80,11 +82,12 @@ class Entity(
     affiliated_entities = models.ManyToManyField(
         to='self', through='entities.Affiliation', blank=True
     )
+    reference_urls = JSONField(blank=True, default=dict)
 
     class Meta:
         """Meta options for the Entity model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Entities'
         ordering = ['name']
@@ -99,19 +102,21 @@ class Entity(
 
     def save(self, *args, **kwargs):
         """Save the entity to the database."""
-        self.clean()
+        self.validate_type(raises=IntegrityError)
+        if not self.unabbreviated_name:
+            self.unabbreviated_name = self.name
         super().save(*args, **kwargs)
 
     def clean(self):
         """Prepare the entity to be saved."""
+        self.validate_type(raises=ValidationError)
+        validate_url = URLValidator()
+        for key, value in self.reference_urls.items():
+            # TODO: refactor
+            if key not in ('wikipedia',):
+                raise ValidationError(f'{key} reference URL is unsupported.')
+            validate_url(value)  # raises a ValidationError
         super().clean()
-        if not self.unabbreviated_name:
-            self.unabbreviated_name = self.name
-        if self.type == 'entities.entity' or not self.type:
-            raise ValidationError('Entity must have a type.')
-        else:
-            # Prevent a RuntimeError when saving a new publication
-            self.recast(self.type)
 
     @property
     def has_quotes(self) -> bool:
@@ -131,6 +136,8 @@ class Entity(
         """Return the entity's description, truncated."""
         return format_html(
             truncatechars_html(self.description, TRUNCATED_DESCRIPTION_LENGTH)
+            .replace('<p>', '')
+            .replace('</p>', '')
         )
 
     def get_categorization(self, date: DateTime) -> Optional['Categorization']:
@@ -182,6 +189,14 @@ class Entity(
             return ' '.join(categorization_words)
         return EMPTY_STRING
 
+    def validate_type(self, raises: Type[Exception] = ValidationError):
+        """Validate the entity's type."""
+        if self.type == 'entities.entity' or not self.type:
+            raise raises('Entity requires a type.')
+        else:
+            # Prevent a RuntimeError when saving a new publication
+            self.recast(self.type)
+
 
 class Person(Entity):
     """A person."""
@@ -189,7 +204,7 @@ class Person(Entity):
     class Meta:
         """Meta options for the Person model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'People'
 
@@ -200,7 +215,7 @@ class Deity(Entity):
     class Meta:
         """Meta options for the Deity model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Deities'
 
@@ -211,7 +226,7 @@ class Group(Entity):
     class Meta:
         """Meta options for the Group model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Groups'
 
@@ -222,7 +237,7 @@ class Organization(Entity):
     class Meta:
         """Meta options for the Organization model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options.
+        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Organizations'
 

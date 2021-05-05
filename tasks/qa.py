@@ -52,15 +52,16 @@ def lint(context, *args):
 
 
 @command
-def test(context, docker: bool = True):
+def test(context, docker: bool = True, fail_fast: bool = False):
     """Run tests."""
     pytest_args = [
         '-v',
         '-n 7',
-        # '-x',
-        '--maxfail=2',
+        '--maxfail=3',
         # '--hypothesis-show-statistics',
     ]
+    if fail_fast:
+        pytest_args.append('-x')
     command = f'coverage run -m pytest {" ".join(pytest_args)}'
     print(command)
     if docker:

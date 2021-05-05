@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Union
 from django.db.models import Q, QuerySet, Subquery
 from rest_framework.generics import ListAPIView
 
+from apps.dates.structures import HistoricDateTime
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.occurrences.models import Occurrence
@@ -13,7 +14,6 @@ from apps.search.models import SearchableDatedModel
 from apps.sources.models import Source
 from apps.topics.models import Topic
 from core.constants.content_types import ContentTypes, get_ct_id
-from core.structures.historic_datetime import HistoricDateTime
 
 from .pagination import ElasticPageNumberPagination
 
@@ -22,6 +22,8 @@ N_RESULTS_PER_PAGE = 10
 
 
 class SearchResultsSerializer:
+    """Serializer for search results."""
+
     def __init__(self, queryset, *args, **kwargs):
         self.data = [instance.serialize() for instance in queryset]
 
@@ -160,7 +162,7 @@ class SearchResultsAPIView(ListAPIView):
                     topic_relations__object_id__in=occurrence_result_ids,
                 )
             )
-            .order_by('key')
+            .order_by('name')
             .distinct()
         )
 

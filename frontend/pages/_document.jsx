@@ -51,11 +51,6 @@ class Document extends BaseDocument {
             rel="stylesheet"
             href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           />
-          {/* Material Design Bootstrap CSS */}
-          {/*<link*/}
-          {/*  rel="stylesheet"*/}
-          {/*  href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.1/css/mdb.min.css"*/}
-          {/*/>*/}
 
           {/* jQuery library */}
           <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" />

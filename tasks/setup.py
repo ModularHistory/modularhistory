@@ -109,7 +109,8 @@ def seed(
         status = workflow_run['status']
         artifacts_url = workflow_run['artifacts_url']
         # Wait for up to 10 minutes, pinging every 9 seconds.
-        timeout, ping_interval, waited_seconds = 600, 9, 0
+        timeout, ping_interval, waited_seconds = 600, 10, 0
+        artifacts = []
         while waited_seconds < timeout:
             print(
                 f'Waiting for artifacts... status: {status} '
@@ -118,19 +119,15 @@ def seed(
             sleep(ping_interval)
             status = session.get(workflow_run_url).json().get('status')
             if status in ('success', 'completed'):
-                break
+                artifacts = session.get(artifacts_url).json().get('artifacts')
+                if artifacts:
+                    break
             waited_seconds += ping_interval
         else:
             raise TimeoutError(
                 'Failed to complete workflow: '
                 f'https://github.com/ModularHistory/modularhistory/runs/{workflow_run_id}'
             )
-        artifacts = session.get(artifacts_url).json().get('artifacts')
-        while not artifacts:
-            print(f'Waiting for artifacts... status: {status}')
-            context.run('sleep 9')
-            artifacts = session.get(artifacts_url).json().get('artifacts')
-            status = session.get(workflow_run_url).json().get('status')
         seed_name, dest_path = 'env-file', '.env'
         for artifact in artifacts:
             artifact_name = artifact['name']
@@ -171,7 +168,7 @@ def seed(
 @command
 def update_hosts(context):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
-    with open(os.path.join(settings.CONFIG_DIR, 'hosts')) as hosts_file:
+    with open(os.path.join(settings.CONFIG_DIR, 'hosts.txt')) as hosts_file:
         required_hosts = [host for host in hosts_file.read().splitlines() if host]
     if os.path.exists(WSL_HOSTS_FILEPATH):
         while True:
@@ -185,7 +182,8 @@ def update_hosts(context):
                     f'{Style.BRIGHT}\n'
                     'Please update your Windows hosts file to include the following:\n'
                     f'{NEWLINE.join(hosts_to_write)}\n\n'
-                    'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
+                    'To do so, follow the instructions at '
+                    'https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'  # noqa: E501
                     'After updating your hosts file, press Enter to continue.'
                     f'{Style.RESET_ALL}'
                 )
