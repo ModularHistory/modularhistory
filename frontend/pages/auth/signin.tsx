@@ -5,7 +5,6 @@ import Container from "@material-ui/core/Container";
 import Alert from "@material-ui/lab/Alert";
 import { GetServerSideProps } from "next";
 import { csrfToken, providers, signIn, useSession } from "next-auth/client";
-import { Providers } from "next-auth/providers";
 import { useRouter } from "next/router";
 import React, { FunctionComponent, useEffect, useState } from "react";
 // https://www.npmjs.com/package/react-social-login-buttons
@@ -26,8 +25,13 @@ const SOCIAL_LOGIN_BUTTONS = {
   github: GithubLoginButton,
 };
 
+interface Provider {
+  id: string;
+  name: string;
+}
+
 interface SignInProps {
-  providers: Providers;
+  providers: Provider[];
   csrfToken: string;
 }
 
