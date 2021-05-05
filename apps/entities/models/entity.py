@@ -43,8 +43,8 @@ PARTS_OF_SPEECH = (
 
 
 class Entity(
-    SearchableModel,
     TypedModel,
+    SearchableModel,
     TaggableModel,
     ModelWithImages,
     ModelWithRelatedQuotes,
