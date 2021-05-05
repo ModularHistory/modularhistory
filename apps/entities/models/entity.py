@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime as DateTime
+from apps.search.models import SearchableModel
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
@@ -42,10 +43,9 @@ PARTS_OF_SPEECH = (
 
 
 class Entity(
+    SearchableModel,
     TypedModel,
-    SluggedModel,
     TaggableModel,
-    ModelWithComputations,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,

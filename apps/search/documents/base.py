@@ -4,8 +4,8 @@ from django_elasticsearch_dsl import Document as ESDocument
 
 class Document(ESDocument):
 
-    # hidden = fields.BooleanField()
-    # verified = fields.BooleanField()
+    hidden = fields.BooleanField()
+    verified = fields.BooleanField()
 
     @classmethod
     def index_name(cls, index=None):
