@@ -7,6 +7,8 @@ LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularh
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG ENVIRONMENT=dev
 
+# TODO: set NODE_ENV environment var
+
 # Create required directories
 RUN mkdir -p -- \
   /modularhistory/modularhistory \
@@ -17,7 +19,7 @@ RUN mkdir -p -- \
 # Install project dependencies
 WORKDIR /modularhistory/frontend
 COPY frontend/package*.json /modularhistory/frontend/
-RUN npm ci --cache .npm
+RUN if [ "$ENVIRONMENT" = "dev" ] ; then npm ci --cache .npm ; else npm ci --cache .npm --production ; fi
 
 # Add source code
 COPY .env /modularhistory/.env
