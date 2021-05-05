@@ -1,10 +1,10 @@
+import Layout from "@/components/Layout";
 import Container from "@material-ui/core/Container";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
-import Layout from "../../components/Layout";
 interface DonateProps {
   clientToken: string;
 }

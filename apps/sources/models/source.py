@@ -317,7 +317,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                     self.source_containments.first().select_related('container')
                 )
                 return containment.container.date
-            except Exception as err:
+            except Exception:
                 pass
         return None
 
@@ -372,7 +372,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         page_number = page_number or self.page_number
         url = self.get_page_number_url(page_number=page_number)
         if url:
-            # '<a href="https://..." class="display-source" target="_blank">25</a>'
+            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'
             return compose_link(
                 page_number, href=url, klass='display-source', target=NEW_TAB
             )
@@ -391,7 +391,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def link(self) -> Optional[SafeString]:
         """Return an HTML link element containing the source URL, if one exists."""
         if self.url:
-            return format_html(f'<a target="_blank" href="{self.url}">{self.url}</a>')
+            return format_html(
+                f'<a href="{self.url}" class="url" target="_blank">{self.url}</a>'
+            )
         return None
 
     @property

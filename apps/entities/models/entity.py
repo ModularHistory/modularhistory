@@ -136,6 +136,8 @@ class Entity(
         """Return the entity's description, truncated."""
         return format_html(
             truncatechars_html(self.description, TRUNCATED_DESCRIPTION_LENGTH)
+            .replace('<p>', '')
+            .replace('</p>', '')
         )
 
     def get_categorization(self, date: DateTime) -> Optional['Categorization']:

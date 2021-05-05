@@ -5,7 +5,7 @@ from apps.sources.models.mixins.page_numbers import PageNumbersMixin
 
 
 class Entry(Source, PageNumbersMixin):
-    "A journal entry."
+    """A journal entry."""
 
     class Meta:
         """Meta options for the Entry model."""

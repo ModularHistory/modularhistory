@@ -45,11 +45,6 @@ class TreeModel(Model):
         abstract = True
         ordering = ('path',)
 
-    def clean(self):
-        """Prepare the model instance to be saved to the database."""
-        self.validate_parent(raises=ValidationError)
-        return super().clean()
-
     def save(self, *args, **kwargs):
         """Save the model instance to the database."""
         self.key = self.get_key()
@@ -65,12 +60,19 @@ class TreeModel(Model):
                 # https://www.postgresql.org/docs/13/ltree.html
                 cursor.execute(
                     f'UPDATE {table} '
-                    f"SET path = '{new_path}'::ltree || subpath({table}.path, nlevel('{old_path}'::ltree)) "
+                    f"SET path = '{new_path}'::ltree || "
+                    f"subpath({table}.path, nlevel('{old_path}'::ltree)) "
                     f"WHERE {table}.path <@ '{old_path}'::ltree AND id != {self.id}"
                 )
 
+    def clean(self):
+        """Prepare the model instance to be saved to the database."""
+        self.validate_parent(raises=ValidationError)
+        return super().clean()
+
     @property
     def ancestors(self) -> QuerySet:
+        """Return the model instances's ancestors, based on its LTree field."""
         return (
             type(self)
             ._default_manager.filter(path__descendant=self.path)
@@ -79,6 +81,7 @@ class TreeModel(Model):
 
     @property
     def descendants(self) -> QuerySet:
+        """Return the model instances's descendants, based on its LTree field."""
         return (
             type(self)
             ._default_manager.filter(path__ancestor=self.path)
@@ -87,6 +90,7 @@ class TreeModel(Model):
 
     @property
     def siblings(self) -> QuerySet:
+        """Return the model instances's siblings, based on its LTree field."""
         return (
             type(self)
             ._default_manager.filter(parent_id=self.parent_id)

@@ -2,7 +2,7 @@
 Responders to Django signals for the sources app.
 
 The choice of using post_save and pre_delete receivers on intermediate models for
-m2m relationships, as opposed to simply using receivers for the m2m_changed signal, 
+m2m relationships, as opposed to simply using receivers for the m2m_changed signal,
 is due to limitations of inline model admins. See:
 https://github.com/django/django/commit/9d104a21e20f9c5ec41d19fd919d0e808aa13dba
 """

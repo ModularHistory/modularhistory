@@ -196,11 +196,12 @@ class Quote(
 
         This method minimizes db query complexity.
         """
-        attributee_html: str = self.attributee_html  # type: ignore
-        signals = (' and ', ', ', ' et al.')
-        for signal in signals:
-            if signal in attributee_html:
-                return True
+        if self.attributee_html:
+            attributee_html: str = self.attributee_html
+            signals = (' and ', ', ', ' et al.')
+            for signal in signals:
+                if signal in attributee_html:
+                    return True
         return False
 
     @property

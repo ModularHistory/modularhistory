@@ -28,7 +28,6 @@ def get_admin_url(model_instance: Union[Dict, Model]) -> str:
 @register.filter()
 def get_detail_url(instance: Union[Model, Dict]) -> Optional[str]:
     """Return the URL for the model instance's detail page."""
-
     if isinstance(instance, Model):
         return instance.get_absolute_url()
     else:

@@ -182,7 +182,8 @@ def update_hosts(context):
                     f'{Style.BRIGHT}\n'
                     'Please update your Windows hosts file to include the following:\n'
                     f'{NEWLINE.join(hosts_to_write)}\n\n'
-                    'To do so, follow the instructions at https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'
+                    'To do so, follow the instructions at '
+                    'https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/ \n'  # noqa: E501
                     'After updating your hosts file, press Enter to continue.'
                     f'{Style.RESET_ALL}'
                 )

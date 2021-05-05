@@ -42,7 +42,7 @@ def autoformat(
             for command in commands:
                 context.run(f'{command} {filepath}', warn=True)
     elif not staged_files_only:
-        print(f'Autoformatting all Python code ...')
+        print('Autoformatting all Python code ...')
         with context.cd(settings.BASE_DIR):
             for command in commands:
                 context.run(f'{command} .')

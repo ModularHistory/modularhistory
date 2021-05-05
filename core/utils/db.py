@@ -12,7 +12,6 @@ from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
 
-from core.constants.environments import Environments
 from core.constants.misc import (
     MAX_MIGRATION_COUNT,
     MIGRATIONS_DIRNAME,
@@ -244,7 +243,12 @@ def restore_squashed_migrations(context: Context = CONTEXT, app: str = ''):
         print(f'There are no squashed migrations to remove from {app_name}.')
 
 
-def seed(context: Context = CONTEXT, remote: bool = False, migrate: bool = False):
+def seed(
+    context: Context = CONTEXT,
+    remote: bool = False,
+    migrate: bool = False,
+    up: bool = False,
+):
     """Seed the database."""
     db_volume = 'modularhistory_postgres_data'
     if remote:
@@ -271,7 +275,7 @@ def seed(context: Context = CONTEXT, remote: bool = False, migrate: bool = False
     print('Waiting for Postgres to finish recreating the database...')
     sleep(10)  # Give postgres time to recreate the database.
     if migrate:
-        context.run(f'docker-compose run django_helper python manage.py migrate')
+        context.run('docker-compose run django_helper python manage.py migrate')
     if input('Create a superuser (for testing the website)? [Y/n] ') != NEGATIVE:
         sleep(1)
         instructions = (
@@ -279,11 +283,13 @@ def seed(context: Context = CONTEXT, remote: bool = False, migrate: bool = False
             'for your superuser account.'
         )
         context.run(
-            'docker-compose run django_helper bash -c \''
+            "docker-compose run django_helper bash -c '"
             f'echo "{instructions}" && python manage.py createsuperuser'
-            '\'',
+            "'",
             pty=True,
         )
+    if up:
+        context.run('docker-compose up -d dev')
 
 
 def squash_migrations(context: Context = CONTEXT, app: str = '', dry: bool = False):
