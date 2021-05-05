@@ -2,7 +2,7 @@
 
 import logging
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import serpy
 from autoslug import AutoSlugField
@@ -87,6 +87,9 @@ class SearchableModel(
         return absolute_url
 
 
+ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']
+
+
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
@@ -96,3 +99,13 @@ class SearchableModelSerializer(ModelSerializer):
     tags_html = serpy.StrField()
     title = serpy.StrField()
     verified = serpy.BoolField()
+    meta = serpy.MethodField()
+
+    def get_meta(self, model) -> Optional[dict]:
+        if not hasattr(model, 'meta'):
+            return None
+
+        meta = model.meta.to_dict()
+        for key in ELASTICSEARCH_META_FIELDS_TO_CLEAN:
+            del meta[key]
+        return model.meta.to_dict()

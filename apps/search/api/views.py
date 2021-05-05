@@ -15,6 +15,8 @@ from apps.topics.models import Topic
 from core.constants.content_types import ContentTypes, get_ct_id
 from core.structures.historic_datetime import HistoricDateTime
 
+from .pagination import ElasticPageNumberPagination
+
 QUERY_KEY = 'query'
 N_RESULTS_PER_PAGE = 10
 
@@ -22,6 +24,31 @@ N_RESULTS_PER_PAGE = 10
 class SearchResultsSerializer:
     def __init__(self, queryset, *args, **kwargs):
         self.data = [instance.serialize() for instance in queryset]
+
+
+class SearchResultsAPIView2(ListAPIView):
+
+    serializer_class = SearchResultsSerializer
+    pagination_class = ElasticPageNumberPagination
+
+    def get_queryset(self):
+        from elasticsearch_dsl import Q
+
+        from .search import Search
+
+        request = self.request
+
+        query_string = request.query_params.get(QUERY_KEY, None)
+        query = Q('simple_query_string', query=query_string)
+
+        search = Search(index="*")
+        qs = search.query(query)
+
+        # TODO: refactor & improve this. currently only applying highlights to quote#text and occurrence#description
+        qs = qs.highlight('text', number_of_fragments=1, type='plain', pre_tags=['<mark>'], post_tags=['</mark>'])
+        qs = qs.highlight('description', number_of_fragments=1, type='plain', pre_tags=['<mark>'], post_tags=['</mark>'])
+
+        return qs
 
 
 class SearchResultsAPIView(ListAPIView):
