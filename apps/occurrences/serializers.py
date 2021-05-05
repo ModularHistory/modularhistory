@@ -8,14 +8,14 @@ from apps.search.models.searchable_model import SearchableModelSerializer
 class OccurrenceSerializer(SearchableModelSerializer):
     """Serializer for occurrences."""
 
-    date_html = serpy.Field()
+    dateHtml = serpy.Field(attr='date_html')
     summary = serpy.Field(attr='summary.html')
     description = serpy.Field(attr='description.html')
     postscript = serpy.MethodField()
-    serialized_images = serpy.Field()
-    primary_image = serpy.Field()
-    serialized_citations = serpy.Field()
-    tags_html = serpy.Field()
+    serializedImages = serpy.Field(attr='serialized_images')
+    primaryImage = serpy.Field(attr='primary_image')
+    serializedCitations = serpy.Field(attr='serialized_citations')
+    tagsHtml = serpy.Field(attr='tags_html')
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""

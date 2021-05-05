@@ -17,7 +17,7 @@ class UserSerializer(serpy.Serializer):
     avatar = serpy.MethodField('get_avatar')
     name = serpy.Field()
     email = serpy.Field()
-    is_superuser = serpy.BoolField()
+    isSuperuser = serpy.BoolField(attr='is_superuser')
     # 'is_active',
     # 'date_joined',
     # 'last_login',

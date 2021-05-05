@@ -8,7 +8,9 @@ from core.models.model import ModelSerializer
 class PostulationSerializer(ModelSerializer):
     """Serializer for postulations."""
 
+    slug = serpy.StrField()
     summary = serpy.MethodField()
+    elaboration = serpy.StrField()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the postulation."""

@@ -4,25 +4,26 @@ from django.db import models
 
 
 class LtreeField(models.TextField):
-    """A field for storing a label tree (ltree)."""
+    """Field for storing a label tree (ltree)."""
 
     description = 'ltree'
 
     def __init__(self, *args, **kwargs):
+        """Construct the ltree field."""
         kwargs['editable'] = False
         kwargs['null'] = True
         kwargs['default'] = None
         super().__init__(*args, **kwargs)
 
-    def db_type(self, connection):
+    def db_type(self, connection) -> str:
+        """Return the data type that the ltree field uses in the database."""
+        # Use the Postgres `ltree` type:
+        # https://www.postgresql.org/docs/current/ltree.html
         return 'ltree'
 
 
 class Ancestor(models.Lookup):
-    """
-    A lookup for instances that have a specified ancestor
-    (inclusive of the ancestor).
-    """
+    """Lookup for instances with the specified ancestor, inclusive."""
 
     lookup_name = 'ancestor'
 
@@ -34,10 +35,7 @@ class Ancestor(models.Lookup):
 
 
 class Descendant(models.Lookup):
-    """
-    A lookup for instances that have a specified descendant
-    (inclusive of the descendant).
-    """
+    """Lookup for instances with the specified descendant, inclusive."""
 
     lookup_name = 'descendant'
 

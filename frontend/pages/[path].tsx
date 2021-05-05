@@ -1,10 +1,9 @@
-import { StaticPage as StaticPageType } from "@/interfaces";
-import { FC } from "react";
-import { GetStaticPaths, GetStaticProps } from "next";
-
 import Layout from "@/components/Layout";
+import { StaticPage as StaticPageType } from "@/interfaces";
 import { Container, useMediaQuery } from "@material-ui/core";
 import axios from "axios";
+import { GetStaticPaths, GetStaticProps } from "next";
+import { FC } from "react";
 
 interface StaticPageProps {
   page: StaticPageType;
@@ -15,9 +14,9 @@ const StaticPage: FC<StaticPageProps> = ({ page }: StaticPageProps) => {
   const isSmall = useMediaQuery("@media (max-width:36rem)");
 
   return (
-    <Layout title={page["title"]}>
+    <Layout title={page.title}>
       <Container style={{ padding: `1.25rem ${isSmall ? "1.25rem" : "5rem"}`, maxWidth: "50rem" }}>
-        <h1>{page["title"]}</h1>
+        <h1>{page.title}</h1>
         <div dangerouslySetInnerHTML={{ __html: page["content"] }} />
       </Container>
     </Layout>

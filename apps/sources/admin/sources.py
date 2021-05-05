@@ -20,6 +20,12 @@ from apps.sources.admin.inlines import (
 
 
 class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
+    """
+    Admin for all sources, accessible at http://localhost/admin/sources/source/.
+    This admin is not used for editing individual source instances;
+    editing of individual model instances is delegated to `ChildSourceAdmin`
+    or one of its subclasses.
+    """
 
     base_model = models.Source
     child_models = (
@@ -80,16 +86,21 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         return queryset, use_distinct
 
     def get_fields(self, request, model_instance=None):
-        """Return reordered fields to be displayed in the admin."""
-        fields: list(super().get_fields(request, model_instance))
+        """Return reordered fields to be displayed in the source admin form."""
+        fields = list(super().get_fields(request, model_instance))
         return rearrange_fields(fields)
 
     def get_queryset(self, request):
+        """Return the queryset of sources to be displayed in the source admin."""
         return super().get_queryset(request).select_related('polymorphic_ctype')
 
 
 class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
-    """ Base admin class for all child models """
+    """
+    Admin for source models that inherit from the base `Source` model.
+    Such source models (e.g., `Article`) must be registered with `ChildSourceAdmin`
+    or with a custom admin that inherits from `ChildSourceAdmin`.
+    """
 
     base_model = models.Source
 

@@ -1,4 +1,3 @@
-from rest_framework import permissions
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
 
@@ -24,4 +23,5 @@ class QuoteAPIView(RetrieveAPIView):
     """API view for a single occurrences."""
 
     queryset = Quote.objects.all()
+    lookup_field = 'slug'
     serializer_class = QuoteSerializer

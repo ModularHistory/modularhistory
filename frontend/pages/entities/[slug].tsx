@@ -1,7 +1,7 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ModuleContainer from "@/components/details/ModuleContainer";
+import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import ModuleContainer from "@/components/moduledetails/ModuleContainer";
-import ModuleDetail from "@/components/moduledetails/ModuleDetail";
 import { EntityModule } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
@@ -15,7 +15,7 @@ interface EntityProps {
  */
 const Entity: FC<EntityProps> = ({ entity }: EntityProps) => {
   return (
-    <Layout title={entity["name"]}>
+    <Layout title={entity.name}>
       <ModuleContainer>
         <ModuleDetail module={entity} />
       </ModuleContainer>

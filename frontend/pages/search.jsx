@@ -1,6 +1,6 @@
+import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
+import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import ModuleCard from "@/components/modulecards/ModuleCard";
-import ModuleDetail from "@/components/moduledetails/ModuleDetail";
 import Pagination from "@/components/Pagination";
 import SearchForm from "@/components/search/SearchForm";
 import { Container, Drawer } from "@material-ui/core";
@@ -133,15 +133,18 @@ export default function Search({ searchResults }) {
             <div className={`results result-cards ${classes.cards}`}>
               {modules.map((module, index) => (
                 <a
-                  href={module["absolute_url"]}
+                  href={module.absoluteUrl}
                   className="result 2pane-result"
-                  data-href={module["absolute_url"]}
-                  data-key={module["slug"]}
-                  key={module["absolute_url"]}
+                  data-href={module.absoluteUrl}
+                  data-key={module.slug}
+                  key={module.absoluteUrl}
                   data-index={index}
                   onClick={setModuleIndexFromEvent}
                 >
-                  <ModuleCard module={module} cardClass={index == moduleIndex ? "selected" : ""} />
+                  <ModuleUnionCard
+                    module={module}
+                    cardClass={index == moduleIndex ? "selected" : ""}
+                  />
                 </a>
               ))}
             </div>

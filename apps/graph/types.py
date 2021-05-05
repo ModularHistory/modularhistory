@@ -2,8 +2,7 @@ import graphene
 from graphene_django.types import DjangoObjectType
 
 
-class ModuleType(DjangoObjectType):
-    """Abstract GraphQL type for modules."""
+class AbstractModuleType(graphene.ObjectType):
 
     # required in order to use the ModuleDetail component
     model = graphene.String()
@@ -14,5 +13,14 @@ class ModuleType(DjangoObjectType):
     class Meta:
         abstract = True
 
-    def resolve_model(self, *args) -> str:
+    @staticmethod
+    def resolve_model(root, *args) -> str:
+        """Return the value to be assigned to an object's `model` attribute."""
         raise NotImplementedError
+
+
+class ModuleType(DjangoObjectType, AbstractModuleType):
+    """Abstract GraphQL type for modules."""
+
+    class Meta:
+        abstract = True

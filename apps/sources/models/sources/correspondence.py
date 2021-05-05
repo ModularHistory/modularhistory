@@ -34,9 +34,14 @@ class Correspondence(Source, DocumentMixin):
 
     def __html__(self) -> str:
         """Return the correspondence's citation HTML string."""
+        title_html = (
+            f'<a href="{self.href}" target="_blank">'
+            f'{self.type_label} to {self.recipient or "unidentified recipient"}'
+            '</a>'
+        )
         components = [
             self.attributee_html,
-            f'<a href="{self.href}" target="_blank">{self.type_label} to {self.recipient or "unidentified recipient"}</a>',
+            title_html,
             f'dated {self.date.string}' if self.date else '',
             self.descriptive_phrase,
             f'archived in {self.collection}' if self.collection else '',

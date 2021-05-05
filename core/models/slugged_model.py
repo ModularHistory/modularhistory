@@ -32,6 +32,12 @@ class SluggedModel(Model):
     class Meta:
         abstract = True
 
+    def save(self, *args, **kwargs):
+        """Save the model instance to the database."""
+        if not self.slug:
+            self.slug = self.get_slug()
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         """Return the URL for the model instance detail page."""
         slug = getattr(self, 'slug', None)
@@ -65,5 +71,5 @@ class SluggedModel(Model):
             slug_base = str(getattr(self, slug_base_field, self.pk))
             if '<' in slug_base:
                 slug_base = soupify(slug_base).get_text()
-            slug = slugify(slug_base)
+            slug = slugify(slug_base)[:75]
         return slug or self.pk

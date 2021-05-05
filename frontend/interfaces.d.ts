@@ -2,57 +2,76 @@ export interface BaseModule {
   model: string;
   pk: number;
   slug: string;
-  absolute_url: string;
-  admin_url: string;
+  absoluteUrl: string;
+  adminUrl: string;
+  serializedImages?: ImageModule[];
+  verified?: boolean;
+  dateHtml?: string;
 }
 
 export interface SearchableModule extends BaseModule {
-  tags_html: string;
+  tagsHtml: string;
   verified: boolean;
 }
 
 export interface Citation {
+  pk: string;
   html: string;
 }
 
 export interface ImageModule extends SearchableModule {
-  src_url: string;
+  srcUrl: string;
   width: number;
   height: number;
-  caption_html: string;
-  provider_string: string;
-  bg_img_position: string;
+  captionHtml: string;
+  providerString: string;
+  description: string;
+  bgImgPosition: string;
 }
 
 export interface ModuleWithImages {
-  primary_image: ImageModule;
-  serialized_images: ImageModule[];
+  primaryImage: ImageModule;
+  serializedImages: ImageModule[];
 }
 
 export interface QuoteModule extends SearchableModule, ModuleWithImages {
-  attributee_html: string;
+  title: string;
+  attributeeHtml: string;
   bite: string;
-  date_html: string;
-  has_multiple_attributees: boolean;
+  dateHtml: string;
   html: string;
-  serialized_citations: Citation[];
-  truncated_html: string;
+  serializedCitations: Citation[];
 }
 
 export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
-  date_html: string;
+  title: string;
+  dateHtml: string;
   description: string;
   postscript: string;
-  serialized_citations: Citation[];
+  serializedCitations: Citation[];
   summary: string;
 }
 
-export interface EntityModule extends ModuleWithImages {
-  serialized_citations: Citation[];
+export interface SourceModule extends SearchableModule {
+  title: string;
+  citationHtml: string;
+  citationString: string;
   description: string;
 }
 
+export interface EntityModule extends BaseModule, ModuleWithImages {
+  name: string;
+  description: string;
+}
+
+export interface PostulationModule extends BaseModule {
+  summary: string;
+  elaboration: string;
+  certainty: string;
+}
+
 export interface TopicModule extends BaseModule {
+  name: string;
   description: string;
 }
 

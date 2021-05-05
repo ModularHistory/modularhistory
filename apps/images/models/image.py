@@ -111,7 +111,9 @@ class Image(MediaModel):
             raise ValidationError('Image needs a caption.')
         image_is_duplicated = (
             self.caption
-            and Image.objects.filter(image=self.image, caption=self.caption).exists()
+            and Image.objects.filter(image=self.image, caption=self.caption)
+            .exclude(pk=self.pk)
+            .exists()
         )
         if image_is_duplicated:
             raise ValidationError(

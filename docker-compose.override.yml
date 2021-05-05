@@ -6,6 +6,31 @@ x-common-env-vars: &common-env-vars
   POSTGRES_HOST: "postgres"
 
 services:
+  dev:
+    depends_on:
+      - django
+      - flower
+      - react
+    deploy:
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      # NOTE: This check will only work in dev environment.
+      test: ["CMD", "curl", "--fail", "http://localhost"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    hostname: modularhistory.dev.net
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx/dev:/etc/nginx/conf.d
+      - .:/modularhistory
+    networks:
+      default:
+        ipv4_address: 172.27.0.5
+
   celery:
     image: django:latest
     volumes:

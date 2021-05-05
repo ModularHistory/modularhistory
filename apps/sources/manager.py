@@ -11,8 +11,7 @@ class PolymorphicSourceQuerySet(PolymorphicQuerySet, SearchableModelQuerySet):
 
 
 class PolymorphicSourceManager(PolymorphicManager, SearchableModelManager):
-    def get_queryset(self):
-        return super().get_queryset()
+    """Manager for sources."""
 
     def search(
         self,

@@ -7,6 +7,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_create_topic():
+    """Test creating a topic."""
     topic = Topic(name='Foo')
     topic.save()
     assert topic.id > 0
@@ -16,6 +17,7 @@ def test_create_topic():
 
 
 def test_direct_children():
+    """Test accessing a topic's direct children."""
     top = Topic.objects.create(name='Top')
     science = Topic.objects.create(name='Science', parent=top)
     sport = Topic.objects.create(name='Sport', parent=top)
@@ -25,6 +27,7 @@ def test_direct_children():
 
 
 def test_descendants():
+    """Test accessing a topic's descendants."""
     top = Topic.objects.create(name='Top')
     science = Topic.objects.create(name='Science', parent=top)
     Topic.objects.create(name='Maths', parent=science)
@@ -57,6 +60,7 @@ def test_descendants():
 
 
 def test_ancestors():
+    """Test accessing a topic's ancestors."""
     top = Topic.objects.create(name='Top', key='top')
     Topic.objects.create(name='Sport', key='sport', parent=top)
     science = Topic.objects.create(name='Science', key='science', parent=top)
@@ -95,6 +99,7 @@ def test_ancestors():
 
 
 def test_update_key():
+    """Test updating a topic's key."""
     top = Topic.objects.create(name='Top')
     Topic.objects.create(name='Sport', parent=top)
     science = Topic.objects.create(name='Science', parent=top)
@@ -125,6 +130,7 @@ def test_update_key():
 
 
 def test_update_parent():
+    """Test updating a topic's parent."""
     top = Topic.objects.create(name='Top', key='top')
     Topic.objects.create(name='Sport', key='sport', parent=top)
     science = Topic.objects.create(name='Science', key='science', parent=top)
@@ -151,6 +157,7 @@ def test_update_parent():
 
 
 def test_simple_recursion():
+    """Test trying to add a relationship that would directly result in a recursion."""
     foo = Topic.objects.create(name='Foo')
 
     # we cannot be our own parent...
@@ -160,6 +167,7 @@ def test_simple_recursion():
 
 
 def test_nested_recursion():
+    """Test trying to add a relationship that would indirectly result in a recursion."""
     foo = Topic.objects.create(name='Foo')
     bar = Topic.objects.create(name='Bar', parent=foo)
     baz = Topic.objects.create(name='Baz', parent=bar)

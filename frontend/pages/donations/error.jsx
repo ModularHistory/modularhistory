@@ -1,8 +1,8 @@
+import Layout from "@/components/Layout";
 import Link from "next/link";
 import React from "react";
-import Layout from "../../components/Layout";
 
-export default function Error () {
+export default function Error() {
   return (
     <Layout>
       <div className="pt-5">

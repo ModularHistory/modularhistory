@@ -12,6 +12,6 @@ class SourcesConfig(AppConfig):
         # Since our signal receivers use the receiver() decorator,
         # we must import the signals submodule inside ready().
         # https://docs.djangoproject.com/en/3.2/topics/signals/#connecting-receiver-functions
-        from . import signals
+        from . import signals  # noqa: F401
 
         return super().ready()
