@@ -1,11 +1,9 @@
 """Base classes for models that appear in ModularHistory search results."""
 
-import uuid
 from typing import TYPE_CHECKING
 
 import serpy
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
@@ -27,13 +25,6 @@ class SearchableModel(
     it must be defined as an abstract model class.
     """
 
-    key = models.UUIDField(
-        verbose_name=_('key'),
-        primary_key=False,
-        default=uuid.uuid4,
-        editable=False,
-        unique=True,
-    )
     hidden = models.BooleanField(
         default=False,
         blank=True,

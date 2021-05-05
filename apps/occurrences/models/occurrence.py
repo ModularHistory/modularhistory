@@ -34,6 +34,7 @@ class Occurrence(
 ):
     """Something that happened."""
 
+    version = IntegerVersionField()
     date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
     end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
     summary = HTMLField(verbose_name=_('summary'), paragraphed=False, processed=False)
@@ -45,8 +46,6 @@ class Occurrence(
         paragraphed=True,
         help_text='Content to be displayed below all related data',
     )
-    version = IntegerVersionField()
-
     locations = models.ManyToManyField(
         to='places.Place',
         through='occurrences.OccurrenceLocation',
@@ -75,6 +74,12 @@ class Occurrence(
         related_name='occurrences',
         verbose_name=_('chains'),
     )
+    # postulation = models.OneToOneField(
+    #     to='postulations.Postulation',
+    #     on_delete=models.PROTECT,
+    #     verbose_name=_('postulation'),
+    #     null=True,  # TODO: remove null=True after setting values.
+    # )
 
     class Meta:
         """Meta options for the Category model."""
