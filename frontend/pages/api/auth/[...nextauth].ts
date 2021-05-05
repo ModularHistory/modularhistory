@@ -9,7 +9,6 @@ import NextAuth, {
 } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
-import { WithAdditionalParams } from "next-auth/_utils";
 import {
   authenticateWithCredentials,
   authenticateWithSocialMediaAccount,
@@ -68,7 +67,7 @@ const providers = [
 // https://next-auth.js.org/configuration/callbacks
 const callbacks: CallbacksOptions = {};
 
-callbacks.signIn = async function signIn(user: User, provider: Record<string, string>, _data) {
+callbacks.signIn = async function signIn(user: User, provider: any, _data) {
   // Respond to the sign-in attempt. If the user signed in with credentials (i.e.,
   // a username and password), authentication with the back-end Django server will
   // have been completed before the signIn callback is reached. However, if the user
@@ -103,7 +102,7 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
 
 // https://next-auth.js.org/configuration/callbacks#session-callback
 callbacks.session = async function session(session: Session, jwt: JWT) {
-  const sessionPlus: WithAdditionalParams<Session> = { ...session };
+  const sessionPlus: Session = { ...session };
   if (jwt) {
     // If the access token is expired, ...
     if (Date.now() > jwt.accessTokenExpiry) {
