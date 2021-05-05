@@ -1,5 +1,3 @@
-import graphene
-
 from apps.graph.types import ModuleType
 from apps.postulations.models.postulation import Postulation
 
