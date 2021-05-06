@@ -140,6 +140,7 @@ export default function SearchForm({ inSidebar }) {
                 { label: "Quotes", key: "quotes.quote" },
                 { label: "Images", key: "images.image" },
                 { label: "Sources", key: "sources.source" },
+                { label: "Entities", key: "entities.entity" },
               ]}
             </CheckboxGroup>
           </Grid>

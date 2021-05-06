@@ -50,7 +50,8 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
   switch (module.model) {
     // TODO: add more models here as soon as they
     //       may appear on the SERP.
-    case "entities.entity":
+    case "entities.person":
+    case "entities.organization":
       details = <EntityDetail entity={module as EntityModule} />;
       break;
     case "images.image":

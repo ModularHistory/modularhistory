@@ -31,6 +31,10 @@ export default function ModuleUnionCard({ module, ...childProps }) {
     case "sources.source":
       content = <div dangerouslySetInnerHTML={{ __html: module.citationHtml }} />;
       break;
+    case "entities.person":
+    case "entities.organization":
+      content = <div dangerouslySetInnerHTML={{ __html: module.name }} />;
+      break;
   }
   return (
     <ModuleCard module={module} {...childProps}>
