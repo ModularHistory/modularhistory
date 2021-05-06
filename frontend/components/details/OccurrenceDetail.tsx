@@ -27,9 +27,9 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
         dangerouslySetInnerHTML={{ __html: occurrence.dateHtml }}
       />
       {occurrence.serializedImages.map(
-        (image) =>
+        (image, index) =>
           occurrence.description.includes(image.srcUrl) || (
-            <div className="img-container" style={{ maxWidth: "44%" }} key={image.srcUrl}>
+            <div className="img-container" style={{ maxWidth: "44%" }} key={index}>
               <ImageCard image={image} />
             </div>
           )

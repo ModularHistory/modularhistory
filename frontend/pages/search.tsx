@@ -3,17 +3,20 @@ import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
 import SearchForm from "@/components/search/SearchForm";
-import { Container, Drawer } from "@material-ui/core";
+import { Container, Drawer, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import axios from "axios";
 import { useRouter } from "next/router";
 import qs from "qs";
-import { useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
+import { ModuleUnion } from "@/interfaces";
+import ModuleModal from "@/components/details/ModuleModal";
+import { GetServerSideProps } from "next";
 
-function useTwoPaneState(...args) {
+function useTwoPaneState() {
   // This hook is used to track which card in the left pane
   // should have its details displayed in the right pane.
-  const [moduleIndex, setModuleIndex] = useState(...args);
+  const [moduleIndex, setModuleIndex] = useState(0);
 
   // event handler for when the user clicks on a module card
   const setModuleIndexFromEvent = useCallback((e) => {
@@ -51,13 +54,31 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Search({ searchResults }) {
+interface SearchProps {
+  searchResults: {
+    count: number;
+    total_pages: number;
+    results: ModuleUnion[];
+  };
+}
+
+const Search: FC<SearchProps> = ({ searchResults }: SearchProps) => {
   const classes = useStyles();
   const router = useRouter();
-  const { moduleIndex, setModuleIndex, setModuleIndexFromEvent } = useTwoPaneState(0);
+  const { moduleIndex, setModuleIndex, setModuleIndexFromEvent } = useTwoPaneState();
 
   // determines whether the search filter sidebar is open
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // controls whether the modal is open
+  const [modalOpen, setModalOpen] = useState(false);
+  // media query value is based on /core/static/styles/serp.css
+  const smallScreen = useMediaQuery("(max-width: 660px)");
+
+  const selectModule = (event) => {
+    setModuleIndexFromEvent(event);
+    setModalOpen(true);
+  };
 
   // Reset the selected module to 0 when a page transition occurs.
   useEffect(() => {
@@ -109,19 +130,19 @@ export default function Search({ searchResults }) {
     <Layout title={title}>
       <div className="serp-container">
         <Drawer
-          open={isSearchOpen}
+          open={searchOpen}
           anchor={"left"}
           variant={"persistent"}
-          onClose={() => setIsSearchOpen(false)}
-          className={`${classes.drawer} ${isSearchOpen ? "open" : ""}`}
+          onClose={() => setSearchOpen(false)}
+          className={`${classes.drawer} ${searchOpen ? "open" : ""}`}
           PaperProps={{ className: classes.paper }}
         >
           <SearchForm inSidebar />
         </Drawer>
         <button
           id="sliderToggle"
-          className={`btn ${classes.drawerButton} ${isSearchOpen ? "open" : ""}`}
-          onClick={() => setIsSearchOpen(!isSearchOpen)}
+          className={`btn ${classes.drawerButton} ${searchOpen ? "open" : ""}`}
+          onClick={() => setSearchOpen(!searchOpen)}
         >
           <i className="fas fa-filter" />
         </button>
@@ -139,7 +160,7 @@ export default function Search({ searchResults }) {
                   data-key={module.slug}
                   key={module.absoluteUrl}
                   data-index={index}
-                  onClick={setModuleIndexFromEvent}
+                  onClick={selectModule}
                 >
                   <ModuleUnionCard
                     module={module}
@@ -149,9 +170,17 @@ export default function Search({ searchResults }) {
               ))}
             </div>
 
-            <div className="card view-detail sticky">
-              <ModuleDetail module={modules[moduleIndex] || modules[0]} />
-            </div>
+            {smallScreen ? (
+              <ModuleModal
+                module={modules[moduleIndex] || modules[0]}
+                open={modalOpen}
+                setOpen={setModalOpen}
+              />
+            ) : (
+              <div className="card view-detail sticky">
+                <ModuleDetail module={modules[moduleIndex] || modules[0]} />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -161,9 +190,11 @@ export default function Search({ searchResults }) {
       </Container>
     </Layout>
   );
-}
+};
 
-export async function getServerSideProps(context) {
+export default Search;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
   let searchResults = {};
 
   await axios
@@ -186,4 +217,4 @@ export async function getServerSideProps(context) {
       searchResults,
     },
   };
-}
+};
