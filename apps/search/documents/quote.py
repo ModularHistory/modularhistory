@@ -31,7 +31,8 @@ class QuoteDocument(Document):
         'id': fields.IntegerField(),
         'key': fields.TextField(),
         'aliases': fields.TextField(),
-        'description': fields.TextField(attr='description.raw_value', analyzer=html_field_analyzer)
+        'description': fields.TextField(attr='description.raw_value', analyzer=html_field_analyzer),
+        'path': fields.TextField()
     })
 
     class Django:
