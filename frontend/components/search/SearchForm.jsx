@@ -118,7 +118,7 @@ export default function SearchForm({ inSidebar }) {
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            <MultiSelect label={"Topics"} name={"topics"} keyName={"pk"} valueName={"key"}>
+            <MultiSelect label={"Topics"} name={"topics"} keyName={"pk"} valueName={"name"}>
               {() =>
                 axiosWithoutAuth
                   .get("/api/topics/partial/")
