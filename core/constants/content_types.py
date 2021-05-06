@@ -47,7 +47,7 @@ MODEL_CLASS_PATHS = {
 }
 
 
-def get_ct_id(ct_name: str) -> int:
+def get_ct_id(ct_name: str) -> ContentType:
     """Return the content type id for the given content type name."""
     cache_key = f'{ct_name}_ct_id'
     cached_ct_id = cache.get(cache_key)

@@ -1,8 +1,8 @@
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
-from apps.search.documents.config import html_field_analyzer
-from apps.search.documents.config import DEFAULT_INDEX_SETTINGS
+from core.constants.content_types import ContentTypes
+from apps.search.documents.config import html_field_analyzer, DEFAULT_INDEX_SETTINGS, get_index_name_for_ct
 
 from apps.quotes.models import Quote
 from apps.entities.models import Entity
@@ -15,11 +15,11 @@ from .base import Document
 class QuoteDocument(Document):
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
-        name = 'quotes'
+        name = get_index_name_for_ct(ContentTypes.quote)
 
     text = fields.TextField(attr='text.raw_value', analyzer=html_field_analyzer)
     context = fields.TextField(attr='context.raw_value', analyzer=html_field_analyzer)
-    date = fields.TextField(attr='date.string')
+    date_year = fields.IntegerField(attr='date.year')
     attributees = fields.ObjectField(properties={
         'id': fields.IntegerField(),
         'name': fields.TextField(),

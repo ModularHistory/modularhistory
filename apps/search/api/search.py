@@ -7,12 +7,18 @@ from apps.search.documents.source import SourceDocument
 from apps.search.documents.entity import EntityDocument
 from apps.search.documents.quote import QuoteDocument
 from apps.search.documents.occurrence import OccurrenceDocument
+from apps.search.documents.image import ImageDocument
 
-SEARCHABLE_DOCUMENTS = [SourceDocument, EntityDocument, QuoteDocument, OccurrenceDocument]
+SEARCHABLE_DOCUMENTS = {
+    OccurrenceDocument.index_name(): OccurrenceDocument,
+    SourceDocument.index_name(): SourceDocument,
+    EntityDocument.index_name(): EntityDocument,
+    QuoteDocument.index_name(): QuoteDocument,
+    ImageDocument.index_name(): ImageDocument
+}
 
 
 class Search(DSLSearch):
-
     results_count: int
 
     def to_queryset(self):
@@ -40,13 +46,16 @@ class Search(DSLSearch):
         # build queryset chain for each result group by resolving es results to django models
         qs = chain()
         for index, result_group in result_groups.items():
-            document = next((document for document in SEARCHABLE_DOCUMENTS if document.index_name() == index), None)
+            if index not in SEARCHABLE_DOCUMENTS:
+                logging.error(f"Couldn't find document definition for this index = {index}")
+                continue
+
+            document = SEARCHABLE_DOCUMENTS[index]
             model = document.django.model
             pks = [result.meta.id for result in result_group]
 
             queryset = model.objects.filter(pk__in=pks)
             qs = chain(qs, queryset)
-
 
         return sorted(qs, key=self.score_order, reverse=True), self.results_count
 
@@ -58,5 +67,3 @@ class Search(DSLSearch):
         hit = next((hit for hit in self if int(hit.meta.id) == model.pk), None)
         model.meta = hit.meta
         return model.meta.score
-
-

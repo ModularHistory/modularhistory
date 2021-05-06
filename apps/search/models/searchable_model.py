@@ -72,5 +72,7 @@ class SearchableModelSerializer(ModelSerializer):
 
         meta = model.meta.to_dict()
         for key in ELASTICSEARCH_META_FIELDS_TO_CLEAN:
-            del meta[key]
+            # TODO: find out why in some cases it's already cleaned
+            if key in meta:
+                del meta[key]
         return model.meta.to_dict()

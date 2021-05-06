@@ -14,10 +14,19 @@ from apps.search.models import SearchableDatedModel
 from apps.sources.models import Source
 from apps.topics.models import Topic
 from core.constants.content_types import ContentTypes, get_ct_id
+from apps.search.documents.config import get_index_name_for_ct
 
 from .pagination import ElasticPageNumberPagination
+from .search import Search
 
-QUERY_KEY = 'query'
+QUERY_PARAM = 'query'
+START_YEAR_PARAM = 'start_year'
+END_YEAR_PARAM = 'end_year'
+ENTITIES_PARAM = 'entities'
+SORT_BY_PARAM = 'ordering'
+QUALITY_PARAM = 'quality'
+TOPICS_PARAM = 'topics'
+
 N_RESULTS_PER_PAGE = 10
 
 
@@ -28,29 +37,101 @@ class SearchResultsSerializer:
         self.data = [instance.serialize() for instance in queryset]
 
 
-class SearchResultsAPIView2(ListAPIView):
-
+class ElasticSearchResultsAPIView(ListAPIView):
     serializer_class = SearchResultsSerializer
     pagination_class = ElasticPageNumberPagination
 
+    suppress_unverified: bool
+
     def get_queryset(self):
-        from elasticsearch_dsl import Q
+        search_kwargs = self.get_query_params()
+        query = self.build_es_query(**search_kwargs)
 
-        from .search import Search
+        return query
 
+    def get_query_params(self):
         request = self.request
 
-        query_string = request.query_params.get(QUERY_KEY, None)
-        query = Q('simple_query_string', query=query_string)
+        query_string = request.query_params.get(QUERY_PARAM, None)
 
-        search = Search(index="*")
-        qs = search.query(query)
+        indexes = "*"
+        content_types = request.query_params.getlist('content_types') or None
+        if content_types:
+            indexes = ",".join(map(lambda c: get_index_name_for_ct(c), content_types))
+
+        # TODO: figure out sorting requirements, we might want to do it client side
+        sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
+        suppress_unverified = request.query_params.get(QUALITY_PARAM) == 'verified'
+
+        start_year = request.query_params.get(START_YEAR_PARAM, None)
+        end_year = request.query_params.get(END_YEAR_PARAM, None)
+
+        entities = request.query_params.getlist(ENTITIES_PARAM, None)
+        entity_ids = [int(entity_id) for entity_id in entities] if entities else None
+
+        topics = request.query_params.getlist(TOPICS_PARAM, None)
+        topic_ids = [int(topic_id) for topic_id in topics] if topics else None
+
+        return {
+            'indexes': indexes,
+            'query_string': query_string,
+            'start_year': start_year,
+            'end_year': end_year,
+            'entity_ids': entity_ids,
+            'topic_ids': topic_ids,
+            'sort_by_date': sort_by_date,
+            'suppress_unverified': suppress_unverified,
+            'suppress_hidden': True,
+        }
+
+    def build_es_query(
+            self,
+            indexes: str,
+            query_string: Optional[str] = None,
+            start_year: Optional[int] = None,
+            end_year: Optional[int] = None,
+            entity_ids: Optional[List[int]] = None,
+            topic_ids: Optional[List[int]] = None,
+            sort_by_date: bool = False,
+            suppress_unverified: bool = True,
+            suppress_hidden: bool = True):
+        from elasticsearch_dsl import Q
+
+        search = Search(index=indexes)
+
+        if query_string:
+            query = Q('simple_query_string', query=query_string)
+            search = search.query(query)
+
+        if start_year or end_year:
+            date_range = {}
+            if start_year:
+                date_range['gte'] = int(start_year)
+            if end_year:
+                date_range['lte'] = int(end_year)
+            search = search.query('bool', filter=[Q('range', date_year=date_range)])
+
+        if entity_ids:
+            search = search.query('bool', filter=[Q('terms', involved_entities__id=entity_ids) | Q('terms', attributees__id=entity_ids)])
+
+        if topic_ids:
+            search = search.query('bool', filter=[Q('terms', topics__id=topic_ids)])
+
+        if suppress_unverified:
+            search = search.query('bool', filter=[Q('match', verified=True)])
+
+        if suppress_hidden:
+            search = search.query('bool', filter=[Q('match', hidden=False)])
 
         # TODO: refactor & improve this. currently only applying highlights to quote#text and occurrence#description
-        qs = qs.highlight('text', number_of_fragments=1, type='plain', pre_tags=['<mark>'], post_tags=['</mark>'])
-        qs = qs.highlight('description', number_of_fragments=1, type='plain', pre_tags=['<mark>'], post_tags=['</mark>'])
+        search = search.highlight('text', number_of_fragments=1, type='plain', pre_tags=['<mark>'],
+                                  post_tags=['</mark>'])
+        search = search.highlight('description', number_of_fragments=1, type='plain', pre_tags=['<mark>'],
+                                  post_tags=['</mark>'])
 
-        return qs
+        logging.info(f"ES Indexes: {indexes}")
+        logging.info(f"ES Query: {search.to_dict()}")
+        return search
 
 
 class SearchResultsAPIView(ListAPIView):
@@ -111,7 +192,7 @@ class SearchResultsAPIView(ListAPIView):
         topic_ids = [int(topic_id) for topic_id in topics] if topics else None
 
         search_kwargs = {
-            QUERY_KEY: request.query_params.get(QUERY_KEY, None),
+            QUERY_PARAM: request.query_params.get(QUERY_PARAM, None),
             'start_year': start_year,
             'end_year': end_year,
             'entity_ids': entity_ids,
@@ -226,7 +307,7 @@ def _get_image_results(
 
 
 def _get_source_results(
-    content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
+        content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
     if ContentTypes.source in content_types or not content_types:
         source_results = Source.objects.search(**search_kwargs)  # type: ignore
