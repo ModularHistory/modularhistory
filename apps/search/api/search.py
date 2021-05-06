@@ -1,5 +1,6 @@
 import logging
 from itertools import chain
+from typing import Optional
 
 from elasticsearch_dsl import Search as DSLSearch
 
@@ -20,6 +21,7 @@ SEARCHABLE_DOCUMENTS = {
 
 class Search(DSLSearch):
     results_count: int
+    results_by_id: Optional[dict]
 
     def to_queryset(self):
         """
@@ -40,8 +42,12 @@ class Search(DSLSearch):
 
         # group results by index name
         result_groups = {}
+        self.results_by_id = {}
         for result in s:
-            result_groups.setdefault(result.meta.index, []).append(result)
+            index = result.meta.index
+            result_groups.setdefault(index, []).append(result)
+            key = f"{index}_{result.meta.id}"
+            self.results_by_id[key] = result
 
         # build queryset chain for each result group by resolving es results to django models
         qs = chain()
@@ -57,13 +63,19 @@ class Search(DSLSearch):
             queryset = model.objects.filter(pk__in=pks)
             qs = chain(qs, queryset)
 
-        return sorted(qs, key=self.score_order, reverse=True), self.results_count
+        qs = sorted(qs, key=self.score_order, reverse=True)
+        return qs, self.results_count
 
     def score_order(self, model):
         # TODO: refactor this
         # 1. needs faster hit matching (pre-create hash map with hit.meta.id as a key?)
         # 2. implement other sort options
         # 3. possibly move our meta assigning to somewhere else
-        hit = next((hit for hit in self if int(hit.meta.id) == model.pk), None)
+
+        # hit = next((hit for hit in self if int(hit.meta.id) == model.pk), None)
+        document = next((document for document in SEARCHABLE_DOCUMENTS.values() if isinstance(model, document.django.model)), None)
+        index = document.index_name()
+        key = f"{index}_{model.pk}"
+        hit = self.results_by_id[key]
         model.meta = hit.meta
         return model.meta.score
