@@ -37,11 +37,11 @@ class OccurrenceAdmin(SearchableModelAdmin):
         RelatedTopicsInline,
     ]
     list_display = [
+        'title',
         'summary',
-        'detail_link',
+        # 'detail_link',
         'date_string',
         'slug',
-        'pk',
     ]
     list_editable = ['slug']
     list_filter = [

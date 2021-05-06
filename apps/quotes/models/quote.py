@@ -190,6 +190,11 @@ class Quote(
         return slugify(self.pk)
 
     @property
+    def escaped_attributee_html(self) -> SafeString:
+        """Return the escaped attributee HTML to be displayed in the Django admin."""
+        return format_html(self.attributee_html)
+
+    @property
     def has_multiple_attributees(self) -> bool:
         """
         Return True if the quote has multiple attributees, else False.
