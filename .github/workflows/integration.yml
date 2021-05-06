@@ -198,7 +198,7 @@ jobs:
       run: poetry run invoke test --no-docker
 
   build:
-    name: Build image
+    name: Build images
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
