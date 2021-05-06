@@ -37,6 +37,9 @@ RUN npm run build
 
 FROM node:lts-buster AS deployable
 
+# Copy the ENVIRONMENT arg from the previous stage.
+ARG ENVIRONMENT
+
 # Create required directories.
 RUN mkdir -p -- \
   /modularhistory/modularhistory \
