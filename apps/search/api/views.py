@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Union
 
 from django.db.models import Q, QuerySet, Subquery
 from rest_framework.generics import ListAPIView
+from rest_framework import filters
 
 from apps.dates.structures import HistoricDateTime
 from apps.entities.models import Entity
@@ -37,9 +38,24 @@ class SearchResultsSerializer:
         self.data = [instance.serialize() for instance in queryset]
 
 
+class SortByFilterBackend(filters.BaseFilterBackend):
+    """
+    Filter that sorts queryset by SORT_BY_PARAM
+    """
+    def filter_queryset(self, request, queryset, view):
+        sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
+
+        if sort_by_date:
+            return sorted(queryset, key=date_sorter, reverse=False)
+
+        return queryset
+
+
 class ElasticSearchResultsAPIView(ListAPIView):
     serializer_class = SearchResultsSerializer
     pagination_class = ElasticPageNumberPagination
+
+    post_resolve_filters = [SortByFilterBackend]
 
     suppress_unverified: bool
 
@@ -59,8 +75,6 @@ class ElasticSearchResultsAPIView(ListAPIView):
         if content_types:
             indexes = ",".join(map(lambda c: get_index_name_for_ct(c), content_types))
 
-        # TODO: figure out sorting requirements, we might want to do it client side
-        sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
         suppress_unverified = request.query_params.get(QUALITY_PARAM) == 'verified'
 
         start_year = request.query_params.get(START_YEAR_PARAM, None)
@@ -79,7 +93,6 @@ class ElasticSearchResultsAPIView(ListAPIView):
             'end_year': end_year,
             'entity_ids': entity_ids,
             'topic_ids': topic_ids,
-            'sort_by_date': sort_by_date,
             'suppress_unverified': suppress_unverified,
             'suppress_hidden': True,
         }
@@ -92,7 +105,6 @@ class ElasticSearchResultsAPIView(ListAPIView):
             end_year: Optional[int] = None,
             entity_ids: Optional[List[int]] = None,
             topic_ids: Optional[List[int]] = None,
-            sort_by_date: bool = False,
             suppress_unverified: bool = True,
             suppress_hidden: bool = True):
         from elasticsearch_dsl import Q

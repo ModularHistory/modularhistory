@@ -95,7 +95,7 @@ export default function SearchForm({ inSidebar }) {
 
           <Grid item xs={12} sm={sm}>
             <RadioGroup label={"Ordering"} name={"ordering"}>
-              {["Date", "Relevance"]}
+              {["Relevance", "Date"]}
             </RadioGroup>
           </Grid>
 
