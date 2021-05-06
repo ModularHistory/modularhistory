@@ -1,4 +1,4 @@
-import {Container, Grid, makeStyles, Theme} from "@material-ui/core";
+import { Container, Grid, makeStyles, Theme } from "@material-ui/core";
 import { useRouter } from "next/router";
 import { createContext, FC, useCallback, useContext, useEffect, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
@@ -45,6 +45,10 @@ function useSearchFormState() {
   return { state, setState, setStateFromEvent, disabled: isLoading };
 }
 
+interface SearchFormProps {
+  inSidebar?: boolean;
+}
+
 const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
   root: {
     paddingTop: "20px",
@@ -63,10 +67,6 @@ const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
     "&:last-child": { marginBottom: "50px" },
   },
 }));
-
-interface SearchFormProps {
-  inSidebar?: boolean;
-}
 
 /**
  * A component for an advanced/full search form.
@@ -122,7 +122,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            <MultiSelect label={"Topics"} name={"topics"} keyName={"pk"} valueName={"key"}>
+            <MultiSelect label={"Topics"} name={"topics"} keyName={"pk"} valueName={"name"}>
               {() =>
                 axiosWithoutAuth
                   .get("/api/topics/partial/")
