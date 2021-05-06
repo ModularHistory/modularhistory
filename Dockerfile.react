@@ -57,6 +57,10 @@ RUN if [ "$ENVIRONMENT" = "dev" ] ; then npm ci --cache .npm ; else npm ci --cac
 # Copy the wait-for-it script.
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 
+# TODO: Move these static files into frontend?
+# Copy static files.
+COPY core/static /modularhistory/core/static
+
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && chmod +x /usr/local/bin/wait-for-it.sh
 

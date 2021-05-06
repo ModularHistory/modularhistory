@@ -153,30 +153,17 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
 
 callbacks.redirect = async function redirect(url, baseUrl) {
   url = url.startsWith(baseUrl) ? url : baseUrl;
-  // Regardless of whether the redirect page is a Django or React page,
-  // we have to first hit the redirect page to deal with cookies.
-  const reactPagesDoNotNeedToHitTheRedirectPage = false;
-  // Strip /auth/signin from the redirect URL if necessary,
-  // so that the user is instead redirected to the homepage.
+  // Strip /auth/signin from the redirect URL if necessary, so that the user is
+  // redirected to the homepage instead.
   const path = url.replace(baseUrl, "").replace("/auth/signin", "");
-  // Determine whether the redirect URL is to a React or to a non-React page.
-  const reactPattern = /(\/?$|\/entities\/?|\/search\/?|\/occurrences\/?|\/quotes\/?)/;
-  if (reactPagesDoNotNeedToHitTheRedirectPage && reactPattern.test(url)) {
-    // Strip /auth/redirect from the redirect URL if necessary, so that
-    // the user is redirected straight to their destination page without
-    // hitting the "redirect page."
-    if (url.includes("/auth/redirect/")) {
-      url = url.replace("/auth/redirect", "");
-    }
-  } else {
-    // Add /auth/redirect to the redirect URL if necessary.
-    // This will cause the user to first be routed to the "redirect page," where
-    // Next.js can set or remove cookies before routing the user to the callback URL.
-    if (!url.includes("/auth/redirect/")) {
-      url = `${baseUrl}/auth/redirect/${path}`;
-      // Remove duplicate slashes.
-      url = url.replace(/([^:]\/)\/+/g, "$1");
-    }
+  // Add /auth/redirect to the redirect URL so that the user is first routed to the
+  // "redirect page," where Next.js can set or remove cookies before routing the user
+  // to the callback URL. Regardless of whether the specified page is served by Django
+  // or by Next.js, we have to first hit the redirect page to deal with cookies.
+  if (!url.includes("/auth/redirect/")) {
+    url = `${baseUrl}/auth/redirect/${path}`;
+    // Remove duplicate slashes.
+    url = url.replace(/([^:]\/)\/+/g, "$1");
   }
   return url;
 };
