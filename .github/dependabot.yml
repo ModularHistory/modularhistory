@@ -1,26 +1,25 @@
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
+  # Maintain dependencies for GitHub Actions.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-  # Maintain JS dependencies
+  # Maintain JS dependencies.
   - package-ecosystem: "npm"
     directory: "/frontend/"
     schedule:
       interval: "daily"
-  # Maintain Python dependencies
+  # Maintain Python dependencies.
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "daily"
-  # Maintain Docker dependencies
+  # Maintain Docker dependencies.
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "daily"
     ignore:
+      # Ignore Python version updates (from 3.7 to 3.9, etc.).
       - dependency-name: "python"
-        # Ignore 3.8, 3.9, etc.
-        versions: ["3.x"]
