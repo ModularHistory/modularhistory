@@ -47,9 +47,16 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       image = response.data.data.image;
     })
-    .catch((error) => {
-      // console.error(error);
+    .catch((_error) => {
+      image = null;
     });
+
+  if (!image) {
+    // https://nextjs.org/blog/next-10#notfound-support
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
