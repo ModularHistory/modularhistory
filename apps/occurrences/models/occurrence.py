@@ -74,12 +74,6 @@ class Occurrence(
         related_name='occurrences',
         verbose_name=_('chains'),
     )
-    # postulation = models.OneToOneField(
-    #     to='postulations.Postulation',
-    #     on_delete=models.PROTECT,
-    #     verbose_name=_('postulation'),
-    #     null=True,  # TODO: remove null=True after setting values.
-    # )
 
     class Meta:
         """Meta options for the Category model."""
