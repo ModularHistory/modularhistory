@@ -28,7 +28,6 @@ from core.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from core.models import retrieve_or_compute
 from core.utils.html import soupify
 
 if TYPE_CHECKING:

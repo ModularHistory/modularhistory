@@ -2,7 +2,7 @@
 
 import serpy
 
-from apps.search.models.searchable_model import SearchableModelSerializer
+from apps.search.api.serializers import SearchableModelSerializer
 
 
 class StorySerializer(SearchableModelSerializer):

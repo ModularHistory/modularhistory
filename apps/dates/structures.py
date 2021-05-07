@@ -139,12 +139,9 @@ class HistoricDateTime(datetime):
             getcontext().prec = self.significant_figures
             inv_exponent = self.second
             inv_decimal_num = self.microsecond
+            base = -(inv_decimal_num - DECIMAL_INVERSION_BASIS)
             exponent = -(inv_exponent - EXPONENT_INVERSION_BASIS)
-            decimal_num = Decimal(
-                ('{:.4e}'.format(-(inv_decimal_num - DECIMAL_INVERSION_BASIS))).split(
-                    'e+'
-                )[0]
-            )
+            decimal_num = Decimal(('{:.4e}'.format(base)).split('e+')[0])  # noqa: P101
             multiplier = Decimal(10 ** exponent)
             bce = int(Decimal(decimal_num * multiplier))
             if bce > BCE_PREHISTORY_FLOOR:  # if prehistory
