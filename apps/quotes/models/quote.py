@@ -7,7 +7,6 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
@@ -110,6 +109,7 @@ class Quote(
         'tags__topic__aliases',
     ]
     serializer = QuoteSerializer
+    slug_base_field = 'title'
 
     def __str__(self) -> str:
         """Return the quote's string representation, for debugging and internal use."""
@@ -189,10 +189,6 @@ class Quote(
                 else:
                     attributee_html = f'{primary_attributee_html} et al.'
         return format_html(attributee_html)
-
-    def get_slug(self) -> str:
-        """Generate a slug for the quote."""
-        return slugify(self.title)
 
     @property
     def escaped_attributee_html(self) -> SafeString:
