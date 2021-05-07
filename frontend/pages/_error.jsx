@@ -2,10 +2,11 @@
   Based on:
   https://github.com/vercel/next.js/blob/canary/examples/with-sentry/pages/_error.js
 */
+import Layout from "@/components/Layout";
 import * as Sentry from "@sentry/node";
 import NextErrorComponent from "next/error";
 
-const ErrorPage = ({ statusCode, hasGetInitialPropsRun, err }) => {
+const Error = ({ statusCode, hasGetInitialPropsRun, err }) => {
   if (!hasGetInitialPropsRun && err) {
     // getInitialProps is not called in case of
     // https://github.com/vercel/next.js/issues/8592. As a workaround, we pass
@@ -14,10 +15,14 @@ const ErrorPage = ({ statusCode, hasGetInitialPropsRun, err }) => {
     // Flushing is not required in this case as it only happens on the client
   }
 
-  return <NextErrorComponent statusCode={statusCode} />;
+  return (
+    <Layout title={statusCode}>
+      <NextErrorComponent statusCode={statusCode} />
+    </Layout>
+  );
 };
 
-ErrorPage.getInitialProps = async ({ res, err, asPath }) => {
+Error.getInitialProps = async ({ res, err, asPath }) => {
   const errorInitialProps = await NextErrorComponent.getInitialProps({
     res,
     err,
@@ -59,4 +64,4 @@ ErrorPage.getInitialProps = async ({ res, err, asPath }) => {
   return errorInitialProps;
 };
 
-export default ErrorPage;
+export default Error;

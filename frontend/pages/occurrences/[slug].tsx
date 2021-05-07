@@ -33,9 +33,16 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       occurrence = response.data;
     })
-    .catch((error) => {
-      // TODO: how should we handle errors here?
+    .catch((_error) => {
+      occurrence = null;
     });
+
+  if (!occurrence) {
+    // https://nextjs.org/blog/next-10#notfound-support
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
