@@ -43,21 +43,15 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       topic = response.data.data.topic;
     })
-    .catch((error) => {
-      // console.error(error);
+    .catch((_error) => {
+      topic = null;
     });
-
-  // via Rest API
-  // await axiosWithoutAuth
-  //   .get(`http://django:8000/api/topics/${slug}`)
-  //   .then((response) => {
-  //     topic = response.data;
-  //     console.log(topic);
-  //   })
-  //   .catch((error) => {
-  //     // console.error(error);
-  //   });
-
+  if (!topic) {
+    // https://nextjs.org/blog/next-10#notfound-support
+    return {
+      notFound: true,
+    };
+  }
   return {
     props: {
       topic,
