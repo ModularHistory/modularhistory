@@ -22,6 +22,7 @@ from apps.sources.admin.inlines import (
 class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
     """
     Admin for all sources, accessible at http://localhost/admin/sources/source/.
+
     This admin is not used for editing individual source instances;
     editing of individual model instances is delegated to `ChildSourceAdmin`
     or one of its subclasses.
@@ -98,16 +99,12 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
 class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     """
     Admin for source models that inherit from the base `Source` model.
+
     Such source models (e.g., `Article`) must be registered with `ChildSourceAdmin`
     or with a custom admin that inherits from `ChildSourceAdmin`.
     """
 
     base_model = models.Source
-
-    # # By using these `base_...` attributes instead of the regular ModelAdmin `form` and `fieldsets`,
-    # # the additional fields of the child models are automatically added to the admin form.
-    # base_form = ...
-    # base_fieldsets = ...
 
     autocomplete_fields = ['file', 'location']
     exclude = [

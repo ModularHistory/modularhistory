@@ -17,6 +17,7 @@ PUBLICATION_TYPES = (
 
 
 class AbstractPublication(Model):
+    """Abstract base class for publications."""
 
     name = models.CharField(
         verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
@@ -33,7 +34,7 @@ class AbstractPublication(Model):
 
 
 class Publication(TypedModel, AbstractPublication):
-    """A publication, such as a newspaper, magazine, journal, or website."""
+    """A publication, such as a newspaper, magazine, or journal."""
 
     name = models.CharField(
         verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
