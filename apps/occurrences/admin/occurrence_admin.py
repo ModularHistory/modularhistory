@@ -37,13 +37,14 @@ class OccurrenceAdmin(SearchableModelAdmin):
         RelatedTopicsInline,
     ]
     list_display = [
+        'pk',
         'title',
         'summary',
         # 'detail_link',
         'date_string',
         'slug',
     ]
-    list_editable = ['slug']
+    list_editable = ['title', 'slug']
     list_filter = [
         'verified',
         HasDateFilter,
