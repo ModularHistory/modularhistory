@@ -137,8 +137,7 @@ class Quote(
 
     def save(self, *args, **kwargs):
         """Save the quote to the database."""
-        self.attributee_html = self.get_attributee_html()
-        self.clean()
+        self.update_calculated_fields()
         super().save(*args, **kwargs)
         if not self.images.exists():
             image = None
@@ -154,6 +153,13 @@ class Quote(
                 image = self.related_occurrences.first().primary_image
             if image:
                 QuoteImage.objects.create(quote=self, image=image)
+
+    def update_calculated_fields(self):
+        """Update the quote's calculated fields."""
+        self.attributee_html = self.get_attributee_html()
+        self.title = self.title or ', '.join(
+            [item for item in (self.attributee_string, self.date_string) if item]
+        )
 
     def get_attributee_html(self) -> SafeString:
         """Return the HTML representing the quote's attributees."""
@@ -186,7 +192,7 @@ class Quote(
 
     def get_slug(self) -> str:
         """Generate a slug for the quote."""
-        return slugify(self.pk)
+        return slugify(self.title)
 
     @property
     def escaped_attributee_html(self) -> SafeString:
