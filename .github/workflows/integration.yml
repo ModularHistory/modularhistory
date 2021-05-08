@@ -340,6 +340,7 @@ jobs:
       fail-fast: false
       matrix:
         language: [javascript, python]
+    continue-on-error: true
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
