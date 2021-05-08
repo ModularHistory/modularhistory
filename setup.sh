@@ -389,9 +389,9 @@ poetry install --no-root || {
   _error "Failed to install dependencies with Poetry."
 }
 
-# Build the Docker images.
+# Build the Django image.
+# Note: This has to be done before running `invoke seed` within this script.
 docker-compose build django
-docker-compose build react
 
 # Add container names to /etc/hosts.
 poetry run invoke setup.update-hosts
@@ -489,6 +489,10 @@ if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
     "
   }
 fi
+
+# Build the react container.
+# Note: This has to be done after a .env file exists.
+docker-compose build react
 
 read -rp "Sync media [Y/n]? " CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
