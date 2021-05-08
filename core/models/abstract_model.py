@@ -1,9 +1,9 @@
 from abc import ABCMeta
 
-from django.db import models
+from django.db.models.base import ModelBase
 
 
-class AbstractModelMeta(ABCMeta, type(models.Model)):
+class AbstractModelMeta(ABCMeta, ModelBase):
     """
     Meta class for abstract models.
 
