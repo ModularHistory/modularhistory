@@ -14,7 +14,7 @@ class AbstractModelMeta(ABCMeta, ModelBase):
     inherit from `abc.ABC`, since this results in a metaclass conflict.)
 
     To use ABC with an abstract model, use `AbstractModelMeta` like so:
-    ```
+    ``
     from core.models import Model, AbstractModelMeta
     from abc import abstractmethod
     ...
@@ -33,5 +33,5 @@ class AbstractModelMeta(ABCMeta, ModelBase):
         @abstractmethod
         def my_abstract_method(self):
             pass
-    ```
+    ``
     """
