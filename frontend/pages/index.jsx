@@ -11,12 +11,12 @@ import { useState } from "react";
 
 const useStyles = makeStyles({
   root: {
-    position: "relative",
     height: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     marginTop: "1.5rem",
+    marginBottom: "1.5rem",
   },
 });
 
