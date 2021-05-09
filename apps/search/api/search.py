@@ -68,9 +68,7 @@ class Search(DSLSearch):
 
     def score_order(self, model):
         # TODO: refactor this
-        # 1. needs faster hit matching (pre-create hash map with hit.meta.id as a key?)
-        # 2. implement other sort options
-        # 3. possibly move our meta assigning to somewhere else
+        # 1. find a better way of to assign meta somewhere else
 
         # hit = next((hit for hit in self if int(hit.meta.id) == model.pk), None)
         document = next((document for document in SEARCHABLE_DOCUMENTS.values() if isinstance(model, document.django.model)), None)
