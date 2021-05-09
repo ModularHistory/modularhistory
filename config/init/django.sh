@@ -1,6 +1,8 @@
 #!/bin/bash
 
 sleep 3 && wait-for-it.sh postgres:5432 --
+sleep 3 && wait-for-it.sh elasticsearch:9200 --
+
 writable_dirs=( ".backups" ".init" "_static" "_media" )
 for writable_dir in "${writable_dirs[@]}"; do
     # Must be run by a www-data user:
@@ -26,6 +28,11 @@ python manage.py migrate || {
 
 python manage.py collectstatic --no-input || {
     echo "Failed to collect static files."
+    exit 1
+}
+
+python manage.py search_index -f --rebuild --parallel || {
+    echo "Failed to rebuild elasticsearch indexes."
     exit 1
 }
 
