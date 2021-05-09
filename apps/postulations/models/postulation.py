@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models.model_with_sources import ModelWithSources
+from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
 from core.fields import HTMLField
 from core.fields.html_field import (
@@ -41,10 +42,10 @@ class PostulationSerializer(ModelSerializer):
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of serialized postulations."""
-        return 'topics.fact'
+        return 'postulations.postulation'
 
 
-class Postulation(SluggedModel, VerifiableModel, ModelWithSources):
+class Postulation(SluggedModel, TaggableModel, VerifiableModel, ModelWithSources):
     """A postulation."""
 
     summary = HTMLField(
@@ -68,18 +69,6 @@ class Postulation(SluggedModel, VerifiableModel, ModelWithSources):
         through='postulations.EntityFactRelation',
         related_name='postulations',
         verbose_name=_('related entities'),
-    )
-    related_topics = models.ManyToManyField(
-        to='topics.Topic',
-        through='postulations.TopicFactRelation',
-        related_name='postulations',
-        verbose_name=_('related topics'),
-    )
-    related_occurrences = models.ManyToManyField(
-        to='occurrences.Occurrence',
-        through='postulations.OccurrenceFactRelation',
-        related_name='postulations',
-        verbose_name=_('related occurrences'),
     )
 
     searchable_fields = ['summary', 'elaboration']

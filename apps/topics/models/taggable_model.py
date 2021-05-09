@@ -19,9 +19,6 @@ class TaggableModel(Model):
 
     tags = GenericRelation('topics.TopicRelation')
 
-    class FieldNames(Model.FieldNames):
-        tags = 'tags'
-
     class Meta:
         abstract = True
 

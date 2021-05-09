@@ -11,9 +11,9 @@ class PostulationEntitiesInline(TabularInline):
 
 
 class OccurrencesInline(TabularInline):
-    """Inline admin for a fact's related occurences."""
+    """Inline admin for a fact's related occurrences."""
 
-    model = models.Postulation.related_occurrences.through
+    model = models.Postulation.occurrence_set.through
     extra = 0
 
 
@@ -42,7 +42,7 @@ class PostulationAdmin(ModelAdmin):
 
     model = models.Postulation
     list_display = ['pk', 'summary']
-    list_filter = ['related_entities', 'related_occurrences']
+    list_filter = ['related_entities', 'occurrence_set']
     search_fields = model.searchable_fields
 
     inlines = [

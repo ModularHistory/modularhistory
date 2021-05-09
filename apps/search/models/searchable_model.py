@@ -29,10 +29,6 @@ class SearchableModel(
         help_text='Hide this item from search results.',
     )
 
-    class FieldNames(TaggableModel.FieldNames):
-        verified = 'verified'
-        hidden = 'hidden'
-
     class Meta:
         """Meta options for SearchableModel."""
 
