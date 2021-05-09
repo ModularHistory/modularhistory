@@ -27,6 +27,16 @@ class InvolvedEntitiesInline(TabularInline):
     autocomplete_fields = ['entity']
 
 
+class PostulationsInline(TabularInline):
+    """Inline admin for an occurrence chain's occurrences."""  # right?
+
+    verbose_name = 'postulation'
+    verbose_name_plural = 'postulations'
+    model = models.Occurrence.postulations.through
+    autocomplete_fields = ['postulation']
+    extra = 1
+
+
 class OccurrencesInline(TabularInline):
     """Inline admin for an occurrence chain's occurrences."""  # right?
 
