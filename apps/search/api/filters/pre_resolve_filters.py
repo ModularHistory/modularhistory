@@ -22,8 +22,9 @@ class PreResolveFilterBackend:
     Filter that's applied for resolving modules from search results per module
     """
     def filter_queryset(self, request, queryset, view, model):
-        for filter in PRE_RESOLVE_FILTERS:
-            queryset = filter(queryset)
+        for pre_resolve_filter in PRE_RESOLVE_FILTERS:
+            queryset = pre_resolve_filter(queryset)
+
         if model in PER_MODULE_PRE_RESOLVE_FILTERS:
             for pre_resolve_filter in PER_MODULE_PRE_RESOLVE_FILTERS[model]:
                 queryset = pre_resolve_filter(queryset)
