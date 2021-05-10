@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import serpy
 
-from core.models.model import ModelSerializer
+from apps.search.api.serializers import SearchableModelSerializer
 
 if TYPE_CHECKING:
     from apps.entities.models import Entity
@@ -32,7 +32,7 @@ class CategorizationSerializer(serpy.Serializer):
         return instance.end_date.serialize() if instance.end_date else None
 
 
-class EntitySerializer(ModelSerializer):
+class EntitySerializer(SearchableModelSerializer):
     """Serializer for entities."""
 
     name = serpy.Field()
