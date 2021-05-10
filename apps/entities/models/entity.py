@@ -197,6 +197,10 @@ class Entity(
             # Prevent a RuntimeError when saving a new publication
             self.recast(self.type)
 
+    def get_date(self) -> Optional[DateTime]:
+        """Date used for sorting search results"""
+        return self.birth_date
+
 
 class Person(Entity):
     """A person."""
