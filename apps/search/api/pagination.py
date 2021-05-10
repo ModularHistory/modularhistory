@@ -29,27 +29,23 @@ class ElasticPaginator(Paginator):
         bottom = (number - 1) * self.per_page
         top = bottom + self.per_page
 
-        object_list, count = self.object_list[bottom:top].to_queryset()
+        object_list, count = self.object_list[bottom:top].to_queryset(self.view)
         object_list = self.apply_filters(object_list)
 
         self.count = count
 
         if self.count > top and self.count - top <= self.orphans:
             # Fetch the additional orphaned nodes
-            orphans = self.object_list[top:self.count].to_queryset()
+            orphans = self.object_list[top:self.count].to_queryset(self.view)
             orphans = self.apply_filters(orphans)
-            object_list = (
-                list(object_list) +
-                list(orphans)
-            )
+            object_list = (list(object_list) + list(orphans))
         number = self.validate_number(number)
         __facets = getattr(object_list, 'aggregations', None)
         return self._get_page(object_list, number, self, facets=__facets, count=count)
 
     def apply_filters(self, object_list):
-        # TODO: explore less hacky ways of applying this filters
         for backend in self.view.post_resolve_filters:
-            object_list = backend().filter_queryset(self.view.request, object_list, self)
+            object_list = backend().filter_queryset(self.view.request, object_list, self.view)
         return object_list
 
     def _get_page(self, *args, **kwargs):

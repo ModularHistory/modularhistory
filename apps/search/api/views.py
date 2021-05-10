@@ -16,8 +16,9 @@ from core.constants.content_types import ContentTypes, get_ct_id
 
 from .pagination import ElasticPageNumberPagination
 from .search import Search
-from .filters.post_resolve_filters import SortByFilterBackend, date_sorter
 from .filters.elastic_filters import ModulesSearchFilterBackend
+from .filters.pre_resolve_filters import PreResolveFilterBackend
+from .filters.post_resolve_filters import ApplyMetaFilterBackend, SortByFilterBackend, date_sorter
 
 QUERY_PARAM = 'query'
 
@@ -33,15 +34,23 @@ class ElasticSearchResultsAPIView(ListAPIView):
     serializer_class = SearchResultsSerializer
     pagination_class = ElasticPageNumberPagination
 
+    # these filters are applied to ES search instance
     filter_backends = [ModulesSearchFilterBackend]
-    post_resolve_filters = [SortByFilterBackend]
+
+    # these filters are applied during resolving
+    pre_resolve_filters = [PreResolveFilterBackend]
+
+    # these filters are applied after the search results resolved to models
+    # applying meta filter backend should be first because sort and future filters might depend on meta field
+    post_resolve_filters = [ApplyMetaFilterBackend, SortByFilterBackend]
 
     suppress_unverified: bool
+    search: Search
 
     def get_queryset(self):
-        queryset = Search()
+        self.search = Search()
 
-        return queryset
+        return self.search
 
 
 class SearchResultsAPIView(ListAPIView):

@@ -23,7 +23,7 @@ class Search(DSLSearch):
     results_count: int
     results_by_id: Optional[dict]
 
-    def to_queryset(self):
+    def to_queryset(self, view):
         """
         This method return a django queryset from the an elasticsearch result.
         It costs a query to the sql db.
@@ -61,19 +61,14 @@ class Search(DSLSearch):
             pks = [result.meta.id for result in result_group]
 
             queryset = model.objects.filter(pk__in=pks)
+            queryset = self.apply_filters(view, queryset, model)
             qs = chain(qs, queryset)
 
-        qs = sorted(qs, key=self.score_order, reverse=True)
+        view.search = self
         return qs, self.results_count
 
-    def score_order(self, model):
-        # TODO: refactor this
-        # 1. find a better way of to assign meta somewhere else
-
-        # hit = next((hit for hit in self if int(hit.meta.id) == model.pk), None)
-        document = next((document for document in SEARCHABLE_DOCUMENTS.values() if isinstance(model, document.django.model)), None)
-        index = document.index_name()
-        key = f"{index}_{model.pk}"
-        hit = self.results_by_id[key]
-        model.meta = hit.meta
-        return model.meta.score
+    @staticmethod
+    def apply_filters(view, queryset, model):
+        for backend in view.pre_resolve_filters:
+            queryset = backend().filter_queryset(view.request, queryset, view, model)
+        return queryset

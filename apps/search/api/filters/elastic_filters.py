@@ -18,7 +18,8 @@ TOPICS_PARAM = 'topics'
 
 class ModulesSearchFilterBackend(filters.BaseFilterBackend):
     """
-    Filter that sorts queryset by SORT_BY_PARAM
+    Main ES filter backend.
+    TODO: this could be broken down to multiple filters if #apply_filter logic grows too big
     """
     def filter_queryset(self, request, queryset, view):
         filter_kwargs = self.get_filter_params(request)

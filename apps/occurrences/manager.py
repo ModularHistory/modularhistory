@@ -48,3 +48,12 @@ class OccurrenceManager(SearchableModelManager):
                 | Q(tags__topic__related_topics__id__in=topic_ids)
             )
         return qs
+
+    @staticmethod
+    def prefetch_search_relatives(queryset):
+        return queryset.prefetch_related('tags__topic')\
+            .prefetch_related('citations', Prefetch(
+                'image_relations',
+                queryset=OccurrenceImage.objects.select_related('image'),
+            ),
+        )
