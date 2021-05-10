@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import serpy
 from django.template.defaultfilters import truncatechars_html
 
-from apps.search.models.searchable_model import SearchableModelSerializer
+from apps.search.api.serializers import SearchableModelSerializer
 
 if TYPE_CHECKING:
     from apps.quotes.models import Quote

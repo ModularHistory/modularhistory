@@ -64,7 +64,7 @@ export const handleLogout = (session: Session): void => {
     document.cookie = `${cookieName}; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
   });
   // Sign out of the front end.
-  signOut({ callbackUrl: window.location.origin });
+  signOut({ callbackUrl: window.location.pathname });
   // TODO: Save random data to the `logout` key in local storage
   // to trigger the event listener to sign out of any other open windows.
   window.localStorage.setItem("logout", `${Date.now()}`);

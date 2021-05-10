@@ -133,7 +133,7 @@ jobs:
       run: poetry run invoke test --no-docker
 
   build:
-    name: Build image
+    name: Build images
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
@@ -233,6 +233,8 @@ jobs:
         language: [ 'javascript', 'python' ]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
         # Learn more: https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+    # Don't cancel other jobs if CodeQL analysis fails.
+    continue-on-error: true
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2

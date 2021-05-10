@@ -33,14 +33,19 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       quote = response.data;
     })
-    .catch((error) => {
-      // TODO: how should we handle errors here?
+    .catch((_error) => {
+      quote = null;
     });
 
+  if (!quote) {
+    // https://nextjs.org/blog/next-10#notfound-support
+    return {
+      notFound: true,
+    };
+  }
+
   return {
-    props: {
-      quote,
-    },
+    props: { quote },
     revalidate: 10,
   };
 };

@@ -389,6 +389,10 @@ poetry install --no-root || {
   _error "Failed to install dependencies with Poetry."
 }
 
+# Build the Django image.
+# Note: This has to be done before running `invoke seed` within this script.
+docker-compose build django
+
 # Add container names to /etc/hosts.
 poetry run invoke setup.update-hosts
 
@@ -403,8 +407,8 @@ nvm --version &>/dev/null || {
   [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
 echo "Installing Node modules ..."
-npm i -g prettier eslint prettier-eslint
 cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
+npm i -g prettier eslint
 
 # Update ctags
 ctags -R -f .vscode/.tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" --exclude="**/libraries/**" &>/dev/null
@@ -486,7 +490,8 @@ if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   }
 fi
 
-docker-compose build django
+# Build the react container.
+# Note: This has to be done after a .env file exists.
 docker-compose build react
 
 read -rp "Sync media [Y/n]? " CONT

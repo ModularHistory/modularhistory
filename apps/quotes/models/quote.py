@@ -7,7 +7,6 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
@@ -110,6 +109,7 @@ class Quote(
         'tags__topic__aliases',
     ]
     serializer = QuoteSerializer
+    slug_base_field = 'title'
 
     def __str__(self) -> str:
         """Return the quote's string representation, for debugging and internal use."""
@@ -137,8 +137,7 @@ class Quote(
 
     def save(self, *args, **kwargs):
         """Save the quote to the database."""
-        self.attributee_html = self.get_attributee_html()
-        self.clean()
+        self.update_calculated_fields()
         super().save(*args, **kwargs)
         if not self.images.exists():
             image = None
@@ -154,6 +153,13 @@ class Quote(
                 image = self.related_occurrences.first().primary_image
             if image:
                 QuoteImage.objects.create(quote=self, image=image)
+
+    def update_calculated_fields(self):
+        """Update the quote's calculated fields."""
+        self.attributee_html = self.get_attributee_html()
+        self.title = self.title or ', '.join(
+            [item for item in (self.attributee_string, self.date_string) if item]
+        )
 
     def get_attributee_html(self) -> SafeString:
         """Return the HTML representing the quote's attributees."""
@@ -184,9 +190,10 @@ class Quote(
                     attributee_html = f'{primary_attributee_html} et al.'
         return format_html(attributee_html)
 
-    def get_slug(self) -> str:
-        """Generate a slug for the quote."""
-        return slugify(self.pk)
+    @property
+    def escaped_attributee_html(self) -> SafeString:
+        """Return the escaped attributee HTML to be displayed in the Django admin."""
+        return format_html(self.attributee_html)
 
     @property
     def has_multiple_attributees(self) -> bool:

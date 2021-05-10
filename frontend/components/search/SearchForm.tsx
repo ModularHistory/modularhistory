@@ -1,6 +1,6 @@
-import { Container, Grid, makeStyles } from "@material-ui/core";
+import { Container, Grid, makeStyles, Theme } from "@material-ui/core";
 import { useRouter } from "next/router";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, FC, useCallback, useContext, useEffect, useState } from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
 import PageTransitionContext from "../PageTransitionContext";
 import CheckboxGroup from "./CheckboxGroup";
@@ -35,7 +35,7 @@ function useSearchFormState() {
   useEffect(() => {
     // Remove any params we don't want sent to the next search page
     // and update form state when browser history is navigated.
-    const { page, ...query } = router.query;
+    const { _page, ...query } = router.query;
     setState(query);
   }, [router.query]);
 
@@ -45,7 +45,11 @@ function useSearchFormState() {
   return { state, setState, setStateFromEvent, disabled: isLoading };
 }
 
-const useStyles = makeStyles((theme) => ({
+interface SearchFormProps {
+  inSidebar?: boolean;
+}
+
+const useStyles = makeStyles<Theme, SearchFormProps>((theme) => ({
   root: {
     paddingTop: "20px",
     maxWidth: ({ inSidebar }) => (inSidebar ? undefined : theme.breakpoints.values.sm),
@@ -70,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
  *    forced to display vertically, as when constrained by a sidebar.
  *    If false, the inputs may be rendered side-by-side.
  */
-export default function SearchForm({ inSidebar }) {
+const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps) => {
   const classes = useStyles({ inSidebar });
   const router = useRouter();
   const formState = useSearchFormState();
@@ -152,4 +156,6 @@ export default function SearchForm({ inSidebar }) {
       </Container>
     </SearchFormContext.Provider>
   );
-}
+};
+
+export default SearchForm;

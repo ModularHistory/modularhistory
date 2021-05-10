@@ -75,6 +75,15 @@ export interface TopicModule extends BaseModule {
   description: string;
 }
 
+export type ModuleUnion =
+  | ImageModule
+  | QuoteModule
+  | OccurrenceModule
+  | SourceModule
+  | EntityModule
+  | PostulationModule
+  | TopicModule;
+
 export interface StaticPage {
   title: string;
   content: string;

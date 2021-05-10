@@ -27,12 +27,12 @@ class QuoteAdmin(SearchableModelAdmin):
     model = models.Quote
 
     list_display = [
-        'pk',
+        'title',
         'bite',
-        'detail_link',
-        'attributee_html',
+        # 'detail_link',
+        'escaped_attributee_html',
         'date_string',
-        'citation_html',
+        # 'citation_html',
         'tags_string',
         'slug',
     ]

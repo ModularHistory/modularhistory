@@ -44,9 +44,16 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       source = response.data.data.source;
     })
-    .catch((error) => {
-      // console.error(error);
+    .catch((_error) => {
+      source = null;
     });
+
+  if (!source) {
+    // https://nextjs.org/blog/next-10#notfound-support
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
