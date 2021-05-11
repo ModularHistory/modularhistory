@@ -1,6 +1,5 @@
 """Base classes for models that appear in ModularHistory search results."""
 
-from django.db import models
 
 from apps.dates.models import DatedModel
 

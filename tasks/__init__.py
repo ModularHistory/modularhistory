@@ -5,7 +5,7 @@ from invoke import Collection
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
-from . import db, media, qa, scm, setup, tasks, search_utils  # noqa: E402
+from . import db, media, qa, scm, search_utils, setup, tasks  # noqa: E402
 
 # http://docs.pyinvoke.org/en/latest/api/collection.html#invoke.collection.Collection.from_module
 namespace = Collection.from_module(tasks)

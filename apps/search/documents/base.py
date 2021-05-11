@@ -1,5 +1,5 @@
-from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl import Document as ESDocument
+from django_elasticsearch_dsl import fields
 
 
 class Document(ESDocument):

@@ -1,30 +1,42 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
-import time
 import random
+import time
+from itertools import chain
 
 import django
-from elasticsearch_dsl import Search, Q
 from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Q, Search
 
-from itertools import chain
+from apps.search.documents.entity import EntityDocument
+from apps.search.documents.image import ImageDocument
+from apps.search.documents.occurrence import OccurrenceDocument
+from apps.search.documents.quote import QuoteDocument
+from apps.search.documents.source import SourceDocument
 
 from .command import command
 
-from apps.search.documents.quote import QuoteDocument
-from apps.search.documents.occurrence import OccurrenceDocument
-from apps.search.documents.source import SourceDocument
-from apps.search.documents.image import ImageDocument
-from apps.search.documents.entity import EntityDocument
-
 django.setup()
 
-SEARCHABLE_DOCUMENTS = [OccurrenceDocument, QuoteDocument, SourceDocument, ImageDocument, EntityDocument]
+SEARCHABLE_DOCUMENTS = [
+    OccurrenceDocument,
+    QuoteDocument,
+    SourceDocument,
+    ImageDocument,
+    EntityDocument,
+]
 
 
 @command
-def search(context, query, all: bool = False, print_all: bool = False, print_sql: bool = False, start: int = 0,
-           end: int = 20):
+def search(
+    context,
+    query,
+    all: bool = False,
+    print_all: bool = False,
+    print_sql: bool = False,
+    start: int = 0,
+    end: int = 20,
+):
     random_document = random.choice(SEARCHABLE_DOCUMENTS)
 
     print(f"Searching for = {query} in {'all' if all else random_document}")

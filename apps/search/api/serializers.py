@@ -1,6 +1,7 @@
+from typing import Optional
+
 import serpy
 
-from typing import Optional
 from core.models.model import ModelSerializer
 
 ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']

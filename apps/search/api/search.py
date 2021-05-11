@@ -4,18 +4,18 @@ from typing import Optional
 
 from elasticsearch_dsl import Search as DSLSearch
 
-from apps.search.documents.source import SourceDocument
 from apps.search.documents.entity import EntityDocument
-from apps.search.documents.quote import QuoteDocument
-from apps.search.documents.occurrence import OccurrenceDocument
 from apps.search.documents.image import ImageDocument
+from apps.search.documents.occurrence import OccurrenceDocument
+from apps.search.documents.quote import QuoteDocument
+from apps.search.documents.source import SourceDocument
 
 SEARCHABLE_DOCUMENTS = {
     OccurrenceDocument.index_name(): OccurrenceDocument,
     SourceDocument.index_name(): SourceDocument,
     EntityDocument.index_name(): EntityDocument,
     QuoteDocument.index_name(): QuoteDocument,
-    ImageDocument.index_name(): ImageDocument
+    ImageDocument.index_name(): ImageDocument,
 }
 
 
@@ -37,7 +37,9 @@ class Search(DSLSearch):
 
         self.results_count = s.hits.total.value
 
-        logging.info(f"ES Search took {s.took} ms and returned n={self.results_count} results")
+        logging.info(
+            f"ES Search took {s.took} ms and returned n={self.results_count} results"
+        )
 
         # group results by index name
         result_groups = {}
@@ -52,7 +54,9 @@ class Search(DSLSearch):
         qs = chain()
         for index, result_group in result_groups.items():
             if index not in SEARCHABLE_DOCUMENTS:
-                logging.error(f"Couldn't find document definition for this index = {index}")
+                logging.error(
+                    f"Couldn't find document definition for this index = {index}"
+                )
                 continue
 
             document = SEARCHABLE_DOCUMENTS[index]

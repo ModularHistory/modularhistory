@@ -14,11 +14,15 @@ from apps.sources.models import Source
 from apps.topics.models import Topic
 from core.constants.content_types import ContentTypes, get_ct_id
 
+from .filters.elastic_filters import ModulesSearchFilterBackend
+from .filters.post_resolve_filters import (
+    ApplyMetaFilterBackend,
+    SortByFilterBackend,
+    date_sorter,
+)
+from .filters.pre_resolve_filters import PreResolveFilterBackend
 from .pagination import ElasticPageNumberPagination
 from .search import Search
-from .filters.elastic_filters import ModulesSearchFilterBackend
-from .filters.pre_resolve_filters import PreResolveFilterBackend
-from .filters.post_resolve_filters import ApplyMetaFilterBackend, SortByFilterBackend, date_sorter
 
 QUERY_PARAM = 'query'
 
@@ -225,7 +229,7 @@ def _get_image_results(
 
 
 def _get_source_results(
-        content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
+    content_types, occurrence_result_ids, quote_result_ids, **search_kwargs
 ):
     if ContentTypes.source in content_types or not content_types:
         source_results = Source.objects.search(**search_kwargs)  # type: ignore

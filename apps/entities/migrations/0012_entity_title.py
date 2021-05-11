@@ -13,6 +13,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='entity',
             name='title',
-            field=models.CharField(blank=True, help_text='The title can be used for the detail page header and title tag, SERP result card header, etc.', max_length=120, null=True, verbose_name='title'),
+            field=models.CharField(
+                blank=True,
+                help_text='The title can be used for the detail page header and title tag, SERP result card header, etc.',
+                max_length=120,
+                null=True,
+                verbose_name='title',
+            ),
         ),
     ]

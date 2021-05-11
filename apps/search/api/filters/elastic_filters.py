@@ -2,9 +2,8 @@ import logging
 from pprint import pformat
 from typing import List, Optional
 
-from rest_framework import filters
-
 from elasticsearch_dsl import Q
+from rest_framework import filters
 
 from apps.search.documents.config import get_index_name_for_ct
 
@@ -21,6 +20,7 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
     Main ES filter backend.
     TODO: this could be broken down to multiple filters if #apply_filter logic grows too big
     """
+
     def filter_queryset(self, request, queryset, view):
         filter_kwargs = self.get_filter_params(request)
         queryset = self.apply_filter(queryset, **filter_kwargs)
@@ -59,15 +59,16 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
 
     @staticmethod
     def apply_filter(
-            qs,
-            indexes: str,
-            query_string: Optional[str] = None,
-            start_year: Optional[int] = None,
-            end_year: Optional[int] = None,
-            entity_ids: Optional[List[int]] = None,
-            topic_ids: Optional[List[int]] = None,
-            suppress_unverified: bool = True,
-            suppress_hidden: bool = True):
+        qs,
+        indexes: str,
+        query_string: Optional[str] = None,
+        start_year: Optional[int] = None,
+        end_year: Optional[int] = None,
+        entity_ids: Optional[List[int]] = None,
+        topic_ids: Optional[List[int]] = None,
+        suppress_unverified: bool = True,
+        suppress_hidden: bool = True,
+    ):
 
         qs = qs.index(indexes)
 
@@ -84,8 +85,13 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
             qs = qs.query('bool', filter=[Q('range', date_year=date_range)])
 
         if entity_ids:
-            qs = qs.query('bool', filter=[
-                Q('terms', involved_entities__id=entity_ids) | Q('terms', attributees__id=entity_ids)])
+            qs = qs.query(
+                'bool',
+                filter=[
+                    Q('terms', involved_entities__id=entity_ids)
+                    | Q('terms', attributees__id=entity_ids)
+                ],
+            )
 
         if topic_ids:
             qs = qs.query('bool', filter=[Q('terms', topics__id=topic_ids)])
@@ -97,10 +103,20 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
             qs = qs.query('bool', filter=[Q('match', hidden=False)])
 
         # TODO: refactor & improve this. currently only applying highlights to quote#text and occurrence#description
-        qs = qs.highlight('text', number_of_fragments=1, type='plain', pre_tags=['<mark>'],
-                          post_tags=['</mark>'])
-        qs = qs.highlight('description', number_of_fragments=1, type='plain', pre_tags=['<mark>'],
-                          post_tags=['</mark>'])
+        qs = qs.highlight(
+            'text',
+            number_of_fragments=1,
+            type='plain',
+            pre_tags=['<mark>'],
+            post_tags=['</mark>'],
+        )
+        qs = qs.highlight(
+            'description',
+            number_of_fragments=1,
+            type='plain',
+            pre_tags=['<mark>'],
+            post_tags=['</mark>'],
+        )
 
         logging.info(f"ES Indexes: {indexes}")
         logging.info(f"ES Query: {pformat(qs.to_dict())}")

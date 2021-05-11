@@ -13,7 +13,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='entity',
             name='hidden',
-            field=models.BooleanField(blank=True, default=False, help_text='Hide this item from search results.'),
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text='Hide this item from search results.',
+            ),
         ),
         migrations.AddField(
             model_name='entity',

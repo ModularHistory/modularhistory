@@ -41,7 +41,13 @@ class EntityAdmin(ModelAdmin):
         'aliases',
         'type',
     ]
-    list_filter = ['verified', HasQuotesFilter, HasImageFilter, CategoriesFilter, EntityTypeFilter]
+    list_filter = [
+        'verified',
+        HasQuotesFilter,
+        HasImageFilter,
+        CategoriesFilter,
+        EntityTypeFilter,
+    ]
     ordering = ['name', 'birth_date']
     readonly_fields = ['pretty_computations']
     search_fields = ['name', 'aliases']

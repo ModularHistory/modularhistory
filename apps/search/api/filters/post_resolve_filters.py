@@ -3,8 +3,8 @@ from typing import Dict, Union
 from rest_framework import filters
 
 from apps.dates.structures import HistoricDateTime
-from apps.search.models import SearchableDatedModel
 from apps.search.api.search import SEARCHABLE_DOCUMENTS
+from apps.search.models import SearchableDatedModel
 
 SORT_BY_PARAM = 'ordering'
 
@@ -22,7 +22,14 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
         return list(map(self.apply_meta, queryset))
 
     def apply_meta(self, model):
-        document = next((document for document in SEARCHABLE_DOCUMENTS.values() if isinstance(model, document.django.model)), None)
+        document = next(
+            (
+                document
+                for document in SEARCHABLE_DOCUMENTS.values()
+                if isinstance(model, document.django.model)
+            ),
+            None,
+        )
         index = document.index_name()
         key = f"{index}_{model.pk}"
         hit = self.view.search.results_by_id[key]
@@ -34,6 +41,7 @@ class SortByFilterBackend(filters.BaseFilterBackend):
     """
     Filter that sorts queryset by SORT_BY_PARAM
     """
+
     def filter_queryset(self, request, queryset, view):
         sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
 

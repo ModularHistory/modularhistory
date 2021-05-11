@@ -1,4 +1,3 @@
-from apps.occurrences.models import Occurrence
 
 SORT_BY_PARAM = 'ordering'
 
@@ -21,6 +20,7 @@ class PreResolveFilterBackend:
     """
     Filter that's applied for resolving modules from search results per module
     """
+
     def filter_queryset(self, request, queryset, view, model):
         for pre_resolve_filter in PRE_RESOLVE_FILTERS:
             queryset = pre_resolve_filter(queryset)
