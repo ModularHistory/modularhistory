@@ -25,8 +25,7 @@ class Search(DSLSearch):
 
     def to_queryset(self, view):
         """
-        This method return a django queryset from the an elasticsearch result.
-        It costs a query to the sql db.
+        Resolves elasticsearch results to django models.
         """
         s = self
 
