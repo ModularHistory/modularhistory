@@ -34,6 +34,18 @@ if [[ -d config/hooks ]]; then
   done
 fi
 
+# Update django dependencies.
+echo "$changed_files" | grep --quiet 'poetry.lock' && {
+  # Install dependencies.
+  poetry install --no-root
+  # Rebuild the django image.
+  docker-compose build django
+  docker-compose ps | grep --quiet 'django' && {
+    # Recreate running containers.
+    docker-compose up -d django flower
+  }
+}
+
 # Check if migrations have changed.
 echo "$changed_files" | grep --quiet 'migrations/' && {
   # TODO: Determine more intelligently whether seeding is required?
