@@ -18,12 +18,7 @@ from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.topics.models.taggable_model import TaggableModel
 from core.constants.strings import EMPTY_STRING
 from core.fields import ArrayField, HTMLField, JSONField
-from core.models import (
-    ModelWithComputations,
-    SluggedModel,
-    TypedModel,
-    retrieve_or_compute,
-)
+from core.models import SluggedModel, TypedModel, retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -45,7 +40,6 @@ class Entity(
     TypedModel,
     SluggedModel,
     TaggableModel,
-    ModelWithComputations,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,

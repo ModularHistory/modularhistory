@@ -1,21 +1,8 @@
-from apps.admin import ModelAdmin, StackedInline, TabularInline, admin_site
+from apps.admin import ModelAdmin, StackedInline, admin_site
 from apps.postulations import models
 from apps.sources.admin import CitationsInline
 from apps.topics.admin import RelatedTopicsInline
-
-
-class PostulationEntitiesInline(TabularInline):
-    """Inline admin for a postulation's related entities."""
-
-    model = models.Postulation.related_entities.through
-    extra = 0
-
-
-class OccurrencesInline(TabularInline):
-    """Inline admin for a postulation's related occurrences."""
-
-    model = models.Postulation.related_occurrences.through
-    extra = 0
+from apps.topics.models.taggable_model import TopicFilter
 
 
 class SupportedPostulationsInline(StackedInline):
@@ -43,14 +30,12 @@ class PostulationAdmin(ModelAdmin):
     """Admin for postulations."""
 
     model = models.Postulation
-    list_display = ['pk', 'summary']
-    list_filter = ['related_entities', 'related_occurrences']
+    list_display = ['summary', 'slug', 'tags_string']
+    list_filter = [TopicFilter]
     search_fields = model.searchable_fields
 
     inlines = [
         CitationsInline,
-        PostulationEntitiesInline,
-        OccurrencesInline,
         SupportedPostulationsInline,
         SupportivePostulationsInline,
         RelatedTopicsInline,

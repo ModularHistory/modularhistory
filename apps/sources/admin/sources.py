@@ -58,7 +58,7 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         # HasFileFilter,
         # HasFilePageOffsetFilter,
         # ImpreciseDateFilter,
-        models.Source.FieldNames.hidden,
+        'hidden',
         AttributeeFilter,
         SourceTypeFilter,
     ]
