@@ -43,7 +43,7 @@ class PostulationSerializer(ModelSerializer):
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of serialized postulations."""
-        return 'topics.fact'
+        return 'postulations.postulation'
 
 
 class Postulation(

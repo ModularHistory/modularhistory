@@ -13,6 +13,7 @@ from apps.occurrences.admin.occurrence_inlines import (
     InvolvedEntitiesInline,
     LocationsInline,
     OccurrencesInline,
+    PostulationsInline,
 )
 from apps.quotes.admin.related_quotes_inline import RelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
@@ -27,8 +28,9 @@ class OccurrenceAdmin(SearchableModelAdmin):
 
     model = models.Occurrence
 
-    exclude = SearchableModelAdmin.exclude
+    exclude = SearchableModelAdmin.exclude + ['postulations']
     inlines = [
+        PostulationsInline,
         RelatedQuotesInline,
         InvolvedEntitiesInline,
         LocationsInline,

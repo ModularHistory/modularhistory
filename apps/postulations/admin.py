@@ -1,4 +1,5 @@
 from apps.admin import ModelAdmin, StackedInline, admin_site
+from apps.entities.admin.admin_filters import RelatedEntityFilter
 from apps.postulations import models
 from apps.sources.admin import CitationsInline
 from apps.topics.admin import RelatedTopicsInline
@@ -31,7 +32,7 @@ class PostulationAdmin(ModelAdmin):
 
     model = models.Postulation
     list_display = ['summary', 'slug', 'tags_string']
-    list_filter = [TopicFilter]
+    list_filter = [TopicFilter, RelatedEntityFilter, 'occurrence_set']
     search_fields = model.searchable_fields
 
     inlines = [

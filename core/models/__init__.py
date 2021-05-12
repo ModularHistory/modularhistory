@@ -1,5 +1,6 @@
 """Public base models and mixins."""
 
+from .abstract_model import AbstractModelMeta
 from .manager import Manager, TypedModelManager
 from .model import BaseTypedModel as TypedModel
 from .model import Model, PlaceholderGroups
