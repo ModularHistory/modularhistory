@@ -105,8 +105,8 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
         searchable_fields = (
             getattr(self.model, 'searchable_fields', None) or self.search_fields
         )
-        weights = ['A', 'B', 'C', 'D']
         if searchable_fields:
+            weights = ['A', 'B', 'C', 'D']
             vector = SearchVector(searchable_fields[0], weight=weights[0])
             for index, field in enumerate(searchable_fields[1:]):
                 try:
