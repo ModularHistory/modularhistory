@@ -48,7 +48,7 @@ jobs:
       with:
         workflow: .github/workflows/seed.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
     - name: Set up Python 3.7
