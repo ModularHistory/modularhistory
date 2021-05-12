@@ -1,6 +1,7 @@
 from apps.admin import ModelAdmin, StackedInline, TabularInline, admin_site
 from apps.postulations import models
 from apps.sources.admin import CitationsInline
+from apps.topics.admin import RelatedTopicsInline
 
 
 class PostulationEntitiesInline(TabularInline):
@@ -52,6 +53,7 @@ class PostulationAdmin(ModelAdmin):
         OccurrencesInline,
         SupportedPostulationsInline,
         SupportivePostulationsInline,
+        RelatedTopicsInline,
     ]
 
 
