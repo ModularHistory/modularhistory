@@ -86,11 +86,12 @@ jobs:
       with:
         workflow: .github/workflows/delivery.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
       with:
-        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
+        fetch-depth: 0
+    # Set up Python.
     - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v2.2.2
       with:
         python-version: 3.7
     - name: Get full Python version
@@ -162,7 +163,7 @@ jobs:
           set +a; bash config/deploy.sh
         ENDSSH
     - name: Create Sentry release
-      uses: getsentry/action-release@v1
+      uses: getsentry/action-release@v1.1.5
       env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
