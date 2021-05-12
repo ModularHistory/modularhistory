@@ -11,10 +11,13 @@ from django.utils.safestring import SafeString
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.topics.models import Topic
 from core.models.model import Model
-from core.models.model_with_computations import retrieve_or_compute
+from core.models.model_with_computations import (
+    ModelWithComputations,
+    retrieve_or_compute,
+)
 
 
-class TaggableModel(Model):
+class TaggableModel(ModelWithComputations):
     """Mixin for models that are topic-taggable."""
 
     tags = GenericRelation('topics.TopicRelation')

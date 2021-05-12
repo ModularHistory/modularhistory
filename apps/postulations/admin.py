@@ -1,39 +1,28 @@
-from apps.admin import ModelAdmin, StackedInline, TabularInline, admin_site
+from apps.admin import ModelAdmin, StackedInline, admin_site
 from apps.postulations import models
 from apps.sources.admin import CitationsInline
-
-
-class PostulationEntitiesInline(TabularInline):
-    """Inline admin for a fact's related entities."""
-
-    model = models.Postulation.related_entities.through
-    extra = 0
-
-
-class OccurrencesInline(TabularInline):
-    """Inline admin for a fact's related occurrences."""
-
-    model = models.Postulation.occurrence_set.through
-    extra = 0
+from apps.topics.admin import RelatedTopicsInline
+from apps.topics.models.taggable_model import TopicFilter
 
 
 class SupportedPostulationsInline(StackedInline):
-    """Inline admin for a fact's supported postulations."""
+    """Inline admin for a postulation's supported postulations."""
 
     verbose_name = 'supported postulation'
     verbose_name_plural = 'supported postulations'
     model = models.PostulationSupport
-    fk_name = 'supportive_fact'
+    fk_name = 'supportive_postulation'
+    autocomplete_fields = ['supported_postulation']
     extra = 0
 
 
-class SupportiveFactsInline(StackedInline):
-    """Inline admin for a postulation's supportive facts."""
+class SupportivePostulationsInline(StackedInline):
+    """Inline admin for a postulation's supportive postulations."""
 
-    verbose_name = 'supportive fact'
-    verbose_name_plural = 'supportive facts'
+    verbose_name = 'supportive postulation'
+    verbose_name_plural = 'supportive postulations'
     model = models.PostulationSupport
-    fk_name = 'supported_fact'
+    fk_name = 'supported_postulation'
     extra = 0
 
 
@@ -41,16 +30,15 @@ class PostulationAdmin(ModelAdmin):
     """Admin for postulations."""
 
     model = models.Postulation
-    list_display = ['pk', 'summary']
-    list_filter = ['related_entities', 'occurrence_set']
+    list_display = ['summary', 'slug', 'tags_string']
+    list_filter = [TopicFilter, 'related_entities', 'occurrence_set']
     search_fields = model.searchable_fields
 
     inlines = [
         CitationsInline,
-        PostulationEntitiesInline,
-        OccurrencesInline,
         SupportedPostulationsInline,
-        SupportiveFactsInline,
+        SupportivePostulationsInline,
+        RelatedTopicsInline,
     ]
 
 

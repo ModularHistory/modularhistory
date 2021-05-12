@@ -8,6 +8,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
+from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
@@ -45,7 +46,13 @@ class PostulationSerializer(ModelSerializer):
         return 'postulations.postulation'
 
 
-class Postulation(SluggedModel, TaggableModel, VerifiableModel, ModelWithSources):
+class Postulation(
+    SluggedModel,
+    TaggableModel,
+    VerifiableModel,
+    ModelWithRelatedEntities,
+    ModelWithSources,
+):
     """A postulation."""
 
     summary = HTMLField(
@@ -57,18 +64,12 @@ class Postulation(SluggedModel, TaggableModel, VerifiableModel, ModelWithSources
     certainty = models.PositiveSmallIntegerField(
         verbose_name=_('certainty'), choices=DEGREES_OF_CERTAINTY
     )
-    supportive_facts = models.ManyToManyField(
+    supportive_postulations = models.ManyToManyField(
         to='self',
         through='postulations.PostulationSupport',
         related_name='supported_postulations',
         symmetrical=False,
-        verbose_name=_('supportive facts'),
-    )
-    related_entities = models.ManyToManyField(
-        to='entities.Entity',
-        through='postulations.EntityFactRelation',
-        related_name='postulations',
-        verbose_name=_('related entities'),
+        verbose_name=_('supportive postulations'),
     )
 
     searchable_fields = ['summary', 'elaboration']

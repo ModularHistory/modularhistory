@@ -166,7 +166,7 @@ class SourcesInline(TabularInline):
         'verified',
         'hidden',
         'date_is_circa',
-        'creators',
+        'attributee_string',
         'url',
         'date',
         'publication_date',

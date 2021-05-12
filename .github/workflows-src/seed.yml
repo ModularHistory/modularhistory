@@ -36,14 +36,12 @@ jobs:
       RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
     steps:
-    - name: Check out main branch
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
         python-version: 3.7
+        # Fetch entire history so we can analyze commits since last tag.
+        fetch-depth: 0
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file --dev
     - name: Archive .env file
