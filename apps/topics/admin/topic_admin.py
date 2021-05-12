@@ -1,3 +1,4 @@
+
 from django.urls import path
 
 from apps.admin import ModelAdmin, admin_site
