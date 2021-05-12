@@ -5,6 +5,7 @@ import logging
 import os
 import re
 from datetime import datetime
+from glob import iglob
 from os.path import join
 from pprint import pformat
 from time import sleep
@@ -197,6 +198,22 @@ def update_hosts(context):
         for host in hosts_to_write:
             context.run(f'sudo echo "{host}" | sudo tee -a /etc/hosts')
     print('Hosts file is up to date.')
+
+
+@command
+def update_git_hooks(context):
+    """Update git hooks."""
+    for filepath in iglob(os.path.join(settings.BASE_DIR, 'config/hooks/*')):
+        filename = os.path.basename(filepath)
+        # fmt: off
+        context.run(f'''
+            cmp --silent ".git/hooks/{filename}" "{filepath}" || {{
+                cat "{filepath}" > ".git/hooks/{filename}"
+                sudo chmod +x ".git/hooks/{filename}"
+                echo "Updated {filename} hook."
+            }}
+        ''')
+        # fmt: on
 
 
 @command
