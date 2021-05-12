@@ -15,6 +15,9 @@ class Website(AbstractPublication):
         verbose_name=_('owner'), max_length=80, null=True, blank=True
     )
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class Webpage(Source, TextualMixin):
     """A webpage."""
