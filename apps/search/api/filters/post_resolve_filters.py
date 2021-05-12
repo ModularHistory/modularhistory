@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Union
 
 from rest_framework import filters
@@ -60,6 +61,7 @@ def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDa
     else:
         date = getattr(model_instance, 'date', None)
     if not date:
+        logging.error(f'{model_instance} has no date attribute but is included in search results.')
         date = HistoricDateTime(1, 1, 1, 0, 0, 0)
     # Display precise dates before ranges, e.g., "1500" before "1500 – 2000"
     if getattr(model_instance, 'end_date', None):
