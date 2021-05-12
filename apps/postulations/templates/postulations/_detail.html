@@ -6,11 +6,11 @@
         {{ postulation.summary|safe }}
     </h1>
 
-    {% if postulation.supportive_facts.exists %}
+    {% if postulation.supportive_postulations.exists %}
         <ul class="list-group my-5">
-            {% for supportive_fact in postulation.supportive_facts.all %}
+            {% for supportive_postulation in postulation.supportive_postulations.all %}
                 <li class="list-group-item">
-                    {{ supportive_fact.summary_link|safe }}
+                    {{ supportive_postulation.summary_link|safe }}
                 </li>
             {% endfor %}
             <li class="list-group-item active">

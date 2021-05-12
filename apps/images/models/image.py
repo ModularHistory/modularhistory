@@ -88,15 +88,12 @@ class Image(MediaModel):
         unique_together = [IMAGE_FIELD_NAME, 'caption']
         ordering = ['date']
 
-    class FieldNames(MediaModel.FieldNames):
-        image = IMAGE_FIELD_NAME
-
     objects: ImageManager = ImageManager()  # type: ignore
     placeholder_regex = image_placeholder_regex
     searchable_fields = [
-        FieldNames.caption,
-        FieldNames.description,
-        FieldNames.provider,
+        'caption',
+        'description',
+        'provider',
     ]
     serializer = ImageSerializer
 

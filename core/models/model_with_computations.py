@@ -20,9 +20,6 @@ class ModelWithComputations(Model):
 
     computations = JSONField(null=True, blank=True, default=dict)
 
-    class FieldNames(Model.FieldNames):
-        computations = 'computations'
-
     class Meta:
         """Meta options for ModelWithComputations."""
 
