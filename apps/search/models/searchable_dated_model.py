@@ -22,8 +22,8 @@ class SearchableDatedModel(SearchableModel, DatedModel):
         null=True,
         blank=True,
         help_text=(
-            "The title can be used for the detail page header and title tag, "
-            "SERP result card header, etc."
+            'The title can be used for the detail page header and title tag, '
+            'SERP result card header, etc.'
         ),
     )
 
@@ -33,6 +33,3 @@ class SearchableDatedModel(SearchableModel, DatedModel):
         # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         abstract = True
-
-    class FieldNames(SearchableModel.FieldNames, DatedModel.FieldNames):
-        """Field names used by SearchableDatedModel."""
