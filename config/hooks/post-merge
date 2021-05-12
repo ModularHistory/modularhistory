@@ -5,6 +5,7 @@ echo "Successfully pulled to $(pwd)."
 
 changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
 prompt_to_run_setup_script=false
+post_merge_hook_changed=false
 setup_sha_file=".venv/.setup.sha"
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -22,9 +23,9 @@ if [[ -d config/hooks ]]; then
     filename=$(basename "$filepath")
     cmp --silent ".git/hooks/$filename" "$filepath" || {
       if [[ $filename = "post-merge" ]]; then
+        # Avoid overwriting the post-merge hook from within the post-merge hook.
         echo "The post-merge hook has changed."
-        # To avoid having this hook overwrite itself, prompt to rerun the setup script.
-        prompt_to_run_setup_script=true
+        post_merge_hook_changed=true
       else
         cat "$filepath" > ".git/hooks/$filename"
         sudo chmod +x ".git/hooks/$filename"
@@ -58,6 +59,17 @@ echo "$changed_files" | grep --quiet 'migrations/' && {
 
   "
 }
+
+# Prompt to update hooks if necessary.
+if [[ $post_merge_hook_changed = true ]]; then
+  echo "${bold}
+    The post-merge hook has changed.${normal} Please run the following 
+    command to update the hook:
+    
+      poetry run invoke setup.update-git-hooks
+
+  "
+fi
 
 # Prompt to rerun the setup script if necessary.
 if [[ $prompt_to_run_setup_script = true ]]; then

@@ -346,10 +346,12 @@ body {
   height: 100%;
   width: 100%; }
 
-.main-content {
+body {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  min-height: 100vh; }
+
+.main-content {
   flex: 1; }
   .main-content > .container {
     margin-top: 1.5rem; }
