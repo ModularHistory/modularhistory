@@ -31,7 +31,7 @@ class PostulationAdmin(ModelAdmin):
 
     model = models.Postulation
     list_display = ['summary', 'slug', 'tags_string']
-    list_filter = [TopicFilter]
+    list_filter = [TopicFilter, 'related_entities', 'occurrence_set']
     search_fields = model.searchable_fields
 
     inlines = [
