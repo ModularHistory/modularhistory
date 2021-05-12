@@ -7,6 +7,7 @@ from typing import Any, ClassVar, Dict, List, Match, Optional, Pattern, Tuple, T
 import regex
 import serpy
 from aenum import Constant
+from concurrency.fields import IntegerVersionField
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model as DjangoModel

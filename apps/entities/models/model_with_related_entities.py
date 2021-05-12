@@ -1,9 +1,11 @@
 """Classes for models with related entities."""
 
 import re
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List
 
+from django.db import models
 from django.db.models import QuerySet
+from django.utils.translation import ugettext_lazy as _
 
 from core.models import Model
 from core.models.model_with_computations import retrieve_or_compute
@@ -22,6 +24,10 @@ class ModelWithRelatedEntities(Model):
     it must be defined as an abstract model class.
     """
 
+    related_entities = models.ManyToManyField(
+        to='entities.Entity', blank=True, verbose_name=_('related entities')
+    )
+
     class Meta:
         """Meta options for ModelWithRelatedEntities."""
 
@@ -30,19 +36,21 @@ class ModelWithRelatedEntities(Model):
         abstract = True
 
     @property
-    def related_entities(self) -> Optional['QuerySet[Entity]']:
+    def _related_entities(self) -> 'QuerySet[Entity]':
         """Return the queryset of entities related to the model instance, or None."""
         for attribute_name in ATTRIBUTE_NAMES:
             attribute_value = getattr(self, attribute_name, None)
             if attribute_value:
                 return attribute_value
-        return None
+        return self.related_entities.all()
 
     @property  # type: ignore
     @retrieve_or_compute(attribute_name='serialized_entities')
     def serialized_entities(self) -> List[Dict]:
         """Return a list of dictionaries representing the instance's images."""
-        return [entity.serialize() for entity in self.related_entities.all().iterator()]
+        return [
+            entity.serialize() for entity in self._related_entities.all().iterator()
+        ]
 
     def preprocess_html(self, html: str) -> str:
         """Modify the value of an HTML field during cleaning."""

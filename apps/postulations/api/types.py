@@ -7,7 +7,7 @@ class PostulationType(ModuleType):
 
     class Meta:
         model = Postulation
-        exclude = []
+        exclude = ['version']
 
     @staticmethod
     def resolve_model(root, *args) -> str:
