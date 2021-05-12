@@ -20,9 +20,4 @@ class MediaModel(SearchableDatedModel):
 
         abstract = True
 
-    class FieldNames(SearchableDatedModel.FieldNames):
-        description = 'description'
-        caption = 'caption'
-        provider = 'provider'
-
-    slug_base_field = FieldNames.caption
+    slug_base_field = 'caption'

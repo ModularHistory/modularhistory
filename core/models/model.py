@@ -43,9 +43,6 @@ class Views(Constant):
 class Model(DjangoModel):
     """Model with additional properties used in ModularHistory apps."""
 
-    class FieldNames(Constant):
-        pk = 'pk'
-
     objects: Manager = Manager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
     serializer: Type[Serializer]
