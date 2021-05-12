@@ -26,6 +26,13 @@ class QuoteAdmin(SearchableModelAdmin):
 
     model = models.Quote
 
+    inlines = [
+        AttributeesInline,
+        CitationsInline,
+        RelatedQuotesInline,
+        RelatedTopicsInline,
+        BitesInline,
+    ]
     list_display = [
         'title',
         'bite',
@@ -46,19 +53,12 @@ class QuoteAdmin(SearchableModelAdmin):
         AttributeeCategoryFilter,
         AttributeeCountFilter,
     ]
-    search_fields = models.Quote.searchable_fields
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields + [
         'attributee_html',
         'citation_html',
     ]
-    inlines = [
-        AttributeesInline,
-        CitationsInline,
-        RelatedQuotesInline,
-        RelatedTopicsInline,
-        BitesInline,
-    ]
+    search_fields = models.Quote.searchable_fields
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
     date_hierarchy = 'date'
