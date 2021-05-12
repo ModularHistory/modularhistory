@@ -22,10 +22,10 @@ class TextualMixin(models.Model):
     )
     original_publication_date = HistoricDateTimeField(null=True, blank=True)
 
+    # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
     class Meta:
         """Meta options."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
         abstract = True
 
     @property

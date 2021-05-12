@@ -372,7 +372,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         page_number = page_number or self.page_number
         url = self.get_page_number_url(page_number=page_number)
         if url:
-            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'
+            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'  # noqa: E800
             return compose_link(
                 page_number, href=url, klass='display-source', target=NEW_TAB
             )
@@ -484,3 +484,19 @@ def _set_page_number(url: str, page_number: Union[str, int]) -> str:
     else:
         url = f'{url}#{page_param}={page_number}'
     return url
+
+
+class AbstractSource(Source):
+    """
+    Abstract base model for source models.
+
+    Source models (e.g., `Article`) can inherit from this abstract model
+    as an alternative to inheriting directly from `Source`.
+    """
+
+    source = models.OneToOneField(
+        Source, parent_link=True, on_delete=models.CASCADE, related_name='%(class)s'
+    )
+
+    class Meta:
+        abstract = True

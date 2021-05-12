@@ -69,7 +69,7 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
     - name: Cache virtual environment
       uses: actions/cache@v2
       id: cache
@@ -120,7 +120,6 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    - uses: actions/checkout@v2
     - includes: ./.github/actions/setup
       with:
         os: ${{ matrix.os }}
@@ -147,9 +146,6 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    -
-      name: Check out main branch
-      uses: actions/checkout@v2
     - 
       includes: ./.github/actions/setup
       with:
@@ -171,7 +167,7 @@ jobs:
           ${{ runner.os }}-buildx-
     -
       name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v1.9.0
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -237,7 +233,7 @@ jobs:
     continue-on-error: true
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
@@ -267,7 +263,7 @@ jobs:
       run: git config --system core.longpaths true
     # Checkout your code repository to scan
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
       with:
         # We must fetch at least the immediate parents so that if this is
         # a pull request then we can checkout the head.
