@@ -56,12 +56,12 @@ class Postulation(SluggedModel, VerifiableModel, ModelWithSources):
     certainty = models.PositiveSmallIntegerField(
         verbose_name=_('certainty'), choices=DEGREES_OF_CERTAINTY
     )
-    supportive_facts = models.ManyToManyField(
+    supportive_postulations = models.ManyToManyField(
         to='self',
         through='postulations.PostulationSupport',
         related_name='supported_postulations',
         symmetrical=False,
-        verbose_name=_('supportive facts'),
+        verbose_name=_('supportive postulations'),
     )
     related_entities = models.ManyToManyField(
         to='entities.Entity',

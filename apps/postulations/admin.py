@@ -4,36 +4,37 @@ from apps.sources.admin import CitationsInline
 
 
 class PostulationEntitiesInline(TabularInline):
-    """Inline admin for a fact's related entities."""
+    """Inline admin for a postulation's related entities."""
 
     model = models.Postulation.related_entities.through
     extra = 0
 
 
 class OccurrencesInline(TabularInline):
-    """Inline admin for a fact's related occurences."""
+    """Inline admin for a postulation's related occurrences."""
 
     model = models.Postulation.related_occurrences.through
     extra = 0
 
 
 class SupportedPostulationsInline(StackedInline):
-    """Inline admin for a fact's supported postulations."""
+    """Inline admin for a postulation's supported postulations."""
 
     verbose_name = 'supported postulation'
     verbose_name_plural = 'supported postulations'
     model = models.PostulationSupport
-    fk_name = 'supportive_fact'
+    fk_name = 'supportive_postulation'
+    autocomplete_fields = ['supported_postulation']
     extra = 0
 
 
-class SupportiveFactsInline(StackedInline):
-    """Inline admin for a postulation's supportive facts."""
+class SupportivePostulationsInline(StackedInline):
+    """Inline admin for a postulation's supportive postulations."""
 
-    verbose_name = 'supportive fact'
-    verbose_name_plural = 'supportive facts'
+    verbose_name = 'supportive postulation'
+    verbose_name_plural = 'supportive postulations'
     model = models.PostulationSupport
-    fk_name = 'supported_fact'
+    fk_name = 'supported_postulation'
     extra = 0
 
 
@@ -50,7 +51,7 @@ class PostulationAdmin(ModelAdmin):
         PostulationEntitiesInline,
         OccurrencesInline,
         SupportedPostulationsInline,
-        SupportiveFactsInline,
+        SupportivePostulationsInline,
     ]
 
 
