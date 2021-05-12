@@ -7,7 +7,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('quotes', '0016_remove_quote_key'),
+        ('quotes', '0019_auto_20210512_1927'),
     ]
 
     operations = [

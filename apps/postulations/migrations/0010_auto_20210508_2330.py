@@ -7,18 +7,10 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('postulations', '0003_postulation_slug'),
+        ('postulations', '0009_auto_20210512_1927'),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='postulation',
-            name='related_occurrences',
-        ),
-        migrations.RemoveField(
-            model_name='postulation',
-            name='related_topics',
-        ),
         migrations.AddField(
             model_name='postulation',
             name='version',

@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('postulations', '0004_auto_20210508_2330'),
+        ('postulations', '0010_auto_20210508_2330'),
         ('occurrences', '0021_remove_occurrence_key'),
     ]
 
