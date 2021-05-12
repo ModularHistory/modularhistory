@@ -47,7 +47,7 @@ MODEL_CLASS_PATHS = {
 }
 
 
-def get_ct_id(ct_name: str) -> ContentType:
+def get_ct_id(ct_name: str) -> int:
     """Return the content type id for the given content type name."""
     cache_key = f'{ct_name}_ct_id'
     cached_ct_id = cache.get(cache_key)
@@ -55,6 +55,6 @@ def get_ct_id(ct_name: str) -> ContentType:
         ct_id = cached_ct_id
     else:
         app_label, model = ct_name.split('.')
-        ct_id = ContentType.objects.get_by_natural_key(app_label=app_label, model=model)
+        ct_id = ContentType.objects.get_by_natural_key(app_label=app_label, model=model).id
         cache.set(cache_key, ct_id, timeout=None)
     return ct_id
