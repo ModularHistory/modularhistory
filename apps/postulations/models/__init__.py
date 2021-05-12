@@ -7,4 +7,5 @@ from .fact_relation import (
     TopicFactRelation,
 )
 from .fact_support import PostulationSupport
+from .model_with_postulations import ModelWithPostulations
 from .postulation import Postulation

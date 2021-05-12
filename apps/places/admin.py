@@ -27,7 +27,7 @@ class LocationAdmin(ModelAdmin):
     search_fields = ['name']
     ordering = [
         'name',
-        f'location__name',
+        'location__name',
     ]
     form = PlaceForm
     add_form = PlaceForm

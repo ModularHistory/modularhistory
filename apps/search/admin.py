@@ -21,6 +21,16 @@ class SearchableModelAdmin(ModelAdmin):
     exclude = ['computations']
     readonly_fields = ['pretty_computations']
 
+    def get_fields(self, request, model_instance=None):
+        """Return reordered fields to be displayed in the admin."""
+        fields = super().get_fields(request, model_instance)
+        ordered_field_names = ('notes',)
+        for field_name in ordered_field_names:
+            if field_name in fields:
+                fields.remove(field_name)
+                fields.insert(0, field_name)
+        return fields
+
     def get_search_results(
         self, request: HttpRequest, queryset: QuerySet, search_term: str
     ) -> Tuple[QuerySet, bool]:
