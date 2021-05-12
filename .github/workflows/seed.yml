@@ -52,7 +52,7 @@ jobs:
       with:
         fetch-depth: 0  # Fetch entire history so we can analyze commits since last tag
     - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v2.2.2
       with:
         python-version: 3.7
     - name: Get full Python version
