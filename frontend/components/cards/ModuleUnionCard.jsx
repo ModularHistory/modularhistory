@@ -1,5 +1,4 @@
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
-import ImageCard from "./ImageCard";
 import ModuleCard from "./ModuleCard";
 
 export default function ModuleUnionCard({ module, ...childProps }) {
@@ -8,7 +7,11 @@ export default function ModuleUnionCard({ module, ...childProps }) {
   let content;
   switch (module.model) {
     case "images.image":
-      return <ImageCard image={module} {...childProps} />;
+      // return <ImageCard image={module} {...childProps} />;
+      content = (
+        <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" trimRight />
+      );
+      break;
     case "occurrences.occurrence":
       content = <div dangerouslySetInnerHTML={{ __html: module.summary }} />;
       break;
