@@ -88,5 +88,5 @@ def score_sorter(model) -> float:
 
 
 def es_sorter(model) -> float:
-    """Return the first non-zero sort value from elasticsearch sort array"""
+    """Return the first non-zero sort value from elasticsearch sort array."""
     return list(filter(lambda x: x != 0, model.meta.sort))[0]
