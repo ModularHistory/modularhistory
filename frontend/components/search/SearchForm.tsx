@@ -1,6 +1,16 @@
 import { Container, Grid, makeStyles, Theme } from "@material-ui/core";
 import { useRouter } from "next/router";
-import { createContext, FC, useCallback, useContext, useEffect, useState } from "react";
+import {
+  ChangeEventHandler,
+  createContext,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import axiosWithoutAuth from "../../axiosWithoutAuth";
 import PageTransitionContext from "../PageTransitionContext";
 import CheckboxGroup from "./CheckboxGroup";
@@ -10,7 +20,14 @@ import SearchButton from "./SearchButton";
 import TextField from "./StyledTextField";
 import YearSelect from "./YearSelect";
 
-export const SearchFormContext = createContext({});
+interface SearchFormStateType {
+  state?: { [key: string]: any };
+  setState?: Dispatch<SetStateAction<any>>;
+  setStateFromEvent?: ChangeEventHandler;
+  disabled?: boolean;
+}
+
+export const SearchFormContext = createContext<SearchFormStateType>({});
 
 /**
  * This hook is used to centralize the state of all search form inputs.
@@ -20,7 +37,7 @@ export const SearchFormContext = createContext({});
  *   `setStateFromEvent`: function that accepts an event and extracts
  *                        the new state from the event.
  */
-function useSearchFormState() {
+function useSearchFormState(): SearchFormStateType {
   const router = useRouter();
 
   // load the initial state from url query params
@@ -35,7 +52,7 @@ function useSearchFormState() {
   useEffect(() => {
     // Remove any params we don't want sent to the next search page
     // and update form state when browser history is navigated.
-    const { _page, ...query } = router.query;
+    const { page, ...query } = router.query;
     setState(query);
   }, [router.query]);
 
@@ -139,13 +156,11 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
 
           <Grid item xs={12} sm={sm}>
             <CheckboxGroup label={"Content Types"} name={"content_types"}>
-              {[
-                { label: "Occurrences", key: "occurrences.occurrence" },
-                { label: "Quotes", key: "quotes.quote" },
-                { label: "Images", key: "images.image" },
-                { label: "Sources", key: "sources.source" },
-                { label: "Entities", key: "entities.entity" },
-              ]}
+              {{ label: "Occurrences", key: "occurrences.occurrence" }}
+              {{ label: "Quotes", key: "quotes.quote" }}
+              {{ label: "Images", key: "images.image", defaultChecked: false }}
+              {{ label: "Sources", key: "sources.source" }}
+              {{ label: "Entities", key: "entities.entity" }}
             </CheckboxGroup>
           </Grid>
 
