@@ -101,22 +101,29 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
         queryset, use_distinct = super().get_search_results(
             request, queryset, search_term
         )
-        # Use Postgres full-text search.
-        searchable_fields = (
-            getattr(self.model, 'searchable_fields', None) or self.search_fields
-        )
-        if searchable_fields:
-            weights = ['A', 'B', 'C', 'D']
-            vector = SearchVector(searchable_fields[0], weight=weights[0])
-            for index, field in enumerate(searchable_fields[1:]):
-                try:
-                    weight = weights[index + 1]
-                except IndexError:
-                    weight = 'D'
-                vector += SearchVector(field, weight=weight)
-            queryset = self.model.objects.annotate(
-                rank=SearchRank(vector, SearchQuery(search_term))
-            ).order_by('-rank')
+        if search_term:
+            searchable_fields = (
+                getattr(self.model, 'searchable_fields', None) or self.search_fields
+            )
+            if searchable_fields:
+                # Use Postgres full-text search.
+                weights = ['A', 'B', 'C', 'D']
+                vector = SearchVector(searchable_fields[0], weight=weights[0])
+                for index, field in enumerate(searchable_fields[1:]):
+                    try:
+                        weight = weights[index + 1]
+                    except IndexError:
+                        weight = 'D'
+                    vector += SearchVector(field, weight=weight)
+                queryset = (
+                    self.model.objects.annotate(
+                        rank=SearchRank(
+                            vector, SearchQuery(f'{search_term}:*', search_type='raw')
+                        )
+                    )
+                    .filter(rank__gt=0.0)
+                    .order_by('-rank')
+                )
         # If the request comes from the admin edit page for a model instance,
         # exclude the model instance from the search results. This prevents
         # inline admins from displaying an unwanted value in an autocomplete

@@ -84,7 +84,11 @@ class Topic(TreeModel, SluggedModel, ModelWithComputations):
         blank=True,
     )
 
-    searchable_fields = ['name', 'description', 'aliases']
+    searchable_fields = [
+        'name',
+        # 'aliases',
+        # 'description'
+    ]
     slug_base_field = 'name'
 
     class Meta:

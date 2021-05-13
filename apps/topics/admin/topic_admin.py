@@ -58,8 +58,8 @@ class TopicAdmin(ModelAdmin):
     search_fields = [
         'name',
         'aliases',
-        'description',
         'path',
+        'description',
     ]
 
     def get_urls(self):
