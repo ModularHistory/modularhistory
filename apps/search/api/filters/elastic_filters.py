@@ -33,6 +33,11 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         content_types = request.query_params.getlist('content_types') or None
         if content_types:
             indexes = ','.join(map(lambda c: get_index_name_for_ct(c), content_types))
+        # TODO: Figure out what to do with images.
+        # Temporarily exclude images.
+        # Note: The search filter form starts with the images content type unselected.
+        else:
+            indexes = 'occurrences,quotes,sources,entities'
 
         query_string = request.query_params.get(QUERY_PARAM, None)
         suppress_unverified = request.query_params.get(QUALITY_PARAM) == 'verified'
