@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, Optional
 
-from concurrency.fields import IntegerVersionField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.defaultfilters import truncatechars_html
@@ -13,6 +12,7 @@ from apps.images.models.model_with_images import ModelWithImages
 from apps.occurrences.manager import OccurrenceManager
 from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.occurrences.serializers import OccurrenceSerializer
+from apps.postulations.models import ModelWithPostulations
 from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.search.models import SearchableDatedModel
@@ -28,13 +28,13 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 class Occurrence(
     SearchableDatedModel,
-    ModelWithRelatedQuotes,
+    ModelWithPostulations,
     ModelWithSources,
+    ModelWithRelatedQuotes,
     ModelWithImages,
 ):
     """Something that happened."""
 
-    version = IntegerVersionField()
     date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
     end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
     summary = HTMLField(verbose_name=_('summary'), paragraphed=False, processed=False)

@@ -3,6 +3,7 @@
 import logging
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+from concurrency.fields import IntegerVersionField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -27,6 +28,8 @@ class ModelWithSources(Model):
 
     citations = GenericRelation('sources.Citation')
     sources: 'RelatedManager[Source]'
+
+    version = IntegerVersionField()
 
     # Admin-facing notes (not to be displayed to users)
     notes = HTMLField(null=True, blank=True, paragraphed=True, processed=False)

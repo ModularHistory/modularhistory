@@ -46,10 +46,6 @@ class Place(TypedModel, ModelWithComputations):
     class Meta:
         unique_together = ['name', 'location']
 
-    class FieldNames(ModelWithComputations.FieldNames):
-        name = 'name'
-        location = 'location'
-
     slug_base_field = 'string'
 
     def __str__(self) -> str:

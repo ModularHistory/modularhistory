@@ -5,6 +5,7 @@ from aenum import Constant
 from django.conf import settings
 from django.contrib.admin import ListFilter
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.sites.models import Site
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
@@ -53,6 +54,8 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
     https://django-nested-admin.readthedocs.io/en/latest/integrations.html.
     """
 
+    model: Type[Model]
+
     formfield_overrides = FORM_FIELD_OVERRIDES
 
     list_display: List[str]
@@ -98,6 +101,22 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
         queryset, use_distinct = super().get_search_results(
             request, queryset, search_term
         )
+        # Use Postgres full-text search.
+        searchable_fields = (
+            getattr(self.model, 'searchable_fields', None) or self.search_fields
+        )
+        if searchable_fields:
+            weights = ['A', 'B', 'C', 'D']
+            vector = SearchVector(searchable_fields[0], weight=weights[0])
+            for index, field in enumerate(searchable_fields[1:]):
+                try:
+                    weight = weights[index + 1]
+                except IndexError:
+                    weight = 'D'
+                vector += SearchVector(field, weight=weight)
+            queryset = self.model.objects.annotate(
+                rank=SearchRank(vector, SearchQuery(search_term))
+            ).order_by('-rank')
         # If the request comes from the admin edit page for a model instance,
         # exclude the model instance from the search results. This prevents
         # inline admins from displaying an unwanted value in an autocomplete

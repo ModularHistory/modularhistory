@@ -7,16 +7,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
-from core.models.model_with_computations import ModelWithComputations
 from core.models.slugged_model import SluggedModel
 
 if TYPE_CHECKING:
     from apps.search.models.manager import SearchableModelManager
 
 
-class SearchableModel(
-    SluggedModel, TaggableModel, ModelWithComputations, VerifiableModel
-):
+class SearchableModel(SluggedModel, TaggableModel, VerifiableModel):
     """
     A model that shows up in ModularHistory's search results; e.g., a quote or occurrence.
 
@@ -30,8 +27,8 @@ class SearchableModel(
         null=True,
         blank=True,
         help_text=(
-            "The title can be used for the detail page header and title tag, "
-            "SERP result card header, etc."
+            'The title can be used for the detail page header and title tag, '
+            'SERP result card header, etc.'
         ),
     )
     hidden = models.BooleanField(
@@ -39,10 +36,6 @@ class SearchableModel(
         blank=True,
         help_text='Hide this item from search results.',
     )
-
-    class FieldNames(TaggableModel.FieldNames):
-        verified = 'verified'
-        hidden = 'hidden'
 
     class Meta:
         """Meta options for SearchableModel."""
