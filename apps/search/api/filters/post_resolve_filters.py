@@ -51,8 +51,8 @@ class SortByFilterBackend(filters.BaseFilterBackend):
         reverse = True
 
         if sort_by_date:
-            sort_by = sort_by_date
-            reverse = True
+            sort_by = date_sorter
+            reverse = False
         elif not score_sortable:
             sort_by = es_sorter
             reverse = False
