@@ -100,6 +100,13 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
   // See: https://material-ui.com/components/grid/#grid-with-breakpoints
   const sm = inSidebar ? 12 : 6;
 
+  const submitForm = () => router.push({ query: formState.state });
+  const handleKeyUp = (event) => {
+    if (event.key === "Enter") {
+      submitForm();
+    }
+  };
+
   return (
     <SearchFormContext.Provider value={formState}>
       <Container className={classes.root}>
@@ -111,6 +118,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
               value={formState.state["query"] || ""}
               disabled={formState.disabled}
               onChange={formState.setStateFromEvent}
+              onKeyUp={handleKeyUp}
             />
           </Grid>
 
@@ -165,7 +173,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12}>
-            <SearchButton onClick={() => router.push({ query: formState.state })} />
+            <SearchButton onClick={submitForm} />
           </Grid>
         </Grid>
       </Container>
