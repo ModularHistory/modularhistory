@@ -11,11 +11,11 @@ from apps.search.documents.quote import QuoteDocument
 from apps.search.documents.source import SourceDocument
 
 SEARCHABLE_DOCUMENTS = {
-    OccurrenceDocument.index_name(): OccurrenceDocument,
-    SourceDocument.index_name(): SourceDocument,
-    EntityDocument.index_name(): EntityDocument,
-    QuoteDocument.index_name(): QuoteDocument,
-    ImageDocument.index_name(): ImageDocument,
+    OccurrenceDocument.get_index_name(): OccurrenceDocument,
+    SourceDocument.get_index_name(): SourceDocument,
+    EntityDocument.get_index_name(): EntityDocument,
+    QuoteDocument.get_index_name(): QuoteDocument,
+    ImageDocument.get_index_name(): ImageDocument,
 }
 
 
@@ -27,24 +27,24 @@ class Search(DSLSearch):
         """
         Resolves elasticsearch results to django models.
         """
-        s = self
+        response = self
 
         # Do not query again if the es result is already cached
         if not hasattr(self, '_response'):
             # We only need the meta fields with the models ids
-            s = self.source(excludes=['*'])
-            s = s.execute()
+            response = self.source(excludes=['*'])
+            response = response.execute()
 
-        self.results_count = s.hits.total.value
+        self.results_count = response.hits.total.value
 
         logging.info(
-            f"ES Search took {s.took} ms and returned n={self.results_count} results"
+            f"ES Search took {response.took} ms and returned n={self.results_count} results"
         )
 
         # group results by index name
         result_groups = {}
         self.results_by_id = {}
-        for result in s:
+        for result in response:
             index = result.meta.index
             result_groups.setdefault(index, []).append(result)
             key = f"{index}_{result.meta.id}"
@@ -53,13 +53,13 @@ class Search(DSLSearch):
         # build queryset chain for each result group by resolving es results to django models
         qs = chain()
         for index, result_group in result_groups.items():
-            if index not in SEARCHABLE_DOCUMENTS:
+            document = SEARCHABLE_DOCUMENTS.get(index)
+            if not document:
                 logging.error(
                     f"Couldn't find document definition for this index = {index}"
                 )
                 continue
 
-            document = SEARCHABLE_DOCUMENTS[index]
             model = document.django.model
             pks = [result.meta.id for result in result_group]
 
