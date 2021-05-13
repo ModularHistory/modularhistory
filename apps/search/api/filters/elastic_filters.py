@@ -29,10 +29,10 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
 
     @staticmethod
     def get_filter_params(request):
-        indexes = "*"
+        indexes = '*'
         content_types = request.query_params.getlist('content_types') or None
         if content_types:
-            indexes = ",".join(map(lambda c: get_index_name_for_ct(c), content_types))
+            indexes = ','.join(map(lambda c: get_index_name_for_ct(c), content_types))
 
         query_string = request.query_params.get(QUERY_PARAM, None)
         suppress_unverified = request.query_params.get(QUALITY_PARAM) == 'verified'
@@ -71,6 +71,9 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
     ):
 
         qs = qs.index(indexes)
+
+        # sorts by relevance, falls back to date sort when scores aren't available (i.e when there's no query)
+        qs = qs.sort('_score', 'date')
 
         if query_string:
             query = Q('simple_query_string', query=query_string)
@@ -118,7 +121,7 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
             post_tags=['</mark>'],
         )
 
-        logging.info(f"ES Indexes: {indexes}")
-        logging.info(f"ES Query: {pformat(qs.to_dict())}")
+        logging.info(f'ES Indexes: {indexes}')
+        logging.info(f'ES Query: {pformat(qs.to_dict())}')
 
         return qs

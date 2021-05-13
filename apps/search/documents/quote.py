@@ -22,7 +22,6 @@ class QuoteDocument(Document):
 
     text = fields.TextField(attr='text.raw_value', analyzer=html_field_analyzer)
     context = fields.TextField(attr='context.raw_value', analyzer=html_field_analyzer)
-    date_year = fields.IntegerField(attr='date.year')
     attributees = fields.ObjectField(
         properties={
             'id': fields.IntegerField(),

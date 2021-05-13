@@ -32,13 +32,14 @@ class Search(DSLSearch):
         # Do not query again if the es result is already cached
         if not hasattr(self, '_response'):
             # We only need the meta fields with the models ids
-            response = self.source(excludes=['*'])
+            response = self.source(excludes=['*']).extra(track_scores=True)
             response = response.execute()
 
         self.results_count = response.hits.total.value
+        self._response = response
 
         logging.info(
-            f"ES Search took {response.took} ms and returned n={self.results_count} results"
+            f'ES Search took {response.took} ms and returned n={self.results_count} results'
         )
 
         # group results by index name
@@ -47,7 +48,7 @@ class Search(DSLSearch):
         for result in response:
             index = result.meta.index
             result_groups.setdefault(index, []).append(result)
-            key = f"{index}_{result.meta.id}"
+            key = f'{index}_{result.meta.id}'
             self.results_by_id[key] = result
 
         # build queryset chain for each result group by resolving es results to django models

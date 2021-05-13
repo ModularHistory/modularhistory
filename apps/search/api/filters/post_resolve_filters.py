@@ -45,10 +45,19 @@ class SortByFilterBackend(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
+        score_sortable = (view.search._response.hits.max_score or 0) > 0
 
-        key = date_sorter if sort_by_date else score_sorter
+        sort_by = score_sorter
+        reverse = True
 
-        return sorted(queryset, key=key, reverse=not sort_by_date)
+        if sort_by_date:
+            sort_by = sort_by_date
+            reverse = True
+        elif not score_sortable:
+            sort_by = es_sorter
+            reverse = False
+
+        return sorted(queryset, key=sort_by, reverse=reverse)
 
 
 def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDateTime:
@@ -74,4 +83,9 @@ def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDa
 
 def score_sorter(model) -> float:
     """Return the value used to sort the model instance by date."""
-    return model.meta.score or 0
+    return model.meta.score
+
+
+def es_sorter(model) -> float:
+    """Return the first non-zero sort value from elasticsearch sort array"""
+    return list(filter(lambda x: x != 0, model.meta.sort))[0]

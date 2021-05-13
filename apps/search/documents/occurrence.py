@@ -19,11 +19,11 @@ class OccurrenceDocument(Document):
         settings = DEFAULT_INDEX_SETTINGS
         name = get_index_name_for_ct(ContentTypes.occurrence)
 
+    title = fields.TextField(analyzer=html_field_analyzer)
     summary = fields.TextField(attr='summary.raw_value', analyzer=html_field_analyzer)
     description = fields.TextField(
         attr='description.raw_value', analyzer=html_field_analyzer
     )
-    date_year = fields.IntegerField(attr='date.year')
     involved_entities = fields.ObjectField(
         properties={
             'id': fields.IntegerField(),
