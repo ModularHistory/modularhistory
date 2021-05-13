@@ -16,10 +16,9 @@ from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.search.models import SearchableModel
-from apps.topics.models.taggable_model import TaggableModel
 from core.constants.strings import EMPTY_STRING
 from core.fields import ArrayField, HTMLField, JSONField
-from core.models import SluggedModel, TypedModel, retrieve_or_compute
+from core.models import TypedModel, retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -40,7 +39,6 @@ PARTS_OF_SPEECH = (
 class Entity(
     TypedModel,
     SearchableModel,
-    TaggableModel,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,
