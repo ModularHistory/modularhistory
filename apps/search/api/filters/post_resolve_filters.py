@@ -12,7 +12,10 @@ SORT_BY_PARAM = 'ordering'
 
 class ApplyMetaFilterBackend(filters.BaseFilterBackend):
     """
-    Filter that applies meta field from elasticsearch response that contains fields like highlight and score.
+    Filter that adds a meta attribute to model instances.
+
+    The meta value comes from the elasticsearch response and contains fields
+    like highlight and score.
     """
 
     def __init__(self):
@@ -39,9 +42,7 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
 
 
 class SortByFilterBackend(filters.BaseFilterBackend):
-    """
-    Filter that sorts queryset by SORT_BY_PARAM
-    """
+    """Filter that sorts queryset by SORT_BY_PARAM."""
 
     def filter_queryset(self, request, queryset, view):
         sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
