@@ -19,7 +19,6 @@ from core.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
-from core.models import SluggedModel
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
 
@@ -83,14 +82,18 @@ class Proposition(
         elaboration = elaboration.replace('\n', '')
         if add_elaboration_tooltip:
             summary_link = (
-                f'<a href="{reverse("propositions:detail", args=[self.pk])}" class="proposition-link" '
-                f'target="_blank" title="{escape_quotes(elaboration)}" '
-                f'data-toggle="tooltip" data-html="true">{self.summary.html}</a>'
+                f'<a href="{reverse("propositions:detail", args=[self.pk])}"'
+                ' class="proposition-link" target="_blank" '
+                f'title="{escape_quotes(elaboration)}" '
+                f'data-toggle="tooltip" data-html="true">{self.summary.html}'
+                '</a>'
             )
         else:
             summary_link = (
-                f'<a href="{reverse("propositions:detail", args=[self.pk])}" class="proposition-link" '
-                f'target="_blank">{self.summary.html}</a>'
+                f'<a href="{reverse("propositions:detail", args=[self.pk])}"'
+                ' class="proposition-link" target="_blank">'
+                f'{self.summary.html}'
+                '</a>'
             )
         return summary_link
 
