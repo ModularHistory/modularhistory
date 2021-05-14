@@ -11,7 +11,15 @@ echo "$staged_files" | grep --quiet ".py" && {
     }
     # Run linters on Python code.
     for file in $staged_python_files; do
-        flake8 "$file"; pytype "$file"
+        flake8 "$file";
+        # https://github.com/google/pytype#usage
+        pytype --output .cache/.pytype "$file" || {
+            echo "
+                Carefully examine the error above. Does it need to be fixed?
+                If it need to be fixed, hit Ctrl-C to exit the pre-commit hook.
+            "
+            read -rp "Otherwise, to continue despite the error, press any key. "
+        }
     done
 }
 
