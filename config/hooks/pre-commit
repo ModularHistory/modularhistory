@@ -1,6 +1,8 @@
 #!/bin/bash
 
 staged_files="$(git diff --diff-filter=AM --name-only --staged)"
+bold=$(tput bold)
+normal=$(tput sgr0)
 
 echo "$staged_files" | grep --quiet ".py" && {
     staged_python_files=$(echo "$staged_files" | grep '.py')
@@ -14,11 +16,10 @@ echo "$staged_files" | grep --quiet ".py" && {
         flake8 "$file";
         # https://github.com/google/pytype#usage
         pytype --output .cache/.pytype "$file" || {
-            echo "
+            echo "${bold}
                 Carefully examine the error above. Should it be fixed?
-                If so, hit Ctrl-C to exit the pre-commit hook.
+                ${normal}
             "
-            read -rp "Otherwise, to continue despite the error, press any key. "
         }
     done
 }

@@ -41,7 +41,7 @@ class NewOccurrence(
 
     For our purposes, an occurrence is a proposition: each occurrence is proposed
     (with some degree of certainty) to have occurred. As such, this model inherits
-    from `PolymorphicProposition`.
+    from `Proposition`.
     """
 
     type = models.PositiveSmallIntegerField(choices=OCCURRENCE_TYPES, default=0)
