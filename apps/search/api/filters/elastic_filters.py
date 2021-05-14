@@ -5,11 +5,18 @@ from typing import List, Optional
 from elasticsearch_dsl import Q
 from rest_framework import filters
 
+from apps.dates.structures import HistoricDateTime
 from apps.search.documents.config import get_index_name_for_ct
+from core.widgets.historic_date_widget import CE
+from core.widgets.historic_date_widget import (
+    _datetime_from_datadict_values as historicdate_from_year,
+)
 
 QUERY_PARAM = 'query'
 START_YEAR_PARAM = 'start_year'
+START_YEAR_TYPE_PARAM = 'start_year_type'
 END_YEAR_PARAM = 'end_year'
+END_YEAR_TYPE_PARAM = 'end_year_type'
 ENTITIES_PARAM = 'entities'
 QUALITY_PARAM = 'quality'
 TOPICS_PARAM = 'topics'
@@ -43,6 +50,13 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
 
         start_year = request.query_params.get(START_YEAR_PARAM, None)
         end_year = request.query_params.get(END_YEAR_PARAM, None)
+        start_year_type = request.query_params.get(START_YEAR_TYPE_PARAM, CE)
+        end_year_type = request.query_params.get(END_YEAR_TYPE_PARAM, CE)
+
+        start_date = (
+            historicdate_from_year(start_year, start_year_type) if start_year else None
+        )
+        end_date = historicdate_from_year(end_year, end_year_type) if end_year else None
 
         entities = request.query_params.getlist(ENTITIES_PARAM, None)
         entity_ids = [int(entity_id) for entity_id in entities] if entities else None
@@ -53,8 +67,8 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         return {
             'indexes': indexes,
             'query_string': query_string,
-            'start_year': start_year,
-            'end_year': end_year,
+            'start_date': start_date,
+            'end_date': end_date,
             'entity_ids': entity_ids,
             'topic_ids': topic_ids,
             'suppress_unverified': suppress_unverified,
@@ -66,8 +80,8 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         qs,
         indexes: str,
         query_string: Optional[str] = None,
-        start_year: Optional[int] = None,
-        end_year: Optional[int] = None,
+        start_date: Optional[HistoricDateTime] = None,
+        end_date: Optional[HistoricDateTime] = None,
         entity_ids: Optional[List[int]] = None,
         topic_ids: Optional[List[int]] = None,
         suppress_unverified: bool = True,
@@ -83,13 +97,13 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
             query = Q('simple_query_string', query=query_string)
             qs = qs.query(query)
 
-        if start_year or end_year:
+        if start_date or end_date:
             date_range = {}
-            if start_year:
-                date_range['gte'] = int(start_year)
-            if end_year:
-                date_range['lte'] = int(end_year)
-            qs = qs.query('bool', filter=[Q('range', date_year=date_range)])
+            if start_date:
+                date_range['gte'] = start_date
+            if end_date:
+                date_range['lte'] = end_date
+            qs = qs.query('bool', filter=[Q('range', date=date_range)])
 
         if entity_ids:
             qs = qs.query(
