@@ -68,6 +68,7 @@
         "tinymce",
         "unstaged",
         "venv",
+        "virtualenvs",
         "webserver",
         "xsrf"
     ],
