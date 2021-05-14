@@ -238,7 +238,9 @@ class HistoricDateWidget(MultiWidget):
         return tuple(int(string) for string in str_values)
 
 
-def _datetime_from_datadict_values(year, year_system, season, month, day):
+def _datetime_from_datadict_values(
+    year, year_system, season=None, month=None, day=None
+):
     # Figure out year
     year, second, microsecond = get_year(year, year_system)
     # Figure out date precision
