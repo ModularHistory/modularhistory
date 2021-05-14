@@ -15,8 +15,8 @@ echo "$staged_files" | grep --quiet ".py" && {
         # https://github.com/google/pytype#usage
         pytype --output .cache/.pytype "$file" || {
             echo "
-                Carefully examine the error above. Does it need to be fixed?
-                If it need to be fixed, hit Ctrl-C to exit the pre-commit hook.
+                Carefully examine the error above. Should it be fixed?
+                If so, hit Ctrl-C to exit the pre-commit hook.
             "
             read -rp "Otherwise, to continue despite the error, press any key. "
         }
