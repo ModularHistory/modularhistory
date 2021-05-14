@@ -47,7 +47,7 @@ echo "$changed_files" | grep --quiet 'poetry.lock' && {
   docker-compose build django
   docker-compose ps | grep --quiet 'django' && {
     # Recreate running containers.
-    docker-compose up -d django flower
+    docker-compose up -d django
   }
 }
 

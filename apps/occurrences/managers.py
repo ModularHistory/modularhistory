@@ -1,12 +1,14 @@
 from typing import List, Optional
 
 from django.db.models import Prefetch, Q
+from polymorphic.managers import PolymorphicManager
 
+from apps.occurrences.constants import OccurrenceTypes
 from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
 
 
-class OccurrenceManager(SearchableModelManager):
+class OccurrenceManager(SearchableModelManager):  # PolymorphicManager,
     """Manager for occurrences."""
 
     def search(
@@ -58,3 +60,23 @@ class OccurrenceManager(SearchableModelManager):
                 queryset=OccurrenceImage.objects.select_related('image'),
             ),
         )
+
+
+class BirthManager(OccurrenceManager):
+    def get_queryset(self) -> 'SearchableModelQuerySet':
+        return super().get_queryset().filter(type=OccurrenceTypes.BIRTH.value)
+
+
+class DeathManager(OccurrenceManager):
+    def get_queryset(self) -> 'SearchableModelQuerySet':
+        return super().get_queryset().filter(type=OccurrenceTypes.DEATH.value)
+
+
+class PublicationManager(OccurrenceManager):
+    def get_queryset(self) -> 'SearchableModelQuerySet':
+        return super().get_queryset().filter(type=OccurrenceTypes.PUBLICATION.value)
+
+
+class VerbalizationManager(OccurrenceManager):
+    def get_queryset(self) -> 'SearchableModelQuerySet':
+        return super().get_queryset().filter(type=OccurrenceTypes.VERBALIZATION.value)

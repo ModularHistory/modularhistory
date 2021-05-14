@@ -11,7 +11,7 @@ echo "$staged_files" | grep --quiet ".py" && {
     }
     # Run linters on Python code.
     for file in $staged_python_files; do
-        flake8 "$file"; mypy "$file"
+        flake8 "$file"; pytype "$file"
     done
 }
 
