@@ -8,7 +8,7 @@ from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
 
 
-class OccurrenceManager(PolymorphicManager, SearchableModelManager):
+class OccurrenceManager(SearchableModelManager):  # PolymorphicManager,
     """Manager for occurrences."""
 
     def search(
