@@ -11,9 +11,8 @@ from polymorphic.models import PolymorphicModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.propositions.api.serializers import PropositionSerializer
+from apps.search.models import SearchableModel
 from apps.sources.models.model_with_sources import ModelWithSources
-from apps.topics.models.taggable_model import TaggableModel
-from apps.verifications.models import VerifiableModel
 from core.fields import HTMLField
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
@@ -39,23 +38,19 @@ DEGREES_OF_CERTAINTY = (
 )
 
 
-class PolymorphicProposition(PolymorphicModel, VerifiableModel, ModelWithSources):
+class Proposition(
+    PolymorphicModel,
+    ModelWithSources,
+    SearchableModel,
+    ModelWithRelatedEntities,
+):
     """
-    Base model for propositions.
+    A proposition.
 
     Models of which instances are proposed, i.e., presented as information that
     can be analyzed and judged to be true or false with some degree of certainty,
     should inherit from this model.
     """
-
-
-class Proposition(
-    PolymorphicProposition,
-    SluggedModel,
-    TaggableModel,
-    ModelWithRelatedEntities,
-):
-    """A proposition."""
 
     summary = HTMLField(
         verbose_name=_('summary'), unique=True, paragraphed=False, processed=False
