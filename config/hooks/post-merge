@@ -31,6 +31,7 @@ if [[ -d config/hooks ]]; then
         echo "The post-merge hook has changed."
         post_merge_hook_changed=true
       else
+        echo "Updating $filename hook..."
         cat "$filepath" > ".git/hooks/$filename"
         sudo chmod +x ".git/hooks/$filename"
         echo "Updated $filename hook."
