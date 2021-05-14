@@ -14,7 +14,7 @@ import {
   authenticateWithSocialMediaAccount,
   refreshAccessToken,
 } from "../../../auth";
-import axios from "../../../axiosWithAuth";
+import axiosWithoutAuth from "../../../axiosWithAuth";
 
 const makeDjangoApiUrl = (endpoint) => {
   return `http://django:8000/api${endpoint}`;
@@ -102,6 +102,7 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
 
 // https://next-auth.js.org/configuration/callbacks#session-callback
 callbacks.session = async function session(session: Session, jwt: JWT) {
+  console.log(">>>>>>>>> session");
   const sessionPlus: Session = { ...session };
   if (jwt) {
     // If the access token is expired, ...
@@ -128,7 +129,7 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
         // Replace the session's `user` attribute (containing only name, image, and
         // a couple other fields) with full user details from the Django API.
         let userData;
-        await axios
+        await axiosWithoutAuth
           .get(makeDjangoApiUrl("/users/me/"), {
             headers: {
               Authorization: `Bearer ${accessToken}`,
