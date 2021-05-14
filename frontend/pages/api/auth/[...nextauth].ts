@@ -154,7 +154,8 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
 callbacks.redirect = async function redirect(url, baseUrl) {
   url = url.startsWith(baseUrl) ? url : baseUrl;
   // Strip /auth/signin from the redirect URL if necessary, so that the user is
-  // redirected to the homepage instead.
+  // not redirected back to the sign-in page after successfully signing in (and
+  // is redirected to the homepage instead).
   const path = url.replace(baseUrl, "").replace("/auth/signin", "");
   // Add /auth/redirect to the redirect URL so that the user is first routed to the
   // "redirect page," where Next.js can set or remove cookies before routing the user

@@ -25,7 +25,10 @@ class ModelWithRelatedEntities(Model):
     """
 
     related_entities = models.ManyToManyField(
-        to='entities.Entity', blank=True, verbose_name=_('related entities')
+        to='entities.Entity',
+        related_name='%(class)s_set',
+        blank=True,
+        verbose_name=_('related entities'),
     )
 
     class Meta:

@@ -75,10 +75,11 @@
         "hte"
     ],
     "ignoreRegExpList": [
+        "'//.+",
+        "END\\w+",
         "default='.*'",
         "[A-Z_]+(=|: ).*",
         "from .+ import .+",
-        "'//.+",
-        "END\\w+"
+        "'[A-Za-z0-9_]{4,10}',  # https://github.com.+"
     ]
 }

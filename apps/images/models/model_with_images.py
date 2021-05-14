@@ -1,15 +1,16 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, TYPE_CHECKING
 
+from django.utils.translation import ugettext_lazy as _
+
+from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models import Model, retrieve_or_compute
 
 if TYPE_CHECKING:
-    from django.db.models import ManyToManyField
-    from django.db.models.manager import Manager, RelatedManager
+    from django.db.models.manager import Manager
 
-    from apps.images.models.image import Image
 
 
 class ModelWithImages(Model):
@@ -20,7 +21,13 @@ class ModelWithImages(Model):
     it must be defined as an abstract model class.
     """
 
-    images: 'ManyToManyField[Sequence[Image], RelatedManager[Image]]'
+    images = SortedManyToManyField(
+        to='images.Image',
+        related_name='%(class)s_set',
+        blank=True,
+        verbose_name=_('images'),
+    )
+
     image_relations: 'Manager'
 
     class Meta:
