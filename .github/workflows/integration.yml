@@ -122,7 +122,7 @@ jobs:
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
-        if [ ! echo "${{ runner.os }}" | grep -i --quiet "macos" ]; then sudo apt-get install -y graphviz graphviz-dev; else echo "Skipping graphviz installation..."; fi
+        if [ echo "${{ runner.os }}" | grep -i --quiet "macos" ]; then brew install graphviz; else sudo apt-get install -y graphviz graphviz-dev; fi
         poetry install --no-root
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules
@@ -226,7 +226,7 @@ jobs:
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
-        if [ ! echo "${{ matrix.os }}" | grep -i --quiet "macos" ]; then sudo apt-get install -y graphviz graphviz-dev; else echo "Skipping graphviz installation..."; fi
+        if [ echo "${{ matrix.os }}" | grep -i --quiet "macos" ]; then brew install graphviz; else sudo apt-get install -y graphviz graphviz-dev; fi
         poetry install --no-root
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules
@@ -311,7 +311,7 @@ jobs:
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
-        if [ ! echo "${{ runner.os }}" | grep -i --quiet "macos" ]; then sudo apt-get install -y graphviz graphviz-dev; else echo "Skipping graphviz installation..."; fi
+        if [ echo "${{ runner.os }}" | grep -i --quiet "macos" ]; then brew install graphviz; else sudo apt-get install -y graphviz graphviz-dev; fi
         poetry install --no-root
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules
