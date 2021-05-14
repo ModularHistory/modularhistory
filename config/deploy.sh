@@ -8,12 +8,12 @@ echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin || {
     echo "GHCR login failed."; exit 1
 }
 echo "Pulling images to $SERVER..."
-docker-compose pull --include-deps django flower react || {
+docker-compose pull --include-deps django react || {
     echo "Failed to pull required images."; exit 1
 }
 echo "" && echo "Restarting server..."
 docker-compose down --remove-orphans
-docker-compose up -d django flower react
+docker-compose up -d django celery_beat react
 echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
 docker image prune -a -f
 docker system prune -f

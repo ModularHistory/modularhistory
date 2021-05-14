@@ -9,10 +9,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.images.models.model_with_images import ModelWithImages
-from apps.occurrences.manager import OccurrenceManager
+from apps.occurrences import managers
+from apps.occurrences.constants import OCCURRENCE_TYPES
 from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.occurrences.serializers import OccurrenceSerializer
-from apps.postulations.models import ModelWithPostulations
 from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.search.models import SearchableDatedModel
@@ -27,14 +27,15 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
 class Occurrence(
+    # PolymorphicProposition,
     SearchableDatedModel,
-    ModelWithPostulations,
     ModelWithSources,
     ModelWithRelatedQuotes,
     ModelWithImages,
 ):
     """Something that happened."""
 
+    type = models.PositiveSmallIntegerField(choices=OCCURRENCE_TYPES, default=0)
     date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
     end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
     summary = HTMLField(verbose_name=_('summary'), paragraphed=False, processed=False)
@@ -83,7 +84,7 @@ class Occurrence(
         unique_together = ['summary', 'date']
         ordering = ['date']
 
-    objects: OccurrenceManager = OccurrenceManager()  # type: ignore
+    objects = managers.OccurrenceManager()
     searchable_fields = [
         'summary',
         'description',
@@ -154,3 +155,39 @@ class Occurrence(
             'occurrence': self,
             'quotes': sorted(quotes, key=quote_sorter_key),
         }
+
+
+class Birth(Occurrence):
+    """A birth of an entity."""
+
+    class Meta:
+        proxy = True
+
+    objects = managers.BirthManager()
+
+
+class Death(Occurrence):
+    """A death of an entity."""
+
+    class Meta:
+        proxy = True
+
+    objects = managers.DeathManager()
+
+
+class Publication(Occurrence):
+    """A publication of a source."""
+
+    class Meta:
+        proxy = True
+
+    objects = managers.PublicationManager()
+
+
+class Verbalization(Occurrence):
+    """A verbalization or production of a source, prior to publication."""
+
+    class Meta:
+        proxy = True
+
+    objects = managers.VerbalizationManager()

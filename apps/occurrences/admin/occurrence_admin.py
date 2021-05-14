@@ -8,12 +8,11 @@ from apps.occurrences.admin.occurrence_filters import (
     HasQuotesFilter,
     LocationFilter,
 )
-from apps.occurrences.admin.occurrence_inlines import (
+from apps.occurrences.admin.occurrence_inlines import (  # PostulationsInline,
     ImagesInline,
     InvolvedEntitiesInline,
     LocationsInline,
     OccurrencesInline,
-    PostulationsInline,
 )
 from apps.quotes.admin.related_quotes_inline import RelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
@@ -30,7 +29,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
 
     exclude = SearchableModelAdmin.exclude + ['postulations']
     inlines = [
-        PostulationsInline,
+        # PostulationsInline,
         RelatedQuotesInline,
         InvolvedEntitiesInline,
         LocationsInline,
