@@ -39,7 +39,7 @@
     "@types/next-auth": "^3.7.1",
     "@types/node": "^15.0.2",
     "@types/react": "^17.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.22",
+    "@typescript-eslint/eslint-plugin": "^4.23",
     "@typescript-eslint/parser": "^4.14.0",
     "cypress": "^7.1.0",
     "eslint": "^7.26.0",
