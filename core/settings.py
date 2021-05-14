@@ -119,6 +119,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
     # ---------------------------------
+    # Elasticsearch
+    # ---------------------------------
+    'django_elasticsearch_dsl',  # https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html
+    # ---------------------------------
     # Miscellaneous third-party apps
     # ---------------------------------
     'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501

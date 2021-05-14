@@ -36,7 +36,7 @@ class ModelWithImages(Model):
         try:
             return self.serialized_images[0]
         except IndexError:
-            logging.info(f'No image could be retrieved for {self}')
+            logging.debug(f'No image could be retrieved for {self}')
             return None
 
     @property  # type: ignore

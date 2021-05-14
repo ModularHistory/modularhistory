@@ -155,6 +155,8 @@ Twisted = [
 uvicorn = { extras = ["standard"], version = "^0.12" }
 wordcloud = "^1.8.0"
 youtube-dl = "^2020.7.28"
+django-elasticsearch-dsl = "^7.2.0"
+django-elasticsearch-dsl-drf = "^0.22.1"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"

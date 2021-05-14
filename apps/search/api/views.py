@@ -1,11 +1,10 @@
 import logging
 from itertools import chain
-from typing import Dict, List, Optional, Union
+from typing import List, Optional
 
 from django.db.models import Q, QuerySet, Subquery
 from rest_framework.generics import ListAPIView
 
-from apps.dates.structures import HistoricDateTime
 from apps.entities.models import Entity
 from apps.images.models import Image
 from apps.occurrences.models import Occurrence
@@ -15,8 +14,17 @@ from apps.sources.models import Source
 from apps.topics.models import Topic
 from core.constants.content_types import ContentTypes, get_ct_id
 
-QUERY_KEY = 'query'
-N_RESULTS_PER_PAGE = 10
+from .filters.elastic_filters import ModulesSearchFilterBackend
+from .filters.post_resolve_filters import (
+    ApplyMetaFilterBackend,
+    SortByFilterBackend,
+    date_sorter,
+)
+from .filters.pre_resolve_filters import PreResolveFilterBackend
+from .pagination import ElasticPageNumberPagination
+from .search import Search
+
+QUERY_PARAM = 'query'
 
 
 class SearchResultsSerializer:
@@ -26,12 +34,34 @@ class SearchResultsSerializer:
         self.data = [instance.serialize() for instance in queryset]
 
 
+class ElasticSearchResultsAPIView(ListAPIView):
+    serializer_class = SearchResultsSerializer
+    pagination_class = ElasticPageNumberPagination
+
+    # these filters are applied to ES search instance
+    filter_backends = [ModulesSearchFilterBackend]
+
+    # these filters are applied during resolving
+    pre_resolve_filters = [PreResolveFilterBackend]
+
+    # these filters are applied after the search results resolved to models
+    # applying meta filter backend should be first because sort and future filters might depend on meta field
+    post_resolve_filters = [ApplyMetaFilterBackend, SortByFilterBackend]
+
+    suppress_unverified: bool
+    search: Search
+
+    def get_queryset(self):
+        self.search = Search()
+
+        return self.search
+
+
 class SearchResultsAPIView(ListAPIView):
     """API view for listing search results."""
 
     serializer_class = SearchResultsSerializer
     template_name = 'search/search_results.html'
-    paginate_by = N_RESULTS_PER_PAGE
 
     excluded_content_types: Optional[List[str]]
     sort_by_relevance: bool
@@ -84,7 +114,7 @@ class SearchResultsAPIView(ListAPIView):
         topic_ids = [int(topic_id) for topic_id in topics] if topics else None
 
         search_kwargs = {
-            QUERY_KEY: request.query_params.get(QUERY_KEY, None),
+            QUERY_PARAM: request.query_params.get(QUERY_PARAM, None),
             'start_year': start_year,
             'end_year': end_year,
             'entity_ids': entity_ids,
@@ -221,24 +251,6 @@ def _get_source_results(
     else:
         source_results = []
     return source_results, [source.pk for source in source_results if source]
-
-
-def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> HistoricDateTime:
-    """Return the value used to sort the model instance by date."""
-    get_date = getattr(model_instance, 'get_date', None)
-    if get_date is not None:
-        date = get_date()
-    elif isinstance(model_instance, dict):
-        date = model_instance.get('date')
-    else:
-        date = getattr(model_instance, 'date', None)
-    if not date:
-        date = HistoricDateTime(1, 1, 1, 0, 0, 0)
-    # Display precise dates before ranges, e.g., "1500" before "1500 – 2000"
-    if getattr(model_instance, 'end_date', None):
-        microsecond = date.microsecond + 1
-        date = date.replace(microsecond=microsecond)
-    return date
 
 
 def rank_sorter(model_instance: SearchableDatedModel):

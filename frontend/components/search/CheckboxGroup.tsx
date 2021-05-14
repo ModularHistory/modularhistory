@@ -1,24 +1,40 @@
 import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from "@material-ui/core";
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { SearchFormContext } from "./SearchForm";
 
-export default function CheckboxGroup({ label, name, children }) {
-  // A component for checkbox inputs in the search form.
-  // `label` is displayed above the checkboxes.
-  // `name` is the query parameter key used in the search API request.
-  // `children` is an array of options, objects with keys `label` and `key`.
-  //    `label` is rendered next to the option.
-  //    `key` is the value of the option used in the API request.
+interface CheckboxGroupProps {
+  label: string;
+  name: string;
+  children: Array<{
+    label: string;
+    key: string;
+    defaultChecked?: boolean;
+  }>;
+}
 
+/**
+ * A component for checkbox inputs in the search form.
+ * `label` is displayed above the checkboxes.
+ * `name` is the query parameter key used in the search API request.
+ * `children` is an array of options, objects with keys `label` and `key`.
+ *   `label` is rendered next to the option.
+ *   `key` is the value of the option used in the API request.
+ */
+const CheckboxGroup: FC<CheckboxGroupProps> = ({ label, name, children }: CheckboxGroupProps) => {
   // get current input values
   const { state, setState, disabled } = useContext(SearchFormContext);
 
   // If the current state is not set, default to all options.
   // This is the default behavior expected by the API.
-  let checkedItems = state[name] || children.map(({ key }) => key);
-  // when the state is initially set to a single option,
-  // we must convert it to an array
-  if (!Array.isArray(checkedItems)) checkedItems = [checkedItems];
+  let checkedItems: string[];
+  if (state[name]) {
+    checkedItems = Array.isArray(state[name]) ? state[name] : Array(state[name]);
+  } else {
+    checkedItems = children.reduce((filtered: string[], item) => {
+      if (item.defaultChecked !== false) filtered.push(item.key);
+      return filtered;
+    }, []);
+  }
 
   // event handler for user input
   const handleChange = ({ target }) => {
@@ -56,4 +72,6 @@ export default function CheckboxGroup({ label, name, children }) {
       </FormGroup>
     </FormControl>
   );
-}
+};
+
+export default CheckboxGroup;

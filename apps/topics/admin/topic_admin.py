@@ -1,4 +1,3 @@
-
 from django.urls import path
 
 from apps.admin import ModelAdmin, admin_site
@@ -59,8 +58,8 @@ class TopicAdmin(ModelAdmin):
     search_fields = [
         'name',
         'aliases',
-        'description',
         'path',
+        'description',
     ]
 
     def get_urls(self):

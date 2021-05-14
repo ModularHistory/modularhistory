@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
@@ -20,6 +21,16 @@ class SearchableModel(SluggedModel, TaggableModel, VerifiableModel):
     it must be defined as an abstract model class.
     """
 
+    title = models.CharField(
+        verbose_name=_('title'),
+        max_length=120,
+        null=True,
+        blank=True,
+        help_text=(
+            'The title can be used for the detail page header and title tag, '
+            'SERP result card header, etc.'
+        ),
+    )
     hidden = models.BooleanField(
         default=False,
         blank=True,

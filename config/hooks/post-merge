@@ -4,17 +4,22 @@
 echo "Successfully pulled to $(pwd)."
 
 changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+branch=$(git branch --show-current)
 prompt_to_run_setup_script=false
+post_merge_hook_changed=false
 setup_sha_file=".venv/.setup.sha"
 bold=$(tput bold)
 normal=$(tput sgr0)
 
 # Check if the setup script hasn't yet been run.
-[[ ! -f $setup_sha_file ]] && prompt_to_run_setup_script=true
-# Check if the setup script has been modified.
-echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=true
-# Check if last time the setup script was run was with an older version of the script.
-[[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum setup.sh | head -n1 | cut -d ' ' -f1)" ]] || prompt_to_run_setup_script=true
+if [[ ! -f $setup_sha_file ]]; then
+  prompt_to_run_setup_script=true
+# Otherwise, if on the main branch...
+elif [[ "$branch" = "main" ]]; then
+  # Check if the setup script has changed since it was last run.
+  echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=true
+  [[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum setup.sh | head -n1 | cut -d ' ' -f1)" ]] || prompt_to_run_setup_script=true
+fi
 
 # Update hooks.
 if [[ -d config/hooks ]]; then
@@ -22,9 +27,9 @@ if [[ -d config/hooks ]]; then
     filename=$(basename "$filepath")
     cmp --silent ".git/hooks/$filename" "$filepath" || {
       if [[ $filename = "post-merge" ]]; then
+        # Avoid overwriting the post-merge hook from within the post-merge hook.
         echo "The post-merge hook has changed."
-        # To avoid having this hook overwrite itself, prompt to rerun the setup script.
-        prompt_to_run_setup_script=true
+        post_merge_hook_changed=true
       else
         cat "$filepath" > ".git/hooks/$filename"
         sudo chmod +x ".git/hooks/$filename"
@@ -33,6 +38,18 @@ if [[ -d config/hooks ]]; then
     }
   done
 fi
+
+# Update django dependencies.
+echo "$changed_files" | grep --quiet 'poetry.lock' && {
+  # Install dependencies.
+  poetry install --no-root
+  # Rebuild the django image.
+  docker-compose build django
+  docker-compose ps | grep --quiet 'django' && {
+    # Recreate running containers.
+    docker-compose up -d django flower
+  }
+}
 
 # Check if migrations have changed.
 echo "$changed_files" | grep --quiet 'migrations/' && {
@@ -46,6 +63,17 @@ echo "$changed_files" | grep --quiet 'migrations/' && {
 
   "
 }
+
+# Prompt to update hooks if necessary.
+if [[ $post_merge_hook_changed = true ]]; then
+  echo "${bold}
+    The post-merge hook has changed.${normal} Please run the following 
+    command to update the hook:
+    
+      poetry run invoke setup.update-git-hooks
+
+  "
+fi
 
 # Prompt to rerun the setup script if necessary.
 if [[ $prompt_to_run_setup_script = true ]]; then

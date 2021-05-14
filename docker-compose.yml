@@ -1,3 +1,4 @@
+
 version: "3.8"
 
 x-common-env-vars: &common-env-vars
@@ -56,6 +57,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - elasticsearch
     deploy:
       restart_policy:
         condition: on-failure
@@ -220,6 +222,45 @@ services:
     volumes:
       - "redisinsight:/db"
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    environment:
+      # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
+      - node.name=modularhistory-es
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - search_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      default:
+        ipv4_address: 172.27.0.15
+
+  kibana:
+    depends_on:
+      - elasticsearch
+    image: docker.elastic.co/kibana/kibana:7.8.1
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      default:
+        ipv4_address: 172.27.0.16
+
 networks:
   default:
     driver: bridge
@@ -231,4 +272,5 @@ volumes:
   # `data` is used by both redis and mongodb
   data:
   postgres_data:
+  search_data:
   redisinsight:

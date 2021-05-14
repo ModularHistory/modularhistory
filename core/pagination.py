@@ -3,14 +3,18 @@ from rest_framework.pagination import (
 )
 
 
-class PageNumberPagination(DjangoRestFrameworkPageNumberPagination):
-    """Pagination including total page count."""
+class TotalPagesMixin(DjangoRestFrameworkPageNumberPagination):
+    """Adds total page count to pagination"""
 
     def get_paginated_response(self, data):
         """Add total_pages to the response."""
         response = super().get_paginated_response(data=data)
         response.data['total_pages'] = self.page.paginator.num_pages
         return response
+
+
+class PageNumberPagination(TotalPagesMixin):
+    """Default pagination class"""
 
 
 class VariableSizePagination(PageNumberPagination):
