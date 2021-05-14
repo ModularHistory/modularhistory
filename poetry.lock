@@ -1095,6 +1095,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "django-sortedm2m"
+version = "3.0.2"
+description = "Drop-in replacement for django's many to many field with sorted relations."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "django-split-settings"
 version = "1.0.1"
 description = "Organize Django settings into multiple files and directories. Easily override and modify settings. Use wildcards and optional settings files."
@@ -3540,7 +3548,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "==3.7.10"
-content-hash = "44a0717a47cefc7428b5c8100031e2ddfde40316a3f974a1aab75e3dc2be495d"
+content-hash = "69b4edacd1766760b7c527b759ea3de6dc7db34243291ca5c3166ee1c084e653"
 
 [metadata.files]
 aenum = [
@@ -4090,6 +4098,10 @@ django-simple-menu = [
 django-social-share = [
     {file = "django-social-share-2.2.1.tar.gz", hash = "sha256:4062c31ddad15eb9f7796cdfaae5a813018a3fd8da2b77f3e063e3a31252f84a"},
     {file = "django_social_share-2.2.1-py2.py3-none-any.whl", hash = "sha256:6de83acdd2a566c70af29b229a6430ccf8031d3d0ae1612419f633cbd9f649f5"},
+]
+django-sortedm2m = [
+    {file = "django-sortedm2m-3.0.2.tar.gz", hash = "sha256:8acc3638b7a2587533c7776deaa2c6c035220c8f9fff85ed67858a9c6bf51e7c"},
+    {file = "django_sortedm2m-3.0.2-py2.py3-none-any.whl", hash = "sha256:091e00e12b399ffd8fc74ebf4cc0f14d0bc0e28961c4ac714ca88ae24bd96aa3"},
 ]
 django-split-settings = [
     {file = "django-split-settings-1.0.1.tar.gz", hash = "sha256:2da16cd967cd38315ec7ff0ae0c9db8488f8528bb2e5de26cd898328dc4bbeac"},

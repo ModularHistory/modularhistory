@@ -155,10 +155,11 @@ INSTALLED_APPS = [
     'lockdown',  # https://github.com/Dunedan/django-lockdown
     'massadmin',  # https://github.com/burke-software/django-mass-edit
     'meta',  # https://django-meta.readthedocs.io/en/latest/
+    'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
-    'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'sass_processor',  # https://github.com/jrief/django-sass-processor
+    'sortedm2m',  # https://github.com/jazzband/django-sortedm2m
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman

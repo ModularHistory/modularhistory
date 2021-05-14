@@ -142,19 +142,19 @@ export const authenticateWithSocialMediaAccount = async (
   const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
   const credentials: SocialMediaAccountCredentials = { user };
   switch (provider.provider) {
-    case "github": {
-      // https://next-auth.js.org/providers/github
-      // Retrieve email address, if necessary.
-      if (!user.email) {
-        const emailRes = await fetch("https://api.github.com/user/emails", {
-          headers: { Authorization: `token ${provider.accessToken}` },
-        });
-        const emails = await emailRes.json();
-        if (emails?.length !== 0) {
-          user.email = emails.find((emails) => emails.primary).email;
-        }
-      }
-    }
+    // case "github": {
+    //   // https://next-auth.js.org/providers/github
+    //   // Retrieve email address, if necessary.
+    //   if (!user.email) {
+    //     const emailRes = await fetch("https://api.github.com/user/emails", {
+    //       headers: { Authorization: `token ${provider.accessToken}` },
+    //     });
+    //     const emails = await emailRes.json();
+    //     if (emails?.length !== 0) {
+    //       user.email = emails.find((emails) => emails.primary).email;
+    //     }
+    //   }
+    // }
     // https://next-auth.js.org/providers/discord
     // https://next-auth.js.org/providers/facebook
     // https://next-auth.js.org/providers/github

@@ -69,15 +69,10 @@ jobs:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     steps:
-    - uses: actions/checkout@v2.3.4
-    - name: Cache virtual environment
-      uses: actions/cache@v2
-      id: cache
+    - includes: ./.github/actions/setup
       with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+        os: ${{ runner.os }}
+        python-version: 3.7
     - name: Run setup script
       run: bash setup.sh
       shell: bash

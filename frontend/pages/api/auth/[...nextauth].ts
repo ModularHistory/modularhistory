@@ -14,7 +14,7 @@ import {
   authenticateWithSocialMediaAccount,
   refreshAccessToken,
 } from "../../../auth";
-import axios from "../../../axiosWithAuth";
+import axiosWithoutAuth from "../../../axiosWithAuth";
 
 const makeDjangoApiUrl = (endpoint) => {
   return `http://django:8000/api${endpoint}`;
@@ -102,6 +102,7 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
 
 // https://next-auth.js.org/configuration/callbacks#session-callback
 callbacks.session = async function session(session: Session, jwt: JWT) {
+  console.log(">>>>>>>>> session");
   const sessionPlus: Session = { ...session };
   if (jwt) {
     // If the access token is expired, ...
@@ -128,7 +129,7 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
         // Replace the session's `user` attribute (containing only name, image, and
         // a couple other fields) with full user details from the Django API.
         let userData;
-        await axios
+        await axiosWithoutAuth
           .get(makeDjangoApiUrl("/users/me/"), {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -154,7 +155,8 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
 callbacks.redirect = async function redirect(url, baseUrl) {
   url = url.startsWith(baseUrl) ? url : baseUrl;
   // Strip /auth/signin from the redirect URL if necessary, so that the user is
-  // redirected to the homepage instead.
+  // not redirected back to the sign-in page after successfully signing in (and
+  // is redirected to the homepage instead).
   const path = url.replace(baseUrl, "").replace("/auth/signin", "");
   // Add /auth/redirect to the redirect URL so that the user is first routed to the
   // "redirect page," where Next.js can set or remove cookies before routing the user

@@ -57,12 +57,10 @@ class Proposition(
 ):
     """A proposition."""
 
-    _summary = HTMLField(
-        verbose_name=_('statement'), unique=True, paragraphed=False, processed=False
+    summary = HTMLField(
+        verbose_name=_('summary'), unique=True, paragraphed=False, processed=False
     )
-    _elaboration = HTMLField(
-        verbose_name=_('elaboration'), null=True, blank=True, paragraphed=True
-    )
+    elaboration = HTMLField(verbose_name=_('elaboration'), null=True, paragraphed=True)
     certainty = models.PositiveSmallIntegerField(
         verbose_name=_('certainty'), null=True, choices=DEGREES_OF_CERTAINTY
     )
