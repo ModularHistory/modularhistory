@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.quotes.models import Quote
+from apps.quotes.models.quote import Quote
 from apps.quotes.serializers import QuoteSerializer
 
 

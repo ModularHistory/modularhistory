@@ -99,7 +99,7 @@ class Proposition(
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
-        """Return the obj's HTML based on a placeholder in the admin."""
+        """Return the proposition's HTML based on a placeholder in the admin."""
         if not match:
             logging.error('proposition.get_object_html was called without a match')
             raise ValueError
@@ -107,21 +107,22 @@ class Proposition(
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
-        proposition: 'Proposition' = cls.objects.get(
-            pk=match.group(PlaceholderGroups.PK)
-        )
+                return str(preretrieved_html).strip()
+        pk = int(match.group(PlaceholderGroups.PK))
+        proposition: Proposition = cls.objects.get(pk=pk)
         return proposition.summary_link
 
     @classmethod
     def get_updated_placeholder(cls, match: Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
-        placeholder = match.group(0)
+        placeholder: str = str(match.group(0))
         logging.debug(f'Looking at {truncate(placeholder)}')
-        extant_html: Optional[str] = match.group(PlaceholderGroups.HTML)
-        extant_html = extant_html.strip() if extant_html else extant_html
+        extant_html: Optional[str] = (
+            str(match.group(PlaceholderGroups.HTML)).strip()
+            if match.group(PlaceholderGroups.HTML)
+            else None
+        )
         if extant_html:
-
             if '<a ' not in extant_html:
                 html = cls.get_object_html(match)
                 html = re.sub(

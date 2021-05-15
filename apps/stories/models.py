@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.stories.serializers import StorySerializer
 from core.fields import HTMLField
-from core.models import Model
+from core.models.model import Model
 
 HANDLE_MAX_LENGTH = 40
 

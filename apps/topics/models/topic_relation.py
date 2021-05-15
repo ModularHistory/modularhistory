@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.translation import ugettext_lazy as _
 
-from core.models import Model
+from core.models.model import Model
 
 MAX_WEIGHT = 1000
 DEFAULT_WEIGHT = MAX_WEIGHT / 2

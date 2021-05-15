@@ -25,7 +25,7 @@ from apps.dates.fields import HistoricDateTimeField
 from core.constants.environments import Environments
 from core.fields import JSONField
 from core.forms import HistoricDateWidget
-from core.models import Model
+from core.models.model import Model
 from core.widgets.json_editor_widget import JSONEditorWidget
 
 AdminListFilter = Union[str, Type[ListFilter]]

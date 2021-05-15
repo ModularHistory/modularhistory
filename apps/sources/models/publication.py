@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
 from core.fields import HTMLField
-from core.models import Model
+from core.models.model import Model
 from core.utils.html import soupify
 
 PUBLICATION_TYPES = (

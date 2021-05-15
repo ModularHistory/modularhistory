@@ -1,7 +1,7 @@
 import pytest
 from django.db import IntegrityError
 
-from apps.topics.models import Topic
+from apps.topics.models.topic import Topic
 
 pytestmark = pytest.mark.django_db
 

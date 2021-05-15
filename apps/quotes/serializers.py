@@ -8,7 +8,7 @@ from django.template.defaultfilters import truncatechars_html
 from apps.search.api.serializers import SearchableModelSerializer
 
 if TYPE_CHECKING:
-    from apps.quotes.models import Quote
+    from apps.quotes.models.quote import Quote
 
 
 class QuoteSerializer(SearchableModelSerializer):

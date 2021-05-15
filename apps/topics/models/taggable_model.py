@@ -9,7 +9,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
-from apps.topics.models import Topic
+from apps.topics.models.topic import Topic
 from core.models.model import Model
 from core.models.model_with_computations import (
     ModelWithComputations,

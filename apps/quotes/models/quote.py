@@ -32,7 +32,7 @@ from core.utils.html import soupify
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from apps.entities.models import Entity
+    from apps.entities.models.entity import Entity
 
 BITE_MAX_LENGTH: int = 400
 
@@ -258,7 +258,7 @@ class Quote(
     def related_occurrences(self) -> 'QuerySet':
         """Return a queryset of the quote's related occurrences."""
         # TODO: refactor
-        from apps.occurrences.models import Occurrence
+        from apps.occurrences.models.occurrence import Occurrence
 
         occurrence_ids = self.relations.filter(
             models.Q(content_type_id=get_ct_id(ContentTypes.occurrence))

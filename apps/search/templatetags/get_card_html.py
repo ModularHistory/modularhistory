@@ -3,7 +3,7 @@ from typing import Dict, Optional, Union
 from django.template import Library
 from django.utils.safestring import SafeString
 
-from core.models import Model
+from core.models.model import Model
 from core.utils.models import get_html_for_view
 
 register = Library()

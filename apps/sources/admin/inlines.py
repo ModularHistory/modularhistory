@@ -1,6 +1,6 @@
 from apps.admin import GenericTabularInline, TabularInline
 from apps.sources import models
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 
 
 class AttributeesInline(TabularInline):

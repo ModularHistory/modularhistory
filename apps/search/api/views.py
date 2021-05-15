@@ -5,13 +5,13 @@ from typing import List, Optional
 from django.db.models import Q, QuerySet, Subquery
 from rest_framework.generics import ListAPIView
 
-from apps.entities.models import Entity
+from apps.entities.models.entity import Entity
 from apps.images.models import Image
-from apps.occurrences.models import Occurrence
-from apps.quotes.models import Quote
+from apps.occurrences.models.occurrence import Occurrence
+from apps.quotes.models.quote import Quote
 from apps.search.models import SearchableDatedModel
-from apps.sources.models import Source
-from apps.topics.models import Topic
+from apps.sources.models.source import Source
+from apps.topics.models.topic import Topic
 from core.constants.content_types import ContentTypes, get_ct_id
 
 from .filters.elastic_filters import ModulesSearchFilterBackend

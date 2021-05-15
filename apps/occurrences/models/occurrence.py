@@ -15,7 +15,7 @@ from apps.occurrences.constants import OCCURRENCE_TYPES
 from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.occurrences.serializers import OccurrenceSerializer
 from apps.places.models.model_with_locations import ModelWithLocations
-from apps.propositions.models import Proposition
+from apps.propositions.models.proposition import Proposition
 from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.search.models import SearchableDatedModel

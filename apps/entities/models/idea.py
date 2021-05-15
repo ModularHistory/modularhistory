@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from core.fields import HTMLField
-from core.models import Model
+from core.models.model import Model
 
 NAME_MAX_LENGTH: int = 100
 
