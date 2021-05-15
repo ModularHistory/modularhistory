@@ -135,7 +135,6 @@ class NewOccurrence(
 
 
 class Occurrence(
-    # PolymorphicProposition,
     SearchableDatedModel,
     ModelWithSources,
     ModelWithRelatedQuotes,

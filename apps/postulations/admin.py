@@ -1,5 +1,5 @@
 from apps.admin import ModelAdmin, StackedInline, admin_site
-from apps.entities.admin.admin_filters import RelatedEntityFilter
+from apps.entities.admin.filters import RelatedEntityFilter
 from apps.postulations import models
 from apps.sources.admin import CitationsInline
 from apps.topics.admin import RelatedTopicsInline

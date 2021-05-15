@@ -204,6 +204,9 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
     'django.middleware.common.CommonMiddleware',
+    # Intercept `RecordModifiedError` from concurrency:
+    # https://django-concurrency.readthedocs.io/en/latest/middleware.html#concurrencymiddleware
+    'concurrency.middleware.ConcurrencyMiddleware',
     # Fetch from cache:
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.FetchFromCacheMiddleware',
@@ -226,6 +229,9 @@ MIDDLEWARE = [
     # Memory profiler
     # 'core.middleware.PymplerMiddleware',  # TODO
 ]
+
+# https://django-concurrency.readthedocs.io/en/latest/middleware.html#concurrencymiddleware
+CONCURRENCY_HANDLER409 = 'core.views.conflict'
 
 ROOT_URLCONF = 'core.urls'
 

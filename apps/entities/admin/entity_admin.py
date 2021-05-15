@@ -1,13 +1,13 @@
 from apps.admin.model_admin import ModelAdmin, admin_site
 from apps.entities import models
-from apps.entities.admin.admin_filters import (
+from apps.entities.admin.affiliations import AffiliationsInline
+from apps.entities.admin.filters import (
     CategoriesFilter,
     EntityTypeFilter,
     HasImageFilter,
     HasQuotesFilter,
 )
-from apps.entities.admin.affiliations import AffiliationsInline
-from apps.entities.admin.entity_inlines import (
+from apps.entities.admin.inlines import (
     CategorizationsInline,
     ImagesInline,
     OccurrencesInline,

@@ -20,3 +20,6 @@ class PositionedRelation(Model):
         # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         abstract = True
+
+    def __str__(self) -> str:
+        return f''

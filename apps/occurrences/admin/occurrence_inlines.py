@@ -17,6 +17,8 @@ class ImagesInline(TabularInline):
     extra = 0
     autocomplete_fields = ['image']
     readonly_fields = ['key', 'image_pk']
+    verbose_name = 'image'
+    verbose_name_plural = 'images'
 
 
 class InvolvedEntitiesInline(TabularInline):
@@ -25,16 +27,6 @@ class InvolvedEntitiesInline(TabularInline):
     model = models.Occurrence.involved_entities.through
     extra = 1
     autocomplete_fields = ['entity']
-
-
-# class PostulationsInline(TabularInline):
-#     """Inline admin for an occurrence chain's occurrences."""  # right?
-
-#     verbose_name = 'postulation'
-#     verbose_name_plural = 'postulations'
-#     model = models.Occurrence.postulations.through
-#     autocomplete_fields = ['postulation']
-#     extra = 1
 
 
 class OccurrencesInline(TabularInline):

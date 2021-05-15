@@ -45,11 +45,10 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
     )
 
     list_display = [
-        'pk',
+        'slug',
         'escaped_citation_html',
         'attributee_string',
         'date_string',
-        'slug',
         'ctype_name',
     ]
     list_filter: List[Union[str, Type[ListFilter]]] = [

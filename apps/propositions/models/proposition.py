@@ -4,6 +4,7 @@ import logging
 import re
 from typing import Match, Optional
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -73,6 +74,16 @@ class Proposition(
     def __str__(self) -> str:
         """Return the proposition's string representation."""
         return self.summary.text
+
+    @property
+    def ctype(self) -> ContentType:
+        """Alias polymorphic_ctype."""
+        return self.polymorphic_ctype
+
+    @property
+    def ctype_name(self) -> ContentType:
+        """Return the model instance's ContentType."""
+        return self.ctype.model
 
     @property
     def summary_link(self) -> str:

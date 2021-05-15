@@ -158,6 +158,7 @@ youtube-dl = "^2020.7.28"
 django-elasticsearch-dsl = "^7.2.0"
 django-elasticsearch-dsl-drf = "^0.22.1"
 django-sortedm2m = "^3.0.2"
+diff-match-patch = "^20200713"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"

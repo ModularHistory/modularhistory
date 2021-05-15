@@ -4,6 +4,15 @@ from apps.occurrences.models import OccurrenceEntityInvolvement
 from apps.quotes.models.quote import Quote
 
 
+class RelatedEntitiesInline(TabularInline):
+    """Inline admin for related entities."""
+
+    model = models.Entity
+    extra = 0
+    show_change_link = True
+    autocomplete_fields = ['entity']
+
+
 class QuotesInline(TabularInline):
     """Inline admin for quotes."""
 
