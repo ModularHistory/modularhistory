@@ -1,6 +1,5 @@
 """Based on https://github.com/peopledoc/django-ltree-demo."""
 
-from abc import abstractmethod
 from typing import Type
 
 import regex
@@ -72,11 +71,6 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
         """Prepare the model instance to be saved to the database."""
         self.validate_parent(raises=ValidationError)
         return super().clean()
-
-    @property
-    @abstractmethod
-    def objects(self) -> Manager:
-        pass
 
     @property
     def ancestors(self) -> QuerySet:
