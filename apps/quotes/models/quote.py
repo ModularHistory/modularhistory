@@ -82,7 +82,7 @@ class Quote(
         'entities.Entity',
         'quotes.Quote',
         through='quotes.QuoteRelation',
-        related_name='related_quotes',
+        related_name='_related_quotes',
         blank=True,
     )
     images = models.ManyToManyField(

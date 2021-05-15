@@ -7,17 +7,18 @@ from concurrency.fields import IntegerVersionField
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.translation import ugettext_lazy as _
 
+from apps.sources.models.citation import AbstractCitation, Citation
+from apps.sources.models.source import Source
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
+from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
 from core.models.model_with_computations import retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
-
-    from apps.sources.models.citation import Citation
-    from apps.sources.models.source import Source
 
 
 class ModelWithSources(Model):
@@ -29,6 +30,13 @@ class ModelWithSources(Model):
     """
 
     citations = GenericRelation('sources.Citation')
+    new_citations = SortedManyToManyField(
+        to='sources.Source',
+        base_class=AbstractCitation,
+        related_name='%(class)s_set',
+        blank=True,
+        verbose_name=_('citations'),
+    )
     sources: 'RelatedManager[Source]'
 
     version = IntegerVersionField()

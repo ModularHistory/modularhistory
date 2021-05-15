@@ -4,9 +4,11 @@ from typing import List, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from django.utils.translation import ugettext_lazy as _
 
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.topics.models.topic import Topic
@@ -21,6 +23,12 @@ class TaggableModel(ModelWithComputations):
     """Mixin for models that are topic-taggable."""
 
     tags = GenericRelation('topics.TopicRelation')
+    new_tags = models.ManyToManyField(
+        to='topics.Topic',
+        related_name='%(class)s_set',
+        blank=True,
+        verbose_name=_('citations'),
+    )
 
     class Meta:
         abstract = True
