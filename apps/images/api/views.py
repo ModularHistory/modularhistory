@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.images.models import Image
+from apps.images.models.image import Image
 from apps.images.serializers import ImageSerializer
 
 

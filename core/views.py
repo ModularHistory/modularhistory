@@ -16,7 +16,7 @@ def get_diff(current, stored):
     for field in fields:
         v1 = getattr(current, field.name, '')
         v2 = getattr(stored, field.name, '')
-        diff = dmp.diff_main(unicode(v1), unicode(v2))
+        diff = dmp.diff_main(str(v1), str(v2))
         dmp.diff_cleanupSemantic(diff)
         html = dmp.diff_prettyHtml(diff)
         html = mark_safe(html)

@@ -3,7 +3,7 @@ import logging
 import graphene
 
 from apps.images.api.types import ImageType
-from apps.images.models import Image
+from apps.images.models.image import Image
 
 
 class Query(graphene.ObjectType):
