@@ -1,7 +1,7 @@
 import graphene
 
 from apps.entities.api.types import EntityType
-from apps.entities.models import Entity
+from apps.entities.models.entity import Entity
 
 
 class Query(graphene.ObjectType):

@@ -2,7 +2,7 @@ import graphene
 from django.core.exceptions import ObjectDoesNotExist
 
 from apps.topics.api.types import TopicType
-from apps.topics.models import Topic
+from apps.topics.models.topic import Topic
 
 
 class Query(graphene.ObjectType):

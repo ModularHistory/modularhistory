@@ -9,7 +9,6 @@ from apps.entities.admin.admin_filters import (
 from apps.entities.admin.affiliations import AffiliationsInline
 from apps.entities.admin.entity_inlines import (
     CategorizationsInline,
-    FactsInline,
     ImagesInline,
     OccurrencesInline,
     QuotesInline,
@@ -27,7 +26,6 @@ class EntityAdmin(ModelAdmin):
     inlines = [
         ImagesInline,
         CategorizationsInline,
-        FactsInline,
         AffiliationsInline,
         OccurrencesInline,
         QuotesInline,

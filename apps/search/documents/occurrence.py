@@ -1,15 +1,15 @@
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
-from apps.entities.models import Entity
-from apps.occurrences.models import Occurrence
+from apps.entities.models.entity import Entity
+from apps.occurrences.models.occurrence import Occurrence
 from apps.search.documents.base import Document
 from apps.search.documents.config import (
     DEFAULT_INDEX_SETTINGS,
     get_index_name_for_ct,
     html_field_analyzer,
 )
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 from core.constants.content_types import ContentTypes
 
 

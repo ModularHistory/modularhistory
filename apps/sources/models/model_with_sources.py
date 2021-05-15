@@ -10,12 +10,14 @@ from django.utils.safestring import SafeString
 
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
-from core.models import Model, retrieve_or_compute
+from core.models.model import Model
+from core.models.model_with_computations import retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
 
-    from apps.sources.models import Citation, Source
+    from apps.sources.models.citation import Citation
+    from apps.sources.models.source import Source
 
 
 class ModelWithSources(Model):

@@ -8,14 +8,14 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
-from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.dates.models import DatedModel
 from apps.images.models.model_with_images import ModelWithImages
 from apps.occurrences import managers
 from apps.occurrences.constants import OCCURRENCE_TYPES
 from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.occurrences.serializers import OccurrenceSerializer
 from apps.places.models.model_with_locations import ModelWithLocations
-from apps.propositions.models import PolymorphicProposition
+from apps.propositions.models.proposition import Proposition
 from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
 from apps.search.models import SearchableDatedModel
@@ -30,9 +30,8 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
 class NewOccurrence(
-    PolymorphicProposition,
-    SearchableDatedModel,
-    ModelWithRelatedEntities,
+    Proposition,
+    DatedModel,
     ModelWithRelatedQuotes,
     ModelWithLocations,
     ModelWithImages,
@@ -42,7 +41,7 @@ class NewOccurrence(
 
     For our purposes, an occurrence is a proposition: each occurrence is proposed
     (with some degree of certainty) to have occurred. As such, this model inherits
-    from `PolymorphicProposition`.
+    from `Proposition`.
     """
 
     type = models.PositiveSmallIntegerField(choices=OCCURRENCE_TYPES, default=0)

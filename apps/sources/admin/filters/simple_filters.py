@@ -3,7 +3,7 @@
 from django.db.models import Count, Q
 
 from apps.admin.list_filters import BooleanListFilter, PolymorphicContentTypeFilter
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 from core.constants.strings import EMPTY_STRING, NO, YES
 
 

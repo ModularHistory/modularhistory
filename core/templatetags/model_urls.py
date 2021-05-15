@@ -4,7 +4,7 @@ from typing import Dict, Optional, Union
 from django import template
 from django.urls import reverse
 
-from core.models import Model
+from core.models.model import Model
 
 register = template.Library()
 

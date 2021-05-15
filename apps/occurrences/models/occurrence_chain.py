@@ -5,7 +5,7 @@ from typing import List
 from django.db import models
 
 from core.fields import HTMLField
-from core.models import Model
+from core.models.model import Model
 
 DESCRIPTION_MAX_LENGTH = 200
 

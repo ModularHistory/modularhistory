@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 from django.contrib.admin import SimpleListFilter
 
 from apps.admin import GenericTabularInline
-from apps.topics.models import TopicRelation
+from apps.topics.models.topic_relation import TopicRelation
 from core.constants.strings import NO, YES
 
 if TYPE_CHECKING:

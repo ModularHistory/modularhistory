@@ -26,9 +26,7 @@ from core.utils import pdf
 from core.utils.html import components_to_html, compose_link, escape_quotes, soupify
 
 if TYPE_CHECKING:
-    pass
-
-    from apps.quotes.models import Quote
+    from apps.quotes.models.quote import Quote
 
 
 class PlaceholderGroups(DefaultPlaceholderGroups):

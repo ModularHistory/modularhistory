@@ -10,7 +10,7 @@ from nested_admin.nested import (
 from apps.admin.model_admin import FORM_FIELD_OVERRIDES
 
 if TYPE_CHECKING:
-    from core.models import Model
+    from core.models.model import Model
 
 
 class GenericTabularInline(NestedGenericTabularInline):

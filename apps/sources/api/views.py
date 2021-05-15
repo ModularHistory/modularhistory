@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 from apps.sources.serializers import SourceSerializer
 
 

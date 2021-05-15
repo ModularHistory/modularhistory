@@ -2,7 +2,7 @@ from rest_framework import permissions
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.topics.models import Topic
+from apps.topics.models.topic import Topic
 from apps.topics.serializers import TopicDictSerializer, TopicSerializer
 from core.pagination import VariableSizePagination
 

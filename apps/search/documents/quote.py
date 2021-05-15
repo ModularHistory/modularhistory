@@ -1,14 +1,14 @@
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
-from apps.entities.models import Entity
-from apps.quotes.models import Quote
+from apps.entities.models.entity import Entity
+from apps.quotes.models.quote import Quote
 from apps.search.documents.config import (
     DEFAULT_INDEX_SETTINGS,
     get_index_name_for_ct,
     html_field_analyzer,
 )
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 from core.constants.content_types import ContentTypes
 
 from .base import Document

@@ -4,8 +4,8 @@ from typing import List, Optional
 
 from django.db import models
 
-from apps.sources.models import Source
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
+from apps.sources.models.source import Source
 
 
 class Article(Source, PageNumbersMixin):

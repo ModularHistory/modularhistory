@@ -6,7 +6,7 @@ from apps.search.documents.config import (
     get_index_name_for_ct,
     html_field_analyzer,
 )
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 from core.constants.content_types import ContentTypes
 
 from .base import Document

@@ -3,8 +3,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from apps.sources.models import Source
 from apps.sources.models.mixins.document import DocumentMixin
+from apps.sources.models.source import Source
 
 NAME_MAX_LENGTH: int = 100
 
