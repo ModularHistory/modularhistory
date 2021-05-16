@@ -38,14 +38,15 @@ class ElasticSearchResultsAPIView(ListAPIView):
     serializer_class = SearchResultsSerializer
     pagination_class = ElasticPageNumberPagination
 
-    # these filters are applied to ES search instance
+    # These filters are applied to the ES search instance.
     filter_backends = [ModulesSearchFilterBackend]
 
-    # these filters are applied during resolving
+    # These filters are applied during resolving.
     pre_resolve_filters = [PreResolveFilterBackend]
 
-    # these filters are applied after the search results resolved to models
-    # applying meta filter backend should be first because sort and future filters might depend on meta field
+    # These filters are applied after the search results resolved to models
+    # applying meta filter backend should be first because sort and future
+    # filters might depend on meta field.
     post_resolve_filters = [ApplyMetaFilterBackend, SortByFilterBackend]
 
     suppress_unverified: bool

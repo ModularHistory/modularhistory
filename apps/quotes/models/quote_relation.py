@@ -6,7 +6,31 @@ from core.models.positioned_relation import PositionedRelation
 from core.utils.html import soupify
 
 
-class QuoteRelation(PositionedRelation):
+class AbstractQuoteRelation(PositionedRelation):
+    """A relation to a quote (by any other model)."""
+
+    quote = models.ForeignKey(
+        to='quotes.Quote', related_name='%(class)s_relations', on_delete=models.CASCADE
+    )
+
+    class Meta:
+        abstract = True
+
+    def __str__(self) -> str:
+        """Return the string representation of the relation."""
+        return soupify(self.quote.bite.html).get_text()
+
+    @property
+    def quote_pk(self) -> str:
+        """
+        Return the primary key of the quote relation's quote.
+
+        This attribute can be included in inline admins.
+        """
+        return self.quote.pk
+
+
+class QuoteRelation(AbstractQuoteRelation):
     """A relation to a quote (by any other model)."""
 
     quote = models.ForeignKey(
@@ -23,16 +47,3 @@ class QuoteRelation(PositionedRelation):
 
         unique_together = ['quote', 'content_type', 'object_id', 'position']
         ordering = ['position', 'quote']
-
-    def __str__(self) -> str:
-        """Return the string representation of the relation."""
-        return soupify(self.quote.bite.html).get_text()
-
-    @property
-    def quote_pk(self) -> str:
-        """
-        Return the primary key of the quote relation's quote.
-
-        This attribute can be included in inline admins.
-        """
-        return self.quote.pk

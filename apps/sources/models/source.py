@@ -27,7 +27,7 @@ from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
 if TYPE_CHECKING:
-    from apps.entities.models.entity import Entity
+    from apps.entities.models import Entity
     from apps.sources.models.source_containment import SourceContainment
 
 MAX_CITATION_STRING_LENGTH: int = 500
@@ -372,7 +372,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         page_number = page_number or self.page_number
         url = self.get_page_number_url(page_number=page_number)
         if url:
-            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'  # noqa: E800
+            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'  # noqa: E800,E501
             return compose_link(
                 page_number, href=url, klass='display-source', target=NEW_TAB
             )

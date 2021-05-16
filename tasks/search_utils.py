@@ -5,8 +5,7 @@ import time
 from itertools import chain
 
 import django
-from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Q, Search
+from elasticsearch_dsl import Q
 
 from apps.search.documents.entity import EntityDocument
 from apps.search.documents.image import ImageDocument
@@ -63,14 +62,14 @@ def search(
         queryset = list(s.to_queryset())
 
     toc = (time.perf_counter_ns() - tic) / 1000000
-    print(f"Search returned n={len(queryset)}, resolved results in {toc} ms")
+    print(f'Search returned n={len(queryset)}, resolved results in {toc} ms')
 
     if print_sql:
         print(connection.queries)
 
     if len(queryset) > 0:
-        print("Results:")
+        print('Results:')
         if print_all:
             [print(x) for x in queryset]
         else:
-            print(f"Random result item = {random.choice(queryset)}")
+            print(f'Random result item = {random.choice(queryset)}')

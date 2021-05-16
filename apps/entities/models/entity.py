@@ -191,7 +191,7 @@ class Entity(
             self.recast(self.type)
 
     def get_date(self) -> Optional[DateTime]:
-        """Date used for sorting search results"""
+        """Date used for sorting search results."""
         return self.birth_date
 
 

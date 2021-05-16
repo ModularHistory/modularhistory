@@ -5,15 +5,15 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 
 from concurrency.fields import IntegerVersionField
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models.fields.related import ManyToManyField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models.citation import AbstractCitation, Citation
+from apps.sources.models.citation import Citation
 from apps.sources.models.source import Source
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
-from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
 from core.models.model_with_computations import retrieve_or_compute
 
@@ -30,22 +30,20 @@ class ModelWithSources(Model):
     """
 
     citations = GenericRelation('sources.Citation')
-    new_citations = SortedManyToManyField(
-        to='sources.Source',
-        base_class=AbstractCitation,
-        related_name='%(class)s_set',
-        blank=True,
-        verbose_name=_('citations'),
-    )
-    sources: 'RelatedManager[Source]'
 
     version = IntegerVersionField()
 
     # Admin-facing notes (not to be displayed to users)
-    notes = HTMLField(null=True, blank=True, paragraphed=True, processed=False)
+    notes = HTMLField(
+        null=True, blank=True, paragraphed=True, processed=False, verbose_name=_('note')
+    )
 
     class Meta:
         abstract = True
+
+    @property
+    def sources(self) -> ManyToManyField:
+        raise NotImplementedError
 
     @property
     def source_file_url(self) -> Optional[str]:
