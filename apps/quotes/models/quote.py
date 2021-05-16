@@ -276,7 +276,7 @@ class Quote(
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
-        """Return the obj's HTML based on a placeholder in the admin."""
+        """Return the quote's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = str(match.group(PlaceholderGroups.HTML))
