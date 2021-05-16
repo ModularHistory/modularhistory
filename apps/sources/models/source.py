@@ -143,7 +143,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         'quotes.Quote',
         'occurrences.Occurrence',
         through='sources.Citation',
-        related_name='sources',
+        related_name='_sources',
         blank=True,
     )
     title = models.CharField(

@@ -71,6 +71,12 @@ class Postulation(
         symmetrical=False,
         verbose_name=_('supportive postulations'),
     )
+    sources = models.ManyToManyField(
+        to='sources.Source',
+        related_name='%(class)s_citations',
+        blank=True,
+        verbose_name=_('sources'),
+    )
 
     searchable_fields = ['summary', 'elaboration']
     serializer = PostulationSerializer
@@ -116,7 +122,7 @@ class Postulation(
     @classmethod
     def get_updated_placeholder(cls, match: Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
-        placeholder = match.group(0)
+        placeholder = str(match.group(0))
         logging.debug(f'Looking at {truncate(placeholder)}')
         extant_html: Optional[str] = match.group(PlaceholderGroups.HTML)
         extant_html = extant_html.strip() if extant_html else extant_html

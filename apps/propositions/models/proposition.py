@@ -65,6 +65,12 @@ class Proposition(
         symmetrical=False,
         verbose_name=_('premises'),
     )
+    sources = models.ManyToManyField(
+        to='sources.Source',
+        related_name='%(class)s_citations',
+        blank=True,
+        verbose_name=_('sources'),
+    )
 
     searchable_fields = ['summary', 'elaboration']
     serializer = PropositionSerializer

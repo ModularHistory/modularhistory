@@ -86,7 +86,16 @@ class Quote(
         blank=True,
     )
     images = models.ManyToManyField(
-        'images.Image', through='quotes.QuoteImage', related_name='quotes', blank=True
+        to='images.Image',
+        through='quotes.QuoteImage',
+        related_name='quotes',
+        blank=True,
+    )
+    sources = models.ManyToManyField(
+        to='sources.Source',
+        related_name='%(class)s_citations',
+        blank=True,
+        verbose_name=_('sources'),
     )
 
     class Meta:
@@ -270,7 +279,7 @@ class Quote(
         """Return the obj's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(PlaceholderGroups.HTML)
+            preretrieved_html = str(match.group(PlaceholderGroups.HTML))
             if preretrieved_html:
                 return preretrieved_html.strip()
         quote = cls.objects.get(pk=match.group(PlaceholderGroups.PK))

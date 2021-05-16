@@ -135,10 +135,6 @@ class NewOccurrence(
         }
 
 
-class OccurrenceQuoteRelation(AbstractQuoteRelation):
-    occurrence = models.ForeignKey('Occurrence', on_delete=models.CASCADE)
-
-
 class Occurrence(
     SearchableDatedModel,
     ModelWithSources,
