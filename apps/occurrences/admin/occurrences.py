@@ -66,6 +66,7 @@ class NewOccurrenceAdmin(PropositionChildAdmin):
         'title',
         'summary',
         'date_string',
+        'tags_string',
     ]
     list_editable = ['title']
     list_filter = [
@@ -106,6 +107,7 @@ class OccurrenceAdmin(SearchableModelAdmin):
         'summary',
         # 'detail_link',
         'date_string',
+        'tags_string',
     ]
     list_editable = ['title']
     list_filter = [
