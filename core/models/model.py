@@ -180,10 +180,9 @@ class Model(DjangoModel):
 
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            html_group = match.group(PlaceholderGroups.HTML)
-            preretrieved_html = str(html_group) if html_group else ''
+            preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
             logging.info(
                 f'Could not use preretrieved HTML for '
                 f'{match.group(PlaceholderGroups.MODEL_NAME)} '

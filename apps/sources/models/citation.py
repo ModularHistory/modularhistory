@@ -269,7 +269,7 @@ class AbstractCitation(PositionedRelation):
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         key = match.group(PlaceholderGroups.PK).strip()
         try:
             citation = cls.objects.get(pk=key)

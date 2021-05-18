@@ -125,7 +125,7 @@ class Postulation(
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         fact: 'Postulation' = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         return fact.summary_link
 
@@ -135,9 +135,8 @@ class Postulation(
         placeholder = str(match.group(0))
         logging.debug(f'Looking at {truncate(placeholder)}')
         extant_html: Optional[str] = match.group(PlaceholderGroups.HTML)
-        extant_html = extant_html.strip() if extant_html else extant_html
         if extant_html:
-
+            extant_html = str(extant_html).strip()
             if '<a ' not in extant_html:
                 html = cls.get_object_html(match)
                 html = re.sub(

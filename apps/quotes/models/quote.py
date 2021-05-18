@@ -296,7 +296,7 @@ class Quote(
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = str(match.group(PlaceholderGroups.HTML))
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         quote = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         if isinstance(quote, dict):
             body = quote['text']
