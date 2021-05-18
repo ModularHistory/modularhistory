@@ -260,10 +260,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         # TODO: Do something else with the information URL.
         # It shouldn't be part of the citation string, but we should use it.
         # if getattr(self, 'information_url', None) and self.information_url:
-        #     html = (
-        #         f'{html}, information available at '
-        #         f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
+        #     information_link = compose_link(
+        #         self.information_url, href=self.information_url, target="_blank"
         #     )
+        #     html = f'{html}, information available at {information_link}'
         return format_html(fix_comma_positions(html))
 
     def get_containment_html(self) -> str:

@@ -111,7 +111,7 @@ def cache_tags(model: str, instance_id: int, tags: list):
     """Save cached tags to a model instance."""
     if not tags:
         return
-    Model = apps.get_model(model)
+    Model = apps.get_model(model)  # noqa: N806
     model_instance = Model.objects.get(pk=instance_id)
     model_instance._cached_tags = tags
     model_instance.save()
