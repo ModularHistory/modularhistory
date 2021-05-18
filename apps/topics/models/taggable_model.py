@@ -50,7 +50,7 @@ class TaggableModel(ModelWithComputations):
         """Return a list of tag keys (e.g., ['race', 'religion'])."""
         try:
             return [topic.name for topic in self.cached_tags]
-        except:
+        except Exception:
             return [topic['name'] for topic in self.cached_tags]
 
     @property
