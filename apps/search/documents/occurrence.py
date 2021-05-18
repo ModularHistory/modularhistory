@@ -34,14 +34,12 @@ class OccurrenceDocument(Document):
     )
     citations = fields.TextField(attr='citation_html', analyzer=html_field_analyzer)
     topics = fields.ObjectField(
-        attr='_related_topics',
+        attr='cached_tags',
         properties={
             'id': fields.IntegerField(),
             'key': fields.TextField(),
             'aliases': fields.TextField(),
-            'description': fields.TextField(
-                attr='description.raw_value', analyzer=html_field_analyzer
-            ),
+            'description': fields.TextField(analyzer=html_field_analyzer),
             'path': fields.TextField(),
         },
     )
@@ -54,5 +52,5 @@ class OccurrenceDocument(Document):
         return (
             super()
             .get_queryset()
-            .prefetch_related('involved_entities', 'sources', 'topics')
+            .prefetch_related('involved_entities', 'sources', 'new_tags')
         )

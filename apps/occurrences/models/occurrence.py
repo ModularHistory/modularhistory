@@ -15,11 +15,10 @@ from apps.occurrences.constants import OCCURRENCE_TYPES
 from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.occurrences.serializers import OccurrenceSerializer
 from apps.places.models.model_with_locations import ModelWithLocations
-
-# from apps.propositions.models.proposition import Proposition
+from apps.propositions.models.proposition import Proposition
 from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
-from apps.search.models import SearchableDatedModel
+from apps.search.models.searchable_dated_model import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
 from core.fields import HTMLField
 from core.utils.html import soupify
@@ -31,9 +30,8 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
 class NewOccurrence(
-    # Proposition,
+    Proposition,
     DatedModel,
-    ModelWithRelatedQuotes,
     ModelWithLocations,
     ModelWithImages,
 ):
@@ -81,7 +79,6 @@ class NewOccurrence(
 
     def save(self, *args, **kwargs):
         """Save the occurrence to the database."""
-        self.clean()
         super().save(*args, **kwargs)
         if not self.images.exists():
             image = None
@@ -182,12 +179,6 @@ class Occurrence(
         through='occurrences.OccurrenceChainInclusion',
         related_name='occurrences',
         verbose_name=_('chains'),
-    )
-    sources = models.ManyToManyField(
-        to='sources.Source',
-        related_name='%(class)s_citations',
-        blank=True,
-        verbose_name=_('sources'),
     )
 
     class Meta:

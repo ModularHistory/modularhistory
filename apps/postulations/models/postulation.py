@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
@@ -36,6 +37,14 @@ DEGREES_OF_CERTAINTY = (
     (3, 'Beyond reasonable doubt'),
     (4, 'Beyond any shadow of a doubt'),
 )
+
+
+class PostulationCitation(AbstractCitation):
+    content_object = models.ForeignKey(
+        to='postulations.Postulation',
+        on_delete=models.CASCADE,
+        related_name='citations',
+    )
 
 
 class PostulationSerializer(ModelSerializer):
@@ -74,6 +83,7 @@ class Postulation(
     sources = models.ManyToManyField(
         to='sources.Source',
         related_name='%(class)s_citations',
+        through=PostulationCitation,
         blank=True,
         verbose_name=_('sources'),
     )

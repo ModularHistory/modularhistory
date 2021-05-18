@@ -204,9 +204,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return self.polymorphic_ctype
 
     @property
-    def ctype_name(self) -> ContentType:
-        """Return the model instance's ContentType."""
-        return self.ctype.model
+    def ctype_name(self) -> str:
+        """Return the model instance's content type name."""
+        return f'{self.ctype.model}'
 
     @property
     def escaped_citation_html(self) -> SafeString:

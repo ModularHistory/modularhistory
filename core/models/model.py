@@ -228,7 +228,7 @@ class Model(DjangoModel):
 class ModelSerializer(serpy.Serializer):
     """Base serializer for ModularHistory's models."""
 
-    pk = serpy.Field()
+    id = serpy.IntField()
     model = serpy.MethodField()
 
     def get_model(self, instance: Model) -> str:  # noqa

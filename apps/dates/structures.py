@@ -10,6 +10,7 @@ import sigfig
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from millify import millify, prettify
+from pytz import UTC
 
 SEASONS = (
     (None, '-----'),
@@ -77,6 +78,10 @@ class HistoricDateTime(datetime):
     ybp_lower_limit = YBP_LOWER_LIMIT
     bce_threshold = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
     significant_figures = SIGNIFICANT_FIGURES
+
+    def __new__(cls, *args, **kwargs):
+        kwargs['tzinfo'] = kwargs.get('tzinfo') or UTC
+        return super().__new__(cls, *args, **kwargs)
 
     def __str__(self) -> str:
         """Return the datetime's string representation."""

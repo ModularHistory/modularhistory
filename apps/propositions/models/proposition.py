@@ -4,6 +4,7 @@ import logging
 import re
 from typing import Match, Optional
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -11,14 +12,21 @@ from polymorphic.models import PolymorphicModel
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.propositions.api.serializers import PropositionSerializer
+from apps.quotes.models.model_with_related_quotes import (
+    AbstractQuoteRelation,
+    ModelWithRelatedQuotes,
+    RelatedQuotesField,
+)
 from apps.search.models import SearchableModel
-from apps.sources.models.model_with_sources import ModelWithSources
+from apps.sources.models.citation import AbstractCitation
+from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.fields import HTMLField
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
     PlaceholderGroups,
 )
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
 
@@ -37,11 +45,22 @@ DEGREES_OF_CERTAINTY = (
 )
 
 
+class Citation(AbstractCitation):
+    content_object = ManyToManyForeignKey(
+        to='propositions.Proposition', related_name='citations'
+    )
+
+
+class QuoteRelation(AbstractQuoteRelation):
+    content_object = ManyToManyForeignKey(to='propositions.Proposition')
+
+
 class Proposition(
     PolymorphicModel,
-    ModelWithSources,
     SearchableModel,
+    ModelWithSources,
     ModelWithRelatedEntities,
+    ModelWithRelatedQuotes,
 ):
     """
     A proposition.
@@ -65,12 +84,10 @@ class Proposition(
         symmetrical=False,
         verbose_name=_('premises'),
     )
-    sources = models.ManyToManyField(
-        to='sources.Source',
-        related_name='%(class)s_citations',
-        blank=True,
-        verbose_name=_('sources'),
+    related_quotes = RelatedQuotesField(
+        through=QuoteRelation, related_name='propositions'
     )
+    sources = SourcesField(through=Citation, related_name='propositions')
 
     searchable_fields = ['summary', 'elaboration']
     serializer = PropositionSerializer
@@ -79,6 +96,16 @@ class Proposition(
     def __str__(self) -> str:
         """Return the proposition's string representation."""
         return self.summary.text
+
+    @property
+    def ctype(self) -> ContentType:
+        """Alias polymorphic_ctype."""
+        return self.polymorphic_ctype
+
+    @property
+    def ctype_name(self) -> str:
+        """Return the model instance's content type name."""
+        return f'{self.ctype.model}'
 
     @property
     def summary_link(self) -> str:

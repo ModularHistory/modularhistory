@@ -3,10 +3,8 @@
 from datetime import datetime
 from typing import Optional, Union
 
-from django.conf import settings
 from django.db.models import DateTimeField
 from django.forms import Field
-from django.utils.timezone import is_naive, make_aware
 
 from apps.dates.structures import HistoricDateTime
 from core.forms import HistoricDateFormField
@@ -42,9 +40,7 @@ class HistoricDateTimeField(DateTimeField):
         """
         if datetime_value is None:
             return datetime_value
-        # TODO: consider effect of timezones
-        if settings.USE_TZ and is_naive(datetime_value):
-            datetime_value = make_aware(datetime_value)
+        # TODO: include tz? It's set to UTC by default in HistoricDateTime.__new__.
         return HistoricDateTime(
             datetime_value.year,
             datetime_value.month,
@@ -66,12 +62,11 @@ class HistoricDateTimeField(DateTimeField):
         """
         if not historic_datetime:
             return None
-        elif isinstance(historic_datetime, HistoricDateTime):
+        elif isinstance(historic_datetime, str):
+            raise TypeError
+        if isinstance(historic_datetime, HistoricDateTime):
             return historic_datetime
         elif isinstance(historic_datetime, datetime):
-            # TODO: consider effect of timezones
-            if settings.USE_TZ and is_naive(historic_datetime):
-                historic_datetime = make_aware(historic_datetime)
             return HistoricDateTime(
                 historic_datetime.year,
                 historic_datetime.month,
@@ -81,8 +76,6 @@ class HistoricDateTimeField(DateTimeField):
                 historic_datetime.second,
                 historic_datetime.microsecond,
             )
-        elif isinstance(historic_datetime, str):
-            raise TypeError
 
     # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-python-objects-to-query-values
     def get_prep_value(
