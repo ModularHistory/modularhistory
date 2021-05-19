@@ -45,14 +45,20 @@ DEGREES_OF_CERTAINTY = (
 )
 
 
-class Citation(AbstractCitation):
-    content_object = ManyToManyForeignKey(
-        to='propositions.Proposition', related_name='citations'
+def get_proposition_fk(related_name: str):
+    return ManyToManyForeignKey(
+        to='propositions.Proposition',
+        related_name=related_name,
+        verbose_name='proposition',
     )
 
 
+class Citation(AbstractCitation):
+    content_object = get_proposition_fk('citations')
+
+
 class QuoteRelation(AbstractQuoteRelation):
-    content_object = ManyToManyForeignKey(to='propositions.Proposition')
+    content_object = get_proposition_fk('quote_relations')
 
 
 class Proposition(

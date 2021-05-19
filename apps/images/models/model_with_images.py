@@ -1,16 +1,19 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import Dict, Optional, TYPE_CHECKING
 
+from celery import shared_task
+from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 
+from core.fields.json_field import JSONField
 from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
 from core.models.model_with_computations import retrieve_or_compute
 
 if TYPE_CHECKING:
-    from django.db.models.manager import Manager
+    pass
 
 
 class ModelWithImages(Model):
@@ -28,7 +31,7 @@ class ModelWithImages(Model):
         verbose_name=_('images'),
     )
 
-    image_relations: 'Manager'
+    _cached_images = JSONField(editable=False, default=list)
 
     class Meta:
         """Meta options for ModelWithImages."""
@@ -38,19 +41,37 @@ class ModelWithImages(Model):
         abstract = True
 
     @property
+    def cached_images(self) -> list:
+        if self._cached_images or not self.images.exists():
+            return self._cached_images
+        images = [image.serialize() for image in self.images.all()]
+        # images = [
+        #     image_relation.image.serialize()
+        #     for image_relation in self.image_relations.all().select_related('image')
+        # ]
+        cache_images.delay(
+            f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
+            self.id,
+            images,
+        )
+        return images
+
+    @property
     def primary_image(self) -> Optional[Dict]:
         """Return the image to represent the model instance by default."""
         try:
-            return self.serialized_images[0]
+            return self.cached_images[0]
         except IndexError:
             logging.debug(f'No image could be retrieved for {self}')
             return None
 
-    @property  # type: ignore
-    @retrieve_or_compute(attribute_name='serialized_images')
-    def serialized_images(self) -> List[Dict]:
-        """Return a list of dictionaries representing the instance's images."""
-        return [
-            image_relation.image.serialize()
-            for image_relation in self.image_relations.all().select_related('image')
-        ]
+
+@shared_task
+def cache_images(model: str, instance_id: int, images: list):
+    """Save cached images to a model instance."""
+    if not images:
+        return
+    Model = apps.get_model(model)
+    model_instance = Model.objects.get(pk=instance_id)  # noqa: N806
+    model_instance._cached_images = images
+    model_instance.save()

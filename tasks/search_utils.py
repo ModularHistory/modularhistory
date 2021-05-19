@@ -25,34 +25,42 @@ SEARCHABLE_DOCUMENTS = [
     EntityDocument,
 ]
 
+DOCUMENT_MAP = {
+    'occurrences': OccurrenceDocument,
+    'quotes': QuoteDocument,
+    'sources': SourceDocument,
+    'images': ImageDocument,
+    'entities': EntityDocument,
+}
+
 
 @command
 def search(
     context,
     query,
-    all: bool = False,
+    document: str = 'all',
     print_all: bool = False,
     print_sql: bool = False,
     start: int = 0,
     end: int = 20,
 ):
     """Perform a search for testing purposes."""
-    random_document = random.choice(SEARCHABLE_DOCUMENTS)
-    print(f"Searching for = {query} in {'all' if all else random_document}")
+    _document = DOCUMENT_MAP.get(document, 'all')
+    print(f'Searching for = {query} in {document}...')
     query = Q('simple_query_string', query=query)
     # client = Elasticsearch()
     # search = Search(using=client).query(query)
     tic = time.perf_counter_ns()
     if print_sql:
         from django.db import connection
-    if all:
+    if document == 'all':
         queryset = chain()
         for document in SEARCHABLE_DOCUMENTS:
             s = document.search().query(query)[start:end]
             queryset = chain(queryset, s.to_queryset())
         queryset = list(queryset)
     else:
-        s = random_document.search().query(query)[start:end]
+        s = _document.search().query(query)[start:end]
         queryset = list(s.to_queryset())
     toc = (time.perf_counter_ns() - tic) / 1000000
     print(f'Search returned n={len(queryset)}, resolved results in {toc} ms')

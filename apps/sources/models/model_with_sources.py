@@ -1,12 +1,11 @@
 """Classes for models with relations to sources."""
 
 import logging
-from typing import Dict, List, Optional, Type, Union
+from typing import Optional, Type, Union
 
 from celery import shared_task
 from concurrency.fields import IntegerVersionField
 from django.apps import apps
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.fields.related import ManyToManyField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -41,7 +40,7 @@ class ModelWithSources(Model):
     it must be defined as an abstract model class.
     """
 
-    citations = GenericRelation('sources.Citation')
+    # citations = GenericRelation('sources.Citation')
 
     _cached_citations = JSONField(editable=False, default=list)
 
@@ -72,7 +71,7 @@ class ModelWithSources(Model):
         """
         The `related_name` value for the intermediate citation model.
 
-        Models inheriting from ModelWithSources must implement a m2m relationship
+        Models inheriting from ModelWithSources must have a m2m relationship
         with the Source model with a `through` model that inherits from
         AbstractCitation and uses `related_name='citations'`. For example:
 
@@ -105,18 +104,12 @@ class ModelWithSources(Model):
         except IndexError:
             return None
 
-    @property  # type: ignore
-    @retrieve_or_compute(attribute_name='serialized_citations')
-    def serialized_citations(self) -> List[Dict]:
-        """Return a list of dictionaries representing the instance's citations."""
-        return [citation.serialize() for citation in self.citations.all()]
-
     @property
     def citation_html(self) -> SafeString:
         """Return the instance's full citation HTML."""
         try:
             citation_html = '; '.join(
-                citation.get('html') for citation in self.serialized_citations
+                citation.get('html') for citation in self.cached_citations
             )
         except Exception as error:
             logging.error(f'{error}')

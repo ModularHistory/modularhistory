@@ -2,7 +2,6 @@
 
 from typing import Type, Union
 
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -50,13 +49,32 @@ class RelatedQuotesField(CustomManyToManyField):
 class ModelWithRelatedQuotes(Model):
     """A model that has related quotes; e.g., an occurrence, topic, or person."""
 
-    quote_relations = GenericRelation('quotes.GenericQuoteRelation')
-
     # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
     class Meta:
         """Meta options for ModelWithRelatedQuotes."""
 
         abstract = True
 
+    @property
     def related_quotes(self) -> RelatedQuotesField:
+        raise NotImplementedError
+
+    @property
+    def quote_relations(self):
+        """
+        The `related_name` value for the intermediate citation model.
+
+        Models inheriting from ModelWithRelatedQuotes must have a m2m relationship
+        with the Quote model with a `through` model that inherits from
+        AbstractQuoteRelation and uses `related_name='quote_relations'`.
+        For example:
+
+        ``
+        class QuoteRelation(AbstractQuoteRelation):
+            content_object = ManyToManyForeignKey(
+                to='propositions.Proposition',
+                related_name='quote_relations',
+            )
+        ``
+        """
         raise NotImplementedError

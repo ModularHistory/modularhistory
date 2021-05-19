@@ -56,15 +56,15 @@ class NewOccurrence(
 
         ordering = ['date']
 
-    objects = managers.NewOccurrenceManager()
+    objects = managers.OccurrenceManager()
     searchable_fields = [
         'summary',
         'description',
         'date__year',
         'related_entities__name',
         'related_entities__aliases',
-        'tags__topic__key',
-        'tags__topic__aliases',
+        'tags__key',
+        'tags__aliases',
     ]
     serializer = OccurrenceSerializer
     slug_base_field = 'title'
@@ -128,137 +128,7 @@ class NewOccurrence(
         }
 
 
-# class Occurrence(
-#     SearchableDatedModel,
-#     ModelWithSources,
-#     ModelWithRelatedQuotes,
-#     ModelWithImages,
-# ):
-#     """Something that happened."""
-
-#     type = models.PositiveSmallIntegerField(choices=OCCURRENCE_TYPES, default=0)
-#     date = HistoricDateTimeField(verbose_name=_('date'), null=True, blank=True)
-#     end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
-#     summary = HTMLField(verbose_name=_('summary'), paragraphed=False, processed=False)
-#     description = HTMLField(verbose_name=_('description'), paragraphed=True)
-#     postscript = HTMLField(
-#         verbose_name=_('postscript'),
-#         null=True,
-#         blank=True,
-#         paragraphed=True,
-#         help_text='Content to be displayed below all related data',
-#     )
-#     locations = models.ManyToManyField(
-#         to='places.Place',
-#         through='occurrences.OccurrenceLocation',
-#         related_name='occurrences',
-#         blank=True,
-#         verbose_name=_('locations'),
-#     )
-#     images = models.ManyToManyField(
-#         to='images.Image',
-#         through='occurrences.OccurrenceImage',
-#         related_name='occurrences',
-#         blank=True,
-#         verbose_name=_('images'),
-#     )
-#     image_relations: 'Manager'
-#     involved_entities = models.ManyToManyField(
-#         to='entities.Entity',
-#         through='occurrences.OccurrenceEntityInvolvement',
-#         related_name='involved_occurrences',
-#         blank=True,
-#         verbose_name=_('involved entities'),
-#     )
-#     chains = models.ManyToManyField(
-#         to='occurrences.OccurrenceChain',
-#         through='occurrences.OccurrenceChainInclusion',
-#         related_name='occurrences',
-#         verbose_name=_('chains'),
-#     )
-
-#     class Meta:
-#         """Meta options for the Category model."""
-
-#         # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
-
-#         unique_together = ['summary', 'date']
-#         ordering = ['date']
-
-#     objects = managers.OccurrenceManager()
-#     searchable_fields = [
-#         'summary',
-#         'description',
-#         'date__year',
-#         'involved_entities__name',
-#         'involved_entities__aliases',
-#         'tags__topic__key',
-#         'tags__topic__aliases',
-#     ]
-#     serializer = OccurrenceSerializer
-#     slug_base_field = 'title'
-
-#     def __str__(self) -> str:
-#         """Return the string representation of the occurrence."""
-#         return self.summary.text
-
-#     def save(self, *args, **kwargs):
-#         """Save the occurrence to the database."""
-#         self.clean()
-#         super().save(*args, **kwargs)
-#         if not self.images.exists():
-#             image = None
-#             if self.involved_entities.exists():
-#                 for entity in self.involved_entities.all():
-#                     if entity.images.exists():
-#                         if self.date:
-#                             image = entity.images.get_closest_to_datetime(self.date)
-#                         else:
-#                             image = entity.image
-#             if image:
-#                 OccurrenceImage.objects.create(occurrence=self, image=image)
-
-#     def clean(self):
-#         """Prepare the occurrence to be saved."""
-#         super().clean()
-#         if not self.date:
-#             raise ValidationError('Occurrence needs a date.')
-
-#     @property
-#     def truncated_description(self) -> Optional[SafeString]:
-#         """Return the occurrence's description, truncated."""
-#         if not self.description:
-#             return None
-#         description = soupify(self.description.html)
-#         if description.find('img'):
-#             description.find('img').decompose()
-#         truncated_description = (
-#             truncatechars_html(description.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
-#             .replace('<p>', '')
-#             .replace('</p>', '')
-#         )
-#         return format_html(truncated_description)
-
-#     @property
-#     def ordered_images(self):
-#         """Careful!  These are occurrence-images, not images."""
-#         return self.image_relations.all().select_related('image')
-
-#     def get_context(self):
-#         """Return context for rendering the occurrence's detail template."""
-#         quotes = [
-#             quote_relation.quote
-#             for quote_relation in self.quote_relations.all()
-#             .select_related('quote')
-#             .iterator()
-#         ]
-#         return {
-#             'occurrence': self,
-#             'quotes': sorted(quotes, key=quote_sorter_key),
-#         }
-
-
-# class Birth(NewOccurrence):
+# class Birth(Occurrence):
 #     """A birth of an entity."""
 
 #     class Meta:
@@ -267,7 +137,7 @@ class NewOccurrence(
 #     objects = managers.BirthManager()
 
 
-# class Death(NewOccurrence):
+# class Death(Occurrence):
 #     """A death of an entity."""
 
 #     class Meta:
@@ -276,7 +146,7 @@ class NewOccurrence(
 #     objects = managers.DeathManager()
 
 
-# class Publication(NewOccurrence):
+# class Publication(Occurrence):
 #     """A publication of a source."""
 
 #     class Meta:
@@ -285,7 +155,7 @@ class NewOccurrence(
 #     objects = managers.PublicationManager()
 
 
-# class Verbalization(NewOccurrence):
+# class Verbalization(Occurrence):
 #     """A verbalization or production of a source, prior to publication."""
 
 #     class Meta:

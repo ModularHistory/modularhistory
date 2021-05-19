@@ -26,7 +26,7 @@ class ContentTypes(Constant):
     citation = 'sources.citation'
     entity = 'entities.entity'
     image = 'images.image'
-    occurrence = 'occurrences.occurrence'
+    occurrence = 'occurrences.newoccurrence'
     place = 'places.place'
     quote = 'quotes.quote'
     source = 'sources.source'
@@ -38,7 +38,7 @@ MODEL_CLASS_PATHS = {
     ModelNameSet.citation: 'apps.sources.models.Citation',
     ModelNameSet.entity: 'apps.entities.models.Entity',
     ModelNameSet.image: 'apps.images.models.Image',
-    ModelNameSet.occurrence: 'apps.occurrences.models.NewOccurrence',
+    ModelNameSet.occurrence: 'apps.occurrences.models.Occurrence',
     ModelNameSet.place: 'apps.places.models.Place',
     ModelNameSet.quote: 'apps.quotes.models.Quote',
     ModelNameSet.source: 'apps.sources.models.Source',

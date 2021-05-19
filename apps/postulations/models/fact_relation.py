@@ -57,25 +57,3 @@ class TopicFactRelation(FactRelation):
         # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         unique_together = ['topic', 'fact']
-
-
-class OccurrenceFactRelation(FactRelation):
-    """A relation of a fact to an occurrence."""
-
-    occurrence = models.ForeignKey(
-        to='occurrences.Occurrence',
-        related_name='occurrence_fact_relations',
-        on_delete=models.CASCADE,
-    )
-    fact = models.ForeignKey(
-        to='postulations.Postulation',
-        related_name='fact_occurrence_relations',
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        """Meta options for OccurrenceFactRelation."""
-
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
-
-        unique_together = ['fact', 'occurrence']

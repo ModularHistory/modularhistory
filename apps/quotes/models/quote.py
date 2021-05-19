@@ -47,12 +47,18 @@ quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
 )
 
 
+def get_quote_fk(related_name: str):
+    return ManyToManyForeignKey(
+        to='quotes.Quote', related_name=related_name, verbose_name='quote'
+    )
+
+
 class Citation(AbstractCitation):
-    content_object = ManyToManyForeignKey(to='quotes.Quote', related_name='citations')
+    content_object = get_quote_fk(related_name='citations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
-    content_object = ManyToManyForeignKey(to='quotes.Quote')
+    content_object = get_quote_fk(related_name='quote_relations')
 
 
 class Quote(
@@ -91,14 +97,6 @@ class Quote(
         blank=True,
         verbose_name=_('attributees'),
     )
-    related = GenericManyToManyField(
-        'occurrences.Occurrence',
-        'entities.Entity',
-        'quotes.Quote',
-        through='quotes.GenericQuoteRelation',
-        related_name='_related_quotes',
-        blank=True,
-    )
     images = models.ManyToManyField(
         to='images.Image',
         through='quotes.QuoteImage',
@@ -129,8 +127,8 @@ class Quote(
         'attributees__name',
         'date__year',
         'sources__citation_string',
-        'tags__topic__key',
-        'tags__topic__aliases',
+        'tags__key',
+        'tags__aliases',
     ]
     serializer = QuoteSerializer
     slug_base_field = 'title'
@@ -282,12 +280,12 @@ class Quote(
     def related_occurrences(self) -> 'QuerySet':
         """Return a queryset of the quote's related occurrences."""
         # TODO: refactor
-        from apps.occurrences.models.occurrence import NewOccurrence
+        from apps.occurrences.models.occurrence import NewOccurrence as Occurrence
 
         occurrence_ids = self.relations.filter(
             models.Q(content_type_id=get_ct_id(ContentTypes.occurrence))
         ).values_list('id', flat=True)
-        return NewOccurrence.objects.filter(id__in=occurrence_ids)
+        return Occurrence.objects.filter(id__in=occurrence_ids)
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:

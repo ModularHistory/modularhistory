@@ -40,6 +40,6 @@ class HasTagsFilter(SimpleListFilter):
     def queryset(self, request, queryset):
         """Return the filtered queryset."""
         if self.value() == YES:
-            return queryset.exclude(new_tags=None)
+            return queryset.exclude(tags=None)
         if self.value() == NO:
-            return queryset.filter(new_tags=None)
+            return queryset.filter(tags=None)

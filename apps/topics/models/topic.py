@@ -5,7 +5,6 @@ from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
-from apps.topics.models.topic_relation import TopicRelation
 from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
@@ -80,13 +79,6 @@ class Topic(TreeModel, SluggedModel, ModelWithComputations):
         through=TopicTopicRelation,
         symmetrical=True,
         related_name='topics_related',
-        blank=True,
-    )
-    related = GenericManyToManyField(
-        'occurrences.Occurrence',
-        'quotes.Quote',
-        through=TopicRelation,
-        related_name='topic_relations',
         blank=True,
     )
 

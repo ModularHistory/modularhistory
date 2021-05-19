@@ -43,7 +43,7 @@ class EntitySerializer(SearchableModelSerializer):
     deathDate = serpy.MethodField('get_serialized_death_date')
     description = serpy.Field(attr='description.html', required=False)
     truncatedDescription = serpy.Field(attr='truncated_description')
-    serializedImages = serpy.Field(attr='serialized_images')
+    cachedImages = serpy.Field(attr='cached_images')
     categorizations = CategorizationSerializer(
         many=True, attr='categorizations.all', call=True
     )

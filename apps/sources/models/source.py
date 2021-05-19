@@ -139,13 +139,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     publication_date = HistoricDateTimeField(
         verbose_name=_('publication date'), null=True, blank=True
     )
-    related = GenericManyToManyField(
-        'quotes.Quote',
-        'occurrences.Occurrence',
-        through='sources.Citation',
-        related_name='_sources',
-        blank=True,
-    )
     title = models.CharField(
         verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
     )

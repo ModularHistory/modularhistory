@@ -2,7 +2,7 @@ from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.entities.models.entity import Entity
-from apps.occurrences.models.occurrence import NewOccurrence
+from apps.occurrences.models.occurrence import NewOccurrence as Occurrence
 from apps.search.documents.base import Document
 from apps.search.documents.config import (
     DEFAULT_INDEX_SETTINGS,
@@ -21,10 +21,10 @@ class OccurrenceDocument(Document):
 
     title = fields.TextField(analyzer=html_field_analyzer)
     summary = fields.TextField(attr='summary.raw_value', analyzer=html_field_analyzer)
-    description = fields.TextField(
-        attr='description.raw_value', analyzer=html_field_analyzer
+    elaboration = fields.TextField(
+        attr='elaboration.raw_value', analyzer=html_field_analyzer
     )
-    involved_entities = fields.ObjectField(
+    related_entities = fields.ObjectField(
         properties={
             'id': fields.IntegerField(),
             'name': fields.TextField(),
@@ -45,12 +45,12 @@ class OccurrenceDocument(Document):
     )
 
     class Django:
-        model = NewOccurrence
+        model = Occurrence
         related_models = [Source, Entity]
 
     def get_queryset(self):
         return (
             super()
             .get_queryset()
-            .prefetch_related('involved_entities', 'sources', 'new_tags')
+            .prefetch_related('related_entities', 'sources', 'tags')
         )

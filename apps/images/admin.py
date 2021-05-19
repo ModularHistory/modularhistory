@@ -44,7 +44,7 @@ class AbstractImagesInline(TabularInline):
     model: Type
 
     autocomplete_fields = ['image']
-    readonly_fields = ['key', 'image_pk']
+    # readonly_fields = ['image_pk']
     verbose_name = 'image'
     verbose_name_plural = 'images'
 

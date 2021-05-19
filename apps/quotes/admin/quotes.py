@@ -44,7 +44,7 @@ class RelatedQuotesInline(AbstractRelatedQuotesInline):
 class RelatedTopicsInline(AbstractRelatedTopicsInline):
     """Inline admin for a quote's related entities."""
 
-    model = models.Quote.new_tags.through
+    model = models.Quote.tags.through
 
 
 class QuoteAdmin(SearchableModelAdmin):
@@ -101,7 +101,7 @@ class QuoteAdmin(SearchableModelAdmin):
 
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
-        qs = models.Quote.objects.prefetch_related('attributees', 'tags__topic')
+        qs = models.Quote.objects.prefetch_related('attributees', 'tags')
         ordering = self.get_ordering(request)
         if ordering and ordering != models.Quote.get_meta().ordering:
             qs = qs.order_by(*ordering)

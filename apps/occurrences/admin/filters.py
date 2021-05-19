@@ -31,7 +31,7 @@ class HasQuotesFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         """Return the filtered queryset."""
-        queryset = queryset.annotate(quote_count=Count('quote_relations'))
+        queryset = queryset.annotate(quote_count=Count('related_quotes'))
         if self.value() == YES:
             return queryset.exclude(quote_count__lt=1)
         if self.value() == NO:

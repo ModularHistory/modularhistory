@@ -12,7 +12,7 @@ export default function ModuleUnionCard({ module, ...childProps }) {
         <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" trimRight />
       );
       break;
-    case "occurrences.occurrence":
+    case "occurrences.newoccurrence":
       content = <div dangerouslySetInnerHTML={{ __html: module.summary }} />;
       break;
     case "postulations.postulation":

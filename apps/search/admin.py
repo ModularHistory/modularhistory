@@ -16,7 +16,7 @@ class SearchableModelAdmin(ModelAdmin):
 
     model: Type['SearchableModel']
 
-    exclude = ['computations', 'new_tags']
+    exclude = ['computations', 'tags']
     readonly_fields = ['pretty_computations']
 
     def get_fields(self, request, model_instance=None):

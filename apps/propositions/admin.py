@@ -1,11 +1,10 @@
-
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from apps.admin import StackedInline, admin_site
 from apps.admin.list_filters.type_filter import PolymorphicContentTypeFilter
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
-from apps.occurrences.models.occurrence import NewOccurrence
+from apps.occurrences.models.occurrence import NewOccurrence as Occurrence
 from apps.propositions import models
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
@@ -16,7 +15,7 @@ from apps.topics.models.taggable_model import TopicFilter
 class RelatedTopicsInline(AbstractRelatedTopicsInline):
     """Inline admin for topic tags."""
 
-    model = models.Proposition.new_tags.through
+    model = models.Proposition.tags.through
 
 
 class SourcesInline(AbstractSourcesInline):
@@ -53,7 +52,7 @@ class PremisesInline(StackedInline):
 
 
 class PropositionTypeFilter(PolymorphicContentTypeFilter):
-    model_options = [models.Proposition, NewOccurrence]
+    model_options = [models.Proposition, Occurrence]
 
 
 class AbstractPropositionAdmin(SearchableModelAdmin):
@@ -88,7 +87,7 @@ class PolymorphicPropositionAdmin(
     """Admin for propositions."""
 
     base_model = models.Proposition
-    child_models = (models.Proposition, NewOccurrence)
+    child_models = (models.Proposition, Occurrence)
 
     model = models.Proposition
 

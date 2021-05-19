@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from celery import shared_task
 from django.apps import apps
-from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
@@ -21,8 +20,7 @@ from core.models.model_with_computations import ModelWithComputations
 class TaggableModel(ModelWithComputations):
     """Mixin for models that are topic-taggable."""
 
-    tags = GenericRelation('topics.TopicRelation')
-    new_tags = models.ManyToManyField(
+    tags = models.ManyToManyField(
         to='topics.Topic',
         related_name='%(class)s_set',
         blank=True,
@@ -35,9 +33,9 @@ class TaggableModel(ModelWithComputations):
 
     @property
     def cached_tags(self) -> list:
-        if self._cached_tags or not self.new_tags.exists():
+        if self._cached_tags or not self.tags.exists():
             return self._cached_tags
-        tags = [tag.serialize() for tag in self.new_tags.all()]
+        tags = [tag.serialize() for tag in self.tags.all()]
         cache_tags.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
@@ -84,7 +82,7 @@ class TaggableModel(ModelWithComputations):
         # if self.cached_tags:
         #     return self.cached_tags
         try:
-            tags = [tag.serialize() for tag in self.new_tags.all()]
+            tags = [tag.serialize() for tag in self.tags.all()]
             if tags:
                 self.cached_tags = tags
                 self.save()
@@ -98,7 +96,7 @@ class TopicFilter(ManyToManyAutocompleteFilter):
 
     title = 'tags'
     field_name = 'tags'
-    _parameter_name = 'new_tags__pk__exact'
+    _parameter_name = 'tags__pk__exact'
     m2m_cls = Topic
 
     def get_autocomplete_url(self, request, model_admin):
