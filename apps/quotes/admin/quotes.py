@@ -3,22 +3,48 @@
 from django.db.models.query import QuerySet
 
 from apps.admin import admin_site
+from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.quotes import models
-from apps.quotes.admin.quote_filters import (
+from apps.quotes.admin.filters import (
     AttributeeCategoryFilter,
     AttributeeCountFilter,
     AttributeeFilter,
 )
-from apps.quotes.admin.quote_inlines import AttributeesInline, BitesInline
-from apps.quotes.admin.related_quotes_inline import RelatedQuotesInline
+from apps.quotes.admin.inlines import AttributeesInline, BitesInline
+from apps.quotes.admin.related_quotes_inline import AbstractRelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
-from apps.sources.admin.citations import CitationsInline
+from apps.sources.admin.citations import AbstractSourcesInline
 from apps.sources.admin.filters.simple_filters import (
     HasMultipleCitationsFilter,
     HasSourceFilter,
 )
-from apps.topics.admin import HasTagsFilter, RelatedTopicsInline
+from apps.topics.admin.related_topics import AbstractRelatedTopicsInline, HasTagsFilter
 from apps.topics.models.taggable_model import TopicFilter
+
+
+class SourcesInline(AbstractSourcesInline):
+    """Inline admin for a quote's sources."""
+
+    model = models.Quote.sources.through
+
+
+class RelatedEntitiesInline(AbstractRelatedEntitiesInline):
+    """Inline admin for a quote's related entities."""
+
+    model = models.Quote.related_entities.through
+
+
+class RelatedQuotesInline(AbstractRelatedQuotesInline):
+    """Inline admin for a quote's related quotes."""
+
+    model = models.Quote.related_quotes.through
+    fk_name = 'content_object'
+
+
+class RelatedTopicsInline(AbstractRelatedTopicsInline):
+    """Inline admin for a quote's related entities."""
+
+    model = models.Quote.new_tags.through
 
 
 class QuoteAdmin(SearchableModelAdmin):
@@ -26,20 +52,23 @@ class QuoteAdmin(SearchableModelAdmin):
 
     model = models.Quote
 
+    exclude = SearchableModelAdmin.exclude + [
+        'related_entities',
+        # 'related_quotes',
+    ]
     inlines = [
         AttributeesInline,
-        CitationsInline,
+        SourcesInline,
         RelatedQuotesInline,
+        RelatedEntitiesInline,
         RelatedTopicsInline,
         BitesInline,
     ]
     list_display = [
         'title',
         'bite',
-        # 'detail_link',
         'escaped_attributee_html',
         'date_string',
-        # 'citation_html',
         'tags_string',
         'slug',
     ]

@@ -1,9 +1,15 @@
+from typing import Type
+
+from django.db.models.aggregates import Count
 from image_cropping import ImageCroppingMixin
 
 from apps.admin import ModelAdmin, TabularInline, admin_site
+from apps.admin.list_filters.boolean_filters import BooleanListFilter
 from apps.entities.models.entity_image import EntityImage
-from apps.images.models import Image, Video
+from apps.images.models.image import Image
+from apps.images.models.video import Video
 from apps.occurrences.models import OccurrenceImage
+from apps.search.admin import SearchableModelAdmin
 
 
 class EntitiesInline(TabularInline):
@@ -24,7 +30,7 @@ class OccurrencesInline(TabularInline):
     autocomplete_fields = ['occurrence']
 
 
-class ImageAdmin(ImageCroppingMixin, ModelAdmin):
+class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
     """Admin for images."""
 
     list_display = [
@@ -41,22 +47,36 @@ class ImageAdmin(ImageCroppingMixin, ModelAdmin):
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 
-    def get_fields(self, request, model_instance=None):
-        """Return reordered fields to be displayed in the admin."""
-        fields = super().get_fields(request, model_instance)
-        ordered_field_names = (
-            'date_is_circa',
-            'date',
-            'type',
-            'image',
-            'hidden',
-            'verified',
-        )
-        for field_name in ordered_field_names:
-            if field_name in fields:
-                fields.remove(field_name)
-                fields.insert(0, field_name)
-        return fields
+
+class AbstractImagesInline(TabularInline):
+    """Abstract base inline for images."""
+
+    model: Type
+
+    autocomplete_fields = ['image']
+    readonly_fields = ['key', 'image_pk']
+    verbose_name = 'image'
+    verbose_name_plural = 'images'
+
+    extra = 0
+
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
+
+
+class HasMultipleImagesFilter(BooleanListFilter):
+    """Filter for whether a model instance has multiple image relations."""
+
+    title = 'has multiple images'
+    parameter_name = 'has_multiple_images'
+
+    def queryset(self, request, queryset):
+        """Return the filtered queryset."""
+        queryset = queryset.annotate(citation_count=Count('images'))
+        if self.value() == 'Yes':
+            return queryset.exclude(citation_count__lt=2)
+        if self.value() == 'No':
+            return queryset.filter(citation_count__gte=2)
 
 
 class VideoAdmin(ModelAdmin):

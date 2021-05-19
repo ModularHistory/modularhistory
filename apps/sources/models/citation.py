@@ -21,6 +21,7 @@ from core.fields.html_field import (
     TYPE_GROUP,
 )
 from core.fields.html_field import PlaceholderGroups as DefaultPlaceholderGroups
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.positioned_relation import PositionedRelation
 from core.utils import pdf
 from core.utils.html import components_to_html, compose_link, escape_quotes, soupify
@@ -53,7 +54,7 @@ PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 
 SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
 CITATION_PHRASE_OPTIONS = (
-    (None, ''),
+    (None, '-------'),
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in'),
     ('partially reproduced in', 'partially reproduced in'),
@@ -81,11 +82,12 @@ PAGES_SCHEMA = {
 class AbstractCitation(PositionedRelation):
     """Abstract base model for m2m relationships between sources and other models."""
 
-    source = models.ForeignKey(
+    source = ManyToManyForeignKey(
         to='sources.Source',
-        related_name='%(class)s_citations',
-        on_delete=models.PROTECT,
+        related_name='%(app_label)s_%(class)ss',
     )
+    # Foreign key to the model that references the source.
+    content_object: models.ForeignKey
     citation_phrase = models.CharField(
         max_length=CITATION_PHRASE_MAX_LENGTH,
         choices=CITATION_PHRASE_OPTIONS,
@@ -93,6 +95,7 @@ class AbstractCitation(PositionedRelation):
         null=True,
         blank=True,
     )
+    citation_html = models.TextField(null=True, blank=True)
     pages = JSONField(schema=PAGES_SCHEMA, default=list)
 
     class Meta:
@@ -105,9 +108,14 @@ class AbstractCitation(PositionedRelation):
     def __str__(self) -> str:
         """Return the citation's string representation."""
         try:
-            return soupify(self.html).get_text()
+            return soupify(self.citation_html).get_text()
         except Exception:
             return f'citation {self.pk}'
+
+    @property
+    def escaped_citation_html(self) -> SafeString:
+        """Return the citation HTML, escaped."""
+        return format_html(self.citation_html)
 
     # TODO: refactor
     @property  # type: ignore
@@ -124,8 +132,9 @@ class AbstractCitation(PositionedRelation):
             else:
                 html = f'{html}, {page_string}'
         if self.pk and self.source.attributees.exists():
-            if self.content_type_id == get_ct_id(ContentTypes.quote):
-                quote: Quote = self.content_object  # type: ignore
+            if getattr(self.content_object, 'attributees', None):
+                # Assume the content object is a quote.
+                quote: Quote = self.content_object
                 if quote.ordered_attributees != self.source.ordered_attributees:
                     source_html = html
                     if quote.citations.filter(position__lt=self.position).exists():
@@ -260,7 +269,7 @@ class AbstractCitation(PositionedRelation):
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         key = match.group(PlaceholderGroups.PK).strip()
         try:
             citation = cls.objects.get(pk=key)
@@ -311,7 +320,7 @@ class Citation(AbstractCitation):
 
     source = models.ForeignKey(
         to='sources.Source',
-        related_name='citations',
+        related_name='_citations',
         on_delete=models.PROTECT,
     )
     content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
@@ -489,7 +498,7 @@ class Citation(AbstractCitation):
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         key = match.group(PlaceholderGroups.PK).strip()
         try:
             citation = cls.objects.get(pk=key)

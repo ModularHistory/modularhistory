@@ -7,7 +7,7 @@ from apps.entities.models import Person
 from core.tests import TestSuite
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 class EntitiesTestSuite(TestSuite):
     """Tests for the admin app."""
 
