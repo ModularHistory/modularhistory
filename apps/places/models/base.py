@@ -2,7 +2,11 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models import ModelWithComputations, TypedModel, retrieve_or_compute
+from core.models.model import TypedModel
+from core.models.model_with_computations import (
+    ModelWithComputations,
+    retrieve_or_compute,
+)
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
 

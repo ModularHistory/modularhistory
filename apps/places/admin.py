@@ -1,10 +1,24 @@
+from typing import Type
+
+from django.db.models import Model
+
 from apps.admin import ModelAdmin, TabularInline, admin_site
 from apps.admin.list_filters import AutocompleteFilter
 from apps.places import models
 from apps.places.forms import PlaceForm
 
 
-class LocationInline(TabularInline):
+class AbstractLocationsInline(TabularInline):
+    """Inline admin for an occurrence's locations."""
+
+    model: Type[Model]
+    extra = 1
+    autocomplete_fields = ['place']
+    verbose_name = 'location'
+    verbose_name_plural = 'locations'
+
+
+class LocationInline(AbstractLocationsInline):
     """Inline admin for a location's parent location."""
 
     model = models.Place

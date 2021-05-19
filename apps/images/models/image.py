@@ -213,7 +213,7 @@ class Image(MediaModel):
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         image = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         if isinstance(image, dict):
             width = image['width']

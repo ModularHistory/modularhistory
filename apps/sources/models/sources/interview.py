@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 
 INTERVIEWERS_MAX_LENGTH: int = 200
 

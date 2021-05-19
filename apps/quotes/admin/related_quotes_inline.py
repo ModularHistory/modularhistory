@@ -1,15 +1,16 @@
 from typing import List
 
-from apps.admin import GenericTabularInline
-from apps.quotes import models
+from django.db.models.base import Model
+
+from apps.admin.inlines import TabularInline
 
 
-class RelatedQuotesInline(GenericTabularInline):
-    """TODO: add docstring."""
+class AbstractRelatedQuotesInline(TabularInline):
+    """Abstract base inline for related quotes."""
 
-    model = models.QuoteRelation
+    model: Model
+
     autocomplete_fields: List[str] = ['quote']
-    readonly_fields: List[str] = ['quote_pk']
     extra = 0
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables

@@ -8,17 +8,17 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
-from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.dates.models import DatedModel
 from apps.images.models.model_with_images import ModelWithImages
 from apps.occurrences import managers
 from apps.occurrences.constants import OCCURRENCE_TYPES
 from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.occurrences.serializers import OccurrenceSerializer
 from apps.places.models.model_with_locations import ModelWithLocations
-from apps.propositions.models import PolymorphicProposition
+from apps.propositions.models.proposition import Proposition
 from apps.quotes.models import quote_sorter_key
 from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
-from apps.search.models import SearchableDatedModel
+from apps.search.models.searchable_dated_model import SearchableDatedModel
 from apps.sources.models.model_with_sources import ModelWithSources
 from core.fields import HTMLField
 from core.utils.html import soupify
@@ -30,10 +30,8 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
 class NewOccurrence(
-    PolymorphicProposition,
-    SearchableDatedModel,
-    ModelWithRelatedEntities,
-    ModelWithRelatedQuotes,
+    Proposition,
+    DatedModel,
     ModelWithLocations,
     ModelWithImages,
 ):
@@ -42,7 +40,7 @@ class NewOccurrence(
 
     For our purposes, an occurrence is a proposition: each occurrence is proposed
     (with some degree of certainty) to have occurred. As such, this model inherits
-    from `PolymorphicProposition`.
+    from `Proposition`.
     """
 
     type = models.PositiveSmallIntegerField(choices=OCCURRENCE_TYPES, default=0)
@@ -81,7 +79,6 @@ class NewOccurrence(
 
     def save(self, *args, **kwargs):
         """Save the occurrence to the database."""
-        self.clean()
         super().save(*args, **kwargs)
         if not self.images.exists():
             image = None
@@ -136,7 +133,6 @@ class NewOccurrence(
 
 
 class Occurrence(
-    # PolymorphicProposition,
     SearchableDatedModel,
     ModelWithSources,
     ModelWithRelatedQuotes,
@@ -266,37 +262,37 @@ class Occurrence(
         }
 
 
-class Birth(NewOccurrence):
-    """A birth of an entity."""
+# class Birth(NewOccurrence):
+#     """A birth of an entity."""
 
-    class Meta:
-        proxy = True
+#     class Meta:
+#         proxy = True
 
-    objects = managers.BirthManager()
-
-
-class Death(NewOccurrence):
-    """A death of an entity."""
-
-    class Meta:
-        proxy = True
-
-    objects = managers.DeathManager()
+#     objects = managers.BirthManager()
 
 
-class Publication(NewOccurrence):
-    """A publication of a source."""
+# class Death(NewOccurrence):
+#     """A death of an entity."""
 
-    class Meta:
-        proxy = True
+#     class Meta:
+#         proxy = True
 
-    objects = managers.PublicationManager()
+#     objects = managers.DeathManager()
 
 
-class Verbalization(NewOccurrence):
-    """A verbalization or production of a source, prior to publication."""
+# class Publication(NewOccurrence):
+#     """A publication of a source."""
 
-    class Meta:
-        proxy = True
+#     class Meta:
+#         proxy = True
 
-    objects = managers.VerbalizationManager()
+#     objects = managers.PublicationManager()
+
+
+# class Verbalization(NewOccurrence):
+#     """A verbalization or production of a source, prior to publication."""
+
+#     class Meta:
+#         proxy = True
+
+#     objects = managers.VerbalizationManager()

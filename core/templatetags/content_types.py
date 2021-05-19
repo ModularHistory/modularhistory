@@ -6,7 +6,7 @@ from django.apps import apps
 from django.utils.module_loading import import_string
 
 from core.constants.content_types import MODEL_CLASS_PATHS
-from core.models import Model
+from core.models.model import Model
 
 register = template.Library()
 

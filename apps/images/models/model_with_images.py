@@ -1,16 +1,16 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from django.utils.translation import ugettext_lazy as _
 
 from core.fields.sorted_m2m_field import SortedManyToManyField
-from core.models import Model, retrieve_or_compute
+from core.models.model import Model
+from core.models.model_with_computations import retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager
-
 
 
 class ModelWithImages(Model):

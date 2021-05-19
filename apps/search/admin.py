@@ -16,13 +16,25 @@ class SearchableModelAdmin(ModelAdmin):
 
     model: Type['SearchableModel']
 
-    exclude = ['computations']
+    exclude = ['computations', 'new_tags']
     readonly_fields = ['pretty_computations']
 
     def get_fields(self, request, model_instance=None):
         """Return reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
-        ordered_field_names = ('notes',)
+        ordered_field_names = reversed(
+            [
+                'notes',
+                'type',
+                'title',
+                'slug',
+                'verified',
+                'hidden',
+                'date_is_circa',
+                'date',
+                'end_date',
+            ]
+        )
         for field_name in ordered_field_names:
             if field_name in fields:
                 fields.remove(field_name)

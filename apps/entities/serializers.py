@@ -7,7 +7,7 @@ import serpy
 from apps.search.api.serializers import SearchableModelSerializer
 
 if TYPE_CHECKING:
-    from apps.entities.models import Entity
+    from apps.entities.models.entity import Entity
 
 
 class CategorySerializer(serpy.Serializer):

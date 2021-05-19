@@ -14,7 +14,7 @@ from core.utils.html import soupify
 from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
-    from core.models import Model
+    from core.models.model import Model
 
 # group 1: entity pk
 # group 2: entity name

@@ -1,8 +1,7 @@
 from apps.admin import TabularInline
 from apps.entities import models
 from apps.occurrences.models import OccurrenceEntityInvolvement
-from apps.postulations.models import EntityFactRelation
-from apps.quotes.models import Quote
+from apps.quotes.models.quote import Quote
 
 
 class QuotesInline(TabularInline):
@@ -37,14 +36,6 @@ class OccurrencesInline(TabularInline):
     model = OccurrenceEntityInvolvement
     extra = 1
     autocomplete_fields = ['occurrence']
-
-
-class FactsInline(TabularInline):
-    """Inline admin for postulations."""
-
-    model = EntityFactRelation
-    extra = 1
-    autocomplete_fields = ['fact']
 
 
 class CategorizationsInline(TabularInline):

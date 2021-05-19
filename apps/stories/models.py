@@ -3,12 +3,18 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.stories.serializers import StorySerializer
 from core.fields import HTMLField
-from core.models import Model
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
+from core.models.model import Model
 
 HANDLE_MAX_LENGTH = 40
+
+
+class StoryCitation(AbstractCitation):
+    content_object = ManyToManyForeignKey(to='stories.Story', related_name='citations')
 
 
 class Story(ModelWithSources):
@@ -30,6 +36,13 @@ class Story(ModelWithSources):
         related_name='downstream_stories',
         symmetrical=False,
         verbose_name=_('upstream stories'),
+    )
+    sources = models.ManyToManyField(
+        to='sources.Source',
+        related_name='%(class)s_citations',
+        through=StoryCitation,
+        blank=True,
+        verbose_name=_('sources'),
     )
 
     searchable_fields = ['handle', 'description']

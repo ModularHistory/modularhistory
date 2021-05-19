@@ -3,7 +3,7 @@ import logging
 import graphene
 
 from apps.sources.api.types import SourceType
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 
 
 class Query(graphene.ObjectType):

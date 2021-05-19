@@ -1,7 +1,7 @@
 """Model classes for journals (as sources)."""
 
-from apps.sources.models import Source
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
+from apps.sources.models.source import Source
 
 
 class Entry(Source, PageNumbersMixin):

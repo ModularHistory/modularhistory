@@ -62,13 +62,13 @@ class ElasticPaginator(Paginator):
 
 
 class ElasticPageNumberPagination(TotalPagesMixin, PageNumberPagination):
-    """Page number pagination.
+    """
+    Page number pagination.
 
     A simple page number based style that supports page numbers as
     query parameters.
 
     Example:
-
         http://api.example.org/accounts/?page=4
         http://api.example.org/accounts/?page=4&page_size=100
     """

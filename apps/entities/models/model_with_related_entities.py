@@ -7,11 +7,11 @@ from django.db import models
 from django.db.models import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
-from core.models import Model
+from core.models.model import Model
 from core.models.model_with_computations import retrieve_or_compute
 
 if TYPE_CHECKING:
-    from apps.entities.models import Entity
+    from apps.entities.models.entity import Entity
 
 ATTRIBUTE_NAMES = ('attributees', 'involved_entities', 'affiliated_entities')
 
@@ -64,7 +64,7 @@ class ModelWithRelatedEntities(Model):
                 aliases = entity.get('aliases') or []
                 for name in set([entity['name']] + aliases):
                     opening_tag = (
-                        f'<span class="entity-name" data-entity-id="{entity["pk"]}">'
+                        f'<span class="entity-name" data-entity-id="{entity["id"]}">'
                     )
                     closing_tag = '</span>'
                     html = re.sub(

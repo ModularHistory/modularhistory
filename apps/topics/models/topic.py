@@ -6,9 +6,15 @@ from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
 from apps.topics.models.topic_relation import TopicRelation
+from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
-from core.models import Model, ModelWithComputations, SluggedModel, retrieve_or_compute
+from core.models.model import Model
+from core.models.model_with_computations import (
+    ModelWithComputations,
+    retrieve_or_compute,
+)
+from core.models.slugged_model import SluggedModel
 
 NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
@@ -89,6 +95,7 @@ class Topic(TreeModel, SluggedModel, ModelWithComputations):
         # 'aliases',
         # 'description'
     ]
+    serializer = TopicSerializer
     slug_base_field = 'name'
 
     class Meta:

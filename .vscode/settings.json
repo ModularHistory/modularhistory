@@ -91,5 +91,5 @@
     "workbench.iconTheme": "material-icon-theme",
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
     "workbench.editor.limit.enabled": true,
-    "workbench.editor.limit.value": 5,
+    "workbench.editor.limit.value": 7,
 }

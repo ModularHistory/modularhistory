@@ -143,7 +143,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         'quotes.Quote',
         'occurrences.Occurrence',
         through='sources.Citation',
-        related_name='sources',
+        related_name='_sources',
         blank=True,
     )
     title = models.CharField(
@@ -204,9 +204,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return self.polymorphic_ctype
 
     @property
-    def ctype_name(self) -> ContentType:
-        """Return the model instance's ContentType."""
-        return self.ctype.model
+    def ctype_name(self) -> str:
+        """Return the model instance's content type name."""
+        return f'{self.ctype.model}'
 
     @property
     def escaped_citation_html(self) -> SafeString:
@@ -260,10 +260,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         # TODO: Do something else with the information URL.
         # It shouldn't be part of the citation string, but we should use it.
         # if getattr(self, 'information_url', None) and self.information_url:
-        #     html = (
-        #         f'{html}, information available at '
-        #         f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
+        #     information_link = compose_link(
+        #         self.information_url, href=self.information_url, target="_blank"
         #     )
+        #     html = f'{html}, information available at {information_link}'
         return format_html(fix_comma_positions(html))
 
     def get_containment_html(self) -> str:
@@ -372,7 +372,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         page_number = page_number or self.page_number
         url = self.get_page_number_url(page_number=page_number)
         if url:
-            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'  # noqa: E800
+            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'  # noqa: E800,E501
             return compose_link(
                 page_number, href=url, klass='display-source', target=NEW_TAB
             )

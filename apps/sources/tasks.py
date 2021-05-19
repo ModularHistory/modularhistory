@@ -1,4 +1,4 @@
-from apps.sources.models import Source
+from apps.sources.models.source import Source
 from core.celery import app
 
 

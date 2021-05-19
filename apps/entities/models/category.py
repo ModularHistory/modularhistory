@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from core.fields import ArrayField
-from core.models import Model
+from core.models.model import Model
 
 NAME_MAX_LENGTH: int = 100
 

@@ -15,7 +15,7 @@ class AbstractModelMeta(ABCMeta, ModelBase):
 
     To use ABC with an abstract model, use `AbstractModelMeta` like so:
     ``
-    from core.models import Model, AbstractModelMeta
+    from core.models.model import Model, AbstractModelMeta
     from abc import abstractmethod
     ...
 

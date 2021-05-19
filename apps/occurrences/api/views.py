@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.occurrences.models import Occurrence
+from apps.occurrences.models.occurrence import Occurrence
 from apps.occurrences.serializers import OccurrenceSerializer
 
 
