@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from gm2m import GM2MField as GenericManyToManyField
 
 from apps.topics.models.topic_relation import TopicRelation
+from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
 from core.models.model import Model
@@ -94,6 +95,7 @@ class Topic(TreeModel, SluggedModel, ModelWithComputations):
         # 'aliases',
         # 'description'
     ]
+    serializer = TopicSerializer
     slug_base_field = 'name'
 
     class Meta:

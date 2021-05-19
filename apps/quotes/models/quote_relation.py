@@ -6,7 +6,7 @@ from core.models.positioned_relation import PositionedRelation
 from core.utils.html import soupify
 
 
-class QuoteRelation(PositionedRelation):
+class GenericQuoteRelation(PositionedRelation):
     """A relation to a quote (by any other model)."""
 
     quote = models.ForeignKey(

@@ -27,7 +27,7 @@ class BitesInline(TabularInline):
 class OccurrencesInline(GenericTabularInline):
     """Inline admin for a quote's related occurrences."""
 
-    model = models.QuoteRelation
+    model = models.GenericQuoteRelation
     verbose_name = 'occurrence'
     verbose_name_plural = 'occurrences'
 
@@ -35,4 +35,4 @@ class OccurrencesInline(GenericTabularInline):
         """Return the filtered queryset."""
         pk = re.search(r'/(\d+)/', request.path).group(1)
         ct_id = get_ct_id(ContentTypes.occurrence)
-        return models.QuoteRelation.objects.filter(quote_id=pk, content_type_id=ct_id)
+        return models.GenericQuoteRelation.objects.filter(quote_id=pk, content_type_id=ct_id)

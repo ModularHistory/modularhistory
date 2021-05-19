@@ -1,32 +1,62 @@
 """Classes for models with related quotes."""
 
+from typing import Type, Union
+
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.fields.sorted_m2m_field import SortedManyToManyField
+from core.fields.custom_m2m_field import CustomManyToManyField
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import Model
+from core.models.positioned_relation import PositionedRelation
+
+
+class AbstractQuoteRelation(PositionedRelation):
+    """
+    Abstract base model for quote relations, i.e., models governing m2m relationships
+    between `Quote` and another model.
+    """
+
+    quote = ManyToManyForeignKey(
+        to='quotes.Quote', related_name='%(app_label)s_%(class)ss'
+    )
+
+    # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+    class Meta:
+        """Meta options for AbstractQuoteRelation."""
+
+        abstract = True
+
+    def content_object(self) -> models.ForeignKey:
+        """Foreign key to the model that references the quote."""
+        raise NotImplementedError
+
+
+class RelatedQuotesField(CustomManyToManyField):
+
+    through_model = AbstractQuoteRelation
+
+    def __init__(self, through: Union[Type[AbstractQuoteRelation], str], **kwargs):
+        to = kwargs.get('to', 'quotes.Quote')
+        if to not in ('self', 'quotes.Quote'):
+            raise ValueError(f'{to} does not refer to the `Quote` model.')
+        kwargs['to'] = to
+        kwargs['through'] = through
+        kwargs['verbose_name'] = _('related quotes')
+        super().__init__(**kwargs)
 
 
 class ModelWithRelatedQuotes(Model):
-    """
-    A model that has related quotes; e.g., an occurrence, topic, or person.
+    """A model that has related quotes; e.g., an occurrence, topic, or person."""
 
-    Ideally, this class would be a mixin, but due to Django's model magic,
-    it must be defined as an abstract model class.
-    """
+    quote_relations = GenericRelation('quotes.GenericQuoteRelation')
 
-    related_quotes = SortedManyToManyField(
-        to='quotes.Quote',
-        related_name='%(class)s_set',
-        blank=True,
-        verbose_name=_('images'),
-    )
-
-    quote_relations = GenericRelation('quotes.QuoteRelation')
-
+    # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
     class Meta:
         """Meta options for ModelWithRelatedQuotes."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
-
         abstract = True
+
+    def related_quotes(self) -> RelatedQuotesField:
+        raise NotImplementedError
