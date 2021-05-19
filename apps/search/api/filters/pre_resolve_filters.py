@@ -13,7 +13,7 @@ PRE_RESOLVE_FILTERS: List[Callable] = [
 # list of filters per module
 PER_MODULE_PRE_RESOLVE_FILTERS: Dict[str, List[Callable]] = {
     # disabled for now because apparently it's redundant when serialized relations are cached
-    # Occurrence: [Occurrence.objects.prefetch_search_relatives]
+    # Occurrence: [NewOccurrence.objects.prefetch_search_relatives]
 }
 
 

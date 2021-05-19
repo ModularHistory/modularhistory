@@ -1,4 +1,5 @@
-from apps.admin.model_admin import ModelAdmin, admin_site
+from apps.admin.inlines import TabularInline
+from apps.admin.model_admin import admin_site
 from apps.entities import models
 from apps.entities.admin.affiliations import AffiliationsInline
 from apps.entities.admin.filters import (
@@ -10,12 +11,20 @@ from apps.entities.admin.filters import (
 from apps.entities.admin.inlines import (
     CategorizationsInline,
     ImagesInline,
-    OccurrencesInline,
     QuotesInline,
 )
 from apps.entities.forms import DeityForm, GroupForm, OrganizationForm, PersonForm
+from apps.occurrences.models import NewOccurrence
 from apps.quotes.admin.related_quotes_inline import AbstractRelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
+
+
+class OccurrencesInline(TabularInline):
+    """Inline admin for occurrences."""
+
+    model = NewOccurrence.related_entities.through
+    extra = 1
+    autocomplete_fields = ['occurrence']
 
 
 class RelatedQuotesInline(AbstractRelatedQuotesInline):

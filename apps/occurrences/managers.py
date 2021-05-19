@@ -1,10 +1,9 @@
 from typing import List, Optional
 
-from django.db.models import Prefetch, Q
+from django.db.models import Q
 from polymorphic.managers import PolymorphicManager
 
 from apps.occurrences.constants import OccurrenceTypes
-from apps.occurrences.models.occurrence_image import OccurrenceImage
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
 
 
@@ -32,13 +31,7 @@ class NewOccurrenceManager(PolymorphicManager, SearchableModelManager):
             )
             .filter(hidden=False)
             .filter_by_date(start_year=start_year, end_year=end_year)
-            .prefetch_related(
-                'citations',
-                Prefetch(
-                    'image_relations',
-                    queryset=OccurrenceImage.objects.select_related('image'),
-                ),
-            )
+            .prefetch_related('citations', 'images')
         )
         # Limit to specified entities
         if entity_ids:
@@ -55,10 +48,7 @@ class NewOccurrenceManager(PolymorphicManager, SearchableModelManager):
     def prefetch_search_relatives(queryset):
         return queryset.prefetch_related('tags__topic').prefetch_related(
             'citations',
-            Prefetch(
-                'image_relations',
-                queryset=OccurrenceImage.objects.select_related('image'),
-            ),
+            'images',
         )
 
 
@@ -86,13 +76,7 @@ class OccurrenceManager(SearchableModelManager):  # PolymorphicManager,
             )
             .filter(hidden=False)
             .filter_by_date(start_year=start_year, end_year=end_year)
-            .prefetch_related(
-                'citations',
-                Prefetch(
-                    'image_relations',
-                    queryset=OccurrenceImage.objects.select_related('image'),
-                ),
-            )
+            .prefetch_related('citations', 'images')
         )
         # Limit to specified entities
         if entity_ids:
@@ -108,11 +92,7 @@ class OccurrenceManager(SearchableModelManager):  # PolymorphicManager,
     @staticmethod
     def prefetch_search_relatives(queryset):
         return queryset.prefetch_related('tags__topic').prefetch_related(
-            'citations',
-            Prefetch(
-                'image_relations',
-                queryset=OccurrenceImage.objects.select_related('image'),
-            ),
+            'citations', 'images'
         )
 
 

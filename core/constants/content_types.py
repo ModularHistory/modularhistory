@@ -38,7 +38,7 @@ MODEL_CLASS_PATHS = {
     ModelNameSet.citation: 'apps.sources.models.Citation',
     ModelNameSet.entity: 'apps.entities.models.Entity',
     ModelNameSet.image: 'apps.images.models.Image',
-    ModelNameSet.occurrence: 'apps.occurrences.models.Occurrence',
+    ModelNameSet.occurrence: 'apps.occurrences.models.NewOccurrence',
     ModelNameSet.place: 'apps.places.models.Place',
     ModelNameSet.quote: 'apps.quotes.models.Quote',
     ModelNameSet.source: 'apps.sources.models.Source',
@@ -55,6 +55,8 @@ def get_ct_id(ct_name: str) -> int:
         ct_id = cached_ct_id
     else:
         app_label, model = ct_name.split('.')
-        ct_id = ContentType.objects.get_by_natural_key(app_label=app_label, model=model).id
+        ct_id = ContentType.objects.get_by_natural_key(
+            app_label=app_label, model=model
+        ).id
         cache.set(cache_key, ct_id, timeout=None)
     return ct_id

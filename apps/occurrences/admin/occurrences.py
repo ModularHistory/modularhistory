@@ -1,18 +1,12 @@
 """Admin classes for occurrences."""
 
 from apps.admin import ModelAdmin, admin_site
-from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
+from apps.images.admin import AbstractImagesInline
 from apps.occurrences import models
 from apps.occurrences.admin.filters import (
-    EntityFilter,
     HasDateFilter,
     HasQuotesFilter,
     LocationFilter,
-)
-from apps.occurrences.admin.inlines import (  # PostulationsInline,
-    ImagesInline,
-    InvolvedEntitiesInline,
-    OccurrencesInline,
 )
 from apps.places.admin import AbstractLocationsInline
 from apps.propositions.admin import PropositionChildAdmin
@@ -23,16 +17,16 @@ from apps.sources.admin.filters import HasMultipleCitationsFilter, HasSourceFilt
 from apps.topics.models.taggable_model import TopicFilter
 
 
+class ImagesInline(AbstractImagesInline):
+    """Inline admin for an occurrence's images."""
+
+    model = models.NewOccurrence.images.through
+
+
 class SourcesInline(AbstractSourcesInline):
     """Inline admin for sources."""
 
     model = models.NewOccurrence.sources.through
-
-
-class RelatedEntitiesInline(AbstractRelatedEntitiesInline):
-    """Inline admin for sources."""
-
-    model = models.NewOccurrence.related_entities.through
 
 
 class LocationsInline(AbstractLocationsInline):
@@ -41,7 +35,7 @@ class LocationsInline(AbstractLocationsInline):
     model = models.NewOccurrence.locations.through
 
 
-class NewOccurrenceAdmin(PropositionChildAdmin):
+class OccurrenceAdmin(PropositionChildAdmin):
     """Model admin for occurrences."""
 
     base_model = Proposition
@@ -88,54 +82,12 @@ class NewOccurrenceAdmin(PropositionChildAdmin):
     date_hierarchy = 'date'
 
 
-class OccurrenceAdmin(SearchableModelAdmin):
-    """Model admin for occurrences."""
-
-    model = models.Occurrence
-
-    exclude = SearchableModelAdmin.exclude + ['postulations']
-    inlines = [
-        # RelatedQuotesInline,
-        InvolvedEntitiesInline,
-        # LocationsInline,
-        # CitationsInline,
-    ]
-    list_display = [
-        'pk',
-        'slug',
-        'title',
-        'summary',
-        # 'detail_link',
-        'date_string',
-        'tags_string',
-    ]
-    list_editable = ['title']
-    list_filter = [
-        'verified',
-        HasDateFilter,
-        # HasQuotesFilter,
-        EntityFilter,
-        TopicFilter,
-        # LocationFilter,
-        # HasSourceFilter,
-        # HasMultipleCitationsFilter,
-    ]
-    list_per_page = 10
-    ordering = ['date', 'pk']
-    readonly_fields = SearchableModelAdmin.readonly_fields
-    search_fields = model.searchable_fields
-
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
-    date_hierarchy = 'date'
-
-
 class OccurrenceChainAdmin(ModelAdmin):
     """Admin for occurrence chains."""
 
     base_model = models.OccurrenceChain
-    inlines = [OccurrencesInline]
+    # inlines = [OccurrencesInline]
 
 
-admin_site.register(models.Occurrence, OccurrenceAdmin)
-admin_site.register(models.NewOccurrence, NewOccurrenceAdmin)
+admin_site.register(models.NewOccurrence, OccurrenceAdmin)
 admin_site.register(models.OccurrenceChain, OccurrenceChainAdmin)

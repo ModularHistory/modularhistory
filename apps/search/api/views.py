@@ -7,7 +7,7 @@ from rest_framework.generics import ListAPIView
 
 from apps.entities.models.entity import Entity
 from apps.images.models import Image
-from apps.occurrences.models.occurrence import Occurrence
+from apps.occurrences.models.occurrence import NewOccurrence
 from apps.quotes.models.quote import Quote
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.source import Source
@@ -184,7 +184,9 @@ class SearchResultsAPIView(ListAPIView):
 
 def _get_occurrence_results(content_types, **search_kwargs):
     if ContentTypes.occurrence in content_types or not content_types:
-        occurrence_results = list(Occurrence.objects.search(**search_kwargs).iterator())
+        occurrence_results = list(
+            NewOccurrence.objects.search(**search_kwargs).iterator()
+        )
     else:
         occurrence_results = []
     return occurrence_results, [

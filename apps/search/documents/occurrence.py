@@ -2,7 +2,7 @@ from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.entities.models.entity import Entity
-from apps.occurrences.models.occurrence import Occurrence
+from apps.occurrences.models.occurrence import NewOccurrence
 from apps.search.documents.base import Document
 from apps.search.documents.config import (
     DEFAULT_INDEX_SETTINGS,
@@ -45,7 +45,7 @@ class OccurrenceDocument(Document):
     )
 
     class Django:
-        model = Occurrence
+        model = NewOccurrence
         related_models = [Source, Entity]
 
     def get_queryset(self):
