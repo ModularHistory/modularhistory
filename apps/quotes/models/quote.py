@@ -14,11 +14,16 @@ from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import ModelWithImages
 from apps.quotes.manager import QuoteManager
-from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
+from apps.quotes.models.model_with_related_quotes import (
+    AbstractQuoteRelation,
+    ModelWithRelatedQuotes,
+    RelatedQuotesField,
+)
 from apps.quotes.models.quote_image import QuoteImage
 from apps.quotes.serializers import QuoteSerializer
-from apps.search.models import SearchableDatedModel
-from apps.sources.models.model_with_sources import ModelWithSources
+from apps.search.models.searchable_dated_model import SearchableDatedModel
+from apps.sources.models.citation import AbstractCitation
+from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.constants.content_types import ContentTypes, get_ct_id
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
@@ -27,6 +32,7 @@ from core.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.utils.html import soupify
 
 if TYPE_CHECKING:
@@ -39,6 +45,14 @@ BITE_MAX_LENGTH: int = 400
 quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>quote)'
 )
+
+
+class Citation(AbstractCitation):
+    content_object = ManyToManyForeignKey(to='quotes.Quote', related_name='citations')
+
+
+class QuoteRelation(AbstractQuoteRelation):
+    content_object = ManyToManyForeignKey(to='quotes.Quote')
 
 
 class Quote(
@@ -81,12 +95,22 @@ class Quote(
         'occurrences.Occurrence',
         'entities.Entity',
         'quotes.Quote',
-        through='quotes.QuoteRelation',
+        through='quotes.GenericQuoteRelation',
         related_name='_related_quotes',
         blank=True,
     )
     images = models.ManyToManyField(
-        'images.Image', through='quotes.QuoteImage', related_name='quotes', blank=True
+        to='images.Image',
+        through='quotes.QuoteImage',
+        related_name='quotes',
+        blank=True,
+    )
+    sources = SourcesField(through=Citation, related_name='quotes')
+    related_quotes = RelatedQuotesField(
+        through=QuoteRelation,
+        to='self',
+        symmetrical=False,
+        through_fields=('content_object', 'quote'),
     )
 
     class Meta:
@@ -267,12 +291,12 @@ class Quote(
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
-        """Return the obj's HTML based on a placeholder in the admin."""
+        """Return the quote's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(PlaceholderGroups.HTML)
+            preretrieved_html = str(match.group(PlaceholderGroups.HTML))
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         quote = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         if isinstance(quote, dict):
             body = quote['text']

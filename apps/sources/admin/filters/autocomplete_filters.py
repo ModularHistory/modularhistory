@@ -1,4 +1,4 @@
-from apps.entities.admin.admin_filters import EntityAutocompleteFilter
+from apps.entities.admin.filters import EntityAutocompleteFilter
 
 
 class AttributeeFilter(EntityAutocompleteFilter):

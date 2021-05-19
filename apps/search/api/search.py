@@ -24,9 +24,7 @@ class Search(DSLSearch):
     results_by_id: Optional[dict]
 
     def to_queryset(self, view):
-        """
-        Resolves elasticsearch results to django models.
-        """
+        """Resolve elasticsearch results to django models."""
         response = self
 
         # Do not query again if the es result is already cached

@@ -14,10 +14,15 @@ from apps.dates.structures import HistoricDateTime as DateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
-from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
+from apps.quotes.models.model_with_related_quotes import (
+    AbstractQuoteRelation,
+    ModelWithRelatedQuotes,
+    RelatedQuotesField,
+)
 from apps.search.models import SearchableModel
 from core.constants.strings import EMPTY_STRING
 from core.fields import ArrayField, HTMLField, JSONField
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models import TypedModel, retrieve_or_compute
 
 if TYPE_CHECKING:
@@ -34,6 +39,10 @@ PARTS_OF_SPEECH = (
     ('adj', 'adjective'),
     ('any', 'noun / adjective'),
 )
+
+
+class QuoteRelation(AbstractQuoteRelation):
+    content_object = ManyToManyForeignKey(to='entities.Entity')
 
 
 class Entity(
@@ -76,6 +85,7 @@ class Entity(
         to='self', through='entities.Affiliation', blank=True
     )
     reference_urls = JSONField(blank=True, default=dict)
+    related_quotes = RelatedQuotesField(through=QuoteRelation)
 
     class Meta:
         """Meta options for the Entity model."""
@@ -191,7 +201,7 @@ class Entity(
             self.recast(self.type)
 
     def get_date(self) -> Optional[DateTime]:
-        """Date used for sorting search results"""
+        """Date used for sorting search results."""
         return self.birth_date
 
 

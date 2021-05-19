@@ -1,10 +1,11 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional, Type
 
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import QuerySet
 
 from apps.admin import GenericTabularInline, ModelAdmin, admin_site
+from apps.admin.inlines import TabularInline
 from apps.sources import models
 
 if TYPE_CHECKING:
@@ -65,6 +66,31 @@ class CitationAdmin(ModelAdmin):
         if ordering and ordering != models.Citation.get_meta().ordering:
             qs = qs.order_by(*ordering)
         return qs
+
+
+class AbstractSourcesInline(TabularInline):
+    """Inline admin for sources."""
+
+    model: Type
+
+    autocomplete_fields = ['source']
+    # TODO: fix JSON widget so pages can be included in the inline editor
+    exclude = ['computations', 'pages', 'citation_html']
+    readonly_fields = ['escaped_citation_html', 'pk']
+    verbose_name = 'citation'
+    verbose_name_plural = 'sources'
+
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
+
+    def get_fields(self, request, model_instance) -> List[str]:
+        fields = super().get_fields(request, model_instance=model_instance)
+        ordered_fields = ['citation_phrase']
+        for field in ordered_fields:
+            if field in fields:
+                fields.remove(field)
+                fields.insert(0, field)
+        return fields
 
 
 class CitationsInline(GenericTabularInline):
