@@ -19,6 +19,7 @@ APPS_TO_INCLUDE = (
     'quotes',
     'occurrences',
     'postulations',
+    'propositions',
     'topics',
     'images',
     'places',

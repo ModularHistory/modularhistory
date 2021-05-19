@@ -3,11 +3,9 @@ from sortedm2m.fields import SortedManyToManyField as BaseSortedManyToManyField
 from core.models.positioned_relation import PositionedRelation
 
 
+# https://github.com/jazzband/django-sortedm2m/blob/master/sortedm2m/fields.py
 class SortedManyToManyField(BaseSortedManyToManyField):
-    """
-    Wrapper for SortedManyToManyField:
-    https://github.com/jazzband/django-sortedm2m/blob/master/sortedm2m/fields.py
-    """
+    """Wrapper for SortedManyToManyField."""
 
     def __init__(self, to, sorted=True, base_class=None, **kwargs):
         if not base_class:

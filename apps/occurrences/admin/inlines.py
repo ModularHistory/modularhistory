@@ -1,4 +1,5 @@
 from apps.admin import TabularInline
+from apps.images.admin import AbstractImagesInline
 from apps.occurrences import models
 
 
@@ -7,16 +8,16 @@ class LocationsInline(TabularInline):
 
     model = models.Occurrence.locations.through
     extra = 1
-    autocomplete_fields = ['location']
+    autocomplete_fields = ['place']
+    verbose_name = 'location'
+    verbose_name_plural = 'locations'
 
 
-class ImagesInline(TabularInline):
+class ImagesInline(AbstractImagesInline):
     """Inline admin for an occurrence's images."""
 
-    model = models.Occurrence.images.through
-    extra = 0
-    autocomplete_fields = ['image']
-    readonly_fields = ['key', 'image_pk']
+    model = models.NewOccurrence.images.through
+    readonly_fields = []
 
 
 class InvolvedEntitiesInline(TabularInline):
@@ -25,16 +26,6 @@ class InvolvedEntitiesInline(TabularInline):
     model = models.Occurrence.involved_entities.through
     extra = 1
     autocomplete_fields = ['entity']
-
-
-# class PostulationsInline(TabularInline):
-#     """Inline admin for an occurrence chain's occurrences."""  # right?
-
-#     verbose_name = 'postulation'
-#     verbose_name_plural = 'postulations'
-#     model = models.Occurrence.postulations.through
-#     autocomplete_fields = ['postulation']
-#     extra = 1
 
 
 class OccurrencesInline(TabularInline):

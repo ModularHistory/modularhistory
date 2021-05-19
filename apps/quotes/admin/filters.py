@@ -11,7 +11,7 @@ from apps.admin.list_filters.autocomplete_filter import (
     BaseAutocompleteFilter,
     ManyToManyAutocompleteFilter,
 )
-from apps.entities.admin.admin_filters import EntityAutocompleteFilter
+from apps.entities.admin.filters import EntityAutocompleteFilter
 from apps.entities.models import Category, Entity
 
 

@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
@@ -36,6 +37,14 @@ DEGREES_OF_CERTAINTY = (
     (3, 'Beyond reasonable doubt'),
     (4, 'Beyond any shadow of a doubt'),
 )
+
+
+class PostulationCitation(AbstractCitation):
+    content_object = models.ForeignKey(
+        to='postulations.Postulation',
+        on_delete=models.CASCADE,
+        related_name='citations',
+    )
 
 
 class PostulationSerializer(ModelSerializer):
@@ -70,6 +79,13 @@ class Postulation(
         related_name='supported_postulations',
         symmetrical=False,
         verbose_name=_('supportive postulations'),
+    )
+    sources = models.ManyToManyField(
+        to='sources.Source',
+        related_name='%(class)s_citations',
+        through=PostulationCitation,
+        blank=True,
+        verbose_name=_('sources'),
     )
 
     searchable_fields = ['summary', 'elaboration']
@@ -109,19 +125,18 @@ class Postulation(
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         fact: 'Postulation' = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         return fact.summary_link
 
     @classmethod
     def get_updated_placeholder(cls, match: Match) -> str:
         """Return a placeholder for a model instance depicted in an HTML field."""
-        placeholder = match.group(0)
+        placeholder = str(match.group(0))
         logging.debug(f'Looking at {truncate(placeholder)}')
         extant_html: Optional[str] = match.group(PlaceholderGroups.HTML)
-        extant_html = extant_html.strip() if extant_html else extant_html
         if extant_html:
-
+            extant_html = str(extant_html).strip()
             if '<a ' not in extant_html:
                 html = cls.get_object_html(match)
                 html = re.sub(

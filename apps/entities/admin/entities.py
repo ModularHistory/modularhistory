@@ -1,28 +1,38 @@
 from apps.admin.model_admin import ModelAdmin, admin_site
 from apps.entities import models
-from apps.entities.admin.admin_filters import (
+from apps.entities.admin.affiliations import AffiliationsInline
+from apps.entities.admin.filters import (
     CategoriesFilter,
     EntityTypeFilter,
     HasImageFilter,
     HasQuotesFilter,
 )
-from apps.entities.admin.affiliations import AffiliationsInline
-from apps.entities.admin.entity_inlines import (
+from apps.entities.admin.inlines import (
     CategorizationsInline,
     ImagesInline,
     OccurrencesInline,
     QuotesInline,
 )
 from apps.entities.forms import DeityForm, GroupForm, OrganizationForm, PersonForm
-from apps.quotes.admin import RelatedQuotesInline
+from apps.quotes.admin.related_quotes_inline import AbstractRelatedQuotesInline
+from apps.search.admin import SearchableModelAdmin
 
 
-class EntityAdmin(ModelAdmin):
+class RelatedQuotesInline(AbstractRelatedQuotesInline):
+    """Inline admin for an entity's related quotes."""
+
+    model = models.Entity.related_quotes.through
+
+
+class EntityAdmin(SearchableModelAdmin):
     """Admin for entities."""
 
     model = models.Entity
 
-    exclude = ['computations']  # display read-only pretty_computations instead
+    exclude = SearchableModelAdmin.exclude + [
+        'related_entities',
+        'related_quotes',
+    ]
     inlines = [
         ImagesInline,
         CategorizationsInline,
