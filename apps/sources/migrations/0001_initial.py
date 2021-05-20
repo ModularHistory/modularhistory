@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('entities', '0002_auto_20210520_2008'),
+        ('entities', '0002_auto_20210520_2048'),
         ('topics', '0001_initial'),
         ('places', '0003_auto_20210519_1729'),
         ('contenttypes', '0002_remove_content_type_name'),

@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('occurrences', '0001_initial'),
-        ('propositions', '0003_auto_20210520_2008'),
+        ('propositions', '0003_auto_20210520_2048'),
     ]
 
     operations = [

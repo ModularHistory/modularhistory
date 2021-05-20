@@ -6,24 +6,23 @@ normal=$(tput sgr0)
 
 echo "$staged_files" | grep --quiet ".py" && {
     staged_python_files=$(echo "$staged_files" | grep '.py')
-    # Autoformat Python code.
+    # Autoformat and lint Python code.
     poetry --help &>/dev/null && [[ -d ".venv" ]] && {
         comma_delimited_filepaths=$(echo "$staged_python_files" | tr '\n' ',')
         poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
+        for file in $staged_python_files; do
+            poetry run flake8 "$file";
+            # Check types with mypy first, since mypy is faster than pytype.
+            # If mypy fails, try pytype, then report the error if pytype also fails.
+            # https://github.com/google/pytype#usage
+            poetry run mypy "$file" || poetry run pytype --output .cache/pytype "$file" || {
+                echo "${bold}
+                    Carefully examine the error above. Should it be fixed?
+                    ${normal}
+                "
+            }
+        done
     }
-    # Run linters on Python code.
-    for file in $staged_python_files; do
-        flake8 "$file";
-        # Check types with mypy first, since mypy is faster than pytype.
-        # If mypy fails, try pytype, then report the error if pytype also fails.
-        # https://github.com/google/pytype#usage
-        mypy "$file" || pytype --output .cache/pytype "$file" || {
-            echo "${bold}
-                Carefully examine the error above. Should it be fixed?
-                ${normal}
-            "
-        }
-    done
 }
 
 # Autoformat JS & TS code.
