@@ -32,7 +32,7 @@ class OccurrenceChainInclusion(Model):
         related_name='occurrence_inclusions',
     )
     occurrence = models.ForeignKey(
-        to='occurrences.NewOccurrence',
+        to='propositions.Occurrence',
         on_delete=models.CASCADE,
         related_name='chain_inclusions',
     )

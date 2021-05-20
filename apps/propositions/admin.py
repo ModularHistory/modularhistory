@@ -33,9 +33,9 @@ class ConclusionsInline(TabularInline):
     verbose_name = 'supported proposition'
     verbose_name_plural = 'supported propositions'
     model = models.Support
-    exclude = ['premise', 'conclusion', 'position']
-    fk_name = 'new_premise'
-    autocomplete_fields = ['new_conclusion']
+    exclude = ['position']
+    fk_name = 'premise'
+    autocomplete_fields = ['conclusion']
     extra = 0
 
 
@@ -45,9 +45,8 @@ class PremisesInline(TabularInline):
     verbose_name = 'premise'
     verbose_name_plural = 'premises'
     model = models.Support
-    exclude = ['premise', 'conclusion']
-    fk_name = 'new_conclusion'
-    autocomplete_fields = ['new_premise']
+    fk_name = 'conclusion'
+    autocomplete_fields = ['premise']
     extra = 0
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
@@ -100,4 +99,4 @@ class PropositionAdmin(TypedPropositionAdmin):
 
 
 admin_site.register(models.TypedProposition, TypedPropositionAdmin)
-admin_site.register(models.NewProposition, PropositionAdmin)
+admin_site.register(models.Proposition, PropositionAdmin)

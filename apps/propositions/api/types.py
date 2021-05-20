@@ -1,12 +1,12 @@
 from apps.graph.types import ModuleType
-from apps.propositions.models.proposition import Proposition
+from apps.propositions.models.proposition import TypedProposition
 
 
 class PropositionType(ModuleType):
-    """GraphQL type for the Proposition model."""
+    """GraphQL type for the TypedProposition model."""
 
     class Meta:
-        model = Proposition
+        model = TypedProposition
         exclude = ['version']
 
     @staticmethod

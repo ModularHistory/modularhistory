@@ -49,23 +49,3 @@ class OccurrenceManager(TypedModelManager, SearchableModelManager):
             'citations',
             'images',
         )
-
-
-# class BirthManager(OccurrenceManager):
-#     def get_queryset(self) -> 'SearchableModelQuerySet':
-#         return super().get_queryset().filter(type=OccurrenceTypes.BIRTH.value)
-
-
-# class DeathManager(OccurrenceManager):
-#     def get_queryset(self) -> 'SearchableModelQuerySet':
-#         return super().get_queryset().filter(type=OccurrenceTypes.DEATH.value)
-
-
-# class PublicationManager(OccurrenceManager):
-#     def get_queryset(self) -> 'SearchableModelQuerySet':
-#         return super().get_queryset().filter(type=OccurrenceTypes.PUBLICATION.value)
-
-
-# class VerbalizationManager(OccurrenceManager):
-#     def get_queryset(self) -> 'SearchableModelQuerySet':
-#         return super().get_queryset().filter(type=OccurrenceTypes.VERBALIZATION.value)

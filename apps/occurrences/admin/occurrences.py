@@ -10,7 +10,6 @@ from apps.occurrences.admin.filters import (
 )
 from apps.places.admin import AbstractLocationsInline
 from apps.propositions.admin import TypedPropositionAdmin
-from apps.sources.admin.citations import AbstractSourcesInline
 from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.models.taggable_model import TopicFilter
 
@@ -19,12 +18,6 @@ class ImagesInline(AbstractImagesInline):
     """Inline admin for an occurrence's images."""
 
     model = models.Occurrence.images.through
-
-
-class SourcesInline(AbstractSourcesInline):
-    """Inline admin for sources."""
-
-    model = models.NewOccurrence.sources.through
 
 
 class LocationsInline(AbstractLocationsInline):
