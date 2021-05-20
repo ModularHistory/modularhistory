@@ -53,10 +53,8 @@ class PremisesInline(TabularInline):
     sortable_field_name = 'position'
 
 
-class TypedPropositionAdmin(SearchableModelAdmin):
-    """Admin for all propositions."""
-
-    model = models.TypedProposition
+class AbstractPropositionAdmin(SearchableModelAdmin):
+    """Abstract base admin for propositions."""
 
     exclude = SearchableModelAdmin.exclude + [
         'related_entities',
@@ -74,28 +72,28 @@ class TypedPropositionAdmin(SearchableModelAdmin):
     list_display = [
         'slug',
         'summary',
-        'date_html',
         'tags_string',
-        'type',
     ]
     list_filter = [
         TopicFilter,
         RelatedEntityFilter,
-        'type',
     ]
     list_per_page = 15
+
+
+class TypedPropositionAdmin(AbstractPropositionAdmin):
+    """Admin for all propositions."""
+
+    model = models.TypedProposition
+
+    list_display = AbstractPropositionAdmin.list_display + ['date_html', 'type']
+    list_filter = AbstractPropositionAdmin.list_filter + ['type']
     ordering = ['type', 'date']
     search_fields = model.searchable_fields
 
 
-class PropositionAdmin(TypedPropositionAdmin):
+class PropositionAdmin(AbstractPropositionAdmin):
     """Admin for propositions."""
-
-    list_display = [
-        'slug',
-        'summary',
-        'tags_string',
-    ]
 
 
 admin_site.register(models.TypedProposition, TypedPropositionAdmin)
