@@ -19,7 +19,7 @@ class OccurrenceSerializer(SearchableModelSerializer):
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
-        return 'occurrences.newoccurrence'
+        return 'occurrences.occurrence'
 
     def get_postscript(self, instance):
         """Return the user-facing postscript HTML."""

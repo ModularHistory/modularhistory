@@ -26,7 +26,7 @@ class ContentTypes(Constant):
     citation = 'sources.citation'
     entity = 'entities.entity'
     image = 'images.image'
-    occurrence = 'occurrences.newoccurrence'
+    occurrence = 'occurrences.occurrence'
     place = 'places.place'
     quote = 'quotes.quote'
     source = 'sources.source'

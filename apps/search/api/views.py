@@ -7,7 +7,7 @@ from rest_framework.generics import ListAPIView
 
 from apps.entities.models.entity import Entity
 from apps.images.models import Image
-from apps.occurrences.models.occurrence import NewOccurrence as Occurrence
+from apps.occurrences.models.occurrence import Occurrence
 from apps.quotes.models.quote import Quote
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.source import Source

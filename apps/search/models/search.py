@@ -10,7 +10,7 @@ from apps.dates.fields import HistoricDateTimeField
 from core.models.model import Model
 
 CONTENT_TYPE_OPTIONS: List[Tuple[str, str]] = [
-    ('occurrences.newoccurrence', 'Occurrences'),
+    ('occurrences.occurrence', 'Occurrences'),
     ('quotes.quote', 'Quotes'),
     ('images.image', 'Images'),
     ('sources.source', 'Sources'),

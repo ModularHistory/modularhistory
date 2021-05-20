@@ -57,10 +57,8 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     case "images.image":
       details = <ImageDetail image={module as ImageModule} />;
       break;
-    case "occurrences.newoccurrence":
-      console.log(">>>>>>>>>");
-      console.log(module);
-      console.log(module.cachedImages);
+    case "occurrences.occurrence":
+      console.log(">>>", module.cachedImages);
       details = <OccurrenceDetail occurrence={module as OccurrenceModule} />;
       break;
     case "postulations.postulation":

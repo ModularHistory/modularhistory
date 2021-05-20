@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from celery import shared_task
 from django.apps import apps
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
@@ -34,10 +33,11 @@ class TaggableModel(SluggedModel, ModelWithCache):
     @property
     def cached_tags(self) -> list:
         """Return the model instance's cached tags."""
-        tags = self.cache.get('tags')
+        tags = self.cache.get('tags', [])
         if tags or not self.tags.exists():
             return tags
         tags = [tag.serialize() for tag in self.tags.all()]
+        print(f'>>>> Calculated tags: {tags}')
         cache_tags.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
@@ -48,10 +48,7 @@ class TaggableModel(SluggedModel, ModelWithCache):
     @property  # type: ignore
     def tag_keys(self) -> Optional[List[str]]:
         """Return a list of tag keys (e.g., ['race', 'religion'])."""
-        try:
-            return [topic.name for topic in self.cached_tags]
-        except Exception:
-            return [topic['name'] for topic in self.cached_tags]
+        return [topic['name'] for topic in self.cached_tags]
 
     @property
     def tags_string(self) -> Optional[str]:
@@ -73,24 +70,6 @@ class TaggableModel(SluggedModel, ModelWithCache):
                 )
             )
         return None
-
-    @property
-    def _related_topics(self) -> List['Topic']:
-        """
-        Return a list of topics related to the model instance.
-
-        WARNING: This executes a db query for each model instance that accesses it.
-        """
-        # if self.cached_tags:
-        #     return self.cached_tags
-        try:
-            tags = [tag.serialize() for tag in self.tags.all()]
-            if tags:
-                self.cached_tags = tags
-                self.save()
-            return tags
-        except (AttributeError, ObjectDoesNotExist):
-            return []
 
 
 class TopicFilter(ManyToManyAutocompleteFilter):
@@ -115,3 +94,5 @@ def cache_tags(model: str, instance_id: int, tags: list):
     model_instance: TaggableModel = Model.objects.get(pk=instance_id)
     model_instance.cache['tags'] = tags
     model_instance.save(wipe_cache=False)
+    model_instance.refresh_from_db()
+    print(f'>>>> Saved tags: {model_instance.cache.get("tags")}')

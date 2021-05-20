@@ -20,7 +20,8 @@ from core.fields import HTMLField
 from core.utils.html import soupify
 
 if TYPE_CHECKING:
-    pass
+    from apps.entities.models.entity import Entity
+    from apps.images.models.image import Image
 
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
@@ -51,7 +52,7 @@ class Occurrence(TypedProposition):
     objects = managers.OccurrenceManager()
     searchable_fields = [
         'summary',
-        'description',
+        'elaboration',
         'date__year',
         'related_entities__name',
         'related_entities__aliases',
@@ -69,8 +70,9 @@ class Occurrence(TypedProposition):
         """Save the occurrence to the database."""
         super().save(*args, **kwargs)
         if not self.images.exists():
-            image = None
+            image: Optional['Image'] = None
             if self.related_entities.exists():
+                entity: 'Entity'
                 for entity in self.related_entities.all():
                     if entity.images.exists():
                         if self.date:
@@ -105,19 +107,6 @@ class Occurrence(TypedProposition):
     def ordered_images(self):
         """Careful!  These are occurrence-images, not images."""
         return self.image_relations.all().select_related('image')
-
-    def get_context(self):
-        """Return context for rendering the occurrence's detail template."""
-        quotes = [
-            quote_relation.quote
-            for quote_relation in self.quote_relations.all()
-            .select_related('quote')
-            .iterator()
-        ]
-        return {
-            'occurrence': self,
-            'quotes': sorted(quotes, key=quote_sorter_key),
-        }
 
 
 class NewOccurrence(

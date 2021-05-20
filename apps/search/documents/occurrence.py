@@ -2,7 +2,7 @@ from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.entities.models.entity import Entity
-from apps.occurrences.models.occurrence import NewOccurrence as Occurrence
+from apps.occurrences.models.occurrence import Occurrence
 from apps.search.documents.base import Document
 from apps.search.documents.config import (
     DEFAULT_INDEX_SETTINGS,

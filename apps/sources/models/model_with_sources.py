@@ -53,7 +53,7 @@ class ModelWithSources(Model):
     @property
     def cached_citations(self) -> list:
         """Return the model instance's cached citations."""
-        citations = self.cache.get('citations')
+        citations = self.cache.get('citations', [])
         if citations or not self.sources.exists():
             return citations
         citations = [citation.serialize() for citation in self.citations.all()]
@@ -81,7 +81,13 @@ class ModelWithSources(Model):
             )
         ``
         """
-        raise NotImplementedError
+        citations = getattr(self, 'new_citations', None)
+        if citations:
+            return citations
+        raise NotImplementedError(
+            f'{self.__class__} lacks an associated `Citation` model '
+            'with related_name="citations"'
+        )
 
     @property
     def sources(self) -> ManyToManyField:

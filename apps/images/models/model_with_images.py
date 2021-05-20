@@ -1,19 +1,14 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import Dict, Optional
 
 from celery import shared_task
 from django.apps import apps
 from django.utils.translation import ugettext_lazy as _
 
-from core.fields.json_field import JSONField
 from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
-from core.models.model_with_computations import retrieve_or_compute
-
-if TYPE_CHECKING:
-    pass
 
 
 class ModelWithImages(Model):
@@ -41,7 +36,7 @@ class ModelWithImages(Model):
     @property
     def cached_images(self) -> list:
         """Return the model instance's cached images."""
-        images = self.cache.get('images')
+        images = self.cache.get('images', [])
         if images or not self.images.exists():
             return images
         images = [image.serialize() for image in self.images.all()]
