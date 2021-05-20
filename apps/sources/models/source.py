@@ -11,7 +11,6 @@ from django.db.models.query import QuerySet
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
-from gm2m import GM2MField as GenericManyToManyField
 from polymorphic.models import PolymorphicModel
 
 from apps.dates.fields import HistoricDateTimeField

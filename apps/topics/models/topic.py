@@ -3,7 +3,6 @@
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.utils.translation import ugettext_lazy as _
-from gm2m import GM2MField as GenericManyToManyField
 
 from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel

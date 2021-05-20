@@ -75,10 +75,4 @@ class TopicAdmin(ModelAdmin):
         return custom_urls + urls
 
 
-class TopicRelationAdmin(ModelAdmin):
-    models = models.TopicRelation
-    list_display = ['pk', 'content_object']
-
-
 admin_site.register(models.Topic, TopicAdmin)
-admin_site.register(models.TopicRelation, TopicRelationAdmin)

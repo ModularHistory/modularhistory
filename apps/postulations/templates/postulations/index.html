@@ -3,10 +3,10 @@
 
 {% block content %}
     <div class="container">
-        {% if postulations|length %}
+        {% if propositions|length %}
             <div>
-                {% for postulation in postulations %}
-                    {{ postulation|get_html_for_view:"card" }}
+                {% for proposition in propositions %}
+                    {{ proposition|get_html_for_view:"card" }}
                 {% endfor %}
             </div>
         {% endif %}

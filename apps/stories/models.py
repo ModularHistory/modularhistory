@@ -26,7 +26,7 @@ class StoryCitation(AbstractCitation):
 
 
 class Story(ModelWithSources):
-    """A postulation."""
+    """A story."""
 
     handle = models.CharField(max_length=HANDLE_MAX_LENGTH, unique=True)
     description = HTMLField(

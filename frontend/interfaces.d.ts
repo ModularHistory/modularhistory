@@ -64,7 +64,7 @@ export interface EntityModule extends BaseModule, ModuleWithImages {
   description: string;
 }
 
-export interface PostulationModule extends BaseModule {
+export interface PropositionModule extends BaseModule {
   summary: string;
   elaboration: string;
   certainty: string;
@@ -81,7 +81,7 @@ export type ModuleUnion =
   | OccurrenceModule
   | SourceModule
   | EntityModule
-  | PostulationModule
+  | PropositionModule
   | TopicModule;
 
 export interface StaticPage {

@@ -12,34 +12,16 @@ from apps.topics.models.taggable_model import TopicFilter
 class RelatedTopicsInline(AbstractRelatedTopicsInline):
     """Inline admin for topic tags."""
 
-    model = models.Proposition.tags.through
-
-
-class NewRelatedTopicsInline(AbstractRelatedTopicsInline):
-    """Inline admin for topic tags."""
-
     model = models.TypedProposition.tags.through
 
 
 class SourcesInline(AbstractSourcesInline):
     """Inline admin for sources."""
 
-    model = models.Proposition.sources.through
-
-
-class NewSourcesInline(AbstractSourcesInline):
-    """Inline admin for sources."""
-
     model = models.TypedProposition.sources.through
 
 
 class RelatedEntitiesInline(AbstractRelatedEntitiesInline):
-    """Inline admin for related entities."""
-
-    model = models.Proposition.related_entities.through
-
-
-class NewRelatedEntitiesInline(AbstractRelatedEntitiesInline):
     """Inline admin for related entities."""
 
     model = models.TypedProposition.related_entities.through
@@ -105,9 +87,9 @@ class TypedPropositionAdmin(AbstractPropositionAdmin):
     inlines = [
         PremisesInline,
         ConclusionsInline,
-        NewSourcesInline,
-        NewRelatedEntitiesInline,
-        NewRelatedTopicsInline,
+        SourcesInline,
+        RelatedEntitiesInline,
+        RelatedTopicsInline,
     ]
     list_display = AbstractPropositionAdmin.list_display + ['type']
     search_fields = model.searchable_fields
@@ -115,3 +97,4 @@ class TypedPropositionAdmin(AbstractPropositionAdmin):
 
 
 admin_site.register(models.TypedProposition, TypedPropositionAdmin)
+admin_site.register(models.NewProposition, TypedPropositionAdmin)

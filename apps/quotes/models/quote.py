@@ -8,7 +8,6 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
-from gm2m import GM2MField as GenericManyToManyField
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
@@ -54,10 +53,14 @@ def get_quote_fk(related_name: str):
 
 
 class Citation(AbstractCitation):
+    """A relation between a quote and a source."""
+
     content_object = get_quote_fk(related_name='citations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
+    """A relation between a quote and a quote."""
+
     content_object = get_quote_fk(related_name='quote_relations')
 
 

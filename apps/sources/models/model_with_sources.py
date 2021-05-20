@@ -11,11 +11,10 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models.citation import AbstractCitation, Citation
+from apps.sources.models.citation import AbstractCitation
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
 from core.fields.custom_m2m_field import CustomManyToManyField
-from core.fields.json_field import JSONField
 from core.models.model import Model
 from core.models.model_with_computations import retrieve_or_compute
 
@@ -101,7 +100,7 @@ class ModelWithSources(Model):
         return None
 
     @property
-    def citation(self) -> Optional['Citation']:
+    def citation(self) -> Optional[AbstractCitation]:
         """Return the quote's primary citation, if a citation exists."""
         try:
             return self.citations.order_by('position')[0]

@@ -14,8 +14,10 @@ echo "$staged_files" | grep --quiet ".py" && {
     # Run linters on Python code.
     for file in $staged_python_files; do
         flake8 "$file";
+        # Check types with mypy first, since mypy is faster than pytype.
+        # If mypy fails, try pytype, then report the error if pytype also fails.
         # https://github.com/google/pytype#usage
-        pytype --output .cache/pytype "$file" || {
+        mypy "$file" || pytype --output .cache/pytype "$file" || {
             echo "${bold}
                 Carefully examine the error above. Should it be fixed?
                 ${normal}

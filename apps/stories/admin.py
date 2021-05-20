@@ -1,5 +1,4 @@
 from apps.admin import ModelAdmin, StackedInline, admin_site
-from apps.sources.admin import CitationsInline
 from apps.stories import models
 
 
@@ -33,7 +32,7 @@ class StoryElementsInline(StackedInline):
 
 
 class StoryAdmin(ModelAdmin):
-    """Admin for postulations."""
+    """Admin for stories."""
 
     model = models.Story
     list_display = ['handle']
@@ -41,7 +40,6 @@ class StoryAdmin(ModelAdmin):
     search_fields = model.searchable_fields
 
     inlines = [
-        CitationsInline,
         DownstreamStoriesInline,
         UpstreamStoriesInline,
     ]
