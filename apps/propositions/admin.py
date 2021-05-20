@@ -1,4 +1,5 @@
-from apps.admin import StackedInline, admin_site
+from apps.admin import admin_site
+from apps.admin.inlines import TabularInline
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.propositions import models
@@ -44,19 +45,19 @@ class NewRelatedEntitiesInline(AbstractRelatedEntitiesInline):
     model = models.TypedProposition.related_entities.through
 
 
-class ConclusionsInline(StackedInline):
+class ConclusionsInline(TabularInline):
     """Inline admin for a proposition's supported propositions."""
 
     verbose_name = 'supported proposition'
     verbose_name_plural = 'supported propositions'
     model = models.Support
-    exclude = ['premise', 'conclusion']
+    exclude = ['premise', 'conclusion', 'position']
     fk_name = 'new_premise'
     autocomplete_fields = ['new_conclusion']
     extra = 0
 
 
-class PremisesInline(StackedInline):
+class PremisesInline(TabularInline):
     """Inline admin for a proposition's premises."""
 
     verbose_name = 'premise'
@@ -66,6 +67,9 @@ class PremisesInline(StackedInline):
     fk_name = 'new_conclusion'
     autocomplete_fields = ['new_premise']
     extra = 0
+
+    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
+    sortable_field_name = 'position'
 
 
 class AbstractPropositionAdmin(SearchableModelAdmin):

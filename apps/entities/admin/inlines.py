@@ -1,5 +1,6 @@
 from apps.admin import TabularInline
 from apps.entities import models
+from apps.images.admin import AbstractImagesInline
 from apps.quotes.models.quote import Quote
 
 
@@ -37,12 +38,12 @@ class QuotesInline(TabularInline):
         return fields
 
 
-class ImagesInline(TabularInline):
+class ImagesInline(AbstractImagesInline):
     """Inline admin for images."""
 
     model = models.Entity.images.through
+
     extra = 1
-    autocomplete_fields = ['image']
 
 
 class CategorizationsInline(TabularInline):

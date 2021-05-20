@@ -44,7 +44,7 @@ class AbstractImagesInline(TabularInline):
     model: Type
 
     autocomplete_fields = ['image']
-    # readonly_fields = ['image_pk']
+    readonly_fields = ['admin_image_element']
     verbose_name = 'image'
     verbose_name_plural = 'images'
 
@@ -52,6 +52,10 @@ class AbstractImagesInline(TabularInline):
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
+
+    def admin_image_element(self, instance):
+        """Return an inline image's admin image element."""
+        return instance.image.admin_image_element
 
 
 class HasMultipleImagesFilter(BooleanListFilter):

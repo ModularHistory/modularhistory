@@ -3,6 +3,72 @@
 from django.db import migrations
 
 
+def run_script(apps, schema_editor):
+    ContentType = apps.get_model('contenttypes', 'ContentType')
+    Support = apps.get_model('propositions', 'Support')
+    TypedProposition = apps.get_model('propositions', 'TypedProposition')
+    Proposition = apps.get_model('propositions', 'Proposition')
+    NewOccurrence = apps.get_model('occurrences', 'NewOccurrence')
+
+    proposition_ct_id = ContentType.objects.get_for_model(Proposition).id
+    new_occurrence_ct_id = ContentType.objects.get_for_model(NewOccurrence).id
+
+    p: Proposition
+    proposition: TypedProposition
+    for p in Proposition.objects.all():
+        if p.polymorphic_ctype_id == proposition_ct_id:
+            _type = 'propositions.newproposition'
+        else:
+            _type = 'propositions.occurrence'
+            p = NewOccurrence.objects.get(id=p.id)
+        proposition, _created = TypedProposition.objects.get_or_create(
+            slug=p.slug, type=_type, summary=p.summary, title=p.title
+        )
+        proposition.elaboration = p.elaboration
+        proposition.certainty = p.certainty
+        proposition.notes = p.notes
+        if p.polymorphic_ctype_id != proposition_ct_id:
+            if p.polymorphic_ctype_id != new_occurrence_ct_id:
+                input(p.polymorphic_ctype)
+            proposition.postscript = p.postscript
+            proposition.date = p.date
+            proposition.end_date = p.end_date
+            proposition.hidden = p.hidden
+            proposition.verified = p.verified
+            proposition.date_is_circa = p.date_is_circa
+        proposition.save()
+        proposition.refresh_from_db()
+        for support in Support.objects.filter(premise_id=p.id):
+            support.new_premise_id = proposition.id
+            support.save()
+        for support in Support.objects.filter(conclusion_id=p.id):
+            support.new_conclusion_id = proposition.id
+            support.save()
+        for tag in p.tags.all():
+            if not proposition.tags.filter(pk=tag.pk).exists():
+                proposition.tags.add(tag)
+        for related_entity in p.related_entities.all():
+            if not proposition.related_entities.filter(pk=related_entity.pk).exists():
+                proposition.related_entities.add(related_entity)
+        for citation in p.__class__.sources.through.objects.filter(
+            content_object_id=p.id
+        ):
+            citation.new_content_object_id = proposition.id
+            citation.save()
+        for qr in p.__class__.related_quotes.through.objects.filter(
+            content_object_id=p.id
+        ):
+            qr.new_content_object_id = proposition.id
+            qr.save()
+        if p.polymorphic_ctype_id != proposition_ct_id:
+            for location in p.locations.all():
+                if not proposition.locations.filter(pk=location.pk).exists():
+                    proposition.locations.add(location)
+            for image in p.images.all():
+                if not proposition.images.filter(pk=image.pk).exists():
+                    proposition.images.add(image)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -14,4 +80,5 @@ class Migration(migrations.Migration):
             model_name='typedproposition',
             name='_cached_images',
         ),
+        migrations.RunPython(run_script),
     ]
