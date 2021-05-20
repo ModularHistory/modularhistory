@@ -56,10 +56,14 @@ def get_proposition_fk(related_name: str):
 
 
 class Citation(AbstractCitation):
+    """A relation of a source with a proposition."""
+
     new_content_object = get_proposition_fk('citations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
+    """A relation of a quote with a proposition."""
+
     new_content_object = get_proposition_fk('quote_relations')
 
 
