@@ -7,7 +7,7 @@ from apps.graph.types import ModuleType
 class EntityType(ModuleType):
     """GraphQL type for the Entity model."""
 
-    serialized_images = GenericScalar(source='serialized_images')
+    cached_images = GenericScalar(source='cached_images')
 
     class Meta:
         model = Entity

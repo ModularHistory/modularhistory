@@ -2,34 +2,34 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { PostulationModule } from "@/interfaces";
+import { PropositionModule } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
-interface PostulationProps {
-  postulation: PostulationModule;
+interface PropositionProps {
+  proposition: PropositionModule;
 }
 
 /**
- * A page that renders the HTML of a single postulation.
+ * A page that renders the HTML of a single proposition.
  */
-const Postulation: FC<PostulationProps> = ({ postulation }: PostulationProps) => {
+const Proposition: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
-    <Layout title={postulation.summary}>
+    <Layout title={proposition.summary}>
       <ModuleContainer>
-        <ModuleDetail module={postulation} />
+        <ModuleDetail module={proposition} />
       </ModuleContainer>
     </Layout>
   );
 };
-export default Postulation;
+export default Proposition;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let postulation = {};
+  let proposition = {};
   const { slug } = params;
   const body = {
     query: `{
-      postulation(slug: "${slug}") {
+      proposition(slug: "${slug}") {
         summary
         elaboration
         model
@@ -40,13 +40,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   await axiosWithoutAuth
     .post("http://django:8000/graphql/", body)
     .then((response) => {
-      postulation = response.data.data.postulation;
+      proposition = response.data.data.proposition;
     })
     .catch((_error) => {
-      postulation = null;
+      proposition = null;
     });
 
-  if (!postulation) {
+  if (!proposition) {
     // https://nextjs.org/blog/next-10#notfound-support
     return {
       notFound: true,
@@ -55,7 +55,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   return {
     props: {
-      postulation,
+      proposition,
     },
     revalidate: 10,
   };

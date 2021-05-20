@@ -25,7 +25,7 @@ const globalMenuItems = [
     title: "Other",
     path: "/",
     children: [
-      { title: "Postulations", path: "/postulations", reactive: true },
+      { title: "Propositions", path: "/propositions", reactive: true },
       { title: "Sources", path: "/sources", reactive: true },
       { title: "Entities", path: "/entities", reactive: true },
       { title: "Images", path: "/images", reactive: true },

@@ -41,8 +41,14 @@ PARTS_OF_SPEECH = (
 )
 
 
+def get_entity_fk(related_name: str):
+    return ManyToManyForeignKey(
+        to='entities.Entity', related_name=related_name, verbose_name='entity'
+    )
+
+
 class QuoteRelation(AbstractQuoteRelation):
-    content_object = ManyToManyForeignKey(to='entities.Entity')
+    content_object = get_entity_fk(related_name='quote_relations')
 
 
 class Entity(

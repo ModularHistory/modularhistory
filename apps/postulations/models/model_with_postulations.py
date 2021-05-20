@@ -1,4 +1,4 @@
-"""This module provides a `ModelWithPostulations` abstract model."""
+"""This module provides a `ModelWithPropositions` abstract model."""
 
 # from abc import abstractmethod
 
@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from core.models import AbstractModelMeta, Model
 
 
-class ModelWithPostulations(Model, metaclass=AbstractModelMeta):
+class ModelWithPropositions(Model, metaclass=AbstractModelMeta):
     """
     A model with one or more postulations per instance.
 
@@ -25,6 +25,6 @@ class ModelWithPostulations(Model, metaclass=AbstractModelMeta):
 
     # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for ModelWithPostulations."""
+        """Meta options for ModelWithPropositions."""
 
         abstract = True

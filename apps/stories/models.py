@@ -13,12 +13,20 @@ from core.models.model import Model
 HANDLE_MAX_LENGTH = 40
 
 
+def get_story_fk(related_name: str):
+    return ManyToManyForeignKey(
+        to='stories.Story',
+        related_name=related_name,
+        verbose_name='story',
+    )
+
+
 class StoryCitation(AbstractCitation):
-    content_object = ManyToManyForeignKey(to='stories.Story', related_name='citations')
+    content_object = get_story_fk(related_name='citations')
 
 
 class Story(ModelWithSources):
-    """A postulation."""
+    """A story."""
 
     handle = models.CharField(max_length=HANDLE_MAX_LENGTH, unique=True)
     description = HTMLField(

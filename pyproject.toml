@@ -206,6 +206,7 @@ types-colorama = "^0.4.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
 Werkzeug = "^1.0.1"
+pyre-check = "^0.9.3"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

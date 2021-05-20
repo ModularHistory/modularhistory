@@ -1,4 +1,4 @@
-from apps.admin.model_admin import ModelAdmin, admin_site
+from apps.admin.model_admin import admin_site
 from apps.entities import models
 from apps.entities.admin.affiliations import AffiliationsInline
 from apps.entities.admin.filters import (
@@ -10,7 +10,6 @@ from apps.entities.admin.filters import (
 from apps.entities.admin.inlines import (
     CategorizationsInline,
     ImagesInline,
-    OccurrencesInline,
     QuotesInline,
 )
 from apps.entities.forms import DeityForm, GroupForm, OrganizationForm, PersonForm
@@ -37,7 +36,6 @@ class EntityAdmin(SearchableModelAdmin):
         ImagesInline,
         CategorizationsInline,
         AffiliationsInline,
-        OccurrencesInline,
         QuotesInline,
         RelatedQuotesInline,
     ]
@@ -57,7 +55,7 @@ class EntityAdmin(SearchableModelAdmin):
         EntityTypeFilter,
     ]
     ordering = ['name', 'birth_date']
-    readonly_fields = ['pretty_computations']
+    readonly_fields = ['pretty_cache']
     search_fields = ['name', 'aliases']
 
 

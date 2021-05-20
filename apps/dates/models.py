@@ -24,6 +24,7 @@ class DatedModel(Model):
         help_text='whether the date is estimated/imprecise',
     )
     date = HistoricDateTimeField(verbose_name=_('date'), null=True)
+    end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
 
     class Meta:
         """Meta options for DatedModel."""
@@ -40,7 +41,6 @@ class DatedModel(Model):
     date_string.admin_order_field = 'date'  # type: ignore
     date_string = property(date_string)  # type: ignore
 
-    @property  # type: ignore
     @retrieve_or_compute(caster=format_html)
     def date_html(self) -> SafeString:
         """Return the HTML representation of the model instance's date."""
@@ -63,6 +63,9 @@ class DatedModel(Model):
             if use_ce:
                 date_html = f'{date_html} CE'
         return format_html(date_html)
+
+    date_html.admin_order_field = 'date'  # type: ignore
+    date_html = property(date_html)  # type: ignore
 
     @property
     def year_html(self) -> Optional[SafeString]:

@@ -23,7 +23,7 @@ class EntitiesTestSuite(TestSuite):
                 name
                 slug
                 description
-                serializedImages
+                cachedImages
                 model
                 adminUrl
             }

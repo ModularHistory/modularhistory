@@ -123,10 +123,10 @@ def process(html: str) -> str:
                     f'did not match {placeholder}'
                 )
         else:
-            logging.error(f'ERROR: Unable to get model class string for {object_type}')
+            logging.info(f'ERROR: Unable to get model class string for {object_type}')
     # TODO: optimize
     html = re.sub(r'(\S)\ (<a [^>]+?citation-link)', r'\g<1>\g<2>', html)
-    logging.debug(f'Successfuly processed {truncate(html)}')
+    logging.debug(f'Successfully processed {truncate(html)}')
     return html
 
 
@@ -147,7 +147,7 @@ class HTMLField(MceHTMLField):
         'image',
         'citation',
         'source',
-        'postulation',
+        'proposition',
     ]
 
     def __init__(

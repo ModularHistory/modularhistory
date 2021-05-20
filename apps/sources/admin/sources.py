@@ -15,7 +15,6 @@ from apps.sources.admin.inlines import (
     AttributeesInline,
     ContainedSourcesInline,
     ContainersInline,
-    RelatedInline,
 )
 
 
@@ -115,7 +114,6 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
         AttributeesInline,
         ContainersInline,
         ContainedSourcesInline,
-        RelatedInline,
     ]
     list_display = [field for field in SourceAdmin.list_display if field != 'ctype']
     # Without a hint, mypy seems unable to infer the type of `filter`
@@ -132,7 +130,7 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
         'attributee_html',
         'citation_string',
         'containment_html',
-        'computations',
+        'cache',
     ]
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
     save_as = True

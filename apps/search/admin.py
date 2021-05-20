@@ -16,8 +16,8 @@ class SearchableModelAdmin(ModelAdmin):
 
     model: Type['SearchableModel']
 
-    exclude = ['computations', 'new_tags']
-    readonly_fields = ['pretty_computations']
+    exclude = ['cache', 'tags']
+    readonly_fields = ['pretty_cache']
 
     def get_fields(self, request, model_instance=None):
         """Return reordered fields to be displayed in the admin."""

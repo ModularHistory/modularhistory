@@ -9,18 +9,18 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { FC } from "react";
 
-interface PostulationsProps {
-  postulationsData: any;
+interface PropositionsProps {
+  propositionsData: any;
 }
 
-const Postulations: FC<PostulationsProps> = ({ postulationsData }: PostulationsProps) => {
-  const postulations = postulationsData["results"] || [];
-  const postulationCards = postulations.map((postulation) => (
-    <Grid item key={postulation.slug} xs={6} sm={4} md={3}>
-      <Link href={`/postulations/${postulation.slug}`}>
+const Propositions: FC<PropositionsProps> = ({ propositionsData }: PropositionsProps) => {
+  const propositions = propositionsData["results"] || [];
+  const propositionCards = propositions.map((proposition) => (
+    <Grid item key={proposition.slug} xs={6} sm={4} md={3}>
+      <Link href={`/propositions/${proposition.slug}`}>
         <a>
-          <ModuleCard module={postulation}>
-            <div dangerouslySetInnerHTML={{ __html: postulation.summary }} />
+          <ModuleCard module={proposition}>
+            <div dangerouslySetInnerHTML={{ __html: proposition.summary }} />
           </ModuleCard>
         </a>
       </Link>
@@ -28,29 +28,29 @@ const Postulations: FC<PostulationsProps> = ({ postulationsData }: PostulationsP
   ));
 
   return (
-    <Layout title={"Postulations"}>
+    <Layout title={"Propositions"}>
       <Container>
-        <PageHeader>Postulations</PageHeader>
-        <Pagination count={postulationsData["total_pages"]} />
+        <PageHeader>Propositions</PageHeader>
+        <Pagination count={propositionsData["total_pages"]} />
         <Grid container spacing={2}>
-          {postulationCards}
+          {propositionCards}
         </Grid>
-        <Pagination count={postulationsData["total_pages"]} />
+        <Pagination count={propositionsData["total_pages"]} />
       </Container>
     </Layout>
   );
 };
 
-export default Postulations;
+export default Propositions;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let postulationsData = {};
+  let propositionsData = {};
 
   await axiosWithoutAuth
-    .get("http://django:8000/api/postulations/", { params: context.query })
+    .get("http://django:8000/api/propositions/", { params: context.query })
     .then((response) => {
-      postulationsData = response.data;
+      propositionsData = response.data;
     })
     .catch((error) => {
       // console.error(error);
@@ -58,7 +58,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      postulationsData,
+      propositionsData,
     },
   };
 };

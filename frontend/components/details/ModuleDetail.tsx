@@ -1,9 +1,9 @@
-import PostulationDetail from "@/components/details/PostulationDetail";
+import PropositionDetail from "@/components/details/PropositionDetail";
 import {
   EntityModule,
   ImageModule,
   OccurrenceModule,
-  PostulationModule,
+  PropositionModule,
   QuoteModule,
   SourceModule,
   TopicModule,
@@ -23,7 +23,7 @@ interface ModuleDetailProps {
     | QuoteModule
     | EntityModule
     | TopicModule
-    | PostulationModule
+    | PropositionModule
     | ImageModule
     | SourceModule;
 }
@@ -58,10 +58,11 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
       details = <ImageDetail image={module as ImageModule} />;
       break;
     case "occurrences.occurrence":
+      console.log(">>>", module.cachedImages);
       details = <OccurrenceDetail occurrence={module as OccurrenceModule} />;
       break;
-    case "postulations.postulation":
-      details = <PostulationDetail postulation={module as PostulationModule} />;
+    case "propositions.proposition":
+      details = <PropositionDetail proposition={module as PropositionModule} />;
       break;
     case "quotes.quote":
       details = <QuoteDetail quote={module as QuoteModule} />;

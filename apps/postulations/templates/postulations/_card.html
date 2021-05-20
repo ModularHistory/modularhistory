@@ -2,16 +2,16 @@
 {% load model_urls %}
 
 {% block edit %}
-    {% with object=postulation request=request %}
+    {% with object=proposition request=request %}
         {{block.super}}
     {% endwith %}
 {% endblock %}
 
 {% block body %}
     <h4 class="card-title">
-        <a href="/postulations/{{ postulation.pk }}/">{{ postulation.summary }}</a>
+        <a href="/propositions/{{ proposition.pk }}/">{{ proposition.summary }}</a>
     </h4>
     <p class="card-text">
-        {{ postulation.elaboration }}
+        {{ proposition.elaboration }}
     </p>
 {% endblock %}

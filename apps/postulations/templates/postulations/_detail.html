@@ -3,27 +3,27 @@
 <div class="container">
     
     <h1>
-        {{ postulation.summary|safe }}
+        {{ proposition.summary|safe }}
     </h1>
 
-    {% if postulation.supportive_postulations.exists %}
+    {% if proposition.supportive_propositions.exists %}
         <ul class="list-group my-5">
-            {% for supportive_postulation in postulation.supportive_postulations.all %}
+            {% for supportive_proposition in proposition.supportive_propositions.all %}
                 <li class="list-group-item">
-                    {{ supportive_postulation.summary_link|safe }}
+                    {{ supportive_proposition.summary_link|safe }}
                 </li>
             {% endfor %}
             <li class="list-group-item active">
-                {{ postulation.summary|safe }}
+                {{ proposition.summary|safe }}
             </li>
         </ul>
     {% endif %}
 
-    {% if postulation.elaboration %}
+    {% if proposition.elaboration %}
     <div>
-        {{ postulation.elaboration.html|safe }}
+        {{ proposition.elaboration.html|safe }}
     </div>
     {% endif %}
 </div>
 
-<a class="edit-object-button" target="_blank" rel="noopener noreferrer" href="{{ postulation|get_admin_url }}"><i class="fa fa-edit"></i></a>
+<a class="edit-object-button" target="_blank" rel="noopener noreferrer" href="{{ proposition|get_admin_url }}"><i class="fa fa-edit"></i></a>

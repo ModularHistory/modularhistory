@@ -139,7 +139,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
   const classes = useStyles();
   let bgImage;
   if (module.model != "images.image") {
-    bgImage = module.serializedImages?.[0];
+    bgImage = module.cachedImages?.[0];
   } else {
     bgImage = module;
   }

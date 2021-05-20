@@ -102,7 +102,6 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
 
 // https://next-auth.js.org/configuration/callbacks#session-callback
 callbacks.session = async function session(session: Session, jwt: JWT) {
-  console.log(">>>>>>>>> session");
   const sessionPlus: Session = { ...session };
   if (jwt) {
     // If the access token is expired, ...

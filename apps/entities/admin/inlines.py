@@ -1,6 +1,6 @@
 from apps.admin import TabularInline
 from apps.entities import models
-from apps.occurrences.models import OccurrenceEntityInvolvement
+from apps.images.admin import AbstractImagesInline
 from apps.quotes.models.quote import Quote
 
 
@@ -38,20 +38,12 @@ class QuotesInline(TabularInline):
         return fields
 
 
-class ImagesInline(TabularInline):
+class ImagesInline(AbstractImagesInline):
     """Inline admin for images."""
 
     model = models.Entity.images.through
+
     extra = 1
-    autocomplete_fields = ['image']
-
-
-class OccurrencesInline(TabularInline):
-    """Inline admin for occurrences."""
-
-    model = OccurrenceEntityInvolvement
-    extra = 1
-    autocomplete_fields = ['occurrence']
 
 
 class CategorizationsInline(TabularInline):

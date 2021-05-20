@@ -8,7 +8,6 @@ from apps.admin.list_filters.boolean_filters import BooleanListFilter
 from apps.entities.models.entity_image import EntityImage
 from apps.images.models.image import Image
 from apps.images.models.video import Video
-from apps.occurrences.models import OccurrenceImage
 from apps.search.admin import SearchableModelAdmin
 
 
@@ -21,15 +20,6 @@ class EntitiesInline(TabularInline):
     autocomplete_fields = ['entity']
 
 
-class OccurrencesInline(TabularInline):
-    """Inline admin for occurrences (in image admin)."""
-
-    model = OccurrenceImage
-    verbose_name = 'occurrence'
-    extra = 1
-    autocomplete_fields = ['occurrence']
-
-
 class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
     """Admin for images."""
 
@@ -40,9 +30,9 @@ class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
         'provider',
         'date_string',
     ]
-    inlines = [EntitiesInline, OccurrencesInline]
+    inlines = [EntitiesInline]
     search_fields = Image.searchable_fields
-    readonly_fields = ['height', 'width', 'urls', 'pretty_computations']
+    readonly_fields = ['height', 'width', 'urls', 'pretty_cache']
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
@@ -54,7 +44,7 @@ class AbstractImagesInline(TabularInline):
     model: Type
 
     autocomplete_fields = ['image']
-    readonly_fields = ['key', 'image_pk']
+    readonly_fields = ['admin_image_element']
     verbose_name = 'image'
     verbose_name_plural = 'images'
 
@@ -62,6 +52,10 @@ class AbstractImagesInline(TabularInline):
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
+
+    def admin_image_element(self, instance):
+        """Return an inline image's admin image element."""
+        return instance.image.admin_image_element
 
 
 class HasMultipleImagesFilter(BooleanListFilter):

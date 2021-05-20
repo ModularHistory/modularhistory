@@ -4,8 +4,6 @@ from typing import List, Optional
 
 from celery import shared_task
 from django.apps import apps
-from django.contrib.contenttypes.fields import GenericRelation
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
@@ -15,29 +13,30 @@ from django.utils.translation import ugettext_lazy as _
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.topics.models.topic import Topic
 from core.fields.json_field import JSONField
-from core.models.model_with_computations import ModelWithComputations
+from core.models.model_with_computations import ModelWithCache
+from core.models.slugged_model import SluggedModel
 
 
-class TaggableModel(ModelWithComputations):
+class TaggableModel(SluggedModel, ModelWithCache):
     """Mixin for models that are topic-taggable."""
 
-    tags = GenericRelation('topics.TopicRelation')
-    new_tags = models.ManyToManyField(
+    tags = models.ManyToManyField(
         to='topics.Topic',
         related_name='%(class)s_set',
         blank=True,
         verbose_name=_('tags'),
     )
-    _cached_tags = JSONField(editable=False, default=list)
 
     class Meta:
         abstract = True
 
     @property
     def cached_tags(self) -> list:
-        if self._cached_tags or not self.new_tags.exists():
-            return self._cached_tags
-        tags = [tag.serialize() for tag in self.new_tags.all()]
+        """Return the model instance's cached tags."""
+        tags = self.cache.get('tags', [])
+        if tags or not self.tags.exists():
+            return tags
+        tags = [tag.serialize() for tag in self.tags.all()]
         cache_tags.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
@@ -48,10 +47,7 @@ class TaggableModel(ModelWithComputations):
     @property  # type: ignore
     def tag_keys(self) -> Optional[List[str]]:
         """Return a list of tag keys (e.g., ['race', 'religion'])."""
-        try:
-            return [topic.name for topic in self.cached_tags]
-        except Exception:
-            return [topic['name'] for topic in self.cached_tags]
+        return [topic['name'] for topic in self.cached_tags]
 
     @property
     def tags_string(self) -> Optional[str]:
@@ -74,31 +70,13 @@ class TaggableModel(ModelWithComputations):
             )
         return None
 
-    @property
-    def _related_topics(self) -> List['Topic']:
-        """
-        Return a list of topics related to the model instance.
-
-        WARNING: This executes a db query for each model instance that accesses it.
-        """
-        # if self.cached_tags:
-        #     return self.cached_tags
-        try:
-            tags = [tag.serialize() for tag in self.new_tags.all()]
-            if tags:
-                self.cached_tags = tags
-                self.save()
-            return tags
-        except (AttributeError, ObjectDoesNotExist):
-            return []
-
 
 class TopicFilter(ManyToManyAutocompleteFilter):
     """Reusable filter for models with topic tags."""
 
     title = 'tags'
     field_name = 'tags'
-    _parameter_name = 'new_tags__pk__exact'
+    _parameter_name = 'tags__pk__exact'
     m2m_cls = Topic
 
     def get_autocomplete_url(self, request, model_admin):
@@ -112,6 +90,7 @@ def cache_tags(model: str, instance_id: int, tags: list):
     if not tags:
         return
     Model = apps.get_model(model)  # noqa: N806
-    model_instance = Model.objects.get(pk=instance_id)
-    model_instance._cached_tags = tags
-    model_instance.save()
+    model_instance: TaggableModel = Model.objects.get(pk=instance_id)
+    model_instance.cache['tags'] = tags
+    model_instance.save(wipe_cache=False)
+    model_instance.refresh_from_db()

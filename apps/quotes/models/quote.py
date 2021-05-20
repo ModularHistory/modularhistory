@@ -8,7 +8,6 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
-from gm2m import GM2MField as GenericManyToManyField
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
@@ -47,12 +46,22 @@ quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
 )
 
 
+def get_quote_fk(related_name: str):
+    return ManyToManyForeignKey(
+        to='quotes.Quote', related_name=related_name, verbose_name='quote'
+    )
+
+
 class Citation(AbstractCitation):
-    content_object = ManyToManyForeignKey(to='quotes.Quote', related_name='citations')
+    """A relation between a quote and a source."""
+
+    content_object = get_quote_fk(related_name='citations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
-    content_object = ManyToManyForeignKey(to='quotes.Quote')
+    """A relation between a quote and a quote."""
+
+    content_object = get_quote_fk(related_name='quote_relations')
 
 
 class Quote(
@@ -91,14 +100,6 @@ class Quote(
         blank=True,
         verbose_name=_('attributees'),
     )
-    related = GenericManyToManyField(
-        'occurrences.Occurrence',
-        'entities.Entity',
-        'quotes.Quote',
-        through='quotes.GenericQuoteRelation',
-        related_name='_related_quotes',
-        blank=True,
-    )
     images = models.ManyToManyField(
         to='images.Image',
         through='quotes.QuoteImage',
@@ -129,8 +130,8 @@ class Quote(
         'attributees__name',
         'date__year',
         'sources__citation_string',
-        'tags__topic__key',
-        'tags__topic__aliases',
+        'tags__key',
+        'tags__aliases',
     ]
     serializer = QuoteSerializer
     slug_base_field = 'title'

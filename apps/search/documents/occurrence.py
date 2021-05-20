@@ -21,10 +21,10 @@ class OccurrenceDocument(Document):
 
     title = fields.TextField(analyzer=html_field_analyzer)
     summary = fields.TextField(attr='summary.raw_value', analyzer=html_field_analyzer)
-    description = fields.TextField(
-        attr='description.raw_value', analyzer=html_field_analyzer
+    elaboration = fields.TextField(
+        attr='elaboration.raw_value', analyzer=html_field_analyzer
     )
-    involved_entities = fields.ObjectField(
+    related_entities = fields.ObjectField(
         properties={
             'id': fields.IntegerField(),
             'name': fields.TextField(),
@@ -52,5 +52,5 @@ class OccurrenceDocument(Document):
         return (
             super()
             .get_queryset()
-            .prefetch_related('involved_entities', 'sources', 'new_tags')
+            .prefetch_related('related_entities', 'sources', 'tags')
         )

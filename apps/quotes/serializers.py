@@ -19,9 +19,9 @@ class QuoteSerializer(SearchableModelSerializer):
     attributeeHtml = serpy.Field(attr='attributee_html')
     attributeeString = serpy.Field(attr='attributee_string')
     dateHtml = serpy.Field(attr='date_html')
-    serializedImages = serpy.Field(attr='serialized_images')
+    cachedImages = serpy.Field(attr='cached_images')
     primaryImage = serpy.Field(attr='primary_image')
-    serializedCitations = serpy.Field(attr='serialized_citations')
+    cachedCitations = serpy.Field(attr='cached_citations')
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""

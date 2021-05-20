@@ -1,6 +1,6 @@
 """Public models of the sources app."""
 
-from .citation import Citation
+from .citation import AbstractCitation
 from .publication import Journal, Magazine, Newspaper, Publication
 from .source import Source
 from .source_attribution import SourceAttribution

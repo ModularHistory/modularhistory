@@ -33,6 +33,10 @@ env:
   IMGUR_CLIENT_SECRET: ${IMGUR_CLIENT_SECRET}
   MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
   MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+  POSTGRES_HOST: postgres
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -61,18 +65,15 @@ jobs:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
         # NOTE: Services (running in Docker containers) only work on ubuntu.
         os: [ macos-latest, ubuntu-latest ]
+        python-version: [ 3.7 ]
     environment: dev
     env:
       TESTING: true
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.7
+        python-version: ${{ matrix.python-version }}
     - name: Run setup script
       run: bash setup.sh
       shell: bash
@@ -109,11 +110,6 @@ jobs:
         # Set health checks to wait until redis has started
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     environment: integration
-    env:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
     - includes: ./.github/actions/setup
       with:
@@ -126,26 +122,40 @@ jobs:
     - name: Run tests
       run: poetry run invoke test --no-docker
 
+  check-types:
+    name: Check types
+    runs-on: ubuntu-latest
+    # TODO: remove continue-on-error: true
+    continue-on-error: true
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [ 3.7 ]
+    environment: integration
+    steps:
+    - 
+      includes: ./.github/actions/setup
+      with:
+        os: ${{ runner.os }}
+        python-version: ${{ matrix.python-version }}
+    -
+      name: Run static type checker
+      run: poetry run pytype *
+
   build:
     name: Build images
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
       matrix:
-        os: [ ubuntu-latest ]
         python-version: [ 3.7 ]
     environment: integration
-    env:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: modularhistory
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
     - 
       includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.7
+        python-version: ${{ matrix.python-version }}
     -
       name: Inject environment vars
       run: poetry run invoke setup.write-env-file

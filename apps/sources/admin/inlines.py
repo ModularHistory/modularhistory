@@ -1,5 +1,4 @@
-from apps.admin import GenericTabularInline, TabularInline
-from apps.sources import models
+from apps.admin import TabularInline
 from apps.sources.models.source import Source
 
 
@@ -33,15 +32,3 @@ class ContainedSourcesInline(TabularInline):
     fk_name = 'container'
     extra = 0
     autocomplete_fields = ['source']
-
-
-class RelatedInline(GenericTabularInline):
-    """Inline admin for a source's related objects."""
-
-    model = models.Citation
-    extra = 0
-    verbose_name = 'related obj'
-    verbose_name_plural = 'related objects (not yet implemented)'
-
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
-    sortable_field_name = 'position'

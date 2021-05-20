@@ -11,7 +11,7 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
     .filter((html) => Boolean(html))
     .join(", ");
 
-  const firstImage = quote.serializedImages?.[0];
+  const firstImage = quote.cachedImages?.[0];
 
   return (
     <>
@@ -31,7 +31,7 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
 
       <footer className="footer sources-footer">
         <ol className="citations">
-          {quote.serializedCitations.map((citation) => (
+          {quote.cachedCitations.map((citation) => (
             <li
               key={citation.pk}
               className="source"

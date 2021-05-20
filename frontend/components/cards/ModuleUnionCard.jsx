@@ -15,7 +15,7 @@ export default function ModuleUnionCard({ module, ...childProps }) {
     case "occurrences.occurrence":
       content = <div dangerouslySetInnerHTML={{ __html: module.summary }} />;
       break;
-    case "postulations.postulation":
+    case "propositions.proposition":
       content = <div dangerouslySetInnerHTML={{ __html: module.summary }} />;
       break;
     case "quotes.quote":

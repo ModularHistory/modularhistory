@@ -17,7 +17,7 @@ class ModelNameSet(Constant):
     source = 'source'
     topic = 'topic'
     fact = 'fact'
-    postulation = 'postulation'
+    proposition = 'proposition'
 
 
 class ContentTypes(Constant):
@@ -31,19 +31,18 @@ class ContentTypes(Constant):
     quote = 'quotes.quote'
     source = 'sources.source'
     topic = 'topics.topic'
-    postulation = 'postulations.postulation'
+    proposition = 'propositions.proposition'
 
 
 MODEL_CLASS_PATHS = {
-    ModelNameSet.citation: 'apps.sources.models.Citation',
+    # ModelNameSet.citation: 'apps.sources.models.Citation',  # TODO: clean up
     ModelNameSet.entity: 'apps.entities.models.Entity',
     ModelNameSet.image: 'apps.images.models.Image',
     ModelNameSet.occurrence: 'apps.occurrences.models.Occurrence',
     ModelNameSet.place: 'apps.places.models.Place',
     ModelNameSet.quote: 'apps.quotes.models.Quote',
     ModelNameSet.source: 'apps.sources.models.Source',
-    ModelNameSet.fact: 'apps.postulations.models.Postulation',
-    ModelNameSet.postulation: 'apps.postulations.models.Postulation',
+    ModelNameSet.proposition: 'apps.propositions.models.Proposition',
 }
 
 
@@ -55,6 +54,8 @@ def get_ct_id(ct_name: str) -> int:
         ct_id = cached_ct_id
     else:
         app_label, model = ct_name.split('.')
-        ct_id = ContentType.objects.get_by_natural_key(app_label=app_label, model=model).id
+        ct_id = ContentType.objects.get_by_natural_key(
+            app_label=app_label, model=model
+        ).id
         cache.set(cache_key, ct_id, timeout=None)
     return ct_id

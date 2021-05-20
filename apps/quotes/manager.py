@@ -45,7 +45,6 @@ class QuoteManager(SearchableModelManager):
         # Limit to specified topics
         if topic_ids:
             qs = qs.filter(
-                Q(tags__topic__id__in=topic_ids)
-                | Q(tags__topic__related_topics__id__in=topic_ids)
+                Q(tags__id__in=topic_ids) | Q(tags__related_topics__id__in=topic_ids)
             )
         return qs

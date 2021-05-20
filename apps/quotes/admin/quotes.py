@@ -2,7 +2,7 @@
 
 from django.db.models.query import QuerySet
 
-from apps.admin import admin_site
+from apps.admin.admin_site import admin_site
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.quotes import models
 from apps.quotes.admin.filters import (
@@ -15,7 +15,7 @@ from apps.quotes.admin.related_quotes_inline import AbstractRelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
 from apps.sources.admin.filters.simple_filters import (
-    HasMultipleCitationsFilter,
+    HasMultipleSourcesFilter,
     HasSourceFilter,
 )
 from apps.topics.admin.related_topics import AbstractRelatedTopicsInline, HasTagsFilter
@@ -44,7 +44,7 @@ class RelatedQuotesInline(AbstractRelatedQuotesInline):
 class RelatedTopicsInline(AbstractRelatedTopicsInline):
     """Inline admin for a quote's related entities."""
 
-    model = models.Quote.new_tags.through
+    model = models.Quote.tags.through
 
 
 class QuoteAdmin(SearchableModelAdmin):
@@ -75,7 +75,7 @@ class QuoteAdmin(SearchableModelAdmin):
     list_filter = [
         'verified',
         HasSourceFilter,
-        HasMultipleCitationsFilter,
+        HasMultipleSourcesFilter,
         HasTagsFilter,
         TopicFilter,
         AttributeeFilter,
@@ -101,7 +101,7 @@ class QuoteAdmin(SearchableModelAdmin):
 
         https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
-        qs = models.Quote.objects.prefetch_related('attributees', 'tags__topic')
+        qs = models.Quote.objects.prefetch_related('attributees', 'tags')
         ordering = self.get_ordering(request)
         if ordering and ordering != models.Quote.get_meta().ordering:
             qs = qs.order_by(*ordering)

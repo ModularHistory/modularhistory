@@ -1,22 +1,20 @@
 """Classes for models with relations to sources."""
 
 import logging
-from typing import Dict, List, Optional, Type, Union
+from typing import Optional, Type, Union
 
 from celery import shared_task
 from concurrency.fields import IntegerVersionField
 from django.apps import apps
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models.fields.related import ManyToManyField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models.citation import AbstractCitation, Citation
+from apps.sources.models.citation import AbstractCitation
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
 from core.fields.custom_m2m_field import CustomManyToManyField
-from core.fields.json_field import JSONField
 from core.models.model import Model
 from core.models.model_with_computations import retrieve_or_compute
 
@@ -41,10 +39,6 @@ class ModelWithSources(Model):
     it must be defined as an abstract model class.
     """
 
-    citations = GenericRelation('sources.Citation')
-
-    _cached_citations = JSONField(editable=False, default=list)
-
     version = IntegerVersionField()
 
     # Admin-facing notes (not to be displayed to users)
@@ -57,8 +51,10 @@ class ModelWithSources(Model):
 
     @property
     def cached_citations(self) -> list:
-        if self._cached_citations or not self.sources.exists():
-            return self._cached_citations
+        """Return the model instance's cached citations."""
+        citations = self.cache.get('citations', [])
+        if citations or not self.sources.exists():
+            return citations
         citations = [citation.serialize() for citation in self.citations.all()]
         cache_citations.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
@@ -72,7 +68,7 @@ class ModelWithSources(Model):
         """
         The `related_name` value for the intermediate citation model.
 
-        Models inheriting from ModelWithSources must implement a m2m relationship
+        Models inheriting from ModelWithSources must have a m2m relationship
         with the Source model with a `through` model that inherits from
         AbstractCitation and uses `related_name='citations'`. For example:
 
@@ -84,7 +80,13 @@ class ModelWithSources(Model):
             )
         ``
         """
-        raise NotImplementedError
+        citations = getattr(self, 'new_citations', None)
+        if citations:
+            return citations
+        raise NotImplementedError(
+            f'{self.__class__} lacks an associated `Citation` model '
+            'with related_name="citations"'
+        )
 
     @property
     def sources(self) -> ManyToManyField:
@@ -98,25 +100,19 @@ class ModelWithSources(Model):
         return None
 
     @property
-    def citation(self) -> Optional['Citation']:
+    def citation(self) -> Optional[AbstractCitation]:
         """Return the quote's primary citation, if a citation exists."""
         try:
             return self.citations.order_by('position')[0]
         except IndexError:
             return None
 
-    @property  # type: ignore
-    @retrieve_or_compute(attribute_name='serialized_citations')
-    def serialized_citations(self) -> List[Dict]:
-        """Return a list of dictionaries representing the instance's citations."""
-        return [citation.serialize() for citation in self.citations.all()]
-
     @property
     def citation_html(self) -> SafeString:
         """Return the instance's full citation HTML."""
         try:
             citation_html = '; '.join(
-                citation.get('html') for citation in self.serialized_citations
+                citation.get('html') for citation in self.cached_citations
             )
         except Exception as error:
             logging.error(f'{error}')
@@ -130,6 +126,6 @@ def cache_citations(model: str, instance_id: int, citations: list):
     if not citations:
         return
     Model = apps.get_model(model)
-    model_instance = Model.objects.get(pk=instance_id)  # noqa: N806
-    model_instance._cached_citations = citations
-    model_instance.save()
+    model_instance: ModelWithSources = Model.objects.get(pk=instance_id)  # noqa: N806
+    model_instance.cache['citations'] = citations
+    model_instance.save(wipe_cache=False)

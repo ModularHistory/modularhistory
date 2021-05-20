@@ -11,7 +11,6 @@ from django.db.models.query import QuerySet
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
-from gm2m import GM2MField as GenericManyToManyField
 from polymorphic.models import PolymorphicModel
 
 from apps.dates.fields import HistoricDateTimeField
@@ -138,13 +137,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     )
     publication_date = HistoricDateTimeField(
         verbose_name=_('publication date'), null=True, blank=True
-    )
-    related = GenericManyToManyField(
-        'quotes.Quote',
-        'occurrences.Occurrence',
-        through='sources.Citation',
-        related_name='_sources',
-        blank=True,
     )
     title = models.CharField(
         verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
