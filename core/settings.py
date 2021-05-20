@@ -146,7 +146,6 @@ INSTALLED_APPS = [
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
-    'gm2m',  # https://django-gm2m.readthedocs.io/en/latest/
     'graphene_django',  # https://github.com/graphql-python/graphene-django
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.migrations',
