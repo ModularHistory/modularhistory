@@ -17,7 +17,7 @@ from apps.admin.admin_site import admin_site
 APPS_TO_INCLUDE = (
     'entities',
     'quotes',
-    'occurrences',
+    # 'occurrences',
     'propositions',
     'topics',
     'images',
