@@ -1,6 +1,6 @@
 """Admin classes for occurrences."""
 
-from apps.admin import ModelAdmin, admin_site
+from apps.admin import admin_site
 from apps.images.admin import AbstractImagesInline
 from apps.occurrences import models
 from apps.occurrences.admin.filters import (
@@ -9,18 +9,16 @@ from apps.occurrences.admin.filters import (
     LocationFilter,
 )
 from apps.places.admin import AbstractLocationsInline
-from apps.propositions.admin import PropositionChildAdmin
-from apps.propositions.models.proposition import Proposition
-from apps.search.admin import SearchableModelAdmin
+from apps.propositions.admin import TypedPropositionAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
-from apps.sources.admin.filters import HasMultipleCitationsFilter, HasSourceFilter
+from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.models.taggable_model import TopicFilter
 
 
 class ImagesInline(AbstractImagesInline):
     """Inline admin for an occurrence's images."""
 
-    model = models.NewOccurrence.images.through
+    model = models.Occurrence.images.through
 
 
 class SourcesInline(AbstractSourcesInline):
@@ -32,29 +30,17 @@ class SourcesInline(AbstractSourcesInline):
 class LocationsInline(AbstractLocationsInline):
     """Inline admin for an occurrence's locations."""
 
-    model = models.NewOccurrence.locations.through
+    model = models.Occurrence.locations.through
 
 
-class OccurrenceAdmin(PropositionChildAdmin):
+class OccurrenceAdmin(TypedPropositionAdmin):
     """Model admin for occurrences."""
 
-    base_model = Proposition
-    model = models.NewOccurrence
+    model = models.Occurrence
 
-    exclude = PropositionChildAdmin.exclude + [
-        # Use inlines for m2m relations.
-        'postulations',
-        'images',
-        'locations',
-    ]
-    inlines = PropositionChildAdmin.inlines + [
-        LocationsInline,
-        ImagesInline,
-        # The following are included by PropositionChildAdmin:
-        #   RelatedQuotesInline,
-        #   RelatedEntitiesInline,
-        #   SourcesInline,
-    ]
+    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
+    date_hierarchy = 'date'
+    inlines = TypedPropositionAdmin.inlines + [LocationsInline, ImagesInline]
     list_display = [
         'slug',
         'title',
@@ -70,24 +56,11 @@ class OccurrenceAdmin(PropositionChildAdmin):
         TopicFilter,
         LocationFilter,
         HasSourceFilter,
-        HasMultipleCitationsFilter,
+        HasMultipleSourcesFilter,
         # HasMultipleImagesFilter,
     ]
-    list_per_page = 10
     ordering = ['date']
-    readonly_fields = SearchableModelAdmin.readonly_fields
-    search_fields = model.searchable_fields
-
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
-    date_hierarchy = 'date'
 
 
-class OccurrenceChainAdmin(ModelAdmin):
-    """Admin for occurrence chains."""
-
-    base_model = models.OccurrenceChain
-    # inlines = [OccurrencesInline]
-
-
-admin_site.register(models.NewOccurrence, OccurrenceAdmin)
-admin_site.register(models.OccurrenceChain, OccurrenceChainAdmin)
+admin_site.register(models.Occurrence, OccurrenceAdmin)
+# admin_site.register(models.OccurrenceChain, OccurrenceChainAdmin)

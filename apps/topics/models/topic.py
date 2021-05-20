@@ -9,10 +9,7 @@ from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
 from core.models.model import Model
-from core.models.model_with_computations import (
-    ModelWithComputations,
-    retrieve_or_compute,
-)
+from core.models.model_with_computations import ModelWithCache, retrieve_or_compute
 from core.models.slugged_model import SluggedModel
 
 NAME_MAX_LENGTH: int = 25
@@ -55,7 +52,7 @@ class TopicParentChildRelation(Model):
         return f'{self.parent_topic} > {self.child_topic}'
 
 
-class Topic(TreeModel, SluggedModel, ModelWithComputations):
+class Topic(TreeModel, SluggedModel, ModelWithCache):
     """A topic."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)

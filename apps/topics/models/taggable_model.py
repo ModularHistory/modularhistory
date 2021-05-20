@@ -14,10 +14,11 @@ from django.utils.translation import ugettext_lazy as _
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.topics.models.topic import Topic
 from core.fields.json_field import JSONField
-from core.models.model_with_computations import ModelWithComputations
+from core.models.model_with_computations import ModelWithCache
+from core.models.slugged_model import SluggedModel
 
 
-class TaggableModel(ModelWithComputations):
+class TaggableModel(SluggedModel, ModelWithCache):
     """Mixin for models that are topic-taggable."""
 
     tags = models.ManyToManyField(
@@ -26,15 +27,16 @@ class TaggableModel(ModelWithComputations):
         blank=True,
         verbose_name=_('tags'),
     )
-    _cached_tags = JSONField(editable=False, default=list)
 
     class Meta:
         abstract = True
 
     @property
     def cached_tags(self) -> list:
-        if self._cached_tags or not self.tags.exists():
-            return self._cached_tags
+        """Return the model instance's cached tags."""
+        tags = self.cache.get('tags')
+        if tags or not self.tags.exists():
+            return tags
         tags = [tag.serialize() for tag in self.tags.all()]
         cache_tags.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
@@ -110,6 +112,6 @@ def cache_tags(model: str, instance_id: int, tags: list):
     if not tags:
         return
     Model = apps.get_model(model)  # noqa: N806
-    model_instance = Model.objects.get(pk=instance_id)
-    model_instance._cached_tags = tags
-    model_instance.save()
+    model_instance: TaggableModel = Model.objects.get(pk=instance_id)
+    model_instance.cache['tags'] = tags
+    model_instance.save(wipe_cache=False)

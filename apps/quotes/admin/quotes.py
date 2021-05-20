@@ -15,7 +15,7 @@ from apps.quotes.admin.related_quotes_inline import AbstractRelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
 from apps.sources.admin.filters.simple_filters import (
-    HasMultipleCitationsFilter,
+    HasMultipleSourcesFilter,
     HasSourceFilter,
 )
 from apps.topics.admin.related_topics import AbstractRelatedTopicsInline, HasTagsFilter
@@ -75,7 +75,7 @@ class QuoteAdmin(SearchableModelAdmin):
     list_filter = [
         'verified',
         HasSourceFilter,
-        HasMultipleCitationsFilter,
+        HasMultipleSourcesFilter,
         HasTagsFilter,
         TopicFilter,
         AttributeeFilter,

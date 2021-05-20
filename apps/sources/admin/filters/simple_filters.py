@@ -59,15 +59,15 @@ class HasFilePageOffsetFilter(BooleanListFilter):
         return sources.filter(id__in=ids)
 
 
-class HasMultipleCitationsFilter(BooleanListFilter):
-    """TODO: add docstring."""
+class HasMultipleSourcesFilter(BooleanListFilter):
+    """Filter for whether model instances have multiple sources."""
 
-    title = 'has multiple citations'
-    parameter_name = 'has_multiple_citations'
+    title = 'has multiple sources'
+    parameter_name = 'has_multiple_sources'
 
     def queryset(self, request, queryset):
         """Return the filtered queryset."""
-        queryset = queryset.annotate(citation_count=Count('citations'))
+        queryset = queryset.annotate(citation_count=Count('sources'))
         if self.value() == YES:
             return queryset.exclude(citation_count__lt=2)
         if self.value() == NO:
@@ -75,7 +75,7 @@ class HasMultipleCitationsFilter(BooleanListFilter):
 
 
 class HasSourceFilter(BooleanListFilter):
-    """TODO: add docstring."""
+    """Filter for whether model instances have a source."""
 
     title = 'has source'
     parameter_name = 'has_source'

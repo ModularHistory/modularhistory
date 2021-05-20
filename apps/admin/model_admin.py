@@ -86,7 +86,7 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
         self, request: HttpRequest, model_instance: Optional['Model'] = None
     ) -> List[str]:
         """Add additional readonly fields."""
-        default_readonly_fields = ('computations',)
+        default_readonly_fields = ('cache',)
         readonly_fields = list(super().get_readonly_fields(request, model_instance))
         if model_instance:
             for additional_readonly_field in default_readonly_fields:

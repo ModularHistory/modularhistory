@@ -40,10 +40,6 @@ class ModelWithSources(Model):
     it must be defined as an abstract model class.
     """
 
-    # citations = GenericRelation('sources.Citation')
-
-    _cached_citations = JSONField(editable=False, default=list)
-
     version = IntegerVersionField()
 
     # Admin-facing notes (not to be displayed to users)
@@ -56,8 +52,10 @@ class ModelWithSources(Model):
 
     @property
     def cached_citations(self) -> list:
-        if self._cached_citations or not self.sources.exists():
-            return self._cached_citations
+        """Return the model instance's cached citations."""
+        citations = self.cache.get('citations')
+        if citations or not self.sources.exists():
+            return citations
         citations = [citation.serialize() for citation in self.citations.all()]
         cache_citations.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
@@ -123,6 +121,6 @@ def cache_citations(model: str, instance_id: int, citations: list):
     if not citations:
         return
     Model = apps.get_model(model)
-    model_instance = Model.objects.get(pk=instance_id)  # noqa: N806
-    model_instance._cached_citations = citations
-    model_instance.save()
+    model_instance: ModelWithSources = Model.objects.get(pk=instance_id)  # noqa: N806
+    model_instance.cache['citations'] = citations
+    model_instance.save(wipe_cache=False)

@@ -1,7 +1,7 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import Dict, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Optional
 
 from celery import shared_task
 from django.apps import apps
@@ -31,8 +31,6 @@ class ModelWithImages(Model):
         verbose_name=_('images'),
     )
 
-    _cached_images = JSONField(editable=False, default=list)
-
     class Meta:
         """Meta options for ModelWithImages."""
 
@@ -42,8 +40,10 @@ class ModelWithImages(Model):
 
     @property
     def cached_images(self) -> list:
-        if self._cached_images or not self.images.exists():
-            return self._cached_images
+        """Return the model instance's cached images."""
+        images = self.cache.get('images')
+        if images or not self.images.exists():
+            return images
         images = [image.serialize() for image in self.images.all()]
         # images = [
         #     image_relation.image.serialize()
@@ -72,6 +72,6 @@ def cache_images(model: str, instance_id: int, images: list):
     if not images:
         return
     Model = apps.get_model(model)
-    model_instance = Model.objects.get(pk=instance_id)  # noqa: N806
-    model_instance._cached_images = images
-    model_instance.save()
+    model_instance: ModelWithImages = Model.objects.get(pk=instance_id)  # noqa: N806
+    model_instance.cache['images'] = images
+    model_instance.save(wipe_cache=False)

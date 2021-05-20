@@ -38,7 +38,7 @@ else:
 
 # Cachalot settings:
 # https://django-cachalot.readthedocs.io/en/latest/quickstart.html#settings
-CACHALOT_ENABLED = ENVIRONMENT != Environments.GITHUB_TEST
+CACHALOT_ENABLED = False and ENVIRONMENT != Environments.GITHUB_TEST
 CACHALOT_CACHE = 'default'  # cache name
 CACHALOT_CACHE_RANDOM = False  # caching of random order queries, i.e order_by('?')
 CACHALOT_UNCACHABLE_TABLES = frozenset(
@@ -55,5 +55,6 @@ CACHALOT_UNCACHABLE_TABLES = frozenset(
         'django_celery_results_chordcounter',
         'django_celery_results_taskresult',
         'health_check_db_testmodel',
+        'propositions_typed_proposition',
     )
 )

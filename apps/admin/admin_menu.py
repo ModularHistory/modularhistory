@@ -30,8 +30,12 @@ APPS_TO_INCLUDE = (
 
 
 def _get_models_registered_in_app(app: str) -> Iterable:
-    app_models = apps.get_app_config(app).get_models()
-    return [model for model in app_models if model in admin_site.get_registry().keys()]
+    _models = [
+        model
+        for model in apps.get_app_config(app).get_models()
+        if model in admin_site.get_registry().keys()
+    ]
+    return _models
 
 
 class AdminMenu(Menu):

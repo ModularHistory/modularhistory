@@ -132,7 +132,7 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
         'attributee_html',
         'citation_string',
         'containment_html',
-        'computations',
+        'cache',
     ]
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
     save_as = True

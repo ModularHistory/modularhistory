@@ -7,10 +7,7 @@ from django.utils.safestring import SafeString
 
 from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.source import Source
-from core.models.model_with_computations import (
-    ModelWithComputations,
-    retrieve_or_compute,
-)
+from core.models.model_with_computations import ModelWithCache, retrieve_or_compute
 from core.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
@@ -36,7 +33,7 @@ class Document(Source, DocumentMixin):
         return self.components_to_html(components)
 
 
-class Collection(ModelWithComputations):
+class Collection(ModelWithCache):
     """A collection of documents."""
 
     name = models.CharField(
@@ -74,7 +71,7 @@ class Collection(ModelWithComputations):
         return ', '.join([component for component in components if component])
 
 
-class Repository(ModelWithComputations):
+class Repository(ModelWithCache):
     """A repository of collections of documents."""
 
     name = models.CharField(

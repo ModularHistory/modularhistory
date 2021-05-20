@@ -1,10 +1,6 @@
-from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
-
 from apps.admin import StackedInline, admin_site
-from apps.admin.list_filters.type_filter import PolymorphicContentTypeFilter
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
-from apps.occurrences.models.occurrence import NewOccurrence as Occurrence
 from apps.propositions import models
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
@@ -18,10 +14,22 @@ class RelatedTopicsInline(AbstractRelatedTopicsInline):
     model = models.Proposition.tags.through
 
 
+class NewRelatedTopicsInline(AbstractRelatedTopicsInline):
+    """Inline admin for topic tags."""
+
+    model = models.TypedProposition.tags.through
+
+
 class SourcesInline(AbstractSourcesInline):
     """Inline admin for sources."""
 
     model = models.Proposition.sources.through
+
+
+class NewSourcesInline(AbstractSourcesInline):
+    """Inline admin for sources."""
+
+    model = models.TypedProposition.sources.through
 
 
 class RelatedEntitiesInline(AbstractRelatedEntitiesInline):
@@ -30,14 +38,21 @@ class RelatedEntitiesInline(AbstractRelatedEntitiesInline):
     model = models.Proposition.related_entities.through
 
 
+class NewRelatedEntitiesInline(AbstractRelatedEntitiesInline):
+    """Inline admin for related entities."""
+
+    model = models.TypedProposition.related_entities.through
+
+
 class ConclusionsInline(StackedInline):
     """Inline admin for a proposition's supported propositions."""
 
     verbose_name = 'supported proposition'
     verbose_name_plural = 'supported propositions'
     model = models.Support
-    fk_name = 'premise'
-    autocomplete_fields = ['conclusion']
+    exclude = ['premise', 'conclusion']
+    fk_name = 'new_premise'
+    autocomplete_fields = ['new_conclusion']
     extra = 0
 
 
@@ -47,12 +62,10 @@ class PremisesInline(StackedInline):
     verbose_name = 'premise'
     verbose_name_plural = 'premises'
     model = models.Support
-    fk_name = 'conclusion'
+    exclude = ['premise', 'conclusion']
+    fk_name = 'new_conclusion'
+    autocomplete_fields = ['new_premise']
     extra = 0
-
-
-class PropositionTypeFilter(PolymorphicContentTypeFilter):
-    model_options = [models.Proposition, Occurrence]
 
 
 class AbstractPropositionAdmin(SearchableModelAdmin):
@@ -60,7 +73,6 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
 
     exclude = SearchableModelAdmin.exclude + [
         'related_entities',
-        'citations',
         'sources',
     ]
     inlines = [
@@ -78,35 +90,24 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
     list_filter = [
         TopicFilter,
         RelatedEntityFilter,
+        'type',
     ]
 
 
-class PolymorphicPropositionAdmin(
-    PolymorphicParentModelAdmin, AbstractPropositionAdmin
-):
-    """Admin for propositions."""
+class TypedPropositionAdmin(AbstractPropositionAdmin):
+    model = models.TypedProposition
 
-    base_model = models.Proposition
-    child_models = (models.Proposition, Occurrence)
-
-    model = models.Proposition
-
-    list_display = AbstractPropositionAdmin.list_display + ['ctype_name']
-    list_filter = AbstractPropositionAdmin.list_filter + [PropositionTypeFilter]
+    exclude = AbstractPropositionAdmin.exclude + ['images', 'locations']
+    inlines = [
+        PremisesInline,
+        ConclusionsInline,
+        NewSourcesInline,
+        NewRelatedEntitiesInline,
+        NewRelatedTopicsInline,
+    ]
+    list_display = AbstractPropositionAdmin.list_display + ['type']
     search_fields = model.searchable_fields
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related('polymorphic_ctype')
+    list_per_page = 15
 
 
-class PropositionChildAdmin(PolymorphicChildModelAdmin, AbstractPropositionAdmin):
-    """Admin for models that inherit from `Proposition`."""
-
-    base_model = models.Proposition
-
-    model = models.Proposition
-    exclude = AbstractPropositionAdmin.exclude
-    search_fields = model.searchable_fields
-
-
-admin_site.register(models.Proposition, PolymorphicPropositionAdmin)
+admin_site.register(models.TypedProposition, TypedPropositionAdmin)

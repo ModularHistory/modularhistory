@@ -14,7 +14,7 @@ from apps.occurrences import managers
 from apps.occurrences.constants import OCCURRENCE_TYPES
 from apps.occurrences.serializers import OccurrenceSerializer
 from apps.places.models.model_with_locations import ModelWithLocations
-from apps.propositions.models.proposition import Proposition
+from apps.propositions.models.proposition import Proposition, TypedProposition
 from apps.quotes.models import quote_sorter_key
 from core.fields import HTMLField
 from core.utils.html import soupify
@@ -23,6 +23,101 @@ if TYPE_CHECKING:
     pass
 
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
+
+
+class Occurrence(TypedProposition):
+    """
+    An occurrence, i.e., something that has happened.
+
+    For our purposes, an occurrence is a proposition: each occurrence is proposed
+    (with some degree of certainty) to have occurred. As such, this model inherits
+    from `Proposition`.
+    """
+
+    postscript = HTMLField(
+        verbose_name=_('postscript'),
+        null=True,
+        blank=True,
+        paragraphed=True,
+        help_text='Content to be displayed below all related data',
+    )
+
+    # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+    class Meta:
+        """Meta options for the `Occurrence` model."""
+
+        ordering = ['date']
+
+    objects = managers.OccurrenceManager()
+    searchable_fields = [
+        'summary',
+        'description',
+        'date__year',
+        'related_entities__name',
+        'related_entities__aliases',
+        'tags__key',
+        'tags__aliases',
+    ]
+    serializer = OccurrenceSerializer
+    slug_base_field = 'title'
+
+    def __str__(self) -> str:
+        """Return the string representation of the occurrence."""
+        return self.summary.text
+
+    def save(self, *args, **kwargs):
+        """Save the occurrence to the database."""
+        super().save(*args, **kwargs)
+        if not self.images.exists():
+            image = None
+            if self.related_entities.exists():
+                for entity in self.related_entities.all():
+                    if entity.images.exists():
+                        if self.date:
+                            image = entity.images.get_closest_to_datetime(self.date)
+                        else:
+                            image = entity.image
+            if image:
+                self.images.add(image)
+
+    def clean(self):
+        """Prepare the occurrence to be saved."""
+        super().clean()
+        if not self.date:
+            raise ValidationError('Occurrence needs a date.')
+
+    @property
+    def truncated_description(self) -> Optional[SafeString]:
+        """Return the occurrence's description, truncated."""
+        if not self.description:
+            return None
+        description = soupify(self.description.html)
+        if description.find('img'):
+            description.find('img').decompose()
+        truncated_description = (
+            truncatechars_html(description.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
+            .replace('<p>', '')
+            .replace('</p>', '')
+        )
+        return format_html(truncated_description)
+
+    @property
+    def ordered_images(self):
+        """Careful!  These are occurrence-images, not images."""
+        return self.image_relations.all().select_related('image')
+
+    def get_context(self):
+        """Return context for rendering the occurrence's detail template."""
+        quotes = [
+            quote_relation.quote
+            for quote_relation in self.quote_relations.all()
+            .select_related('quote')
+            .iterator()
+        ]
+        return {
+            'occurrence': self,
+            'quotes': sorted(quotes, key=quote_sorter_key),
+        }
 
 
 class NewOccurrence(
@@ -56,7 +151,6 @@ class NewOccurrence(
 
         ordering = ['date']
 
-    objects = managers.OccurrenceManager()
     searchable_fields = [
         'summary',
         'description',

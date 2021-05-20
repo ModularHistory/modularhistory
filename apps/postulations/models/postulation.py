@@ -56,7 +56,6 @@ class PostulationSerializer(ModelSerializer):
 
 
 class Postulation(
-    SluggedModel,
     TaggableModel,
     VerifiableModel,
     ModelWithRelatedEntities,
@@ -134,7 +133,7 @@ class Postulation(
         """Return a placeholder for a model instance depicted in an HTML field."""
         placeholder = str(match.group(0))
         logging.debug(f'Looking at {truncate(placeholder)}')
-        extant_html: Optional[str] = match.group(PlaceholderGroups.HTML)
+        extant_html = match.group(PlaceholderGroups.HTML)
         if extant_html:
             extant_html = str(extant_html).strip()
             if '<a ' not in extant_html:

@@ -1,13 +1,12 @@
 from typing import List, Optional
 
 from django.db.models import Q
-from polymorphic.managers import PolymorphicManager
 
-from apps.occurrences.constants import OccurrenceTypes
 from apps.search.models.manager import SearchableModelManager, SearchableModelQuerySet
+from core.models.manager import TypedModelManager
 
 
-class OccurrenceManager(PolymorphicManager, SearchableModelManager):
+class OccurrenceManager(TypedModelManager, SearchableModelManager):
     """Manager for occurrences."""
 
     def search(
@@ -52,21 +51,21 @@ class OccurrenceManager(PolymorphicManager, SearchableModelManager):
         )
 
 
-class BirthManager(OccurrenceManager):
-    def get_queryset(self) -> 'SearchableModelQuerySet':
-        return super().get_queryset().filter(type=OccurrenceTypes.BIRTH.value)
+# class BirthManager(OccurrenceManager):
+#     def get_queryset(self) -> 'SearchableModelQuerySet':
+#         return super().get_queryset().filter(type=OccurrenceTypes.BIRTH.value)
 
 
-class DeathManager(OccurrenceManager):
-    def get_queryset(self) -> 'SearchableModelQuerySet':
-        return super().get_queryset().filter(type=OccurrenceTypes.DEATH.value)
+# class DeathManager(OccurrenceManager):
+#     def get_queryset(self) -> 'SearchableModelQuerySet':
+#         return super().get_queryset().filter(type=OccurrenceTypes.DEATH.value)
 
 
-class PublicationManager(OccurrenceManager):
-    def get_queryset(self) -> 'SearchableModelQuerySet':
-        return super().get_queryset().filter(type=OccurrenceTypes.PUBLICATION.value)
+# class PublicationManager(OccurrenceManager):
+#     def get_queryset(self) -> 'SearchableModelQuerySet':
+#         return super().get_queryset().filter(type=OccurrenceTypes.PUBLICATION.value)
 
 
-class VerbalizationManager(OccurrenceManager):
-    def get_queryset(self) -> 'SearchableModelQuerySet':
-        return super().get_queryset().filter(type=OccurrenceTypes.VERBALIZATION.value)
+# class VerbalizationManager(OccurrenceManager):
+#     def get_queryset(self) -> 'SearchableModelQuerySet':
+#         return super().get_queryset().filter(type=OccurrenceTypes.VERBALIZATION.value)

@@ -1,4 +1,3 @@
-from apps.admin.inlines import TabularInline
 from apps.admin.model_admin import admin_site
 from apps.entities import models
 from apps.entities.admin.affiliations import AffiliationsInline
@@ -14,18 +13,8 @@ from apps.entities.admin.inlines import (
     QuotesInline,
 )
 from apps.entities.forms import DeityForm, GroupForm, OrganizationForm, PersonForm
-from apps.occurrences.models import NewOccurrence as Occurrence
 from apps.quotes.admin.related_quotes_inline import AbstractRelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
-
-
-class OccurrencesInline(TabularInline):
-    """Inline admin for occurrences."""
-
-    model = Occurrence.related_entities.through
-    extra = 1
-    # TODO: separate relation for occurrences (not through polymorphic parent?)
-    autocomplete_fields = ['proposition']
 
 
 class RelatedQuotesInline(AbstractRelatedQuotesInline):
@@ -47,7 +36,6 @@ class EntityAdmin(SearchableModelAdmin):
         ImagesInline,
         CategorizationsInline,
         AffiliationsInline,
-        OccurrencesInline,
         QuotesInline,
         RelatedQuotesInline,
     ]
@@ -67,7 +55,7 @@ class EntityAdmin(SearchableModelAdmin):
         EntityTypeFilter,
     ]
     ordering = ['name', 'birth_date']
-    readonly_fields = ['pretty_computations']
+    readonly_fields = ['pretty_cache']
     search_fields = ['name', 'aliases']
 
 

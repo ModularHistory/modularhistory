@@ -40,7 +40,7 @@ class TopicAdmin(ModelAdmin):
         ChildTopicsInline,
         TopicRelationsInline,
     ]
-    exclude = ['key', 'computations']
+    exclude = ['key', 'cache']
     list_display = [
         'name',
         'aliases',
@@ -54,7 +54,7 @@ class TopicAdmin(ModelAdmin):
     list_filter = [RelatedTopicFilter, HasParentFilter]
     list_per_page = 25
     ordering = ['name', 'path']
-    readonly_fields = ['pretty_computations', 'slug', 'path']
+    readonly_fields = ['pretty_cache', 'slug', 'path']
     search_fields = [
         'name',
         'aliases',
