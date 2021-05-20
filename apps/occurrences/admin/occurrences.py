@@ -1,6 +1,6 @@
 """Admin classes for occurrences."""
 
-from apps.admin import admin_site
+from apps.admin.admin_site import admin_site
 from apps.images.admin import AbstractImagesInline
 from apps.occurrences import models
 from apps.occurrences.admin.filters import (
@@ -45,7 +45,7 @@ class OccurrenceAdmin(TypedPropositionAdmin):
         'slug',
         'title',
         'summary',
-        'date_string',
+        'date_html',
         'tags_string',
     ]
     list_editable = ['title']

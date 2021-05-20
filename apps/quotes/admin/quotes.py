@@ -2,7 +2,7 @@
 
 from django.db.models.query import QuerySet
 
-from apps.admin import admin_site
+from apps.admin.admin_site import admin_site
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.quotes import models
 from apps.quotes.admin.filters import (

@@ -1,4 +1,4 @@
-from apps.admin import admin_site
+from apps.admin.admin_site import admin_site
 from apps.admin.inlines import TabularInline
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
@@ -91,9 +91,10 @@ class TypedPropositionAdmin(AbstractPropositionAdmin):
         RelatedEntitiesInline,
         RelatedTopicsInline,
     ]
-    list_display = AbstractPropositionAdmin.list_display + ['type']
+    list_display = AbstractPropositionAdmin.list_display + ['date_html', 'type']
     search_fields = model.searchable_fields
     list_per_page = 15
+    ordering = ['type', 'date']
 
 
 admin_site.register(models.TypedProposition, TypedPropositionAdmin)
