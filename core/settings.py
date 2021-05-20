@@ -178,7 +178,6 @@ INSTALLED_APPS = [
     'apps.images.apps.ImagesConfig',
     'apps.occurrences.apps.OccurrencesConfig',
     'apps.places.apps.LocationsConfig',
-    'apps.postulations.apps.PostulationsConfig',
     'apps.propositions.apps.PropositionsConfig',
     'apps.quotes.apps.QuotesConfig',
     'apps.sources.apps.SourcesConfig',

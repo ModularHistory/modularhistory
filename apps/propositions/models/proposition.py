@@ -7,7 +7,6 @@ from typing import Match, Optional
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from polymorphic.models import PolymorphicModel
 
 from apps.dates.models import DatedModel
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
@@ -105,7 +104,15 @@ class TypedProposition(
         related_name='new_propositions',
     )
 
-    searchable_fields = ['summary', 'elaboration']
+    searchable_fields = [
+        'title',
+        'summary',
+        'elaboration',
+        'related_entities__name',
+        'related_entities__aliases',
+        'tags__key',
+        'tags__aliases',
+    ]
     serializer = PropositionSerializer
     slug_base_field = 'summary'
 
