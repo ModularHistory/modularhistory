@@ -157,6 +157,21 @@ fi
 
 # Update package managers
 echo "Checking package manager ..."
+# Install/update Homebrew
+brew help &>/dev/null || {
+  echo "Installing Homebrew ..."
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+}
+brew update
+
+function brew_install {
+  if brew ls --versions "$1" >/dev/null; then
+    HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade "$1"
+  else
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install "$1"
+  fi
+}
+
 if [[ "$os" == "$MAC_OS" ]]; then
   # Update software dependencies through XCode
   echo "Updating software ..."
@@ -169,38 +184,30 @@ if [[ "$os" == "$MAC_OS" ]]; then
     }
   }
   softwareupdate -l
+fi
 
-  function brew_install {
-    if brew ls --versions "$1" >/dev/null; then
-      HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade "$1"
-    else
-      HOMEBREW_NO_AUTO_UPDATE=1 brew install "$1"
-    fi
-  }
-
-  # Install/update Homebrew and Homebrew-managed packages
-  brew help &>/dev/null || {
-    echo "Installing Homebrew ..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-  }
-  echo "Updating Homebrew packages ..."
-  brew update
+if [[ "$os" == "$MAC_OS" ]]; then
+  echo "Updating packages ..."
   # PostgreSQL
   brew tap homebrew/services && brew_install postgresql
   # Other packages
-  brew_install openssl@1.1
-  brew_install rust
-  brew_install graphviz
   brew_install ctags
   brew_install fdupes
+  brew_install graphviz
+  brew_install openssl@1.1
+  brew_install rust
   brew install libjpeg zlib grep gnu-sed jq
+  # https://opam.ocaml.org/doc/Install.html
+  brew install gpatch
+  brew install opam
   # Modify PATH to use GNU Grep over MacOS Grep.
   # shellcheck disable=SC2016
   _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
 elif [[ "$os" == "$LINUX" ]]; then
+  add-apt-repository ppa:avsm/ppa
   sudo apt update -y && sudo apt upgrade -y
   # Basic dev dependencies
-  sudo apt install -y bash-completion curl git wget vim ctags fdupes
+  sudo apt install -y bash-completion curl git wget vim ctags fdupes opam
   # PostgreSQL
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" |
@@ -222,6 +229,9 @@ elif [[ "$os" == "$LINUX" ]]; then
   xz-utils \
   zlib1g-dev || _error "Unable to install one or more required packages."
 fi
+
+# Install watchman.
+brew_install watchman
 
 # Note: These are referenced multiple times in this script.
 writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/_media" "$PROJECT_DIR/_static" "$PROJECT_DIR/frontend/.next" )
