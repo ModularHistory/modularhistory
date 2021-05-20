@@ -37,7 +37,6 @@ class TaggableModel(SluggedModel, ModelWithCache):
         if tags or not self.tags.exists():
             return tags
         tags = [tag.serialize() for tag in self.tags.all()]
-        print(f'>>>> Calculated tags: {tags}')
         cache_tags.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
@@ -95,4 +94,3 @@ def cache_tags(model: str, instance_id: int, tags: list):
     model_instance.cache['tags'] = tags
     model_instance.save(wipe_cache=False)
     model_instance.refresh_from_db()
-    print(f'>>>> Saved tags: {model_instance.cache.get("tags")}')
