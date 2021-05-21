@@ -20,7 +20,7 @@ const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps
       <Link href={`/occurrences/${occurrence.slug}`}>
         <a>
           <ModuleCard module={occurrence}>
-            <div dangerouslySetInnerHTML={{ __html: occurrence.summary }} />
+            <div dangerouslySetInnerHTML={{ __html: occurrence.title }} />
           </ModuleCard>
         </a>
       </Link>
