@@ -115,7 +115,7 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
                     except IndexError:
                         weight = 'D'
                     vector += SearchVector(field, weight=weight)
-                search_terms = search_term.split(' ')
+                search_terms = search_term.strip().split(' ')
                 # https://www.postgresql.org/docs/current/functions-textsearch.html
                 query = f'{" & ".join(search_terms)}:*'
                 queryset = (
