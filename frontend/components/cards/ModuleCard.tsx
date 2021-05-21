@@ -167,9 +167,9 @@ const ModuleCard: FC<ModuleCardProps> = ({
         <p className={`text-center ${classes.cardHeader}`}>
           <small>{header}</small>
         </p>
-      ) : module.dateHtml ? (
+      ) : module.dateString ? (
         <p className={`text-center ${classes.cardHeader}`}>
-          <small dangerouslySetInnerHTML={{ __html: module.dateHtml }} />
+          <small dangerouslySetInnerHTML={{ __html: module.dateString }} />
         </p>
       ) : null}
       {children && <div className={classes.cardBody}>{children}</div>}

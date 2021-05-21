@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from core.models.model import TypedModel
-from core.models.model_with_cache import ModelWithCache, retrieve_or_compute
+from core.models.model_with_cache import ModelWithCache, store
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
 
@@ -63,7 +63,7 @@ class Place(TypedModel, ModelWithCache):
         super().save()
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='string')
+    @store(attribute_name='string')
     def string(self) -> str:
         """Presentable string to display in HTML."""
         location = self.location

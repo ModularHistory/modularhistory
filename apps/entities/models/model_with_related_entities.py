@@ -8,7 +8,7 @@ from django.db.models import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 from core.models.model import Model
-from core.models.model_with_cache import retrieve_or_compute
+from core.models.model_with_cache import store
 
 if TYPE_CHECKING:
     from apps.entities.models.entity import Entity
@@ -48,7 +48,7 @@ class ModelWithRelatedEntities(Model):
         return self.related_entities.all()
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='serialized_entities')
+    @store(attribute_name='serialized_entities')
     def serialized_entities(self) -> List[Dict]:
         """Return a list of dictionaries representing the instance's images."""
         return [

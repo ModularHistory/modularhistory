@@ -21,7 +21,7 @@ from apps.sources.manager import PolymorphicSourceManager, PolymorphicSourceQuer
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields import HTMLField
-from core.models import retrieve_or_compute
+from core.models import store
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -314,10 +314,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return None
 
     # TODO: after deploying to prod and copying deprecated_href to the new href field,
-    # remove the @property and @retrieve_or_compute decorators and rename this method
+    # remove the @property and @store decorators and rename this method
     # to get_href.
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='href')
+    @store(attribute_name='href')
     def deprecated_href(self) -> str:
         """
         Return the href to use when providing a link to the source.

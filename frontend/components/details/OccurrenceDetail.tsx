@@ -24,7 +24,7 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
       )}
       <p
         className="text-center card-title lead"
-        dangerouslySetInnerHTML={{ __html: occurrence.dateHtml }}
+        dangerouslySetInnerHTML={{ __html: occurrence.dateString }}
       />
       {occurrence.cachedImages.map(
         (image, index) =>

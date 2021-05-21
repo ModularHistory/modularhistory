@@ -38,7 +38,7 @@ class OccurrenceAdmin(TypedPropositionAdmin):
         'slug',
         'title',
         'summary',
-        'date_html',
+        'date_string',
         'tags_string',
     ]
     list_editable = ['title']

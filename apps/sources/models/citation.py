@@ -82,7 +82,7 @@ class AbstractCitation(PositionedRelation):
 
     source = ManyToManyForeignKey(
         to='sources.Source',
-        related_name='%(app_label)s_%(class)ss',
+        related_name='%(app_label)s_%(class)s_set',
     )
     # Foreign key to the model that references the source.
     content_object: models.ForeignKey

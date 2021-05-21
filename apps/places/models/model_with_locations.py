@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
-from core.models.model_with_cache import retrieve_or_compute
+from core.models.model_with_cache import store
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager
@@ -42,7 +42,7 @@ class ModelWithLocations(Model):
             return None
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='serialized_locations')
+    @store(attribute_name='serialized_locations')
     def serialized_locations(self) -> List[Dict]:
         """Return a list of dictionaries representing the instance's locations."""
         return [

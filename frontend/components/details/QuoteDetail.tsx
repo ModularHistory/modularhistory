@@ -7,7 +7,7 @@ interface QuoteDetailProps {
 }
 
 const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
-  const titleHtml = [quote.attributeeHtml, quote.dateHtml]
+  const titleHtml = [quote.attributeeHtml, quote.dateString]
     .filter((html) => Boolean(html))
     .join(", ");
 

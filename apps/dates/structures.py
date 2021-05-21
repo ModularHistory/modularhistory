@@ -7,8 +7,6 @@ from decimal import Decimal, getcontext
 from typing import Optional
 
 import sigfig
-from django.utils.html import format_html
-from django.utils.safestring import SafeString
 from millify import millify, prettify
 from pytz import UTC
 
@@ -90,11 +88,6 @@ class HistoricDateTime(datetime):
     def serialize(self) -> str:
         """Serialize the datetime to a JSON-compatible string value."""
         return self.isoformat()
-
-    @property
-    def html(self) -> SafeString:
-        """Return the datetime's HTML representation."""
-        return format_html(f'<span class="date">{self.string}</span>')
 
     @property
     def is_bce(self) -> bool:

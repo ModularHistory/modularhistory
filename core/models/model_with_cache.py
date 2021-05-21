@@ -42,7 +42,7 @@ class ModelWithCache(Model):
         return json.dumps(self.cache, indent=4)
 
 
-def retrieve_or_compute(
+def store(
     _func=None,
     *,
     attribute_name: Optional[str] = None,
@@ -55,7 +55,7 @@ def retrieve_or_compute(
     compute the property value and save it in the `computations` JSON field (so
     that it can subsequently be retrieved without recalculation).
 
-    `retrieve_or_compute` can be used as a decorator on methods/properties of
+    `store` can be used as a decorator on methods/properties of
     ModelWithCache. The point is to reduce expensive computation and db queries.
 
     The optional decorator param `attribute_name` specifies the attribute name to
@@ -69,12 +69,12 @@ def retrieve_or_compute(
     Examples:
     ``
     @property
-    @retrieve_or_compute(attribute_name='html', caster=format_html)
+    @store(attribute_name='html', caster=format_html)
     def html(self):
         html = self.related_object.html + '...'
         return html
 
-    @retrieve_or_compute(attribute_name='categorization_string')
+    @store(attribute_name='categorization_string')
     def get_categorization_string(self, date: Optional[DateTime] = None):
         categorization_string = ...
         return categorization_string
@@ -116,7 +116,7 @@ def retrieve_or_compute(
                         model_instance.save(wipe_cache=False)
                     return property_value
                 logging.error(
-                    f'{model_instance.__class__.__name__} uses @retrieve_or_compute '
+                    f'{model_instance.__class__.__name__} uses @store '
                     f'on its `{model_property.__name__}` attribute '
                     f'but is not subclassed from ModelWithCache.'
                 )

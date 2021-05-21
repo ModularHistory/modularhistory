@@ -8,8 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime
 from core.models.model import Model
-from core.models.model_with_cache import retrieve_or_compute
-from core.utils.html import soupify
+from core.models.model_with_cache import store
 
 CIRCA_PREFIX = 'c. '
 
@@ -33,39 +32,31 @@ class DatedModel(Model):
 
         abstract = True
 
+    @store
     def date_string(self) -> str:
         """Return the string representation of the model instance's date."""
-        date_html = self.date_html
-        return soupify(date_html).get_text() if date_html else ''
-
-    date_string.admin_order_field = 'date'  # type: ignore
-    date_string = property(date_string)  # type: ignore
-
-    @retrieve_or_compute(caster=format_html)
-    def date_html(self) -> SafeString:
-        """Return the HTML representation of the model instance's date."""
-        date, date_html = self.get_date(), ''
+        date, date_string = self.get_date(), ''
         if date:
-            date_html = f'{date.html}'
-            date_html_requires_circa_prefix = (
-                date_html and self.date_is_circa and CIRCA_PREFIX not in date_html
+            date_string = f'{date.string}'
+            date_string_requires_circa_prefix = (
+                date_string and self.date_is_circa and CIRCA_PREFIX not in date_string
             )
-            if date_html_requires_circa_prefix:
-                date_html = f'{CIRCA_PREFIX}{date_html}'
+            if date_string_requires_circa_prefix:
+                date_string = f'{CIRCA_PREFIX}{date_string}'
             end_date = getattr(self, 'end_date', None)
             if end_date:
-                date_html = f'{date_html} – {end_date.html}'
+                date_string = f'{date_string} – {end_date.string}'
             use_ce = (
                 self.date.year < 1000
                 and not self.date.is_bce
-                and not date_html.endswith(' CE')
+                and not date_string.endswith(' CE')
             )
             if use_ce:
-                date_html = f'{date_html} CE'
-        return format_html(date_html)
+                date_string = f'{date_string} CE'
+        return date_string
 
-    date_html.admin_order_field = 'date'  # type: ignore
-    date_html = property(date_html)  # type: ignore
+    date_string.admin_order_field = 'date'  # type: ignore
+    date_string = property(date_string)  # type: ignore
 
     @property
     def year_html(self) -> Optional[SafeString]:

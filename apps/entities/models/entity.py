@@ -23,7 +23,7 @@ from apps.search.models import SearchableModel
 from core.constants.strings import EMPTY_STRING
 from core.fields import ArrayField, HTMLField, JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models import TypedModel, retrieve_or_compute
+from core.models import TypedModel, store
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -41,14 +41,10 @@ PARTS_OF_SPEECH = (
 )
 
 
-def get_entity_fk(related_name: str):
-    return ManyToManyForeignKey(
-        to='entities.Entity', related_name=related_name, verbose_name='entity'
-    )
-
-
 class QuoteRelation(AbstractQuoteRelation):
-    content_object = get_entity_fk(related_name='quote_relations')
+    content_object = ManyToManyForeignKey(
+        to='entities.Entity', related_name='quote_relations', verbose_name='entity'
+    )
 
 
 class Entity(
@@ -172,7 +168,7 @@ class Entity(
         )
         return categorizations.select_related('category')
 
-    @retrieve_or_compute(attribute_name='categorization_string')
+    @store(attribute_name='categorization_string')
     def get_categorization_string(self, date: Optional[DateTime] = None) -> str:
         """Intelligently build a categorization string, like `liberal scholar`."""
         categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)

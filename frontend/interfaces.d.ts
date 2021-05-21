@@ -6,7 +6,7 @@ export interface BaseModule {
   adminUrl: string;
   cachedImages?: ImageModule[];
   verified?: boolean;
-  dateHtml?: string;
+  dateString?: string;
 }
 
 export interface SearchableModule extends BaseModule {
@@ -38,14 +38,14 @@ export interface QuoteModule extends SearchableModule, ModuleWithImages {
   title: string;
   attributeeHtml: string;
   bite: string;
-  dateHtml: string;
+  dateString: string;
   html: string;
   cachedCitations: Citation[];
 }
 
 export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
   title: string;
-  dateHtml: string;
+  dateString: string;
   elaboration: string;
   postscript: string;
   cachedCitations: Citation[];

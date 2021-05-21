@@ -8,7 +8,7 @@ from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
 from core.models.model import Model
-from core.models.model_with_cache import ModelWithCache, retrieve_or_compute
+from core.models.model_with_cache import ModelWithCache, store
 from core.models.slugged_model import SluggedModel
 
 NAME_MAX_LENGTH: int = 25
@@ -94,7 +94,7 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
         return self.name
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='child_topics_string')
+    @store(attribute_name='child_topics_string')
     def child_topics_string(self) -> str:
         """Return a list of the topic's child topics as a string."""
         return TOPIC_STRING_DELIMITER.join(
@@ -102,7 +102,7 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
         )
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='parent_topics_string')
+    @store(attribute_name='parent_topics_string')
     def parent_topics_string(self) -> str:
         """Return a list of the topic's parent topics as a string."""
         return TOPIC_STRING_DELIMITER.join(
@@ -110,7 +110,7 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
         )
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='related_topics_string')
+    @store(attribute_name='related_topics_string')
     def tags_string(self) -> str:
         """Return a list of the topic's related topics as a string."""
         return TOPIC_STRING_DELIMITER.join(

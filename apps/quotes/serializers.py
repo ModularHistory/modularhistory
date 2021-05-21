@@ -18,7 +18,7 @@ class QuoteSerializer(SearchableModelSerializer):
     html = serpy.StrField()
     attributeeHtml = serpy.StrField(attr='attributee_html')
     attributeeString = serpy.StrField(attr='attributee_string')
-    dateHtml = serpy.StrField(attr='date_html')
+    dateString = serpy.StrField(attr='date_string')
     cachedImages = serpy.Field(attr='cached_images')
     primaryImage = serpy.Field(attr='primary_image')
     cachedCitations = serpy.Field(attr='cached_citations')

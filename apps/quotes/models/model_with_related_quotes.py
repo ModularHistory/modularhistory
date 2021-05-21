@@ -18,7 +18,7 @@ class AbstractQuoteRelation(PositionedRelation):
     """
 
     quote = ManyToManyForeignKey(
-        to='quotes.Quote', related_name='%(app_label)s_%(class)ss'
+        to='quotes.Quote', related_name='%(app_label)s_%(class)s_set'
     )
 
     # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
