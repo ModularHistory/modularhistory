@@ -9,7 +9,7 @@ GRAPHENE = {
     'SCHEMA': 'apps.graph.schema.schema',
     'MIDDLEWARE': (
         'graphene_django.debug.DjangoDebugMiddleware',
-        'core.config.graphene.SentryMiddleware',
+        'core.config._graphene.SentryMiddleware',
     ),
 }
 if IS_DEV:
