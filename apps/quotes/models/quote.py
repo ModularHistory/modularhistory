@@ -285,10 +285,7 @@ class Quote(
         # TODO: refactor
         from apps.occurrences.models.occurrence import Occurrence
 
-        occurrence_ids = self.relations.filter(
-            models.Q(content_type_id=get_ct_id(ContentTypes.occurrence))
-        ).values_list('id', flat=True)
-        return Occurrence.objects.filter(id__in=occurrence_ids)
+        return Occurrence.objects.filter(related_quotes__pk=self.pk)
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:

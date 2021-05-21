@@ -101,11 +101,11 @@ class TypedProposition(
     )
     related_quotes = RelatedQuotesField(
         through=QuoteRelation,
-        related_name='new_propositions',
+        related_name='propositions',
     )
     sources = SourcesField(
         through=Citation,
-        related_name='new_propositions',
+        related_name='propositions',
     )
 
     searchable_fields = [
