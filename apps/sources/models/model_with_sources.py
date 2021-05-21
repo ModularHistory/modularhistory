@@ -4,7 +4,6 @@ import logging
 from typing import Optional, Type, Union
 
 from celery import shared_task
-from concurrency.fields import IntegerVersionField
 from django.apps import apps
 from django.db.models.fields.related import ManyToManyField
 from django.utils.html import format_html
@@ -16,7 +15,6 @@ from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.models.model import Model
-from core.models.model_with_cache import retrieve_or_compute
 
 
 class SourcesField(CustomManyToManyField):
@@ -25,6 +23,7 @@ class SourcesField(CustomManyToManyField):
     through_model = AbstractCitation
 
     def __init__(self, through: Union[Type[AbstractCitation], str], **kwargs):
+        """Construct the field."""
         kwargs['to'] = 'sources.Source'
         kwargs['through'] = through
         kwargs['verbose_name'] = _('sources')
@@ -38,8 +37,6 @@ class ModelWithSources(Model):
     Ideally, this class would be a mixin, but due to Django's model magic,
     it must be defined as an abstract model class.
     """
-
-    version = IntegerVersionField()
 
     # Admin-facing notes (not to be displayed to users)
     notes = HTMLField(
@@ -80,9 +77,6 @@ class ModelWithSources(Model):
             )
         ``
         """
-        citations = getattr(self, 'new_citations', None)
-        if citations:
-            return citations
         raise NotImplementedError(
             f'{self.__class__} lacks an associated `Citation` model '
             'with related_name="citations"'
@@ -125,7 +119,7 @@ def cache_citations(model: str, instance_id: int, citations: list):
     """Save cached citations to a model instance."""
     if not citations:
         return
-    Model = apps.get_model(model)
+    Model = apps.get_model(model)  # noqa: N806
     model_instance: ModelWithSources = Model.objects.get(pk=instance_id)  # noqa: N806
     model_instance.cache['citations'] = citations
     model_instance.save(wipe_cache=False)

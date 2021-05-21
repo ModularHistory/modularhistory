@@ -131,7 +131,6 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'cachalot',  # https://django-cachalot.readthedocs.io/
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
-    'concurrency',  # https://github.com/saxix/django-concurrency
     'corsheaders',  # https://github.com/adamchainz/django-cors-headers
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
