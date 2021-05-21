@@ -1,3 +1,5 @@
+import logging
+
 import graphene
 
 from apps.entities.api.types import EntityType
@@ -18,7 +20,11 @@ class Query(graphene.ObjectType):
     @staticmethod
     def resolve_entity(root, info, slug: str):
         """Return the entity specified by an 'entity' query."""
-        return Entity.objects.get(slug=slug)
+        try:
+            return Entity.objects.get(slug=slug)
+        except Exception as err:
+            logging.error(err)
+            return Entity.objects.get(pk=slug)
 
 
 # class Mutation(graphene.ObjectType):
