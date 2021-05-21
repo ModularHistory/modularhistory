@@ -64,7 +64,7 @@ class ModelWithRelatedEntities(Model):
                 aliases = entity.get('aliases') or []
                 for name in set([entity['name']] + aliases):
                     opening_tag = (
-                        f'<span class="entity-name" data-entity-id="{entity["id"]}">'
+                        f'<span class="entity-name" data-entity-id="{entity["slug"]}">'
                     )
                     closing_tag = '</span>'
                     html = re.sub(
