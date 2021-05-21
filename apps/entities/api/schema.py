@@ -1,6 +1,5 @@
-import logging
-
 import graphene
+from django.core.exceptions import ObjectDoesNotExist
 
 from apps.entities.api.types import EntityType
 from apps.entities.models.entity import Entity
@@ -22,8 +21,7 @@ class Query(graphene.ObjectType):
         """Return the entity specified by an 'entity' query."""
         try:
             return Entity.objects.get(slug=slug)
-        except Exception as err:
-            logging.error(err)
+        except ObjectDoesNotExist:
             return Entity.objects.get(pk=slug)
 
 

@@ -1,6 +1,5 @@
-import logging
-
 import graphene
+from django.core.exceptions import ObjectDoesNotExist
 
 from apps.sources.api.types import SourceType
 from apps.sources.models.source import Source
@@ -22,8 +21,7 @@ class Query(graphene.ObjectType):
         """Return the source specified by a 'source' query."""
         try:
             return Source.objects.get(slug=slug)
-        except Exception as err:
-            logging.error(f'{err}')
+        except ObjectDoesNotExist:
             return Source.objects.get(pk=slug)
 
 

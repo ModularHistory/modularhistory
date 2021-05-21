@@ -1,6 +1,6 @@
-import logging
 
 import graphene
+from django.core.exceptions import ObjectDoesNotExist
 
 from apps.propositions.api.types import PropositionType
 from apps.propositions.models import TypedProposition
@@ -22,8 +22,7 @@ class Query(graphene.ObjectType):
         """Return the proposition specified by a 'proposition' query."""
         try:
             return TypedProposition.objects.get(slug=slug)
-        except Exception as err:
-            logging.error(f'{err}')
+        except ObjectDoesNotExist:
             return TypedProposition.objects.get(pk=slug)
 
 

@@ -1,6 +1,5 @@
-import logging
-
 import graphene
+from django.core.exceptions import ObjectDoesNotExist
 
 from apps.images.api.types import ImageType
 from apps.images.models import Image
@@ -22,8 +21,7 @@ class Query(graphene.ObjectType):
         """Return the image specified by an 'image' query."""
         try:
             return Image.objects.get(slug=slug)
-        except Exception as err:
-            logging.error(f'{err}')
+        except ObjectDoesNotExist:
             return Image.objects.get(pk=slug)
 
 
