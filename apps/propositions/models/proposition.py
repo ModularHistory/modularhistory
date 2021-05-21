@@ -128,21 +128,21 @@ class TypedProposition(
     def summary_link(self) -> str:
         """Return an HTML link to the proposition, containing the summary text."""
         add_elaboration_tooltip = False
-        elaboration = self.elaboration.html if self.elaboration else ''
+        elaboration = self.elaboration or ''
         elaboration = elaboration.replace('\n', '')
         if add_elaboration_tooltip:
             summary_link = (
                 f'<a href="{reverse("propositions:detail", args=[self.pk])}"'
                 ' class="proposition-link" target="_blank" '
                 f'title="{escape_quotes(elaboration)}" '
-                f'data-toggle="tooltip" data-html="true">{self.summary.html}'
+                f'data-toggle="tooltip" data-html="true">{self.summary}'
                 '</a>'
             )
         else:
             summary_link = (
                 f'<a href="{reverse("propositions:detail", args=[self.pk])}"'
                 ' class="proposition-link" target="_blank">'
-                f'{self.summary.html}'
+                f'{self.summary}'
                 '</a>'
             )
         return summary_link

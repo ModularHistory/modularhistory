@@ -137,7 +137,7 @@ class Image(MediaModel):
     @property
     def caption_html(self) -> str:
         """Return the user-facing caption HTML."""
-        return self.caption.html if self.caption else ''
+        return self.caption or ''
 
     @property
     def cropped_image_url(self) -> Optional[str]:

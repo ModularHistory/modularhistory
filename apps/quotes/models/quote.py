@@ -247,18 +247,18 @@ class Quote(
         """Return the quote's HTML representation."""
         blockquote = (
             f'<blockquote class="blockquote">'
-            f'{self.text.html}'
+            f'{self.text}'
             f'<footer class="blockquote-footer" style="position: relative;">'
             f'{self.citation_html or self.attributee_string}'
             f'</footer>'
             f'</blockquote>'
         )
         components = [
-            f'<p class="quote-context">{self.pretext.html}</p>'
+            f'<p class="quote-context">{self.pretext}</p>'
             if self.pretext
             else EMPTY_STRING,
             blockquote,
-            f'<div class="quote-context">{self.context.html}</div>'
+            f'<div class="quote-context">{self.context}</div>'
             if self.context
             else EMPTY_STRING,
         ]
@@ -303,7 +303,7 @@ class Quote(
             body = quote['text']
             footer = quote.get('citation_html') or quote.get('attributee_string')
         else:
-            body = quote.text.html
+            body = quote.text
             footer = quote.citation_html or quote.attributee_string
         return (
             f'<blockquote class="blockquote">'

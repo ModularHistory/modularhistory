@@ -86,7 +86,7 @@ class Occurrence(TypedProposition):
         """Return the occurrence's description, truncated."""
         if not self.description:
             return None
-        description = soupify(self.description.html)
+        description = soupify(self.description)
         if description.find('img'):
             description.find('img').decompose()
         truncated_description = (
