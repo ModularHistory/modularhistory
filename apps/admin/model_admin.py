@@ -115,11 +115,12 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
                     except IndexError:
                         weight = 'D'
                     vector += SearchVector(field, weight=weight)
+                search_terms = search_term.split(' ')
+                # https://www.postgresql.org/docs/current/functions-textsearch.html
+                query = f'{" & ".join(search_terms)}:*'
                 queryset = (
                     self.model.objects.annotate(
-                        rank=SearchRank(
-                            vector, SearchQuery(f'{search_term}:*', search_type='raw')
-                        )
+                        rank=SearchRank(vector, SearchQuery(query, search_type='raw'))
                     )
                     .filter(rank__gt=0.0)
                     .order_by('-rank')
