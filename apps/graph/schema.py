@@ -6,6 +6,7 @@ classes in this module.
 """
 
 import graphene
+from graphene_django.debug import DjangoDebug
 
 from apps.entities.api import schema as entities_schema
 from apps.images.api import schema as images_schema
@@ -21,7 +22,25 @@ class Query(
     sources_schema.Query,
     topics_schema.Query,
 ):
-    """Unified GraphQL query."""
+    """
+    Unified GraphQL query.
+
+    To output SQL while testing GraphQL requests, use the following to the query:
+    ``
+        exampleQuery {
+            exampleFieldOne
+            exampleFieldTwo
+        }
+        _debug {
+            sql {
+            rawSql
+            }
+        }
+    ``
+    """
+
+    # Enable outputting SQL queries (for testing/debugging).
+    debug = graphene.Field(DjangoDebug, name='_debug')
 
 
 # class Mutation(topics_schema.Mutation, graphene.ObjectType):

@@ -303,9 +303,6 @@ USE_TZ = True
 MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
-# GraphQL
-GRAPHENE = {'SCHEMA': 'apps.graph.schema.schema'}
-
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_URL = '/static/'
