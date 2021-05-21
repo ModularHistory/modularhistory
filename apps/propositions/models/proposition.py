@@ -122,7 +122,7 @@ class TypedProposition(
 
     def __str__(self) -> str:
         """Return the proposition's string representation."""
-        return self.summary.text
+        return self.summary
 
     @property
     def summary_link(self) -> str:

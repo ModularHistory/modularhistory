@@ -20,9 +20,7 @@ class EntityDocument(Document):
 
     name = fields.TextField()
     aliases = fields.TextField()
-    description = fields.TextField(
-        attr='description.raw_value', analyzer=html_field_analyzer
-    )
+    description = fields.TextField(analyzer=html_field_analyzer)
 
     class Django:
         model = Entity

@@ -8,7 +8,7 @@ from django.db.models import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 from core.models.model import Model
-from core.models.model_with_computations import retrieve_or_compute
+from core.models.model_with_cache import retrieve_or_compute
 
 if TYPE_CHECKING:
     from apps.entities.models.entity import Entity

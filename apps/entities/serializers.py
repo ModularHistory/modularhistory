@@ -41,7 +41,7 @@ class EntitySerializer(SearchableModelSerializer):
     aliases = serpy.Field()
     birthDate = serpy.MethodField('get_serialized_birth_date')
     deathDate = serpy.MethodField('get_serialized_death_date')
-    description = serpy.Field(attr='description.html', required=False)
+    description = serpy.Field(required=False)
     truncatedDescription = serpy.Field(attr='truncated_description')
     cachedImages = serpy.Field(attr='cached_images')
     categorizations = CategorizationSerializer(

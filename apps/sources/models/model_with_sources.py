@@ -16,7 +16,7 @@ from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.models.model import Model
-from core.models.model_with_computations import retrieve_or_compute
+from core.models.model_with_cache import retrieve_or_compute
 
 
 class SourcesField(CustomManyToManyField):

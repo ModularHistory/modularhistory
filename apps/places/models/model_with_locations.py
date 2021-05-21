@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
-from core.models.model_with_computations import retrieve_or_compute
+from core.models.model_with_cache import retrieve_or_compute
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager

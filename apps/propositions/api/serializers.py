@@ -7,12 +7,8 @@ class PropositionSerializer(ModelSerializer):
     """Serializer for propositions."""
 
     slug = serpy.StrField()
-    summary = serpy.MethodField()
+    summary = serpy.StrField()
     elaboration = serpy.StrField()
-
-    def get_summary(self, instance) -> str:
-        """Return the model name of the postulation."""
-        return instance.summary.html
 
     def get_model(self, instance) -> str:
         """Return the model name of serialized propositions."""

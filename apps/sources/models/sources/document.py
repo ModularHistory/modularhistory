@@ -7,7 +7,7 @@ from django.utils.safestring import SafeString
 
 from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.source import Source
-from core.models.model_with_computations import ModelWithCache, retrieve_or_compute
+from core.models.model_with_cache import ModelWithCache, retrieve_or_compute
 from core.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100

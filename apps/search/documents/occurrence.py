@@ -20,16 +20,14 @@ class OccurrenceDocument(Document):
         name = get_index_name_for_ct(ContentTypes.occurrence)
 
     title = fields.TextField(analyzer=html_field_analyzer)
-    summary = fields.TextField(attr='summary.raw_value', analyzer=html_field_analyzer)
-    elaboration = fields.TextField(
-        attr='elaboration.raw_value', analyzer=html_field_analyzer
-    )
+    summary = fields.TextField(analyzer=html_field_analyzer)
+    elaboration = fields.TextField(analyzer=html_field_analyzer)
     related_entities = fields.ObjectField(
         properties={
             'id': fields.IntegerField(),
             'name': fields.TextField(),
             'aliases': fields.TextField(),
-            'description': fields.TextField(attr='description.raw_value'),
+            'description': fields.TextField(),
         }
     )
     citations = fields.TextField(attr='citation_html', analyzer=html_field_analyzer)

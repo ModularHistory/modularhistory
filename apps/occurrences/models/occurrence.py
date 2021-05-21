@@ -57,7 +57,7 @@ class Occurrence(TypedProposition):
 
     def __str__(self) -> str:
         """Return the string representation of the occurrence."""
-        return self.summary.text
+        return self.summary
 
     def save(self, *args, **kwargs):
         """Save the occurrence to the database."""

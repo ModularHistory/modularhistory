@@ -20,14 +20,14 @@ class QuoteDocument(Document):
         settings = DEFAULT_INDEX_SETTINGS
         name = get_index_name_for_ct(ContentTypes.quote)
 
-    text = fields.TextField(attr='text.raw_value', analyzer=html_field_analyzer)
-    context = fields.TextField(attr='context.raw_value', analyzer=html_field_analyzer)
+    text = fields.TextField(analyzer=html_field_analyzer)
+    context = fields.TextField(analyzer=html_field_analyzer)
     attributees = fields.ObjectField(
         properties={
             'id': fields.IntegerField(),
             'name': fields.TextField(),
             'aliases': fields.TextField(),
-            'description': fields.TextField(attr='description.raw_value'),
+            'description': fields.TextField(),
         }
     )
     citations = fields.TextField(attr='citation_html', analyzer=html_field_analyzer)

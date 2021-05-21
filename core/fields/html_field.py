@@ -9,7 +9,6 @@ from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
 
 from core.constants.content_types import MODEL_CLASS_PATHS
-from core.structures.html import HTML
 from core.utils.html import soupify
 from core.utils.string import dedupe_newlines, truncate
 
@@ -133,9 +132,7 @@ def process(html: str) -> str:
 class HTMLField(MceHTMLField):
     """A string field for HTML content; uses the TinyMCE widget in forms."""
 
-    raw_value: str
-    html: SafeString
-    text: str
+    # Callable that processes the HTML value before it is saved
     processor: Optional[Callable]
 
     # Whether content should be wrapped in <p> tags (if none are present)
@@ -164,10 +161,10 @@ class HTMLField(MceHTMLField):
         self.paragraphed = paragraphed
         super().__init__(**kwargs)
 
-    def clean(self, html_value, model_instance: 'Model') -> HTML:
+    def clean(self, html_value, model_instance: 'Model') -> str:
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
-        raw_html = html.raw_value
+        raw_html = html
         if '{' in raw_html or '}' in raw_html:
             raise ValidationError(
                 'The "{" and "}" characters are illegal in HTML fields.'
@@ -202,10 +199,7 @@ class HTMLField(MceHTMLField):
             raise ValidationError(f'{err}')
 
         # Add or remove <p> tags if necessary
-        raw_html = self.format_html(raw_html)
-
-        html.raw_value = raw_html
-        return html
+        return self.format_html(raw_html)
 
     def format_html(self, html: str) -> str:
         """Add or remove <p> tags if necessary."""
@@ -266,7 +260,7 @@ class HTMLField(MceHTMLField):
 
     def from_db_value(
         self, html_value: Optional[str], expression, connection
-    ) -> Optional[HTML]:
+    ) -> Optional[Union[SafeString, str]]:
         """
         Convert a value as returned by the database to a Python object.
 
@@ -279,24 +273,20 @@ class HTMLField(MceHTMLField):
             html_value = self.format_html(html_value)
         except Exception as err:
             logging.error(f'{err}')
-        return HTML(html_value, processor=self.processor)
+        return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
-    def to_python(self, html_value: Optional[Union[HTML, str]]) -> Optional[HTML]:
+    def to_python(self, html_value: Optional[str]) -> Optional[str]:
         """Convert the value into the correct Python object."""
-        if isinstance(html_value, HTML):
-            return html_value
-        elif not html_value:
+        if not html_value:
             return None
-        return HTML(html_value)
+        return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_prep_value
-    def get_prep_value(self, html_value: Optional[Union[HTML, str]]) -> Optional[str]:
+    def get_prep_value(self, html_value: Optional[str]) -> Optional[str]:
         """Return data in a format prepared for use as a parameter in a db query."""
         if not html_value:
             return None
-        elif isinstance(html_value, HTML):
-            return html_value.raw_value
         return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_db_prep_value

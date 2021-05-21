@@ -11,15 +11,12 @@ class TopicSerializer(ModelSerializer):
     name = serpy.Field()
     key = serpy.StrField()
     aliases = serpy.StrField()
-    description = serpy.MethodField('get_description')
+    description = serpy.StrField()
     path = serpy.StrField()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of serialized topics."""
         return 'topics.topic'
-
-    def get_description(self, instance) -> str:
-        return instance.description.raw_value if instance.description else ''
 
 
 class TopicDictSerializer:

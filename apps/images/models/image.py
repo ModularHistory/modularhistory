@@ -99,7 +99,7 @@ class Image(MediaModel):
 
     def __str__(self) -> str:
         """Return the string representation of the image."""
-        return self.caption.text if self.caption else self.image.name
+        return self.caption if self.caption else self.image.name
 
     def clean(self):
         """Prepare the image to be saved."""
@@ -172,7 +172,7 @@ class Image(MediaModel):
     @property
     def provider_string(self) -> Optional[str]:
         """Image credit string (e.g., "Image provided by NASA") displayed in caption."""
-        if (not self.provider) or self.provider in self.caption.text:
+        if (not self.provider) or self.provider in self.caption:
             return None
         provision_phrase: Optional[str] = 'provided'
         if self.image_type == 'painting':

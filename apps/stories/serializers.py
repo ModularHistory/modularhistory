@@ -9,14 +9,9 @@ class StorySerializer(SearchableModelSerializer):
     """Serializer for occurrences."""
 
     handle = serpy.Field()
-    description = serpy.MethodField()
+    description = serpy.StrField()
     cachedCitations = serpy.Field(attr='cached_citations')
 
     def get_model(self, instance) -> str:
         """Return the model name of the instance."""
         return 'stories.story'
-
-    def get_description(self, instance) -> str:
-        """Return the user-facing description HTML."""
-        html = instance.description.html if instance.description else ''
-        return html

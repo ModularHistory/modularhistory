@@ -8,7 +8,7 @@ from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
 from core.models.model import Model
-from core.models.model_with_computations import ModelWithCache, retrieve_or_compute
+from core.models.model_with_cache import ModelWithCache, retrieve_or_compute
 from core.models.slugged_model import SluggedModel
 
 NAME_MAX_LENGTH: int = 25

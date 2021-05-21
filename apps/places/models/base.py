@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from core.models.model import TypedModel
-from core.models.model_with_computations import ModelWithCache, retrieve_or_compute
+from core.models.model_with_cache import ModelWithCache, retrieve_or_compute
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
 

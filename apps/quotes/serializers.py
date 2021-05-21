@@ -15,10 +15,10 @@ class QuoteSerializer(SearchableModelSerializer):
     """Serializer for quotes."""
 
     bite = serpy.MethodField()
-    html = serpy.Field()
-    attributeeHtml = serpy.Field(attr='attributee_html')
-    attributeeString = serpy.Field(attr='attributee_string')
-    dateHtml = serpy.Field(attr='date_html')
+    html = serpy.StrField()
+    attributeeHtml = serpy.StrField(attr='attributee_html')
+    attributeeString = serpy.StrField(attr='attributee_string')
+    dateHtml = serpy.StrField(attr='date_html')
     cachedImages = serpy.Field(attr='cached_images')
     primaryImage = serpy.Field(attr='primary_image')
     cachedCitations = serpy.Field(attr='cached_citations')
@@ -31,7 +31,5 @@ class QuoteSerializer(SearchableModelSerializer):
         """Return the user-facing bite HTML."""
         # Set `bite` to truncated text if it does not exist.
         return (
-            instance.bite.html
-            if instance.bite
-            else truncatechars_html(instance.text, 150)
+            instance.bite if instance.bite else truncatechars_html(instance.text, 150)
         )

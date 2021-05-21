@@ -59,7 +59,7 @@ class Story(ModelWithSources):
 
     def __str__(self) -> str:
         """Return the fact's string representation."""
-        return self.summary.text
+        return self.summary
 
 
 class StoryElement(Model):
