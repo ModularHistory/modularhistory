@@ -16,10 +16,9 @@ echo "$staged_files" | grep --quiet ".py" && {
             # https://github.com/google/pytype#usage
             poetry run mypy "$file" || {
                 echo "${bold}
-                    Carefully examine the error above. Should it be fixed?
+                    Carefully examine the error above. Should it be fixed?${normal}
                     Pytype may give more helpful output:
                         poetry run pytype --output .cache/pytype $file
-                    ${normal}
                 "
             }
         done
