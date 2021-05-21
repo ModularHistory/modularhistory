@@ -7,7 +7,7 @@ class PropositionType(ModuleType):
 
     class Meta:
         model = TypedProposition
-        exclude = ['version']
+        exclude = []
 
     @staticmethod
     def resolve_model(root, *args) -> str:
