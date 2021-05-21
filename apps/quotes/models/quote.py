@@ -142,9 +142,9 @@ class Quote(
         attributee_string = self.attributee_string or '<Unknown>'
         date_string = self.date.string if self.date else EMPTY_STRING
         if date_string:
-            string = f'{attributee_string}, {date_string}: {self.bite.text}'
+            string = f'{attributee_string}, {date_string}: {self.bite}'
         else:
-            string = f'{attributee_string}: {self.bite.text}'
+            string = f'{attributee_string}: {self.bite}'
         return string
 
     def clean(self):
@@ -155,7 +155,7 @@ class Quote(
         if no_text or len(f'{self.text}') < min_text_length:  # e.g., <p>&nbsp;</p>
             raise ValidationError('The quote must have text.')
         if not self.bite:
-            text = self.text.text
+            text = self.text
             if len(text) > BITE_MAX_LENGTH:
                 raise ValidationError('Add a quote bite.')
             self.bite = text  # type: ignore  # TODO: remove type ignore

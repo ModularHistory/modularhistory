@@ -35,13 +35,13 @@ class CategorizationSerializer(serpy.Serializer):
 class EntitySerializer(SearchableModelSerializer):
     """Serializer for entities."""
 
-    name = serpy.Field()
-    slug = serpy.Field()
+    name = serpy.StrField()
+    slug = serpy.StrField()
     unabbreviatedName = serpy.Field(attr='unabbreviated_name')
     aliases = serpy.Field()
     birthDate = serpy.MethodField('get_serialized_birth_date')
     deathDate = serpy.MethodField('get_serialized_death_date')
-    description = serpy.Field(required=False)
+    description = serpy.StrField(required=False)
     truncatedDescription = serpy.Field(attr='truncated_description')
     cachedImages = serpy.Field(attr='cached_images')
     categorizations = CategorizationSerializer(

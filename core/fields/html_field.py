@@ -1,11 +1,10 @@
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Optional, Type, Union
+from typing import Any, Callable, Dict, Iterable, Optional, TYPE_CHECKING, Type
 
 import regex as re
 from aenum import Constant
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.module_loading import import_string
-from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
 
 from core.constants.content_types import MODEL_CLASS_PATHS
@@ -258,9 +257,7 @@ class HTMLField(MceHTMLField):
         kwargs['paragraphed'] = self.paragraphed
         return name, field_class, args, kwargs
 
-    def from_db_value(
-        self, html_value: Optional[str], expression, connection
-    ) -> Optional[Union[SafeString, str]]:
+    def from_db_value(self, html_value: Optional[str], expression, connection) -> str:
         """
         Convert a value as returned by the database to a Python object.
 
@@ -268,25 +265,21 @@ class HTMLField(MceHTMLField):
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if html_value is None:
-            return html_value
-        try:
-            html_value = self.format_html(html_value)
-        except Exception as err:
-            logging.error(f'{err}')
+            return ''
         return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
-    def to_python(self, html_value: Optional[str]) -> Optional[str]:
+    def to_python(self, html_value: Optional[str]) -> str:
         """Convert the value into the correct Python object."""
-        if not html_value:
-            return None
+        if html_value is None:
+            return ''
         return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_prep_value
-    def get_prep_value(self, html_value: Optional[str]) -> Optional[str]:
+    def get_prep_value(self, html_value: Optional[str]) -> str:
         """Return data in a format prepared for use as a parameter in a db query."""
-        if not html_value:
-            return None
+        if html_value is None:
+            return ''
         return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_db_prep_value
