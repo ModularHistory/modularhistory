@@ -1,7 +1,7 @@
 """Model classes for the quotes app."""
 
 import logging
-from typing import TYPE_CHECKING, List, Match, Optional
+from typing import List, Match, TYPE_CHECKING
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -23,7 +23,6 @@ from apps.quotes.serializers import QuoteSerializer
 from apps.search.models.searchable_dated_model import SearchableDatedModel
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
-from core.constants.content_types import ContentTypes, get_ct_id
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
 from core.fields.html_field import (
@@ -236,11 +235,11 @@ class Quote(
         return False
 
     @property
-    def attributee_string(self) -> Optional[str]:
+    def attributee_string(self) -> str:
         """See the `attributee_html` property."""
         if self.attributee_html:
             return soupify(self.attributee_html).get_text()  # type: ignore
-        return None
+        return ''
 
     @property
     def html(self) -> SafeString:

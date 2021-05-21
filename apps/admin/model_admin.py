@@ -101,6 +101,7 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
         queryset, use_distinct = super().get_search_results(
             request, queryset, search_term
         )
+        search_term = search_term.strip()
         if search_term:
             searchable_fields = (
                 getattr(self.model, 'searchable_fields', None) or self.search_fields
@@ -115,7 +116,7 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
                     except IndexError:
                         weight = 'D'
                     vector += SearchVector(field, weight=weight)
-                search_terms = search_term.strip().split(' ')
+                search_terms = search_term.split(' ')
                 # https://www.postgresql.org/docs/current/functions-textsearch.html
                 query = f'{" & ".join(search_terms)}:*'
                 queryset = (

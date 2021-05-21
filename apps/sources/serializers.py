@@ -30,11 +30,7 @@ class ContainmentSerializer(ModelSerializer):
         return 'sources.sourcecontainment'
 
 
-class CitationSerializer(ModelSerializer):
+class CitationSerializer(serpy.Serializer):
     """Serializer for citations."""
 
     html = serpy.Field()
-
-    def get_model(self, instance) -> str:  # noqa
-        """Return the model name of the instance."""
-        return 'sources.citation'

@@ -50,25 +50,24 @@ class TaggableModel(SluggedModel, ModelWithCache):
         return [topic['name'] for topic in self.cached_tags]
 
     @property
-    def tags_string(self) -> Optional[str]:
+    def tags_string(self) -> str:
         """Return a comma-delimited list of tags as a string."""
         if self.tag_keys:
             return ', '.join(self.tag_keys)
-        return None
+        return ''
 
     @property
-    def tags_html(self) -> Optional[SafeString]:
-        """TODO: write docstring."""
+    def tags_html(self) -> SafeString:
+        """Return the model instance's tags as an HTML string of <li> elements."""
+        tags_html = ''
         if self.tag_keys:
-            return format_html(
-                ' '.join(
-                    [
-                        f'<li class="topic-tag"><a>{tag_key}</a></li>'
-                        for tag_key in self.tag_keys
-                    ]
-                )
+            tags_html = ' '.join(
+                [
+                    f'<li class="topic-tag"><a>{tag_key}</a></li>'
+                    for tag_key in self.tag_keys
+                ]
             )
-        return None
+        return format_html(tags_html)
 
 
 class TopicFilter(ManyToManyAutocompleteFilter):

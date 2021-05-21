@@ -106,10 +106,10 @@ class ModelWithSources(Model):
         """Return the instance's full citation HTML."""
         try:
             citation_html = '; '.join(
-                citation.get('html') for citation in self.cached_citations
+                citation.get('html', '') for citation in self.cached_citations
             )
         except Exception as error:
-            logging.error(f'{error}')
+            logging.error(f'Computing citation HTML resulted in {error}')
             citation_html = EMPTY_STRING
         return format_html(citation_html)
 
