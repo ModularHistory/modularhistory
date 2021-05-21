@@ -1,7 +1,7 @@
 """Model classes for the quotes app."""
 
 import logging
-from typing import List, Match, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Match
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -45,22 +45,20 @@ quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
 )
 
 
-def get_quote_fk(related_name: str):
-    return ManyToManyForeignKey(
-        to='quotes.Quote', related_name=related_name, verbose_name='quote'
-    )
-
-
 class Citation(AbstractCitation):
     """A relation between a quote and a source."""
 
-    content_object = get_quote_fk(related_name='citations')
+    content_object = ManyToManyForeignKey(
+        to='quotes.Quote', related_name='citations', verbose_name='quote'
+    )
 
 
 class QuoteRelation(AbstractQuoteRelation):
     """A relation between a quote and a quote."""
 
-    content_object = get_quote_fk(related_name='quote_relations')
+    content_object = ManyToManyForeignKey(
+        to='quotes.Quote', related_name='quote_relations', verbose_name='quote'
+    )
 
 
 class Quote(
