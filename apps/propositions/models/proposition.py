@@ -91,7 +91,10 @@ class TypedProposition(
     )
     elaboration = HTMLField(verbose_name=_('elaboration'), null=True, paragraphed=True)
     certainty = models.PositiveSmallIntegerField(
-        verbose_name=_('certainty'), null=True, choices=DEGREES_OF_CERTAINTY
+        verbose_name=_('certainty'),
+        null=True,
+        blank=True,
+        choices=DEGREES_OF_CERTAINTY,
     )
     premises = models.ManyToManyField(
         to='self',
@@ -128,6 +131,8 @@ class TypedProposition(
     def clean(self):
         if self.type == 'propositions.occurrence' and not self.date:
             raise ValidationError('Occurrence needs a date.')
+        elif self.type == 'propositions.proposition' and not self.certainty:
+            raise ValidationError('Proposition needs a degree of certainty.')
         return super().clean()
 
     @property
