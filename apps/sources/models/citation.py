@@ -10,7 +10,6 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.sources.serializers import CitationSerializer
-from core.constants.content_types import ContentTypes, get_ct_id
 from core.fields import JSONField
 from core.fields.html_field import (
     APPENDAGE_GROUP,
