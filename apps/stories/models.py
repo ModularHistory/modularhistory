@@ -13,16 +13,12 @@ from core.models.model import Model
 HANDLE_MAX_LENGTH = 40
 
 
-def get_story_fk(related_name: str):
-    return ManyToManyForeignKey(
+class Citation(AbstractCitation):
+    content_object = ManyToManyForeignKey(
         to='stories.Story',
-        related_name=related_name,
+        related_name='citations',
         verbose_name='story',
     )
-
-
-class StoryCitation(AbstractCitation):
-    content_object = get_story_fk(related_name='citations')
 
 
 class Story(ModelWithSources):
@@ -48,7 +44,7 @@ class Story(ModelWithSources):
     sources = models.ManyToManyField(
         to='sources.Source',
         related_name='%(class)s_citations',
-        through=StoryCitation,
+        through=Citation,
         blank=True,
         verbose_name=_('sources'),
     )
@@ -59,7 +55,7 @@ class Story(ModelWithSources):
 
     def __str__(self) -> str:
         """Return the fact's string representation."""
-        return self.summary
+        return self.handle
 
 
 class StoryElement(Model):

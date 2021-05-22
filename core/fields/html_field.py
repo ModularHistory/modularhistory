@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Dict, Iterable, Optional, TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Optional, Type
 
 import regex as re
 from aenum import Constant
@@ -44,7 +44,7 @@ REPLACEMENTS = (
     # Fix media URLs
     (r'https:\S+/media/', '/media/'),
     # Remove empty divs & paragraphs
-    (r'\n?<(?:div|p)>&nbsp;<\/(?:div|p)>', ''),
+    (r'\n?<(?:div|p)>(?:(?:&nbsp;)+|[\s\n]+)?<\/(?:div|p)>', ''),
     # Add bootstrap classes to HTML elements
     (r'<blockquote>', '<blockquote class="blockquote">'),
     (r'<table>', '<table class="table">'),
