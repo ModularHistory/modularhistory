@@ -22,10 +22,16 @@ class DatedModel(Model):
         default=False,
         help_text='whether the date is estimated/imprecise',
     )
+    # `date_nullable` can be set to True by child models that require the
+    # date field to be nullable for any reason.
+    date_nullable: bool = False
     date = HistoricDateTimeField(
         verbose_name=_('date'),
+        # `date` must be nullable at the db level (because some inheriting models
+        # might require such), but if no date is set, we use the `clean` method
+        # to raise a ValidationError unless the child model whitelists itself
+        # by setting `date_nullable` to True.
         null=True,
-        # Defer to the `clean` method for determining whether to require a date.
         blank=True,
     )
     end_date = HistoricDateTimeField(
@@ -34,10 +40,9 @@ class DatedModel(Model):
         blank=True,
     )
 
+    # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
     class Meta:
         """Meta options for DatedModel."""
-
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
 
         abstract = True
 

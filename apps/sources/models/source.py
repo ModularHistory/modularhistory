@@ -50,19 +50,11 @@ CITATION_PHRASE_OPTIONS = (
 class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
-    citation_html = models.TextField(
-        verbose_name=_('citation HTML'),
-        null=False,
-        # Allow to be blank in model forms (and calculated during cleaning).
+    content = HTMLField(
+        verbose_name=_('content'),
+        null=True,
         blank=True,
-    )
-    citation_string = models.CharField(
-        verbose_name=_('citation string'),
-        max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,
-        # Allow to be blank in model forms (and calculated during cleaning).
-        blank=True,
-        unique=True,
+        help_text='Enter the content of the source (with ellipses as needed).',
     )
     attributee_html = models.CharField(
         max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
@@ -83,6 +75,20 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        null=False,
+        # Allow to be blank in model forms (and computed during cleaning).
+        blank=True,
+    )
+    citation_string = models.CharField(
+        verbose_name=_('citation string'),
+        max_length=MAX_CITATION_STRING_LENGTH,
+        null=False,
+        # Allow to be blank in model forms (and computed during cleaning).
+        blank=True,
+        unique=True,
+    )
     containment_html = models.TextField(
         verbose_name=_('containment HTML'), null=True, blank=True
     )
@@ -95,21 +101,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,
         verbose_name=_('containers'),
     )
-
-    # `date` must be nullable at the db level (because some sources simply
-    # do not have dates), but if no date is set, we use the `clean` method
-    # to raise a ValidationError unless the child model whitelists itself
-    # by setting `date_nullable` to True.
-    date = HistoricDateTimeField(null=True, blank=True)
-    # `date_nullable` can be set to True by child models that require the
-    # date field to be nullable for any reason (e.g., by the Webpage model,
-    # since not all webpages present their creation date, or by the Document
-    # model, since some documents cannot be dated and/or are compilations of
-    # material spanning decades).
-    date_nullable: bool = False
-
     description = HTMLField(
-        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+        verbose_name=_('description'),
+        null=True,
+        blank=True,
+        paragraphed=True,
     )
     file = models.ForeignKey(
         to=SourceFile,
@@ -135,11 +131,23 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         on_delete=models.SET_NULL,
         verbose_name=_('location'),
     )
+    release = models.OneToOneField(
+        to='propositions.Publication',
+        on_delete=models.SET_NULL,
+        related_name='source',
+        null=True,
+        blank=True,
+    )
     publication_date = HistoricDateTimeField(
-        verbose_name=_('publication date'), null=True, blank=True
+        verbose_name=_('publication date'),
+        null=True,
+        blank=True,
     )
     title = models.CharField(
-        verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
+        verbose_name=_('title'),
+        max_length=MAX_TITLE_LENGTH,
+        null=True,
+        blank=True,
     )
     url = models.URLField(
         verbose_name=_('URL'),
