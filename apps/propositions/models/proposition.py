@@ -4,6 +4,7 @@ import logging
 import re
 from typing import Match, Optional
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -123,6 +124,11 @@ class TypedProposition(
     def __str__(self) -> str:
         """Return the proposition's string representation."""
         return self.summary
+
+    def clean(self):
+        if self.type == 'propositions.occurrence' and not self.date:
+            raise ValidationError('Occurrence needs a date.')
+        return super().clean()
 
     @property
     def summary_link(self) -> str:

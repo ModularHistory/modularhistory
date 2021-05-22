@@ -22,8 +22,17 @@ class DatedModel(Model):
         default=False,
         help_text='whether the date is estimated/imprecise',
     )
-    date = HistoricDateTimeField(verbose_name=_('date'), null=True)
-    end_date = HistoricDateTimeField(verbose_name=_('end date'), null=True, blank=True)
+    date = HistoricDateTimeField(
+        verbose_name=_('date'),
+        null=True,
+        # Defer to the `clean` method for determining whether to require a date.
+        blank=True,
+    )
+    end_date = HistoricDateTimeField(
+        verbose_name=_('end date'),
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         """Meta options for DatedModel."""
