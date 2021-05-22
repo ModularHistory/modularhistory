@@ -1,7 +1,6 @@
 """Admin classes for occurrences."""
 
 from apps.admin.admin_site import admin_site
-from apps.images.admin import AbstractImagesInline
 from apps.occurrences import models
 from apps.occurrences.admin.filters import (
     HasDateFilter,
@@ -12,12 +11,6 @@ from apps.places.admin import AbstractLocationsInline
 from apps.propositions.admin import TypedPropositionAdmin
 from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.models.taggable_model import TopicFilter
-
-
-class ImagesInline(AbstractImagesInline):
-    """Inline admin for an occurrence's images."""
-
-    model = models.Occurrence.images.through
 
 
 class LocationsInline(AbstractLocationsInline):
@@ -33,7 +26,7 @@ class OccurrenceAdmin(TypedPropositionAdmin):
 
     # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
     date_hierarchy = 'date'
-    inlines = TypedPropositionAdmin.inlines + [LocationsInline, ImagesInline]
+    inlines = TypedPropositionAdmin.inlines + [LocationsInline]
     list_display = [
         'slug',
         'title',

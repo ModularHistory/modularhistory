@@ -18,3 +18,6 @@ class Support(PositionedRelation):
         on_delete=models.CASCADE,
         related_name='conclusion_supports',
     )
+
+    def __str__(self) -> str:
+        return f'{self.premise} --> {self.conclusion}'
