@@ -24,8 +24,6 @@ class OccurrenceAdmin(TypedPropositionAdmin):
 
     model = models.Occurrence
 
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
-    date_hierarchy = 'date'
     inlines = TypedPropositionAdmin.inlines + [LocationsInline]
     list_display = [
         'slug',
