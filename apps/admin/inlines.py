@@ -1,5 +1,7 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import Optional, TYPE_CHECKING
 
+# from django.contrib.admin import StackedInline as BaseStackedInline
+# from django.contrib.admin import TabularInline as BaseTabularInline
 from nested_admin.nested import NestedStackedInline, NestedTabularInline
 
 from apps.admin.model_admin import FORM_FIELD_OVERRIDES
@@ -13,11 +15,6 @@ class StackedInline(NestedStackedInline):
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    def get_fields(self, request, model_instance=None) -> List[str]:
-        """Return reordered fields to be displayed in the admin."""
-        fields = super().get_fields(request, model_instance)
-        return reorder_fields(fields)
-
 
 class TabularInline(NestedTabularInline):
     """Inline admin with fields laid out horizontally."""
@@ -29,18 +26,3 @@ class TabularInline(NestedTabularInline):
         if len(self.get_queryset(request)):
             return 0
         return 1
-
-    def get_fields(self, request, model_instance=None) -> List[str]:
-        """Return reordered fields to be displayed in the admin."""
-        fields = super().get_fields(request, model_instance)
-        return reorder_fields(fields)
-
-
-def reorder_fields(fields) -> List[str]:
-    """Return a reordered list of fields to display in the admin."""
-    ordered_fields = ('page_number', 'end_page_number', 'notes', 'position')
-    for field_name in ordered_fields:
-        if field_name in fields:
-            fields.remove(field_name)
-            fields.append(field_name)
-    return fields

@@ -19,7 +19,7 @@ class AbstractSourcesInline(TabularInline):
     sortable_field_name = 'position'
 
     def get_fields(self, request, model_instance) -> List[str]:
-        fields = super().get_fields(request, model_instance=model_instance)
+        fields = super().get_fields(request, model_instance)
         ordered_fields = ['citation_phrase']
         for field in ordered_fields:
             if field in fields:
