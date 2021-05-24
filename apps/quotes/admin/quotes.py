@@ -18,7 +18,7 @@ from apps.sources.admin.filters.simple_filters import (
     HasMultipleSourcesFilter,
     HasSourceFilter,
 )
-from apps.topics.admin.related_topics import AbstractRelatedTopicsInline, HasTagsFilter
+from apps.topics.admin.related_topics import AbstractTagsInline, HasTagsFilter
 from apps.topics.models.taggable_model import TopicFilter
 
 
@@ -41,7 +41,7 @@ class RelatedQuotesInline(AbstractRelatedQuotesInline):
     fk_name = 'content_object'
 
 
-class RelatedTopicsInline(AbstractRelatedTopicsInline):
+class RelatedTopicsInline(AbstractTagsInline):
     """Inline admin for a quote's related entities."""
 
     model = models.Quote.tags.through

@@ -6,11 +6,11 @@ from apps.images.admin import AbstractImagesInline
 from apps.propositions import models
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
-from apps.topics.admin.related_topics import AbstractRelatedTopicsInline
+from apps.topics.admin.related_topics import AbstractTagsInline
 from apps.topics.models.taggable_model import TopicFilter
 
 
-class RelatedTopicsInline(AbstractRelatedTopicsInline):
+class RelatedTopicsInline(AbstractTagsInline):
     """Inline admin for topic tags."""
 
     model = models.TypedProposition.tags.through
@@ -45,6 +45,9 @@ class ConclusionsInline(TabularInline):
     autocomplete_fields = ['conclusion']
     extra = 0
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('premise', 'conclusion')
+
 
 class PremisesInline(TabularInline):
     """Inline admin for a proposition's premises."""
@@ -58,6 +61,9 @@ class PremisesInline(TabularInline):
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('premise', 'conclusion')
 
 
 class AbstractPropositionAdmin(SearchableModelAdmin):

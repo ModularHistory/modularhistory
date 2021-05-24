@@ -1,28 +1,11 @@
 from typing import TYPE_CHECKING, List, Optional
 
-from nested_admin.nested import (
-    NestedGenericStackedInline,
-    NestedGenericTabularInline,
-    NestedStackedInline,
-    NestedTabularInline,
-)
+from nested_admin.nested import NestedStackedInline, NestedTabularInline
 
 from apps.admin.model_admin import FORM_FIELD_OVERRIDES
 
 if TYPE_CHECKING:
     from core.models.model import Model
-
-
-class GenericTabularInline(NestedGenericTabularInline):
-    """Tabular inline admin for generically related objects."""
-
-    formfield_overrides = FORM_FIELD_OVERRIDES
-
-
-class GenericStackedInline(NestedGenericStackedInline):
-    """Stacked inline admin for generically related objects."""
-
-    formfield_overrides = FORM_FIELD_OVERRIDES
 
 
 class StackedInline(NestedStackedInline):

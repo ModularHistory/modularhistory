@@ -1,2 +1,2 @@
-from .related_topics import AbstractRelatedTopicsInline, HasTagsFilter
+from .related_topics import AbstractTagsInline, HasTagsFilter
 from .topic_admin import TopicAdmin

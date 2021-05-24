@@ -80,9 +80,6 @@ class SearchableModelAdmin(ModelAdmin):
                     },
                 )
             )
-        from time import sleep
-
-        sleep(30)
         return fieldsets
 
     def get_urls(self):

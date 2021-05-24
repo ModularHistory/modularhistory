@@ -17,7 +17,8 @@ from django_celery_beat.models import (
     SolarSchedule,
 )
 from django_celery_results.admin import TaskResult, TaskResultAdmin
-from nested_admin import NestedModelAdmin, NestedPolymorphicInlineSupportMixin
+from nested_admin import NestedModelAdmin
+from nested_admin.polymorphic import NestedPolymorphicInlineSupportMixin
 from sass_processor.processor import sass_processor
 
 from apps.admin.admin_site import admin_site
