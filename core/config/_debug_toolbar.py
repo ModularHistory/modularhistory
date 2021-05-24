@@ -14,12 +14,16 @@ from django.http import HttpRequest
 
 def show_toolbar(request: HttpRequest) -> bool:
     """Determine whether to display the debug toolbar."""
-    conditions = (
+    qualifiers = (
         settings.DEBUG
         and request.META.get('REMOTE_ADDR', None) in settings.INTERNAL_IPS,
         request.user.is_superuser,
     )
-    disqualifiers = (settings.TESTING,)
-    if any(conditions) and not any(disqualifiers):
+    disqualifiers = (
+        settings.TESTING,
+        '/api/' in request.path,
+        request.path == '/healthcheck/',
+    )
+    if any(qualifiers) and not any(disqualifiers):
         return True
     return False

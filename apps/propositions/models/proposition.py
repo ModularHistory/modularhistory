@@ -87,9 +87,16 @@ class TypedProposition(
     """
 
     summary = HTMLField(
-        verbose_name=_('summary'), unique=True, paragraphed=False, processed=False
+        verbose_name=_('summary'),
+        unique=True,
+        paragraphed=False,
+        processed=False,
     )
-    elaboration = HTMLField(verbose_name=_('elaboration'), null=True, paragraphed=True)
+    elaboration = HTMLField(
+        verbose_name=_('elaboration'),
+        null=True,
+        paragraphed=True,
+    )
     certainty = models.PositiveSmallIntegerField(
         verbose_name=_('certainty'),
         null=True,
@@ -122,7 +129,7 @@ class TypedProposition(
         'tags__aliases',
     ]
     serializer = PropositionSerializer
-    slug_base_field = 'summary'
+    slug_base_field = 'title'
 
     def __str__(self) -> str:
         """Return the proposition's string representation."""
@@ -134,6 +141,9 @@ class TypedProposition(
         elif self.type == 'propositions.proposition' and not self.certainty:
             raise ValidationError('Proposition needs a degree of certainty.')
         return super().clean()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
     @property
     def summary_link(self) -> str:

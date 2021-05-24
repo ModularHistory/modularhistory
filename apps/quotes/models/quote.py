@@ -280,7 +280,7 @@ class Quote(
     def related_occurrences(self) -> 'QuerySet':
         """Return a queryset of the quote's related occurrences."""
         # TODO: refactor
-        from apps.occurrences.models.occurrence import Occurrence
+        from apps.propositions.models.occurrence import Occurrence
 
         return Occurrence.objects.filter(related_quotes__pk=self.pk)
 

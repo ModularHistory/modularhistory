@@ -1,14 +1,14 @@
 """Admin classes for occurrences."""
 
 from apps.admin.admin_site import admin_site
-from apps.occurrences import models
-from apps.occurrences.admin.filters import (
+from apps.places.admin import AbstractLocationsInline
+from apps.propositions import models
+from apps.propositions.admin.propositions import TypedPropositionAdmin
+from apps.propositions.admin.filters import (
     HasDateFilter,
     HasQuotesFilter,
     LocationFilter,
 )
-from apps.places.admin import AbstractLocationsInline
-from apps.propositions.admin import TypedPropositionAdmin
 from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.models.taggable_model import TopicFilter
 

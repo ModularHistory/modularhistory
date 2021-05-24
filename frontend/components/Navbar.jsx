@@ -111,7 +111,7 @@ export default function GlobalNavbar({ menuItems }) {
         <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
           <NavDropdown.Item href="/users/profile">Profile</NavDropdown.Item>
           {/* <NavDropdown.Item href="/users/setting">Settings</NavDropdown.Item> */}
-          <NavDropdown.Item href="/admin/">Administrate</NavDropdown.Item>
+          <NavDropdown.Item href="/_admin/">Administrate</NavDropdown.Item>
           {/* <NavDropdown.Item href="" className="hide-admin-controls">
             Hide admin controls
           </NavDropdown.Item> */}

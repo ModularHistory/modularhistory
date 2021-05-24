@@ -6,8 +6,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
-from apps.occurrences import managers
-from apps.occurrences.serializers import OccurrenceSerializer
+from apps.propositions.api.serializers import OccurrenceSerializer
 from apps.propositions.models.proposition import TypedProposition
 from core.fields import HTMLField
 from core.utils.html import soupify
@@ -42,7 +41,6 @@ class Occurrence(TypedProposition):
 
         ordering = ['date']
 
-    objects = managers.OccurrenceManager()
     searchable_fields = [
         'summary',
         'elaboration',

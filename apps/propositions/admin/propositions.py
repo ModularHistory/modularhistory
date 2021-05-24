@@ -96,7 +96,7 @@ class TypedPropositionAdmin(AbstractPropositionAdmin):
 
     list_display = AbstractPropositionAdmin.list_display + ['date_string', 'type']
     list_filter = AbstractPropositionAdmin.list_filter + ['type']
-    ordering = ['type', 'date']
+    ordering = ['date', 'type']
     search_fields = model.searchable_fields
 
 

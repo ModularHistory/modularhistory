@@ -87,6 +87,8 @@ INSTALLED_APPS = [
     'admin_tools.menu',
     # 'admin_tools.theming',
     # 'admin_tools.dashboard',
+    'admin_honeypot',  # https://github.com/dmpayton/django-admin-honeypot
+    'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
     # ---------------------------------
     # Django core apps
     # ---------------------------------
@@ -158,6 +160,7 @@ INSTALLED_APPS = [
     'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
     'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'sass_processor',  # https://github.com/jrief/django-sass-processor
+    'silk',  # https://github.com/jazzband/django-silk
     'sortedm2m',  # https://github.com/jazzband/django-sortedm2m
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'typedmodels',  # https://github.com/craigds/django-typed-models
@@ -193,6 +196,8 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
+    # https://github.com/jazzband/django-silk
+    'silk.middleware.SilkyMiddleware',
     # Update cache:
     # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
     'django.middleware.cache.UpdateCacheMiddleware',
@@ -239,6 +244,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_settings_export.settings_export',
+                # https://github.com/dizballanze/django-admin-env-notice#quickstart
+                'django_admin_env_notice.context_processors.from_settings',
             ],
             # https://docs.djangoproject.com/en/3.1/ref/templates/api/#loader-types
             'loaders': [
@@ -349,7 +356,7 @@ if DEBUG:
         'loggers': {
             'django': {
                 'handlers': ['console'],
-                'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+                'level': config('DJANGO_LOG_LEVEL', default='INFO'),
                 'propagate': False,
             },
         },

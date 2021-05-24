@@ -27,7 +27,7 @@ class SearchableModel(TaggableModel, VerifiableModel):
         blank=True,
         help_text=(
             'The title can be used for the detail page header and title tag, '
-            'SERP result card header, etc.'
+            'SERP result card header, etc. It should be a noun phrase!'
         ),
     )
     hidden = models.BooleanField(

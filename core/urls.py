@@ -46,8 +46,12 @@ urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
-    path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
-    path('admin/', admin_site.urls),
+    # https://github.com/dmpayton/django-admin-honeypot
+    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    path(f'{settings.ADMIN_URL_PREFIX}/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
+    path(f'{settings.ADMIN_URL_PREFIX}/', admin_site.urls),
+    # https://github.com/jazzband/django-silk
+    path(f'{settings.ADMIN_URL_PREFIX}/silk/', include('silk.urls', namespace='silk')),
     # App URLs
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('api/donations/', include(_api('donations'), namespace='donations_api')),
