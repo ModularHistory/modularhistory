@@ -14,7 +14,7 @@ HEALTHY = 'ok'
 @check
 def check_health_checks():
     """Check health checks listed under `health_check` in INSTALLED_APPS."""
-    stati = {'debug': {HEALTHY: True}}
+    statuses = {'debug': {HEALTHY: True}}
     output = StringIO()
     # https://github.com/KristianOellegaard/django-health-check#django-command
     management.call_command(HEALTH_CHECK_COMMAND, stdout=output)
@@ -30,5 +30,5 @@ def check_health_checks():
             continue
         key, status = match.group(1), match.group(2)
         key = stringcase.snakecase(key.replace('HealthCheck', ''))
-        stati[key] = {HEALTHY: status == 'working'}
-    return stati
+        statuses[key] = {HEALTHY: status == 'working'}
+    return statuses

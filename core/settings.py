@@ -149,7 +149,6 @@ INSTALLED_APPS = [
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
     'graphene_django',  # https://github.com/graphql-python/graphene-django
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
-    'health_check.contrib.migrations',
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
