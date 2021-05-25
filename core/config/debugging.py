@@ -14,7 +14,7 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.request.RequestPanel',
     'debug_toolbar.panels.headers.HeadersPanel',
     # https://github.com/jazzband/django-debug-toolbar/issues/1374
-    # 'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
     'debug_toolbar.panels.staticfiles.StaticFilesPanel',
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',

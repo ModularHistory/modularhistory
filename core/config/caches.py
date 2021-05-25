@@ -55,9 +55,5 @@ CACHALOT_UNCACHABLE_TABLES = frozenset(
         'django_celery_results_chordcounter',
         'django_celery_results_taskresult',
         'health_check_db_testmodel',
-        # TODO: Investigate if a fix is possible so that we can cache propositions.
-        # Currently, duplicate queries result from using cachalot with TypedProposition
-        # (due to TypedModel?).
-        # 'propositions_typedproposition',
     )
 )

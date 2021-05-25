@@ -7,7 +7,7 @@ from apps.places.admin import AbstractLocationsInline
 from apps.propositions import models
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
-from apps.topics.admin.related_topics import AbstractTagsInline
+from apps.topics.admin.tags import AbstractTagsInline
 from apps.topics.models.taggable_model import TopicFilter
 
 

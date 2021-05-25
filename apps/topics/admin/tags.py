@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type
+from typing import Type
 
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Model
@@ -7,9 +7,6 @@ from django.http.request import HttpRequest
 
 from apps.admin.inlines import TabularInline
 from core.constants.strings import NO, YES
-
-if TYPE_CHECKING:
-    pass
 
 
 class AbstractTagsInline(TabularInline):
