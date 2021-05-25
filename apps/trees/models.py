@@ -74,22 +74,22 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
     @property
     def ancestors(self) -> QuerySet:
         """Return the model instances's ancestors, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(  # type: ignore
-            path__descendant=self.path  # type: ignore
+        return self.__class__.objects.exclude(pk=self.pk).filter(
+            path__descendant=self.path
         )
 
     @property
     def descendants(self) -> QuerySet:
         """Return the model instances's descendants, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(  # type: ignore
-            path__ancestor=self.path  # type: ignore
+        return self.__class__.objects.exclude(pk=self.pk).filter(
+            path__ancestor=self.path
         )
 
     @property
     def siblings(self) -> QuerySet:
         """Return the model instances's siblings, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(  # type: ignore
-            parent_id=self.parent_id  # type: ignore
+        return self.__class__.objects.exclude(pk=self.pk).filter(
+            parent_id=self.parent_id
         )
 
     def get_key(self) -> str:

@@ -80,7 +80,6 @@ ADMINS = (
     else []
 )
 
-# noqa: E501
 INSTALLED_APPS = [
     # ---------------------------------
     # Admin-related apps
@@ -90,7 +89,7 @@ INSTALLED_APPS = [
     'admin_tools.menu',
     # 'admin_tools.theming',
     # 'admin_tools.dashboard',
-    'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
+    'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter
     'admin_honeypot',  # https://github.com/dmpayton/django-admin-honeypot
     'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
@@ -121,10 +120,10 @@ INSTALLED_APPS = [
     # 'defender',  # https://github.com/jazzband/django-defender  # TODO
     # Note: dj_rest_auth must be loaded after rest_framework.
     'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
-    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.  # noqa: E501
-    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.
+    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
     'allauth.account',
-    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional  # noqa: E501
+    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
     'allauth.socialaccount',
     'allauth.socialaccount.providers.discord',
     'allauth.socialaccount.providers.facebook',
@@ -152,7 +151,7 @@ INSTALLED_APPS = [
     # ---------------------------------
     # Miscellaneous third-party apps
     # ---------------------------------
-    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
+    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
     'cachalot',  # https://django-cachalot.readthedocs.io/
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/

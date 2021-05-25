@@ -3,7 +3,6 @@
 
 from apps.admin import TabularInline
 from apps.quotes import models
-from core.constants.content_types import ContentTypes, get_ct_id
 
 
 class AttributeesInline(TabularInline):

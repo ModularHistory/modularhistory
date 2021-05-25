@@ -71,4 +71,4 @@ def search(
         if print_all:
             [print(x) for x in queryset]
         else:
-            print(f'Random result item = {random.choice(queryset)}')
+            print(f'Random result item = {random.choice(queryset)}')  # noqa: S311

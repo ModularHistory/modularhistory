@@ -13,8 +13,10 @@ from core.models.positioned_relation import PositionedRelation
 
 class AbstractQuoteRelation(PositionedRelation):
     """
-    Abstract base model for quote relations, i.e., models governing m2m relationships
-    between `Quote` and another model.
+    Abstract base model for quote relations.
+
+    Models governing m2m relationships between `Quote` and another model
+    should inherit from this abstract model.
     """
 
     quote = ManyToManyForeignKey(
