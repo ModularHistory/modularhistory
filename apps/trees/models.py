@@ -11,7 +11,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.trees.fields import LtreeField
 from core.models.abstract_model import AbstractModelMeta
-from core.models.manager import Manager
 from core.models.model import Model
 
 
