@@ -41,7 +41,7 @@ class RelatedQuotesInline(AbstractRelatedQuotesInline):
     fk_name = 'content_object'
 
 
-class RelatedTopicsInline(AbstractTagsInline):
+class TagsInline(AbstractTagsInline):
     """Inline admin for a quote's related entities."""
 
     model = models.Quote.tags.through
@@ -61,7 +61,7 @@ class QuoteAdmin(SearchableModelAdmin):
         SourcesInline,
         RelatedQuotesInline,
         RelatedEntitiesInline,
-        RelatedTopicsInline,
+        TagsInline,
         BitesInline,
     ]
     list_display = [

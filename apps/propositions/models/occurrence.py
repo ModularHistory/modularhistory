@@ -72,6 +72,7 @@ class Occurrence(TypedProposition):
                             image = entity.image
             if image:
                 self.images.add(image)
+        print(f'>>>>> post save: {self.summary}')
 
     def clean(self):
         """Prepare the occurrence to be saved."""

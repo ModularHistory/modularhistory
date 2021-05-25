@@ -44,12 +44,11 @@ backups/
 .init/
 
 # Testing / linting / coverage reports
-.cache
+.cache/
 .coverage_html/
 .hypothesis/
-.mypy_cache/
 .nox/
-.pytest_cache/
+.pyre/
 .selenium/
 .tox/
 htmlcov/

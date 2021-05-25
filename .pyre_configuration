@@ -1,0 +1,11 @@
+{
+  "source_directories": [
+    "."
+  ],
+  "exclude": [
+    ".*\/node_modules\/.*",
+    ".*\/.venv\/.*",
+    ".*\/.cache\/.*"
+  ],
+  "taint_models_path": ".venv/lib"
+}

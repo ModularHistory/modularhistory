@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 # from django.contrib.admin import StackedInline as BaseStackedInline
 # from django.contrib.admin import TabularInline as BaseTabularInline
@@ -21,7 +21,7 @@ class TabularInline(NestedTabularInline):
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    def get_extra(self, request, model_instance: Optional['Model'] = None, **kwargs):
+    def get_extra(self, request, *args, **kwargs):
         """Return the number of extra/blank rows to display."""
         if len(self.get_queryset(request)):
             return 0

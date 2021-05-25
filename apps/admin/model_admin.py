@@ -4,6 +4,7 @@ from typing import List, Optional, Tuple, Type, Union
 from aenum import Constant
 from django.conf import settings
 from django.contrib.admin import ListFilter
+from django.contrib.admin import ModelAdmin as BaseModelAdmin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.sites.models import Site
@@ -16,9 +17,11 @@ from django_celery_beat.models import (
     PeriodicTask,
     SolarSchedule,
 )
-from django_celery_results.admin import TaskResult, TaskResultAdmin
-from nested_admin import NestedModelAdmin
+from django_celery_results.admin import TaskResultAdmin
+from django_celery_results.models import TaskResult
+from nested_admin.nested import NestedModelAdmin
 from nested_admin.polymorphic import NestedPolymorphicInlineSupportMixin
+from polymorphic.admin import PolymorphicInlineSupportMixin
 from sass_processor.processor import sass_processor
 
 from apps.admin.admin_site import admin_site
@@ -47,13 +50,8 @@ else:
     ADMIN_CSS = 'styles/admin.css'
 
 
-class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
-    """
-    Base admin class for ModularHistory's models.
-
-    Uses the NestedPolymorphicInlineSupportMixin as instructed in
-    https://django-nested-admin.readthedocs.io/en/latest/integrations.html.
-    """
+class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
+    """Base admin class for ModularHistory's models."""
 
     model: Type[Model]
 
@@ -138,6 +136,27 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
             pk = int(match.group(1))
             queryset = queryset.exclude(pk=pk)
         return queryset, use_distinct
+
+    def save_form(self, request, form, change):
+        """
+        Given a ModelForm return an unsaved instance. ``change`` is True if
+        the object is being changed, and False if it's being added.
+        """
+        print(f'>>>>>>save_form>>>>>')
+        return super().save_form(request, form, change)
+
+    def save_model(self, request, obj, form, change):
+        """
+        Given a model instance save it to the database.
+        """
+        print(f'>>>>>>after save_model>>>>> {getattr(obj, "summary", None)}')
+        obj.save()
+        print(f'>>>>>>after save_model>>>>> {getattr(obj, "summary", None)}')
+        obj.refresh_from_db()
+        print(f'>>>>>>after refresh_from_db>>>>> {getattr(obj, "summary", None)}')
+        from time import sleep
+
+        sleep(5)
 
 
 class ContentTypeFields(Constant):

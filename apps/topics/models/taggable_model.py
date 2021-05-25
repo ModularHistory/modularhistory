@@ -27,6 +27,13 @@ class TaggableModel(SluggedModel, ModelWithCache):
         verbose_name=_('tags'),
     )
 
+    related_topics = models.ManyToManyField(
+        to='topics.Topic',
+        related_name='%(class)s_set',
+        blank=True,
+        verbose_name=_('tags'),
+    )
+
     class Meta:
         abstract = True
 

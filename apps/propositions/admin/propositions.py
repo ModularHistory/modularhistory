@@ -10,7 +10,7 @@ from apps.topics.admin.related_topics import AbstractTagsInline
 from apps.topics.models.taggable_model import TopicFilter
 
 
-class RelatedTopicsInline(AbstractTagsInline):
+class TagsInline(AbstractTagsInline):
     """Inline admin for topic tags."""
 
     model = models.TypedProposition.tags.through
@@ -81,7 +81,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
         SourcesInline,
         ImagesInline,
         RelatedEntitiesInline,
-        RelatedTopicsInline,
+        TagsInline,
     ]
     list_display = [
         'slug',
