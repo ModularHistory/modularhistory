@@ -11,7 +11,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.trees.fields import LtreeField
 from core.models.abstract_model import AbstractModelMeta
-from core.models.manager import Manager
 from core.models.model import Model
 
 
@@ -76,21 +75,21 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
     def ancestors(self) -> QuerySet:
         """Return the model instances's ancestors, based on its LTree field."""
         return self.__class__.objects.exclude(pk=self.pk).filter(  # type: ignore
-            path__descendant=self.path
+            path__descendant=self.path  # type: ignore
         )
 
     @property
     def descendants(self) -> QuerySet:
         """Return the model instances's descendants, based on its LTree field."""
         return self.__class__.objects.exclude(pk=self.pk).filter(  # type: ignore
-            path__ancestor=self.path
+            path__ancestor=self.path  # type: ignore
         )
 
     @property
     def siblings(self) -> QuerySet:
         """Return the model instances's siblings, based on its LTree field."""
         return self.__class__.objects.exclude(pk=self.pk).filter(  # type: ignore
-            parent_id=self.parent_id
+            parent_id=self.parent_id  # type: ignore
         )
 
     def get_key(self) -> str:
