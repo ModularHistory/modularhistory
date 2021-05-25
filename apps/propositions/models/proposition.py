@@ -12,7 +12,11 @@ from django.utils.translation import ugettext_lazy as _
 from apps.dates.models import DatedModel
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import ModelWithImages
-from apps.places.models.model_with_locations import ModelWithLocations
+from apps.places.models.model_with_locations import (
+    AbstractLocationRelation,
+    LocationsField,
+    ModelWithLocations,
+)
 from apps.propositions.api.serializers import PropositionSerializer
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
@@ -57,19 +61,34 @@ def get_proposition_fk(related_name: str):
 
 
 class Citation(AbstractCitation):
-    """A relation of a source with a proposition."""
+    """A relationship between a proposition and a source."""
 
-    content_object = get_proposition_fk('citations')
+    content_object = get_proposition_fk(related_name='citations')
+
+
+class Location(AbstractLocationRelation):
+    """A relationship between a proposition and a place."""
+
+    content_object = get_proposition_fk(related_name='_location_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
-    """A relation of a quote with a proposition."""
+    """A relationship between a proposition and a quote."""
 
-    content_object = get_proposition_fk('quote_relations')
+    content_object = get_proposition_fk(related_name='quote_relations')
+
+
+TYPE_CHOICES = (
+    ('propositions.proposition', 'proposition'),
+    ('propositions.occurrence', 'occurrence'),
+    ('propositions.birth', 'birth'),
+    ('propositions.death', 'death'),
+    ('propositions.publication', 'publication'),
+    ('propositions.verbalization', 'verbalization'),
+)
 
 
 class TypedProposition(
-    TypedModel,
     SearchableModel,
     DatedModel,  # submodels like `Occurrence` require date
     ModelWithSources,
@@ -86,6 +105,11 @@ class TypedProposition(
     should inherit from this model.
     """
 
+    type = models.CharField(
+        choices=TYPE_CHOICES,
+        db_index=True,
+        max_length=100,
+    )
     summary = HTMLField(
         verbose_name=_('summary'),
         unique=True,
@@ -103,6 +127,13 @@ class TypedProposition(
         blank=True,
         choices=DEGREES_OF_CERTAINTY,
     )
+    postscript = HTMLField(
+        verbose_name=_('postscript'),
+        null=True,
+        blank=True,
+        paragraphed=True,
+        help_text='Content to be displayed below all related data',
+    )
     premises = models.ManyToManyField(
         to='self',
         through='propositions.Support',
@@ -110,6 +141,8 @@ class TypedProposition(
         symmetrical=False,
         verbose_name=_('premises'),
     )
+
+    _locations = LocationsField(through=Location)
     related_quotes = RelatedQuotesField(
         through=QuoteRelation,
         related_name='propositions',
@@ -217,3 +250,6 @@ class TypedProposition(
 
 class Proposition(TypedProposition):
     """A proposition."""
+
+    class Meta:
+        proxy = True

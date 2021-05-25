@@ -58,6 +58,6 @@ CACHALOT_UNCACHABLE_TABLES = frozenset(
         # TODO: Investigate if a fix is possible so that we can cache propositions.
         # Currently, duplicate queries result from using cachalot with TypedProposition
         # (due to TypedModel?).
-        'propositions_typedproposition',
+        # 'propositions_typedproposition',
     )
 )

@@ -2,5 +2,11 @@
 
 from .model_with_propositions import ModelWithPropositions
 from .occurrence import Occurrence
-from .proposition import Citation, Proposition, QuoteRelation, TypedProposition
+from .proposition import (
+    Citation,
+    Location,
+    Proposition,
+    QuoteRelation,
+    TypedProposition,
+)
 from .support import Support

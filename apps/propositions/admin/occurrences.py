@@ -1,22 +1,15 @@
 """Admin classes for occurrences."""
 
 from apps.admin.admin_site import admin_site
-from apps.places.admin import AbstractLocationsInline
 from apps.propositions import models
-from apps.propositions.admin.propositions import TypedPropositionAdmin
 from apps.propositions.admin.filters import (
     HasDateFilter,
     HasQuotesFilter,
     LocationFilter,
 )
+from apps.propositions.admin.propositions import TypedPropositionAdmin
 from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.models.taggable_model import TopicFilter
-
-
-class LocationsInline(AbstractLocationsInline):
-    """Inline admin for an occurrence's locations."""
-
-    model = models.Occurrence.locations.through
 
 
 class OccurrenceAdmin(TypedPropositionAdmin):
@@ -24,7 +17,6 @@ class OccurrenceAdmin(TypedPropositionAdmin):
 
     model = models.Occurrence
 
-    inlines = TypedPropositionAdmin.inlines + [LocationsInline]
     list_display = [
         'slug',
         'title',

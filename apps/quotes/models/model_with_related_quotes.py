@@ -34,13 +34,10 @@ class AbstractQuoteRelation(PositionedRelation):
 
 class RelatedQuotesField(CustomManyToManyField):
 
+    target_model = 'quotes.Quote'
     through_model = AbstractQuoteRelation
 
     def __init__(self, through: Union[Type[AbstractQuoteRelation], str], **kwargs):
-        to = kwargs.get('to', 'quotes.Quote')
-        if to not in ('self', 'quotes.Quote'):
-            raise ValueError(f'{to} does not refer to the `Quote` model.')
-        kwargs['to'] = to
         kwargs['through'] = through
         kwargs['verbose_name'] = _('related quotes')
         super().__init__(**kwargs)

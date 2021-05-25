@@ -3,6 +3,7 @@ from apps.admin.inlines import TabularInline
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.images.admin import AbstractImagesInline
+from apps.places.admin import AbstractLocationsInline
 from apps.propositions import models
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
@@ -29,9 +30,15 @@ class RelatedEntitiesInline(AbstractRelatedEntitiesInline):
 
 
 class ImagesInline(AbstractImagesInline):
-    """Inline admin for an occurrence's images."""
+    """Inline admin for images."""
 
     model = models.TypedProposition.images.through
+
+
+class LocationsInline(AbstractLocationsInline):
+    """Inline admin for locations."""
+
+    model = models.TypedProposition.locations.through
 
 
 class ConclusionsInline(TabularInline):
@@ -82,6 +89,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
         ImagesInline,
         RelatedEntitiesInline,
         TagsInline,
+        LocationsInline,
     ]
     list_display = [
         'slug',

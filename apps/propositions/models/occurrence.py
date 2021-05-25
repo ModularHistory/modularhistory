@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Optional
 
 from django.core.exceptions import ValidationError
+from django.db.models import Manager
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from django.utils.translation import ugettext_lazy as _
 
 from apps.propositions.api.serializers import OccurrenceSerializer
 from apps.propositions.models.proposition import TypedProposition
@@ -18,6 +18,11 @@ if TYPE_CHECKING:
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
+class OccurrenceManager(Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(type='propositions.occurrence')
+
+
 class Occurrence(TypedProposition):
     """
     An occurrence, i.e., something that has happened.
@@ -27,20 +32,14 @@ class Occurrence(TypedProposition):
     from `Proposition`.
     """
 
-    postscript = HTMLField(
-        verbose_name=_('postscript'),
-        null=True,
-        blank=True,
-        paragraphed=True,
-        help_text='Content to be displayed below all related data',
-    )
-
     # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
     class Meta:
         """Meta options for the `Occurrence` model."""
 
+        proxy = True
         ordering = ['date']
 
+    objects = OccurrenceManager()
     searchable_fields = [
         'summary',
         'elaboration',
@@ -104,14 +103,26 @@ class Occurrence(TypedProposition):
 class Birth(Occurrence):
     """A birth of an entity."""
 
+    class Meta:
+        proxy = True
+
 
 class Death(Occurrence):
     """A death of an entity."""
+
+    class Meta:
+        proxy = True
 
 
 class Publication(Occurrence):
     """A publication of a source."""
 
+    class Meta:
+        proxy = True
+
 
 class Verbalization(Occurrence):
     """A verbalization or production of a source, prior to publication."""
+
+    class Meta:
+        proxy = True
