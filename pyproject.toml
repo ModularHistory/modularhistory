@@ -2,10 +2,6 @@
 requires = ["poetry>=1.1.6"]
 build-backend = "poetry.masonry.api"
 
-[tool.autohooks]
-mode = "poetry"
-pre-commit = ["autohooks.plugins.black", "autohooks.plugins.isort"]
-
 [tool.black]
 # https://black.readthedocs.io/en/stable/pyproject_toml.html
 line-length = 88
@@ -76,7 +72,6 @@ django-admin-honeypot = "^1.1.0"
 django-admin-tools = "==0.9.0"
 django-allauth = "^0.44.0"
 django-autoslug = "^1.9.8"
-django-bootstrap-datepicker-plus = "==3.0.5"
 django-cachalot = "^2.3.5"
 django-cors-headers = "3.6.0"
 django-crispy-forms = "^1.10"
@@ -87,7 +82,6 @@ django-debug-toolbar = "^3.2"
 django-elasticsearch-dsl = "^7.2.0"
 django-elasticsearch-dsl-drf = "^0.22.1"
 django-extensions = "^3.1.1"
-django-extra-views = "==0.13.0"
 django-filter = "==2.4.0"
 django-flat-json-widget = "^0.1.2"
 django-health-check = "^3.16.1"
@@ -159,7 +153,6 @@ youtube-dl = "^2020.7.28"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
-autohooks = "^21.3.0"
 binaryornot = "^0.4"
 celery-types = "^0.3.0"
 coverage = { extras = ["toml"], version = "^5.3" }
@@ -193,6 +186,7 @@ isort = "^5.6.4"
 libsass = "^0.20.1"
 pep8-naming = "^0.11.1"
 pylint = "^2.6.0"
+pyre-check = "^0.9.3"
 pytest = "^6.1"
 pytest-django = "^4"
 pytest-xdist = "^2.1.0"
@@ -204,7 +198,6 @@ types-colorama = "^0.4.0"
 unify = "^0.5"
 virtualenv-clone = "==0.5.4"
 Werkzeug = "^1.0.1"
-pyre-check = "^0.9.3"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

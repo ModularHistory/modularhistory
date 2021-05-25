@@ -1,7 +1,9 @@
+import logging
 from typing import TYPE_CHECKING, Optional
 
 from django.contrib.admin import StackedInline as BaseStackedInline
 from django.contrib.admin import TabularInline as BaseTabularInline
+from django.core.exceptions import FieldDoesNotExist, FieldError
 
 from apps.admin.model_admin import FORM_FIELD_OVERRIDES
 
@@ -29,6 +31,9 @@ class TabularInline(BaseTabularInline):
                 fk_name = 'content_object'
             else:
                 fk_name = obj.__class__.__name__.lower()
-            if len(self.get_queryset(request).filter(**{f'{fk_name}_id': obj.id})):
-                return 0
+            try:
+                if len(self.get_queryset(request).filter(**{f'{fk_name}_id': obj.id})):
+                    return 0
+            except (FieldError, FieldDoesNotExist) as err:
+                logging.error(err)
         return 1

@@ -150,7 +150,6 @@ INSTALLED_APPS = [
     # ---------------------------------
     # Miscellaneous third-party apps
     # ---------------------------------
-    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
     'cachalot',  # https://django-cachalot.readthedocs.io/
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
@@ -162,7 +161,6 @@ INSTALLED_APPS = [
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
-    'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
