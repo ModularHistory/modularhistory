@@ -3,14 +3,15 @@ from apps.admin.inlines import TabularInline
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.images.admin import AbstractImagesInline
+from apps.places.admin import AbstractLocationsInline
 from apps.propositions import models
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
-from apps.topics.admin.related_topics import AbstractRelatedTopicsInline
+from apps.topics.admin.tags import AbstractTagsInline
 from apps.topics.models.taggable_model import TopicFilter
 
 
-class RelatedTopicsInline(AbstractRelatedTopicsInline):
+class TagsInline(AbstractTagsInline):
     """Inline admin for topic tags."""
 
     model = models.TypedProposition.tags.through
@@ -29,9 +30,15 @@ class RelatedEntitiesInline(AbstractRelatedEntitiesInline):
 
 
 class ImagesInline(AbstractImagesInline):
-    """Inline admin for an occurrence's images."""
+    """Inline admin for images."""
 
     model = models.TypedProposition.images.through
+
+
+class LocationsInline(AbstractLocationsInline):
+    """Inline admin for locations."""
+
+    model = models.TypedProposition.locations.through
 
 
 class ConclusionsInline(TabularInline):
@@ -44,6 +51,9 @@ class ConclusionsInline(TabularInline):
     fk_name = 'premise'
     autocomplete_fields = ['conclusion']
     extra = 0
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('premise', 'conclusion')
 
 
 class PremisesInline(TabularInline):
@@ -58,6 +68,9 @@ class PremisesInline(TabularInline):
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('premise', 'conclusion')
 
 
 class AbstractPropositionAdmin(SearchableModelAdmin):
@@ -75,7 +88,8 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
         SourcesInline,
         ImagesInline,
         RelatedEntitiesInline,
-        RelatedTopicsInline,
+        TagsInline,
+        LocationsInline,
     ]
     list_display = [
         'slug',
@@ -96,7 +110,7 @@ class TypedPropositionAdmin(AbstractPropositionAdmin):
 
     list_display = AbstractPropositionAdmin.list_display + ['date_string', 'type']
     list_filter = AbstractPropositionAdmin.list_filter + ['type']
-    ordering = ['type', 'date']
+    ordering = ['date', 'type']
     search_fields = model.searchable_fields
 
 

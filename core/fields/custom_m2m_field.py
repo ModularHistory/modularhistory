@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Union
 
 from django.db import models
 from django.utils.module_loading import import_string
@@ -6,9 +6,14 @@ from django.utils.module_loading import import_string
 
 class CustomManyToManyField(models.ManyToManyField):
 
-    through_model: Type[models.Model]
+    target_model: Union[str, Type[models.Model]]
+    through_model: Union[str, Type[models.Model]]
 
     def __init__(self, **kwargs):
+        to = kwargs.get('to', self.target_model)
+        if to not in ('self', self.target_model):
+            raise ValueError(f'{to} does not refer to `{self.target_model}`.')
+        kwargs['to'] = to
         kwargs['related_name'] = kwargs.get('related_name', '%(class)s_set')
         kwargs['blank'] = kwargs.get('blank', True)
         through = kwargs.get('through')

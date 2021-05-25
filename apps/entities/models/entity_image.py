@@ -1,13 +1,13 @@
 from django.db import models
 
-from core.models.model import Model
+from core.models.positioned_relation import PositionedRelation
 
 NAME_MAX_LENGTH: int = 100
 
 TRUNCATED_DESCRIPTION_LENGTH: int = 1200
 
 
-class EntityImage(Model):
+class EntityImage(PositionedRelation):
     """An association of an image with an entity."""
 
     entity = models.ForeignKey(

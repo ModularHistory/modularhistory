@@ -66,10 +66,9 @@ backups/
 .cache
 .coverage_html/
 .hypothesis/
-.mypy_cache/
 .nox/
-.pytest_cache/
 .pytype/
+.pyre/
 .selenium/
 .tox/
 htmlcov/

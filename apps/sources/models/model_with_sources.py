@@ -20,11 +20,11 @@ from core.models.model import Model
 class SourcesField(CustomManyToManyField):
     """Field for sources."""
 
+    target_model = 'sources.Source'
     through_model = AbstractCitation
 
     def __init__(self, through: Union[Type[AbstractCitation], str], **kwargs):
         """Construct the field."""
-        kwargs['to'] = 'sources.Source'
         kwargs['through'] = through
         kwargs['verbose_name'] = _('sources')
         super().__init__(**kwargs)

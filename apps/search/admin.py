@@ -28,11 +28,9 @@ class SearchableModelAdmin(ModelAdmin):
                 'type',
                 'title',
                 'slug',
-                'verified',
-                'hidden',
-                'date_is_circa',
-                'date',
-                'end_date',
+                'summary',
+                'certainty',
+                'elaboration',
             ]
         )
         for field_name in ordered_field_names:
@@ -40,6 +38,49 @@ class SearchableModelAdmin(ModelAdmin):
                 fields.remove(field_name)
                 fields.insert(0, field_name)
         return fields
+
+    def get_fieldsets(self, request, model_instance=None):
+        fields, fieldsets = list(self.get_fields(request, model_instance)), []
+        meta_fields = [
+            fields.pop(fields.index(field))
+            for field in ('notes', 'verified', 'hidden')
+            if field in fields
+        ]
+        if meta_fields:
+            fieldsets.append(('Meta', {'fields': meta_fields}))
+        essential_fields = [
+            fields.pop(fields.index(field))
+            for field in ('type', 'title', 'slug')
+            if field in fields
+        ]
+        if essential_fields:
+            fieldsets.append((None, {'fields': essential_fields}))
+        date_fields = [
+            fields.pop(fields.index(field))
+            for field in ('date_is_circa', 'date', 'end_date')
+            if field in fields
+        ]
+        if date_fields:
+            fieldsets.append(
+                ('Date', {'fields': date_fields}),
+            )
+        collapsed_fields = [
+            fields.pop(fields.index(field))
+            for field in ('pretty_cache', 'cache')
+            if field in fields
+        ]
+        fieldsets.append((None, {'fields': fields}))
+        if collapsed_fields:
+            fieldsets.append(
+                (
+                    None,
+                    {
+                        'classes': ('collapse',),
+                        'fields': collapsed_fields,
+                    },
+                )
+            )
+        return fieldsets
 
     def get_urls(self):
         """Return URLs used by searchable model admins."""

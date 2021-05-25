@@ -38,7 +38,7 @@ MODEL_CLASS_PATHS = {
     # ModelNameSet.citation: 'apps.sources.models.Citation',  # TODO: clean up
     ModelNameSet.entity: 'apps.entities.models.Entity',
     ModelNameSet.image: 'apps.images.models.Image',
-    ModelNameSet.occurrence: 'apps.occurrences.models.Occurrence',
+    ModelNameSet.occurrence: 'apps.propositions.models.Occurrence',
     ModelNameSet.place: 'apps.places.models.Place',
     ModelNameSet.quote: 'apps.quotes.models.Quote',
     ModelNameSet.source: 'apps.sources.models.Source',

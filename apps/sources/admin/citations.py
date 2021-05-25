@@ -1,9 +1,6 @@
-from typing import TYPE_CHECKING, List, Type
+from typing import List, Type
 
 from apps.admin.inlines import TabularInline
-
-if TYPE_CHECKING:
-    pass
 
 
 class AbstractSourcesInline(TabularInline):
@@ -22,10 +19,13 @@ class AbstractSourcesInline(TabularInline):
     sortable_field_name = 'position'
 
     def get_fields(self, request, model_instance) -> List[str]:
-        fields = super().get_fields(request, model_instance=model_instance)
+        fields = super().get_fields(request, model_instance)
         ordered_fields = ['citation_phrase']
         for field in ordered_fields:
             if field in fields:
                 fields.remove(field)
                 fields.insert(0, field)
         return fields
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('source')

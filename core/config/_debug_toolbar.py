@@ -8,18 +8,30 @@ core.settings is loaded.
 Config reference:
 https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html
 """
+from decouple import config
 from django.conf import settings
 from django.http import HttpRequest
+
+ENABLE_DEBUG_TOOLBAR = config(
+    'ENABLE_DEBUG_TOOLBAR',
+    cast=bool,
+    default=settings.DEBUG,
+)
 
 
 def show_toolbar(request: HttpRequest) -> bool:
     """Determine whether to display the debug toolbar."""
-    conditions = (
+    qualifiers = (
         settings.DEBUG
         and request.META.get('REMOTE_ADDR', None) in settings.INTERNAL_IPS,
         request.user.is_superuser,
     )
-    disqualifiers = (settings.TESTING,)
-    if any(conditions) and not any(disqualifiers):
+    disqualifiers = (
+        ENABLE_DEBUG_TOOLBAR == False,
+        settings.TESTING,
+        '/api/' in request.path,
+        request.path == '/healthcheck/',
+    )
+    if any(qualifiers) and not any(disqualifiers):
         return True
     return False

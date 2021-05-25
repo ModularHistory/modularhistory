@@ -9,6 +9,7 @@ from typing import Iterable
 
 from admin_tools.menu import Menu, items
 from django.apps import apps
+from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -56,6 +57,7 @@ class AdminMenu(Menu):
                 title='Applications',
                 exclude=[
                     'allauth.*',
+                    'admin_honeypot.*',
                     'rest_framework.*',
                     'defender.*',
                     'django_celery_*',
@@ -73,7 +75,10 @@ class AdminMenu(Menu):
             for model_cls in models:
                 model_name = model_cls.__name__
                 children.append(
-                    items.MenuItem(model_name, f'/admin/{app}/{model_name.lower()}/')
+                    items.MenuItem(
+                        model_name,
+                        f'/{settings.ADMIN_URL_PREFIX}/{app}/{model_name.lower()}/',
+                    )
                 )
             menu_items.append(items.MenuItem(app, children=children))
         return menu_items
