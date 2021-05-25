@@ -82,13 +82,21 @@ ADMINS = (
 
 # noqa: E501
 INSTALLED_APPS = [
+    # ---------------------------------
+    # Admin-related apps
+    # ---------------------------------
     # Note: admin_tools and its modules must come before django.contrib.admin.
     'admin_tools',  # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
     'admin_tools.menu',
     # 'admin_tools.theming',
     # 'admin_tools.dashboard',
+    'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
     'admin_honeypot',  # https://github.com/dmpayton/django-admin-honeypot
     'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
+    'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
+    'massadmin',  # https://github.com/burke-software/django-mass-edit
+    'nested_admin',  # https://github.com/theatlantic/django-nested-admin
+    'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     # ---------------------------------
     # Django core apps
     # ---------------------------------
@@ -104,8 +112,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     # ---------------------------------
-    # DRF and auth-related apps
+    # API- and auth-related apps
     # ---------------------------------
+    'corsheaders',  # https://github.com/adamchainz/django-cors-headers
+    'graphene_django',  # https://github.com/graphql-python/graphene-django
     'rest_framework',  # https://github.com/encode/django-rest-framework
     'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
     # 'defender',  # https://github.com/jazzband/django-defender  # TODO
@@ -122,49 +132,47 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
     # ---------------------------------
+    # Model-related apps
+    # ---------------------------------
+    'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
+    'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
+    'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
+    'sortedm2m',  # https://github.com/jazzband/django-sortedm2m
+    'typedmodels',  # https://github.com/craigds/django-typed-models
+    # ---------------------------------
     # Elasticsearch
     # ---------------------------------
     'django_elasticsearch_dsl',  # https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html
     # ---------------------------------
+    # Debugging- and profiling-related apps
+    # ---------------------------------
+    'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
+    'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
+    'silk',  # https://github.com/jazzband/django-silk
+    # ---------------------------------
     # Miscellaneous third-party apps
     # ---------------------------------
-    'admin_auto_filters',  # https://github.com/farhan0581/django-admin-autocomplete-filter  # noqa: E501
-    'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/  # noqa: E501
     'cachalot',  # https://django-cachalot.readthedocs.io/
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
-    'corsheaders',  # https://github.com/adamchainz/django-cors-headers
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
     'dbbackup',  # https://django-dbbackup.readthedocs.io/en/latest/
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
     'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_extensions',  # https://github.com/django-extensions/django-extensions
     'django_replicated',  # https://github.com/yandex/django_replicated
-    'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'django_social_share',  # https://github.com/fcurella/django-social-share
     'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
-    'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
-    'graphene_django',  # https://github.com/graphql-python/graphene-django
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
-    'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'lockdown',  # https://github.com/Dunedan/django-lockdown
-    'massadmin',  # https://github.com/burke-software/django-mass-edit
     'meta',  # https://django-meta.readthedocs.io/en/latest/
-    'nested_admin',  # https://github.com/theatlantic/django-nested-admin
-    'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
-    'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'sass_processor',  # https://github.com/jrief/django-sass-processor
-    'silk',  # https://github.com/jazzband/django-silk
-    'sortedm2m',  # https://github.com/jazzband/django-sortedm2m
-    'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
-    'typedmodels',  # https://github.com/craigds/django-typed-models
     'watchman',  # https://github.com/mwarkentin/django-watchman
-    'webpack_loader',  # https://github.com/owais/django-webpack-loader  # TODO
     # ---------------------------------
     # In-project apps
     # ---------------------------------
