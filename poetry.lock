@@ -863,17 +863,6 @@ python-versions = ">=3.6"
 Django = ">=2.2"
 
 [[package]]
-name = "django-filter"
-version = "2.4.0"
-description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
-category = "main"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-Django = ">=2.2"
-
-[[package]]
 name = "django-flat-json-widget"
 version = "0.1.2"
 description = "Django Flat JSON Key/Value Widget"
@@ -3088,17 +3077,6 @@ packaging = "*"
 requests = "*"
 
 [[package]]
-name = "scp"
-version = "0.13.3"
-description = "scp module for paramiko"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-paramiko = "*"
-
-[[package]]
 name = "sentry-sdk"
 version = "1.1.0"
 description = "Python client for Sentry (https://sentry.io)"
@@ -3643,7 +3621,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "==3.7.10"
-content-hash = "eebdb66a5190eeb946cbe5a1303ec5607d8bc0b99ff8a9d4f7b035ef9331e7ad"
+content-hash = "0a0680169bde5080426e53096559931d428ba2e03cfc0c778cbd4aa9b04099f1"
 
 [metadata.files]
 aenum = [
@@ -4120,10 +4098,6 @@ django-elasticsearch-dsl-drf = [
 django-extensions = [
     {file = "django-extensions-3.1.3.tar.gz", hash = "sha256:5f0fea7bf131ca303090352577a9e7f8bfbf5489bd9d9c8aea9401db28db34a0"},
     {file = "django_extensions-3.1.3-py3-none-any.whl", hash = "sha256:50de8977794a66a91575dd40f87d5053608f679561731845edbd325ceeb387e3"},
-]
-django-filter = [
-    {file = "django-filter-2.4.0.tar.gz", hash = "sha256:84e9d5bb93f237e451db814ed422a3a625751cbc9968b484ecc74964a8696b06"},
-    {file = "django_filter-2.4.0-py3-none-any.whl", hash = "sha256:e00d32cebdb3d54273c48f4f878f898dced8d5dfaad009438fe61ebdf535ace1"},
 ]
 django-flat-json-widget = [
     {file = "django-flat-json-widget-0.1.2.tar.gz", hash = "sha256:32630ccd6284f6e1c83412d443dcf8ffe8d3302392bcf1bd4d5b198053494933"},
@@ -5411,10 +5385,6 @@ rx = [
 safety = [
     {file = "safety-1.10.3-py2.py3-none-any.whl", hash = "sha256:5f802ad5df5614f9622d8d71fedec2757099705c2356f862847c58c6dfe13e84"},
     {file = "safety-1.10.3.tar.gz", hash = "sha256:30e394d02a20ac49b7f65292d19d38fa927a8f9582cdfd3ad1adbbc66c641ad5"},
-]
-scp = [
-    {file = "scp-0.13.3-py2.py3-none-any.whl", hash = "sha256:f2fa9fb269ead0f09b4e2ceb47621beb7000c135f272f6b70d3d9d29928d7bf0"},
-    {file = "scp-0.13.3.tar.gz", hash = "sha256:8bd748293d7362073169b96ce4b8c4f93bcc62cfc5f7e1d949e01e406a025bd4"},
 ]
 sentry-sdk = [
     {file = "sentry-sdk-1.1.0.tar.gz", hash = "sha256:c1227d38dca315ba35182373f129c3e2722e8ed999e52584e6aca7d287870739"},
