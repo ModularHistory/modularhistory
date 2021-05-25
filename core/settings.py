@@ -160,7 +160,6 @@ INSTALLED_APPS = [
     'django_extensions',  # https://github.com/django-extensions/django-extensions
     'django_replicated',  # https://github.com/yandex/django_replicated
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
-    'django_social_share',  # https://github.com/fcurella/django-social-share
     'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html

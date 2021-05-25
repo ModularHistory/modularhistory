@@ -1007,18 +1007,6 @@ six = "*"
 docs = ["django (<3.1)"]
 
 [[package]]
-name = "django-nested-admin"
-version = "3.3.3"
-description = "Django admin classes that allow for nested inlines"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-python-monkey-business = ">=1.0.0"
-six = "*"
-
-[[package]]
 name = "django-nine"
 version = "0.2.4"
 description = "Version checking library."
@@ -1075,14 +1063,6 @@ python-versions = "*"
 
 [package.dependencies]
 six = "*"
-
-[[package]]
-name = "django-reverse-admin"
-version = "2.9.6"
-description = ""
-category = "main"
-optional = false
-python-versions = ">=3"
 
 [[package]]
 name = "django-sass-processor"
@@ -1151,14 +1131,6 @@ python-versions = "*"
 
 [package.dependencies]
 Django = "*"
-
-[[package]]
-name = "django-social-share"
-version = "2.2.1"
-description = "Templatetags for 'tweet this' and 'share on facebook'"
-category = "main"
-optional = false
-python-versions = "*"
 
 [[package]]
 name = "django-sortedm2m"
@@ -1434,7 +1406,7 @@ pillow = "*"
 
 [[package]]
 name = "elasticsearch"
-version = "7.12.1"
+version = "7.13.0"
 description = "Python client for Elasticsearch"
 category = "main"
 optional = false
@@ -2992,17 +2964,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
-name = "python-monkey-business"
-version = "1.0.0"
-description = "Utility functions for monkey-patching python code"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-six = ">=1.7.0"
-
-[[package]]
 name = "python3-openid"
 version = "3.2.0"
 description = "OpenID support for modern servers and consumers."
@@ -3729,7 +3690,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "==3.7.10"
-content-hash = "bdede9a1fc4a8309779bd8ebc3dbe8becee33787f4dc32c88a99f668308cbeda"
+content-hash = "9b9351b4af495cbd211d8c3850c9b8d6fed5445b7aa632e39d99ba77ef2e2b35"
 
 [metadata.files]
 aenum = [
@@ -4254,10 +4215,6 @@ django-meta = [
     {file = "django-meta-2.0.0.tar.gz", hash = "sha256:3d69068b1c9e8369427fe0843f4cb6974c24c27dc87750cd915db487ee475fce"},
     {file = "django_meta-2.0.0-py2.py3-none-any.whl", hash = "sha256:25010157000fa2f1d1ed46e8739f43cfe00e40af199d913b230e52133b650da5"},
 ]
-django-nested-admin = [
-    {file = "django-nested-admin-3.3.3.tar.gz", hash = "sha256:f1773c4d1be0a19e4b7a510734e88b81f551f831ed7b0641f63ad13cef3ee08c"},
-    {file = "django_nested_admin-3.3.3-py2.py3-none-any.whl", hash = "sha256:440d06055d5c114b354c6bbd040ab878a1bfbea02692cb40ec8fd1e5a071e99b"},
-]
 django-nine = [
     {file = "django-nine-0.2.4.tar.gz", hash = "sha256:27cb253eea230d0c792b815125c58f69bb1a3f32265c3b8585ab891f7855c0cd"},
     {file = "django_nine-0.2.4-py2.py3-none-any.whl", hash = "sha256:296718cc75eec8fc5a4a35aa4b689ab782f4fc9d59f12515ad70abbea49a7c27"},
@@ -4277,9 +4234,6 @@ django-redis = [
 django-replicated = [
     {file = "django_replicated-2.7.tar.gz", hash = "sha256:9f983343b707aaaed7ccc664dde5f16a7c56f896ff08b3087e8d9b45a9f77e7c"},
 ]
-django-reverse-admin = [
-    {file = "django_reverse_admin-2.9.6.zip", hash = "sha256:3c26d7a93181e8f11b1c81f83251f238c566bc7ebea2873520269c949116f0d9"},
-]
 django-sass-processor = [
     {file = "django-sass-processor-0.8.2.tar.gz", hash = "sha256:9b46a12ca8bdcb397d46fbcc49e6a926ff9f76a93c5efeb23b495419fd01fc7a"},
 ]
@@ -4296,10 +4250,6 @@ django-silk = [
 django-simple-menu = [
     {file = "django-simple-menu-1.2.1.tar.gz", hash = "sha256:9bf5b87d1ead1ac6d4588c623be276fc87a4382424bbe564a574d8959d1f03bd"},
     {file = "django_simple_menu-1.2.1-py2-none-any.whl", hash = "sha256:55358f10cc24cb990411819f43a0ab84007a1ea5b2c8ad22ace51aa88183e579"},
-]
-django-social-share = [
-    {file = "django-social-share-2.2.1.tar.gz", hash = "sha256:4062c31ddad15eb9f7796cdfaae5a813018a3fd8da2b77f3e063e3a31252f84a"},
-    {file = "django_social_share-2.2.1-py2.py3-none-any.whl", hash = "sha256:6de83acdd2a566c70af29b229a6430ccf8031d3d0ae1612419f633cbd9f649f5"},
 ]
 django-sortedm2m = [
     {file = "django-sortedm2m-3.0.2.tar.gz", hash = "sha256:8acc3638b7a2587533c7776deaa2c6c035220c8f9fff85ed67858a9c6bf51e7c"},
@@ -4383,8 +4333,8 @@ easy-thumbnails = [
     {file = "easy-thumbnails-2.7.1.tar.gz", hash = "sha256:f862949208d9066cd3d84ffcf9c2dbe9c7344ea6152b741e440f861eca46855c"},
 ]
 elasticsearch = [
-    {file = "elasticsearch-7.12.1-py2.py3-none-any.whl", hash = "sha256:1840fea8c305224b8c28acabc8697f739cdfb03618f2d2427b42838971a787f6"},
-    {file = "elasticsearch-7.12.1.tar.gz", hash = "sha256:df35d8c638f946f098a74681b18611bdf27ba469fa2063e3dfc8bdc290b11419"},
+    {file = "elasticsearch-7.13.0-py2.py3-none-any.whl", hash = "sha256:8213d6b7d3f984a23e2f8b6ff63366224b3de9129839ed0cb8195d9e8339dc85"},
+    {file = "elasticsearch-7.13.0.tar.gz", hash = "sha256:da3de0451c61e9357cec2f8bf32d8aea65974e5717b5deef53718392cf4c2985"},
 ]
 elasticsearch-dsl = [
     {file = "elasticsearch-dsl-7.3.0.tar.gz", hash = "sha256:0ed75f6ff037e36b2397a8e92cae0ddde79b83adc70a154b8946064cb62f7301"},
@@ -5390,10 +5340,6 @@ python-dotenv = [
 python-magic = [
     {file = "python-magic-0.4.22.tar.gz", hash = "sha256:ca884349f2c92ce830e3f498c5b7c7051fe2942c3ee4332f65213b8ebff15a62"},
     {file = "python_magic-0.4.22-py2.py3-none-any.whl", hash = "sha256:8551e804c09a3398790bd9e392acb26554ae2609f29c72abb0b9dee9a5571eae"},
-]
-python-monkey-business = [
-    {file = "python-monkey-business-1.0.0.tar.gz", hash = "sha256:9976522989766f00b2aaa24ec96eacb91a6de7b7001d1452079323b071988e0e"},
-    {file = "python_monkey_business-1.0.0-py2.py3-none-any.whl", hash = "sha256:6d4cf47f011945db838ccf04643acd49b82f7ad6ab7ecba4c8165385687a828a"},
 ]
 python3-openid = [
     {file = "python3-openid-3.2.0.tar.gz", hash = "sha256:33fbf6928f401e0b790151ed2b5290b02545e8775f982485205a066f874aaeaf"},

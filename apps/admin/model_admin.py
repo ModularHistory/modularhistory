@@ -135,27 +135,6 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
             queryset = queryset.exclude(pk=pk)
         return queryset, use_distinct
 
-    def save_form(self, request, form, change):
-        """
-        Given a ModelForm return an unsaved instance. ``change`` is True if
-        the object is being changed, and False if it's being added.
-        """
-        print(f'>>>>>>save_form>>>>>')
-        return super().save_form(request, form, change)
-
-    def save_model(self, request, obj, form, change):
-        """
-        Given a model instance save it to the database.
-        """
-        print(f'>>>>>>after save_model>>>>> {getattr(obj, "summary", None)}')
-        obj.save()
-        print(f'>>>>>>after save_model>>>>> {getattr(obj, "summary", None)}')
-        obj.refresh_from_db()
-        print(f'>>>>>>after refresh_from_db>>>>> {getattr(obj, "summary", None)}')
-        from time import sleep
-
-        sleep(5)
-
 
 class ContentTypeFields(Constant):
     """Field names of the ContentType model."""
