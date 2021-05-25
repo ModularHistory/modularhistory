@@ -9,7 +9,8 @@ from django.db.models.fields.files import FieldFile
 from core.utils import files
 
 if TYPE_CHECKING:
-    from apps.sources.models import SourceFile, TextualSource
+    from apps.sources.models.source import Source
+    from apps.sources.models.source_file import SourceFile
 
 
 class TextualSourceFile(FieldFile):
@@ -33,7 +34,7 @@ class TextualSourceFile(FieldFile):
                         )
                         logging.info(f'{source_file.name} -> {duplicated_file_name}')
                         remove(join(settings.MEDIA_ROOT, filename))
-                        source: 'TextualSource'
+                        source: 'Source'
                         for source in source_file.sources.all():
                             source.db_file = designated_source_file
                             source.save()

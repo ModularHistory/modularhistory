@@ -1,20 +1,18 @@
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Optional, Type
 
 import regex as re
 from aenum import Constant
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.module_loading import import_string
-from django.utils.safestring import SafeString
 from tinymce.models import HTMLField as MceHTMLField
 
 from core.constants.content_types import MODEL_CLASS_PATHS
-from core.structures.html import HTML
 from core.utils.html import soupify
 from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
-    from core.models import Model
+    from core.models.model import Model
 
 # group 1: entity pk
 # group 2: entity name
@@ -26,27 +24,8 @@ REPLACEMENTS = (
         r'''(<iframe .*?src=["'].*youtube\.com\/[^\?]+?)(["'])''',
         r'\g<1>?rel=0\g<2>',
     ),
-    (r'074c54e4-ff1d-4952-9964-7d1e52cec4db', '6'),
-    (r'354f9d11-74bb-4e2a-8e0d-5df877b4c461', '86'),
-    (r'53a517fc-68a6-42bd-ac6b-e3a84a617ace', '8'),
-    (r'd8d7199b-4eaa-4189-bd29-b33dc9de4c8c', '90'),
-    (r'aa7291c7-55bf-4ff0-981f-38c259bc160e', '244'),
-    (r'e1e1cf34-b070-41d4-b8ba-604a3a257ace', '88'),
-    (r'a662f48d-9674-4154-9d8f-3456efe7aebf', '70'),
-    (r'993f6db6-c815-4521-b8a0-65e19d0dbe25', '204'),
-    (r'7c86ed23-d548-4aef-81a1-1a16d6ecd7cb', '72'),
-    (r'27c0d6f6-8306-4b3f-a60b-c842857ea1ab', '73'),
-    (r'7579f024-9a48-4f55-b7c7-a1e88b866a0c', '246'),
-    (r'260c4e8e-a35b-4306-a0ce-17cfcb7de47d', '268'),
-    (r'f0af0a2b-68e5-484e-8f08-5de0179a185c', '229'),
-    (r'19e0f153-b248-4147-a09b-ee35c5e4fdaf', '250'),
-    (r'5610f0f6-8bba-4647-9642-e0a623c266d9', '261'),
-    (r'e93eda83-560d-4a8a-8eac-8c28798b52ff', '262'),
-    (r'ed35a437-15a0-4c03-9661-903db39fe216', '91'),
-    # Fix media URLs
-    (r'https:\S+/media/', '/media/'),
     # Remove empty divs & paragraphs
-    (r'\n?<(?:div|p)>&nbsp;<\/(?:div|p)>', ''),
+    (r'\n?<(?:div|p)>(?:(?:&nbsp;)+|[\s\n]+)?<\/(?:div|p)>', ''),
     # Add bootstrap classes to HTML elements
     (r'<blockquote>', '<blockquote class="blockquote">'),
     (r'<table>', '<table class="table">'),
@@ -123,19 +102,17 @@ def process(html: str) -> str:
                     f'did not match {placeholder}'
                 )
         else:
-            logging.error(f'ERROR: Unable to get model class string for {object_type}')
+            logging.info(f'ERROR: Unable to get model class string for {object_type}')
     # TODO: optimize
     html = re.sub(r'(\S)\ (<a [^>]+?citation-link)', r'\g<1>\g<2>', html)
-    logging.debug(f'Successfuly processed {truncate(html)}')
+    logging.debug(f'Successfully processed {truncate(html)}')
     return html
 
 
 class HTMLField(MceHTMLField):
     """A string field for HTML content; uses the TinyMCE widget in forms."""
 
-    raw_value: str
-    html: SafeString
-    text: str
+    # Callable that processes the HTML value before it is saved
     processor: Optional[Callable]
 
     # Whether content should be wrapped in <p> tags (if none are present)
@@ -147,7 +124,7 @@ class HTMLField(MceHTMLField):
         'image',
         'citation',
         'source',
-        'postulation',
+        'proposition',
     ]
 
     def __init__(
@@ -164,10 +141,10 @@ class HTMLField(MceHTMLField):
         self.paragraphed = paragraphed
         super().__init__(**kwargs)
 
-    def clean(self, html_value, model_instance: 'Model') -> HTML:
+    def clean(self, html_value, model_instance: 'Model') -> str:
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
-        raw_html = html.raw_value
+        raw_html = html
         if '{' in raw_html or '}' in raw_html:
             raise ValidationError(
                 'The "{" and "}" characters are illegal in HTML fields.'
@@ -202,10 +179,7 @@ class HTMLField(MceHTMLField):
             raise ValidationError(f'{err}')
 
         # Add or remove <p> tags if necessary
-        raw_html = self.format_html(raw_html)
-
-        html.raw_value = raw_html
-        return html
+        return self.format_html(raw_html)
 
     def format_html(self, html: str) -> str:
         """Add or remove <p> tags if necessary."""
@@ -264,9 +238,7 @@ class HTMLField(MceHTMLField):
         kwargs['paragraphed'] = self.paragraphed
         return name, field_class, args, kwargs
 
-    def from_db_value(
-        self, html_value: Optional[str], expression, connection
-    ) -> Optional[HTML]:
+    def from_db_value(self, html_value: Optional[str], expression, connection) -> str:
         """
         Convert a value as returned by the database to a Python object.
 
@@ -274,29 +246,21 @@ class HTMLField(MceHTMLField):
         https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if html_value is None:
-            return html_value
-        try:
-            html_value = self.format_html(html_value)
-        except Exception as err:
-            logging.error(f'{err}')
-        return HTML(html_value, processor=self.processor)
+            return ''
+        return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
-    def to_python(self, html_value: Optional[Union[HTML, str]]) -> Optional[HTML]:
+    def to_python(self, html_value: Optional[str]) -> str:
         """Convert the value into the correct Python object."""
-        if isinstance(html_value, HTML):
-            return html_value
-        elif not html_value:
-            return None
-        return HTML(html_value)
+        if html_value is None:
+            return ''
+        return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_prep_value
-    def get_prep_value(self, html_value: Optional[Union[HTML, str]]) -> Optional[str]:
+    def get_prep_value(self, html_value: Optional[str]) -> str:
         """Return data in a format prepared for use as a parameter in a db query."""
-        if not html_value:
-            return None
-        elif isinstance(html_value, HTML):
-            return html_value.raw_value
+        if html_value is None:
+            return ''
         return html_value
 
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_db_prep_value

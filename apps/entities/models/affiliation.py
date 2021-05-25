@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from core.fields import HTMLField
-from core.models import Model
+from core.models.model import Model
 
 MAX_NAME_LENGTH: int = 100
 

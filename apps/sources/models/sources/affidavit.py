@@ -3,8 +3,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from apps.sources.models import Source
 from apps.sources.models.mixins.document import DocumentMixin
+from apps.sources.models.source import Source
 
 NAME_MAX_LENGTH: int = 100
 
@@ -28,12 +28,12 @@ class Affidavit(Source, DocumentMixin):
         """Return the source's HTML representation."""
         if self.location:
             affidavit_string = (
-                f'affidavit sworn {self.date_html} at {self.location.string} '
+                f'affidavit sworn {self.date_string} at {self.location.string} '
                 f'before {self.certifier}'
             )
         else:
             affidavit_string = (
-                f'affidavit sworn {self.date_html} before {self.certifier}'
+                f'affidavit sworn {self.date_string} before {self.certifier}'
             )
         components = [
             self.attributee_html,

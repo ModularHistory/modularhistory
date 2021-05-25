@@ -9,6 +9,9 @@ class Thread(models.Model):
     # creator = models.ForeignKey(User, on_delete=models.CASCADE)
     initial_post = models.ForeignKey('Post', on_delete=models.CASCADE)
 
+    def __str__(self) -> str:
+        return f'{self.initial_post}'
+
 
 class Post(models.Model):
     """A post in a forum thread."""
@@ -19,3 +22,6 @@ class Post(models.Model):
     date = models.DateTimeField()
 
     parent_thread = models.ForeignKey(Thread, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f'{self.content}'

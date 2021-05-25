@@ -5,9 +5,9 @@ from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
-from apps.sources.models import Source
 from apps.sources.models.mixins.document import DocumentMixin
-from core.models import ModelWithComputations, retrieve_or_compute
+from apps.sources.models.source import Source
+from core.models.model_with_cache import ModelWithCache, store
 from core.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
@@ -33,7 +33,7 @@ class Document(Source, DocumentMixin):
         return self.components_to_html(components)
 
 
-class Collection(ModelWithComputations):
+class Collection(ModelWithCache):
     """A collection of documents."""
 
     name = models.CharField(
@@ -57,7 +57,7 @@ class Collection(ModelWithComputations):
         return soupify(self.html).get_text()
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='html', caster=format_html)
+    @store(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the collection's HTML representation."""
         return format_html(self.__html__())
@@ -71,7 +71,7 @@ class Collection(ModelWithComputations):
         return ', '.join([component for component in components if component])
 
 
-class Repository(ModelWithComputations):
+class Repository(ModelWithCache):
     """A repository of collections of documents."""
 
     name = models.CharField(
@@ -102,7 +102,7 @@ class Repository(ModelWithComputations):
         return soupify(self.html).get_text()
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='html', caster=format_html)
+    @store(attribute_name='html', caster=format_html)
     def html(self) -> SafeString:
         """Return the collection's HTML representation."""
         return format_html(self.__html__())

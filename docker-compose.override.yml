@@ -9,7 +9,7 @@ services:
   dev:
     depends_on:
       - django
-      - flower
+      - celery_beat
       - react
     deploy:
       restart_policy:

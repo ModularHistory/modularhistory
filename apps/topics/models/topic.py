@@ -3,12 +3,13 @@
 from django.db import models
 from django.db.models import CASCADE, ForeignKey, ManyToManyField
 from django.utils.translation import ugettext_lazy as _
-from gm2m import GM2MField as GenericManyToManyField
 
-from apps.topics.models.topic_relation import TopicRelation
+from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields import ArrayField, HTMLField
-from core.models import Model, ModelWithComputations, SluggedModel, retrieve_or_compute
+from core.models.model import Model
+from core.models.model_with_cache import ModelWithCache, store
+from core.models.slugged_model import SluggedModel
 
 NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
@@ -50,7 +51,7 @@ class TopicParentChildRelation(Model):
         return f'{self.parent_topic} > {self.child_topic}'
 
 
-class Topic(TreeModel, SluggedModel, ModelWithComputations):
+class Topic(TreeModel, SluggedModel, ModelWithCache):
     """A topic."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
@@ -76,15 +77,13 @@ class Topic(TreeModel, SluggedModel, ModelWithComputations):
         related_name='topics_related',
         blank=True,
     )
-    related = GenericManyToManyField(
-        'occurrences.Occurrence',
-        'quotes.Quote',
-        through=TopicRelation,
-        related_name='topic_relations',
-        blank=True,
-    )
 
-    searchable_fields = ['name', 'description', 'aliases']
+    searchable_fields = [
+        'name',
+        # 'aliases',
+        # 'description'
+    ]
+    serializer = TopicSerializer
     slug_base_field = 'name'
 
     class Meta:
@@ -95,7 +94,7 @@ class Topic(TreeModel, SluggedModel, ModelWithComputations):
         return self.name
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='child_topics_string')
+    @store(attribute_name='child_topics_string')
     def child_topics_string(self) -> str:
         """Return a list of the topic's child topics as a string."""
         return TOPIC_STRING_DELIMITER.join(
@@ -103,7 +102,7 @@ class Topic(TreeModel, SluggedModel, ModelWithComputations):
         )
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='parent_topics_string')
+    @store(attribute_name='parent_topics_string')
     def parent_topics_string(self) -> str:
         """Return a list of the topic's parent topics as a string."""
         return TOPIC_STRING_DELIMITER.join(
@@ -111,7 +110,7 @@ class Topic(TreeModel, SluggedModel, ModelWithComputations):
         )
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='related_topics_string')
+    @store(attribute_name='related_topics_string')
     def tags_string(self) -> str:
         """Return a list of the topic's related topics as a string."""
         return TOPIC_STRING_DELIMITER.join(

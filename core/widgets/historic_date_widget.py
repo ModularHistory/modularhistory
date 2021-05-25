@@ -114,17 +114,22 @@ class HistoricDateWidget(MultiWidget):
         """Construct the widget."""
         default_attrs = {'style': 'margin-right: 1rem'}
         attrs = {**attrs, **default_attrs} if attrs else default_attrs
-        placeholder_attr = 'placeholder'
+        placeholder, min, max = 'placeholder', 'min', 'max'
+        today = date.today()
         widgets = [
-            forms.TextInput(attrs={**attrs, **{placeholder_attr: 'Year'}}),
+            forms.NumberInput(
+                attrs={**attrs, **{placeholder: 'Year', min: 1, max: today.year}}
+            ),
             forms.Select(attrs=attrs, choices=year_systems),
             forms.Select(attrs=attrs, choices=SEASONS),
-            forms.TextInput(attrs={**attrs, **{placeholder_attr: 'Month'}}),
-            forms.TextInput(attrs={**attrs, **{placeholder_attr: 'Day'}}),
+            forms.NumberInput(
+                attrs={**attrs, **{placeholder: 'Month', min: 1, max: 12}}
+            ),
+            forms.NumberInput(attrs={**attrs, **{placeholder: 'Day', min: 1, max: 31}}),
             forms.TimeInput(
                 attrs={
                     **attrs,
-                    **{placeholder_attr: 'Time', 'class': 'vTimeField hidden'},
+                    **{placeholder: 'Time', 'class': 'vTimeField hidden'},
                 }
             ),
         ]
@@ -233,7 +238,9 @@ class HistoricDateWidget(MultiWidget):
         return tuple(int(string) for string in str_values)
 
 
-def _datetime_from_datadict_values(year, year_system, season, month, day):
+def _datetime_from_datadict_values(
+    year, year_system, season=None, month=None, day=None
+):
     # Figure out year
     year, second, microsecond = get_year(year, year_system)
     # Figure out date precision

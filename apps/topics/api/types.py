@@ -7,7 +7,7 @@ class TopicType(ModuleType):
 
     class Meta:
         model = Topic
-        exclude = ['related']
+        exclude = []
 
     @staticmethod
     def resolve_model(root, *args) -> str:

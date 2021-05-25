@@ -10,10 +10,11 @@ from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 from apps.trees.fields import LtreeField
+from core.models.abstract_model import AbstractModelMeta
 from core.models.model import Model
 
 
-class TreeModel(Model):
+class TreeModel(Model, metaclass=AbstractModelMeta):
     """Implements Postgres ltree for self-referencing hierarchy."""
 
     parent = models.ForeignKey(
@@ -73,28 +74,22 @@ class TreeModel(Model):
     @property
     def ancestors(self) -> QuerySet:
         """Return the model instances's ancestors, based on its LTree field."""
-        return (
-            type(self)
-            ._default_manager.filter(path__descendant=self.path)
-            .exclude(pk=self.pk)
+        return self.__class__.objects.exclude(pk=self.pk).filter(
+            path__descendant=self.path
         )
 
     @property
     def descendants(self) -> QuerySet:
         """Return the model instances's descendants, based on its LTree field."""
-        return (
-            type(self)
-            ._default_manager.filter(path__ancestor=self.path)
-            .exclude(pk=self.pk)
+        return self.__class__.objects.exclude(pk=self.pk).filter(
+            path__ancestor=self.path
         )
 
     @property
     def siblings(self) -> QuerySet:
         """Return the model instances's siblings, based on its LTree field."""
-        return (
-            type(self)
-            ._default_manager.filter(parent_id=self.parent_id)
-            .exclude(pk=self.pk)
+        return self.__class__.objects.exclude(pk=self.pk).filter(
+            parent_id=self.parent_id
         )
 
     def get_key(self) -> str:

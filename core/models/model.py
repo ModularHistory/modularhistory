@@ -43,9 +43,6 @@ class Views(Constant):
 class Model(DjangoModel):
     """Model with additional properties used in ModularHistory apps."""
 
-    class FieldNames(Constant):
-        pk = 'pk'
-
     objects: Manager = Manager()
     searchable_fields: ClassVar[Optional[FieldList]] = None
     serializer: Type[Serializer]
@@ -185,7 +182,7 @@ class Model(DjangoModel):
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
             logging.info(
                 f'Could not use preretrieved HTML for '
                 f'{match.group(PlaceholderGroups.MODEL_NAME)} '
@@ -231,7 +228,7 @@ class Model(DjangoModel):
 class ModelSerializer(serpy.Serializer):
     """Base serializer for ModularHistory's models."""
 
-    pk = serpy.Field()
+    id = serpy.IntField()
     model = serpy.MethodField()
 
     def get_model(self, instance: Model) -> str:  # noqa

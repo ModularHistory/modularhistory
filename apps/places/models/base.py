@@ -2,7 +2,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models import ModelWithComputations, TypedModel, retrieve_or_compute
+from core.models.model import TypedModel
+from core.models.model_with_cache import ModelWithCache, store
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
 
@@ -22,7 +23,7 @@ class PlaceTypes:
 NAME_MAX_LENGTH: int = 40
 
 
-class Place(TypedModel, ModelWithComputations):
+class Place(TypedModel, ModelWithCache):
     """Where something has happened."""
 
     name = models.CharField(
@@ -46,10 +47,6 @@ class Place(TypedModel, ModelWithComputations):
     class Meta:
         unique_together = ['name', 'location']
 
-    class FieldNames(ModelWithComputations.FieldNames):
-        name = 'name'
-        location = 'location'
-
     slug_base_field = 'string'
 
     def __str__(self) -> str:
@@ -66,7 +63,7 @@ class Place(TypedModel, ModelWithComputations):
         super().save()
 
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='string')
+    @store(attribute_name='string')
     def string(self) -> str:
         """Presentable string to display in HTML."""
         location = self.location

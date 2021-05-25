@@ -33,7 +33,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         name
         slug
         description
-        serializedImages
+        cachedImages
         model
         adminUrl
       }

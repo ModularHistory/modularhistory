@@ -8,13 +8,16 @@
         "Bennion",
         "braintree",
         "buildx",
+        "crontabschedule",
         "CSRF",
         "ctype",
         "dbbackup",
         "dbrestore",
         "dedupe",
         "deduping",
+        "divs",
         "DODC",
+        "dotenv",
         "envsubst",
         "epub",
         "favicon",
@@ -24,6 +27,7 @@
         "ghcr",
         "graphiql",
         "graphviz",
+        "grappelli",
         "iframe",
         "iglob",
         "Imgur",
@@ -39,6 +43,7 @@
         "mkdir",
         "modularhistory",
         "mypy",
+        "nbsp",
         "nextjs",
         "nlevel",
         "noinput",
@@ -65,8 +70,10 @@
         "stylelint",
         "testcafe",
         "tinymce",
+        "uncachable",
         "unstaged",
         "venv",
+        "virtualenvs",
         "webserver",
         "xsrf"
     ],
@@ -74,10 +81,11 @@
         "hte"
     ],
     "ignoreRegExpList": [
+        "'//.+",
+        "END\\w+",
         "default='.*'",
         "[A-Z_]+(=|: ).*",
         "from .+ import .+",
-        "'//.+",
-        "END\\w+"
+        "'[A-Za-z0-9_]{4,10}',  # https://github.com.+"
     ]
 }

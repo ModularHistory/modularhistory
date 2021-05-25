@@ -4,7 +4,9 @@ from typing import List, Optional, Tuple, Type, Union
 from aenum import Constant
 from django.conf import settings
 from django.contrib.admin import ListFilter
+from django.contrib.admin import ModelAdmin as BaseModelAdmin
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.sites.models import Site
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
@@ -15,8 +17,9 @@ from django_celery_beat.models import (
     PeriodicTask,
     SolarSchedule,
 )
-from django_celery_results.admin import TaskResult, TaskResultAdmin
-from nested_admin import NestedModelAdmin, NestedPolymorphicInlineSupportMixin
+from django_celery_results.admin import TaskResultAdmin
+from django_celery_results.models import TaskResult
+from polymorphic.admin import PolymorphicInlineSupportMixin
 from sass_processor.processor import sass_processor
 
 from apps.admin.admin_site import admin_site
@@ -24,7 +27,7 @@ from apps.dates.fields import HistoricDateTimeField
 from core.constants.environments import Environments
 from core.fields import JSONField
 from core.forms import HistoricDateWidget
-from core.models import Model
+from core.models.model import Model
 from core.widgets.json_editor_widget import JSONEditorWidget
 
 AdminListFilter = Union[str, Type[ListFilter]]
@@ -45,13 +48,10 @@ else:
     ADMIN_CSS = 'styles/admin.css'
 
 
-class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
-    """
-    Base admin class for ModularHistory's models.
+class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
+    """Base admin class for ModularHistory's models."""
 
-    Uses the NestedPolymorphicInlineSupportMixin as instructed in
-    https://django-nested-admin.readthedocs.io/en/latest/integrations.html.
-    """
+    model: Type[Model]
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
@@ -83,7 +83,7 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
         self, request: HttpRequest, model_instance: Optional['Model'] = None
     ) -> List[str]:
         """Add additional readonly fields."""
-        default_readonly_fields = ('computations',)
+        default_readonly_fields = ('cache',)
         readonly_fields = list(super().get_readonly_fields(request, model_instance))
         if model_instance:
             for additional_readonly_field in default_readonly_fields:
@@ -98,6 +98,31 @@ class ModelAdmin(NestedPolymorphicInlineSupportMixin, NestedModelAdmin):
         queryset, use_distinct = super().get_search_results(
             request, queryset, search_term
         )
+        search_term = search_term.strip()
+        if search_term:
+            searchable_fields = (
+                getattr(self.model, 'searchable_fields', None) or self.search_fields
+            )
+            if searchable_fields:
+                # Use Postgres full-text search.
+                weights = ['A', 'B', 'C', 'D']
+                vector = SearchVector(searchable_fields[0], weight=weights[0])
+                for index, field in enumerate(searchable_fields[1:]):
+                    try:
+                        weight = weights[index + 1]
+                    except IndexError:
+                        weight = 'D'
+                    vector += SearchVector(field, weight=weight)
+                search_terms = search_term.split(' ')
+                # https://www.postgresql.org/docs/current/functions-textsearch.html
+                query = f'{" & ".join(search_terms)}:*'
+                queryset = (
+                    self.model.objects.annotate(
+                        rank=SearchRank(vector, SearchQuery(query, search_type='raw'))
+                    )
+                    .filter(rank__gt=0.0)
+                    .order_by('-rank')
+                )
         # If the request comes from the admin edit page for a model instance,
         # exclude the model instance from the search results. This prevents
         # inline admins from displaying an unwanted value in an autocomplete

@@ -33,6 +33,10 @@ env:
   IMGUR_CLIENT_SECRET: ${IMGUR_CLIENT_SECRET}
   MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
   MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+  POSTGRES_HOST: postgres
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -61,23 +65,15 @@ jobs:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
         # NOTE: Services (running in Docker containers) only work on ubuntu.
         os: [ macos-latest, ubuntu-latest ]
+        python-version: [ 3.7 ]
     environment: dev
     env:
       TESTING: true
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
-    - uses: actions/checkout@v2
-    - name: Cache virtual environment
-      uses: actions/cache@v2
-      id: cache
+    - includes: ./.github/actions/setup
       with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+        os: ${{ runner.os }}
+        python-version: ${{ matrix.python-version }}
     - name: Run setup script
       run: bash setup.sh
       shell: bash
@@ -114,13 +110,7 @@ jobs:
         # Set health checks to wait until redis has started
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     environment: integration
-    env:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
-    - uses: actions/checkout@v2
     - includes: ./.github/actions/setup
       with:
         os: ${{ matrix.os }}
@@ -132,29 +122,40 @@ jobs:
     - name: Run tests
       run: poetry run invoke test --no-docker
 
+  check-types:
+    name: Check types
+    runs-on: ubuntu-latest
+    # TODO: remove continue-on-error: true
+    continue-on-error: true
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [ 3.7 ]
+    environment: integration
+    steps:
+    - 
+      includes: ./.github/actions/setup
+      with:
+        os: ${{ runner.os }}
+        python-version: ${{ matrix.python-version }}
+    -
+      name: Run static type checker
+      run: poetry run pytype *
+
   build:
     name: Build images
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
       matrix:
-        os: [ ubuntu-latest ]
         python-version: [ 3.7 ]
     environment: integration
-    env:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: modularhistory
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
-    -
-      name: Check out main branch
-      uses: actions/checkout@v2
     - 
       includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.7
+        python-version: ${{ matrix.python-version }}
     -
       name: Inject environment vars
       run: poetry run invoke setup.write-env-file
@@ -171,7 +172,7 @@ jobs:
           ${{ runner.os }}-buildx-
     -
       name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v1.9.0
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -237,7 +238,7 @@ jobs:
     continue-on-error: true
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
@@ -267,7 +268,7 @@ jobs:
       run: git config --system core.longpaths true
     # Checkout your code repository to scan
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
       with:
         # We must fetch at least the immediate parents so that if this is
         # a pull request then we can checkout the head.

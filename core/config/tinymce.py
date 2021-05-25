@@ -9,6 +9,8 @@ TINYMCE_SPELLCHECKER = True
 TINYMCE_DEFAULT_CONFIG = {
     'width': '100%',
     'max_height': 1000,
+    'extended_valid_elements': 'module[data-id|data-type],proposition[data-id],citation[data-id]',
+    'custom_elements': 'module,~proposition,~citation',
     'cleanup_on_startup': True,
     'custom_undo_redo_levels': 20,
     'selector': 'textarea.tinymce',

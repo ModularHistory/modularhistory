@@ -1,9 +1,9 @@
-import PostulationDetail from "@/components/details/PostulationDetail";
+import PropositionDetail from "@/components/details/PropositionDetail";
 import {
   EntityModule,
   ImageModule,
   OccurrenceModule,
-  PostulationModule,
+  PropositionModule,
   QuoteModule,
   SourceModule,
   TopicModule,
@@ -23,7 +23,7 @@ interface ModuleDetailProps {
     | QuoteModule
     | EntityModule
     | TopicModule
-    | PostulationModule
+    | PropositionModule
     | ImageModule
     | SourceModule;
 }
@@ -50,17 +50,19 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
   switch (module.model) {
     // TODO: add more models here as soon as they
     //       may appear on the SERP.
-    case "entities.entity":
+    case "entities.person":
+    case "entities.organization":
       details = <EntityDetail entity={module as EntityModule} />;
       break;
     case "images.image":
       details = <ImageDetail image={module as ImageModule} />;
       break;
     case "occurrences.occurrence":
+      console.log(">>>", module.cachedImages);
       details = <OccurrenceDetail occurrence={module as OccurrenceModule} />;
       break;
-    case "postulations.postulation":
-      details = <PostulationDetail postulation={module as PostulationModule} />;
+    case "propositions.proposition":
+      details = <PropositionDetail proposition={module as PropositionModule} />;
       break;
     case "quotes.quote":
       details = <QuoteDetail quote={module as QuoteModule} />;

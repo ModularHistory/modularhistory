@@ -6,8 +6,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from humanize import ordinal
 
-from apps.sources.models import Source
 from apps.sources.models.mixins.textual import TextualMixin
+from apps.sources.models.source import Source
 from core.constants.strings import EMPTY_STRING
 
 

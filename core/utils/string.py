@@ -24,6 +24,4 @@ def truncate(string, max_length: int = 150, strip_newlines: bool = True):
 
 def dedupe_newlines(string):
     """Return the string with unnecessary newlines removed."""
-    while '\n\n' in string:
-        string = string.replace('\n\n', '\n')
-    return string
+    return ''.join([s for s in string.strip().splitlines(True) if s.strip()])

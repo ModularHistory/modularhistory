@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.sources.models import Source
 from apps.sources.models.mixins.page_numbers import PageNumbersMixin
+from apps.sources.models.source import Source
 
 PIECE_TYPES = (('essay', 'Essay'),)
 TYPE_MAX_LENGTH: int = 10

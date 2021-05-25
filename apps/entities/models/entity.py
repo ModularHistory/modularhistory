@@ -11,19 +11,19 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime as DateTime
+from apps.entities.api.serializers import EntitySerializer
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.entities.serializers import EntitySerializer
 from apps.images.models.model_with_images import ModelWithImages
-from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
-from apps.topics.models.taggable_model import TaggableModel
+from apps.quotes.models.model_with_related_quotes import (
+    AbstractQuoteRelation,
+    ModelWithRelatedQuotes,
+    RelatedQuotesField,
+)
+from apps.search.models import SearchableModel
 from core.constants.strings import EMPTY_STRING
 from core.fields import ArrayField, HTMLField, JSONField
-from core.models import (
-    ModelWithComputations,
-    SluggedModel,
-    TypedModel,
-    retrieve_or_compute,
-)
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
+from core.models import TypedModel, store
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -41,11 +41,15 @@ PARTS_OF_SPEECH = (
 )
 
 
+class QuoteRelation(AbstractQuoteRelation):
+    content_object = ManyToManyForeignKey(
+        to='entities.Entity', related_name='quote_relations', verbose_name='entity'
+    )
+
+
 class Entity(
     TypedModel,
-    SluggedModel,
-    TaggableModel,
-    ModelWithComputations,
+    SearchableModel,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,
@@ -83,6 +87,7 @@ class Entity(
         to='self', through='entities.Affiliation', blank=True
     )
     reference_urls = JSONField(blank=True, default=dict)
+    related_quotes = RelatedQuotesField(through=QuoteRelation)
 
     class Meta:
         """Meta options for the Entity model."""
@@ -163,7 +168,7 @@ class Entity(
         )
         return categorizations.select_related('category')
 
-    @retrieve_or_compute(attribute_name='categorization_string')
+    @store(attribute_name='categorization_string')
     def get_categorization_string(self, date: Optional[DateTime] = None) -> str:
         """Intelligently build a categorization string, like `liberal scholar`."""
         categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
@@ -196,6 +201,10 @@ class Entity(
         else:
             # Prevent a RuntimeError when saving a new publication
             self.recast(self.type)
+
+    def get_date(self) -> Optional[DateTime]:
+        """Date used for sorting search results."""
+        return self.birth_date
 
 
 class Person(Entity):

@@ -37,15 +37,11 @@ class QuoteManager(SearchableModelManager):
         if entity_ids:
             qs = qs.filter(
                 Q(attributees__id__in=entity_ids)
-                | Q(
-                    relations__content_type_id=get_ct_id(ContentTypes.occurrence),
-                    relations__object_id__in=entity_ids,
-                )
+                | Q(entities_entity_set__id__in=entity_ids)
             )
         # Limit to specified topics
         if topic_ids:
             qs = qs.filter(
-                Q(tags__topic__id__in=topic_ids)
-                | Q(tags__topic__related_topics__id__in=topic_ids)
+                Q(tags__id__in=topic_ids) | Q(tags__related_topics__id__in=topic_ids)
             )
         return qs

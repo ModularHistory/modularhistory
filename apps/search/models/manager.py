@@ -73,7 +73,7 @@ class SearchableModelManager(Manager):
     ) -> 'SearchableModelQuerySet':
         """Return a queryset of search results, excluding any undated sources."""
         # Exclude undated sources.
-        qs = self.get_queryset().prefetch_related('tags__topic').exclude(date=None)
+        qs = self.get_queryset().prefetch_related('tags').exclude(date=None)
         if suppress_unverified:
             qs = qs.filter(verified=True)
         if suppress_hidden:

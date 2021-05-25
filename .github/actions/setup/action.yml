@@ -11,13 +11,22 @@ inputs:
   python-version:
     description: 'Python version'
     required: true
+  fetch-depth:
+    description: 'Fetch depth'
+    required: false
+    default: 1
 runs:
   # https://github.com/mithro/actions-includes
   using: "includes"
   steps:
+    # Check out.
+    - name: Check out main branch
+      uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
     # Set up Python.
     - name: Set up Python ${{ inputs.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v2.2.2
       with:
         python-version: ${{ inputs.python-version }}
     - name: Get full Python version
@@ -32,7 +41,7 @@ runs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.4
+      uses: snok/install-poetry@v1.1.6
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -52,7 +61,7 @@ runs:
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
-        sudo apt-get install -y graphviz graphviz-dev
+        echo "${{ inputs.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules

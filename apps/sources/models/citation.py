@@ -4,15 +4,12 @@ import logging
 from typing import TYPE_CHECKING, Match, Optional, Union
 
 import regex
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.sources.serializers import CitationSerializer
-from core.constants.content_types import ContentTypes, get_ct_id
 from core.fields import JSONField
 from core.fields.html_field import (
     APPENDAGE_GROUP,
@@ -21,14 +18,13 @@ from core.fields.html_field import (
     TYPE_GROUP,
 )
 from core.fields.html_field import PlaceholderGroups as DefaultPlaceholderGroups
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.positioned_relation import PositionedRelation
 from core.utils import pdf
 from core.utils.html import components_to_html, compose_link, escape_quotes, soupify
 
 if TYPE_CHECKING:
-    pass
-
-    from apps.quotes.models import Quote
+    from apps.quotes.models.quote import Quote
 
 
 class PlaceholderGroups(DefaultPlaceholderGroups):
@@ -49,13 +45,12 @@ citation_placeholder_pattern = rf'\ ?{OBJECT_PLACEHOLDER_REGEX}'.replace(
     APPENDAGE_GROUP,
     rf'(,\ {PAGE_STRING_GROUP})?(,\ {QUOTATION_GROUP})?(:?\ ?(?:<span style="display: none;?">|<span class="citation-placeholder">){HTML_GROUP}<\/span>)',  # noqa: E501'
 ).replace(TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>citation)')
-logging.debug(f'Citation placeholder pattern: {citation_placeholder_pattern}')
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 
 SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
 CITATION_PHRASE_OPTIONS = (
-    (None, ''),
+    (None, '-------'),
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in'),
     ('partially reproduced in', 'partially reproduced in'),
@@ -80,9 +75,15 @@ PAGES_SCHEMA = {
 }
 
 
-class Citation(PositionedRelation):
-    """A reference to a source (from any other model)."""
+class AbstractCitation(PositionedRelation):
+    """Abstract base model for m2m relationships between sources and other models."""
 
+    source = ManyToManyForeignKey(
+        to='sources.Source',
+        related_name='%(app_label)s_%(class)s_set',
+    )
+    # Foreign key to the model that references the source.
+    content_object: models.ForeignKey
     citation_phrase = models.CharField(
         max_length=CITATION_PHRASE_MAX_LENGTH,
         choices=CITATION_PHRASE_OPTIONS,
@@ -90,24 +91,17 @@ class Citation(PositionedRelation):
         null=True,
         blank=True,
     )
-    source = models.ForeignKey(
-        to='sources.Source',
-        related_name='citations',
-        on_delete=models.PROTECT,
-    )
+    citation_html = models.TextField(null=True, blank=True)
     pages = JSONField(schema=PAGES_SCHEMA, default=list)
-    content_type = models.ForeignKey(to=ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(ct_field='content_type', fk_field='object_id')
 
     class Meta:
-        unique_together = [
-            'source',
-            'content_type',
-            'object_id',
-            'position',
+        abstract = True
+        constraints = [
+            models.UniqueConstraint(
+                fields=['source', 'content_object', 'position'],
+                name='%(app_label)s_%(class)s_unique_positions',
+            )
         ]
-        ordering = ['position', 'source']
 
     page_string_regex = regex.compile(PAGE_STRING_REGEX)
     placeholder_regex = citation_placeholder_pattern
@@ -116,9 +110,14 @@ class Citation(PositionedRelation):
     def __str__(self) -> str:
         """Return the citation's string representation."""
         try:
-            return soupify(self.html).get_text()
+            return soupify(self.citation_html).get_text()
         except Exception:
             return f'citation {self.pk}'
+
+    @property
+    def escaped_citation_html(self) -> SafeString:
+        """Return the citation HTML, escaped."""
+        return format_html(self.citation_html)
 
     # TODO: refactor
     @property  # type: ignore
@@ -135,8 +134,9 @@ class Citation(PositionedRelation):
             else:
                 html = f'{html}, {page_string}'
         if self.pk and self.source.attributees.exists():
-            if self.content_type_id == get_ct_id(ContentTypes.quote):
-                quote: Quote = self.content_object  # type: ignore
+            if getattr(self.content_object, 'attributees', None):
+                # Assume the content object is a quote.
+                quote: Quote = self.content_object
                 if quote.ordered_attributees != self.source.ordered_attributees:
                     source_html = html
                     if quote.citations.filter(position__lt=self.position).exists():
@@ -271,7 +271,7 @@ class Citation(PositionedRelation):
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         key = match.group(PlaceholderGroups.PK).strip()
         try:
             citation = cls.objects.get(pk=key)

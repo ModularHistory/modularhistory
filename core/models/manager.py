@@ -9,7 +9,7 @@ from typedmodels.models import TypedModelManager as BaseTypedModelManager
 from apps.dates.structures import HistoricDateTime
 
 if TYPE_CHECKING:
-    from core.models import Model
+    from core.models.model import Model
 
 
 class Manager(ModelManager):

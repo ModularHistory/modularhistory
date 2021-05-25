@@ -1,33 +1,47 @@
+from typing import Type
+
+from django.db.models import Model
+
 from apps.admin import ModelAdmin, TabularInline, admin_site
 from apps.admin.list_filters import AutocompleteFilter
 from apps.places import models
 from apps.places.forms import PlaceForm
 
 
-class LocationInline(TabularInline):
+class AbstractLocationsInline(TabularInline):
+    """Inline admin for an occurrence's locations."""
+
+    model: Type[Model]
+    extra = 1
+    autocomplete_fields = ['place']
+    verbose_name = 'location'
+    verbose_name_plural = 'locations'
+
+
+class LocationInline(AbstractLocationsInline):
     """Inline admin for a location's parent location."""
 
     model = models.Place
-    autocomplete_fields = [model.FieldNames.location]
+    autocomplete_fields = ['location']
 
 
 class LocationFilter(AutocompleteFilter):
     """List filter for filtering locations by parent location."""
 
     title = 'location'
-    field_name = models.Place.FieldNames.location
+    field_name = 'location'
 
 
 class LocationAdmin(ModelAdmin):
     """Admin for locations."""
 
     model = models.Place
-    list_display = [model.FieldNames.name, 'string']
+    list_display = ['name', 'string']
     list_filter = [LocationFilter]
-    search_fields = [model.FieldNames.name]
+    search_fields = ['name']
     ordering = [
-        model.FieldNames.name,
-        f'{model.FieldNames.location}__{model.FieldNames.name}',
+        'name',
+        'location__name',
     ]
     form = PlaceForm
     add_form = PlaceForm

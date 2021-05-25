@@ -27,7 +27,7 @@ jobs:
       with:
         workflow: .github/workflows/cleanup.yml
     - name: Remove old artifacts
-      uses: c-hive/gha-remove-artifacts@v1
+      uses: c-hive/gha-remove-artifacts@v1.2.0
       with:
         age: 3 days
         # Optional inputs

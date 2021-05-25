@@ -44,15 +44,19 @@ _api = 'apps.{}.api.urls'.format  # noqa: P103
 urlpatterns = [
     # Admin
     path('admin_tools/', include('admin_tools.urls')),
-    path('_nested_admin/', include('nested_admin.urls')),
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
-    path('admin/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
-    path('admin/', admin_site.urls),
+    # https://github.com/dmpayton/django-admin-honeypot
+    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    # https://github.com/burke-software/django-mass-edit
+    path(f'{settings.ADMIN_URL_PREFIX}/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
+    path(f'{settings.ADMIN_URL_PREFIX}/', admin_site.urls),
+    # https://github.com/jazzband/django-silk
+    path(f'{settings.ADMIN_URL_PREFIX}/silk/', include('silk.urls', namespace='silk')),
     # App URLs
     path('chat/', include('apps.chat.urls', namespace='chat')),
     path('api/donations/', include(_api('donations'), namespace='donations_api')),
     path('api/entities/', include(_api('entities'), namespace='entities_api')),
-    path('api/postulations/', include(_api('postulations'), namespace='postulations_api')),
+    path('api/propositions/', include(_api('propositions'), namespace='propositions_api')),
     path('api/images/', include(_api('images'), namespace='images_api')),
     path('api/occurrences/', include(_api('occurrences'), namespace='occurrences_api')),
     path('api/places/', include(_api('places'), namespace='places_api')),

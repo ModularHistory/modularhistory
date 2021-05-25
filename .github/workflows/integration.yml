@@ -39,6 +39,10 @@ env:
   IMGUR_CLIENT_SECRET: ${IMGUR_CLIENT_SECRET}
   MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
   MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+  POSTGRES_HOST: postgres
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -67,13 +71,10 @@ jobs:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
         # NOTE: Services (running in Docker containers) only work on ubuntu.
         os: [macos-latest, ubuntu-latest]
+        python-version: [3.7]
     environment: dev
     env:
       TESTING: true
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -81,15 +82,63 @@ jobs:
       continue-on-error: false
       with:
         workflow: .github/workflows/integration.yml
-    - uses: actions/checkout@v2
-    - name: Cache virtual environment
-      uses: actions/cache@v2
-      id: cache
+    - name: Check out main branch
+      uses: actions/checkout@v2.3.4
       with:
-        path: |
-          .venv
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/package-lock.json') }}
+        fetch-depth: 1
+    # Set up Python.
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    # Modify hosts file.
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    # Install and configure Poetry.
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.6
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    # Load cached .venv, if it exists.
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: venv-cache
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    # Make sure Poetry environment is healthy.
+    - name: Test poetry environment
+      id: venv-test
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
+    # Install Python dependencies if necessary.
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      run: |
+        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        poetry install --no-root
+    # Load cached node_modules dir, if it exists.
+    - name: Cache node modules
+      uses: actions/cache@v2.1.5
+      id: node-modules-cache
+      with:
+        path: frontend/node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    # Install node modules if necessary.
+    - name: Install JavaScript dependencies
+      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
+      run: |
+        cd frontend
+        npm ci
+        cd ..
     - name: Run setup script
       run: bash setup.sh
       shell: bash
@@ -125,11 +174,6 @@ jobs:
         # Set health checks to wait until redis has started
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     environment: integration
-    env:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -137,9 +181,13 @@ jobs:
       continue-on-error: false
       with:
         workflow: .github/workflows/integration.yml
-    - uses: actions/checkout@v2
+    - name: Check out main branch
+      uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 1
+    # Set up Python.
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v2.2.2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get full Python version
@@ -154,7 +202,7 @@ jobs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.4
+      uses: snok/install-poetry@v1.1.6
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -174,7 +222,7 @@ jobs:
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
-        sudo apt-get install -y graphviz graphviz-dev
+        echo "${{ matrix.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules
@@ -197,20 +245,15 @@ jobs:
     - name: Run tests
       run: poetry run invoke test --no-docker
 
-  build:
-    name: Build images
+  check-types:
+    name: Check types
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       max-parallel: 3
       matrix:
-        os: [ubuntu-latest]
         python-version: [3.7]
     environment: integration
-    env:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: modularhistory
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
@@ -219,11 +262,14 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Check out main branch
-      uses: actions/checkout@v2
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+      uses: actions/checkout@v2.3.4
       with:
-        python-version: 3.7
+        fetch-depth: 1
+    # Set up Python.
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: ${{ matrix.python-version }}
     - name: Get full Python version
       id: full-python-version
       shell: bash
@@ -236,7 +282,7 @@ jobs:
       shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.4
+      uses: snok/install-poetry@v1.1.6
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -256,7 +302,82 @@ jobs:
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
-        sudo apt-get install -y graphviz graphviz-dev
+        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        poetry install --no-root
+    # Load cached node_modules dir, if it exists.
+    - name: Cache node modules
+      uses: actions/cache@v2.1.5
+      id: node-modules-cache
+      with:
+        path: frontend/node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    # Install node modules if necessary.
+    - name: Install JavaScript dependencies
+      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
+      run: |
+        cd frontend
+        npm ci
+        cd ..
+    - name: Run static type checker
+      run: poetry run pytype *
+
+  build:
+    name: Build images
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        python-version: [3.7]
+    environment: integration
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/integration.yml
+    - name: Check out main branch
+      uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 1
+    # Set up Python.
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    # Modify hosts file.
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    # Install and configure Poetry.
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.6
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    # Load cached .venv, if it exists.
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: venv-cache
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    # Make sure Poetry environment is healthy.
+    - name: Test poetry environment
+      id: venv-test
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
+    # Install Python dependencies if necessary.
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      run: |
+        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules
@@ -284,7 +405,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v1.9.0
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -349,7 +470,7 @@ jobs:
       with:
         workflow: .github/workflows/integration.yml
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
@@ -380,7 +501,7 @@ jobs:
       run: git config --system core.longpaths true
     # Checkout your code repository to scan
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
       with:
         # We must fetch at least the immediate parents so that if this is
         # a pull request then we can checkout the head.

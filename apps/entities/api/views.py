@@ -3,8 +3,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.entities.models import Entity
-from apps.entities.serializers import EntityPartialDictSerializer, EntitySerializer
+from apps.entities.api.serializers import EntityPartialDictSerializer, EntitySerializer
+from apps.entities.models.entity import Entity
 from core.pagination import VariableSizePagination
 
 

@@ -7,7 +7,7 @@ interface EntityDetailProps {
 }
 
 const EntityDetail: FC<EntityDetailProps> = ({ entity }: EntityDetailProps) => {
-  const firstImage = entity.serializedImages?.[0];
+  const firstImage = entity.cachedImages?.[0];
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: entity.name }} />

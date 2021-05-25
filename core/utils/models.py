@@ -8,7 +8,7 @@ from django.utils.safestring import SafeString
 from apps.search.templatetags.highlight import highlight
 
 if TYPE_CHECKING:
-    from core.models import Model
+    from core.models.model import Model
 
 
 def get_html_for_view(

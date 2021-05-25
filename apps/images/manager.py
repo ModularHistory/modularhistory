@@ -34,5 +34,5 @@ class ImageManager(SearchableModelManager):
             qs = qs.filter(Q(entities__id__in=entity_ids))
         # Limit to specified topics
         if topic_ids:
-            qs = qs.filter(Q(occurrences__tags__topic__id__in=topic_ids))
+            qs = qs.filter(Q(occurrences__tags__id__in=topic_ids))
         return qs

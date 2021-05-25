@@ -1,25 +1,28 @@
 """Model classes for the quotes app."""
 
 import logging
-from typing import TYPE_CHECKING, List, Match, Optional
+from typing import TYPE_CHECKING, List, Match
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
-from gm2m import GM2MField as GenericManyToManyField
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import ModelWithImages
 from apps.quotes.manager import QuoteManager
-from apps.quotes.models.model_with_related_quotes import ModelWithRelatedQuotes
+from apps.quotes.models.model_with_related_quotes import (
+    AbstractQuoteRelation,
+    ModelWithRelatedQuotes,
+    RelatedQuotesField,
+)
 from apps.quotes.models.quote_image import QuoteImage
 from apps.quotes.serializers import QuoteSerializer
-from apps.search.models import SearchableDatedModel
-from apps.sources.models.model_with_sources import ModelWithSources
-from core.constants.content_types import ContentTypes, get_ct_id
+from apps.search.models.searchable_dated_model import SearchableDatedModel
+from apps.sources.models.citation import AbstractCitation
+from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.constants.strings import EMPTY_STRING
 from core.fields import HTMLField
 from core.fields.html_field import (
@@ -27,18 +30,35 @@ from core.fields.html_field import (
     TYPE_GROUP,
     PlaceholderGroups,
 )
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.utils.html import soupify
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from apps.entities.models import Entity
+    from apps.entities.models.entity import Entity
 
 BITE_MAX_LENGTH: int = 400
 
 quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>quote)'
 )
+
+
+class Citation(AbstractCitation):
+    """A relation between a quote and a source."""
+
+    content_object = ManyToManyForeignKey(
+        to='quotes.Quote', related_name='citations', verbose_name='quote'
+    )
+
+
+class QuoteRelation(AbstractQuoteRelation):
+    """A relation between a quote and a quote."""
+
+    content_object = ManyToManyForeignKey(
+        to='quotes.Quote', related_name='quote_relations', verbose_name='quote'
+    )
 
 
 class Quote(
@@ -77,16 +97,18 @@ class Quote(
         blank=True,
         verbose_name=_('attributees'),
     )
-    related = GenericManyToManyField(
-        'occurrences.Occurrence',
-        'entities.Entity',
-        'quotes.Quote',
-        through='quotes.QuoteRelation',
-        related_name='related_quotes',
+    images = models.ManyToManyField(
+        to='images.Image',
+        through='quotes.QuoteImage',
+        related_name='quotes',
         blank=True,
     )
-    images = models.ManyToManyField(
-        'images.Image', through='quotes.QuoteImage', related_name='quotes', blank=True
+    sources = SourcesField(through=Citation, related_name='quotes')
+    related_quotes = RelatedQuotesField(
+        through=QuoteRelation,
+        to='self',
+        symmetrical=False,
+        through_fields=('content_object', 'quote'),
     )
 
     class Meta:
@@ -105,8 +127,8 @@ class Quote(
         'attributees__name',
         'date__year',
         'sources__citation_string',
-        'tags__topic__key',
-        'tags__topic__aliases',
+        'tags__key',
+        'tags__aliases',
     ]
     serializer = QuoteSerializer
     slug_base_field = 'title'
@@ -117,9 +139,9 @@ class Quote(
         attributee_string = self.attributee_string or '<Unknown>'
         date_string = self.date.string if self.date else EMPTY_STRING
         if date_string:
-            string = f'{attributee_string}, {date_string}: {self.bite.text}'
+            string = f'{attributee_string}, {date_string}: {self.bite}'
         else:
-            string = f'{attributee_string}: {self.bite.text}'
+            string = f'{attributee_string}: {self.bite}'
         return string
 
     def clean(self):
@@ -130,7 +152,7 @@ class Quote(
         if no_text or len(f'{self.text}') < min_text_length:  # e.g., <p>&nbsp;</p>
             raise ValidationError('The quote must have text.')
         if not self.bite:
-            text = self.text.text
+            text = self.text
             if len(text) > BITE_MAX_LENGTH:
                 raise ValidationError('Add a quote bite.')
             self.bite = text  # type: ignore  # TODO: remove type ignore
@@ -211,29 +233,29 @@ class Quote(
         return False
 
     @property
-    def attributee_string(self) -> Optional[str]:
+    def attributee_string(self) -> str:
         """See the `attributee_html` property."""
         if self.attributee_html:
             return soupify(self.attributee_html).get_text()  # type: ignore
-        return None
+        return ''
 
     @property
     def html(self) -> SafeString:
         """Return the quote's HTML representation."""
         blockquote = (
             f'<blockquote class="blockquote">'
-            f'{self.text.html}'
+            f'{self.text}'
             f'<footer class="blockquote-footer" style="position: relative;">'
             f'{self.citation_html or self.attributee_string}'
             f'</footer>'
             f'</blockquote>'
         )
         components = [
-            f'<p class="quote-context">{self.pretext.html}</p>'
+            f'<p class="quote-context">{self.pretext}</p>'
             if self.pretext
             else EMPTY_STRING,
             blockquote,
-            f'<div class="quote-context">{self.context.html}</div>'
+            f'<div class="quote-context">{self.context}</div>'
             if self.context
             else EMPTY_STRING,
         ]
@@ -258,27 +280,24 @@ class Quote(
     def related_occurrences(self) -> 'QuerySet':
         """Return a queryset of the quote's related occurrences."""
         # TODO: refactor
-        from apps.occurrences.models import Occurrence
+        from apps.propositions.models.occurrence import Occurrence
 
-        occurrence_ids = self.relations.filter(
-            models.Q(content_type_id=get_ct_id(ContentTypes.occurrence))
-        ).values_list('id', flat=True)
-        return Occurrence.objects.filter(id__in=occurrence_ids)
+        return Occurrence.objects.filter(related_quotes__pk=self.pk)
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
-        """Return the obj's HTML based on a placeholder in the admin."""
+        """Return the quote's HTML based on a placeholder in the admin."""
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
-            preretrieved_html = match.group(PlaceholderGroups.HTML)
+            preretrieved_html = str(match.group(PlaceholderGroups.HTML))
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         quote = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         if isinstance(quote, dict):
             body = quote['text']
             footer = quote.get('citation_html') or quote.get('attributee_string')
         else:
-            body = quote.text.html
+            body = quote.text
             footer = quote.citation_html or quote.attributee_string
         return (
             f'<blockquote class="blockquote">'

@@ -88,21 +88,18 @@ class Image(MediaModel):
         unique_together = [IMAGE_FIELD_NAME, 'caption']
         ordering = ['date']
 
-    class FieldNames(MediaModel.FieldNames):
-        image = IMAGE_FIELD_NAME
-
     objects: ImageManager = ImageManager()  # type: ignore
     placeholder_regex = image_placeholder_regex
     searchable_fields = [
-        FieldNames.caption,
-        FieldNames.description,
-        FieldNames.provider,
+        'caption',
+        'description',
+        'provider',
     ]
     serializer = ImageSerializer
 
     def __str__(self) -> str:
         """Return the string representation of the image."""
-        return self.caption.text if self.caption else self.image.name
+        return self.caption if self.caption else self.image.name
 
     def clean(self):
         """Prepare the image to be saved."""
@@ -140,7 +137,7 @@ class Image(MediaModel):
     @property
     def caption_html(self) -> str:
         """Return the user-facing caption HTML."""
-        return self.caption.html if self.caption else ''
+        return self.caption or ''
 
     @property
     def cropped_image_url(self) -> Optional[str]:
@@ -175,7 +172,7 @@ class Image(MediaModel):
     @property
     def provider_string(self) -> Optional[str]:
         """Image credit string (e.g., "Image provided by NASA") displayed in caption."""
-        if (not self.provider) or self.provider in self.caption.text:
+        if (not self.provider) or self.provider in self.caption:
             return None
         provision_phrase: Optional[str] = 'provided'
         if self.image_type == 'painting':
@@ -216,7 +213,7 @@ class Image(MediaModel):
             # Return the pre-retrieved HTML (already included in placeholder)
             preretrieved_html = match.group(PlaceholderGroups.HTML)
             if preretrieved_html:
-                return preretrieved_html.strip()
+                return str(preretrieved_html).strip()
         image = cls.objects.get(pk=match.group(PlaceholderGroups.PK))
         if isinstance(image, dict):
             width = image['width']

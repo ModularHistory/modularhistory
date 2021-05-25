@@ -35,7 +35,7 @@ $(window).on('load', function () {
         form_row.prepend('<div class="label"></div>');
         let label_wrapper = form_row.find('.label');
         form_row.find('label').appendTo(label_wrapper);
-        iframe.contents().find('img.lazy').each(function () {
+        iframe.contents().find('img[data-src]').each(function () {
             $(this).attr('src', this.dataset.src);
         });
         if (!autoresize_plugin_is_enabled) {

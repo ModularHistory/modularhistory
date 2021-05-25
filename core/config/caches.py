@@ -38,7 +38,7 @@ else:
 
 # Cachalot settings:
 # https://django-cachalot.readthedocs.io/en/latest/quickstart.html#settings
-CACHALOT_ENABLED = ENVIRONMENT != Environments.GITHUB_TEST
+CACHALOT_ENABLED = ENVIRONMENT != Environments.GITHUB_TEST and not use_dummy_cache
 CACHALOT_CACHE = 'default'  # cache name
 CACHALOT_CACHE_RANDOM = False  # caching of random order queries, i.e order_by('?')
 CACHALOT_UNCACHABLE_TABLES = frozenset(

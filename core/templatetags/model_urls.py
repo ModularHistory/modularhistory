@@ -4,7 +4,7 @@ from typing import Dict, Optional, Union
 from django import template
 from django.urls import reverse
 
-from core.models import Model
+from core.models.model import Model
 
 register = template.Library()
 
@@ -14,7 +14,7 @@ def get_admin_url(model_instance: Union[Dict, Model]) -> str:
     """Return the URL of the model instance's admin page."""
     if isinstance(model_instance, dict):
         app, model = model_instance['model'].split('.')
-        return reverse(f'admin:{app}_{model}_change', args=[model_instance['pk']])
+        return reverse(f'admin:{app}_{model}_change', args=[model_instance['id']])
     try:
         return model_instance.get_admin_url()
     except AttributeError as err:

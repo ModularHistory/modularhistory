@@ -66,7 +66,6 @@
     "python.linting.banditEnabled": false,
     "python.linting.banditPath": "${workspaceFolder}/.venv/bin/bandit",
     "python.linting.lintOnSave": false,
-    "python.linting.mypyEnabled": true,
     "python.linting.mypyPath": "${workspaceFolder}/.venv/bin/mypy",
     "python.linting.pycodestylePath": "${workspaceFolder}/.venv/bin/pycodestyle",
     "python.linting.pydocstylePath": "${workspaceFolder}/.venv/bin/pydocstyle",
@@ -91,5 +90,5 @@
     "workbench.iconTheme": "material-icon-theme",
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
     "workbench.editor.limit.enabled": true,
-    "workbench.editor.limit.value": 5,
+    "workbench.editor.limit.value": 7,
 }

@@ -13,7 +13,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from core.fields.file_field import SourceFileField, upload_to
-from core.models import Model
+from core.models.model import Model
 from core.templatetags.media import media as fix_url
 
 

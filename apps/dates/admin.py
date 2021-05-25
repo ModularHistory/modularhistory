@@ -11,5 +11,5 @@ class DatedModelAdmin(ModelAdmin):
 
     model: Type['DatedModel']
 
-    exclude = ['computations']
-    readonly_fields = ['pretty_computations']
+    exclude = ['cache']
+    readonly_fields = ['pretty_cache']

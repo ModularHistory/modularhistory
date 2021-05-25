@@ -1,7 +1,8 @@
 import graphene
+from django.core.exceptions import ObjectDoesNotExist
 
 from apps.entities.api.types import EntityType
-from apps.entities.models import Entity
+from apps.entities.models.entity import Entity
 
 
 class Query(graphene.ObjectType):
@@ -18,7 +19,10 @@ class Query(graphene.ObjectType):
     @staticmethod
     def resolve_entity(root, info, slug: str):
         """Return the entity specified by an 'entity' query."""
-        return Entity.objects.get(slug=slug)
+        try:
+            return Entity.objects.get(slug=slug)
+        except ObjectDoesNotExist:
+            return Entity.objects.get(pk=slug)
 
 
 # class Mutation(graphene.ObjectType):

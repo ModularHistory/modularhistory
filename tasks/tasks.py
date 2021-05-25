@@ -84,7 +84,7 @@ def generate_artifacts(context):
     from django.db.models import Count
     from wordcloud import WordCloud
 
-    from apps.topics.models import Topic
+    from apps.topics.models.topic import Topic
 
     print('Building topics.txt...')
     ordered_topics = (

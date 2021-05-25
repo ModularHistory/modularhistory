@@ -11,7 +11,6 @@ from django.db.models.query import QuerySet
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
-from gm2m import GM2MField as GenericManyToManyField
 from polymorphic.models import PolymorphicModel
 
 from apps.dates.fields import HistoricDateTimeField
@@ -22,7 +21,7 @@ from apps.sources.manager import PolymorphicSourceManager, PolymorphicSourceQuer
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields import HTMLField
-from core.models import retrieve_or_compute
+from core.models import store
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -51,19 +50,11 @@ CITATION_PHRASE_OPTIONS = (
 class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
-    citation_html = models.TextField(
-        verbose_name=_('citation HTML'),
-        null=False,
-        # Allow to be blank in model forms (and calculated during cleaning).
+    content = HTMLField(
+        verbose_name=_('content'),
+        null=True,
         blank=True,
-    )
-    citation_string = models.CharField(
-        verbose_name=_('citation string'),
-        max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,
-        # Allow to be blank in model forms (and calculated during cleaning).
-        blank=True,
-        unique=True,
+        help_text='Enter the content of the source (with ellipses as needed).',
     )
     attributee_html = models.CharField(
         max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
@@ -84,6 +75,20 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        null=False,
+        # Allow to be blank in model forms (and computed during cleaning).
+        blank=True,
+    )
+    citation_string = models.CharField(
+        verbose_name=_('citation string'),
+        max_length=MAX_CITATION_STRING_LENGTH,
+        null=False,
+        # Allow to be blank in model forms (and computed during cleaning).
+        blank=True,
+        unique=True,
+    )
     containment_html = models.TextField(
         verbose_name=_('containment HTML'), null=True, blank=True
     )
@@ -96,21 +101,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,
         verbose_name=_('containers'),
     )
-
-    # `date` must be nullable at the db level (because some sources simply
-    # do not have dates), but if no date is set, we use the `clean` method
-    # to raise a ValidationError unless the child model whitelists itself
-    # by setting `date_nullable` to True.
-    date = HistoricDateTimeField(null=True, blank=True)
-    # `date_nullable` can be set to True by child models that require the
-    # date field to be nullable for any reason (e.g., by the Webpage model,
-    # since not all webpages present their creation date, or by the Document
-    # model, since some documents cannot be dated and/or are compilations of
-    # material spanning decades).
-    date_nullable: bool = False
-
     description = HTMLField(
-        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+        verbose_name=_('description'),
+        null=True,
+        blank=True,
+        paragraphed=True,
     )
     file = models.ForeignKey(
         to=SourceFile,
@@ -136,18 +131,23 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         on_delete=models.SET_NULL,
         verbose_name=_('location'),
     )
-    publication_date = HistoricDateTimeField(
-        verbose_name=_('publication date'), null=True, blank=True
+    release = models.OneToOneField(
+        to='propositions.Publication',
+        on_delete=models.SET_NULL,
+        related_name='source',
+        null=True,
+        blank=True,
     )
-    related = GenericManyToManyField(
-        'quotes.Quote',
-        'occurrences.Occurrence',
-        through='sources.Citation',
-        related_name='sources',
+    publication_date = HistoricDateTimeField(
+        verbose_name=_('publication date'),
+        null=True,
         blank=True,
     )
     title = models.CharField(
-        verbose_name=_('title'), max_length=MAX_TITLE_LENGTH, null=True, blank=True
+        verbose_name=_('title'),
+        max_length=MAX_TITLE_LENGTH,
+        null=True,
+        blank=True,
     )
     url = models.URLField(
         verbose_name=_('URL'),
@@ -204,9 +204,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return self.polymorphic_ctype
 
     @property
-    def ctype_name(self) -> ContentType:
-        """Return the model instance's ContentType."""
-        return self.ctype.model
+    def ctype_name(self) -> str:
+        """Return the model instance's content type name."""
+        return f'{self.ctype.model}'
 
     @property
     def escaped_citation_html(self) -> SafeString:
@@ -260,10 +260,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         # TODO: Do something else with the information URL.
         # It shouldn't be part of the citation string, but we should use it.
         # if getattr(self, 'information_url', None) and self.information_url:
-        #     html = (
-        #         f'{html}, information available at '
-        #         f'{compose_link(self.information_url, href=self.information_url, target="_blank")}'
+        #     information_link = compose_link(
+        #         self.information_url, href=self.information_url, target="_blank"
         #     )
+        #     html = f'{html}, information available at {information_link}'
         return format_html(fix_comma_positions(html))
 
     def get_containment_html(self) -> str:
@@ -322,10 +322,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return None
 
     # TODO: after deploying to prod and copying deprecated_href to the new href field,
-    # remove the @property and @retrieve_or_compute decorators and rename this method
+    # remove the @property and @store decorators and rename this method
     # to get_href.
     @property  # type: ignore
-    @retrieve_or_compute(attribute_name='href')
+    @store(attribute_name='href')
     def deprecated_href(self) -> str:
         """
         Return the href to use when providing a link to the source.
@@ -372,7 +372,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         page_number = page_number or self.page_number
         url = self.get_page_number_url(page_number=page_number)
         if url:
-            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'
+            # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'  # noqa: E800,E501
             return compose_link(
                 page_number, href=url, klass='display-source', target=NEW_TAB
             )
@@ -484,3 +484,19 @@ def _set_page_number(url: str, page_number: Union[str, int]) -> str:
     else:
         url = f'{url}#{page_param}={page_number}'
     return url
+
+
+class AbstractSource(Source):
+    """
+    Abstract base model for source models.
+
+    Source models (e.g., `Article`) can inherit from this abstract model
+    as an alternative to inheriting directly from `Source`.
+    """
+
+    source = models.OneToOneField(
+        Source, parent_link=True, on_delete=models.CASCADE, related_name='%(class)s'
+    )
+
+    class Meta:
+        abstract = True

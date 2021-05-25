@@ -3,16 +3,26 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.stories.serializers import StorySerializer
 from core.fields import HTMLField
-from core.models import Model
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
+from core.models.model import Model
 
 HANDLE_MAX_LENGTH = 40
 
 
+class Citation(AbstractCitation):
+    content_object = ManyToManyForeignKey(
+        to='stories.Story',
+        related_name='citations',
+        verbose_name='story',
+    )
+
+
 class Story(ModelWithSources):
-    """A postulation."""
+    """A story."""
 
     handle = models.CharField(max_length=HANDLE_MAX_LENGTH, unique=True)
     description = HTMLField(
@@ -31,6 +41,13 @@ class Story(ModelWithSources):
         symmetrical=False,
         verbose_name=_('upstream stories'),
     )
+    sources = models.ManyToManyField(
+        to='sources.Source',
+        related_name='%(class)s_citations',
+        through=Citation,
+        blank=True,
+        verbose_name=_('sources'),
+    )
 
     searchable_fields = ['handle', 'description']
     serializer = StorySerializer
@@ -38,7 +55,7 @@ class Story(ModelWithSources):
 
     def __str__(self) -> str:
         """Return the fact's string representation."""
-        return self.summary.text
+        return self.handle
 
 
 class StoryElement(Model):

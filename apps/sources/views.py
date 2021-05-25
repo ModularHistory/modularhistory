@@ -5,8 +5,8 @@ from django.views import generic
 from django.views.generic import TemplateView
 from meta.views import Meta
 
-from apps.quotes.models import Quote
-from apps.sources.models import Source
+from apps.quotes.models.quote import Quote
+from apps.sources.models.source import Source
 
 
 class IndexView(generic.ListView):
