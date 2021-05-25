@@ -20,7 +20,7 @@
     "braintree-web-drop-in-react": "^1.2.1",
     "dotenv": "^10.0.0",
     "jquery": "^3.6.0",
-    "next": "10.2.2",
+    "next": "10.2.3",
     "next-auth": "^3.23.2",
     "nookies": "^2.5.2",
     "prop-types": "^15.7.2",
