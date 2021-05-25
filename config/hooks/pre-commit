@@ -4,8 +4,8 @@ staged_files="$(git diff --diff-filter=AM --name-only --staged)"
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-echo "$staged_files" | grep --quiet ".py" && {
-    staged_python_files=$(echo "$staged_files" | grep '.py')
+echo "$staged_files" | grep -E --quiet ".+.py" && {
+    staged_python_files=$(echo "$staged_files" | grep -E ".+.py")
     # Autoformat and lint Python code.
     poetry --help &>/dev/null && [[ -d ".venv" ]] && {
         comma_delimited_filepaths=$(echo "$staged_python_files" | tr '\n' ',')
