@@ -19,8 +19,6 @@ from django_celery_beat.models import (
 )
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
-from nested_admin.nested import NestedModelAdmin
-from nested_admin.polymorphic import NestedPolymorphicInlineSupportMixin
 from polymorphic.admin import PolymorphicInlineSupportMixin
 from sass_processor.processor import sass_processor
 

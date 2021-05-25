@@ -44,7 +44,6 @@ _api = 'apps.{}.api.urls'.format  # noqa: P103
 urlpatterns = [
     # Admin
     path('admin_tools/', include('admin_tools.urls')),
-    path('_nested_admin/', include('nested_admin.urls')),
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     # https://github.com/dmpayton/django-admin-honeypot
     path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),

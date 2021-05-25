@@ -94,7 +94,6 @@ INSTALLED_APPS = [
     'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
     'massadmin',  # https://github.com/burke-software/django-mass-edit
-    'nested_admin',  # https://github.com/theatlantic/django-nested-admin
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     # ---------------------------------
     # Django core apps
