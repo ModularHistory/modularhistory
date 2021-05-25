@@ -82,7 +82,7 @@ ADMINS = (
 
 # noqa: E501
 INSTALLED_APPS = [
-    # # Note: admin_tools and its modules must come before django.contrib.admin.
+    # Note: admin_tools and its modules must come before django.contrib.admin.
     'admin_tools',  # https://django-admin-tools.readthedocs.io/en/latest/configuration.html
     'admin_tools.menu',
     # 'admin_tools.theming',
