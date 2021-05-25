@@ -1,4 +1,4 @@
-"""Settings for the Django Debug Toolbar."""
+"""Settings for debugging."""
 
 # https://docs.djangoproject.com/en/3.1/ref/settings#s-internal-ips
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
@@ -28,3 +28,7 @@ DEBUG_TOOLBAR_PANELS = [
     'cachalot.panels.CachalotPanel',  # https://django-cachalot.readthedocs.io/en/latest/quickstart.html  # noqa: E501
     # 'pympler.panels.MemoryPanel', #https://pympler.readthedocs.io/en/latest/django.html#django  # noqa: E501
 ]
+
+# https://github.com/jazzband/django-silk
+SILKY_PYTHON_PROFILER = True
+SILKY_ANALYZE_QUERIES = True
