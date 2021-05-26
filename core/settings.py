@@ -106,6 +106,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django.contrib.redirects',
     'django.contrib.sessions',
+    'django.contrib.sitemaps',
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.forms',

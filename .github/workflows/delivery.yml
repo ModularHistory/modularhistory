@@ -143,7 +143,7 @@ jobs:
         npm ci
         cd ..
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --dev
+      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
     - name: Build and push Docker images
