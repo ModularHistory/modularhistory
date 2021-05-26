@@ -20,9 +20,9 @@ done
 for container in "${containers[@]}"; do
     ok=false
     while [[ "$ok" = false ]]; do
-        ok=true
-        statuses=$(docker-compose ps)
-        echo "$statuses" | grep --quiet "starting" && ok=false
+        status=$(docker-compose ps | grep "$container")
+        echo "$status" | grep --quiet "starting" || ok=true
+        echo "$status" | grep --quiet "Up" || ok=false
     done
 done
 echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
