@@ -13,7 +13,18 @@ docker-compose pull --include-deps django react || {
 }
 echo "" && echo "Restarting server..."
 docker-compose down --remove-orphans
-docker-compose up -d django celery_beat react
+containers=( "django" "celery_beat" "react" )
+for container in "${containers[@]}"; do
+    docker-compose up -d "$container"
+done
+for container in "${containers[@]}"; do
+    ok=false
+    while [[ "$ok" = false ]]; do
+        ok=true
+        statuses=$(docker-compose ps)
+        echo "$statuses" | grep --quiet "starting" && ok=false
+    done
+done
 echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
 docker image prune -a -f
 docker system prune -f
