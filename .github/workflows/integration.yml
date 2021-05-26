@@ -139,6 +139,8 @@ jobs:
         cd frontend
         npm ci
         cd ..
+    - name: Create .env file
+      run: poetry run invoke setup.write-env-file --dev
     - name: Run setup script
       run: bash setup.sh
       shell: bash
@@ -238,6 +240,8 @@ jobs:
         cd frontend
         npm ci
         cd ..
+    - name: Create .env file
+      run: poetry run invoke setup.write-env-file --dev
     - name: Make sure pytest is working
       run: |
         echo "def test_pytest(): pass" > nothing.py
@@ -318,6 +322,8 @@ jobs:
         cd frontend
         npm ci
         cd ..
+    - name: Create .env file
+      run: poetry run invoke setup.write-env-file --dev
     - name: Run static type checker
       run: poetry run pytype *
 
@@ -393,6 +399,8 @@ jobs:
         cd frontend
         npm ci
         cd ..
+    - name: Create .env file
+      run: poetry run invoke setup.write-env-file --dev
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
     - name: Set up Docker Buildx

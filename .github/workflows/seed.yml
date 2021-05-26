@@ -104,7 +104,9 @@ jobs:
         cd frontend
         npm ci
         cd ..
-    - name: Inject environment vars
+    - name: Create .env file
+      run: poetry run invoke setup.write-env-file --dev
+    - name: Create .env file
       run: poetry run invoke setup.write-env-file --dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
