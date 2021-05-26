@@ -71,7 +71,7 @@ jobs:
         # OS options: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
         # NOTE: Services (running in Docker containers) only work on ubuntu.
         os: [macos-latest, ubuntu-latest]
-        python-version: [3.7]
+        python-version: [3.8]
     environment: dev
     env:
       TESTING: true
@@ -151,7 +151,7 @@ jobs:
       matrix:
         # services (running in Docker containers) only work on ubuntu
         os: [ubuntu-latest]
-        python-version: [3.7]
+        python-version: [3.8]
     services:
       postgres:
         image: postgres
@@ -252,7 +252,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     environment: integration
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
@@ -327,7 +327,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        python-version: [3.7]
+        python-version: [3.8]
     environment: integration
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
