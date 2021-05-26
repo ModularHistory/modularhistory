@@ -77,3 +77,5 @@ runs:
         cd frontend
         npm ci
         cd ..
+    - name: Create .env file
+      run: poetry run invoke setup.write-env-file --dev
