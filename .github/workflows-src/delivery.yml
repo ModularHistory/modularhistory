@@ -76,7 +76,7 @@ jobs:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.7
+        python-version: 3.8
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
     - name: Inject environment vars

@@ -105,7 +105,7 @@ if [[ -z $GITHUB_REF ]]; then
     exit 1
   fi
   # Make sure the latest updates have been pulled.
-  if ! git diff --quiet origin/main; then
+  if ! git diff --quiet origin/main && [[ ! "$just_do_it" = true ]]; then
     _error "
       Your modularhistory code differs from what's in origin/main.
       Pull the latest updates, then try running this script again.
@@ -163,11 +163,16 @@ brew help &>/dev/null || {
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 }
 brew update
+outdated_formulae=$(brew outdated)
 
 function brew_install {
   if brew ls --versions "$1" >/dev/null; then
-    HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade "$1"
+    echo "$outdated_formulae" | grep --quiet "$1" && {
+      echo "Upgrading $1..."
+      brew upgrade "$1"
+    }
   else
+    echo "Installing $1..."
     HOMEBREW_NO_AUTO_UPDATE=1 brew install "$1"
   fi
 }
@@ -189,7 +194,7 @@ fi
 if [[ "$os" == "$MAC_OS" ]]; then
   echo "Updating packages ..."
   # PostgreSQL
-  brew tap homebrew/services && brew_install postgresql
+  brew tap homebrew/services && brew_install postgresql@13
   # Other packages
   brew_install ctags
   brew_install fdupes
@@ -232,6 +237,9 @@ fi
 
 # Install watchman.
 brew_install watchman
+
+# Install pyenv.
+brew_install pyenv
 
 # Note: These are referenced multiple times in this script.
 writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/_media" "$PROJECT_DIR/_static" "$PROJECT_DIR/frontend/.next" )
@@ -290,18 +298,13 @@ pyenv --version &>/dev/null || {
     echo "Removing extant $pyenv_dir ..."
     sudo rm -rf "$pyenv_dir" &>/dev/null
   }
-  if [[ "$os" == "$MAC_OS" ]]; then
-    brew install pyenv
-  elif [[ "$os" == "$LINUX" ]]; then
-    echo "Installing pyenv ..."
-    # https://github.com/pyenv/pyenv-installer
-    curl https://pyenv.run | bash
-  fi
+  brew_install pyenv
 }
 pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
-echo "Using $(pyenv --version) ..."
 installed_py_versions="$(pyenv versions)"
+required_py_version=""
 while IFS= read -r pyversion; do
+  required_py_version="$pyversion"
   # shellcheck disable=SC2076
   if [[ -n $pyversion ]] && [[ ! "$installed_py_versions" =~ "$pyversion" ]]; then
     pyenv install "$pyversion"
@@ -336,8 +339,16 @@ _append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv 
 echo "Checking Python version ..."
 python --version &>/dev/null || _error "Failed to activate Python"
 active_py_version=$(python --version)
-if [[ ! "$active_py_version" =~ .*"$pyversion".* ]]; then
-  _error "Failed to activate Python $pyversion."
+echo "Verifying the active Python version is $required_py_version..."
+if [[ ! "$active_py_version" =~ .*"$required_py_version".* ]]; then
+  # Destroy extant .venv and try to recreate it with new Python version.
+  [[ -d .venv ]] && rm -r .venv; poetry install || {
+    pip install --upgrade pip && poetry install
+  }
+  cd "$PROJECT_DIR" || _error "Failed to cd into $PROJECT_DIR."
+  if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
+    _error "Failed to activate Python $required_py_version."
+  fi
 fi
 echo "Using $(python --version) ..."
 
@@ -398,13 +409,6 @@ poetry install --no-root || {
   rm requirements.txt
   _error "Failed to install dependencies with Poetry."
 }
-
-# Build the Django image.
-# Note: This has to be done before running `invoke seed` within this script.
-docker-compose build django
-
-# Add container names to /etc/hosts.
-poetry run invoke setup.update-hosts
 
 # Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."
@@ -482,6 +486,21 @@ if [[ "$rerun_required" = "true" ]]; then
   exit
 fi
 
+[[ "$TESTING" = true ]] && {
+  echo "
+    Finished testing the setup script. Omitted the docker-dependent steps
+    of building images & starting containers, syncing media, etc.
+  "
+  exit 0
+}
+
+# Build the Django image.
+# Note: This has to be done before running `invoke seed` within this script.
+docker-compose build django || _error "Failed to build django image."
+
+# Add container names to /etc/hosts.
+poetry run invoke setup.update-hosts
+
 prompt="Seed db and env file [Y/n]? "
 if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
@@ -502,7 +521,7 @@ fi
 
 # Build the react container.
 # Note: This has to be done after a .env file exists.
-docker-compose build react
+docker-compose build react || _error "Failed to build react image."
 
 read -rp "Sync media [Y/n]? " CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then

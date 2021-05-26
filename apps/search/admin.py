@@ -17,7 +17,7 @@ class SearchableModelAdmin(ModelAdmin):
     model: Type['SearchableModel']
 
     exclude = ['cache', 'tags']
-    readonly_fields = ['pretty_cache']
+    readonly_fields = ['slug', 'pretty_cache']
 
     def get_fields(self, request, model_instance=None):
         """Return reordered fields to be displayed in the admin."""
@@ -40,6 +40,7 @@ class SearchableModelAdmin(ModelAdmin):
         return fields
 
     def get_fieldsets(self, request, model_instance=None):
+        """Return the fieldsets to be displayed in the admin form."""
         fields, fieldsets = list(self.get_fields(request, model_instance)), []
         meta_fields = [
             fields.pop(fields.index(field))
