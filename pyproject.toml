@@ -38,6 +38,35 @@ multi_line_output = 3 # vertical hanging indent
 skip_gitignore = true # ignore files listed in .gitignore
 use_parentheses = true
 
+[tool.mypy]
+python_version = 3.8
+cache_dir = ".cache/mypy"
+# https://mypy.readthedocs.io/en/stable/config_file.html#confval-check_untyped_defs
+# TODO: switch to true
+check_untyped_defs = false
+# https://mypy.readthedocs.io/en/stable/config_file.html#confval-disallow_untyped_calls
+disallow_untyped_calls = false
+# https://mypy.readthedocs.io/en/stable/config_file.html#confval-ignore_errors
+ignore_errors = false
+# https://mypy.readthedocs.io/en/stable/config_file.html#confval-no_implicit_optional
+no_implicit_optional = true
+show_error_codes = true
+strict_equality = true
+warn_unused_ignores = false
+warn_redundant_casts = true
+warn_unused_configs = true
+# https://mypy.readthedocs.io/en/stable/config_file.html#confval-warn_unreachable
+warn_unreachable = true
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+
+[[tool.mypy.overrides]]
+modules = "*.migrations.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+modules = "__init__"
+ignore_errors = true
+
 [tool.poetry]
 name = "modularhistory"
 authors = [

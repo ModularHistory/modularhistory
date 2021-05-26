@@ -78,4 +78,4 @@ runs:
         npm ci
         cd ..
     - name: Create .env file
-      run: poetry run invoke setup.write-env-file --dev
+      run: echo "$ENVIRONMENT" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
