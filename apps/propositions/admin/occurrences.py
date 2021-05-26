@@ -7,12 +7,12 @@ from apps.propositions.admin.filters import (
     HasQuotesFilter,
     LocationFilter,
 )
-from apps.propositions.admin.propositions import TypedPropositionAdmin
+from apps.propositions.admin.propositions import PolymorphicPropositionAdmin
 from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.models.taggable_model import TopicFilter
 
 
-class OccurrenceAdmin(TypedPropositionAdmin):
+class OccurrenceAdmin(PolymorphicPropositionAdmin):
     """Model admin for occurrences."""
 
     model = models.Occurrence

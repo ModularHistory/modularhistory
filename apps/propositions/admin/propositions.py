@@ -103,7 +103,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
     list_per_page = 15
 
 
-class TypedPropositionAdmin(AbstractPropositionAdmin):
+class PolymorphicPropositionAdmin(AbstractPropositionAdmin):
     """Admin for all propositions."""
 
     model = models.TypedProposition
@@ -118,5 +118,5 @@ class PropositionAdmin(AbstractPropositionAdmin):
     """Admin for propositions."""
 
 
-admin_site.register(models.TypedProposition, TypedPropositionAdmin)
+admin_site.register(models.TypedProposition, PolymorphicPropositionAdmin)
 admin_site.register(models.Proposition, PropositionAdmin)
