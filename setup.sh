@@ -335,23 +335,6 @@ done < .python-version
 # shellcheck disable=SC2016
 _append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
 
-# Make sure the correct version of Python is used.
-echo "Checking Python version ..."
-python --version &>/dev/null || _error "Failed to activate Python"
-active_py_version=$(python --version)
-echo "Verifying the active Python version is $required_py_version..."
-if [[ ! "$active_py_version" =~ .*"$required_py_version".* ]]; then
-  # Destroy extant .venv and try to recreate it with new Python version.
-  [[ -d .venv ]] && rm -r .venv; poetry install || {
-    pip install --upgrade pip && poetry install
-  }
-  cd "$PROJECT_DIR" || _error "Failed to cd into $PROJECT_DIR."
-  if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
-    _error "Failed to activate Python $required_py_version."
-  fi
-fi
-echo "Using $(python --version) ..."
-
 # Make sure Pip is installed.
 pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
 
@@ -375,6 +358,24 @@ poetry config virtualenvs.in-project true
 poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
+# Make sure Poetry uses the correct version of Python.
+echo "Checking Python version ..."
+active_py_version=$(python --version)
+echo "Verifying the active Python version is $required_py_version..."
+if [[ ! "$active_py_version" =~ .*"$required_py_version".* ]]; then
+  # Destroy extant .venv and try to recreate it with new Python version.
+  [[ -d .venv ]] && rm -r .venv
+  poetry install || {
+    .venv/bin/python -m pip install --upgrade pip
+    poetry install
+  }
+  cd "$PROJECT_DIR" || _error "Failed to cd into $PROJECT_DIR."
+  if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
+    _error "Failed to activate Python $required_py_version."
+  fi
+fi
+echo "Using $(python --version) ..."
+
 if [[ "$os" == "$MAC_OS" ]]; then
   # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
   # shellcheck disable=SC2155
@@ -384,13 +385,14 @@ if [[ "$os" == "$MAC_OS" ]]; then
 fi
 # Install dependencies with Poetry.
 echo "Installing dependencies ..."
+.venv/bin/python -m pip install --upgrade pip
 poetry install --no-root || {
   _print_red "Failed to install dependencies with Poetry."
   echo "Attempting workaround ..."
   # Try installing with pip
   set a
-  # shellcheck disable=SC1090
-  source "$PROJECT_DIR/.venv/bin/activate"; unset a
+  # shellcheck disable=SC1091
+  source .venv/bin/activate; unset a
   IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
   [[ "$IN_VENV" = 0 ]] || {
     _error "Failed to create and/or activate virtual environment."
