@@ -410,13 +410,6 @@ poetry install --no-root || {
   _error "Failed to install dependencies with Poetry."
 }
 
-# Build the Django image.
-# Note: This has to be done before running `invoke seed` within this script.
-docker-compose build django || _error "Failed to build django image."
-
-# Add container names to /etc/hosts.
-poetry run invoke setup.update-hosts
-
 # Set up Node Version Manager (NVM).
 echo "Enabling NVM ..."
 nvm --version &>/dev/null || {
@@ -492,6 +485,21 @@ if [[ "$rerun_required" = "true" ]]; then
   fi
   exit
 fi
+
+[[ "$TESTING" = true ]] && {
+  echo "
+    Finished testing the setup script. Omitted the docker-dependent steps
+    of building images & starting containers, syncing media, etc.
+  "
+  exit 0
+}
+
+# Build the Django image.
+# Note: This has to be done before running `invoke seed` within this script.
+docker-compose build django || _error "Failed to build django image."
+
+# Add container names to /etc/hosts.
+poetry run invoke setup.update-hosts
 
 prompt="Seed db and env file [Y/n]? "
 if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
