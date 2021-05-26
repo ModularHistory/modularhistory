@@ -1,8 +1,7 @@
-from django_perf_rec import TestCaseMixin
 from hypothesis.extra.django import TestCase as DjangoHypothesisTestSuite
 
 
-class TestSuite(TestCaseMixin):
+class TestSuite:
     """Base class for test suites."""
 
 
