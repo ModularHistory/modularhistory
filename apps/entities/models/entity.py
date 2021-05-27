@@ -8,6 +8,7 @@ from django.db import IntegrityError, models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+from typedmodels.models import TypedModel
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime as DateTime
@@ -23,7 +24,7 @@ from apps.search.models import SearchableModel
 from core.constants.strings import EMPTY_STRING
 from core.fields import ArrayField, HTMLField, JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models import TypedModel, store
+from core.models import store
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

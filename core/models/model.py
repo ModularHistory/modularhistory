@@ -13,7 +13,6 @@ from django.db.models import Model as DjangoModel
 from django.urls import reverse
 from django.utils.html import SafeString
 from rest_framework.serializers import Serializer
-from typedmodels.models import TypedModel as BaseTypedModel
 
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
@@ -25,10 +24,6 @@ from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
 
 FieldList = List[str]
-
-# TODO: Extend BaseTypedModel when it's possible.
-# Currently, only one level of inheritance from BaseTypedModel is permitted, unfortunately.
-TypedModel: Type[BaseTypedModel] = BaseTypedModel
 
 # TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
 
