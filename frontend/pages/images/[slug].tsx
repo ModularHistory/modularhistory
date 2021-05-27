@@ -13,7 +13,7 @@ interface ImageProps {
 /**
  * A page that renders the HTML of a single image.
  */
-const Image: FC<ImageProps> = ({ image }: ImageProps) => {
+const ImageDetailPage: FC<ImageProps> = ({ image }: ImageProps) => {
   return (
     <Layout title={image.captionHtml}>
       <ModuleContainer>
@@ -22,7 +22,7 @@ const Image: FC<ImageProps> = ({ image }: ImageProps) => {
     </Layout>
   );
 };
-export default Image;
+export default ImageDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let image = {};
