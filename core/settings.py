@@ -158,14 +158,12 @@ INSTALLED_APPS = [
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
     'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_extensions',  # https://github.com/django-extensions/django-extensions
-    'django_replicated',  # https://github.com/yandex/django_replicated
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
-    'lockdown',  # https://github.com/Dunedan/django-lockdown
     'meta',  # https://django-meta.readthedocs.io/en/latest/
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'watchman',  # https://github.com/mwarkentin/django-watchman

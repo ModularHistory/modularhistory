@@ -229,7 +229,7 @@ stevedore = ">=1.20.0"
 name = "bcrypt"
 version = "3.2.0"
 description = "Modern password hashing for your software and your servers"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -437,11 +437,11 @@ tests = ["cryptography (>=1.3.0)", "pytest", "pytest-asyncio", "async-generator"
 
 [[package]]
 name = "chardet"
-version = "3.0.4"
+version = "4.0.0"
 description = "Universal encoding detector for Python 2 and 3"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "click"
@@ -899,17 +899,6 @@ async = ["django-celery (>=3.0)"]
 async_rq = ["django-rq (>=0.6.0)"]
 
 [[package]]
-name = "django-lockdown"
-version = "3.0.0"
-description = "Lock down a Django site or individual views, with configurable preview authorization"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-Django = ">=1.11"
-
-[[package]]
 name = "django-mass-edit"
 version = "3.2.0"
 description = "Make bulk changes in the Django admin interface"
@@ -967,17 +956,6 @@ python-versions = ">=3.5"
 [package.dependencies]
 Django = ">=2.2"
 redis = ">=3.0.0"
-
-[[package]]
-name = "django-replicated"
-version = "2.7"
-description = "Django DB router for stateful master-slave replication"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-six = "*"
 
 [[package]]
 name = "django-sass-processor"
@@ -2303,7 +2281,7 @@ youtube-dl-backend = ["youtube-dl"]
 name = "paramiko"
 version = "2.7.2"
 description = "SSH2 protocol library"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -2360,17 +2338,6 @@ python-versions = "*"
 
 [package.dependencies]
 flake8-polyfill = ">=1.0.2,<2"
-
-[[package]]
-name = "pexpect"
-version = "4.8.0"
-description = "Pexpect allows easy control of interactive console applications."
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-ptyprocess = ">=0.5"
 
 [[package]]
 name = "pilkit"
@@ -2450,14 +2417,6 @@ description = "psycopg2 - Python-PostgreSQL Database Adapter"
 category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
-
-[[package]]
-name = "ptyprocess"
-version = "0.7.0"
-description = "Run a subprocess in a pseudo terminal"
-category = "main"
-optional = false
-python-versions = "*"
 
 [[package]]
 name = "py"
@@ -2815,7 +2774,7 @@ six = ">=1.5"
 
 [[package]]
 name = "python-decouple"
-version = "3.3"
+version = "3.4"
 description = "Strict separation of settings from code."
 category = "main"
 optional = false
@@ -2925,7 +2884,7 @@ python-versions = "*"
 
 [[package]]
 name = "requests"
-version = "2.24.0"
+version = "2.25.1"
 description = "Python HTTP for Humans."
 category = "main"
 optional = false
@@ -2933,9 +2892,9 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.dependencies]
 certifi = ">=2017.4.17"
-chardet = ">=3.0.2,<4"
+chardet = ">=3.0.2,<5"
 idna = ">=2.5,<3"
-urllib3 = ">=1.21.1,<1.25.0 || >1.25.0,<1.25.1 || >1.25.1,<1.26"
+urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
@@ -3073,7 +3032,7 @@ tests = ["coverage[toml] (>=5.0.2)", "pytest"]
 
 [[package]]
 name = "sigfig"
-version = "1.1.8"
+version = "1.1.9"
 description = "Python library for rounding numbers (with expected results)"
 category = "main"
 optional = false
@@ -3341,7 +3300,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "urllib3"
-version = "1.25.11"
+version = "1.26.5"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
@@ -3541,7 +3500,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "a2f69852dcd0d4004d5e95234a8b9332517e72cf72cf001a796145a74acf1d11"
+content-hash = "dc4d41942e977d370586e2541d81597ae4574b3c9b9041186fe9fdcdd68c703d"
 
 [metadata.files]
 aenum = [
@@ -3815,8 +3774,8 @@ channels-redis = [
     {file = "channels_redis-3.2.0.tar.gz", hash = "sha256:2fb31a63b05373f6402da2e6a91a22b9e66eb8b56626c6bfc93e156c734c5ae6"},
 ]
 chardet = [
-    {file = "chardet-3.0.4-py2.py3-none-any.whl", hash = "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"},
-    {file = "chardet-3.0.4.tar.gz", hash = "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae"},
+    {file = "chardet-4.0.0-py2.py3-none-any.whl", hash = "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"},
+    {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
 ]
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
@@ -4031,10 +3990,6 @@ django-imagekit = [
     {file = "django-imagekit-4.0.2.tar.gz", hash = "sha256:6ec0afb77cdf52cd453c9fc2c10ef350d111edfd6ce53c5977aa8a0e22cee00c"},
     {file = "django_imagekit-4.0.2-py2.py3-none-any.whl", hash = "sha256:304c3379f6a5cac387e47ace11195a603ad3cb01e3e951b45489824d25b00359"},
 ]
-django-lockdown = [
-    {file = "django-lockdown-3.0.0.tar.gz", hash = "sha256:348b8b74d39f851591d55fdad3ded3c14120f50a8151abfea13ae315d967596c"},
-    {file = "django_lockdown-3.0.0-py2.py3-none-any.whl", hash = "sha256:fd4d09ca4cd98b6cc2b39270976a63adbf3ff0624c8ef9a730b9ce84942bb30e"},
-]
 django-mass-edit = [
     {file = "django-mass-edit-3.2.0.tar.gz", hash = "sha256:4646b2d76a9e0cd289ab260c7b8efb7bc58fd0a7223e4871c4e1aa3ceee4a290"},
     {file = "django_mass_edit-3.2.0-py3-none-any.whl", hash = "sha256:a72b525f12071ac20b29541d6038ef68f4e4b21ca590909cd0033f1b0b3c5420"},
@@ -4054,9 +4009,6 @@ django-polymorphic = [
 django-redis = [
     {file = "django-redis-4.12.1.tar.gz", hash = "sha256:306589c7021e6468b2656edc89f62b8ba67e8d5a1c8877e2688042263daa7a63"},
     {file = "django_redis-4.12.1-py3-none-any.whl", hash = "sha256:1133b26b75baa3664164c3f44b9d5d133d1b8de45d94d79f38d1adc5b1d502e5"},
-]
-django-replicated = [
-    {file = "django_replicated-2.7.tar.gz", hash = "sha256:9f983343b707aaaed7ccc664dde5f16a7c56f896ff08b3087e8d9b45a9f77e7c"},
 ]
 django-sass-processor = [
     {file = "django-sass-processor-0.8.2.tar.gz", hash = "sha256:9b46a12ca8bdcb397d46fbcc49e6a926ff9f76a93c5efeb23b495419fd01fc7a"},
@@ -4801,10 +4753,6 @@ pep8-naming = [
     {file = "pep8-naming-0.11.1.tar.gz", hash = "sha256:a1dd47dd243adfe8a83616e27cf03164960b507530f155db94e10b36a6cd6724"},
     {file = "pep8_naming-0.11.1-py2.py3-none-any.whl", hash = "sha256:f43bfe3eea7e0d73e8b5d07d6407ab47f2476ccaeff6937c84275cd30b016738"},
 ]
-pexpect = [
-    {file = "pexpect-4.8.0-py2.py3-none-any.whl", hash = "sha256:0b48a55dcb3c05f3329815901ea4fc1537514d6ba867a152b581d69ae3710937"},
-    {file = "pexpect-4.8.0.tar.gz", hash = "sha256:fc65a43959d153d0114afe13997d439c22823a27cefceb5ff35c2178c6784c0c"},
-]
 pilkit = [
     {file = "pilkit-2.0.tar.gz", hash = "sha256:ddb30c2f0198a147e56b151476c3bb9fe045fbfd5b0a0fa2a3148dba62d1559f"},
 ]
@@ -4924,10 +4872,6 @@ psycopg2-binary = [
     {file = "psycopg2_binary-2.8.6-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:7312e931b90fe14f925729cde58022f5d034241918a5c4f9797cac62f6b3a9dd"},
     {file = "psycopg2_binary-2.8.6-cp39-cp39-win32.whl", hash = "sha256:6422f2ff0919fd720195f64ffd8f924c1395d30f9a495f31e2392c2efafb5056"},
     {file = "psycopg2_binary-2.8.6-cp39-cp39-win_amd64.whl", hash = "sha256:15978a1fbd225583dd8cdaf37e67ccc278b5abecb4caf6b2d6b8e2b948e953f6"},
-]
-ptyprocess = [
-    {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
-    {file = "ptyprocess-0.7.0.tar.gz", hash = "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220"},
 ]
 py = [
     {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
@@ -5147,7 +5091,8 @@ python-dateutil = [
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
 python-decouple = [
-    {file = "python-decouple-3.3.tar.gz", hash = "sha256:55c546b85b0c47a15a47a4312d451a437f7344a9be3e001660bccd93b637de95"},
+    {file = "python-decouple-3.4.tar.gz", hash = "sha256:2e5adb0263a4f963b58d7407c4760a2465d464ee212d733e2a2c179e54c08d8f"},
+    {file = "python_decouple-3.4-py3-none-any.whl", hash = "sha256:a8268466e6389a639a20deab9d880faee186eb1eb6a05e54375bdf158d691981"},
 ]
 python-dotenv = [
     {file = "python-dotenv-0.15.0.tar.gz", hash = "sha256:587825ed60b1711daea4832cf37524dfd404325b7db5e25ebe88c495c9f807a0"},
@@ -5264,8 +5209,8 @@ regex = [
     {file = "regex-2021.4.4.tar.gz", hash = "sha256:52ba3d3f9b942c49d7e4bc105bb28551c44065f139a65062ab7912bef10c9afb"},
 ]
 requests = [
-    {file = "requests-2.24.0-py2.py3-none-any.whl", hash = "sha256:fe75cc94a9443b9246fc7049224f75604b113c36acb93f87b80ed42c44cbb898"},
-    {file = "requests-2.24.0.tar.gz", hash = "sha256:b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b"},
+    {file = "requests-2.25.1-py2.py3-none-any.whl", hash = "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"},
+    {file = "requests-2.25.1.tar.gz", hash = "sha256:27973dd4a904a4f13b263a19c866c13b92a39ed1c964655f025f3f8d3d75b804"},
 ]
 requests-oauthlib = [
     {file = "requests-oauthlib-1.3.0.tar.gz", hash = "sha256:b4261601a71fd721a8bd6d7aa1cc1d6a8a93b4a9f5e96626f8e4d91e8beeaa6a"},
@@ -5303,8 +5248,8 @@ service-identity = [
     {file = "service_identity-21.1.0-py2.py3-none-any.whl", hash = "sha256:f0b0caac3d40627c3c04d7a51b6e06721857a0e10a8775f2d1d7e72901b3a7db"},
 ]
 sigfig = [
-    {file = "sigfig-1.1.8-py3-none-any.whl", hash = "sha256:732db152763b2fcdb43f66cf8a06d2cda8808f80bdd430b865a372f74fd1ce02"},
-    {file = "sigfig-1.1.8.tar.gz", hash = "sha256:56b412db40d462f4e2d058b1c5eb34160acc715d0df728604b265b7220ed430e"},
+    {file = "sigfig-1.1.9-py3-none-any.whl", hash = "sha256:926e5cfc752f3975e3dab10af96fceb1f8d1fdbee8766bbfb66a47ae3b73747d"},
+    {file = "sigfig-1.1.9.tar.gz", hash = "sha256:58b3b1bb3a1198cd46c922f13a291399e527eea16e47dcfff3e4b45db08771a0"},
 ]
 singledispatch = [
     {file = "singledispatch-3.6.2-py2.py3-none-any.whl", hash = "sha256:0d428477703d8386eb6aeed6e522c9f22d49f4363cdf4ed6a2ba3dc276053e20"},
@@ -5493,8 +5438,8 @@ uritemplate = [
     {file = "uritemplate-3.0.1.tar.gz", hash = "sha256:5af8ad10cec94f215e3f48112de2022e1d5a37ed427fbd88652fa908f2ab7cae"},
 ]
 urllib3 = [
-    {file = "urllib3-1.25.11-py2.py3-none-any.whl", hash = "sha256:f5321fbe4bf3fefa0efd0bfe7fb14e90909eb62a48ccda331726b4319897dd5e"},
-    {file = "urllib3-1.25.11.tar.gz", hash = "sha256:8d7eaa5a82a1cac232164990f04874c594c9453ec55eef02eab885aa02fc17a2"},
+    {file = "urllib3-1.26.5-py2.py3-none-any.whl", hash = "sha256:753a0374df26658f99d826cfe40394a686d05985786d946fbe4165b5148f5a7c"},
+    {file = "urllib3-1.26.5.tar.gz", hash = "sha256:a7acd0977125325f516bda9735fa7142b909a8d01e8b2e4c8108d0984e6e0098"},
 ]
 uvicorn = [
     {file = "uvicorn-0.12.3-py3-none-any.whl", hash = "sha256:562ef6aaa8fa723ab6b82cf9e67a774088179d0ec57cb17e447b15d58b603bcf"},
