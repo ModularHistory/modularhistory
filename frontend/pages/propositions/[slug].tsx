@@ -34,6 +34,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         elaboration
         model
         adminUrl
+        premises
       }
     }`,
   };

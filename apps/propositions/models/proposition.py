@@ -137,6 +137,7 @@ class TypedProposition(
     premises = models.ManyToManyField(
         to='self',
         through='propositions.Support',
+        through_fields=('conclusion', 'premise'),
         related_name='conclusions',
         symmetrical=False,
         verbose_name=_('premises'),
