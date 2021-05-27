@@ -84,7 +84,7 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
         # 'description'
     ]
     serializer = TopicSerializer
-    slug_base_field = 'name'
+    slug_base_fields = ('name',)
 
     class Meta:
         ordering = ['name']

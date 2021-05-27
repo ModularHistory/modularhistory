@@ -285,13 +285,15 @@ if [[ -d "$pyenv_dir" ]]; then
   }
 fi
 brew_install pyenv
+pyenv --help &>/dev/null || _error "Failed to install pyenv."
 
+# Install the required Python version.
 # shellcheck disable=SC2076
 if [[ ! "$(pyenv versions)" =~ "$required_py_version" ]]; then
   pyenv install "$required_py_version"
 fi
 
-# Install Poetry.
+# Install and configure Poetry.
 # shellcheck disable=SC2016
 poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
 poetry --version &>/dev/null || {
@@ -303,7 +305,6 @@ poetry --version &>/dev/null || {
     _error "Failed to install Poetry (https://python-poetry.org/docs/#installation)."
   }
 }
-
 # https://python-poetry.org/docs/configuration/
 poetry config virtualenvs.create true
 poetry config virtualenvs.in-project true
@@ -316,7 +317,7 @@ function activate_venv() {
   source .venv/bin/activate; unset a
 }
 
-# Initialize .venv with correct Python version.
+# Initialize .venv with the correct Python version.
 if [[ -d .venv ]]; then
   echo "Verifying the active Python version is $required_py_version..."
   if [[ ! "$(.venv/bin/python --version)" =~ .*"$required_py_version".* ]]; then
@@ -328,12 +329,13 @@ fi
   poetry env use "$HOME/.pyenv/versions/$required_py_version/bin/python"
 }
 activate_venv
-active_py_version=$(python --version)
-if [[ ! "$active_py_version" =~ .*"$required_py_version".* ]]; then
+if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
   _error "Failed to activate Python $required_py_version."
 fi
 
-# Prepare to install dependencies.
+# Install project dependencies.
+echo "Installing dependencies ..."
+pip install --upgrade pip
 if [[ "$os" == "$MAC_OS" ]]; then
   # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
   # shellcheck disable=SC2155
@@ -341,12 +343,6 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # shellcheck disable=SC2155
   export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
 fi
-
-# Dependency installation may initially fail if pip is outdated. However,
-# we can't install upgrade pip before having poetry add the python and 
-# pip executables to .venv. So, make a pip upgrade sandwich.
-echo "Installing dependencies ..."
-pip install --upgrade pip
 poetry install --no-root || {
   _print_red "Failed to install dependencies with Poetry."
   echo "Attempting workaround ..."
@@ -374,9 +370,9 @@ echo "Enabling NVM ..."
 nvm --version &>/dev/null || {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1091
   [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # loads nvm
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1091
   [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
 echo "Installing Node modules ..."

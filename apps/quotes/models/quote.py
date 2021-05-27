@@ -131,7 +131,7 @@ class Quote(
         'tags__aliases',
     ]
     serializer = QuoteSerializer
-    slug_base_field = 'title'
+    slug_base_fields = ('title',)
 
     def __str__(self) -> str:
         """Return the quote's string representation, for debugging and internal use."""

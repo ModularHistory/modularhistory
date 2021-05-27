@@ -99,7 +99,7 @@ class Entity(
 
     searchable_fields = ['name', 'aliases', 'description']
     serializer = EntitySerializer
-    slug_base_field = 'unabbreviated_name'
+    slug_base_fields = ('unabbreviated_name',)
 
     def __str__(self) -> str:
         """Return the string representation of the entity."""

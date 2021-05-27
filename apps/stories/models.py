@@ -51,7 +51,7 @@ class Story(ModelWithSources):
 
     searchable_fields = ['handle', 'description']
     serializer = StorySerializer
-    slug_base_field = 'handle'
+    slug_base_fields = ('handle',)
 
     def __str__(self) -> str:
         """Return the fact's string representation."""

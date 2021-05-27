@@ -20,4 +20,4 @@ class MediaModel(SearchableDatedModel):
 
         abstract = True
 
-    slug_base_field = 'caption'
+    slug_base_fields = ('caption',)

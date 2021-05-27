@@ -47,7 +47,7 @@ class Place(TypedModel, ModelWithCache):
     class Meta:
         unique_together = ['name', 'location']
 
-    slug_base_field = 'string'
+    slug_base_fields = ('string',)
 
     def __str__(self) -> str:
         """Return the location's string representation."""
