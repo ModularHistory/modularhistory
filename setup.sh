@@ -148,11 +148,6 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # Use GNU Grep
   # shellcheck disable=SC2016
   _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
-elif [[ "$os_name" == Linux* ]]; then
-  # Remove conflicting Windows paths from PATH, if necessary.
-  # shellcheck disable=SC2016
-  mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
-  _append_to_sh_profile "$mod"
 fi
 
 # Update package managers
@@ -238,9 +233,6 @@ fi
 # Install watchman.
 brew_install watchman
 
-# Install pyenv.
-brew_install pyenv
-
 # Note: These are referenced multiple times in this script.
 writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/_media" "$PROJECT_DIR/_static" "$PROJECT_DIR/frontend/.next" )
 
@@ -288,72 +280,30 @@ if [[ "$os" == "$LINUX" ]]; then
   fi
 fi
 
-# Make sure pyenv is installed.
-echo "Checking for pyenv ..."
+required_py_version="3.8.10"
+
+# Install pyenv.
+if [[ "$os_name" == Linux* ]]; then
+  # Remove conflicting Windows paths from PATH, if necessary.
+  # shellcheck disable=SC2016
+  mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
+  _append_to_sh_profile "$mod"
+fi
 pyenv_dir="$HOME/.pyenv"
 # shellcheck disable=SC2016
 _append_to_sh_profile 'export PATH="$HOME/.pyenv/bin:$PATH"'
-pyenv --version &>/dev/null || {
-  [[ -d "$pyenv_dir" ]] && {
+if [[ -d "$pyenv_dir" ]]; then
+  pyenv --version &>/dev/null || {
     echo "Removing extant $pyenv_dir ..."
     sudo rm -rf "$pyenv_dir" &>/dev/null
   }
-  brew_install pyenv
-}
-pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
-installed_py_versions="$(pyenv versions)"
-required_py_version=""
-while IFS= read -r pyversion; do
-  required_py_version="$pyversion"
-  # shellcheck disable=SC2076
-  if [[ -n $pyversion ]] && [[ ! "$installed_py_versions" =~ "$pyversion" ]]; then
-    pyenv install "$pyversion"
-    # shellcheck disable=SC2076
-    if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
-      if [[ "$os" == "$MAC_OS" ]]; then
-        # Try to fix MacOS environment for installation of Python versions via pyenv.
-        # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
-        brew install bzip2
-        echo "Exporting LDFLAGS and CFLAGS to allow installing new Python versions via pyenv ..."
-        echo "https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829"
-        # shellcheck disable=SC2155
-        export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
-        # shellcheck disable=SC2155
-        export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
-        pyenv install "$pyversion"
-        if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
-          _error "Failed to install Python $pyversion."
-        fi
-      else
-        _error "Failed to install Python $pyversion."
-      fi
-    fi
-  fi
-done < .python-version
-
-# Activate the local Python version.
-# shellcheck disable=SC2016
-_append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
-
-# Make sure the correct version of Python is used.
-echo "Checking Python version ..."
-python --version &>/dev/null || _error "Failed to activate Python"
-active_py_version=$(python --version)
-echo "Verifying the active Python version is $required_py_version..."
-if [[ ! "$active_py_version" =~ .*"$required_py_version".* ]]; then
-  # Destroy extant .venv and try to recreate it with new Python version.
-  [[ -d .venv ]] && rm -r .venv; poetry install || {
-    pip install --upgrade pip && poetry install
-  }
-  cd "$PROJECT_DIR" || _error "Failed to cd into $PROJECT_DIR."
-  if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
-    _error "Failed to activate Python $required_py_version."
-  fi
 fi
-echo "Using $(python --version) ..."
+brew_install pyenv
 
-# Make sure Pip is installed.
-pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
+# shellcheck disable=SC2076
+if [[ ! "$(pyenv versions)" =~ "$required_py_version" ]]; then
+  pyenv install "$required_py_version"
+fi
 
 # Install Poetry.
 # shellcheck disable=SC2016
@@ -375,6 +325,30 @@ poetry config virtualenvs.in-project true
 poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
+function activate_venv() {
+  set a
+  # shellcheck disable=SC1091
+  source .venv/bin/activate; unset a
+}
+
+# Initialize .venv with correct Python version.
+if [[ -d .venv ]]; then
+  echo "Verifying the active Python version is $required_py_version..."
+  if [[ ! "$(.venv/bin/python --version)" =~ .*"$required_py_version".* ]]; then
+    echo "Destroying the existing .venv ..."
+    [[ -d .venv ]] && rm -r .venv
+  fi
+fi
+[[ -d .venv ]] || {
+  poetry env use "$HOME/.pyenv/versions/$required_py_version/bin/python"
+}
+activate_venv
+active_py_version=$(python --version)
+if [[ ! "$active_py_version" =~ .*"$required_py_version".* ]]; then
+  _error "Failed to activate Python $required_py_version."
+fi
+
+# Prepare to install dependencies.
 if [[ "$os" == "$MAC_OS" ]]; then
   # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
   # shellcheck disable=SC2155
@@ -382,15 +356,15 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # shellcheck disable=SC2155
   export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
 fi
-# Install dependencies with Poetry.
+
+# Dependency installation may initially fail if pip is outdated. However,
+# we can't install upgrade pip before having poetry add the python and 
+# pip executables to .venv. So, make a pip upgrade sandwich.
 echo "Installing dependencies ..."
+pip install --upgrade pip
 poetry install --no-root || {
   _print_red "Failed to install dependencies with Poetry."
   echo "Attempting workaround ..."
-  # Try installing with pip
-  set a
-  # shellcheck disable=SC1090
-  source "$PROJECT_DIR/.venv/bin/activate"; unset a
   IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
   [[ "$IN_VENV" = 0 ]] || {
     _error "Failed to create and/or activate virtual environment."

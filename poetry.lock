@@ -3084,7 +3084,7 @@ SortedContainers = "*"
 
 [[package]]
 name = "singledispatch"
-version = "3.6.1"
+version = "3.6.2"
 description = "Backport functools.singledispatch from Python 3.4 to Python 2.6-3.3."
 category = "main"
 optional = false
@@ -3095,7 +3095,7 @@ six = "*"
 
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-black (>=0.3.7)", "unittest2"]
+testing = ["pytest (>=4.6)", "pytest-flake8", "pytest-cov", "pytest-black (>=0.3.7)", "unittest2", "pytest-checkdocs (>=2.4)"]
 
 [[package]]
 name = "six"
@@ -3540,8 +3540,8 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "==3.8.10"
-content-hash = "a5b67eb479e5439cca7a52ac8ba9133dd920331cbf0f0baeb30c8fc799049ffb"
+python-versions = "~3.8.10"
+content-hash = "cd0669f87b7b7def7fe637cd01e182fd1595ca1ec62200f5c55f816db8f3cb83"
 
 [metadata.files]
 aenum = [
@@ -5307,8 +5307,8 @@ sigfig = [
     {file = "sigfig-1.1.8.tar.gz", hash = "sha256:56b412db40d462f4e2d058b1c5eb34160acc715d0df728604b265b7220ed430e"},
 ]
 singledispatch = [
-    {file = "singledispatch-3.6.1-py2.py3-none-any.whl", hash = "sha256:85c97f94c8957fa4e6dab113156c182fb346d56d059af78aad710bced15f16fb"},
-    {file = "singledispatch-3.6.1.tar.gz", hash = "sha256:58b46ce1cc4d43af0aac3ac9a047bdb0f44e05f0b2fa2eec755863331700c865"},
+    {file = "singledispatch-3.6.2-py2.py3-none-any.whl", hash = "sha256:0d428477703d8386eb6aeed6e522c9f22d49f4363cdf4ed6a2ba3dc276053e20"},
+    {file = "singledispatch-3.6.2.tar.gz", hash = "sha256:d5bb9405a4b8de48e36709238e8b91b4f6f300f81a5132ba2531a9a738eca391"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
