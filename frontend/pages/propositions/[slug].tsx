@@ -2,18 +2,18 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { PropositionModule } from "@/interfaces";
+import { Proposition } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
 interface PropositionProps {
-  proposition: PropositionModule;
+  proposition: Proposition;
 }
 
 /**
  * A page that renders the HTML of a single proposition.
  */
-const Proposition: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
+const PropositionDetailPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
     <Layout title={proposition.summary}>
       <ModuleContainer>
@@ -22,7 +22,7 @@ const Proposition: FC<PropositionProps> = ({ proposition }: PropositionProps) =>
     </Layout>
   );
 };
-export default Proposition;
+export default PropositionDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let proposition = {};
@@ -34,7 +34,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         elaboration
         model
         adminUrl
-        premises
+        premises {
+          slug
+          summary
+          elaboration
+        }
       }
     }`,
   };

@@ -1,9 +1,9 @@
-import { QuoteModule } from "@/interfaces";
+import { Quote } from "@/interfaces";
 import { FC } from "react";
 import ImageCard from "../cards/ImageCard";
 
 interface QuoteDetailProps {
-  quote: QuoteModule;
+  quote: Quote;
 }
 
 const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {

@@ -1,9 +1,9 @@
-import { EntityModule } from "@/interfaces";
+import { Entity } from "@/interfaces";
 import { FC } from "react";
 import ImageCard from "../cards/ImageCard";
 
 interface EntityDetailProps {
-  entity: EntityModule;
+  entity: Entity;
 }
 
 const EntityDetail: FC<EntityDetailProps> = ({ entity }: EntityDetailProps) => {

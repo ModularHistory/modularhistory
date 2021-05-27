@@ -1,9 +1,9 @@
-import { ImageModule } from "@/interfaces";
+import { Image } from "@/interfaces";
 import { FC } from "react";
 import ImageCard from "../cards/ImageCard";
 
 interface ImageDetailProps {
-  image: ImageModule;
+  image: Image;
 }
 
 const ImageDetail: FC<ImageDetailProps> = ({ image }: ImageDetailProps) => {

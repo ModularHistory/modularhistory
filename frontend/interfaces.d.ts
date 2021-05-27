@@ -4,7 +4,7 @@ export interface BaseModule {
   slug: string;
   absoluteUrl: string;
   adminUrl: string;
-  cachedImages?: ImageModule[];
+  cachedImages?: Image[];
   verified?: boolean;
   dateString?: string;
 }
@@ -19,7 +19,7 @@ export interface Citation {
   html: string;
 }
 
-export interface ImageModule extends SearchableModule {
+export interface Image extends SearchableModule {
   srcUrl: string;
   width: number;
   height: number;
@@ -30,11 +30,11 @@ export interface ImageModule extends SearchableModule {
 }
 
 export interface ModuleWithImages {
-  primaryImage: ImageModule;
-  cachedImages: ImageModule[];
+  primaryImage: Image;
+  cachedImages: Image[];
 }
 
-export interface QuoteModule extends SearchableModule, ModuleWithImages {
+export interface Quote extends SearchableModule, ModuleWithImages {
   title: string;
   attributeeHtml: string;
   bite: string;
@@ -43,7 +43,7 @@ export interface QuoteModule extends SearchableModule, ModuleWithImages {
   cachedCitations: Citation[];
 }
 
-export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
+export interface Occurrence extends SearchableModule, ModuleWithImages {
   title: string;
   dateString: string;
   elaboration: string;
@@ -52,37 +52,31 @@ export interface OccurrenceModule extends SearchableModule, ModuleWithImages {
   summary: string;
 }
 
-export interface SourceModule extends SearchableModule {
+export interface Source extends SearchableModule {
   title: string;
   citationHtml: string;
   citationString: string;
   description: string;
 }
 
-export interface EntityModule extends BaseModule, ModuleWithImages {
+export interface Entity extends BaseModule, ModuleWithImages {
   name: string;
   description: string;
 }
 
-export interface PropositionModule extends BaseModule {
+export interface Proposition extends BaseModule {
   summary: string;
   elaboration: string;
   certainty: string;
+  premises: Proposition[];
 }
 
-export interface TopicModule extends BaseModule {
+export interface Topic extends BaseModule {
   name: string;
   description: string;
 }
 
-export type ModuleUnion =
-  | ImageModule
-  | QuoteModule
-  | OccurrenceModule
-  | SourceModule
-  | EntityModule
-  | PropositionModule
-  | TopicModule;
+export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
 
 export interface StaticPage {
   title: string;
