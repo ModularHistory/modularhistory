@@ -66,7 +66,7 @@ def cache_images(model: str, instance_id: int, images: list):
     """Save cached images to a model instance."""
     if not images:
         return
-    Model = apps.get_model(model)
-    model_instance: ModelWithImages = Model.objects.get(pk=instance_id)  # noqa: N806
+    Model = apps.get_model(model)  # noqa: N806
+    model_instance: ModelWithImages = Model.objects.get(pk=instance_id)
     model_instance.cache['images'] = images
     model_instance.save(wipe_cache=False)

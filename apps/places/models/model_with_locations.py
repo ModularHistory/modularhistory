@@ -19,8 +19,10 @@ if TYPE_CHECKING:
 
 class AbstractLocationRelation(PositionedRelation):
     """
-    Abstract base model for locations relations, i.e., models governing
-    m2m relationships between `Place` and another model.
+    Abstract base model for locations relations.
+
+    Models governing m2m relationships between `Place` and another model
+    should inherit from this abstract model.
     """
 
     location = ManyToManyForeignKey(
