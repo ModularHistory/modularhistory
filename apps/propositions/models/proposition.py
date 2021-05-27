@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Manager
 from django.urls import reverse
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.models import DatedModel
@@ -178,6 +180,11 @@ class TypedProposition(
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+    @property
+    def escaped_summary(self) -> SafeString:
+        """Return the escaped summary (for display in the Django admin)."""
+        return format_html(self.summary)
 
     @property
     def summary_link(self) -> str:

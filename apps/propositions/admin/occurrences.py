@@ -20,7 +20,7 @@ class OccurrenceAdmin(PolymorphicPropositionAdmin):
     list_display = [
         'slug',
         'title',
-        'summary',
+        'escaped_summary',
         'date_string',
         'tags_string',
     ]
