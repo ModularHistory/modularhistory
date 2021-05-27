@@ -1,13 +1,13 @@
 #!/bin/bash
 
+required_py_version="3.8.10"
+
 PROJECT_DIR=$(dirname "$0")
 RED='\033[0;31m'
 NC='\033[0m'  # No Color
 BOLD=$(tput bold)
 MAC_OS="MacOS"
 LINUX="Linux"
-
-rerun_required="false"
 
 function _append() {
   grep -qxF "$1" "$2" || {
@@ -248,13 +248,11 @@ if [[ "$os" == "$LINUX" ]]; then
     groups "$USER" | grep -q www-data || {
       _error "Failed to add $USER to the www-data group."
     }
-    rerun_required="true"
   }
   # shellcheck disable=SC2010
   ls -ld "$PROJECT_DIR" | grep -q "$USER www-data" || {
     echo "Granting the www-data group permission to write in project directories ..."
     sudo chown -R "$USER":www-data "$PROJECT_DIR"
-    rerun_required="true"
   }
   for writable_dir in "${writable_dirs[@]}"; do
     # shellcheck disable=SC2010
@@ -266,21 +264,9 @@ if [[ "$os" == "$LINUX" ]]; then
       }
       echo "Granting the www-data group permission to write in $writable_dir ..."
       sudo chmod g+w -R "$writable_dir"
-      rerun_required="true"
     }
   done
-  if [[ "$rerun_required" = "true" ]]; then
-    _print_red "File permissions have been updated."
-    prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
-    read -rp "$prompt" CONT
-    if [[ ! "$CONT" = "n" ]]; then
-      exec bash "$PROJECT_DIR/setup.sh"
-    fi
-    exit
-  fi
 fi
-
-required_py_version="3.8.10"
 
 # Install pyenv.
 if [[ "$os_name" == Linux* ]]; then
@@ -316,7 +302,6 @@ poetry --version &>/dev/null || {
   poetry --version &>/dev/null || {
     _error "Failed to install Poetry (https://python-poetry.org/docs/#installation)."
   }
-  rerun_required="true"
 }
 
 # https://python-poetry.org/docs/configuration/
@@ -449,15 +434,6 @@ if [[ "$os" == "$MAC_OS" ]]; then
   else
     echo "Could not find Docker settings file; skipping enabling Docker file sharing ... "
   fi
-fi
-
-if [[ "$rerun_required" = "true" ]]; then
-  prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
-  read -rp "$prompt" CONT
-  if [[ ! "$CONT" = "n" ]]; then
-    exec bash "$PROJECT_DIR/setup.sh"
-  fi
-  exit
 fi
 
 [[ "$TESTING" = true ]] && {
