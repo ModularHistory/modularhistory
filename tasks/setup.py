@@ -90,6 +90,7 @@ def dispatch_and_get_workflow(context, session: Session) -> dict:
 
 
 def seed_env_file(context, username, pat):
+    """Acquire a .env file."""
     username, pat = github_utils.accept_credentials(username, pat)
     session = github_utils.initialize_session(username=username, pat=pat)
     print('Dispatching workflow...')
