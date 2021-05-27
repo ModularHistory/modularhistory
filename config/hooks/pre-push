@@ -3,12 +3,21 @@
 committed_filepaths="$(git diff --stat --name-only origin/main)"
 bold=$(tput bold)
 normal=$(tput sgr0)
+docker-compose ps | grep "django" | grep --quiet "Up" && django_up=true || django_up=false
+
+function run_in_django() {
+    if [[ "$django_up" = true ]]; then
+        docker-compose exec django "$@"
+    else
+        docker-compose run django_helper "$@"
+    fi
+}
 
 # If any model files have been modified, check if migrations are required.
 echo "$committed_filepaths" | grep --quiet "models" && {
     # https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
     echo "Checking if migrations are required..."
-    docker-compose run django_helper python manage.py makemigrations --check --no-input --dry-run &>/dev/null || {
+    run_in_django python manage.py makemigrations --check --no-input --dry-run &>/dev/null || {
         echo "
         ${bold}Migrations are required${normal}.
         To see what migrations need to be generated, run:
