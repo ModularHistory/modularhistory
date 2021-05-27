@@ -56,8 +56,6 @@ urlpatterns = [
     # https://github.com/burke-software/django-mass-edit
     path(f'{settings.ADMIN_URL_PREFIX}/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path(f'{settings.ADMIN_URL_PREFIX}/', admin_site.urls),
-    # https://github.com/jazzband/django-silk
-    path(f'{settings.ADMIN_URL_PREFIX}/silk/', include('silk.urls', namespace='silk')),
     # ---------------------------------
     # App URLs
     # ---------------------------------

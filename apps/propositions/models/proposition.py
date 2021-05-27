@@ -162,7 +162,7 @@ class TypedProposition(
         'tags__aliases',
     ]
     serializer = PropositionSerializer
-    slug_base_field = 'title'
+    slug_base_fields = ('title', 'summary')
 
     def __str__(self) -> str:
         """Return the proposition's string representation."""

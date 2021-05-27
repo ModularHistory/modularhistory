@@ -165,7 +165,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     objects = PolymorphicSourceManager.from_queryset(PolymorphicSourceQuerySet)()
     searchable_fields = ['citation_string', 'description']
     serializer = SourceSerializer
-    slug_base_field = 'title'
+    slug_base_fields = ('title',)
 
     def __html__(self) -> str:
         """

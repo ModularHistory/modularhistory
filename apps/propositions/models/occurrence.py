@@ -50,7 +50,6 @@ class Occurrence(TypedProposition):
         'tags__aliases',
     ]
     serializer = OccurrenceSerializer
-    slug_base_field = 'title'
 
     def __str__(self) -> str:
         """Return the string representation of the occurrence."""

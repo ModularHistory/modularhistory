@@ -1,13 +1,13 @@
 #!/bin/bash
 
+required_py_version="3.9.5"
+
 PROJECT_DIR=$(dirname "$0")
 RED='\033[0;31m'
 NC='\033[0m'  # No Color
 BOLD=$(tput bold)
 MAC_OS="MacOS"
 LINUX="Linux"
-
-rerun_required="false"
 
 function _append() {
   grep -qxF "$1" "$2" || {
@@ -148,11 +148,6 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # Use GNU Grep
   # shellcheck disable=SC2016
   _append_to_sh_profile 'export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"'
-elif [[ "$os_name" == Linux* ]]; then
-  # Remove conflicting Windows paths from PATH, if necessary.
-  # shellcheck disable=SC2016
-  mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
-  _append_to_sh_profile "$mod"
 fi
 
 # Update package managers
@@ -238,9 +233,6 @@ fi
 # Install watchman.
 brew_install watchman
 
-# Install pyenv.
-brew_install pyenv
-
 # Note: These are referenced multiple times in this script.
 writable_dirs=( "$PROJECT_DIR/.backups" "$PROJECT_DIR/.init" "$PROJECT_DIR/_media" "$PROJECT_DIR/_static" "$PROJECT_DIR/frontend/.next" )
 
@@ -256,13 +248,11 @@ if [[ "$os" == "$LINUX" ]]; then
     groups "$USER" | grep -q www-data || {
       _error "Failed to add $USER to the www-data group."
     }
-    rerun_required="true"
   }
   # shellcheck disable=SC2010
   ls -ld "$PROJECT_DIR" | grep -q "$USER www-data" || {
     echo "Granting the www-data group permission to write in project directories ..."
     sudo chown -R "$USER":www-data "$PROJECT_DIR"
-    rerun_required="true"
   }
   for writable_dir in "${writable_dirs[@]}"; do
     # shellcheck disable=SC2010
@@ -274,71 +264,36 @@ if [[ "$os" == "$LINUX" ]]; then
       }
       echo "Granting the www-data group permission to write in $writable_dir ..."
       sudo chmod g+w -R "$writable_dir"
-      rerun_required="true"
     }
   done
-  if [[ "$rerun_required" = "true" ]]; then
-    _print_red "File permissions have been updated."
-    prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
-    read -rp "$prompt" CONT
-    if [[ ! "$CONT" = "n" ]]; then
-      exec bash "$PROJECT_DIR/setup.sh"
-    fi
-    exit
-  fi
 fi
 
-# Make sure pyenv is installed.
-echo "Checking for pyenv ..."
+# Install pyenv.
+if [[ "$os_name" == Linux* ]]; then
+  # Remove conflicting Windows paths from PATH, if necessary.
+  # shellcheck disable=SC2016
+  mod='export PATH=$(echo "$PATH" | sed -e "s/:\/mnt\/c\/Users\/[^:]+\/\.pyenv\/pyenv-win\/[^:]+$//")'
+  _append_to_sh_profile "$mod"
+fi
 pyenv_dir="$HOME/.pyenv"
 # shellcheck disable=SC2016
 _append_to_sh_profile 'export PATH="$HOME/.pyenv/bin:$PATH"'
-pyenv --version &>/dev/null || {
-  [[ -d "$pyenv_dir" ]] && {
+if [[ -d "$pyenv_dir" ]]; then
+  pyenv --version &>/dev/null || {
     echo "Removing extant $pyenv_dir ..."
     sudo rm -rf "$pyenv_dir" &>/dev/null
   }
-  brew_install pyenv
-}
-pyenv --version &>/dev/null || _error 'ERROR: pyenv is not in PATH.'
-installed_py_versions="$(pyenv versions)"
-required_py_version=""
-while IFS= read -r pyversion; do
-  required_py_version="$pyversion"
-  # shellcheck disable=SC2076
-  if [[ -n $pyversion ]] && [[ ! "$installed_py_versions" =~ "$pyversion" ]]; then
-    pyenv install "$pyversion"
-    # shellcheck disable=SC2076
-    if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
-      if [[ "$os" == "$MAC_OS" ]]; then
-        # Try to fix MacOS environment for installation of Python versions via pyenv.
-        # https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829
-        brew install bzip2
-        echo "Exporting LDFLAGS and CFLAGS to allow installing new Python versions via pyenv ..."
-        echo "https://stackoverflow.com/questions/50036091/pyenv-zlib-error-on-macos#answer-65556829"
-        # shellcheck disable=SC2155
-        export LDFLAGS="-L $(xcrun --show-sdk-path)/usr/lib -L brew --prefix bzip2/lib"
-        # shellcheck disable=SC2155
-        export CFLAGS="-L $(xcrun --show-sdk-path)/usr/include -L brew --prefix bzip2/include"
-        pyenv install "$pyversion"
-        if [[ ! "$(pyenv versions)" =~ "$pyversion" ]]; then
-          _error "Failed to install Python $pyversion."
-        fi
-      else
-        _error "Failed to install Python $pyversion."
-      fi
-    fi
-  fi
-done < .python-version
+fi
+brew_install pyenv
+pyenv --help &>/dev/null || _error "Failed to install pyenv."
 
-# Activate the local Python version.
-# shellcheck disable=SC2016
-_append_to_sh_profile 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi'
+# Install the required Python version.
+# shellcheck disable=SC2076
+if [[ ! "$(pyenv versions)" =~ "$required_py_version" ]]; then
+  pyenv install "$required_py_version"
+fi
 
-# Make sure Pip is installed.
-pip --version &>/dev/null || _error "Pip is not installed; unable to proceed."
-
-# Install Poetry.
+# Install and configure Poetry.
 # shellcheck disable=SC2016
 poetry_init='export PATH="$HOME/.poetry/bin:$PATH"'
 poetry --version &>/dev/null || {
@@ -349,33 +304,38 @@ poetry --version &>/dev/null || {
   poetry --version &>/dev/null || {
     _error "Failed to install Poetry (https://python-poetry.org/docs/#installation)."
   }
-  rerun_required="true"
 }
-
 # https://python-poetry.org/docs/configuration/
 poetry config virtualenvs.create true
 poetry config virtualenvs.in-project true
 poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
-# Make sure Poetry uses the correct version of Python.
-echo "Checking Python version ..."
-active_py_version=$(python --version)
-echo "Verifying the active Python version is $required_py_version..."
-if [[ ! "$active_py_version" =~ .*"$required_py_version".* ]]; then
-  # Destroy extant .venv and try to recreate it with new Python version.
-  [[ -d .venv ]] && rm -r .venv
-  poetry install || {
-    .venv/bin/python -m pip install --upgrade pip
-    poetry install
-  }
-  cd "$PROJECT_DIR" || _error "Failed to cd into $PROJECT_DIR."
-  if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
-    _error "Failed to activate Python $required_py_version."
+function activate_venv() {
+  set a
+  # shellcheck disable=SC1091
+  source .venv/bin/activate; unset a
+}
+
+# Initialize .venv with the correct Python version.
+if [[ -d .venv ]]; then
+  echo "Verifying the active Python version is $required_py_version..."
+  if [[ ! "$(.venv/bin/python --version)" =~ .*"$required_py_version".* ]]; then
+    echo "Destroying the existing .venv ..."
+    [[ -d .venv ]] && rm -r .venv
   fi
 fi
-echo "Using $(python --version) ..."
+[[ -d .venv ]] || {
+  poetry env use "$HOME/.pyenv/versions/$required_py_version/bin/python"
+}
+activate_venv
+if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
+  _error "Failed to activate Python $required_py_version."
+fi
 
+# Install project dependencies.
+echo "Installing dependencies ..."
+pip install --upgrade pip
 if [[ "$os" == "$MAC_OS" ]]; then
   # https://cryptography.io/en/latest/installation.html#building-cryptography-on-macos
   # shellcheck disable=SC2155
@@ -383,16 +343,9 @@ if [[ "$os" == "$MAC_OS" ]]; then
   # shellcheck disable=SC2155
   export CFLAGS="-I$(brew --prefix openssl@1.1)/include" 
 fi
-# Install dependencies with Poetry.
-echo "Installing dependencies ..."
-.venv/bin/python -m pip install --upgrade pip
 poetry install --no-root || {
   _print_red "Failed to install dependencies with Poetry."
   echo "Attempting workaround ..."
-  # Try installing with pip
-  set a
-  # shellcheck disable=SC1091
-  source .venv/bin/activate; unset a
   IN_VENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
   [[ "$IN_VENV" = 0 ]] || {
     _error "Failed to create and/or activate virtual environment."
@@ -417,9 +370,9 @@ echo "Enabling NVM ..."
 nvm --version &>/dev/null || {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1091
   [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # loads nvm
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1091
   [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion
 }
 echo "Installing Node modules ..."
@@ -477,15 +430,6 @@ if [[ "$os" == "$MAC_OS" ]]; then
   else
     echo "Could not find Docker settings file; skipping enabling Docker file sharing ... "
   fi
-fi
-
-if [[ "$rerun_required" = "true" ]]; then
-  prompt="To finish setup, we must rerun the setup script. Proceed? [Y/n]"
-  read -rp "$prompt" CONT
-  if [[ ! "$CONT" = "n" ]]; then
-    exec bash "$PROJECT_DIR/setup.sh"
-  fi
-  exit
 fi
 
 [[ "$TESTING" = true ]] && {
