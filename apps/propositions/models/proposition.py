@@ -33,7 +33,6 @@ from core.fields.html_field import (
     PlaceholderGroups,
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models import TypedModel
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
 
