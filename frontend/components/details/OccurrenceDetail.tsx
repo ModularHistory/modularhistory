@@ -1,9 +1,9 @@
-import { OccurrenceModule } from "@/interfaces";
+import { Occurrence } from "@/interfaces";
 import { FC } from "react";
 import ImageCard from "../cards/ImageCard";
 
 interface OccurrenceDetailProps {
-  occurrence: OccurrenceModule;
+  occurrence: Occurrence;
 }
 
 const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceDetailProps) => {

@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import sys
 from os.path import join
-from typing import Dict
 
 from decouple import config
 from django.conf.locale.en import formats as en_formats
@@ -158,14 +157,12 @@ INSTALLED_APPS = [
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
     'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_extensions',  # https://github.com/django-extensions/django-extensions
-    'django_replicated',  # https://github.com/yandex/django_replicated
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
-    'lockdown',  # https://github.com/Dunedan/django-lockdown
     'meta',  # https://django-meta.readthedocs.io/en/latest/
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'watchman',  # https://github.com/mwarkentin/django-watchman
@@ -376,7 +373,7 @@ IMAGE_CROPPING_JQUERY_URL = None
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
 CRISPY_FAIL_SILENTLY = not DEBUG
-CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
+CRISPY_CLASS_CONVERTERS: dict[str, str] = {}
 
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],

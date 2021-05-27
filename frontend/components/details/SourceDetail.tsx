@@ -1,8 +1,8 @@
-import { SourceModule } from "@/interfaces";
+import { Source } from "@/interfaces";
 import { FC } from "react";
 
 interface SourceDetailProps {
-  source: SourceModule;
+  source: Source;
 }
 
 const SourceDetail: FC<SourceDetailProps> = ({ source }: SourceDetailProps) => {

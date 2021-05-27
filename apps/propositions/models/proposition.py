@@ -6,7 +6,10 @@ from typing import Match, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Manager
 from django.urls import reverse
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.models import DatedModel
@@ -33,7 +36,6 @@ from core.fields.html_field import (
     PlaceholderGroups,
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models import TypedModel
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
 
@@ -137,6 +139,7 @@ class TypedProposition(
     premises = models.ManyToManyField(
         to='self',
         through='propositions.Support',
+        through_fields=('conclusion', 'premise'),
         related_name='conclusions',
         symmetrical=False,
         verbose_name=_('premises'),
@@ -177,6 +180,11 @@ class TypedProposition(
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+    @property
+    def escaped_summary(self) -> SafeString:
+        """Return the escaped summary (for display in the Django admin)."""
+        return format_html(self.summary)
 
     @property
     def summary_link(self) -> str:
@@ -248,8 +256,15 @@ class TypedProposition(
         return dedupe_newlines(placeholder)
 
 
+class PropositionManager(Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(type='propositions.proposition')
+
+
 class Proposition(TypedProposition):
     """A proposition."""
 
     class Meta:
         proxy = True
+
+    objects = PropositionManager()

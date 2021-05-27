@@ -6,8 +6,7 @@ from polymorphic.admin import PolymorphicParentModelAdmin
 
 if TYPE_CHECKING:
     from polymorphic.models import PolymorphicModel
-
-    from core.models import TypedModel
+    from typedmodels.models import TypedModel
 
 
 class PolymorphicContentTypeFilter(SimpleListFilter):

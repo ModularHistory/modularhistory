@@ -1,7 +1,7 @@
 """Model classes for the quotes app."""
 
 import logging
-from typing import TYPE_CHECKING, List, Match
+from typing import TYPE_CHECKING, Match
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -263,7 +263,7 @@ class Quote(
         return format_html(html)
 
     @property
-    def ordered_attributees(self) -> List['Entity']:
+    def ordered_attributees(self) -> list['Entity']:
         """
         Return an ordered list of the quote's attributees.
 

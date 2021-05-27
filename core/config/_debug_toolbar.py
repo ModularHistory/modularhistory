@@ -27,7 +27,7 @@ def show_toolbar(request: HttpRequest) -> bool:
         request.user.is_superuser,
     )
     disqualifiers = (
-        ENABLE_DEBUG_TOOLBAR == False,
+        ENABLE_DEBUG_TOOLBAR is False,
         settings.TESTING,
         '/api/' in request.path,
         request.path == '/healthcheck/',

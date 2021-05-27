@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 import inflect
 from django.template import Library, loader
@@ -14,7 +14,7 @@ register = Library()
 
 @register.filter(is_safe=True)
 def get_html_for_view(
-    model_instance: Union[Dict, Model],
+    model_instance: Union[dict, Model],
     view_name: str,
     text_to_highlight: Optional[str] = None,
 ) -> SafeString:

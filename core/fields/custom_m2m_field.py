@@ -21,8 +21,8 @@ class CustomManyToManyField(models.ManyToManyField):
             app_name, model_name = through.split('.')
             try:
                 through_class = import_string(f'apps.{app_name}.models.{model_name}')
-            except (ImportError, ModuleNotFoundError) as err:
-                raise ModuleNotFoundError(
+            except ImportError as err:
+                raise ImportError(
                     f'{err}.\n Hint: If the {app_name} app uses a `models` directory '
                     f'(rather than models.py), make sure the {model_name} class is '
                     f'imported in apps/{app_name}/models/__init__.py'

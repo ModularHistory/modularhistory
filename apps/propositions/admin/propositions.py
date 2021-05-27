@@ -93,7 +93,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
     ]
     list_display = [
         'slug',
-        'summary',
+        'escaped_summary',
         'tags_string',
     ]
     list_filter = [

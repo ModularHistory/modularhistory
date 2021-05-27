@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 from django import template
 from django.urls import reverse
@@ -10,7 +10,7 @@ register = template.Library()
 
 
 @register.filter()
-def get_admin_url(model_instance: Union[Dict, Model]) -> str:
+def get_admin_url(model_instance: Union[dict, Model]) -> str:
     """Return the URL of the model instance's admin page."""
     if isinstance(model_instance, dict):
         app, model = model_instance['model'].split('.')
@@ -26,7 +26,7 @@ def get_admin_url(model_instance: Union[Dict, Model]) -> str:
 
 
 @register.filter()
-def get_detail_url(instance: Union[Model, Dict]) -> Optional[str]:
+def get_detail_url(instance: Union[Model, dict]) -> Optional[str]:
     """Return the URL for the model instance's detail page."""
     if isinstance(instance, Model):
         return instance.get_absolute_url()

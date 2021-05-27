@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Optional, Type
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Type
 
 import regex as re
 from aenum import Constant
@@ -66,7 +66,7 @@ def process(html: str) -> str:
     This involves replacing model instance placeholders with their HTML.
     """
     logging.debug(f'Processing HTML: {truncate(html)}')
-    model_classes: Dict[str, Type['Model']] = {}
+    model_classes: dict[str, Type['Model']] = {}
     for match in object_placeholder_regex.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(PlaceholderGroups.MODEL_NAME)

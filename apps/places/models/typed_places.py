@@ -1,5 +1,3 @@
-from typing import List
-
 from django.db import models
 
 from apps.places.models.base import Place, PlaceTypes
@@ -16,14 +14,14 @@ LOCATION_PRECEDENCE = [
 ]
 
 
-def get_allowable_location_types(reference_location_type: str) -> List[str]:
+def get_allowable_location_types(reference_location_type: str) -> list[str]:
     """
     Given a location type, return the allowable parent location types.
 
     For example, if reference_location_type is "places.country", return
     ["places.region", "places.continent"]
     """
-    allowable_types: List[str] = []
+    allowable_types: list[str] = []
     for location_type in reversed(LOCATION_PRECEDENCE):
         if location_type == reference_location_type:
             return allowable_types

@@ -2,7 +2,7 @@
 
 import logging
 from pprint import pformat
-from typing import Any, ClassVar, Dict, List, Match, Optional, Pattern, Tuple, Type
+from typing import Any, ClassVar, Match, Optional, Pattern, Tuple, Type
 
 import regex
 import serpy
@@ -11,9 +11,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
-from django.utils.html import SafeString
+from django.utils.safestring import SafeString
 from rest_framework.serializers import Serializer
-from typedmodels.models import TypedModel as BaseTypedModel
 
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
@@ -24,11 +23,7 @@ from core.models.manager import Manager
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
 
-FieldList = List[str]
-
-# TODO: Extend BaseTypedModel when it's possible.
-# Currently, only one level of inheritance from BaseTypedModel is permitted, unfortunately.
-TypedModel: Type[BaseTypedModel] = BaseTypedModel
+FieldList = list[str]
 
 # TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
 
@@ -95,7 +90,7 @@ class Model(DjangoModel):
         return ContentType.objects.get_for_model(self)
 
     @property
-    def natural_key_fields(self) -> Optional[List]:
+    def natural_key_fields(self) -> Optional[list]:
         """Return the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
@@ -155,7 +150,7 @@ class Model(DjangoModel):
         """
         return html
 
-    def serialize(self) -> Dict:
+    def serialize(self) -> dict:
         """Return the serialized model instance (dictionary)."""
         try:
             serialized_instance = self.serializer(self).data

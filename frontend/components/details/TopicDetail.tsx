@@ -1,8 +1,8 @@
-import { TopicModule } from "@/interfaces";
+import { Topic } from "@/interfaces";
 import { FC } from "react";
 
 interface TopicDetailProps {
-  topic: TopicModule;
+  topic: Topic;
 }
 
 const TopicDetail: FC<TopicDetailProps> = ({ topic }: TopicDetailProps) => {

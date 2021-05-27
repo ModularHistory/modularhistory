@@ -2,18 +2,18 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { TopicModule } from "@/interfaces";
+import { Topic } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
 interface TopicProps {
-  topic: TopicModule;
+  topic: Topic;
 }
 
 /**
  * A page that renders the HTML of a single topic.
  */
-const Topic: FC<TopicProps> = ({ topic }: TopicProps) => {
+const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
   return (
     <Layout title={topic.name}>
       <ModuleContainer>
@@ -22,7 +22,7 @@ const Topic: FC<TopicProps> = ({ topic }: TopicProps) => {
     </Layout>
   );
 };
-export default Topic;
+export default TopicDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let topic = {};

@@ -1,7 +1,7 @@
 import json
 import logging
 from pprint import pformat
-from typing import Any, Dict, Iterable, Mapping
+from typing import Any, Iterable, Mapping
 
 from flat_json_widget.widgets import FlatJsonWidget
 
@@ -12,7 +12,7 @@ class JSONEditorWidget(FlatJsonWidget):
     """Widget for editing JSON values."""
 
     def value_from_datadict(
-        self, data: Dict[str, Any], files: Mapping[str, Iterable[Any]], name: str
+        self, data: dict[str, Any], files: Mapping[str, Iterable[Any]], name: str
     ) -> str:
         """
         Process the value returned from the JSON editor.

@@ -8,7 +8,6 @@ from django.utils.safestring import SafeString
 
 from apps.propositions.api.serializers import OccurrenceSerializer
 from apps.propositions.models.proposition import TypedProposition
-from core.fields import HTMLField
 from core.utils.html import soupify
 
 if TYPE_CHECKING:

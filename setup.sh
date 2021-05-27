@@ -1,6 +1,6 @@
 #!/bin/bash
 
-required_py_version="3.8.10"
+required_py_version="3.9.5"
 
 PROJECT_DIR=$(dirname "$0")
 RED='\033[0;31m'
@@ -357,7 +357,6 @@ poetry install --no-root || {
   pip install -r requirements.txt && {
     rm requirements.txt
     echo "Installed dependencies with pip after failing to install with Poetry."
-    _prompt_to_rerun
   } || {
     _print_red "Failed to install dependencies with pip."
   }

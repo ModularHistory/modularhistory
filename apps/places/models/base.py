@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from typedmodels.models import TypedModel
 
-from core.models.model import TypedModel
 from core.models.model_with_cache import ModelWithCache, store
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))

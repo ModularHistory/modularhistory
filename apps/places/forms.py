@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from django.forms import ModelForm
 
@@ -30,7 +30,7 @@ class PlaceForm(_PlaceForm):
 
     class Meta:
         model = Place
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class ContinentForm(_PlaceForm):
@@ -40,7 +40,7 @@ class ContinentForm(_PlaceForm):
 
     class Meta:
         model = Continent
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class CountryForm(_PlaceForm):
@@ -50,7 +50,7 @@ class CountryForm(_PlaceForm):
 
     class Meta:
         model = Country
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class RegionForm(ModelForm):
@@ -60,7 +60,7 @@ class RegionForm(ModelForm):
 
     class Meta:
         model = Region
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class StateForm(ModelForm):
@@ -70,7 +70,7 @@ class StateForm(ModelForm):
 
     class Meta:
         model = State
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class CountyForm(ModelForm):
@@ -80,7 +80,7 @@ class CountyForm(ModelForm):
 
     class Meta:
         model = County
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class CityForm(ModelForm):
@@ -90,7 +90,7 @@ class CityForm(ModelForm):
 
     class Meta:
         model = City
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class VenueForm(ModelForm):
@@ -100,4 +100,4 @@ class VenueForm(ModelForm):
 
     class Meta:
         model = Venue
-        exclude: List[str] = []
+        exclude: list[str] = []

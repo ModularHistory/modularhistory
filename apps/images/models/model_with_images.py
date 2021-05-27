@@ -1,7 +1,7 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import Dict, Optional
+from typing import Optional
 
 from celery import shared_task
 from django.apps import apps
@@ -52,7 +52,7 @@ class ModelWithImages(Model):
         return images
 
     @property
-    def primary_image(self) -> Optional[Dict]:
+    def primary_image(self) -> Optional[dict]:
         """Return the image to represent the model instance by default."""
         try:
             return self.cached_images[0]
@@ -66,7 +66,7 @@ def cache_images(model: str, instance_id: int, images: list):
     """Save cached images to a model instance."""
     if not images:
         return
-    Model = apps.get_model(model)
-    model_instance: ModelWithImages = Model.objects.get(pk=instance_id)  # noqa: N806
+    Model = apps.get_model(model)  # noqa: N806
+    model_instance: ModelWithImages = Model.objects.get(pk=instance_id)
     model_instance.cache['images'] = images
     model_instance.save(wipe_cache=False)

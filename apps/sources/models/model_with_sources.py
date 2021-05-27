@@ -120,6 +120,6 @@ def cache_citations(model: str, instance_id: int, citations: list):
     if not citations:
         return
     Model = apps.get_model(model)  # noqa: N806
-    model_instance: ModelWithSources = Model.objects.get(pk=instance_id)  # noqa: N806
+    model_instance: ModelWithSources = Model.objects.get(pk=instance_id)
     model_instance.cache['citations'] = citations
     model_instance.save(wipe_cache=False)

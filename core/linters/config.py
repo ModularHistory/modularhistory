@@ -6,30 +6,19 @@ import re
 import sys
 from configparser import SectionProxy
 from glob import glob
-from typing import (
-    Any,
-    Dict,
-    Iterator,
-    List,
-    Optional,
-    Pattern,
-    Sequence,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Any, Iterator, List, Optional, Pattern, Sequence, Set, Tuple, Union
 
 from core.constants.strings import COMMA, NEW_LINE
 from core.utils import linting
 
 CONFIG_FILE = 'setup.cfg'
 
-ConfigFileSection = Dict[str, object]
+ConfigFileSection = dict[str, object]
 ErrorCodeSet = Set[str]
 MultiOptions = Union[Sequence[str], str]
 OptionsUpdate = Tuple[Optional[str], ConfigFileSection]
-PathPatternList = List[Pattern]
-PatternList = List[Pattern]
+PathPatternList = list[Pattern]
+PatternList = list[Pattern]
 PerFileIgnore = Tuple[str, Set[str]]
 
 ALL = None
@@ -67,7 +56,7 @@ class LinterOptions:
     exclude: Optional[PathPatternList]
 
     # per-file ignores
-    per_file_ignores: Optional[List[PerFileIgnore]]
+    per_file_ignores: Optional[list[PerFileIgnore]]
 
     # messages
     error_filters: Optional[PatternList]
@@ -136,12 +125,12 @@ class LinterOptions:
         return None
 
 
-PerModuleOptions = List[Tuple[str, LinterOptions]]
+PerModuleOptions = list[Tuple[str, LinterOptions]]
 
 
 def _parse_multi_options(
     options: MultiOptions, split_token: str = COMMA
-) -> List[str]:  # noqa: S107
+) -> list[str]:  # noqa: S107
     """Split and strip and discard empties."""
     if isinstance(options, str):
         options = options.strip()
@@ -165,7 +154,7 @@ def _glob_list(globs: MultiOptions) -> PathPatternList:
     return [_glob_to_regex(file_glob) for file_glob in _parse_multi_options(globs)]
 
 
-def _per_file_ignores_list(per_file_ignores: MultiOptions) -> List[PerFileIgnore]:
+def _per_file_ignores_list(per_file_ignores: MultiOptions) -> list[PerFileIgnore]:
     per_file_ignores_list = []
     entries = _parse_multi_options(per_file_ignores, split_token=NEW_LINE)
     for entry in entries:
@@ -175,7 +164,7 @@ def _per_file_ignores_list(per_file_ignores: MultiOptions) -> List[PerFileIgnore
     return per_file_ignores_list
 
 
-def _regex_list(patterns: MultiOptions) -> List[Pattern]:
+def _regex_list(patterns: MultiOptions) -> list[Pattern]:
     """."""
     return [
         re.compile(pattern)
@@ -221,7 +210,7 @@ class ConfigFileOptionsParser:
         self.script_name = script_name
 
     def apply(
-        self, options: LinterOptions, module_options: List[Tuple[str, LinterOptions]]
+        self, options: LinterOptions, module_options: list[Tuple[str, LinterOptions]]
     ) -> None:
         """TODO: add docstring."""
         options_cls = options.__class__
