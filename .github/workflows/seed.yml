@@ -52,10 +52,10 @@ jobs:
       with:
         fetch-depth: 0
     # Set up Python.
-    - name: Set up Python 3.8
+    - name: Set up Python
       uses: actions/setup-python@v2.2.2
       with:
-        python-version: 3.8
+        python-version: 3.9
     - name: Get full Python version
       id: full-python-version
       shell: bash

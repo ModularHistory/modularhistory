@@ -39,7 +39,7 @@ skip_gitignore = true # ignore files listed in .gitignore
 use_parentheses = true
 
 [tool.mypy]
-python_version = 3.8
+python_version = 3.9
 cache_dir = ".cache/mypy"
 # https://mypy.readthedocs.io/en/stable/config_file.html#confval-check_untyped_defs
 # TODO: switch to true
