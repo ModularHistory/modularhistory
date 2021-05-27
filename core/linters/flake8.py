@@ -12,7 +12,7 @@ from core.linters.config import ConfigFileOptionsParser as BaseConfigFileOptions
 from core.linters.config import LinterOptions, PerModuleOptions
 from core.utils import linting
 
-StringOrCallable = Union[str, Callable]
+StringOrCallable = Union[str, Callable[..., str]]
 StringOrCallableOrDict = Union[StringOrCallable, Dict[str, StringOrCallable]]
 
 # Example:
@@ -129,7 +129,7 @@ VIOLATION_EXPLANATION_URLS: Dict[str, StringOrCallableOrDict] = {
 
 def get_violation_explanation_url(violation_code: str) -> str:  # noqa: C901
     """Return the violation explanation URL for the given violation code."""
-    match, url = re.match(r'(\D+)(\d+)', violation_code), None
+    match, url = re.match(r'(\D+)(\d+)', violation_code), ''
     if match:
         prefix, number = match.group(1), match.group(2)
         url_match: Optional[StringOrCallableOrDict] = VIOLATION_EXPLANATION_URLS.get(

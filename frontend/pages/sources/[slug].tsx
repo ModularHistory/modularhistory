@@ -13,7 +13,7 @@ interface SourceProps {
 /**
  * A page that renders the HTML of a single source.
  */
-const Source: FC<SourceProps> = ({ source }: SourceProps) => {
+const SourceDetailPage: FC<SourceProps> = ({ source }: SourceProps) => {
   return (
     <Layout title={source.title || source.citationString}>
       <ModuleContainer>
@@ -22,7 +22,7 @@ const Source: FC<SourceProps> = ({ source }: SourceProps) => {
     </Layout>
   );
 };
-export default Source;
+export default SourceDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let source = {};
