@@ -1,6 +1,6 @@
 """Taggable models."""
 
-from typing import List, Optional
+from typing import Optional
 
 from celery import shared_task
 from django.apps import apps
@@ -45,7 +45,7 @@ class TaggableModel(SluggedModel, ModelWithCache):
         return tags
 
     @property  # type: ignore
-    def tag_keys(self) -> Optional[List[str]]:
+    def tag_keys(self) -> Optional[list[str]]:
         """Return a list of tag keys (e.g., ['race', 'religion'])."""
         return [topic['name'] for topic in self.cached_tags]
 

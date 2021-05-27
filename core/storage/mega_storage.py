@@ -3,7 +3,7 @@ import os
 import tempfile
 from datetime import datetime
 from pprint import pformat
-from typing import IO, Any, List, Optional, Tuple
+from typing import IO, Any, Optional, Tuple
 
 import requests
 from django.conf import settings
@@ -259,7 +259,7 @@ class MegaStorage(Storage):
         dirname, filename = os.path.split(filename)
         return os.path.normpath(os.path.join(dirname, self.get_valid_name(filename)))
 
-    def listdir(self, path: str) -> Tuple[List[str], List[str]]:
+    def listdir(self, path: str) -> Tuple[list[str], list[str]]:
         """
         List the contents of the specified path.
 

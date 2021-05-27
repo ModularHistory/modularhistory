@@ -1,5 +1,5 @@
 import re
-from typing import Iterable, List, Tuple, Type, Union
+from typing import Iterable, Tuple, Type, Union
 
 from django.contrib.admin.filters import ListFilter
 from django.db.models.query import QuerySet
@@ -51,7 +51,7 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         'slug',
         'ctype_name',
     ]
-    list_filter: List[Union[str, Type[ListFilter]]] = [
+    list_filter: list[Union[str, Type[ListFilter]]] = [
         'verified',
         HasContainerFilter,
         # HasFileFilter,

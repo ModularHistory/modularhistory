@@ -1,6 +1,6 @@
 import logging
 from pprint import pformat
-from typing import List, Optional
+from typing import Optional
 
 from elasticsearch_dsl import Q
 from rest_framework import filters
@@ -82,8 +82,8 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         query_string: Optional[str] = None,
         start_date: Optional[HistoricDateTime] = None,
         end_date: Optional[HistoricDateTime] = None,
-        entity_ids: Optional[List[int]] = None,
-        topic_ids: Optional[List[int]] = None,
+        entity_ids: Optional[list[int]] = None,
+        topic_ids: Optional[list[int]] = None,
         suppress_unverified: bool = True,
         suppress_hidden: bool = True,
     ):

@@ -6,14 +6,14 @@ https://docs.djangoproject.com/en/3.1/topics/checks/
 
 import re
 import subprocess  # noqa: S404
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable, Optional, Tuple, Union
 
 from core.linters.config import ConfigFileOptionsParser as BaseConfigFileOptionsParser
 from core.linters.config import LinterOptions, PerModuleOptions
 from core.utils import linting
 
 StringOrCallable = Union[str, Callable[..., str]]
-StringOrCallableOrDict = Union[StringOrCallable, Dict[str, StringOrCallable]]
+StringOrCallableOrDict = Union[StringOrCallable, dict[str, StringOrCallable]]
 
 # Example:
 # ./history/fields/html_field.py:138:17: WPS442 Found outer scope names shadowing: Quote
@@ -64,7 +64,7 @@ def _process_flake8_message(location, filename, code, message, options):
 def _get_flake8_options() -> Tuple[LinterOptions, PerModuleOptions]:
     """Return an Options object to be used by mypy."""
     options = LinterOptions()
-    module_options: List[Tuple[str, LinterOptions]] = []
+    module_options: list[Tuple[str, LinterOptions]] = []
     ConfigFileFlake8OptionsParser().apply(options, module_options)  # type: ignore
     return options, module_options
 
@@ -82,7 +82,7 @@ class ConfigFileFlake8OptionsParser(BaseConfigFileOptionsParser):
 VIOLATION_DEFAULT_URL = (
     'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
 )
-VIOLATION_EXPLANATION_URLS: Dict[str, StringOrCallableOrDict] = {
+VIOLATION_EXPLANATION_URLS: dict[str, StringOrCallableOrDict] = {
     'B': 'https://github.com/PyCQA/flake8-bugbear#list-of-warnings',  # Bugbear
     'BLK': 'https://github.com/peterjc/flake8-black',  # Black
     'C': {

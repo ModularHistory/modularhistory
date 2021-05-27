@@ -9,7 +9,7 @@ from glob import iglob
 from os.path import join
 from pprint import pformat
 from time import sleep
-from typing import List, Optional
+from typing import Optional
 from zipfile import BadZipFile, ZipFile
 
 from colorama import Style
@@ -41,7 +41,7 @@ def dispatch_and_get_workflow(context, session: Session) -> dict:
         data=json.dumps({'ref': 'main'}),
     )
     sleep(5)
-    workflow_runs: List[dict] = []
+    workflow_runs: list[dict] = []
     time_waited, wait_interval, timeout = 0, 5, 30
     while not workflow_runs:
         context.run(f'sleep {wait_interval}')

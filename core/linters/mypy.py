@@ -46,14 +46,14 @@ class MyPyOptions(LinterOptions):
     warn: Optional[Set[str]] = None
 
     # per-file ignores:
-    per_file_ignores: Optional[List[PerFileIgnore]] = None
+    per_file_ignores: Optional[list[PerFileIgnore]] = None
 
     # messages:
-    error_filters: List[Pattern] = []
-    warning_filters: List[Pattern] = []
+    error_filters: list[Pattern] = []
+    warning_filters: list[Pattern] = []
 
     # global-only options:
-    args: List[str] = []
+    args: list[str] = []
     color: bool = True
     show_ignored: bool = False
     daemon: bool = False
@@ -64,7 +64,7 @@ class MyPyOptions(LinterOptions):
         self.args = []
 
 
-PerModuleOptions = List[Tuple[str, MyPyOptions]]
+PerModuleOptions = list[Tuple[str, MyPyOptions]]
 
 
 def mypy(**kwargs):
@@ -79,10 +79,10 @@ def process_mypy_output(output: str):
     """Process the output from mypy."""
     options, per_module_options = _get_mypy_options()
     matched_error = None  # used to know when to error a note related to an error
-    errors_by_type: DefaultDict[str, int] = defaultdict(int)
-    errors: DefaultDict[str, int] = defaultdict(int)
-    warnings: DefaultDict[str, int] = defaultdict(int)
-    filtered: DefaultDict[str, int] = defaultdict(int)
+    errors_by_type: Defaultdict[str, int] = defaultdict(int)
+    errors: Defaultdict[str, int] = defaultdict(int)
+    warnings: Defaultdict[str, int] = defaultdict(int)
+    filtered: Defaultdict[str, int] = defaultdict(int)
 
     for line in output.rstrip().split('\n'):
         parsed_line = _parse_output_line(line)

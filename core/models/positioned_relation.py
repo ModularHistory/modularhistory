@@ -1,12 +1,11 @@
 """Base model class for positioned relations."""
 
-from typing import List
 
 from django.db import models
 
 from .model import Model
 
-FieldList = List[str]
+FieldList = list[str]
 
 
 class PositionedRelation(Model):

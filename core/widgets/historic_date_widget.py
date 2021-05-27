@@ -2,7 +2,7 @@
 
 import re
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 from django import forms
 from django.forms import MultiWidget
@@ -69,7 +69,7 @@ class YearInput(MultiWidget):
 
     template_name = 'forms/year_input.html'
 
-    def __init__(self, attrs: Optional[Dict] = None):
+    def __init__(self, attrs: Optional[dict] = None):
         """Construct the year input widget."""
         attrs = attrs or {'class': 'form-control'}
         widgets = [
@@ -110,7 +110,7 @@ class YearInput(MultiWidget):
 class HistoricDateWidget(MultiWidget):
     """Widget for dates that may be before common era and have variable specificity."""
 
-    def __init__(self, attrs: Optional[Dict] = None):
+    def __init__(self, attrs: Optional[dict] = None):
         """Construct the widget."""
         default_attrs = {'style': 'margin-right: 1rem'}
         attrs = {**attrs, **default_attrs} if attrs else default_attrs
@@ -198,7 +198,7 @@ class HistoricDateWidget(MultiWidget):
         return dt_string
 
     @staticmethod
-    def _decompress_historic_datetime(historic_datetime: HistoricDateTime) -> List:
+    def _decompress_historic_datetime(historic_datetime: HistoricDateTime) -> list:
         year = historic_datetime.year
         season, month, day, time = None, None, None, None
         hour, minute, second = (

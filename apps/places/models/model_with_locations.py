@@ -1,7 +1,7 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import TYPE_CHECKING, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Optional, Type, Union
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -75,7 +75,7 @@ class ModelWithLocations(Model):
         abstract = True
 
     @property
-    def primary_location(self) -> Optional[Dict]:
+    def primary_location(self) -> Optional[dict]:
         """Return the location to represent the model instance by default."""
         try:
             return self.serialized_locations[0]
@@ -85,7 +85,7 @@ class ModelWithLocations(Model):
 
     @property  # type: ignore
     @store(attribute_name='serialized_locations')
-    def serialized_locations(self) -> List[Dict]:
+    def serialized_locations(self) -> list[dict]:
         """Return a list of dictionaries representing the instance's locations."""
         return [
             location_relation.location.serialize()

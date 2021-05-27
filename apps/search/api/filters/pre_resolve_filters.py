@@ -1,9 +1,9 @@
-from typing import Callable, Dict, List
+from typing import Callable, Dict
 
 SORT_BY_PARAM = 'ordering'
 
 # list of filters that's applied to every module
-PRE_RESOLVE_FILTERS: List[Callable] = [
+PRE_RESOLVE_FILTERS: list[Callable] = [
     # random ordering filter could be applied as a hack to disable caching search queries via cachalot
     # assuming caching of random queries is disabled
     # see: https://django-cachalot.readthedocs.io/en/latest/quickstart.html#cachalot-cache-random
@@ -11,7 +11,7 @@ PRE_RESOLVE_FILTERS: List[Callable] = [
 ]
 
 # list of filters per module
-PER_MODULE_PRE_RESOLVE_FILTERS: Dict[str, List[Callable]] = {
+PER_MODULE_PRE_RESOLVE_FILTERS: dict[str, list[Callable]] = {
     # disabled for now because apparently it's redundant when serialized relations are cached
     # Occurrence: [Occurrence.objects.prefetch_search_relatives]
 }

@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional, Tuple, Type, Union
+from typing import Optional, Tuple, Type, Union
 
 from aenum import Constant
 from django.conf import settings
@@ -55,12 +55,12 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    list_display: List[str]
-    list_filter: List[AdminListFilter]
-    ordering: List[str]
-    readonly_fields: List[str]
-    search_fields: List[str]
-    autocomplete_fields: List[str]
+    list_display: list[str]
+    list_filter: list[AdminListFilter]
+    ordering: list[str]
+    readonly_fields: list[str]
+    search_fields: list[str]
+    autocomplete_fields: list[str]
 
     class Media:
         css = {
@@ -81,7 +81,7 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
 
     def get_readonly_fields(
         self, request: HttpRequest, model_instance: Optional['Model'] = None
-    ) -> List[str]:
+    ) -> list[str]:
         """Add additional readonly fields."""
         default_readonly_fields = ('cache',)
         readonly_fields = list(super().get_readonly_fields(request, model_instance))

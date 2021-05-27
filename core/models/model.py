@@ -2,7 +2,7 @@
 
 import logging
 from pprint import pformat
-from typing import Any, ClassVar, Dict, List, Match, Optional, Pattern, Tuple, Type
+from typing import Any, ClassVar, Match, Optional, Pattern, Tuple, Type
 
 import regex
 import serpy
@@ -23,7 +23,7 @@ from core.models.manager import Manager
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
 
-FieldList = List[str]
+FieldList = list[str]
 
 # TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
 
@@ -90,7 +90,7 @@ class Model(DjangoModel):
         return ContentType.objects.get_for_model(self)
 
     @property
-    def natural_key_fields(self) -> Optional[List]:
+    def natural_key_fields(self) -> Optional[list]:
         """Return the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:

@@ -1,7 +1,7 @@
 """Classes for models with related entities."""
 
 import re
-from typing import TYPE_CHECKING, Dict, List
+from typing import TYPE_CHECKING, Dict
 
 from django.db import models
 from django.db.models import QuerySet
@@ -49,7 +49,7 @@ class ModelWithRelatedEntities(Model):
 
     @property  # type: ignore
     @store(attribute_name='serialized_entities')
-    def serialized_entities(self) -> List[Dict]:
+    def serialized_entities(self) -> list[dict]:
         """Return a list of dictionaries representing the instance's images."""
         return [
             entity.serialize() for entity in self._related_entities.all().iterator()

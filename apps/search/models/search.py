@@ -1,6 +1,6 @@
 """Models for the search app."""
 
-from typing import List, Tuple
+from typing import Tuple
 
 from django.conf import settings
 from django.db import models
@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.dates.fields import HistoricDateTimeField
 from core.models.model import Model
 
-CONTENT_TYPE_OPTIONS: List[Tuple[str, str]] = [
+CONTENT_TYPE_OPTIONS: list[Tuple[str, str]] = [
     ('occurrences.occurrence', 'Occurrences'),
     ('quotes.quote', 'Quotes'),
     ('images.image', 'Images'),

@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -275,7 +275,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         containments: QuerySet[
             'SourceContainment'
         ] = self.source_containments.select_related('container').order_by('position')
-        container_strings: List[str] = []
+        container_strings: list[str] = []
         same_creator = True
         containment: SourceContainment
         for containment in containments[:2]:
@@ -414,7 +414,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return format_html(html)
 
     @property
-    def ordered_attributees(self) -> List['Entity']:
+    def ordered_attributees(self) -> list['Entity']:
         """Return an ordered list of the source's attributees."""
         try:
             attributions = self.attributions.select_related('attributee')

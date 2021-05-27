@@ -1,5 +1,3 @@
-from typing import List
-
 from django.forms import ModelForm
 
 from apps.entities.models import Deity, Entity, Group, Idea, Organization, Person
@@ -12,7 +10,7 @@ class EntityForm(ModelForm):
 
     class Meta:
         model = Entity
-        exclude: List[str] = []
+        exclude: list[str] = []
 
     def __init__(self, *args, **kwargs):
         """Construct the form for entity admin."""
@@ -25,7 +23,7 @@ class DeityForm(ModelForm):
 
     class Meta:
         model = Deity
-        exclude: List[str] = []
+        exclude: list[str] = []
 
     def __init__(self, *args, **kwargs):
         """Construct the form for entity admin."""
@@ -38,7 +36,7 @@ class OrganizationForm(ModelForm):
 
     class Meta:
         model = Organization
-        exclude: List[str] = []
+        exclude: list[str] = []
 
     def __init__(self, *args, **kwargs):
         """Construct the form for organization admin."""
@@ -51,7 +49,7 @@ class PersonForm(ModelForm):
 
     class Meta:
         model = Person
-        exclude: List[str] = []
+        exclude: list[str] = []
 
     def __init__(self, *args, **kwargs):
         """Construct the form for person admin."""
@@ -64,7 +62,7 @@ class GroupForm(ModelForm):
 
     class Meta:
         model = Group
-        exclude: List[str] = []
+        exclude: list[str] = []
 
     def __init__(self, *args, **kwargs):
         """Construct the form for group admin."""
@@ -77,4 +75,4 @@ class IdeaForm(ModelForm):
 
     class Meta:
         model = Idea
-        exclude: List[str] = []
+        exclude: list[str] = []

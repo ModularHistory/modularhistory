@@ -1,6 +1,6 @@
 """Model classes for articles."""
 
-from typing import List, Optional
+from typing import Optional
 
 from django.db import models
 
@@ -18,7 +18,7 @@ class Article(Source, PageNumbersMixin):
     def __html__(self) -> str:
         """Return the article's citation HTML string."""
         title = self.linked_title.replace('"', "'") if self.linked_title else ''
-        components: List[Optional[str]] = [
+        components: list[Optional[str]] = [
             self.attributee_html,
             f'"{title}"' if title else '',
             self.publication.html,

@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional, Type
+from typing import TYPE_CHECKING, Optional, Type
 
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -175,7 +175,7 @@ class Entity(
         categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
         if categorizations:
             # Build the string
-            categorization_words: List[str] = []
+            categorization_words: list[str] = []
             for part_of_speech in ('noun', 'any', 'adj'):
                 pos_categorizations = categorizations.filter(
                     category__part_of_speech=part_of_speech

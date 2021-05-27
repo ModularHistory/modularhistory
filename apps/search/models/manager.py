@@ -1,6 +1,6 @@
 """Manager classes for ModularHistory's models."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import QuerySet
@@ -44,7 +44,7 @@ class SearchableModelQuerySet(QuerySet):
             if len(vectors) > 1:
                 for additional_vector in vectors[1:]:
                     vector += additional_vector
-            annotations: Dict[str, Any] = {'search': vector}
+            annotations: dict[str, Any] = {'search': vector}
             if rank:
                 annotations['rank'] = SearchRank(vector, search_query)
             qs = qs.annotate(**annotations)  # type: ignore
@@ -65,8 +65,8 @@ class SearchableModelManager(Manager):
         query: Optional[str] = None,
         start_year: Optional[int] = None,
         end_year: Optional[int] = None,
-        entity_ids: Optional[List[int]] = None,
-        topic_ids: Optional[List[int]] = None,
+        entity_ids: Optional[list[int]] = None,
+        topic_ids: Optional[list[int]] = None,
         rank: bool = False,
         suppress_unverified: bool = True,
         suppress_hidden: bool = True,

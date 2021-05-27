@@ -4,7 +4,7 @@ import re
 from copy import deepcopy
 from os.path import isfile, join
 from pprint import pformat
-from typing import Dict, List, Optional
+from typing import Optional
 
 from decouple import config
 from django.conf import settings
@@ -33,7 +33,7 @@ def get_extensionless_filenames(path):
     ]
 
 
-DuplicatedFiles = Dict[str, List[str]]
+DuplicatedFiles = dict[str, list[str]]
 
 
 # TODO
