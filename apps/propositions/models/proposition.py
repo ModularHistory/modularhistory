@@ -6,6 +6,7 @@ from typing import Match, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Manager
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -247,8 +248,15 @@ class TypedProposition(
         return dedupe_newlines(placeholder)
 
 
+class PropositionManager(Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(type='propositions.proposition')
+
+
 class Proposition(TypedProposition):
     """A proposition."""
 
     class Meta:
         proxy = True
+
+    objects = PropositionManager()
