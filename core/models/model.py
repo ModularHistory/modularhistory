@@ -11,7 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
-from django.utils.html import SafeString
+from django.utils.safestring import SafeString
 from rest_framework.serializers import Serializer
 
 from core.fields.html_field import (
@@ -150,7 +150,7 @@ class Model(DjangoModel):
         """
         return html
 
-    def serialize(self) -> Dict:
+    def serialize(self) -> dict:
         """Return the serialized model instance (dictionary)."""
         try:
             serialized_instance = self.serializer(self).data

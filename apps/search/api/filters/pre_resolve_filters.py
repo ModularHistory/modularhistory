@@ -1,4 +1,4 @@
-from typing import Callable, Dict
+from typing import Callable
 
 SORT_BY_PARAM = 'ordering'
 

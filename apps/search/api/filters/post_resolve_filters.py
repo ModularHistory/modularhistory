@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict, Union
+from typing import Union
 
 from rest_framework import filters
 
@@ -62,7 +62,7 @@ class SortByFilterBackend(filters.BaseFilterBackend):
         return sorted(queryset, key=sort_by, reverse=reverse)
 
 
-def date_sorter(model_instance: Union[SearchableDatedModel, Dict]) -> datetime:
+def date_sorter(model_instance: Union[SearchableDatedModel, dict]) -> datetime:
     """Return the value used to sort the model instance by date."""
     get_date = getattr(model_instance, 'get_date', None)
     if get_date is not None:

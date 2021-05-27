@@ -1,7 +1,7 @@
 """Classes for models with related entities."""
 
 import re
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING
 
 from django.db import models
 from django.db.models import QuerySet

@@ -4,13 +4,13 @@ import json
 import logging
 from http import client
 from pprint import pformat
-from typing import Any, Dict
+from typing import Any
 
 from django.conf import settings
 from django.http import JsonResponse
 
 
-def _words_api(word: str) -> Dict:
+def _words_api(word: str) -> dict:
     """
     Pass a request to Words API and return the parsed results as a dictionary.
 
@@ -64,7 +64,7 @@ def _words_api(word: str) -> Dict:
     logging.debug(f'Made Words API request to {request_url}...')
     data = json.loads(connection.getresponse().read().decode('utf-8'))
     logging.info(f'Received response from Words API: {data}')
-    parsed_data: Dict[str, Any] = {}
+    parsed_data: dict[str, Any] = {}
     for result in data.get('definitions', []):
         part_of_speech = result['partOfSpeech']
         definition = {'definition': result['definition']}
@@ -75,7 +75,7 @@ def _words_api(word: str) -> Dict:
     return parsed_data
 
 
-def _google_dict_api(word: str) -> Dict:
+def _google_dict_api(word: str) -> dict:
     """
     Return a response from Google Dictionary API.
 

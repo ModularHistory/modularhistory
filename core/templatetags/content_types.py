@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 from django import template
 from django.apps import apps
@@ -18,7 +18,7 @@ def class_name(instance) -> str:
 
 
 @register.filter()
-def is_instance(instance: Union[Dict, Model], arg: str) -> bool:
+def is_instance(instance: Union[dict, Model], arg: str) -> bool:
     """
     Determine whether model_instance is an instance of the specified model class.
 

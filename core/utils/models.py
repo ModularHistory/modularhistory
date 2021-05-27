@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Dict, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from django.template import loader
 from django.utils.html import format_html
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 def get_html_for_view(
-    model_instance: Union[Dict, 'Model'],
+    model_instance: Union[dict, 'Model'],
     template_name: str,
     text_to_highlight: Optional[str] = None,
 ) -> SafeString:

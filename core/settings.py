@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import sys
 from os.path import join
-from typing import Dict
 
 from decouple import config
 from django.conf.locale.en import formats as en_formats
@@ -374,7 +373,7 @@ IMAGE_CROPPING_JQUERY_URL = None
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
 CRISPY_FAIL_SILENTLY = not DEBUG
-CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
+CRISPY_CLASS_CONVERTERS: dict[str, str] = {}
 
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],
