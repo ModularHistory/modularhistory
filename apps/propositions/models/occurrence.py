@@ -18,7 +18,10 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
 class OccurrenceManager(Manager):
+    """Manager for occurrences."""
+
     def get_queryset(self):
+        """Return the propositions of type `propositions.occurrence`."""
         return super().get_queryset().filter(type='propositions.occurrence')
 
 

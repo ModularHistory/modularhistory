@@ -144,46 +144,49 @@ class HTMLField(MceHTMLField):
     def clean(self, html_value, model_instance: 'Model') -> str:
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
-        raw_html = html
-        if '{' in raw_html or '}' in raw_html:
+        if '{' in html or '}' in html:
             raise ValidationError(
                 'The "{" and "}" characters are illegal in HTML fields.'
             )
-        for pattern, replacement in REPLACEMENTS:
-            try:
-                raw_html = re.sub(pattern, replacement, raw_html).strip()
-            except Exception as error:
-                raise Exception(
-                    f'Failed to replace `{pattern}` ({type(pattern)}) '
-                    f'with `{replacement}` ({type(replacement)} '
-                    f'in {raw_html}\n({type(raw_html)})\n{error}'
-                )
+        if model_instance.pk:
+            html = model_instance.preprocess_html(html)
+        # Update obj placeholders and reformat the HTML.
+        try:
+            html = self.update_placeholders(html)
+            html = self.format_html(html)
+        except Exception as err:
+            raise ValidationError(f'{err}')
+        return html
+
+    def make_deletions(self, html: str) -> str:
+        """Delete unwanted elements from the HTML."""
         # Use html.parser to avoid adding <html> and <body> tags
-        soup = soupify(raw_html, features='html.parser')
+        soup = soupify(html, features='html.parser')
         for deletion in DELETIONS:
             try:
                 soup.find(deletion).decompose()
             except AttributeError:  # no match
                 pass
-        raw_html = dedupe_newlines(str(soup))
+        return str(soup)
 
-        logging.debug(f'{raw_html}')
-
-        if model_instance.pk:
-            raw_html = model_instance.preprocess_html(raw_html)
-
-        # Update obj placeholders.
-        try:
-            raw_html = self.update_placeholders(raw_html)
-        except Exception as err:
-            raise ValidationError(f'{err}')
-
-        # Add or remove <p> tags if necessary
-        return self.format_html(raw_html)
+    def make_replacements(self, html: str) -> str:
+        """Make replacements in the HTML."""
+        for pattern, replacement in REPLACEMENTS:
+            try:
+                html = re.sub(pattern, replacement, html).strip()
+            except Exception as error:
+                raise Exception(
+                    f'Failed to replace `{pattern}` ({type(pattern)}) '
+                    f'with `{replacement}` ({type(replacement)} '
+                    f'in {html}\n({type(html)})\n{error}'
+                )
+        return html
 
     def format_html(self, html: str) -> str:
         """Add or remove <p> tags if necessary."""
         if html:
+            html = self.make_deletions(html)
+            html = dedupe_newlines(html)
             if self.paragraphed is None:
                 pass
             elif self.paragraphed:
@@ -196,6 +199,7 @@ class HTMLField(MceHTMLField):
                 # TODO: move this to a util method
                 if html.startswith('<p') and html.endswith('</p>'):
                     html = soupify(html).p.decode_contents()
+            html = self.make_replacements(html)
         return html
 
     def update_placeholders(self, html) -> str:
