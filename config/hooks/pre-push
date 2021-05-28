@@ -7,13 +7,14 @@ docker-compose ps | grep "django" | grep --quiet "Up" && django_up=true || djang
 
 function run_in_django() {
     if [[ "$django_up" = true ]]; then
-        docker-compose exec django "$@"
+        echo "$@" | docker-compose exec django || exit 1
     else
-        docker-compose run django_helper "$@"
+        echo "$@" | docker-compose run django_helper || exit 1
     fi
+    exit 0
 }
 
-# If any model files have been modified, check if migrations are required.
+# If any  model files have been modified, check if migrations are required.
 echo "$committed_filepaths" | grep --quiet "models" && {
     # https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
     echo "Checking if migrations are required..."
