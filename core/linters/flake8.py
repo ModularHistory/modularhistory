@@ -12,7 +12,7 @@ from core.linters.config import ConfigFileOptionsParser as BaseConfigFileOptions
 from core.linters.config import LinterOptions, PerModuleOptions
 from core.utils import linting
 
-StringOrCallable = Union[str, Callable[..., str]]
+StringOrCallable = Union[str, Callable[[str], str]]
 StringOrCallableOrDict = Union[StringOrCallable, dict[str, StringOrCallable]]
 
 # Example:
@@ -149,7 +149,7 @@ def get_violation_explanation_url(violation_code: str) -> str:  # noqa: C901
             if isinstance(submatch, str):
                 return submatch
         if callable(url_match):
-            url = url_match(code=violation_code)
+            url = url_match(violation_code)
         else:
             url = url_match
     return url or VIOLATION_DEFAULT_URL

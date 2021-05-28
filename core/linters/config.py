@@ -6,7 +6,7 @@ import re
 import sys
 from configparser import SectionProxy
 from glob import glob
-from typing import Any, Iterator, List, Optional, Pattern, Sequence, Set, Tuple, Union
+from typing import Any, Iterator, Optional, Pattern, Sequence, Set, Tuple, Union
 
 from core.constants.strings import COMMA, NEW_LINE
 from core.utils import linting

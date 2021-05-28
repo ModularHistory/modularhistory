@@ -12,7 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import ModelWithImages
-from apps.quotes.manager import QuoteManager
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -119,7 +118,6 @@ class Quote(
         unique_together = ['date', 'bite']
         ordering = ['date']
 
-    objects: QuoteManager = QuoteManager()  # type: ignore
     placeholder_regex = quote_placeholder_regex
     searchable_fields = [
         'text',

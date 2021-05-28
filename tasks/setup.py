@@ -119,37 +119,44 @@ def seed_env_file(context, username, pat):
             'Failed to complete workflow: '
             f'https://github.com/ModularHistory/modularhistory/runs/{workflow_run_id}'
         )
-    seed_name, dest_path = 'env-file', '.env'
+    seed_name, dest_filepath = 'env-file', '.env'
     for artifact in artifacts:
         artifact_name = artifact['name']
         if artifact_name != seed_name:
             logging.error(f'Unexpected artifact: "{artifact_name}"')
             continue
         dl_url = artifact['archive_download_url']
-    zip_file = f'{seed_name}.zip'
+    zip_filename = f'{seed_name}.zip'
     context.run(
-        f'curl -u {username}:{pat} -L {dl_url} --output {zip_file} '
-        f'&& sleep 3 && echo "Downloaded {zip_file}"'
+        f'curl -u {username}:{pat} -L {dl_url} --output {zip_filename} '
+        f'&& sleep 3 && echo "Downloaded {zip_filename}"'
     )
+    extract_zip(context, zip_filename, dest_filepath=dest_filepath)
+
+
+def extract_zip(context, filename, dest_filepath: str = None):
+    """Extract the specified zip file to the specified destination."""
     try:
-        with ZipFile(zip_file, 'r') as archive:
-            soft_deleted_path = f'{dest_path}.prior'
-            if os.path.exists(dest_path):
-                if input(f'Overwrite existing {dest_path}? [Y/n] ') != NEGATIVE:
-                    context.run(f'mv {dest_path} {soft_deleted_path}')
+        with ZipFile(filename, 'r') as archive:
+            soft_deleted_path = f'{dest_filepath}.prior'
+            if os.path.exists(dest_filepath):
+                if input(f'Overwrite existing {dest_filepath}? [Y/n] ') != NEGATIVE:
+                    context.run(f'mv {dest_filepath} {soft_deleted_path}')
             archive.extractall()
-            if os.path.exists(dest_path) and os.path.exists(soft_deleted_path):
-                print(f'Removing prior {dest_path} ...')
+            if os.path.exists(dest_filepath) and os.path.exists(soft_deleted_path):
+                print(f'Removing prior {dest_filepath} ...')
                 os.remove(soft_deleted_path)
-        context.run(f'rm {zip_file}')
+        context.run(f'rm {filename}')
     except BadZipFile as err:
-        print(f'Could not extract from {zip_file} due to {err}')
-    if '/' in dest_path:
-        dest_dir, filename = os.path.dirname(dest_path), os.path.basename(dest_path)
+        print(f'Could not extract from {filename} due to {err}')
+    if '/' in dest_filepath:
+        dest_dir, filename = os.path.dirname(dest_filepath), os.path.basename(
+            dest_filepath
+        )
     else:
-        dest_dir, filename = settings.BASE_DIR, dest_path
+        dest_dir, filename = settings.BASE_DIR, dest_filepath
     if dest_dir != settings.BASE_DIR:
-        context.run(f'mv {filename} {dest_path}')
+        context.run(f'mv {filename} {dest_filepath}')
 
 
 @command
