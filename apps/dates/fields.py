@@ -21,8 +21,12 @@ class HistoricDateTimeField(DateTimeField):
 
     def formfield(self, **kwargs) -> Field:
         """Return the form field to be used for historic datetimes."""
-        kwargs |= {'form_class': HistoricDateFormField}
-        return super(DateTimeField, self).formfield(**kwargs)
+        return super(DateTimeField, self).formfield(
+            **{
+                'form_class': HistoricDateFormField,
+                **kwargs,
+            }
+        )
 
     def from_db_value(
         self, datetime_value: Optional[DateTime], expression, connection
