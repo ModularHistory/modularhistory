@@ -25,4 +25,5 @@ class Support(PositionedRelation):
         verbose_name = _('support')
 
     def __str__(self) -> str:
+        """Return the proposition relationship's string representation."""
         return f'{self.premise} --> {self.conclusion}'

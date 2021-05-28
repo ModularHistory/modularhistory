@@ -5,11 +5,13 @@ from django.utils.module_loading import import_string
 
 
 class CustomManyToManyField(models.ManyToManyField):
+    """A field for an m2m relationship with a specific target model."""
 
     target_model: Union[str, Type[models.Model]]
     through_model: Union[str, Type[models.Model]]
 
     def __init__(self, **kwargs):
+        """Construct the field."""
         to = kwargs.get('to', self.target_model)
         if to not in ('self', self.target_model):
             raise ValueError(f'{to} does not refer to `{self.target_model}`.')

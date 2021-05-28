@@ -6,10 +6,11 @@ from apps.users.models import User
 class Thread(models.Model):
     """A forum thread."""
 
-    # creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    # creator = models.ForeignKey(User, on_delete=models.CASCADE)  # noqa: E800
     initial_post = models.ForeignKey('Post', on_delete=models.CASCADE)
 
     def __str__(self) -> str:
+        """Return the thread's string representation."""
         return f'{self.initial_post}'
 
 
@@ -24,4 +25,5 @@ class Post(models.Model):
     parent_thread = models.ForeignKey(Thread, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
+        """Return the post's string representation."""
         return f'{self.content}'

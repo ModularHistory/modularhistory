@@ -48,8 +48,6 @@ def search(
     _document = DOCUMENT_MAP.get(document, 'all')
     print(f'Searching for = {query} in {document}...')
     query = Q('simple_query_string', query=query)
-    # client = Elasticsearch()
-    # search = Search(using=client).query(query)
     tic = time.perf_counter_ns()
     if print_sql:
         from django.db import connection

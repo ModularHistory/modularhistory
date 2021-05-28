@@ -55,6 +55,7 @@ DEGREES_OF_CERTAINTY = (
 
 
 def get_proposition_fk(related_name: str):
+    """Return a foreign key field referencing a proposition."""
     return ManyToManyForeignKey(
         to='propositions.TypedProposition',
         related_name=related_name,
@@ -172,14 +173,12 @@ class TypedProposition(
         return self.summary
 
     def clean(self):
+        """Prepare the proposition to be saved to the database."""
         if self.type == 'propositions.occurrence' and not self.date:
             raise ValidationError('Occurrence needs a date.')
         elif self.type == 'propositions.proposition' and not self.certainty:
             raise ValidationError('Proposition needs a degree of certainty.')
         return super().clean()
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
 
     @property
     def escaped_summary(self) -> SafeString:
@@ -257,7 +256,10 @@ class TypedProposition(
 
 
 class PropositionManager(Manager):
+    """Manager for propositions."""
+
     def get_queryset(self):
+        """Return the propositions of type `propositions.proposition`."""
         return super().get_queryset().filter(type='propositions.proposition')
 
 

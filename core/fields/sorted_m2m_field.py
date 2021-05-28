@@ -8,6 +8,7 @@ class SortedManyToManyField(BaseSortedManyToManyField):
     """Wrapper for SortedManyToManyField."""
 
     def __init__(self, to, sorted=True, base_class=None, **kwargs):
+        """Construct the field."""
         if not base_class:
             base_class = PositionedRelation
             kwargs['sort_value_field_name'] = 'position'

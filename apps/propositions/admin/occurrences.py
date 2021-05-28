@@ -39,4 +39,3 @@ class OccurrenceAdmin(PolymorphicPropositionAdmin):
 
 
 admin_site.register(models.Occurrence, OccurrenceAdmin)
-# admin_site.register(models.OccurrenceChain, OccurrenceChainAdmin)

@@ -2,6 +2,8 @@ from sentry_sdk import capture_exception
 
 from core.environment import IS_DEV
 
+# https://docs.graphene-python.org/en/latest/execution/middleware/
+
 
 class SentryMiddleware:
     """GraphQL middleware for error handling."""
@@ -15,4 +17,5 @@ class SentryMiddleware:
         raise error
 
     def resolve(self, next, root, info, **args):
+        """Continue evaluation by returning the next middleware."""
         return next(root, info, **args).catch(self.on_error)
