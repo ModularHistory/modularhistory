@@ -15,5 +15,5 @@ class PropositionViewSet(ModelViewSet):
 class PropositionListAPIView(ListAPIView):
     """API view for listing propositions."""
 
-    queryset = Proposition.objects.all()
+    queryset = Proposition.objects.filter(hidden=False, verified=True)
     serializer_class = PropositionSerializer

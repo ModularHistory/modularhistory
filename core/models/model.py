@@ -90,7 +90,7 @@ class Model(DjangoModel):
         return ContentType.objects.get_for_model(self)
 
     @property
-    def natural_key_fields(self) -> Optional[list]:
+    def natural_key_fields(self) -> list:
         """Return the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
@@ -187,7 +187,7 @@ class Model(DjangoModel):
         logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
         try:
             model_instance = cls.objects.get(pk=key)
-            object_html = model_instance.html
+            object_html = getattr(model_instance, 'html', '')
             logging.debug(f'Retrieved object HTML: {object_html}')
         except ObjectDoesNotExist as e:
             logging.error(f'Unable to retrieve object HTML; {e}')
