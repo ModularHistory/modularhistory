@@ -136,9 +136,6 @@ mega_clients = {'default': mega_client}
 if IS_PROD and mega_client:
     mega_clients[Environments.DEV] = mega_client
     mega_user = mega_client.get_user()
-    logging.info(
-        f'Obtained Mega client for {settings.MEGA_DEV_USERNAME}: {pformat(mega_user)}'
-    )
 else:
     mega_clients[Environments.DEV] = mega_client
 
