@@ -49,6 +49,7 @@
         "noinput",
         "noqa",
         "OSSAR",
+        "Patreon",
         "pformat",
         "plpgsql",
         "postgres",

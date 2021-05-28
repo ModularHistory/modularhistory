@@ -7,8 +7,14 @@ from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.images.admin import AbstractImagesInline
 from apps.places.admin import AbstractLocationsInline
 from apps.propositions import models
+from apps.propositions.admin.filters import (
+    HasDateFilter,
+    HasQuotesFilter,
+    LocationFilter,
+)
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
+from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.admin.tags import AbstractTagsInline
 from apps.topics.models.taggable_model import TopicFilter
 
@@ -101,8 +107,15 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
         'tags_string',
     ]
     list_filter = [
+        'verified',
         TopicFilter,
         RelatedEntityFilter,
+        HasDateFilter,
+        HasQuotesFilter,
+        LocationFilter,
+        HasSourceFilter,
+        HasMultipleSourcesFilter,
+        # HasMultipleImagesFilter,
     ]
     list_per_page = 15
 
