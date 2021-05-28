@@ -187,7 +187,7 @@ class Model(DjangoModel):
         logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
         try:
             model_instance = cls.objects.get(pk=key)
-            object_html = model_instance.html
+            object_html = getattr(model_instance, 'html', '')
             logging.debug(f'Retrieved object HTML: {object_html}')
         except ObjectDoesNotExist as e:
             logging.error(f'Unable to retrieve object HTML; {e}')
