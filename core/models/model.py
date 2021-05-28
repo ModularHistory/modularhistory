@@ -90,7 +90,7 @@ class Model(DjangoModel):
         return ContentType.objects.get_for_model(self)
 
     @property
-    def natural_key_fields(self) -> Optional[list]:
+    def natural_key_fields(self) -> list:
         """Return the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
