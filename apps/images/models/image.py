@@ -10,7 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 from easy_thumbnails.files import get_thumbnailer
 from image_cropping import ImageRatioField
 
-from apps.images.manager import ImageManager
 from apps.images.models.media_model import MediaModel
 from apps.images.serializers import ImageSerializer
 from core.fields import JSONField
@@ -88,7 +87,6 @@ class Image(MediaModel):
         unique_together = [IMAGE_FIELD_NAME, 'caption']
         ordering = ['date']
 
-    objects: ImageManager = ImageManager()  # type: ignore
     placeholder_regex = image_placeholder_regex
     searchable_fields = [
         'caption',

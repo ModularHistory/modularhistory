@@ -3,7 +3,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.search.models.manager import SearchableModelManager
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
 
@@ -38,7 +37,6 @@ class SearchableModel(TaggableModel, VerifiableModel):
 
         abstract = True
 
-    objects: SearchableModelManager = SearchableModelManager()
     slug_base_field: str = 'key'
 
     def clean(self):
