@@ -43,7 +43,7 @@ class TabularInline(BaseTabularInline):
             else:
                 raise Exception('Unable to determine foreign key field name.')
             try:
-                if len(self.get_queryset(request).filter(**{f'{fk_name}_id': obj.id})):
+                if len(self.get_queryset(request).filter(**{f'{fk_name}_id': obj.pk})):
                     return 0
             except (FieldError, FieldDoesNotExist) as err:
                 logging.error(err)
