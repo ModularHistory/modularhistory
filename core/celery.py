@@ -43,7 +43,8 @@ def upload_db_seed(self: Task, *args, **kwargs):
     """Make and upload a db seed file."""
     environment = os.getenv('ENVIRONMENT')
     if environment == Environments.PROD:
-        db.backup(*args, redact=True, push=True, filename='init.sql', **kwargs)
+        kwargs |= {'redact': True, 'push': True, 'filename': 'init.sql'}
+        db.backup(*args, **kwargs)
     else:
         print(
             'Ignored request to upload db seed, since '
