@@ -3,6 +3,7 @@
 import random
 import time
 from itertools import chain
+from typing import TYPE_CHECKING
 
 import django
 from elasticsearch_dsl import Q
@@ -12,6 +13,9 @@ from apps.search.documents.image import ImageDocument
 from apps.search.documents.occurrence import OccurrenceDocument
 from apps.search.documents.quote import QuoteDocument
 from apps.search.documents.source import SourceDocument
+
+if TYPE_CHECKING:
+    from invoke.context import Context
 
 from .command import command
 
@@ -36,8 +40,8 @@ DOCUMENT_MAP = {
 
 @command
 def search(
-    context,
-    query,
+    context: 'Context',
+    query: str,
     document: str = 'all',
     print_all: bool = False,
     print_sql: bool = False,
