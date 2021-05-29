@@ -38,8 +38,10 @@ class TabularInline(BaseTabularInline):
                 fk_name = 'content_object'
             elif obj._meta.proxy and obj._meta.proxy_for_model:
                 fk_name = obj._meta.proxy_for_model.__name__.lower()
-            else:
+            elif obj._meta.model_name:
                 fk_name = obj._meta.model_name
+            else:
+                raise Exception('Unable to determine foreign key field name.')
             try:
                 if len(self.get_queryset(request).filter(**{f'{fk_name}_id': obj.id})):
                     return 0
