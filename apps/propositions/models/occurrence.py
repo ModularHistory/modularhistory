@@ -11,8 +11,11 @@ from apps.propositions.models.proposition import TypedProposition
 from core.utils.html import soupify
 
 if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
+
     from apps.entities.models.entity import Entity
     from apps.images.models.image import Image
+
 
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
@@ -20,7 +23,7 @@ TRUNCATED_DESCRIPTION_LENGTH: int = 250
 class OccurrenceManager(Manager):
     """Manager for occurrences."""
 
-    def get_queryset(self):
+    def get_queryset(self) -> 'QuerySet[Occurrence]':
         """Return the propositions of type `propositions.occurrence`."""
         return super().get_queryset().filter(type='propositions.occurrence')
 
@@ -80,22 +83,22 @@ class Occurrence(TypedProposition):
             raise ValidationError('Occurrence needs a date.')
 
     @property
-    def truncated_description(self) -> Optional[SafeString]:
-        """Return the occurrence's description, truncated."""
-        if not self.description:
+    def truncated_elaboration(self) -> Optional[SafeString]:
+        """Return the occurrence's elaboration, truncated."""
+        if not self.elaboration:
             return None
-        description = soupify(self.description)
-        if description.find('img'):
-            description.find('img').decompose()
-        truncated_description = (
-            truncatechars_html(description.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
+        elaboration = soupify(self.elaboration)
+        if elaboration.find('img'):
+            elaboration.find('img').decompose()
+        truncated_elaboration = (
+            truncatechars_html(elaboration.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
             .replace('<p>', '')
             .replace('</p>', '')
         )
-        return format_html(truncated_description)
+        return format_html(truncated_elaboration)
 
     @property
-    def ordered_images(self):
+    def ordered_images(self) -> 'QuerySet':
         """Careful!  These are occurrence-images, not images."""
         return self.image_relations.all().select_related('image')
 
