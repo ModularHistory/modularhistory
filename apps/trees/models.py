@@ -10,11 +10,10 @@ from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 from apps.trees.fields import LtreeField
-from core.models.abstract_model import AbstractModelMeta
 from core.models.model import Model
 
 
-class TreeModel(Model, metaclass=AbstractModelMeta):
+class TreeModel(Model):
     """Implements Postgres ltree for self-referencing hierarchy."""
 
     parent = models.ForeignKey(
@@ -38,6 +37,8 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
     # The `path` field represents the path from the root to the node,
     # where each node is represented by its key.
     path = LtreeField()
+
+    id: int
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
@@ -72,21 +73,20 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
     @property
     def ancestors(self) -> QuerySet['TreeModel']:
         """Return the model instances's ancestors, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(
-            path__descendant=self.path
-        )
+        queryset = self.__class__.objects.filter(path__descendant=self.path)
+        return queryset.exclude(id=self.id)
 
     @property
     def descendants(self) -> QuerySet['TreeModel']:
         """Return the model instances's descendants, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(
+        return self.__class__.objects.exclude(id=self.id).filter(
             path__ancestor=self.path
         )
 
     @property
     def siblings(self) -> QuerySet['TreeModel']:
         """Return the model instances's siblings, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(
+        return self.__class__.objects.exclude(id=self.id).filter(
             parent_id=self.parent_id
         )
 
