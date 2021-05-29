@@ -1,7 +1,7 @@
 import logging
 import os
 
-from celery import Celery
+from celery import Celery, Task
 
 from core.constants.environments import Environments
 from core.utils import db, media
@@ -21,25 +21,25 @@ app.autodiscover_tasks()
 
 
 @app.task(bind=True)
-def debug(self):
+def debug(self: Task):
     """Print request info to debug/test Celery."""
     logging.info(f'Request: {self.request!r}')
 
 
 @app.task(bind=True)
-def dbbackup(self, *args, **kwargs):
+def dbbackup(self: Task, *args, **kwargs):
     """Create a database backup file."""
     db.backup(*args, **kwargs)
 
 
 @app.task(bind=True)
-def mediabackup(self, *args, **kwargs):
+def mediabackup(self: Task, *args, **kwargs):
     """Create a media backup file."""
     media.backup(*args, **kwargs)
 
 
 @app.task(bind=True)
-def upload_db_seed(self, *args, **kwargs):
+def upload_db_seed(self: Task, *args, **kwargs):
     """Make and upload a db seed file."""
     environment = os.getenv('ENVIRONMENT')
     if environment == Environments.PROD:
@@ -52,7 +52,7 @@ def upload_db_seed(self, *args, **kwargs):
 
 
 @app.task(bind=True)
-def sync_media(self, *args, **kwargs):
+def sync_media(self: Task, *args, **kwargs):
     """Sync media."""
     environment = os.getenv('ENVIRONMENT')
     if environment == Environments.PROD:

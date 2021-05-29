@@ -16,7 +16,7 @@
     "editor.formatOnSave": true,
     "editor.linkedEditing": true,
     "editor.rulers": [
-        88,
+        94,
         120
     ],
     "editor.suggestSelection": "first",

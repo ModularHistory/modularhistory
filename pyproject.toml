@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.black]
 # https://black.readthedocs.io/en/stable/pyproject_toml.html
-line-length = 88
+line-length = 94
 skip-string-normalization = true
 include = '\.py$'
 exclude = '''
@@ -33,7 +33,7 @@ directory = ".coverage_html"
 atomic = true
 #default_section = "FIRSTPARTY"
 include_trailing_comma = true
-line_length = 88
+line_length = 94
 multi_line_output = 3 # vertical hanging indent
 skip_gitignore = true # ignore files listed in .gitignore
 use_parentheses = true
