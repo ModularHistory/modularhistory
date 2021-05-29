@@ -20,13 +20,20 @@ class AbstractPublication(Model):
     """Abstract base class for publications."""
 
     name = models.CharField(
-        verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
+        verbose_name=_('name'),
+        max_length=100,
+        blank=True,
+        unique=True,
     )
     aliases = models.CharField(
-        verbose_name=_('aliases'), max_length=100, null=True, blank=True
+        verbose_name=_('aliases'),
+        max_length=100,
+        blank=True,
     )
     description = HTMLField(
-        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+        verbose_name=_('description'),
+        blank=True,
+        paragraphed=True,
     )
 
     class Meta:
@@ -35,16 +42,6 @@ class AbstractPublication(Model):
 
 class Publication(TypedModel, AbstractPublication):
     """A publication, such as a newspaper, magazine, or journal."""
-
-    name = models.CharField(
-        verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
-    )
-    aliases = models.CharField(
-        verbose_name=_('aliases'), max_length=100, null=True, blank=True
-    )
-    description = HTMLField(
-        verbose_name=_('description'), null=True, blank=True, paragraphed=True
-    )
 
     class Meta:
         ordering = ['name']

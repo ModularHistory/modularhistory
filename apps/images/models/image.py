@@ -170,10 +170,10 @@ class Image(MediaModel):
         return self.image.url
 
     @property
-    def provider_string(self) -> Optional[str]:
+    def provider_string(self) -> str:
         """Image credit string (e.g., "Image provided by NASA") displayed in caption."""
         if (not self.provider) or self.provider in self.caption:
-            return None
+            return ''
         provision_phrase: Optional[str] = 'provided'
         if self.image_type == 'painting':
             provision_phrase = None

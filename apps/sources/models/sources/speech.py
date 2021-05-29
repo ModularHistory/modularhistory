@@ -26,7 +26,10 @@ class Speech(Source):
         default=SPEECH_TYPES[0][0],
     )
 
-    audience = models.CharField(max_length=100, null=True, blank=True)
+    audience = models.CharField(
+        max_length=100,
+        blank=True,
+    )
 
     def __html__(self) -> str:
         """Return the source's HTML representation."""

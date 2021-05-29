@@ -16,12 +16,10 @@ class Book(Source, TextualMixin):
 
     translator = models.CharField(
         max_length=100,
-        null=True,
         blank=True,
     )
     publisher = models.CharField(
         max_length=100,
-        null=True,
         blank=True,
     )
     edition_number = models.PositiveSmallIntegerField(

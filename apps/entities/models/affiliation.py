@@ -62,7 +62,7 @@ class Role(Model):
     """A role fulfilled by an entity within an organization."""
 
     name = models.CharField(max_length=MAX_NAME_LENGTH, unique=True)
-    description = HTMLField(null=True, blank=True)
+    description = HTMLField(blank=True)
     organization = models.ForeignKey(
         to='entities.Entity',
         related_name='roles',

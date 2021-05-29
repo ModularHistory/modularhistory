@@ -20,7 +20,6 @@ class SearchableModel(TaggableModel, VerifiableModel):
         verbose_name=_('title'),
         max_length=120,
         blank=True,
-        null=True,
         help_text=(
             'The title can be used for the detail page header and title tag, '
             'SERP result card header, etc. It should be a noun phrase!'

@@ -71,7 +71,7 @@ def sync(
     """Upload a file to cloud storage."""
     if context is None:
         context = Context()
-    if storage_provider not in RcloneStorageProviders:
+    if storage_provider not in RcloneStorageProviders:  # type: ignore[operator]
         raise ValueError(f'Unknown storage provider: {storage_provider}')
     if storage_provider != RcloneStorageProviders.GOOGLE_DRIVE:
         raise NotImplementedError(

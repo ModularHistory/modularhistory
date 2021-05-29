@@ -13,10 +13,13 @@ class Website(AbstractPublication):
     """A website."""
 
     owner = models.CharField(
-        verbose_name=_('owner'), max_length=80, null=True, blank=True
+        verbose_name=_('owner'),
+        max_length=80,
+        blank=True,
     )
 
     def __str__(self) -> str:
+        """Return the website's string representation."""
         return self.name
 
 
@@ -31,11 +34,13 @@ class Webpage(Source, TextualMixin):
     date_nullable = True
 
     def clean(self):
+        """Prepare the model instance to be saved to the database."""
         super().clean()
         if not self.website and not self.website_name:
             raise ValidationError('Please specify either `website` or `website_name`.')
 
     def save(self, *args, **kwargs):
+        """Save the model instance to the database."""
         self.website_name = self.website.name if self.website else self.website_name
         super().save(*args, **kwargs)
 

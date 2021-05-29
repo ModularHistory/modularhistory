@@ -12,7 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.topics.models.topic import Topic
-from core.fields.json_field import JSONField
 from core.models.model_with_cache import ModelWithCache
 from core.models.slugged_model import SluggedModel
 

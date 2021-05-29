@@ -14,6 +14,8 @@ HANDLE_MAX_LENGTH = 40
 
 
 class Citation(AbstractCitation):
+    """A relationship between a story and a source."""
+
     content_object = ManyToManyForeignKey(
         to='stories.Story',
         related_name='citations',
@@ -71,11 +73,18 @@ class StoryElement(Model):
 class StoryElementInclusion(Model):
     """An element or component of a story."""
 
-    story = models.ForeignKey(to='stories.Story', on_delete=models.CASCADE)
-    story_element = models.ForeignKey(
-        to='stories.StoryElement', on_delete=models.CASCADE
+    story = models.ForeignKey(
+        to='stories.Story',
+        on_delete=models.CASCADE,
     )
-    justification = HTMLField(null=True, blank=True, paragraphed=True)
+    story_element = models.ForeignKey(
+        to='stories.StoryElement',
+        on_delete=models.CASCADE,
+    )
+    justification = HTMLField(
+        blank=True,
+        paragraphed=True,
+    )
 
     def __str__(self) -> str:
         """Return the story element's string representation."""
@@ -95,3 +104,7 @@ class StoryInspiration(Model):
         on_delete=models.CASCADE,
         related_name='inspirations_in',
     )
+
+    def __str__(self) -> str:
+        """Return the story element's string representation."""
+        return f'{self.upstream_story.handle} --> {self.downstream_story.handle}'

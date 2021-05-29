@@ -70,24 +70,24 @@ class Quote(
     """A quote."""
 
     text = HTMLField(verbose_name='text', paragraphed=True, processed=False)
-    bite = HTMLField(verbose_name='bite', null=True, blank=True, processed=False)
+    bite = HTMLField(verbose_name='bite', blank=True, processed=False)
     pretext = HTMLField(
         verbose_name='pretext',
-        null=True,
         blank=True,
         paragraphed=False,
         help_text='Content to be displayed before the quote',
     )
     context = HTMLField(
         verbose_name='context',
-        null=True,
         blank=True,
         paragraphed=True,
         help_text='Content to be displayed after the quote',
     )
     date = HistoricDateTimeField(null=True)
     attributee_html = models.TextField(
-        verbose_name=_('attributee HTML'), null=True, blank=True, editable=False
+        verbose_name=_('attributee HTML'),
+        blank=True,
+        editable=False,
     )
     attributees = models.ManyToManyField(
         to='entities.Entity',

@@ -21,7 +21,6 @@ class SluggedModel(Model):
 
     slug = AutoSlugField(
         verbose_name=_('slug'),
-        null=True,
         blank=True,
         editable=True,
         unique=True,

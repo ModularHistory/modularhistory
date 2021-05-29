@@ -61,7 +61,10 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
         null=True,
         blank=True,
     )
-    description = HTMLField(null=True, blank=True, paragraphed=True)
+    description = HTMLField(
+        blank=True,
+        paragraphed=True,
+    )
     parent_topics = ManyToManyField(
         to='self',
         through=TopicParentChildRelation,

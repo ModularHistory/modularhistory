@@ -116,8 +116,13 @@ class Model(DjangoModel):
 
     def get_admin_url(self):
         """Return the URL of the model instance's admin page."""
+        model_name = (
+            self._meta.model_name
+            if not self._meta.proxy
+            else self._meta.proxy_for_model.__name__.lower()
+        )
         return reverse(
-            f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
+            f'admin:{self._meta.app_label}_{model_name}_change',
             args=[self.pk],
         )
 
@@ -171,7 +176,9 @@ class Model(DjangoModel):
     ) -> str:
         """Return a model instance's HTML based on a placeholder in the admin."""
         if not cls.get_admin_placeholder_regex().match(match.group(0)):
-            raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
+            raise ValueError(
+                f'{match} does not match {cls.get_admin_placeholder_regex()}'
+            )
 
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
