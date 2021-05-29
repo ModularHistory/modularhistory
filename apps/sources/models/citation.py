@@ -88,10 +88,9 @@ class AbstractCitation(PositionedRelation):
         max_length=CITATION_PHRASE_MAX_LENGTH,
         choices=CITATION_PHRASE_OPTIONS,
         default=None,
-        null=True,
         blank=True,
     )
-    citation_html = models.TextField(null=True, blank=True)
+    citation_html = models.TextField(blank=True)
     pages = JSONField(schema=PAGES_SCHEMA, default=list)
 
     class Meta:

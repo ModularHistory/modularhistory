@@ -117,7 +117,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
         HasMultipleSourcesFilter,
         # HasMultipleImagesFilter,
     ]
-    list_per_page = 15
+    list_per_page = 20
 
 
 class PolymorphicPropositionAdmin(AbstractPropositionAdmin):

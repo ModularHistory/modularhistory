@@ -28,7 +28,6 @@ class Correspondence(Source, DocumentMixin):
 
     recipient = models.CharField(
         max_length=NAME_MAX_LENGTH,
-        null=True,
         blank=True,
     )
 

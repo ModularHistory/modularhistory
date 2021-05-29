@@ -52,19 +52,16 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
     content = HTMLField(
         verbose_name=_('content'),
-        null=True,
         blank=True,
         help_text='Enter the content of the source (with ellipses as needed).',
     )
     attributee_html = models.CharField(
         max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
-        null=True,
         blank=True,
         verbose_name=_('attributee HTML'),
     )
     attributee_string = models.CharField(
         max_length=MAX_ATTRIBUTEE_STRING_LENGTH,
-        null=True,
         blank=True,
         verbose_name=_('attributee string'),
     )
@@ -77,20 +74,19 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     )
     citation_html = models.TextField(
         verbose_name=_('citation HTML'),
-        null=False,
         # Allow to be blank in model forms (and computed during cleaning).
         blank=True,
     )
     citation_string = models.CharField(
         verbose_name=_('citation string'),
         max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,
         # Allow to be blank in model forms (and computed during cleaning).
         blank=True,
         unique=True,
     )
     containment_html = models.TextField(
-        verbose_name=_('containment HTML'), null=True, blank=True
+        verbose_name=_('containment HTML'),
+        blank=True,
     )
     containers = models.ManyToManyField(
         to='self',
@@ -103,7 +99,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     )
     description = HTMLField(
         verbose_name=_('description'),
-        null=True,
         blank=True,
         paragraphed=True,
     )
@@ -146,7 +141,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     title = models.CharField(
         verbose_name=_('title'),
         max_length=MAX_TITLE_LENGTH,
-        null=True,
         blank=True,
     )
     url = models.URLField(
@@ -257,13 +251,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if not self.file:
             if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
-        # TODO: Do something else with the information URL.
-        # It shouldn't be part of the citation string, but we should use it.
-        # if getattr(self, 'information_url', None) and self.information_url:
-        #     information_link = compose_link(
-        #         self.information_url, href=self.information_url, target="_blank"
-        #     )
-        #     html = f'{html}, information available at {information_link}'
         return format_html(fix_comma_positions(html))
 
     def get_containment_html(self) -> str:
@@ -317,7 +304,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                     self.source_containments.first().select_related('container')
                 )
                 return containment.container.date
-            except Exception:
+            except (ObjectDoesNotExist, AttributeError):
                 pass
         return None
 
@@ -354,6 +341,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def get_page_number_html(
         self, page_number: Optional[int] = None, end_page_number: Optional[int] = None
     ) -> str:
+        """Return the HTML for a page number reference."""
         page_number = page_number or self.page_number
         end_page_number = end_page_number or self.end_page_number
         if page_number:

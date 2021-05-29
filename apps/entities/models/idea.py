@@ -13,7 +13,7 @@ class Idea(Model):
     """An idea."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
-    description = HTMLField(null=True, blank=True, paragraphed=True)
+    description = HTMLField(blank=True, paragraphed=True)
     promoters = models.ManyToManyField(
         to='entities.Entity', related_name='ideas', blank=True
     )

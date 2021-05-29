@@ -28,7 +28,6 @@ class Place(TypedModel, ModelWithCache):
 
     name = models.CharField(
         verbose_name=_('name'),
-        null=True,
         blank=True,
         max_length=NAME_MAX_LENGTH,
         unique=True,

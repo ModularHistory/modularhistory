@@ -121,7 +121,6 @@ class TypedProposition(
     )
     elaboration = HTMLField(
         verbose_name=_('elaboration'),
-        null=True,
         paragraphed=True,
     )
     certainty = models.PositiveSmallIntegerField(
@@ -132,7 +131,6 @@ class TypedProposition(
     )
     postscript = HTMLField(
         verbose_name=_('postscript'),
-        null=True,
         blank=True,
         paragraphed=True,
         help_text='Content to be displayed below all related data',

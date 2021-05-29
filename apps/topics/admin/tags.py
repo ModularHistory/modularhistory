@@ -18,6 +18,7 @@ class AbstractTagsInline(TabularInline):
     verbose_name_plural = 'tags'
 
     def get_queryset(self, request: HttpRequest) -> QuerySet:
+        """Return the queryset of tags to display."""
         return super().get_queryset(request).select_related('topic')
 
 

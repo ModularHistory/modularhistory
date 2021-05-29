@@ -12,9 +12,9 @@ EMBED_CODE_MAX_LENGTH: int = 200
 class Video(MediaModel):
     """A video."""
 
-    title = models.CharField(max_length=TITLE_MAX_LENGTH, null=True)
+    title = models.CharField(max_length=TITLE_MAX_LENGTH)
     url = models.URLField(null=True, unique=True)
-    embed_code = models.CharField(max_length=EMBED_CODE_MAX_LENGTH, null=True)
+    embed_code = models.CharField(max_length=EMBED_CODE_MAX_LENGTH)
     duration = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:

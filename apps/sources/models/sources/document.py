@@ -39,7 +39,6 @@ class Collection(ModelWithCache):
     name = models.CharField(
         max_length=NAME_MAX_LENGTH,
         help_text='e.g., "Adam S. Bennion papers"',
-        null=True,
         blank=True,
     )
     repository = ForeignKey(
@@ -47,7 +46,11 @@ class Collection(ModelWithCache):
         on_delete=CASCADE,
         help_text='the library or institution housing the collection',
     )
-    url = models.URLField(max_length=URL_MAX_LENGTH, null=True, blank=True)
+    url = models.URLField(
+        max_length=URL_MAX_LENGTH,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         unique_together = ['name', 'repository']
@@ -76,13 +79,11 @@ class Repository(ModelWithCache):
 
     name = models.CharField(
         max_length=NAME_MAX_LENGTH,
-        null=True,
         blank=True,
         help_text='e.g., "L. Tom Perry Special Collections"',
     )
     owner = models.CharField(
         max_length=NAME_MAX_LENGTH,
-        null=True,
         blank=True,
         help_text='e.g., "Harold B. Lee Library, Brigham Young University"',
     )

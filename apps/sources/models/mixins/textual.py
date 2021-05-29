@@ -10,7 +10,6 @@ class TextualMixin(models.Model):
 
     editors = models.CharField(
         max_length=100,
-        null=True,
         blank=True,
     )
     original_edition = models.ForeignKey(

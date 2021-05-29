@@ -43,6 +43,8 @@ PARTS_OF_SPEECH = (
 
 
 class QuoteRelation(AbstractQuoteRelation):
+    """A relation of a quote to an entity."""
+
     content_object = ManyToManyForeignKey(
         to='entities.Entity', related_name='quote_relations', verbose_name='entity'
     )
@@ -58,10 +60,14 @@ class Entity(
     """An entity."""
 
     name = models.CharField(
-        verbose_name=_('name'), max_length=NAME_MAX_LENGTH, unique=True
+        verbose_name=_('name'),
+        max_length=NAME_MAX_LENGTH,
+        unique=True,
     )
     unabbreviated_name = models.CharField(
-        max_length=NAME_MAX_LENGTH, unique=True, null=True, blank=True
+        max_length=NAME_MAX_LENGTH,
+        unique=True,
+        blank=True,
     )
     aliases = ArrayField(
         models.CharField(max_length=NAME_MAX_LENGTH),
@@ -71,7 +77,7 @@ class Entity(
     )
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
-    description = HTMLField(null=True, blank=True, paragraphed=True)
+    description = HTMLField(blank=True, paragraphed=True)
     categories = models.ManyToManyField(
         to='entities.Category',
         through='entities.Categorization',

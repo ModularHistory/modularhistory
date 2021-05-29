@@ -21,9 +21,16 @@ class SourceFile(Model):
     """A source file with page numbers."""
 
     file = SourceFileField(
-        upload_to=upload_to('sources/'), null=True, blank=True, unique=True
+        upload_to=upload_to('sources/'),
+        null=True,
+        blank=True,
+        unique=True,
     )
-    name = models.CharField(max_length=100, null=True, blank=True, unique=True)
+    name = models.CharField(
+        max_length=100,
+        blank=True,
+        unique=True,
+    )
     page_offset = models.SmallIntegerField(
         default=0,
         blank=True,
