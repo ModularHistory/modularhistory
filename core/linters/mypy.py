@@ -1,15 +1,14 @@
 """
 MyPy static typing check.
 
-See https://docs.djangoproject.com/en/3.1/topics/checks/.
+See https://docs.djangoproject.com/en/dev/topics/checks/.
 """
 
 import os
 import re
 import sys
 from collections import defaultdict
-from typing import *
-from typing import Pattern  # not included in * for some reason
+from typing import Optional, Pattern
 
 from django.conf import settings
 from mypy import api as mypy_client
@@ -41,9 +40,9 @@ class MyPyOptions(LinterOptions):
     """Options common to both the config file and the cli."""
 
     # error codes:
-    select: Optional[Set[str]] = None
-    ignore: Optional[Set[str]] = None
-    warn: Optional[Set[str]] = None
+    select: Optional[set[str]] = None
+    ignore: Optional[set[str]] = None
+    warn: Optional[set[str]] = None
 
     # per-file ignores:
     per_file_ignores: Optional[list[PerFileIgnore]] = None
@@ -64,7 +63,7 @@ class MyPyOptions(LinterOptions):
         self.args = []
 
 
-PerModuleOptions = list[Tuple[str, MyPyOptions]]
+PerModuleOptions = list[tuple[str, MyPyOptions]]
 
 
 def mypy(**kwargs):
@@ -79,10 +78,10 @@ def process_mypy_output(output: str):
     """Process the output from mypy."""
     options, per_module_options = _get_mypy_options()
     matched_error = None  # used to know when to error a note related to an error
-    errors_by_type: Defaultdict[str, int] = defaultdict(int)
-    errors: Defaultdict[str, int] = defaultdict(int)
-    warnings: Defaultdict[str, int] = defaultdict(int)
-    filtered: Defaultdict[str, int] = defaultdict(int)
+    errors_by_type: defaultdict[str, int] = defaultdict(int)
+    errors: defaultdict[str, int] = defaultdict(int)
+    warnings: defaultdict[str, int] = defaultdict(int)
+    filtered: defaultdict[str, int] = defaultdict(int)
 
     for line in output.rstrip().split('\n'):
         parsed_line = _parse_output_line(line)
@@ -126,7 +125,7 @@ def _process_mypy_message(
     filename,
     line_number,
     options,
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     if level == 'error':
         # Change the level based on config
         level = options.get_message_level(message, error_code, filename)
@@ -159,7 +158,7 @@ def _process_mypy_message(
     return level, error_code
 
 
-def _get_mypy_options() -> Tuple[MyPyOptions, PerModuleOptions]:
+def _get_mypy_options() -> tuple[MyPyOptions, PerModuleOptions]:
     """Return an Options object to be used by mypy."""
     options = MyPyOptions()
     module_options: PerModuleOptions = []
@@ -184,7 +183,7 @@ def _get_module_options(
     return options
 
 
-def _parse_output_line(line: str) -> Optional[Tuple[str, ...]]:
+def _parse_output_line(line: str) -> Optional[tuple[str, ...]]:
     """Parse a line of output from mypy."""
     parsed_line = MYPY_OUTPUT_PATTERN.match(line)
     if not parsed_line:

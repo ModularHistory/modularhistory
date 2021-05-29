@@ -16,7 +16,7 @@ function run_in_django() {
 
 # If any  model files have been modified, check if migrations are required.
 echo "$committed_filepaths" | grep --quiet "models" && {
-    # https://docs.djangoproject.com/en/3.1/ref/django-admin/#makemigrations
+    # https://docs.djangoproject.com/en/dev/ref/django-admin/#makemigrations
     echo "Checking if migrations are required..."
     run_in_django python manage.py makemigrations --check --no-input --dry-run &>/dev/null || {
         echo "

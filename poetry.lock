@@ -1362,6 +1362,17 @@ pycodestyle = ">=2.7.0,<2.8.0"
 pyflakes = ">=2.3.0,<2.4.0"
 
 [[package]]
+name = "flake8-annotations"
+version = "2.6.2"
+description = "Flake8 Type Annotation Checks"
+category = "dev"
+optional = false
+python-versions = ">=3.6.1,<4.0.0"
+
+[package.dependencies]
+flake8 = ">=3.7,<4.0"
+
+[[package]]
 name = "flake8-bandit"
 version = "2.1.2"
 description = "Automated security testing with bandit and flake8."
@@ -1555,6 +1566,17 @@ description = "string format checker, plugin for flake8"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[package.dependencies]
+flake8 = "*"
+
+[[package]]
+name = "flake8-type-checking"
+version = "1.0.2"
+description = "A flake8 plugin for managing type-checking imports & forward references"
+category = "dev"
+optional = false
+python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
 flake8 = "*"
@@ -3500,7 +3522,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "dc4d41942e977d370586e2541d81597ae4574b3c9b9041186fe9fdcdd68c703d"
+content-hash = "92f6e9145a08ae0de9db966d19344a8e7790eefdfb47ecdf03cf298c2dfad48d"
 
 [metadata.files]
 aenum = [
@@ -4126,6 +4148,10 @@ flake8 = [
     {file = "flake8-3.9.2-py2.py3-none-any.whl", hash = "sha256:bf8fd333346d844f616e8d47905ef3a3384edae6b4e9beb0c5101e25e3110907"},
     {file = "flake8-3.9.2.tar.gz", hash = "sha256:07528381786f2a6237b061f6e96610a4167b226cb926e2aa2b6b1d78057c576b"},
 ]
+flake8-annotations = [
+    {file = "flake8-annotations-2.6.2.tar.gz", hash = "sha256:0d6cd2e770b5095f09689c9d84cc054c51b929c41a68969ea1beb4b825cac515"},
+    {file = "flake8_annotations-2.6.2-py3-none-any.whl", hash = "sha256:d10c4638231f8a50c0a597c4efce42bd7b7d85df4f620a0ddaca526138936a4f"},
+]
 flake8-bandit = [
     {file = "flake8_bandit-2.1.2.tar.gz", hash = "sha256:687fc8da2e4a239b206af2e54a90093572a60d0954f3054e23690739b0b0de3b"},
 ]
@@ -4189,6 +4215,10 @@ flake8-rst-docstrings = [
 flake8-string-format = [
     {file = "flake8-string-format-0.3.0.tar.gz", hash = "sha256:65f3da786a1461ef77fca3780b314edb2853c377f2e35069723348c8917deaa2"},
     {file = "flake8_string_format-0.3.0-py2.py3-none-any.whl", hash = "sha256:812ff431f10576a74c89be4e85b8e075a705be39bc40c4b4278b5b13e2afa9af"},
+]
+flake8-type-checking = [
+    {file = "flake8-type-checking-1.0.2.tar.gz", hash = "sha256:8c329d9dc8138e6dda6c737b1dc7101b86d88e15099f665a8d1a03251e87bdeb"},
+    {file = "flake8_type_checking-1.0.2-py3-none-any.whl", hash = "sha256:a0cd7beb836ddbd536125e2668e604720bf22f4dfb2513ad6e385e337531c662"},
 ]
 flower = [
     {file = "flower-0.9.7-py2.py3-none-any.whl", hash = "sha256:8d6d6ac03e60b3a4227d156da489eb435e2442d82e89922d413df9054b9221eb"},

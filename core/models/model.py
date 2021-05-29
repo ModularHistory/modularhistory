@@ -2,7 +2,7 @@
 
 import logging
 from pprint import pformat
-from typing import Any, ClassVar, Match, Optional, Pattern, Tuple, Type
+from typing import Any, ClassVar, Match, Optional, Pattern, Type
 
 import regex
 import serpy
@@ -25,7 +25,7 @@ from core.utils.string import truncate
 
 FieldList = list[str]
 
-# TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
+# TODO: https://docs.djangoproject.com/en/dev/topics/db/optimization/
 
 
 class Views(Constant):
@@ -46,7 +46,7 @@ class Model(DjangoModel):
     class Meta:
         """Meta options for Model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 
@@ -136,7 +136,7 @@ class Model(DjangoModel):
             self, template_name=view, text_to_highlight=text_to_highlight
         )
 
-    def natural_key(self) -> Tuple[Any, ...]:
+    def natural_key(self) -> tuple[Any, ...]:
         """Return a tuple of values comprising the model instance's natural key."""
         natural_key_values = []
         for field in self.natural_key_fields:

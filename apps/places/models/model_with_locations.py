@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
 from core.models.model_with_cache import store
 from core.models.positioned_relation import PositionedRelation
@@ -29,7 +28,7 @@ class AbstractLocationRelation(PositionedRelation):
         to='places.Place', related_name='%(app_label)s_%(class)s_set'
     )
 
-    # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
         """Meta options for AbstractLocationRelation."""
 
@@ -41,11 +40,13 @@ class AbstractLocationRelation(PositionedRelation):
 
 
 class LocationsField(CustomManyToManyField):
+    """Custom field for m2m relationship with locations."""
 
     target_model = 'places.Place'
     through_model = AbstractLocationRelation
 
     def __init__(self, through: Union[Type[AbstractLocationRelation], str], **kwargs):
+        """Construct the field."""
         kwargs['through'] = through
         kwargs['verbose_name'] = _('related quotes')
         super().__init__(**kwargs)
@@ -54,25 +55,26 @@ class LocationsField(CustomManyToManyField):
 class ModelWithLocations(Model):
     """A model that has one or more associated locations."""
 
-    locations = SortedManyToManyField(
-        to='places.Place',
-        related_name='_%(class)s_set',
-        blank=True,
-        verbose_name=_('locations'),
-    )
-
-    @property
-    def _locations(self) -> LocationsField:
-        raise NotImplementedError
-
     location_relations: 'Manager'
 
     class Meta:
         """Meta options for ModelWithLocations."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
+
+    @property
+    def locations(self) -> LocationsField:
+        """
+        Require implementation of a `locations` field on inheriting models.
+
+        For example:
+        ``
+        locations = LocationsField(through=Location)
+        ``
+        """
+        raise NotImplementedError
 
     @property
     def primary_location(self) -> Optional[dict]:

@@ -1,12 +1,12 @@
 """
 Module for Flake8 check.
 
-https://docs.djangoproject.com/en/3.1/topics/checks/
+https://docs.djangoproject.com/en/dev/topics/checks/
 """
 
 import re
 import subprocess  # noqa: S404
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, Optional, Union
 
 from core.linters.config import ConfigFileOptionsParser as BaseConfigFileOptionsParser
 from core.linters.config import LinterOptions, PerModuleOptions
@@ -61,10 +61,10 @@ def _process_flake8_message(location, filename, code, message, options):
         )
 
 
-def _get_flake8_options() -> Tuple[LinterOptions, PerModuleOptions]:
+def _get_flake8_options() -> tuple[LinterOptions, PerModuleOptions]:
     """Return an Options object to be used by mypy."""
     options = LinterOptions()
-    module_options: list[Tuple[str, LinterOptions]] = []
+    module_options: list[tuple[str, LinterOptions]] = []
     ConfigFileFlake8OptionsParser().apply(options, module_options)  # type: ignore
     return options, module_options
 

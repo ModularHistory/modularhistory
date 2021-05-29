@@ -14,7 +14,7 @@ class SearchableDatedModel(SearchableModel, DatedModel):
     it must be defined as an abstract model class.
     """
 
-    # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
         """Meta options for SearchableDatedModel."""
 

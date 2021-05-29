@@ -20,7 +20,7 @@ class EntityImage(PositionedRelation):
     class Meta:
         """Meta options for the EntityImage model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         unique_together = ['entity', 'image']
 

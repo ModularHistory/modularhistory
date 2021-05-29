@@ -1,6 +1,6 @@
 """Settings for debugging."""
 
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-internal-ips
+# https://docs.djangoproject.com/en/dev/ref/settings#s-internal-ips
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#configuring-internal-ips
 INTERNAL_IPS = ['127.0.0.1', '172.27.0.5']
 

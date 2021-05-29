@@ -1,6 +1,5 @@
 """Model classes for entity categories/categorizations."""
 
-from typing import Tuple
 
 from django.db import models
 from django.db.models.functions import Lower
@@ -12,7 +11,7 @@ from core.models.model import Model
 
 NAME_MAX_LENGTH: int = 100
 
-PARTS_OF_SPEECH: Tuple[Tuple[str, str], ...] = (
+PARTS_OF_SPEECH: tuple[tuple[str, str], ...] = (
     ('noun', 'noun'),
     ('adj', 'adjective'),
     ('any', 'noun / adjective'),
@@ -47,7 +46,7 @@ class Category(Model):
     class Meta:
         """Meta options for the Category model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'categories'
         ordering = [Lower('name')]
@@ -78,7 +77,7 @@ class Categorization(Model):
     class Meta:
         """Meta options for the Categorization model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         unique_together = ['entity', 'category']
 

@@ -99,7 +99,7 @@ class Entity(
     class Meta:
         """Meta options for the Entity model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Entities'
         ordering = ['name']
@@ -220,7 +220,7 @@ class Person(Entity):
     class Meta:
         """Meta options for the Person model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'People'
 
@@ -231,7 +231,7 @@ class Deity(Entity):
     class Meta:
         """Meta options for the Deity model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Deities'
 
@@ -242,7 +242,7 @@ class Group(Entity):
     class Meta:
         """Meta options for the Group model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Groups'
 
@@ -253,7 +253,7 @@ class Organization(Entity):
     class Meta:
         """Meta options for the Organization model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Organizations'
 

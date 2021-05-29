@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Tuple, Type, Union
+from typing import Optional, Type, Union
 
 from aenum import Constant
 from django.conf import settings
@@ -93,7 +93,7 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
 
     def get_search_results(
         self, request: HttpRequest, queryset: QuerySet, search_term: str
-    ) -> Tuple[QuerySet, bool]:
+    ) -> tuple[QuerySet, bool]:
         """Return model instances matching the supplied search term."""
         queryset, use_distinct = super().get_search_results(
             request, queryset, search_term
@@ -169,7 +169,7 @@ class SiteAdmin(ModelAdmin):
     """
     Admin for sites.
 
-    Ref: https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
+    Ref: https://docs.djangoproject.com/en/dev/ref/contrib/sites/
     """
 
     model = Site

@@ -1,7 +1,7 @@
 """
 Utils for checks.
 
-https://docs.djangoproject.com/en/3.1/topics/checks/
+https://docs.djangoproject.com/en/dev/topics/checks/
 """
 
 from typing import Pattern

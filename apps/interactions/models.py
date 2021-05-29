@@ -24,7 +24,7 @@ class ContentInteraction(Model):
     class Meta:
         """Meta options for ContentInteraction."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 
@@ -41,7 +41,7 @@ class FieldContentInteraction(ContentInteraction):
     class Meta:
         """Meta options for FieldContentInteraction."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 

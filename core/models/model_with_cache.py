@@ -18,7 +18,7 @@ class ModelWithCache(Model):
     class Meta:
         """Meta options for ModelWithCache."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 

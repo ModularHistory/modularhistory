@@ -6,7 +6,7 @@ import re
 import sys
 from configparser import SectionProxy
 from glob import glob
-from typing import Any, Iterator, Optional, Pattern, Sequence, Set, Tuple, Union
+from typing import Any, Iterator, Optional, Pattern, Sequence, Set, Union
 
 from core.constants.strings import COMMA, NEW_LINE
 from core.utils import linting
@@ -16,10 +16,10 @@ CONFIG_FILE = 'setup.cfg'
 ConfigFileSection = dict[str, object]
 ErrorCodeSet = Set[str]
 MultiOptions = Union[Sequence[str], str]
-OptionsUpdate = Tuple[Optional[str], ConfigFileSection]
+OptionsUpdate = tuple[Optional[str], ConfigFileSection]
 PathPatternList = list[Pattern]
 PatternList = list[Pattern]
-PerFileIgnore = Tuple[str, Set[str]]
+PerFileIgnore = tuple[str, Set[str]]
 
 ALL = None
 
@@ -125,7 +125,7 @@ class LinterOptions:
         return None
 
 
-PerModuleOptions = list[Tuple[str, LinterOptions]]
+PerModuleOptions = list[tuple[str, LinterOptions]]
 
 
 def _parse_multi_options(
@@ -210,7 +210,7 @@ class ConfigFileOptionsParser:
         self.script_name = script_name
 
     def apply(
-        self, options: LinterOptions, module_options: list[Tuple[str, LinterOptions]]
+        self, options: LinterOptions, module_options: list[tuple[str, LinterOptions]]
     ) -> None:
         """TODO: add docstring."""
         options_cls = options.__class__

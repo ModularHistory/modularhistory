@@ -2,10 +2,10 @@
 Django settings for modularhistory.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/3.1/topics/settings/
+https://docs.djangoproject.com/en/dev/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/3.1/ref/settings/
+https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
@@ -24,7 +24,7 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
 TESTING: bool = 'test' in sys.argv
 
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
+# https://docs.djangoproject.com/en/dev/ref/settings#s-debug
 # DEBUG must be False in production (for security)
 DEBUG = IS_DEV
 
@@ -35,7 +35,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_URL = config('BASE_URL', default='http://localhost')
 
 # --- URL MODIFICATION SETTINGS ---
-# https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
+# https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.common
 # Do not prepend www to modularhistory.com.
 # The Nginx reverse proxy chops off the "www." from incoming requests.
 PREPEND_WWW = False
@@ -43,21 +43,21 @@ PREPEND_WWW = False
 APPEND_SLASH = not DOCKERIZED
 
 # --- SECURITY SETTINGS ---
-# https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
+# https://docs.djangoproject.com/en/dev/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy in prod.
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
+# https://docs.djangoproject.com/en/dev/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
-# https://docs.djangoproject.com/en/3.1/ref/settings/#session-cookie-samesite
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-samesite
 SESSION_COOKIE_SAMESITE = 'Lax' if (IS_PROD or DOCKERIZED) else 'None'
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-csrf-cookie-secure
+# https://docs.djangoproject.com/en/dev/ref/settings#s-csrf-cookie-secure
 CSRF_COOKIE_SECURE = IS_PROD
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-referrer-policy
-# https://docs.djangoproject.com/en/3.1/ref/middleware/#referrer-policy
+# https://docs.djangoproject.com/en/dev/ref/settings#s-secure-referrer-policy
+# https://docs.djangoproject.com/en/dev/ref/middleware/#referrer-policy
 SECURE_REFERRER_POLICY = 'same-origin'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
+# https://docs.djangoproject.com/en/dev/ref/settings#s-allowed-hosts
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
     default='localhost, 127.0.0.1, 0.0.0.0, django',
@@ -194,25 +194,25 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # CORS middleware "should be placed as high as possible"
     'corsheaders.middleware.CorsMiddleware',
-    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
+    # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
     # https://github.com/jazzband/django-silk
     'silk.middleware.SilkyMiddleware',
     # Update cache:
-    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    # https://docs.djangoproject.com/en/dev/topics/cache/#order-of-middleware
     'django.middleware.cache.UpdateCacheMiddleware',
     # Set the `site` attribute on the request, so request.site returns the current site:
     # 'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    # https://docs.djangoproject.com/en/3.1/topics/http/sessions/
+    # https://docs.djangoproject.com/en/dev/topics/http/sessions/
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
+    # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.common
     'django.middleware.common.CommonMiddleware',
     # Fetch from cache:
-    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    # https://docs.djangoproject.com/en/dev/topics/cache/#order-of-middleware
     'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     # Add the `user` attribute to the request:
-    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.contrib.auth.middleware
+    # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.contrib.auth.middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
@@ -222,9 +222,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Staticpage middleware (based on Django's Flatpage middleware):
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
+    # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
     'apps.staticpages.middleware.StaticPageFallbackMiddleware',
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
+    # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     # Memory profiler
     # 'core.middleware.PymplerMiddleware',  # TODO
@@ -247,7 +247,7 @@ TEMPLATES = [
                 # https://github.com/dizballanze/django-admin-env-notice#quickstart
                 'django_admin_env_notice.context_processors.from_settings',
             ],
-            # https://docs.djangoproject.com/en/3.1/ref/templates/api/#loader-types
+            # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types
             'loaders': [
                 (
                     'django.template.loaders.cached.Loader',
@@ -286,7 +286,7 @@ REST_FRAMEWORK = {
 }
 
 # Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -299,7 +299,7 @@ DATABASES = {
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/3.1/topics/i18n/
+# https://docs.djangoproject.com/en/dev/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -311,7 +311,7 @@ MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
 # Static files (CSS, JavaScript, images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
+# https://docs.djangoproject.com/en/dev/howto/static-files/
 STATIC_URL = '/static/'
 SHARED_STATICFILES_DIR = os.path.join(BASE_DIR, 'core/static')
 STATICFILES_DIRS = (SHARED_STATICFILES_DIR,)
@@ -319,7 +319,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '_static')
 SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 
 # Media files (images, etc. uploaded by users)
-# https://docs.djangoproject.com/en/3.1/topics/files/
+# https://docs.djangoproject.com/en/dev/topics/files/
 MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
 MEDIA_URL = '/media/'
 
@@ -339,7 +339,7 @@ DB_INIT_FILEPATH = os.path.join(DB_INIT_DIR, DB_INIT_FILENAME)
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
 
-# https://docs.djangoproject.com/en/3.1/topics/logging/
+# https://docs.djangoproject.com/en/dev/topics/logging/
 if DEBUG:
     LOGGING = {
         'version': 1,
@@ -392,7 +392,7 @@ SETTINGS_EXPORT = [
 
 RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default='')
 
-# https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
+# https://docs.djangoproject.com/en/dev/ref/contrib/sites/
 SITE_ID = 1
 
 CONFIG_DIR = join(BASE_DIR, 'config')

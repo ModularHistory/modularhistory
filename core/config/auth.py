@@ -6,7 +6,7 @@ from core.environment import IS_PROD
 
 AUTH_USER_MODEL = 'users.User'
 
-# https://docs.djangoproject.com/en/3.2/ref/settings/#login-url
+# https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = '/api/auth/signin'
 
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
@@ -26,7 +26,7 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'apps.users.api.serializers.UserSerializer'
 }
 
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -42,7 +42,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# https://docs.djangoproject.com/en/3.1/topics/auth/customizing/#authentication-backends
+# https://docs.djangoproject.com/en/dev/topics/auth/customizing/#authentication-backends
 AUTHENTICATION_BACKENDS = (
     # Necessary for Django admin login
     'django.contrib.auth.backends.ModelBackend',

@@ -5,7 +5,6 @@ from typing import Optional, Type, Union
 
 from celery import shared_task
 from django.apps import apps
-from django.db.models.fields.related import ManyToManyField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
@@ -18,7 +17,7 @@ from core.models.model import Model
 
 
 class SourcesField(CustomManyToManyField):
-    """Field for sources."""
+    """Custom field for m2m relationship with sources."""
 
     target_model = 'sources.Source'
     through_model = AbstractCitation
@@ -63,7 +62,7 @@ class ModelWithSources(Model):
     @property
     def citations(self):
         """
-        The `related_name` value for the intermediate citation model.
+        Require the `related_name` value of the intermediate model to be 'citations'.
 
         Models inheriting from ModelWithSources must have a m2m relationship
         with the Source model with a `through` model that inherits from
@@ -83,7 +82,15 @@ class ModelWithSources(Model):
         )
 
     @property
-    def sources(self) -> ManyToManyField:
+    def sources(self) -> SourcesField:
+        """
+        Require implementation of a `sources` field on inheriting models.
+
+        For example:
+        ``
+        sources = SourcesField(through=Citation)
+        ``
+        """
         raise NotImplementedError
 
     @property

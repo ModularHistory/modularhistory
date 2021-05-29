@@ -39,10 +39,8 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
     # where each node is represented by its key.
     path = LtreeField()
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for DatedModel."""
-
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
         abstract = True
         ordering = ('path',)
 
@@ -72,21 +70,21 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
         return super().clean()
 
     @property
-    def ancestors(self) -> QuerySet:
+    def ancestors(self) -> QuerySet['TreeModel']:
         """Return the model instances's ancestors, based on its LTree field."""
         return self.__class__.objects.exclude(pk=self.pk).filter(
             path__descendant=self.path
         )
 
     @property
-    def descendants(self) -> QuerySet:
+    def descendants(self) -> QuerySet['TreeModel']:
         """Return the model instances's descendants, based on its LTree field."""
         return self.__class__.objects.exclude(pk=self.pk).filter(
             path__ancestor=self.path
         )
 
     @property
-    def siblings(self) -> QuerySet:
+    def siblings(self) -> QuerySet['TreeModel']:
         """Return the model instances's siblings, based on its LTree field."""
         return self.__class__.objects.exclude(pk=self.pk).filter(
             parent_id=self.parent_id

@@ -13,7 +13,7 @@ class AbstractLocationsInline(TabularInline):
 
     model: Type[Model]
     extra = 1
-    autocomplete_fields = ['place']
+    autocomplete_fields = ['location']
     verbose_name = 'location'
     verbose_name_plural = 'locations'
 

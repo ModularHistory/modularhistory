@@ -34,7 +34,7 @@ class Occurrence(TypedProposition):
     from `Proposition`.
     """
 
-    # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
         """Meta options for the `Occurrence` model."""
 
@@ -72,7 +72,6 @@ class Occurrence(TypedProposition):
                             image = entity.image
             if image:
                 self.images.add(image)
-        print(f'>>>>> post save: {self.summary}')
 
     def clean(self):
         """Prepare the occurrence to be saved."""

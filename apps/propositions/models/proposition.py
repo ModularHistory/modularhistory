@@ -72,7 +72,7 @@ class Citation(AbstractCitation):
 class Location(AbstractLocationRelation):
     """A relationship between a proposition and a place."""
 
-    content_object = get_proposition_fk(related_name='_location_relations')
+    content_object = get_proposition_fk(related_name='location_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
@@ -144,7 +144,7 @@ class TypedProposition(
         verbose_name=_('premises'),
     )
 
-    _locations = LocationsField(through=Location)
+    locations = LocationsField(through=Location)
     related_quotes = RelatedQuotesField(
         through=QuoteRelation,
         related_name='propositions',

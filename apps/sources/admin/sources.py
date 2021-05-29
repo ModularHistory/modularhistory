@@ -1,5 +1,5 @@
 import re
-from typing import Iterable, Tuple, Type, Union
+from typing import Iterable, Type, Union
 
 from django.contrib.admin.filters import ListFilter
 from django.db.models.query import QuerySet
@@ -61,14 +61,14 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         AttributeeFilter,
         SourceTypeFilter,
     ]
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
     ordering = ['date', 'citation_string']
     search_fields = base_model.searchable_fields
 
     def get_search_results(
         self, request: HttpRequest, queryset: QuerySet, search_term: str
-    ) -> Tuple[QuerySet, bool]:
+    ) -> tuple[QuerySet, bool]:
         """Return source instances matching the supplied search term."""
         queryset, use_distinct = super().get_search_results(
             request, queryset, search_term
@@ -122,7 +122,7 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     list_filter = [
         filter for filter in SourceAdmin.list_filter if filter != SourceTypeFilter
     ]
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 15
     ordering = SourceAdmin.ordering
     readonly_fields = SearchableModelAdmin.readonly_fields + [
@@ -132,9 +132,9 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
         'containment_html',
         'cache',
     ]
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
     save_as = True
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
     save_as_continue = True
     search_fields = base_model.searchable_fields
 

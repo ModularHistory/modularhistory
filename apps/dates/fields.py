@@ -36,7 +36,7 @@ class HistoricDateTimeField(DateTimeField):
 
         This method is the reverse of get_prep_value().
 
-        https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
+        https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if datetime_value is None:
             return datetime_value
@@ -51,7 +51,7 @@ class HistoricDateTimeField(DateTimeField):
             datetime_value.microsecond,
         )
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
+    # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-values-to-python-objects
     def to_python(
         self, historic_datetime: Optional[Union[DateTime, str]]
     ) -> Optional[HistoricDateTime]:
@@ -77,7 +77,7 @@ class HistoricDateTimeField(DateTimeField):
                 historic_datetime.microsecond,
             )
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-python-objects-to-query-values
+    # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-python-objects-to-query-values
     def get_prep_value(
         self, historic_datetime: Optional[HistoricDateTime]
     ) -> Optional[DateTime]:

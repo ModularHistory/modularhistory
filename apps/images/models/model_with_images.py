@@ -29,7 +29,7 @@ class ModelWithImages(Model):
     class Meta:
         """Meta options for ModelWithImages."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 
@@ -40,10 +40,6 @@ class ModelWithImages(Model):
         if images or not self.images.exists():
             return images
         images = [image.serialize() for image in self.images.all()]
-        # images = [
-        #     image_relation.image.serialize()
-        #     for image_relation in self.image_relations.all().select_related('image')
-        # ]
         cache_images.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,

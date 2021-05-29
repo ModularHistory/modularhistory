@@ -26,7 +26,7 @@ class QuoteAttribution(PositionedRelation):
     class Meta:
         """Meta options for QuoteAttribution."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         unique_together = ['quote', 'attributee']
         ordering = ['position']

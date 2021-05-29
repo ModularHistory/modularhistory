@@ -2,7 +2,7 @@
 
 import re
 from datetime import date, datetime
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 from django import forms
 from django.forms import MultiWidget
@@ -26,7 +26,7 @@ YBP = 'YBP'
 year_systems = ((CE, 'CE'), (BCE, 'BCE'), (YBP, 'YBP'))
 
 
-def get_year(year: int, year_system: str = CE) -> Tuple[int, int, int]:
+def get_year(year: int, year_system: str = CE) -> tuple[int, int, int]:
     """
     Return a decompressed year value (year, second, microsecond) ready for storage.
 
@@ -141,7 +141,7 @@ class HistoricDateWidget(MultiWidget):
 
         The input value can be assumed valid, but not necessarily non-empty.
 
-        https://docs.djangoproject.com/en/3.1/ref/forms/widgets/#django.forms.MultiWidget.decompress
+        https://docs.djangoproject.com/en/dev/ref/forms/widgets/#django.forms.MultiWidget.decompress
         """
         nones = (None, None, None, None, None, None)
         hour = minute = second = ms = 0
@@ -224,7 +224,7 @@ class HistoricDateWidget(MultiWidget):
             time = historic_datetime.strftime('%H:%M:%S.%f')
         return [year, year_system, season, month, day, time]
 
-    def _parse_string(self, datetime_string: str) -> Tuple[int, ...]:
+    def _parse_string(self, datetime_string: str) -> tuple[int, ...]:
         """TODO: move elsewhere, perhaps."""
         year, month, day = datetime_string.split('-')
         hour = minute = second = microsecond = '0'
@@ -240,7 +240,7 @@ class HistoricDateWidget(MultiWidget):
 
 def _datetime_from_datadict_values(
     year, year_system, season=None, month=None, day=None
-):
+) -> HistoricDateTime:
     # Figure out year
     year, second, microsecond = get_year(year, year_system)
     # Figure out date precision

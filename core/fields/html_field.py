@@ -233,7 +233,7 @@ class HTMLField(MceHTMLField):
         """
         Return a 4-tuple with enough information to recreate the field.
 
-        https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.deconstruct
+        https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.deconstruct
         """
         field_class = 'core.fields.HTMLField'
         name, path, args, kwargs = super().deconstruct()
@@ -247,32 +247,32 @@ class HTMLField(MceHTMLField):
         Convert a value as returned by the database to a Python object.
 
         This method is the reverse of get_prep_value().
-        https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
+        https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if html_value is None:
             return ''
         return html_value
 
-    # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.to_python
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.to_python
     def to_python(self, html_value: Optional[str]) -> str:
         """Convert the value into the correct Python object."""
         if html_value is None:
             return ''
         return html_value
 
-    # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_prep_value
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.get_prep_value
     def get_prep_value(self, html_value: Optional[str]) -> str:
         """Return data in a format prepared for use as a parameter in a db query."""
         if html_value is None:
             return ''
         return html_value
 
-    # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.get_db_prep_value
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.get_db_prep_value
     def get_db_prep_value(self, html_value, connection, prepared=False):
         """Convert the value to a backend-specific value."""
         return self.get_prep_value(html_value)
 
-    # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.value_to_string
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.value_to_string
     def value_to_string(self, html_object: Any) -> str:
         """Convert the object to a string."""
         html_value = self.value_from_object(html_object)
