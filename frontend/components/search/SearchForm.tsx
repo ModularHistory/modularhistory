@@ -139,19 +139,18 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             <MultiSelect label={"Entities"} name={"entities"} keyName={"id"} valueName={"name"}>
               {() =>
                 axiosWithoutAuth
-                  .get("/api/entities/partial/?attributes=id&attributes=name")
-                  .then((response) => response.data["results"])
-                  .catch((error) => console.log(">>>", error.request))
+                  .get("/graphql/?query={entities{id%20name}}", {})
+                  .then((response) => response.data["data"]["entities"])
               }
             </MultiSelect>
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            <MultiSelect label={"Topics"} name={"topics"} keyName={"pk"} valueName={"name"}>
+            <MultiSelect label={"Topics"} name={"topics"} keyName={"id"} valueName={"name"}>
               {() =>
                 axiosWithoutAuth
-                  .get("/api/topics/partial/")
-                  .then((response) => response.data["results"])
+                  .get("/graphql/?query={topics{id%20name}}", {})
+                  .then((response) => response.data["data"]["topics"])
               }
             </MultiSelect>
           </Grid>

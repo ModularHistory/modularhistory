@@ -10,6 +10,5 @@ app_name = 'topics'
 
 urlpatterns = [
     path('', views.TopicListAPIView.as_view()),
-    path('partial/', views.TopicPartialAPIView.as_view()),
     path('<slug>', views.TopicAPIView.as_view()),
 ]

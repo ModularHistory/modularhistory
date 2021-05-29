@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING
+
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
 
 from apps.topics.api.types import TopicType
 from apps.topics.models.topic import Topic
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 class Query(graphene.ObjectType):
@@ -12,12 +17,12 @@ class Query(graphene.ObjectType):
     topic = graphene.Field(TopicType, slug=graphene.String())
 
     @staticmethod
-    def resolve_topics(root, info, **kwargs):
+    def resolve_topics(root, info, **kwargs) -> 'QuerySet[Topic]':
         """Return the queryset against which a 'topics' query should be executed."""
         return Topic.objects.all()
 
     @staticmethod
-    def resolve_topic(root, info, slug: str):
+    def resolve_topic(root, info, slug: str) -> Topic:
         """Return the topic specified by a 'topic' query."""
         try:
             return Topic.objects.get(slug=slug)
