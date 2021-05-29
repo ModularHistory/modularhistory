@@ -9,7 +9,7 @@ from glob import iglob
 from os.path import join
 from pprint import pformat
 from time import sleep
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from zipfile import BadZipFile, ZipFile
 
 from colorama import Style
@@ -24,6 +24,9 @@ from core.utils import github as github_utils
 
 from .command import command
 
+if TYPE_CHECKING:
+    from invoke.context import Context
+
 NEWLINE = '\n'
 GITHUB_ACTIONS_BASE_URL = github_utils.GITHUB_ACTIONS_BASE_URL
 SEEDS = {'env-file': '.env', 'init-sql': os.path.join(settings.DB_INIT_DIR, 'init.sql')}
@@ -31,7 +34,7 @@ HOSTS_FILEPATH = '/etc/hosts'
 WSL_HOSTS_FILEPATH = '/mnt/c/Windows/System32/drivers/etc/hosts'
 
 
-def dispatch_and_get_workflow(context, session: Session) -> dict:
+def dispatch_and_get_workflow(context: 'Context', session: Session) -> dict:
     """Dispatch the seed workflow in GitHub, and return the workflow run id."""
     # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
     workflow_id = 'seed.yml'
@@ -83,13 +86,11 @@ def dispatch_and_get_workflow(context, session: Session) -> dict:
                     break
                 elif answer in ('n', 'N'):
                     # TODO: Offer more instructions
-                    raise TimeoutError(
-                        'Timed out while attempting to retrieve workflow run.'
-                    )
+                    raise TimeoutError('Timed out while attempting to retrieve workflow run.')
     return workflow_runs[0]
 
 
-def seed_env_file(context, username, pat):
+def seed_env_file(context: 'Context', username: str, pat: str):
     """Acquire a .env file."""
     username, pat = github_utils.accept_credentials(username, pat)
     session = github_utils.initialize_session(username=username, pat=pat)
@@ -104,8 +105,7 @@ def seed_env_file(context, username, pat):
     artifacts = []
     while waited_seconds < timeout:
         print(
-            f'Waiting for artifacts... status: {status} '
-            f'(total wait: {waited_seconds}s)'
+            f'Waiting for artifacts... status: {status} ' f'(total wait: {waited_seconds}s)'
         )
         sleep(ping_interval)
         status = session.get(workflow_run_url).json().get('status')
@@ -134,7 +134,7 @@ def seed_env_file(context, username, pat):
     extract_zip(context, zip_filename, dest_filepath=dest_filepath)
 
 
-def extract_zip(context, filename, dest_filepath: str = None):
+def extract_zip(context: 'Context', filename: str, dest_filepath: str = None):
     """Extract the specified zip file to the specified destination."""
     try:
         with ZipFile(filename, 'r') as archive:
@@ -150,9 +150,7 @@ def extract_zip(context, filename, dest_filepath: str = None):
     except BadZipFile as err:
         print(f'Could not extract from {filename} due to {err}')
     if '/' in dest_filepath:
-        dest_dir, filename = os.path.dirname(dest_filepath), os.path.basename(
-            dest_filepath
-        )
+        dest_dir, filename = os.path.dirname(dest_filepath), os.path.basename(dest_filepath)
     else:
         dest_dir, filename = settings.BASE_DIR, dest_filepath
     if dest_dir != settings.BASE_DIR:
@@ -161,7 +159,7 @@ def extract_zip(context, filename, dest_filepath: str = None):
 
 @command
 def seed(
-    context,
+    context: 'Context',
     username: Optional[str] = None,
     pat: Optional[str] = None,
     db: bool = True,
@@ -179,7 +177,7 @@ def seed(
 
 
 @command
-def update_hosts(context):
+def update_hosts(context: 'Context'):
     """Ensure /etc/hosts contains extra hosts defined in config/hosts."""
     with open(os.path.join(settings.CONFIG_DIR, 'hosts.txt')) as hosts_file:
         required_hosts = [host for host in hosts_file.read().splitlines() if host]
@@ -187,9 +185,7 @@ def update_hosts(context):
         while True:
             with open(WSL_HOSTS_FILEPATH, 'r') as hosts_file:
                 extant_hosts = hosts_file.read()
-                hosts_to_write = [
-                    host for host in required_hosts if host not in extant_hosts
-                ]
+                hosts_to_write = [host for host in required_hosts if host not in extant_hosts]
             if hosts_to_write:
                 input(
                     f'{Style.BRIGHT}\n'
@@ -213,7 +209,7 @@ def update_hosts(context):
 
 
 @command
-def update_git_hooks(context):
+def update_git_hooks(context: 'Context'):
     """Update git hooks."""
     for filepath in iglob(os.path.join(settings.BASE_DIR, 'config/hooks/*')):
         filename = os.path.basename(filepath)
@@ -229,7 +225,7 @@ def update_git_hooks(context):
 
 
 @command
-def write_env_file(context, dev: bool = False, dry: bool = False):
+def write_env_file(context: 'Context', dev: bool = False, dry: bool = False):
     """Write a .env file."""
     destination_file = '.env'
     dry_destination_file = '.env.tmp'

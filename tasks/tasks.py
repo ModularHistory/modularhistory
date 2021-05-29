@@ -2,7 +2,7 @@
 
 import os
 from os.path import join
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import django
 from decouple import config
@@ -10,6 +10,9 @@ from decouple import config
 from core.constants.environments import Environments
 
 from .command import command
+
+if TYPE_CHECKING:
+    from invoke.context import Context
 
 django.setup()
 
@@ -23,8 +26,8 @@ GITHUB_CREDENTIALS_FILE = join(settings.BASE_DIR, '.github/.credentials')
 
 
 @command
-def build(
-    context,
+def build(  # noqa: S107
+    context: 'Context',
     github_actor: str = '',
     access_token: str = '',
     sha: str = 'latest',
@@ -73,13 +76,13 @@ def build(
 
 
 @command
-def debug(context):
+def debug(context: 'Context'):
     """Print a message for debugging purposes."""
     context.run('echo "Success."')
 
 
 @command
-def generate_artifacts(context):
+def generate_artifacts(context: 'Context'):
     """Generate artifacts."""
     from django.db.models import Count
     from wordcloud import WordCloud
