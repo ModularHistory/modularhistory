@@ -31,9 +31,9 @@ class TabularInline(BaseTabularInline):
                 fk_name = 'content_object'
             else:
                 fk_name = (
-                    self._meta.model_name
-                    if not self._meta.proxy
-                    else self._meta.proxy_for_model.__name__.lower()
+                    obj._meta.model_name
+                    if not obj._meta.proxy
+                    else obj._meta.proxy_for_model.__name__.lower()
                 )
             try:
                 if len(self.get_queryset(request).filter(**{f'{fk_name}_id': obj.id})):
