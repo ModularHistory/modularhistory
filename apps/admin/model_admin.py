@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Type, Union
+from typing import Mapping, Optional, Type, Union
 
 from aenum import Constant
 from django.conf import settings
@@ -8,7 +8,9 @@ from django.contrib.admin import ModelAdmin as BaseModelAdmin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.sites.models import Site
+from django.db.models.fields import Field
 from django.db.models.query import QuerySet
+from django.forms import Widget
 from django.http import HttpRequest
 from django_celery_beat.admin import PeriodicTaskAdmin
 from django_celery_beat.models import (
@@ -33,9 +35,9 @@ from core.widgets.json_editor_widget import JSONEditorWidget
 AdminListFilter = Union[str, Type[ListFilter]]
 
 
-FORM_FIELD_OVERRIDES = {
+FORM_FIELD_OVERRIDES: Mapping[Type[Field], Mapping[str, Type[Widget]]] = {
     HistoricDateTimeField: {'widget': HistoricDateWidget},
-    JSONField: {'widget': JSONEditorWidget()},
+    JSONField: {'widget': JSONEditorWidget},
 }
 
 if settings.ENVIRONMENT == Environments.DEV:
@@ -95,9 +97,7 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         self, request: HttpRequest, queryset: QuerySet, search_term: str
     ) -> tuple[QuerySet, bool]:
         """Return model instances matching the supplied search term."""
-        queryset, use_distinct = super().get_search_results(
-            request, queryset, search_term
-        )
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         search_term = search_term.strip()
         if search_term:
             searchable_fields = (
