@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import Match, Optional
+from typing import TYPE_CHECKING, Match, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -30,14 +30,13 @@ from apps.search.models import SearchableModel
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.fields import HTMLField
-from core.fields.html_field import (
-    OBJECT_PLACEHOLDER_REGEX,
-    TYPE_GROUP,
-    PlaceholderGroups,
-)
+from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 proposition_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>proposition)'
@@ -54,10 +53,10 @@ DEGREES_OF_CERTAINTY = (
 )
 
 
-def get_proposition_fk(related_name: str):
+def get_proposition_fk(related_name: str) -> ManyToManyForeignKey:
     """Return a foreign key field referencing a proposition."""
     return ManyToManyForeignKey(
-        to='propositions.TypedProposition',
+        to='propositions.PolymorphicProposition',
         related_name=related_name,
         verbose_name='proposition',
     )
@@ -91,7 +90,7 @@ TYPE_CHOICES = (
 )
 
 
-class TypedProposition(
+class PolymorphicProposition(
     SearchableModel,
     DatedModel,  # submodels like `Occurrence` require date
     ModelWithSources,
@@ -176,7 +175,7 @@ class TypedProposition(
             raise ValidationError('Occurrence needs a date.')
         elif self.type == 'propositions.proposition' and not self.certainty:
             raise ValidationError('Proposition needs a degree of certainty.')
-        return super().clean()
+        super().clean()
 
     @property
     def escaped_summary(self) -> SafeString:
@@ -239,9 +238,7 @@ class TypedProposition(
                     rf'\g<1>{extant_html}\g<2>',
                     html,
                 )
-                placeholder = placeholder.replace(
-                    match.group(PlaceholderGroups.HTML), html
-                )
+                placeholder = placeholder.replace(match.group(PlaceholderGroups.HTML), html)
             else:
                 logging.info('Returning extant placeholder')
                 return placeholder
@@ -256,12 +253,12 @@ class TypedProposition(
 class PropositionManager(Manager):
     """Manager for propositions."""
 
-    def get_queryset(self):
+    def get_queryset(self) -> 'QuerySet':
         """Return the propositions of type `propositions.proposition`."""
         return super().get_queryset().filter(type='propositions.proposition')
 
 
-class Proposition(TypedProposition):
+class Proposition(PolymorphicProposition):
     """A proposition."""
 
     class Meta:

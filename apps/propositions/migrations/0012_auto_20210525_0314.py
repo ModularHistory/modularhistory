@@ -17,12 +17,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='locations',
             field=core.fields.sorted_m2m_field.SortedManyToManyField(
                 blank=True,
                 help_text=None,
-                related_name='_typedproposition_set',
+                related_name='_polymorphicproposition_set',
                 sort_value_field_name='position',
                 to='places.Place',
                 verbose_name='locations',
@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                     core.fields.m2m_foreign_key.ManyToManyForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='_location_relations',
-                        to='propositions.typedproposition',
+                        to='propositions.polymorphicproposition',
                         verbose_name='proposition',
                     ),
                 ),
@@ -67,11 +67,11 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AddField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='_locations',
             field=apps.places.models.model_with_locations.LocationsField(
                 blank=True,
-                related_name='typedproposition_set',
+                related_name='polymorphicproposition_set',
                 through='propositions.Location',
                 to='places.Place',
                 verbose_name='related quotes',

@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='TypedProposition',
+            name='PolymorphicProposition',
             fields=[
                 (
                     'id',
@@ -130,9 +130,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'cache',
-                    core.fields.json_field.JSONField(
-                        blank=True, default=dict, null=True
-                    ),
+                    core.fields.json_field.JSONField(blank=True, default=dict, null=True),
                 ),
                 (
                     'slug',
@@ -156,9 +154,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'date',
-                    apps.dates.fields.HistoricDateTimeField(
-                        null=True, verbose_name='date'
-                    ),
+                    apps.dates.fields.HistoricDateTimeField(null=True, verbose_name='date'),
                 ),
                 (
                     'end_date',
@@ -256,7 +252,7 @@ class Migration(migrations.Migration):
                     core.fields.sorted_m2m_field.SortedManyToManyField(
                         blank=True,
                         help_text=None,
-                        related_name='typedproposition_set',
+                        related_name='polymorphicproposition_set',
                         sort_value_field_name='position',
                         to='images.Image',
                         verbose_name='images',
@@ -267,7 +263,7 @@ class Migration(migrations.Migration):
                     core.fields.sorted_m2m_field.SortedManyToManyField(
                         blank=True,
                         help_text=None,
-                        related_name='typedproposition_set',
+                        related_name='polymorphicproposition_set',
                         sort_value_field_name='position',
                         to='places.Place',
                         verbose_name='locations',
@@ -278,7 +274,7 @@ class Migration(migrations.Migration):
                     models.ManyToManyField(
                         related_name='conclusions',
                         through='propositions.Support',
-                        to='propositions.TypedProposition',
+                        to='propositions.PolymorphicProposition',
                         verbose_name='premises',
                     ),
                 ),
@@ -286,7 +282,7 @@ class Migration(migrations.Migration):
                     'related_entities',
                     models.ManyToManyField(
                         blank=True,
-                        related_name='typedproposition_set',
+                        related_name='polymorphicproposition_set',
                         to='entities.Entity',
                         verbose_name='related entities',
                     ),

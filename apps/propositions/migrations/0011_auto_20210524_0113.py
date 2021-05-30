@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='title',
             field=models.CharField(
                 blank=True,

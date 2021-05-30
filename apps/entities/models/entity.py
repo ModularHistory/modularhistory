@@ -77,6 +77,20 @@ class Entity(
     )
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
+    birth = models.OneToOneField(
+        to='propositions.Birth',
+        on_delete=models.SET_NULL,
+        related_name='born_entity',
+        null=True,
+        blank=True,
+    )
+    death = models.OneToOneField(
+        to='propositions.Death',
+        on_delete=models.SET_NULL,
+        related_name='dead_entity',
+        null=True,
+        blank=True,
+    )
     description = HTMLField(blank=True, paragraphed=True)
     categories = models.ManyToManyField(
         to='entities.Category',
@@ -157,9 +171,7 @@ class Entity(
         if not self.categories.exists():
             return None
         categorizations = self.categorizations.all()
-        categorizations = (
-            categorizations.exclude(date__gt=date) if date else categorizations
-        )
+        categorizations = categorizations.exclude(date__gt=date) if date else categorizations
         if not len(categorizations):
             categorizations = self.categorizations.all()
         return categorizations.order_by('date', 'category__weight').last()

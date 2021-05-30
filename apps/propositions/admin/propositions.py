@@ -1,11 +1,7 @@
 from apps.admin.admin_site import admin_site
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.propositions import models
-from apps.propositions.admin.filters import (
-    HasDateFilter,
-    HasQuotesFilter,
-    LocationFilter,
-)
+from apps.propositions.admin.filters import HasDateFilter, HasQuotesFilter, LocationFilter
 from apps.propositions.admin.inlines import (
     ConclusionsInline,
     ImagesInline,
@@ -60,7 +56,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
 class PolymorphicPropositionAdmin(AbstractPropositionAdmin):
     """Admin for all propositions."""
 
-    model = models.TypedProposition
+    model = models.PolymorphicProposition
 
     list_display = AbstractPropositionAdmin.list_display + ['date_string', 'type']
     list_filter = AbstractPropositionAdmin.list_filter + ['type']
@@ -68,6 +64,6 @@ class PolymorphicPropositionAdmin(AbstractPropositionAdmin):
     search_fields = model.searchable_fields
 
 
-admin_site.register(models.TypedProposition, PolymorphicPropositionAdmin)
+admin_site.register(models.PolymorphicProposition, PolymorphicPropositionAdmin)
 admin_site.register(models.Proposition, PolymorphicPropositionAdmin)
 admin_site.register(models.Occurrence, PolymorphicPropositionAdmin)

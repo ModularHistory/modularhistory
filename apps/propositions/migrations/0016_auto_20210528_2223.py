@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='elaboration',
             field=core.fields.HTMLField(
                 default='',
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='postscript',
             field=core.fields.HTMLField(
                 blank=True,
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='slug',
             field=autoslug.fields.AutoSlugField(
                 blank=True,
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='title',
             field=models.CharField(
                 blank=True,

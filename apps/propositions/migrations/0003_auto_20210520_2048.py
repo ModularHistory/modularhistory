@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('propositions', '0002_typedproposition_related_quotes'),
+        ('propositions', '0002_polymorphicproposition_related_quotes'),
         ('sources', '0001_initial'),
         ('topics', '0001_initial'),
         ('quotes', '0001_initial'),
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='sources',
             field=apps.sources.models.model_with_sources.SourcesField(
                 blank=True,
@@ -31,11 +31,11 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='tags',
             field=models.ManyToManyField(
                 blank=True,
-                related_name='typedproposition_set',
+                related_name='polymorphicproposition_set',
                 to='topics.Topic',
                 verbose_name='tags',
             ),
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='conclusion_supports',
-                to='propositions.typedproposition',
+                to='propositions.polymorphicproposition',
             ),
         ),
         migrations.AddField(
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='supports',
-                to='propositions.typedproposition',
+                to='propositions.polymorphicproposition',
             ),
         ),
         migrations.AddField(
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
             field=core.fields.m2m_foreign_key.ManyToManyForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='quote_relations',
-                to='propositions.typedproposition',
+                to='propositions.polymorphicproposition',
                 verbose_name='proposition',
             ),
         ),
@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
             field=core.fields.m2m_foreign_key.ManyToManyForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='citations',
-                to='propositions.typedproposition',
+                to='propositions.polymorphicproposition',
                 verbose_name='proposition',
             ),
         ),
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
                 'indexes': [],
                 'constraints': [],
             },
-            bases=('propositions.typedproposition',),
+            bases=('propositions.polymorphicproposition',),
         ),
         migrations.CreateModel(
             name='Proposition',
@@ -115,7 +115,7 @@ class Migration(migrations.Migration):
                 'indexes': [],
                 'constraints': [],
             },
-            bases=('propositions.typedproposition',),
+            bases=('propositions.polymorphicproposition',),
         ),
         migrations.CreateModel(
             name='Birth',

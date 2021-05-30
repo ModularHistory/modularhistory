@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='related_quotes',
             field=apps.quotes.models.model_with_related_quotes.RelatedQuotesField(
                 blank=True,

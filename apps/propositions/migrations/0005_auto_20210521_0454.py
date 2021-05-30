@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('propositions', '0004_remove_typedproposition_version'),
+        ('propositions', '0004_remove_polymorphicproposition_version'),
     ]
 
     operations = [

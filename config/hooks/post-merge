@@ -11,6 +11,7 @@ setup_sha_file=".venv/.setup.sha"
 poetry_sha_file=".venv/.poetry.sha"
 bold=$(tput bold)
 normal=$(tput sgr0)
+docker-compose ps | grep "dev" | grep --quiet "Up" && dev_up=true || dev_up=false
 
 # Check if the setup script hasn't yet been run.
 if [[ ! -f $setup_sha_file ]]; then
@@ -65,14 +66,17 @@ echo "$changed_files" | grep --quiet 'poetry.lock' && {
 # Check if migrations have changed.
 echo "$changed_files" | grep --quiet 'migrations/' && {
   # TODO: Determine more intelligently whether seeding is required?
-  echo "${bold}
-    The database schema has been modified.${normal} You might not 
-    be able to run the django container successfully until you 
-    re-seed your db. To seed your db, use this command:
+  poetry run invoke db.seed --remote --migrate || {
+    echo "${bold}
+      The database schema has been modified.${normal} You might not 
+      be able to run the django container successfully until you 
+      re-seed your db. To seed your db, use this command:
 
-      poetry run invoke db.seed --remote --migrate
+        poetry run invoke db.seed --remote --migrate
 
-  "
+    "
+  }
+  [[ "$dev_up" = true ]] && docker-compose up -d dev
 }
 
 # Prompt to update hooks if necessary.

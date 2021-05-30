@@ -5,8 +5,8 @@ from .occurrence import Occurrence
 from .proposition import (
     Citation,
     Location,
+    PolymorphicProposition,
     Proposition,
     QuoteRelation,
-    TypedProposition,
 )
 from .support import Support

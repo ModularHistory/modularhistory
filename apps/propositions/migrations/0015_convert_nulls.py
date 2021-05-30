@@ -9,7 +9,7 @@ import core.fields.html_field
 
 def convert_nulls(apps, schema_editor):
     app = 'propositions'
-    models = ('Citation', 'TypedProposition')
+    models = ('Citation', 'PolymorphicProposition')
     fields = (
         'citation_html',
         'citation_phrase',

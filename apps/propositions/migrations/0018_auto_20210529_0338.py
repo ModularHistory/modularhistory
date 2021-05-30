@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             old_name='_locations',
             new_name='locations',
         ),
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             field=core.fields.m2m_foreign_key.ManyToManyForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='location_relations',
-                to='propositions.typedproposition',
+                to='propositions.polymorphicproposition',
                 verbose_name='proposition',
             ),
         ),

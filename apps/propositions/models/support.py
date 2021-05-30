@@ -10,12 +10,12 @@ class Support(PositionedRelation):
     """A support of a proposition by another proposition."""
 
     premise = models.ForeignKey(
-        to='propositions.TypedProposition',
+        to='propositions.PolymorphicProposition',
         on_delete=models.CASCADE,
         related_name='supports',
     )
     conclusion = models.ForeignKey(
-        to='propositions.TypedProposition',
+        to='propositions.PolymorphicProposition',
         on_delete=models.CASCADE,
         related_name='conclusion_supports',
     )

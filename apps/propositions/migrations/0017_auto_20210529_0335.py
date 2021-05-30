@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             old_name='locations',
             new_name='old_locations',
         ),

@@ -1,15 +1,15 @@
 from apps.graph.types import ModuleType
-from apps.propositions.models.proposition import TypedProposition
+from apps.propositions.models.proposition import PolymorphicProposition
 
 
 class PropositionType(ModuleType):
-    """GraphQL type for the TypedProposition model."""
+    """GraphQL type for the PolymorphicProposition model."""
 
     class Meta:
-        model = TypedProposition
+        model = PolymorphicProposition
         exclude = []
 
     @staticmethod
-    def resolve_model(root, *args) -> str:
+    def resolve_model(*args) -> str:
         """Return the value to be assigned to a proposition's `model` attribute."""
         return 'propositions.proposition'

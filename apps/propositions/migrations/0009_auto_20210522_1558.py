@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='typedproposition',
+            model_name='polymorphicproposition',
             name='date',
             field=apps.dates.fields.HistoricDateTimeField(
                 blank=True, null=True, verbose_name='date'
