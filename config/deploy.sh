@@ -18,6 +18,7 @@ for container in "${containers[@]}"; do
     docker-compose up -d "$container"
 done
 for container in "${containers[@]}"; do
+    echo "Checking $container container..."
     ok=false
     while [[ "$ok" = false ]]; do
         status=$(docker-compose ps | grep "$container")
