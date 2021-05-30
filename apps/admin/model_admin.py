@@ -8,6 +8,7 @@ from django.contrib.admin import ModelAdmin as BaseModelAdmin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.sites.models import Site
+from django.db.models import Model
 from django.db.models.fields import Field
 from django.db.models.query import QuerySet
 from django.forms import Widget
@@ -29,7 +30,6 @@ from apps.dates.fields import HistoricDateTimeField
 from core.constants.environments import Environments
 from core.fields import JSONField
 from core.forms import HistoricDateWidget
-from core.models.model import Model
 from core.widgets.json_editor_widget import JSONEditorWidget
 
 AdminListFilter = Union[str, Type[ListFilter]]
