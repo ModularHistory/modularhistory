@@ -14,13 +14,13 @@ def fix_annotations():
     Based on: https://github.com/pyinvoke/invoke/pull/606
     """
 
-    def patched_inspect_getargspec(func):  # noqa
+    def patched_inspect_getargspec(func):  # noqa: ANN001,ANN201
         spec = getfullargspec(func)
         return ArgSpec(*spec[:4])
 
     org_task_argspec = invoke.tasks.Task.argspec
 
-    def patched_task_argspec(*args, **kwargs):  # noqa
+    def patched_task_argspec(*args, **kwargs):  # noqa: ANN001,ANN201
         with patch(target='inspect.getargspec', new=patched_inspect_getargspec):
             return org_task_argspec(*args, **kwargs)
 
