@@ -39,13 +39,13 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
 
 proposition_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
-    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>proposition)'
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>proposition)'  # noqa: WPS360
 )
 logging.debug(f'Proposition placeholder pattern: {proposition_placeholder_regex}')
 
 
 DEGREES_OF_CERTAINTY = (
-    (0, 'No credible evidence'),
+    (None, '-------'),
     (1, 'Some credible evidence'),
     (2, 'A preponderance of evidence'),
     (3, 'Beyond reasonable doubt'),
@@ -90,7 +90,7 @@ TYPE_CHOICES = (
 )
 
 
-class PolymorphicProposition(
+class PolymorphicProposition(  # noqa: WPS215
     SearchableModel,
     DatedModel,  # submodels like `Occurrence` require date
     ModelWithSources,
