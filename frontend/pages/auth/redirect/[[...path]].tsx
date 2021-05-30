@@ -22,13 +22,13 @@ const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
     if (!loading) {
       // Choose redirect method based on whether the redirect URL
       // specifies a Django-served page or a Next.js-served page.
-      if (/(\/admin\/?.*)/.test(redirectUrl)) {
+      if (/(\/_?admin\/?.*)/.test(redirectUrl)) {
         // If Django, redirect using meta tag.
-        console.log(`>>>> Redirecting to ${redirectUrl} with meta`);
+        console.log(`>>> Redirecting to ${redirectUrl} with meta ...`);
         setRedirect(true);
       } else {
         // If Next.js, redirect using Next.js router.
-        console.log(`>>>> Redirecting to ${path} with Next.js`);
+        console.log(`>>> Redirecting to ${path} with Next.js ...`);
         router.push(path);
       }
     }
