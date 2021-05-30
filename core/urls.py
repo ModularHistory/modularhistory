@@ -17,6 +17,7 @@ Examples:
 """
 
 import logging
+from typing import TYPE_CHECKING
 
 import debug_toolbar
 from django.conf import settings
@@ -33,10 +34,13 @@ from apps.propositions.map import PropositionSitemap
 from apps.users.api.views import set_csrf_token
 from core import errors
 
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+
 sitemaps = {'propositions': PropositionSitemap}
 
 
-def error(request):
+def error(request: 'HttpRequest'):
     """Raise an error, so that ModularHistory's server error page is rendered."""
     logging.info(f'Received request to trigger a server error: {request}')
     raise Exception('Raising an exception for testing purposes.')
@@ -52,7 +56,8 @@ urlpatterns = [
     path('admin_tools/', include('admin_tools.urls')),
     # path('admin/defender/', include('defender.urls')),  # defender admin  # TODO
     # https://github.com/dmpayton/django-admin-honeypot
-    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    # https://github.com/dmpayton/django-admin-honeypot/issues/82
+    # path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),  # noqa: E800
     # https://github.com/burke-software/django-mass-edit
     path(f'{settings.ADMIN_URL_PREFIX}/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path(f'{settings.ADMIN_URL_PREFIX}/', admin_site.urls),
