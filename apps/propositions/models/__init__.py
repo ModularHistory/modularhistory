@@ -1,6 +1,6 @@
 """Model classes of the propositions app, importable from `propositions.models`."""
 
-from .model_with_propositions import ModelWithPropositions
+from .argument import Argument
 from .occurrence import Occurrence
 from .proposition import (
     Citation,
@@ -9,4 +9,4 @@ from .proposition import (
     Proposition,
     QuoteRelation,
 )
-from .support import Support
+from .support import ArgumentSupport

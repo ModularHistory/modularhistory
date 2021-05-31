@@ -71,10 +71,10 @@ class SearchableModelAdmin(ModelAdmin):
             if field in fields
         ]
         fieldsets.append((None, {'fields': fields}))
-        if collapsed_fields:
+        if collapsed_fields and model_instance:
             fieldsets.append(
                 (
-                    None,
+                    'More',
                     {
                         'classes': ('collapse',),
                         'fields': collapsed_fields,

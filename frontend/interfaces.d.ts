@@ -64,11 +64,17 @@ export interface Entity extends BaseModule, ModuleWithImages {
   description: string;
 }
 
+export interface Argument extends BaseModule {
+  type: string;
+  explanation: string;
+  premises: Proposition[];
+}
+
 export interface Proposition extends BaseModule {
   summary: string;
   elaboration: string;
   certainty: string;
-  premises: Proposition[];
+  arguments: Argument[];
 }
 
 export interface Topic extends BaseModule {

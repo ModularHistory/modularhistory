@@ -7,24 +7,17 @@ NORMAL=$(tput sgr0)
 staged_files="$(git diff --diff-filter=AM --name-only --staged)"
 linting_failed=false
 
+echo "$staged_files" | grep --quiet -e ".js" -e ".ts" -e ".jsx" -e ".tsx" -e ".scss" -e ".css" && {
+    echo "Autoformatting JS/TS code..."
+    cd frontend && npx lint-staged && cd ..
+}
+
 echo "$staged_files" | grep -E --quiet ".+.py" && {
     staged_python_files=$(echo "$staged_files" | grep -E ".+.py")
     # Autoformat and lint Python code.
     poetry --help &>/dev/null && [[ -d ".venv" ]] && {
         comma_delimited_filepaths=$(echo "$staged_python_files" | tr '\n' ',')
         poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
-        for file in $staged_python_files; do
-            poetry run flake8 "$file" || linting_failed=true
-        done
-        if [[ "$linting_failed" = true ]]; then
-            echo "
-                ${RED}Please fix the issues identified above, then recommit.${NORMAL}
-                To ignore an issue flagged by the linter, you can append a noqa comment
-                to the offending line. For example, to ignore an A100 issue:
-                    offending line  # noqa: A100
-            "
-            exit 1
-        fi
         for file in $staged_python_files; do
             # Check types with mypy first, since mypy is faster than pytype.
             # https://github.com/google/pytype#usage
@@ -36,14 +29,18 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
                 "
             }
         done
+        for file in $staged_python_files; do
+            poetry run flake8 "$file" || linting_failed=true
+        done
+        if [[ "$linting_failed" = true ]]; then
+            echo "
+                ${RED}Please fix the issues identified above, then recommit.${NORMAL}
+                To ignore an issue flagged by the linter, you can append a noqa comment
+                to the offending line. For example, to ignore an A100 issue:
+                    offending line  # noqa: A100
+            "
+        fi
     }
-}
-
-# Autoformat JS & TS code.
-# Match any file types that Prettier can deal with: https://prettier.io/
-echo "$staged_files" | grep --quiet -e ".js" -e ".ts" -e ".jsx" -e ".tsx" -e ".scss" -e ".css" && {
-    echo "Autoformatting JS/TS code..."
-    cd frontend && npx lint-staged && cd ..
 }
 
 for file in $staged_files; do

@@ -271,4 +271,27 @@ td.field-source {
   #changelist .results li.topic-tag ::after {
     content: ","; }
 
+.trumbowyg-box {
+  display: inline-block;
+  margin: 0;
+  width: inherit; }
+
+.trumbowyg-button-pane {
+  margin: 0 !important;
+  padding: 0 !important; }
+
+.trumbowyg-editor.trumbowyg-reset-css p, .trumbowyg-editor.trumbowyg-reset-css blockquote {
+  padding: 0 !important; }
+
+.trumbowyg-modal-box label {
+  float: none;
+  padding: 0;
+  width: auto; }
+
+.trumbowyg-button-pane li button.trumbowyg-video-button {
+  background-position: 5px -520px; }
+
+.trumbowyg-box, .trumbowyg-editor {
+  min-height: 150px; }
+
 /*# sourceMappingURL=admin.css.map */

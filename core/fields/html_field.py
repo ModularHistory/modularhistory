@@ -4,14 +4,18 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Type
 import regex as re
 from aenum import Constant
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import TextField
+from django.forms.widgets import Textarea
 from django.utils.module_loading import import_string
-from tinymce.models import HTMLField as MceHTMLField
+from django.utils.safestring import mark_safe
 
 from core.constants.content_types import MODEL_CLASS_PATHS
 from core.utils.html import soupify
 from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
+    from django.forms import Field
+
     from core.models.model import Model
 
 # group 1: entity pk
@@ -36,6 +40,7 @@ DELETIONS = (('div', {'id': 'i4c-draggable-container'}),)
 class PlaceholderGroups(Constant):
     """Groups in the object placeholder regex pattern."""
 
+    # noqa: WPS115
     # group 1: model class name
     MODEL_NAME = 'content_type'
     # group 2: model instance pk
@@ -48,7 +53,7 @@ class PlaceholderGroups(Constant):
 
 START_PATTERN = r'\[\['
 END_PATTERN = r'\]\]'
-TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME}>[a-zA-Z]+?)'
+TYPE_GROUP = rf'(?P<{PlaceholderGroups.MODEL_NAME}>[a-zA-Z]+?)'  # noqa: WPS360
 KEY_GROUP = rf'(?P<{PlaceholderGroups.PK}>[\w\d-]+)'
 HTML_GROUP = rf'(?!{END_PATTERN})(?P<{PlaceholderGroups.HTML}>[^:\s][\s\S]+?)'
 APPENDAGE_GROUP = rf'(?P<{PlaceholderGroups.APPENDAGE}>[:\ ,]?\ ?{HTML_GROUP})'
@@ -78,9 +83,7 @@ def process(html: str) -> str:
             )
             if model_cls_str not in model_classes:
                 model_classes[model_cls_str] = model_cls
-            logging.debug(
-                f'Processing {object_type} placeholder: {truncate(placeholder)}'
-            )
+            logging.debug(f'Processing {object_type} placeholder: {truncate(placeholder)}')
             # TODO
             object_match = model_cls.get_admin_placeholder_regex().match(placeholder)
             if object_match:
@@ -88,9 +91,7 @@ def process(html: str) -> str:
                     object_html = model_cls.get_object_html(
                         object_match, use_preretrieved_html=True
                     )
-                    logging.debug(
-                        f'Retrieved {object_type} HTML: {truncate(object_html)}'
-                    )
+                    logging.debug(f'Retrieved {object_type} HTML: {truncate(object_html)}')
                 except ObjectDoesNotExist:
                     raise ValidationError(
                         f'Could not get HTML for placeholder: {truncate(placeholder)}'
@@ -109,8 +110,75 @@ def process(html: str) -> str:
     return html
 
 
-class HTMLField(MceHTMLField):
-    """A string field for HTML content; uses the TinyMCE widget in forms."""
+class TrumbowygWidget(Textarea):
+    class Media:
+        css = {
+            'all': ('//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/ui/trumbowyg.min.css',)
+        }
+        # Note: Trumbowyg depends on jQuery.
+        js = ['//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/trumbowyg.min.js']
+
+    def render(self, name: str, value: str, attrs: dict = None, renderer=None):
+        output = super().render(name, value, attrs)
+        script = f'''
+            <script defer>
+                window.addEventListener("load", function() {{
+                    (function($) {{
+                        $("#id_{name}").trumbowyg({{
+                            resetCss: true,
+                            autogrow: true,
+                            autogrowOnEnter: true,
+                            defaultLinkTarget: "_blank",
+                            removeformatPasted: true,
+                            btnsDef: {{
+                                image: {{
+                                    dropdown: [
+                                        "upload",
+                                        "insertImage",
+                                        "base64",
+                                        "noembed"
+                                    ],
+                                    ico: "insertImage"
+                                }}
+                            }},
+                            btns: [
+                                ['viewHTML'],
+                                ['undo', 'redo'], // Only supported in Blink browsers
+                                ['formatting'],
+                                ['strong', 'em', 'del'],
+                                ['superscript', 'subscript'],
+                                ['link'],
+                                ['image'],
+                                ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                                ['unorderedList', 'orderedList'],
+                                ['horizontalRule'],
+                                ['removeformat'],
+                                ['fullscreen']
+                            ],
+                            plugins: {{}},
+                            tagsToRemove: ['script', 'link']
+                        }});
+                        $("#id_{name}").find('img[data-src]').each(function () {{
+                            $(this).attr('src', this.dataset.src);
+                        }});
+                        /*
+                        // TODO: Adjust textarea height
+                        let content_height = iframe.contents().find('html').height() + 30;
+                        let initial_iframe_height = iframe.height();
+                        let new_iframe_height = initial_iframe_height - (initial_iframe_height - content_height);
+                        iframe.height(new_iframe_height);
+                        return new_iframe_height;
+                        */
+                    }})(django.jQuery);
+                }});
+            </script>
+        '''
+        output += mark_safe(script)  # noqa: S703,S308
+        return output
+
+
+class HTMLField(TextField):
+    """A field for HTML content."""
 
     # Callable that processes the HTML value before it is saved
     processor: Optional[Callable]
@@ -145,9 +213,7 @@ class HTMLField(MceHTMLField):
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
         if '{' in html or '}' in html:
-            raise ValidationError(
-                'The "{" and "}" characters are illegal in HTML fields.'
-            )
+            raise ValidationError('The "{" and "}" characters are illegal in HTML fields.')
         if model_instance.pk:
             html = model_instance.preprocess_html(html)
         # Update obj placeholders and reformat the HTML.
@@ -157,6 +223,11 @@ class HTMLField(MceHTMLField):
         except Exception as err:
             raise ValidationError(f'{err}')
         return html
+
+    def formfield(self, **kwargs) -> 'Field':
+        """Return the default form field for this field."""
+        kwargs['widget'] = TrumbowygWidget
+        return super().formfield(**kwargs)
 
     def make_deletions(self, html: str) -> str:
         """Delete unwanted elements from the HTML."""
@@ -202,7 +273,7 @@ class HTMLField(MceHTMLField):
             html = self.make_replacements(html)
         return html
 
-    def update_placeholders(self, html) -> str:
+    def update_placeholders(self, html: str) -> str:
         """
         Modify object placeholders to include up-to-date HTML representations.
 
@@ -229,7 +300,7 @@ class HTMLField(MceHTMLField):
                         ) from err
         return html
 
-    def deconstruct(self):
+    def deconstruct(self) -> tuple:
         """
         Return a 4-tuple with enough information to recreate the field.
 
@@ -242,7 +313,7 @@ class HTMLField(MceHTMLField):
         kwargs['paragraphed'] = self.paragraphed
         return name, field_class, args, kwargs
 
-    def from_db_value(self, html_value: Optional[str], expression, connection) -> str:
+    def from_db_value(self, html_value: Optional[str], *args) -> str:
         """
         Convert a value as returned by the database to a Python object.
 

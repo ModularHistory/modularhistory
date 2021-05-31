@@ -22,21 +22,24 @@ from django_celery_beat.models import (
 )
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
+from nested_admin import NestedModelAdmin as BaseNestedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin
 from sass_processor.processor import sass_processor
 
 from apps.admin.admin_site import admin_site
+from apps.admin.widgets.historic_date_widget import HistoricDateWidget
+from apps.admin.widgets.json_editor_widget import JSONEditorWidget
 from apps.dates.fields import HistoricDateTimeField
 from core.constants.environments import Environments
-from core.fields import JSONField
-from core.forms import HistoricDateWidget
-from core.widgets.json_editor_widget import JSONEditorWidget
+from core.fields.html_field import HTMLField, TrumbowygWidget
+from core.fields.json_field import JSONField
 
 AdminListFilter = Union[str, Type[ListFilter]]
 
 
 FORM_FIELD_OVERRIDES: Mapping[Type[Field], Mapping[str, Type[Widget]]] = {
     HistoricDateTimeField: {'widget': HistoricDateWidget},
+    HTMLField: {'widget': TrumbowygWidget},
     JSONField: {'widget': JSONEditorWidget},
 }
 
@@ -57,29 +60,15 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    list_display: list[str]
-    list_filter: list[AdminListFilter]
-    ordering: list[str]
-    readonly_fields: list[str]
-    search_fields: list[str]
-    autocomplete_fields: list[str]
-
     class Media:
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                # 'https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',  # TODO
                 BASE_CSS,
-                MCE_CSS,
                 ADMIN_CSS,
             )
         }
-        js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jQuery
-            '//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',  # Bootstrap
-            '//cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js',  # EPub.JS
-            'scripts/base.js',
-        )
+        js = ()
 
     def get_readonly_fields(
         self, request: HttpRequest, model_instance: Optional['Model'] = None
@@ -120,7 +109,7 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
                     self.model.objects.annotate(
                         rank=SearchRank(vector, SearchQuery(query, search_type='raw'))
                     )
-                    .filter(rank__gt=0.0)
+                    .filter(rank__gt=0)
                     .order_by('-rank')
                 )
         # If the request comes from the admin edit page for a model instance,
@@ -134,6 +123,10 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
             pk = int(match.group(1))
             queryset = queryset.exclude(pk=pk)
         return queryset, use_distinct
+
+
+class NestedModelAdmin(BaseNestedModelAdmin, ModelAdmin):
+    """Mix NestedModelAdmin with ModularHistory's custom admin."""
 
 
 class ContentTypeFields(Constant):

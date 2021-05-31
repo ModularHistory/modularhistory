@@ -58,6 +58,8 @@ urlpatterns = [
     # https://github.com/dmpayton/django-admin-honeypot
     # https://github.com/dmpayton/django-admin-honeypot/issues/82
     # path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),  # noqa: E800
+    # https://django-nested-admin.readthedocs.io/en/latest/
+    path('_nested_admin/', include('nested_admin.urls')),
     # https://github.com/burke-software/django-mass-edit
     path(f'{settings.ADMIN_URL_PREFIX}/', include('massadmin.urls'), kwargs={'admin_site': admin_site}),
     path(f'{settings.ADMIN_URL_PREFIX}/', admin_site.urls),
@@ -121,6 +123,7 @@ urlpatterns = [
     # ---------------------------------
     path('select2/', include('django_select2.urls')),
     path('tinymce/', include('tinymce.urls')),
+    path('trumbowyg/', include('trumbowyg.urls'))
 ]
 # fmt: on
 

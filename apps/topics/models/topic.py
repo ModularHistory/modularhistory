@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
-from core.fields import ArrayField, HTMLField
+from core.fields.array_field import ArrayField
+from core.fields.html_field import HTMLField
 from core.models.model import Model
 from core.models.model_with_cache import ModelWithCache, store
 from core.models.slugged_model import SluggedModel
@@ -100,17 +101,13 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
     @store(attribute_name='child_topics_string')
     def child_topics_string(self) -> str:
         """Return a list of the topic's child topics as a string."""
-        return TOPIC_STRING_DELIMITER.join(
-            [str(topic) for topic in self.child_topics.all()]
-        )
+        return TOPIC_STRING_DELIMITER.join([str(topic) for topic in self.child_topics.all()])
 
     @property  # type: ignore
     @store(attribute_name='parent_topics_string')
     def parent_topics_string(self) -> str:
         """Return a list of the topic's parent topics as a string."""
-        return TOPIC_STRING_DELIMITER.join(
-            [str(topic) for topic in self.parent_topics.all()]
-        )
+        return TOPIC_STRING_DELIMITER.join([str(topic) for topic in self.parent_topics.all()])
 
     @property  # type: ignore
     @store(attribute_name='related_topics_string')

@@ -49,5 +49,8 @@ $(window).on('load', function () {
     //     //      spellcheck="false" dir="ltr"><p><br data-mce-bogus="1"></p></body>`
     //     // );
     //     adjustMceHeight(iframe);
+    //     $('.mce-branding,.mce-notification').hide();
+    //     tinymce.execCommand('mceAddEditor', false, this.id);
+    //     console.log('Fixed TinyMCE editor.')
     // });
 });

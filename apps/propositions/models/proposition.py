@@ -1,5 +1,3 @@
-"""Model classes for propositions."""
-
 import logging
 import re
 from typing import TYPE_CHECKING, Match, Optional
@@ -29,14 +27,22 @@ from apps.quotes.models.model_with_related_quotes import (
 from apps.search.models import SearchableModel
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
-from core.fields import HTMLField
-from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
+from core.fields.html_field import (
+    OBJECT_PLACEHOLDER_REGEX,
+    TYPE_GROUP,
+    HTMLField,
+    PlaceholderGroups,
+)
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+    from django.db.models.manager import RelatedManager
+
+    from apps.propositions.models.argument import Argument
+
 
 proposition_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>proposition)'  # noqa: WPS360
@@ -134,14 +140,7 @@ class PolymorphicProposition(  # noqa: WPS215
         paragraphed=True,
         help_text='Content to be displayed below all related data',
     )
-    premises = models.ManyToManyField(
-        to='self',
-        through='propositions.Support',
-        through_fields=('conclusion', 'premise'),
-        related_name='conclusions',
-        symmetrical=False,
-        verbose_name=_('premises'),
-    )
+    arguments: 'RelatedManager[Argument]'
 
     locations = LocationsField(through=Location)
     related_quotes = RelatedQuotesField(

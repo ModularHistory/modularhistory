@@ -72,9 +72,9 @@ services:
           "curl --fail http://localhost:8000/healthcheck/ || exit 1",
         ]
       timeout: 7s
-      interval: 20s
+      interval: 30s
       retries: 2
-      start_period: 10s
+      start_period: 15s
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:

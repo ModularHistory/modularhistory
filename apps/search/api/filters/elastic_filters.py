@@ -5,12 +5,12 @@ from typing import Optional
 from elasticsearch_dsl import Q
 from rest_framework import filters
 
-from apps.dates.structures import HistoricDateTime
-from apps.search.documents.config import get_index_name_for_ct
-from core.widgets.historic_date_widget import CE
-from core.widgets.historic_date_widget import (
+from apps.admin.widgets.historic_date_widget import CE
+from apps.admin.widgets.historic_date_widget import (
     _datetime_from_datadict_values as historicdate_from_year,
 )
+from apps.dates.structures import HistoricDateTime
+from apps.search.documents.config import get_index_name_for_ct
 
 QUERY_PARAM = 'query'
 START_YEAR_PARAM = 'start_year'
