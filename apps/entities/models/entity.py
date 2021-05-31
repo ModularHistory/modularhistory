@@ -22,7 +22,9 @@ from apps.quotes.models.model_with_related_quotes import (
 )
 from apps.search.models import SearchableModel
 from core.constants.strings import EMPTY_STRING
-from core.fields import ArrayField, HTMLField, JSONField
+from core.fields.array_field import ArrayField
+from core.fields.html_field import HTMLField
+from core.fields.json_field import JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models import store
 

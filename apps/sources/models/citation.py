@@ -10,7 +10,6 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.sources.serializers import CitationSerializer
-from core.fields import JSONField
 from core.fields.html_field import (
     APPENDAGE_GROUP,
     END_PATTERN,
@@ -18,6 +17,7 @@ from core.fields.html_field import (
     TYPE_GROUP,
 )
 from core.fields.html_field import PlaceholderGroups as DefaultPlaceholderGroups
+from core.fields.json_field import JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.positioned_relation import PositionedRelation
 from core.utils import pdf
@@ -36,15 +36,15 @@ class PlaceholderGroups(DefaultPlaceholderGroups):
 
 
 HYPHEN_OR_EN_DASH = r'\p{Pd}'
-PAGE_STRING_GROUP = (
-    rf'(?P<{PlaceholderGroups.PAGE_STRING}>pp?\.\ [\d{HYPHEN_OR_EN_DASH}]+)'
-)
+PAGE_STRING_GROUP = rf'(?P<{PlaceholderGroups.PAGE_STRING}>pp?\.\ [\d{HYPHEN_OR_EN_DASH}]+)'
 QUOTATION_GROUP = rf'(?P<{PlaceholderGroups.QUOTATION}>\".+?\")'
 HTML_GROUP = rf'(?P<{PlaceholderGroups.HTML}>\S.+?)'
 citation_placeholder_pattern = rf'\ ?{OBJECT_PLACEHOLDER_REGEX}'.replace(
     APPENDAGE_GROUP,
     rf'(,\ {PAGE_STRING_GROUP})?(,\ {QUOTATION_GROUP})?(:?\ ?(?:<span style="display: none;?">|<span class="citation-placeholder">){HTML_GROUP}<\/span>)',  # noqa: E501'
-).replace(TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>citation)')
+).replace(
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>citation)'
+)  # noqa: WPS360
 
 PAGE_STRING_REGEX = r'.+, (pp?\. <a .+>\d+<\/a>)$'
 
@@ -139,9 +139,7 @@ class AbstractCitation(PositionedRelation):
                 if quote.ordered_attributees != self.source.ordered_attributees:
                     source_html = html
                     if quote.citations.filter(position__lt=self.position).exists():
-                        prior_citations = quote.citations.filter(
-                            position__lt=self.position
-                        )
+                        prior_citations = quote.citations.filter(position__lt=self.position)
                         prior_citation = prior_citations.last()
                         if 'quoted in' not in str(prior_citation):
                             html = f'quoted in {source_html}'
@@ -159,7 +157,7 @@ class AbstractCitation(PositionedRelation):
         return format_html(html)
 
     @property
-    def number(self):
+    def number(self) -> int:
         """Return the citation's 1-based index."""
         return self.position + 1
 
@@ -182,9 +180,7 @@ class AbstractCitation(PositionedRelation):
             pn_html = self.get_page_number_link(pn, pn_url) or str(pn)
             if end_pn:
                 end_pn_url = self.get_page_number_url(end_pn)
-                end_pn_html = self.get_page_number_link(end_pn, end_pn_url) or str(
-                    end_pn
-                )
+                end_pn_html = self.get_page_number_link(end_pn, end_pn_url) or str(end_pn)
                 pn_html = f'{pn_html}–{end_pn_html}'
             else:
                 pn_html = f'{pn_html}'
@@ -224,9 +220,7 @@ class AbstractCitation(PositionedRelation):
                     replacement = f'{pdf.PAGE_KEY}={self.source_file_page_number}'
                     file_url = regex.sub(pattern, replacement, file_url)
                 else:
-                    file_url = (
-                        f'{file_url}#{pdf.PAGE_KEY}={self.source_file_page_number}'
-                    )
+                    file_url = f'{file_url}#{pdf.PAGE_KEY}={self.source_file_page_number}'
         return file_url
 
     def get_page_number_url(self, page_number: Union[str, int]) -> Optional[str]:
@@ -257,9 +251,7 @@ class AbstractCitation(PositionedRelation):
         url = url or self.get_page_number_url(page_number)
         if not url:
             return None
-        return compose_link(
-            page_number, href=url, klass='display-source', target='_blank'
-        )
+        return compose_link(page_number, href=url, klass='display-source', target='_blank')
 
     @classmethod
     def get_object_html(cls, match: Match, use_preretrieved_html: bool = False) -> str:
@@ -311,6 +303,6 @@ class AbstractCitation(PositionedRelation):
         if appendage:
             updated_placeholder = placeholder.replace(appendage, updated_appendage)
         else:
-            stem = regex.sub(rf' ?{END_PATTERN}', '', placeholder)
+            stem = regex.sub(rf' ?{END_PATTERN}', '', placeholder)  # noqa: WPS360
             updated_placeholder = f'{stem}{updated_appendage} ]]'
         return updated_placeholder

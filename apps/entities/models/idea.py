@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.fields import HTMLField
+from core.fields.html_field import HTMLField
 from core.models.model import Model
 
 NAME_MAX_LENGTH: int = 100
@@ -14,9 +14,7 @@ class Idea(Model):
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
     description = HTMLField(blank=True, paragraphed=True)
-    promoters = models.ManyToManyField(
-        to='entities.Entity', related_name='ideas', blank=True
-    )
+    promoters = models.ManyToManyField(to='entities.Entity', related_name='ideas', blank=True)
 
     class Meta:
         """Meta options for the Idea model."""
@@ -25,7 +23,7 @@ class Idea(Model):
 
         verbose_name = _('idea')
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the idea's string representation."""
         return self.name
 
@@ -54,6 +52,6 @@ class EntityIdea(Model):
         unique_together = ['entity', 'idea']
         verbose_name = _('entity idea')
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the string representation of the entity–idea association."""
         return f'{self.entity} : {self.idea}'

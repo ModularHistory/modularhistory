@@ -1,8 +1,10 @@
 from apps.admin.admin_site import admin_site
+from apps.admin.model_admin import NestedModelAdmin
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.propositions import models
 from apps.propositions.admin.filters import HasDateFilter, HasQuotesFilter, LocationFilter
 from apps.propositions.admin.inlines import (
+    ArgumentsInline,
     ConclusionsInline,
     ImagesInline,
     LocationsInline,
@@ -16,7 +18,7 @@ from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.models.taggable_model import TopicFilter
 
 
-class AbstractPropositionAdmin(SearchableModelAdmin):
+class AbstractPropositionAdmin(NestedModelAdmin, SearchableModelAdmin):
     """Abstract base admin for propositions."""
 
     exclude = SearchableModelAdmin.exclude + [
@@ -26,6 +28,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
         'locations',
     ]
     inlines = [
+        ArgumentsInline,
         PremisesInline,
         ConclusionsInline,
         SourcesInline,

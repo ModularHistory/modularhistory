@@ -12,13 +12,9 @@ from image_cropping import ImageRatioField
 
 from apps.images.models.media_model import MediaModel
 from apps.images.serializers import ImageSerializer
-from core.fields import JSONField
 from core.fields.file_field import upload_to
-from core.fields.html_field import (
-    OBJECT_PLACEHOLDER_REGEX,
-    TYPE_GROUP,
-    PlaceholderGroups,
-)
+from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
+from core.fields.json_field import JSONField
 from core.utils.string import components_to_string
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
@@ -42,7 +38,7 @@ IMAGE_FIELD_NAME = 'image'
 IMAGE_KEY = IMAGE_FIELD_NAME
 
 image_placeholder_regex: str = OBJECT_PLACEHOLDER_REGEX.replace(
-    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'  # noqa: WPS360
 )
 logging.debug(f'Image placeholder pattern: {image_placeholder_regex}')
 
@@ -67,9 +63,7 @@ class Image(MediaModel):
     width = models.PositiveSmallIntegerField(
         verbose_name=_('width'), null=True, blank=True  # TODO: remove null
     )
-    height = models.PositiveSmallIntegerField(
-        verbose_name=_('height'), null=True, blank=True
-    )
+    height = models.PositiveSmallIntegerField(verbose_name=_('height'), null=True, blank=True)
     # https://github.com/jonasundderwolf/django-image-cropping
     cropping = ImageRatioField(
         IMAGE_FIELD_NAME,
@@ -155,9 +149,7 @@ class Image(MediaModel):
                         'crop': True,
                         'detail': True,
                     }
-                    return (
-                        get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
-                    )
+                    return get_thumbnailer(self.image).get_thumbnail(thumbnail_params).url
             except Exception as error:
                 logging.error(
                     f'Attempt to retrieve cropped_image_url for image {self.pk} '

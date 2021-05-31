@@ -6,7 +6,7 @@ from functools import wraps
 from pprint import pformat
 from typing import Callable, Optional, Union
 
-from core.fields import JSONField
+from core.fields.json_field import JSONField
 from core.models.model import Model
 
 
@@ -84,11 +84,9 @@ def store(
     https://realpython.com/primer-on-python-decorators/
     """
 
-    def wrap(model_property):  # noqa: WPS430
-        @wraps(model_property)  # noqa: WPS430
-        def wrapped_property(
-            model_instance: Union[ModelWithCache, Model], *args, **kwargs
-        ):
+    def wrap(model_property):  # noqa: ANN201,WPS430
+        @wraps(model_property)  # noqa: ANN201,WPS430
+        def wrapped_property(model_instance: Union[ModelWithCache, Model], *args, **kwargs):
             # Avoid recursion errors when creating new model instances
             if model_instance.pk:
                 if isinstance(model_instance, ModelWithCache):

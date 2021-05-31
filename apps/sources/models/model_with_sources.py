@@ -11,8 +11,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models.citation import AbstractCitation
 from core.constants.strings import EMPTY_STRING
-from core.fields import HTMLField
 from core.fields.custom_m2m_field import CustomManyToManyField
+from core.fields.html_field import HTMLField
 from core.models.model import Model
 
 

@@ -4,10 +4,8 @@ from datetime import datetime
 from typing import Optional, Union
 
 from django.db.models import DateTimeField
-from django.forms import Field
 
 from apps.dates.structures import HistoricDateTime
-from core.forms import HistoricDateFormField
 
 DateTime = datetime
 
@@ -19,17 +17,8 @@ class HistoricDateTimeField(DateTimeField):
 
     year: int
 
-    def formfield(self, **kwargs) -> Field:
-        """Return the form field to be used for historic datetimes."""
-        return super(DateTimeField, self).formfield(
-            **{
-                'form_class': HistoricDateFormField,
-                **kwargs,
-            }
-        )
-
     def from_db_value(
-        self, datetime_value: Optional[DateTime], expression, connection
+        self, datetime_value: Optional[DateTime], *args
     ) -> Optional[HistoricDateTime]:
         """
         Convert a value as returned by the database to a Python object.

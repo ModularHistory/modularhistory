@@ -6,6 +6,21 @@ from django.utils.translation import ugettext_lazy as _
 from core.models import PositionedRelation
 
 
+class ArgumentSupport(PositionedRelation):
+    """A support of an argument by a proposition."""
+
+    premise = models.ForeignKey(
+        to='propositions.PolymorphicProposition',
+        on_delete=models.CASCADE,
+        related_name='_argument_supports',
+    )
+    argument = models.ForeignKey(
+        to='propositions.Argument',
+        on_delete=models.CASCADE,
+        related_name='_supports',
+    )
+
+
 class Support(PositionedRelation):
     """A support of a proposition by another proposition."""
 

@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.stories.serializers import StorySerializer
-from core.fields import HTMLField
+from core.fields.html_field import HTMLField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import Model
 

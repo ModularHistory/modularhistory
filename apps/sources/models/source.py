@@ -19,7 +19,7 @@ from apps.entities.models.model_with_related_entities import ModelWithRelatedEnt
 from apps.search.models import SearchableDatedModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
-from core.fields import HTMLField
+from core.fields.html_field import HTMLField
 from core.models import store
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
@@ -147,9 +147,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         max_length=MAX_URL_LENGTH,
         null=True,
         blank=True,
-        help_text=(
-            'URL where the source can be accessed online (outside ModularHistory)'
-        ),
+        help_text=('URL where the source can be accessed online (outside ModularHistory)'),
     )
 
     class Meta:
@@ -208,9 +206,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def get_attributee_html(self) -> str:
         """Return an HTML string representing the source's attributees."""
         # Avoid attempting to access a m2m relationship on a not-yet-saved source.
-        m2m_relation_exists = (
-            self.attributees.exists() if not self._state.adding else False
-        )
+        m2m_relation_exists = self.attributees.exists() if not self._state.adding else False
         if m2m_relation_exists or self.attributee_string:
             if self.attributee_string:
                 # Use attributee_string to generate attributee_html, if possible.
@@ -257,9 +253,9 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if self._state.adding:
             logging.debug('Containments of an unsaved source cannot be accessed.')
             return ''
-        containments: QuerySet[
-            'SourceContainment'
-        ] = self.source_containments.select_related('container').order_by('position')
+        containments: QuerySet['SourceContainment'] = self.source_containments.select_related(
+            'container'
+        ).order_by('position')
         container_strings: list[str] = []
         same_creator = True
         containment: SourceContainment
@@ -346,8 +342,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             pn = self.get_page_number_link(page_number=page_number) or page_number
             if end_page_number:
                 end_pn = (
-                    self.get_page_number_link(page_number=end_page_number)
-                    or end_page_number
+                    self.get_page_number_link(page_number=end_page_number) or end_page_number
                 )
                 return f'pp. {pn}–{end_pn}'
             return f'p. {pn}'
@@ -359,9 +354,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         url = self.get_page_number_url(page_number=page_number)
         if url:
             # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'  # noqa: E800,E501
-            return compose_link(
-                page_number, href=url, klass='display-source', target=NEW_TAB
-            )
+            return compose_link(page_number, href=url, klass='display-source', target=NEW_TAB)
         return ''
 
     def get_page_number_url(self, page_number: Optional[int] = None) -> str:
@@ -451,9 +444,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if self.containment_html and self.containment_html in self.citation_html:
             # Omit the containment string and anything following it.
             index = self.citation_html.index(self.containment_html)
-            self.citation_string = soupify(
-                self.citation_html[:index].rstrip(', ')
-            ).get_text()
+            self.citation_string = soupify(self.citation_html[:index].rstrip(', ')).get_text()
         else:
             self.citation_string = soupify(self.citation_html).get_text()
 

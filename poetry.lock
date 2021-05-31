@@ -932,6 +932,18 @@ six = "*"
 docs = ["django (<3.1)"]
 
 [[package]]
+name = "django-nested-admin"
+version = "3.3.3"
+description = "Django admin classes that allow for nested inlines"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+python-monkey-business = ">=1.0.0"
+six = "*"
+
+[[package]]
 name = "django-nine"
 version = "0.2.4"
 description = "Version checking library."
@@ -1104,6 +1116,17 @@ description = "A Django application that contains a widget to render a form fiel
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "django-trumbowyg"
+version = "1.1.2"
+description = "Trumbowyg (WYSIWYG editor) integration app for Django admin."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
 
 [[package]]
 name = "django-typed-models"
@@ -2846,6 +2869,17 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "python-monkey-business"
+version = "1.0.0"
+description = "Utility functions for monkey-patching python code"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = ">=1.7.0"
+
+[[package]]
 name = "python3-openid"
 version = "3.2.0"
 description = "OpenID support for modern servers and consumers."
@@ -3588,7 +3622,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "b9989e6130f8740fddceab1c6569ad38e2722155a0bd3b8c725037d17de073f5"
+content-hash = "da8bab2d4766d742ff272202b79aa5e026e87df3f5b8d5b27791e5e34a6b99a0"
 
 [metadata.files]
 aenum = [
@@ -4090,6 +4124,10 @@ django-meta = [
     {file = "django-meta-2.0.0.tar.gz", hash = "sha256:3d69068b1c9e8369427fe0843f4cb6974c24c27dc87750cd915db487ee475fce"},
     {file = "django_meta-2.0.0-py2.py3-none-any.whl", hash = "sha256:25010157000fa2f1d1ed46e8739f43cfe00e40af199d913b230e52133b650da5"},
 ]
+django-nested-admin = [
+    {file = "django-nested-admin-3.3.3.tar.gz", hash = "sha256:f1773c4d1be0a19e4b7a510734e88b81f551f831ed7b0641f63ad13cef3ee08c"},
+    {file = "django_nested_admin-3.3.3-py2.py3-none-any.whl", hash = "sha256:440d06055d5c114b354c6bbd040ab878a1bfbea02692cb40ec8fd1e5a071e99b"},
+]
 django-nine = [
     {file = "django-nine-0.2.4.tar.gz", hash = "sha256:27cb253eea230d0c792b815125c58f69bb1a3f32265c3b8585ab891f7855c0cd"},
     {file = "django_nine-0.2.4-py2.py3-none-any.whl", hash = "sha256:296718cc75eec8fc5a4a35aa4b689ab782f4fc9d59f12515ad70abbea49a7c27"},
@@ -4142,6 +4180,9 @@ django-timezone-field = [
 django-tinymce = [
     {file = "django-tinymce-3.3.0.tar.gz", hash = "sha256:77cca137e97e92e43e42c98a232df3e66b80c987ad0f03709a4b73435f8e4060"},
     {file = "django_tinymce-3.3.0-py3-none-any.whl", hash = "sha256:3684d6611162cd3566b068cfeaf9309d415f1d415191a1f8a8c9140246774679"},
+]
+django-trumbowyg = [
+    {file = "django_trumbowyg-1.1.2-py3-none-any.whl", hash = "sha256:92b39b4f98d70476cd46bdfce55edf11876cf1faa94bad3da5151ea7d9943e0e"},
 ]
 django-typed-models = [
     {file = "django-typed-models-0.10.0.tar.gz", hash = "sha256:0682c87e5887124d4990f851d73e172103828e8b48ad2ce53ae039b1498cedb6"},
@@ -5205,6 +5246,10 @@ python-dotenv = [
 python-magic = [
     {file = "python-magic-0.4.22.tar.gz", hash = "sha256:ca884349f2c92ce830e3f498c5b7c7051fe2942c3ee4332f65213b8ebff15a62"},
     {file = "python_magic-0.4.22-py2.py3-none-any.whl", hash = "sha256:8551e804c09a3398790bd9e392acb26554ae2609f29c72abb0b9dee9a5571eae"},
+]
+python-monkey-business = [
+    {file = "python-monkey-business-1.0.0.tar.gz", hash = "sha256:9976522989766f00b2aaa24ec96eacb91a6de7b7001d1452079323b071988e0e"},
+    {file = "python_monkey_business-1.0.0-py2.py3-none-any.whl", hash = "sha256:6d4cf47f011945db838ccf04643acd49b82f7ad6ab7ecba4c8165385687a828a"},
 ]
 python3-openid = [
     {file = "python3-openid-3.2.0.tar.gz", hash = "sha256:33fbf6928f401e0b790151ed2b5290b02545e8775f982485205a066f874aaeaf"},

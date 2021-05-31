@@ -5,7 +5,7 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
-from core.fields import HTMLField
+from core.fields.html_field import HTMLField
 from core.models.model import Model
 from core.utils.html import soupify
 

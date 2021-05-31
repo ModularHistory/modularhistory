@@ -23,10 +23,10 @@ from apps.search.models.searchable_dated_model import SearchableDatedModel
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.constants.strings import EMPTY_STRING
-from core.fields import HTMLField
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
+    HTMLField,
     PlaceholderGroups,
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
@@ -40,7 +40,7 @@ if TYPE_CHECKING:
 BITE_MAX_LENGTH: int = 400
 
 quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
-    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>quote)'
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>quote)'  # noqa: WPS360
 )
 
 
@@ -249,9 +249,7 @@ class Quote(
             f'</blockquote>'
         )
         components = [
-            f'<p class="quote-context">{self.pretext}</p>'
-            if self.pretext
-            else EMPTY_STRING,
+            f'<p class="quote-context">{self.pretext}</p>' if self.pretext else EMPTY_STRING,
             blockquote,
             f'<div class="quote-context">{self.context}</div>'
             if self.context

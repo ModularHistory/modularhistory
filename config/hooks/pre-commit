@@ -14,18 +14,6 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
         comma_delimited_filepaths=$(echo "$staged_python_files" | tr '\n' ',')
         poetry run invoke qa.autoformat --filepaths "${comma_delimited_filepaths%,}"
         for file in $staged_python_files; do
-            poetry run flake8 "$file" || linting_failed=true
-        done
-        if [[ "$linting_failed" = true ]]; then
-            echo "
-                ${RED}Please fix the issues identified above, then recommit.${NORMAL}
-                To ignore an issue flagged by the linter, you can append a noqa comment
-                to the offending line. For example, to ignore an A100 issue:
-                    offending line  # noqa: A100
-            "
-            exit 1
-        fi
-        for file in $staged_python_files; do
             # Check types with mypy first, since mypy is faster than pytype.
             # https://github.com/google/pytype#usage
             poetry run mypy "$file" || {
@@ -36,6 +24,17 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
                 "
             }
         done
+        for file in $staged_python_files; do
+            poetry run flake8 "$file" || linting_failed=true
+        done
+        if [[ "$linting_failed" = true ]]; then
+            echo "
+                ${RED}Please fix the issues identified above, then recommit.${NORMAL}
+                To ignore an issue flagged by the linter, you can append a noqa comment
+                to the offending line. For example, to ignore an A100 issue:
+                    offending line  # noqa: A100
+            "
+        fi
     }
 }
 
