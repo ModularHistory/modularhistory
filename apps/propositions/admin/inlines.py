@@ -44,41 +44,7 @@ class LocationsInline(AbstractLocationsInline, NestedTabularInline):
     model = models.PolymorphicProposition.locations.through
 
 
-class ConclusionsInline(NestedTabularInline):
-    """Inline admin for a proposition's supported propositions."""
-
-    verbose_name = 'supported proposition'
-    verbose_name_plural = 'supported propositions'
-    model = models.Support
-    exclude = ['position']
-    fk_name = 'premise'
-    autocomplete_fields = ['conclusion']
-    extra = 0
-
-    def get_queryset(self, request: 'HttpRequest') -> 'QuerySet':
-        """Return the queryset of model instances to be included."""
-        return super().get_queryset(request).select_related('premise', 'conclusion')
-
-
 class PremisesInline(NestedTabularInline):
-    """Inline admin for a proposition's premises."""
-
-    verbose_name = 'premise'
-    verbose_name_plural = 'premises'
-    model = models.Support
-    fk_name = 'conclusion'
-    autocomplete_fields = ['premise']
-    extra = 0
-
-    # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
-    sortable_field_name = 'position'
-
-    def get_queryset(self, request: 'HttpRequest') -> 'QuerySet':
-        """Return the queryset of model instances to be included."""
-        return super().get_queryset(request).select_related('premise', 'conclusion')
-
-
-class _PremisesInline(NestedTabularInline):
     """Inline admin for a proposition's premises."""
 
     model = models.ArgumentSupport
@@ -101,7 +67,7 @@ class ArgumentsInline(NestedStackedInline):
     model = models.Argument
 
     extra = 0
-    inlines = [_PremisesInline]
+    inlines = [PremisesInline]
     verbose_name = 'argument'
     verbose_name_plural = 'arguments'
 

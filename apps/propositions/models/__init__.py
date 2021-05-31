@@ -9,4 +9,4 @@ from .proposition import (
     Proposition,
     QuoteRelation,
 )
-from .support import ArgumentSupport, Support
+from .support import ArgumentSupport

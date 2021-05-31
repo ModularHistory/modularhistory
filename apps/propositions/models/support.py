@@ -20,25 +20,10 @@ class ArgumentSupport(PositionedRelation):
         related_name='_supports',
     )
 
-
-class Support(PositionedRelation):
-    """A support of a proposition by another proposition."""
-
-    premise = models.ForeignKey(
-        to='propositions.PolymorphicProposition',
-        on_delete=models.CASCADE,
-        related_name='supports',
-    )
-    conclusion = models.ForeignKey(
-        to='propositions.PolymorphicProposition',
-        on_delete=models.CASCADE,
-        related_name='conclusion_supports',
-    )
-
     class Meta:
-        unique_together = ['premise', 'conclusion']
+        unique_together = ['argument', 'premise']
         verbose_name = _('support')
 
     def __str__(self) -> str:
         """Return the proposition relationship's string representation."""
-        return f'{self.premise} --> {self.conclusion}'
+        return f'Support #{self.position}: {self.premise}'

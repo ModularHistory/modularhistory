@@ -5,10 +5,8 @@ from apps.propositions import models
 from apps.propositions.admin.filters import HasDateFilter, HasQuotesFilter, LocationFilter
 from apps.propositions.admin.inlines import (
     ArgumentsInline,
-    ConclusionsInline,
     ImagesInline,
     LocationsInline,
-    PremisesInline,
     RelatedEntitiesInline,
     SourcesInline,
     TagsInline,
@@ -29,8 +27,6 @@ class AbstractPropositionAdmin(NestedModelAdmin, SearchableModelAdmin):
     ]
     inlines = [
         ArgumentsInline,
-        PremisesInline,
-        ConclusionsInline,
         SourcesInline,
         ImagesInline,
         RelatedEntitiesInline,

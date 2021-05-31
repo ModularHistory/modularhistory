@@ -9,11 +9,14 @@ import core.fields
 def convert_data(apps, schema_editor):
     Support = apps.get_model('propositions', 'Support')
     Argument = apps.get_model('propositions', 'Argument')
-    ArgumentSupport = apps.get_model('propositions', 'ArgumentSupport')
     for support in Support.objects.all():
         proposition = support.conclusion
-        argument = proposition.arguments.first() if proposition.arguments.exists() else ''
-        pass
+        argument = (
+            proposition.arguments.first()
+            if proposition.arguments.exists()
+            else Argument.objects.create(conclusion=proposition)
+        )
+        argument.premises.add(support.premise)
 
 
 class Migration(migrations.Migration):
@@ -50,6 +53,7 @@ class Migration(migrations.Migration):
                         processed=False,
                         processor=None,
                         verbose_name='explanation',
+                        blank=True,
                     ),
                 ),
                 (

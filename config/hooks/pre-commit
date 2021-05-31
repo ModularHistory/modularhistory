@@ -7,6 +7,11 @@ NORMAL=$(tput sgr0)
 staged_files="$(git diff --diff-filter=AM --name-only --staged)"
 linting_failed=false
 
+echo "$staged_files" | grep --quiet -e ".js" -e ".ts" -e ".jsx" -e ".tsx" -e ".scss" -e ".css" && {
+    echo "Autoformatting JS/TS code..."
+    cd frontend && npx lint-staged && cd ..
+}
+
 echo "$staged_files" | grep -E --quiet ".+.py" && {
     staged_python_files=$(echo "$staged_files" | grep -E ".+.py")
     # Autoformat and lint Python code.
@@ -36,13 +41,6 @@ echo "$staged_files" | grep -E --quiet ".+.py" && {
             "
         fi
     }
-}
-
-# Autoformat JS & TS code.
-# Match any file types that Prettier can deal with: https://prettier.io/
-echo "$staged_files" | grep --quiet -e ".js" -e ".ts" -e ".jsx" -e ".tsx" -e ".scss" -e ".css" && {
-    echo "Autoformatting JS/TS code..."
-    cd frontend && npx lint-staged && cd ..
 }
 
 for file in $staged_files; do

@@ -141,14 +141,6 @@ class PolymorphicProposition(  # noqa: WPS215
         help_text='Content to be displayed below all related data',
     )
     arguments: 'RelatedManager[Argument]'
-    premises = models.ManyToManyField(
-        to='self',
-        through='propositions.Support',
-        through_fields=('conclusion', 'premise'),
-        related_name='conclusions',
-        symmetrical=False,
-        verbose_name=_('premises'),
-    )
 
     locations = LocationsField(through=Location)
     related_quotes = RelatedQuotesField(

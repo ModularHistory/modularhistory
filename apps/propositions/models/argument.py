@@ -37,9 +37,18 @@ class Argument(Model):
         verbose_name=_('explanation'),
         paragraphed=True,
         processed=False,
+        blank=True,
     )
 
     def __str__(self) -> str:
         """Return the proposition's string representation."""
-        premises = '\n + '.join(str(self.premises.all()))
+        premises = [
+            str(premise)
+            for premise in (
+                (list(self.premises.all()[:3]) + ['...'])
+                if self.premises.count() > 3
+                else self.premises.all()
+            )
+        ]
+        premises = '\n + '.join([str(premise) for premise in premises])
         return f'{premises}\n --> {self.conclusion}'
