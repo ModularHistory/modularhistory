@@ -159,7 +159,7 @@ class AbstractCitation(PositionedRelation):
     @property
     def number(self) -> int:
         """Return the citation's 1-based index."""
-        return self.position + 1
+        return self.position + 1 if self.position else 0
 
     @property
     def primary_page_number(self) -> Optional[int]:
