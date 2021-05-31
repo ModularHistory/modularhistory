@@ -14,9 +14,10 @@ from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
 from apps.dates.fields import HistoricDateTimeField
+from apps.dates.models import DatedModel
 from apps.dates.structures import HistoricDateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.search.models import SearchableDatedModel
+from apps.search.models import SearchableModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields.html_field import HTMLField
@@ -46,7 +47,7 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
+class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
     content = HTMLField(

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import graphene
+from graphene.types.generic import GenericScalar
 
 from apps.graph.types import ModuleType
 from apps.propositions.models.argument import Argument
@@ -27,6 +28,7 @@ class PropositionType(ModuleType):
     """GraphQL type for the PolymorphicProposition model."""
 
     arguments = graphene.List(PropositionArgumentType)
+    cached_images = GenericScalar(source='cached_images')
 
     class Meta:
         model = PolymorphicProposition

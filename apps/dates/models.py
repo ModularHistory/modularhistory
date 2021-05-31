@@ -39,6 +39,12 @@ class DatedModel(Model):
         null=True,
         blank=True,
     )
+    date_string = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name=_('date string'),
+    )
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
@@ -46,8 +52,7 @@ class DatedModel(Model):
 
         abstract = True
 
-    @store
-    def date_string(self) -> str:
+    def get_date_string(self) -> str:
         """Return the string representation of the model instance's date."""
         date, date_string = self.get_date(), ''
         if date:
@@ -69,8 +74,7 @@ class DatedModel(Model):
                 date_string = f'{date_string} CE'
         return date_string
 
-    date_string.admin_order_field = 'date'  # type: ignore
-    date_string = property(date_string)  # type: ignore
+    # date_string.admin_order_field = 'date'  # type: ignore
 
     @property
     def year_html(self) -> Optional[SafeString]:
