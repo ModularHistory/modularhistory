@@ -35,6 +35,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         description
         model
         adminUrl
+        propositions {
+          slug
+          summary
+          elaboration
+          cachedImages
+        }
       }
     }`,
   };

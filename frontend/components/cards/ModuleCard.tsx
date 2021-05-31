@@ -165,7 +165,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
       )}
       {header ? (
         <p className={`text-center ${classes.cardHeader}`}>
-          <small>{header}</small>
+          <small dangerouslySetInnerHTML={{ __html: header }} />
         </p>
       ) : module.dateString ? (
         <p className={`text-center ${classes.cardHeader}`}>

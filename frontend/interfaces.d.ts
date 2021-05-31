@@ -80,6 +80,7 @@ export interface Proposition extends BaseModule {
 export interface Topic extends BaseModule {
   name: string;
   description: string;
+  propositions: Proposition[];
 }
 
 export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposition | Topic;
