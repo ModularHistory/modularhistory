@@ -34,10 +34,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         elaboration
         model
         adminUrl
-        premises {
-          slug
-          summary
-          elaboration
+        arguments {
+          type
+          explanation
+          premises {
+            slug
+            summary
+            elaboration
+          }
         }
       }
     }`,

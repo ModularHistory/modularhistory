@@ -31,19 +31,24 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
       <div dangerouslySetInnerHTML={{ __html: proposition.elaboration }} />
       <div className={classes.root}>
-        {proposition.premises.map((premise) => (
-          <Accordion key={premise.slug}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography className={classes.heading}>{premise.summary}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div dangerouslySetInnerHTML={{ __html: premise.elaboration }} />
-            </AccordionDetails>
-          </Accordion>
+        {proposition.arguments.map((argument) => (
+          <div key={argument.pk}>
+            <p dangerouslySetInnerHTML={{ __html: argument.explanation }} />
+            {argument.premises.map((premise) => (
+              <Accordion key={argument.pk}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography className={classes.heading}>{premise.summary}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div dangerouslySetInnerHTML={{ __html: premise.elaboration }} />
+                </AccordionDetails>
+              </Accordion>
+            ))}
+          </div>
         ))}
       </div>
     </>
