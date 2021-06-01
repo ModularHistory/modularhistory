@@ -1,5 +1,5 @@
 import re
-from typing import Iterable, Type, Union
+from typing import TYPE_CHECKING, Iterable, Sequence, Type, Union
 
 from django.contrib.admin.filters import ListFilter
 from django.db.models.query import QuerySet
@@ -16,6 +16,9 @@ from apps.sources.admin.inlines import (
     ContainedSourcesInline,
     ContainersInline,
 )
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 class AbstractSourceAdmin(SearchableModelAdmin):
@@ -107,12 +110,12 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
             queryset = queryset.exclude(pk=pk)
         return queryset, use_distinct
 
-    def get_fields(self, request, model_instance=None):
+    def get_fields(self, request, model_instance=None) -> Sequence[str]:
         """Return reordered fields to be displayed in the source admin form."""
         fields = list(super().get_fields(request, model_instance))
         return rearrange_fields(fields)
 
-    def get_queryset(self, request):
+    def get_queryset(self, request) -> 'QuerySet':
         """Return the queryset of sources to be displayed in the source admin."""
         return super().get_queryset(request).select_related('polymorphic_ctype')
 

@@ -36,17 +36,23 @@ class TabularInline(BaseTabularInline):
                 fk_name = self.fk_name
             elif hasattr(self.model, 'content_object'):
                 fk_name = 'content_object'
-            elif obj._meta.proxy and obj._meta.proxy_for_model:
-                fk_name = obj._meta.proxy_for_model.__name__.lower()
-            elif getattr(obj, 'polymorphic_ctype_id', None):
-                fk_name = list(obj.__class__._meta.parents.keys())[0].__name__.lower()
-            elif obj._meta.model_name:
-                fk_name = obj._meta.model_name
             else:
-                raise Exception('Unable to determine foreign key field name.')
+                fk_name = get_fk_name(obj)
             try:
                 if len(self.get_queryset(request).filter(**{f'{fk_name}_id': obj.pk})):
                     return 0
             except (FieldError, FieldDoesNotExist) as err:
                 logging.error(err)
         return 1
+
+
+def get_fk_name(model_instance: 'Model') -> str:
+    if model_instance._meta.proxy_for_model:
+        fk_name = model_instance._meta.proxy_for_model.__name__
+    elif getattr(model_instance, 'polymorphic_ctype_id', None):
+        fk_name = list(model_instance.__class__._meta.parents.keys())[0].__name__
+    elif model_instance._meta.model_name:
+        fk_name = model_instance._meta.model_name
+    else:
+        raise Exception('Unable to determine foreign key field name.')
+    return fk_name.lower()
