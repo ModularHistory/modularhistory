@@ -118,6 +118,7 @@ class TrumbowygWidget(Textarea):
         js = ['//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/trumbowyg.min.js']
 
     def render(self, name: str, value: str, attrs: dict = None, renderer: Type = None):
+        """Render the widget."""
         output = super().render(name, value, attrs)
         script = f'''
             <script defer>
@@ -160,14 +161,6 @@ class TrumbowygWidget(Textarea):
                         $("#id_{name}").find('img[data-src]').each(function () {{
                             $(this).attr('src', this.dataset.src);
                         }});
-                        /*
-                        // TODO: Adjust textarea height
-                        let content_height = iframe.contents().find('html').height() + 30;
-                        let initial_iframe_height = iframe.height();
-                        let new_iframe_height = initial_iframe_height - (initial_iframe_height - content_height);
-                        iframe.height(new_iframe_height);
-                        return new_iframe_height;
-                        */
                     }})(django.jQuery);
                 }});
             </script>
@@ -337,7 +330,7 @@ class HTMLField(TextField):
         return html_value
 
     # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.get_db_prep_value
-    def get_db_prep_value(self, html_value, connection, prepared=False):
+    def get_db_prep_value(self, html_value: Optional[str], *args, **kwargs):
         """Convert the value to a backend-specific value."""
         return self.get_prep_value(html_value)
 
