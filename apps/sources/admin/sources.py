@@ -2,8 +2,6 @@ import re
 from typing import TYPE_CHECKING, Iterable, Sequence, Type, Union
 
 from django.contrib.admin.filters import ListFilter
-from django.db.models.query import QuerySet
-from django.http.request import HttpRequest
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from apps.admin import TabularInline, admin_site
@@ -18,7 +16,8 @@ from apps.sources.admin.inlines import (
 )
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
+    from django.db.models import Model, QuerySet
+    from django.http.request import HttpRequest
 
 
 class AbstractSourceAdmin(SearchableModelAdmin):
@@ -94,8 +93,8 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
     readonly_fields = AbstractSourceAdmin.readonly_fields
 
     def get_search_results(
-        self, request: HttpRequest, queryset: QuerySet, search_term: str
-    ) -> tuple[QuerySet, bool]:
+        self, request: 'HttpRequest', queryset: 'QuerySet', search_term: str
+    ) -> tuple['QuerySet', bool]:
         """Return source instances matching the supplied search term."""
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         # If the request comes from the admin edit page for a model instance,
@@ -110,12 +109,14 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
             queryset = queryset.exclude(pk=pk)
         return queryset, use_distinct
 
-    def get_fields(self, request, model_instance=None) -> Sequence[str]:
+    def get_fields(
+        self, request: 'HttpRequest', model_instance: 'Model' = None
+    ) -> Sequence[str]:
         """Return reordered fields to be displayed in the source admin form."""
         fields = list(super().get_fields(request, model_instance))
         return rearrange_fields(fields)
 
-    def get_queryset(self, request) -> 'QuerySet':
+    def get_queryset(self, request: 'HttpRequest') -> 'QuerySet':
         """Return the queryset of sources to be displayed in the source admin."""
         return super().get_queryset(request).select_related('polymorphic_ctype')
 
@@ -139,7 +140,6 @@ class SourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     list_filter = [
         filter for filter in PolymorphicSourceAdmin.list_filter if filter != SourceTypeFilter
     ]
-    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 15
     readonly_fields = AbstractSourceAdmin.readonly_fields
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
@@ -148,7 +148,7 @@ class SourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     save_as_continue = True
     search_fields = base_model.searchable_fields
 
-    def get_fields(self, request, model_instance=None):
+    def get_fields(self, request: 'HttpRequest', model_instance: 'Model' = None):
         """Return reordered fields to be displayed in the admin."""
         return rearrange_fields(super().get_fields(request, model_instance))
 
