@@ -21,7 +21,6 @@ from apps.search.models import SearchableModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields.html_field import HTMLField
-from core.models import store
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -166,7 +165,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         """
         raise NotImplementedError
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the source's string representation."""
         return self.citation_string
 
@@ -445,7 +444,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
             self.citation_string = soupify(self.citation_html).get_text()
 
     @staticmethod
-    def components_to_html(components: Sequence[Optional[str]]):
+    def components_to_html(components: Sequence[Optional[str]]) -> str:
         """Combine a list of HTML components into an HTML string."""
         return components_to_html(components, delimiter=COMPONENT_DELIMITER)
 

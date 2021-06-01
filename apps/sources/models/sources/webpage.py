@@ -8,13 +8,15 @@ from apps.sources.models.mixins.textual import TextualMixin
 from apps.sources.models.publication import AbstractPublication
 from apps.sources.models.source import Source
 
+DEFAULT_MAX_LENGTH = 100
+
 
 class Website(AbstractPublication):
     """A website."""
 
     owner = models.CharField(
         verbose_name=_('owner'),
-        max_length=80,
+        max_length=DEFAULT_MAX_LENGTH,
         blank=True,
     )
 
