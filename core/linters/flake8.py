@@ -79,10 +79,9 @@ class ConfigFileFlake8OptionsParser(BaseConfigFileOptionsParser):
         super().__init__(script_name=script_name)
 
 
-VIOLATION_DEFAULT_URL = (
-    'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
-)
+VIOLATION_DEFAULT_URL = 'https://wemake-python-stylegui.de/en/latest/pages/usage/violations'
 VIOLATION_EXPLANATION_URLS: dict[str, StringOrCallableOrDict] = {
+    'ANN': 'https://github.com/sco1/flake8-annotations',  # Annotations
     'B': 'https://github.com/PyCQA/flake8-bugbear#list-of-warnings',  # Bugbear
     'BLK': 'https://github.com/peterjc/flake8-black',  # Black
     'C': {
@@ -133,10 +132,8 @@ def get_violation_explanation_url(violation_code: str) -> str:  # noqa: C901
     if match:
         prefix, number = match.group(1), match.group(2)
         url_match: Optional[StringOrCallableOrDict] = VIOLATION_EXPLANATION_URLS.get(
-            violation_code
+            violation_code, VIOLATION_EXPLANATION_URLS.get(prefix)
         )
-        if url_match is None:
-            url_match = VIOLATION_EXPLANATION_URLS.get(prefix)
         if isinstance(url_match, str):
             return url_match
         elif isinstance(url_match, dict):
