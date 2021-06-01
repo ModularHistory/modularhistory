@@ -332,7 +332,7 @@ class HTMLField(TextField):
         return html_value
 
     # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.get_db_prep_value
-    def get_db_prep_value(self, html_value: Optional[str], *args, **kwargs):
+    def get_db_prep_value(self, html_value: Optional[str], *args, **kwargs) -> str:
         """Convert the value to a backend-specific value."""
         return self.get_prep_value(html_value)
 
