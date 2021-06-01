@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import TextField
 from django.forms.widgets import Textarea
 from django.utils.module_loading import import_string
-from django.utils.safestring import mark_safe
+from django.utils.safestring import SafeText, mark_safe
 
 from core.constants.content_types import MODEL_CLASS_PATHS
 from core.utils.html import soupify
@@ -117,7 +117,9 @@ class TrumbowygWidget(Textarea):
         # Note: Trumbowyg depends on jQuery.
         js = ['//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/trumbowyg.min.js']
 
-    def render(self, name: str, value: str, attrs: dict = None, renderer: Type = None):
+    def render(
+        self, name: str, value: str, attrs: dict = None, renderer: Type = None
+    ) -> SafeText:
         """Render the widget."""
         output = super().render(name, value, attrs)
         script = f'''
