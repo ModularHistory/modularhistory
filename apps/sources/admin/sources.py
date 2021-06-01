@@ -1,5 +1,5 @@
 import re
-from typing import TYPE_CHECKING, Iterable, Sequence, Type, Union
+from typing import Sequence, TYPE_CHECKING, Type, Union
 
 from django.contrib.admin.filters import ListFilter
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
@@ -148,7 +148,9 @@ class SourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     save_as_continue = True
     search_fields = base_model.searchable_fields
 
-    def get_fields(self, request: 'HttpRequest', model_instance: 'Model' = None):
+    def get_fields(
+        self, request: 'HttpRequest', model_instance: 'Model' = None
+    ) -> Sequence[str]:
         """Return reordered fields to be displayed in the admin."""
         return rearrange_fields(super().get_fields(request, model_instance))
 
@@ -181,7 +183,7 @@ class SourcesInline(TabularInline):
     ]
 
 
-def rearrange_fields(fields: Iterable[str]):
+def rearrange_fields(fields: Sequence[str]) -> Sequence[str]:
     """Return reordered fields to be displayed in the admin."""
     # Fields to display at the top, in order
     top_fields = (
