@@ -1,9 +1,10 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
-import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
+import PageHeader from "@/components/PageHeader";
 import { Topic } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
+import Link from "next/link";
 import { FC } from "react";
 
 interface TopicProps {
@@ -17,7 +18,18 @@ const TopicDetailPage: FC<TopicProps> = ({ topic }: TopicProps) => {
   return (
     <Layout title={topic.name}>
       <ModuleContainer>
-        <ModuleDetail module={topic} />
+        <PageHeader>{topic.name}</PageHeader>
+        {topic.description && <p dangerouslySetInnerHTML={{ __html: topic.description }} />}
+        {topic.propositions &&
+          topic.propositions.map((proposition) => (
+            <Link href={`/propositions/${proposition.slug}`} key={proposition.slug}>
+              <a>
+                <div>
+                  <p dangerouslySetInnerHTML={{ __html: proposition.summary }} />
+                </div>
+              </a>
+            </Link>
+          ))}
       </ModuleContainer>
     </Layout>
   );

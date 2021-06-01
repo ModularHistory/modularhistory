@@ -1,8 +1,8 @@
 import { Container, useMediaQuery } from "@material-ui/core";
-import { FC, ReactElement } from "react";
+import { FC, ReactNode } from "react";
 
 interface ModuleContainerProps {
-  children: ReactElement;
+  children: ReactNode;
 }
 
 /**

@@ -84,6 +84,7 @@
     ],
     "ignoreRegExpList": [
         "'//.+",
+        "r'.+'",
         "END\\w+",
         "default='.*'",
         "[A-Z_]+(=|: ).*",
