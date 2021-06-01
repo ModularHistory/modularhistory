@@ -52,7 +52,7 @@ class Webpage(Source, TextualMixin):
             self.attributee_html,
             f'"{self.linked_title}"',
             f'<i>{self.website_name}</i>' if self.website_name else '',
-            self.website.owner,
+            self.website.owner if self.website else '',
             self.date.string if self.date else '',
             f'retrieved from <a target="_blank" href="{self.url}" class="url">{self.url}</a>',
         ]
