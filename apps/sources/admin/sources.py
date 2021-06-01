@@ -18,7 +18,41 @@ from apps.sources.admin.inlines import (
 )
 
 
-class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
+class AbstractSourceAdmin(SearchableModelAdmin):
+    """Abstract base admin for PolymorphicSourceAdmin and SourceAdmin."""
+
+    exclude = SearchableModelAdmin.exclude + [
+        'related_entities',
+        'images',
+        'locations',
+        'citation_html',
+        'citation_string',
+    ]
+    inlines = [
+        AttributeesInline,
+        ContainersInline,
+        ContainedSourcesInline,
+    ]
+    list_display = [
+        'slug',
+        'escaped_citation_html',
+        'attributee_string',
+        'date_string',
+    ]
+    ordering = ['date', 'citation_string']
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    list_per_page = 10
+    readonly_fields = SearchableModelAdmin.readonly_fields + [
+        'escaped_citation_html',
+        'attributee_html',
+        'citation_string',
+        'containment_html',
+        'cache',
+    ]
+    search_fields = models.Source.searchable_fields
+
+
+class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
     """
     Admin for all sources, accessible at http://localhost/admin/sources/source/.
 
@@ -42,15 +76,7 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         models.Speech,
         models.Webpage,
     )
-
-    list_display = [
-        'pk',
-        'escaped_citation_html',
-        'attributee_string',
-        'date_string',
-        'slug',
-        'ctype_name',
-    ]
+    list_display = AbstractSourceAdmin.list_display + ['ctype_name']
     list_filter: list[Union[str, Type[ListFilter]]] = [
         'verified',
         HasContainerFilter,
@@ -61,18 +87,14 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         AttributeeFilter,
         SourceTypeFilter,
     ]
-    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
-    list_per_page = 10
-    ordering = ['date', 'citation_string']
-    search_fields = base_model.searchable_fields
+    ordering = AbstractSourceAdmin.ordering
+    readonly_fields = AbstractSourceAdmin.readonly_fields
 
     def get_search_results(
         self, request: HttpRequest, queryset: QuerySet, search_term: str
     ) -> tuple[QuerySet, bool]:
         """Return source instances matching the supplied search term."""
-        queryset, use_distinct = super().get_search_results(
-            request, queryset, search_term
-        )
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         # If the request comes from the admin edit page for a model instance,
         # exclude the model instance from the search results. This prevents
         # inline admins from displaying an unwanted value in an autocomplete
@@ -95,7 +117,7 @@ class SourceAdmin(PolymorphicParentModelAdmin, SearchableModelAdmin):
         return super().get_queryset(request).select_related('polymorphic_ctype')
 
 
-class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
+class SourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     """
     Admin for source models that inherit from the base `Source` model.
 
@@ -106,32 +128,17 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     base_model = models.Source
 
     autocomplete_fields = ['file', 'location']
-    exclude = [
-        'citation_html',
-        'citation_string',
-    ]
-    inlines = [
-        AttributeesInline,
-        ContainersInline,
-        ContainedSourcesInline,
-    ]
-    list_display = [field for field in SourceAdmin.list_display if field != 'ctype']
-    # Without a hint, mypy seems unable to infer the type of `filter`
-    # in the list comprehension.
+    exclude = AbstractSourceAdmin.exclude
+    inlines = AbstractSourceAdmin.inlines
+    list_display = AbstractSourceAdmin.list_display
+    # Without a hint, mypy seems unable to infer the type of `filter` in list comprehensions.
     filter: Union[str, Type[ListFilter]]
     list_filter = [
-        filter for filter in SourceAdmin.list_filter if filter != SourceTypeFilter
+        filter for filter in PolymorphicSourceAdmin.list_filter if filter != SourceTypeFilter
     ]
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 15
-    ordering = SourceAdmin.ordering
-    readonly_fields = SearchableModelAdmin.readonly_fields + [
-        'escaped_citation_html',
-        'attributee_html',
-        'citation_string',
-        'containment_html',
-        'cache',
-    ]
+    readonly_fields = AbstractSourceAdmin.readonly_fields
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
     save_as = True
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as_continue
@@ -143,16 +150,16 @@ class ChildSourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
         return rearrange_fields(super().get_fields(request, model_instance))
 
 
-class TextualSourceAdmin(ChildSourceAdmin):
+class TextualSourceAdmin(SourceAdmin):
     """Admin for textual sources."""
 
-    autocomplete_fields = ChildSourceAdmin.autocomplete_fields + ['original_edition']
+    autocomplete_fields = SourceAdmin.autocomplete_fields + ['original_edition']
 
 
 class ArticleAdmin(TextualSourceAdmin):
     """Admin for articles."""
 
-    autocomplete_fields = ChildSourceAdmin.autocomplete_fields + ['publication']
+    autocomplete_fields = SourceAdmin.autocomplete_fields + ['publication']
 
 
 class SourcesInline(TabularInline):
@@ -212,17 +219,17 @@ def rearrange_fields(fields: Iterable[str]):
     return fields
 
 
-admin_site.register(models.Source, SourceAdmin)
+admin_site.register(models.Source, PolymorphicSourceAdmin)
 
-admin_site.register(models.Affidavit, ChildSourceAdmin)
+admin_site.register(models.Affidavit, SourceAdmin)
 admin_site.register(models.Article, ArticleAdmin)
 admin_site.register(models.Book, TextualSourceAdmin)
-admin_site.register(models.Correspondence, ChildSourceAdmin)
-admin_site.register(models.Document, ChildSourceAdmin)
-admin_site.register(models.Film, ChildSourceAdmin)
-admin_site.register(models.Interview, ChildSourceAdmin)
-admin_site.register(models.Entry, ChildSourceAdmin)
-admin_site.register(models.Piece, ChildSourceAdmin)
-admin_site.register(models.Section, ChildSourceAdmin)
-admin_site.register(models.Speech, ChildSourceAdmin)
-admin_site.register(models.Webpage, ChildSourceAdmin)
+admin_site.register(models.Correspondence, SourceAdmin)
+admin_site.register(models.Document, SourceAdmin)
+admin_site.register(models.Film, SourceAdmin)
+admin_site.register(models.Interview, SourceAdmin)
+admin_site.register(models.Entry, SourceAdmin)
+admin_site.register(models.Piece, SourceAdmin)
+admin_site.register(models.Section, SourceAdmin)
+admin_site.register(models.Speech, SourceAdmin)
+admin_site.register(models.Webpage, SourceAdmin)

@@ -38,6 +38,8 @@ class TabularInline(BaseTabularInline):
                 fk_name = 'content_object'
             elif obj._meta.proxy and obj._meta.proxy_for_model:
                 fk_name = obj._meta.proxy_for_model.__name__.lower()
+            elif getattr(obj, 'polymorphic_ctype_id', None):
+                fk_name = list(obj.__class__._meta.parents.keys())[0].__name__.lower()
             elif obj._meta.model_name:
                 fk_name = obj._meta.model_name
             else:

@@ -16,15 +16,10 @@ CIRCA_PREFIX = 'c. '
 class DatedModel(Model):
     """A model with a date (e.g., a quote or occurrence)."""
 
-    date_is_circa = models.BooleanField(
-        verbose_name=_('date is circa'),
-        blank=True,
-        default=False,
-        help_text='whether the date is estimated/imprecise',
-    )
     # `date_nullable` can be set to True by child models that require the
     # date field to be nullable for any reason.
     date_nullable: bool = False
+
     date = HistoricDateTimeField(
         verbose_name=_('date'),
         # `date` must be nullable at the db level (because some inheriting models
@@ -39,12 +34,20 @@ class DatedModel(Model):
         null=True,
         blank=True,
     )
+    date_is_circa = models.BooleanField(
+        verbose_name=_('date is circa'),
+        blank=True,
+        default=False,
+        help_text='whether the date is estimated/imprecise',
+    )
+
     date_string = models.CharField(
         max_length=100,
         null=True,
         blank=True,
         verbose_name=_('date string'),
     )
+    date_string.admin_order_field = 'date'  # type: ignore
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
@@ -73,8 +76,6 @@ class DatedModel(Model):
             if use_ce:
                 date_string = f'{date_string} CE'
         return date_string
-
-    # date_string.admin_order_field = 'date'  # type: ignore
 
     @property
     def year_html(self) -> Optional[SafeString]:
