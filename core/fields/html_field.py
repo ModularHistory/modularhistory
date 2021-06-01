@@ -24,10 +24,7 @@ ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)
 
 REPLACEMENTS = (
     # Prevent related videos from different channels from being displayed
-    (
-        r'''(<iframe .*?src=["'].*youtube\.com\/[^\?]+?)(["'])''',
-        r'\g<1>?rel=0\g<2>',
-    ),
+    (r'''(<iframe .*?src=["'].*youtube\.com\/[^\?]+?)(["'])''', r'\g<1>?rel=0\g<2>'),
     # Remove empty divs & paragraphs
     (r'\n?<(?:div|p)>(?:(?:&nbsp;)+|[\s\n]+)?<\/(?:div|p)>', ''),
     # Add bootstrap classes to HTML elements
@@ -111,6 +108,8 @@ def process(html: str) -> str:
 
 
 class TrumbowygWidget(Textarea):
+    """Trumbowyg widget for editing HTML fields."""
+
     class Media:
         css = {
             'all': ('//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/ui/trumbowyg.min.css',)
@@ -118,7 +117,7 @@ class TrumbowygWidget(Textarea):
         # Note: Trumbowyg depends on jQuery.
         js = ['//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/trumbowyg.min.js']
 
-    def render(self, name: str, value: str, attrs: dict = None, renderer=None):
+    def render(self, name: str, value: str, attrs: dict = None, renderer: Type = None):
         output = super().render(name, value, attrs)
         script = f'''
             <script defer>
@@ -209,7 +208,7 @@ class HTMLField(TextField):
         self.paragraphed = paragraphed
         super().__init__(**kwargs)
 
-    def clean(self, html_value, model_instance: 'Model') -> str:
+    def clean(self, html_value: str, model_instance: 'Model') -> str:
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
         html = html.replace('{', '[').replace('}', ']')
