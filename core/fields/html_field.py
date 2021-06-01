@@ -212,8 +212,7 @@ class HTMLField(TextField):
     def clean(self, html_value, model_instance: 'Model') -> str:
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
-        if '{' in html or '}' in html:
-            raise ValidationError('The "{" and "}" characters are illegal in HTML fields.')
+        html = html.replace('{', '[').replace('}', ']')
         if model_instance.pk:
             html = model_instance.preprocess_html(html)
         # Update obj placeholders and reformat the HTML.

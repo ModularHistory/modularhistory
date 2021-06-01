@@ -42,6 +42,8 @@ sitemaps = {'propositions': PropositionSitemap}
 
 
 class ModelGraphView(TemplateView):
+    """View for ModularHistory's model graph."""
+
     template_name = 'model_graph.html'
 
 
