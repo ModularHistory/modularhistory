@@ -85,6 +85,8 @@ def debug(context: 'Context'):
 def generate_artifacts(context: 'Context'):
     """Generate artifacts."""
     from django.db.models import Count
+
+    # Note: wordcloud is a dev-only dependency.
     from wordcloud import WordCloud
 
     from apps.topics.models.topic import Topic

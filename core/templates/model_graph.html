@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load global_elements %}
+
+{% block styles %}
+    <style>
+        * {box-sizing: border-box;}
+        .model-graph-container {
+            position: relative;
+            height: 100%;
+        }
+        #model-graph {
+            margin-top: auto;
+            margin-bottom: auto;
+            padding-top: auto;
+            padding-bottom: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="model-graph-container">
+        <img id="model-graph" src="{% static 'model_graph.png' %}" alt="Model graph" width="100%" />
+    </div>
+{% endblock %}
+

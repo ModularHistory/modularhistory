@@ -14,7 +14,8 @@ function run_in_django() {
     exit 0
 }
 
-# If any  model files have been modified, check if migrations are required.
+# If any model files have been modified, verify that any necessary migrations
+# have been applied, and update the model graph.
 echo "$committed_filepaths" | grep --quiet "models" && {
     # https://docs.djangoproject.com/en/dev/ref/django-admin/#makemigrations
     echo "Checking if migrations are required..."
@@ -29,7 +30,7 @@ echo "$committed_filepaths" | grep --quiet "models" && {
             docker-compose run django_helper python manage.py migrate
         "; exit 1
     }
-    echo "No migrations are required."
+    run_in_django python manage.py graph_models -o core/static/model_graph.png
 }
 
 # If workflow YAML files (for CI) have been modified, preprocess the files.

@@ -26,6 +26,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.base import TemplateView
 from graphene_django.views import GraphQLView
 from watchman.views import bare_status
 
@@ -38,6 +39,10 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 sitemaps = {'propositions': PropositionSitemap}
+
+
+class ModelGraphView(TemplateView):
+    template_name = 'model_graph.html'
 
 
 def error(request: 'HttpRequest'):
@@ -102,7 +107,7 @@ urlpatterns = [
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=False))),
     path('graphiql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
     # ---------------------------------
-    # Debugging
+    # Debugging & dev utilities
     # ---------------------------------
     # https://django-debug-toolbar.readthedocs.io/en/latest/
     path('__debug__', include(debug_toolbar.urls)),
@@ -114,6 +119,8 @@ urlpatterns = [
     path('errors/500', errors.error),  # 500 trigger
     # https://github.com/jazzband/django-silk
     path('silk/', include('silk.urls', namespace='silk')),
+    # Graphviz model graph
+    path('model-graph/', ModelGraphView.as_view()),
     # ---------------------------------
     # Sitemap
     # ---------------------------------

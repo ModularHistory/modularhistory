@@ -1,5 +1,5 @@
 import re
-from typing import Sequence, TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Sequence, Type, Union
 
 from django.contrib.admin.filters import ListFilter
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
@@ -49,6 +49,7 @@ class AbstractSourceAdmin(SearchableModelAdmin):
         'attributee_html',
         'citation_string',
         'containment_html',
+        'href',
         'cache',
     ]
     search_fields = models.Source.searchable_fields

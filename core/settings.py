@@ -300,6 +300,19 @@ DATABASES = {
     },
 }
 
+GRAPH_MODELS = {
+    'app_labels': [
+        'images',
+        'places',
+        'propositions',
+        'quotes',
+        'sources',
+        'topics',
+        'users',
+    ],
+    'group_models': True,
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 LANGUAGE_CODE = 'en-us'

@@ -90,6 +90,7 @@
         "[A-Z_]+(=|: ).*",
         "from .+ import .+",
         " *path.+, include.+",
+        "'.+?_.+?_.+?[^a-z].+'",
         "'[A-Za-z0-9_]{4,10}',  # https://github.com.+"
     ]
 }
