@@ -58,9 +58,7 @@ def backup(
     temp_file = max(backup_files, key=os.path.getctime)
     backup_filepath = temp_file.replace('.psql', '.sql')
     if filename:
-        backup_filepath = backup_filepath.replace(
-            os.path.basename(backup_filepath), filename
-        )
+        backup_filepath = backup_filepath.replace(os.path.basename(backup_filepath), filename)
     else:
         filename = os.path.basename(backup_filepath)
     with open(temp_file, 'r') as unprocessed_backup:
@@ -128,8 +126,7 @@ def clear_migration_history(context: Context = CONTEXT, app: str = ''):
                 input('Press enter to continue.')
             else:
                 raise Exception(
-                    f'Failed to clear migration history for {app_name}: '
-                    f'{result.stderr}'
+                    f'Failed to clear migration history for {app_name}: ' f'{result.stderr}'
                 )
         else:
             print(f'Skipped {app_name} because it only has {n_migrations} migrations.')
@@ -276,18 +273,13 @@ def seed(
     sleep(10)  # Give postgres time to recreate the database.
     if migrate:
         context.run('docker-compose run django_helper python manage.py migrate')
-    if input('Create a superuser (for testing the website)? [Y/n] ') != NEGATIVE:
-        sleep(1)
-        instructions = (
-            'When prompted, enter the username and password you would like to use '
-            'for your superuser account.'
-        )
-        context.run(
-            "docker-compose run django_helper bash -c '"
-            f'echo "{instructions}" && python manage.py createsuperuser'
-            "'",
-            pty=True,
-        )
+    context.run(
+        "docker-compose run django_helper bash -c '"
+        'python manage.py createsuperuser --no-input '
+        '--username=admin --email=admin@example.com &>/dev/null'
+        "'",
+        pty=True,
+    )
     if up:
         context.run('docker-compose up -d dev')
 

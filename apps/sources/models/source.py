@@ -303,12 +303,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
                 pass
         return None
 
-    # TODO: after deploying to prod and copying deprecated_href to the new href field,
-    # remove the @property and @store decorators and rename this method
-    # to get_href.
-    @property  # type: ignore
-    @store(attribute_name='href')
-    def deprecated_href(self) -> str:
+    def get_href(self) -> str:
         """
         Return the href to use when providing a link to the source.
 
@@ -325,7 +320,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         else:
             url = self.url or ''
             page_number = getattr(self, 'page_number', None)
-            # TODO: refactor?
+            # TODO: refactor
             if page_number:
                 if 'www.sacred-texts.com' in url:
                     url = f'{url}#page_{page_number}'

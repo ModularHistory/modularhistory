@@ -41,6 +41,8 @@ if [ "$ENVIRONMENT" = prod ]; then
       --user www-data --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker \
       --workers 9 --max-requests 100 --max-requests-jitter 50
 else
+    # Create superuser if necessary.
+    python manage.py createsuperuser --no-input --username=admin --email=admin@example.com &>/dev/null
     # Run dev server.
     python manage.py runserver 0.0.0.0:8000
 fi

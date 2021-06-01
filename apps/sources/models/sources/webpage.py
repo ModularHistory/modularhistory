@@ -26,7 +26,7 @@ class Website(AbstractPublication):
 class Webpage(Source, TextualMixin):
     """A webpage."""
 
-    website_name = models.CharField(max_length=20, blank=True)
+    website_name = models.CharField(max_length=100, blank=True)
     website = models.ForeignKey(
         to='sources.Website', null=True, blank=True, on_delete=models.CASCADE
     )

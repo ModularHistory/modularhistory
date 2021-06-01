@@ -21,7 +21,7 @@
     "dotenv": "^10.0.0",
     "jquery": "^3.6.0",
     "next": "10.2.3",
-    "next-auth": "^3.23.3",
+    "next-auth": "^3.24.0",
     "nookies": "^2.5.2",
     "prop-types": "^15.7.2",
     "qs": "^6.10.1",
@@ -43,12 +43,12 @@
     "@typescript-eslint/parser": "^4.25.0",
     "cypress": "^7.4.0",
     "eslint": "^7.27.0",
-    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react": "^7.24.0",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
-    "typescript": "^4.2.4"
+    "typescript": "^4.3.2"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
