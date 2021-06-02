@@ -1,5 +1,6 @@
 """Model classes for spoken sources."""
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -14,6 +15,22 @@ SPEECH_TYPES = (
     ('sermon', 'Sermon'),
     ('statement', 'Statement'),
 )
+
+
+class TypeValidator:
+    """A validator for the type of model instance referenced by a foreign key."""
+
+    type: str
+
+    def __call__(self, value, *args, **kwargs):
+        if value and value.type != self.type:
+            raise ValidationError(f'{value} must be of type "{self.type}".')
+
+
+class SpeechTypeValidator(TypeValidator):
+    """A validator for the type of model instance referenced by `speech`."""
+
+    type = 'speech'
 
 
 class Speech(Source):
@@ -31,6 +48,15 @@ class Speech(Source):
         blank=True,
     )
 
+    utterance = models.OneToOneField(
+        to='propositions.PolymorphicProposition',
+        on_delete=models.PROTECT,
+        related_name='speech',
+        null=True,
+        blank=True,
+        validators=[SpeechTypeValidator],
+    )
+
     def __html__(self) -> str:
         """Return the source's HTML representation."""
         type_label = self.type
@@ -46,9 +72,7 @@ class Speech(Source):
                     preposition = (
                         location.preposition if isinstance(location, Venue) else 'in'
                     )
-                    delivery_string = (
-                        f'{delivery_string} {preposition} {location.string}'
-                    )
+                    delivery_string = f'{delivery_string} {preposition} {location.string}'
                 if date:
                     delivery_string = f'{delivery_string}, {self.date_string}'
             elif date:

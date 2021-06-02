@@ -92,7 +92,8 @@ TYPE_CHOICES = (
     ('propositions.birth', 'birth'),
     ('propositions.death', 'death'),
     ('propositions.publication', 'publication'),
-    ('propositions.verbalization', 'verbalization'),
+    ('composition', 'Composition'),
+    ('speech', 'Speech'),
 )
 
 

@@ -1,4 +1,5 @@
 import os
+import sys
 
 from decouple import config
 
@@ -14,3 +15,4 @@ else:
 IS_PROD = ENVIRONMENT == Environments.PROD
 IS_DEV = ENVIRONMENT == Environments.DEV
 DOCKERIZED = config('DOCKERIZED', cast=bool, default=IS_PROD)
+TESTING: bool = 'test' in sys.argv

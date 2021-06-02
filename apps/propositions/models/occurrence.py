@@ -124,8 +124,8 @@ class Publication(Occurrence):
         proxy = True
 
 
-class Verbalization(Occurrence):
-    """A verbalization or production of a source, prior to publication."""
+class Speech(Occurrence):
+    """A speech."""
 
     class Meta:
         proxy = True

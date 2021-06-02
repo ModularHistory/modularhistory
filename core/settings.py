@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
-import sys
 from os.path import join
 
 from decouple import config
@@ -17,12 +16,9 @@ from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from split_settings.tools import include
 
-from core.constants.environments import Environments
-from core.environment import DOCKERIZED, ENVIRONMENT, IS_DEV, IS_PROD
+from core.environment import DOCKERIZED, ENVIRONMENT, IS_DEV, IS_PROD, TESTING
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
-
-TESTING: bool = 'test' in sys.argv
 
 # https://docs.djangoproject.com/en/dev/ref/settings#s-debug
 # DEBUG must be False in production (for security)
@@ -146,8 +142,6 @@ INSTALLED_APPS = [
     # ---------------------------------
     # Debugging- and profiling-related apps
     # ---------------------------------
-    'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
-    'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'silk',  # https://github.com/jazzband/django-silk
     # ---------------------------------
     # Miscellaneous third-party apps
@@ -219,8 +213,6 @@ MIDDLEWARE = [
     # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
-    # https://django-debug-toolbar.readthedocs.io/en/latest/
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Staticpage middleware (based on Django's Flatpage middleware):

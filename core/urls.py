@@ -19,7 +19,6 @@ Examples:
 import logging
 from typing import TYPE_CHECKING
 
-import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
@@ -111,8 +110,6 @@ urlpatterns = [
     # ---------------------------------
     # Debugging & dev utilities
     # ---------------------------------
-    # https://django-debug-toolbar.readthedocs.io/en/latest/
-    path('__debug__', include(debug_toolbar.urls)),
     # Error triggers:
     path('error', error),  # exception trigger
     path('errors/400', errors.bad_request),  # 400 trigger

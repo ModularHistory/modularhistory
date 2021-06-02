@@ -54,6 +54,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         blank=True,
         help_text='Enter the content of the source (with ellipses as needed).',
     )
+
     attributee_html = models.CharField(
         max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
         blank=True,
@@ -71,35 +72,19 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
-    citation_html = models.TextField(
-        verbose_name=_('citation HTML'),
-        # Allow to be blank in model forms (and computed during cleaning).
+
+    title = models.CharField(
+        verbose_name=_('title'),
+        max_length=MAX_TITLE_LENGTH,
         blank=True,
     )
-    citation_string = models.CharField(
-        verbose_name=_('citation string'),
-        max_length=MAX_CITATION_STRING_LENGTH,
-        # Allow to be blank in model forms (and computed during cleaning).
+
+    url = models.URLField(
+        verbose_name=_('URL'),
+        max_length=MAX_URL_LENGTH,
+        null=True,
         blank=True,
-        unique=True,
-    )
-    containment_html = models.TextField(
-        verbose_name=_('containment HTML'),
-        blank=True,
-    )
-    containers = models.ManyToManyField(
-        to='self',
-        through='sources.SourceContainment',
-        through_fields=('source', 'container'),
-        related_name='contained_sources',
-        symmetrical=False,
-        blank=True,
-        verbose_name=_('containers'),
-    )
-    description = HTMLField(
-        verbose_name=_('description'),
-        blank=True,
-        paragraphed=True,
+        help_text=('URL where the source can be accessed online (outside ModularHistory)'),
     )
     file = models.ForeignKey(
         to=SourceFile,
@@ -118,6 +103,34 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
             'could be the URL of the source file (if one exists) or of a webpage.'
         ),
     )
+
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        # Allow to be blank in model forms (and computed during cleaning).
+        blank=True,
+    )
+    citation_string = models.CharField(
+        verbose_name=_('citation string'),
+        max_length=MAX_CITATION_STRING_LENGTH,
+        # Allow to be blank in model forms (and computed during cleaning).
+        blank=True,
+        unique=True,
+    )
+
+    containment_html = models.TextField(
+        verbose_name=_('containment HTML'),
+        blank=True,
+    )
+    containers = models.ManyToManyField(
+        to='self',
+        through='sources.SourceContainment',
+        through_fields=('source', 'container'),
+        related_name='contained_sources',
+        symmetrical=False,
+        blank=True,
+        verbose_name=_('containers'),
+    )
+
     location = models.ForeignKey(
         to='places.Place',
         null=True,
@@ -125,6 +138,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         on_delete=models.SET_NULL,
         verbose_name=_('location'),
     )
+
     release = models.OneToOneField(
         to='propositions.Publication',
         on_delete=models.SET_NULL,
@@ -137,17 +151,20 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         null=True,
         blank=True,
     )
-    title = models.CharField(
-        verbose_name=_('title'),
-        max_length=MAX_TITLE_LENGTH,
-        blank=True,
-    )
-    url = models.URLField(
-        verbose_name=_('URL'),
-        max_length=MAX_URL_LENGTH,
+
+    original = models.ForeignKey(
+        to='self',
+        on_delete=models.PROTECT,
+        related_name='versions',
         null=True,
         blank=True,
-        help_text=('URL where the source can be accessed online (outside ModularHistory)'),
+        verbose_name=_('original'),
+    )
+
+    description = HTMLField(
+        verbose_name=_('description'),
+        blank=True,
+        paragraphed=True,
     )
 
     class Meta:
