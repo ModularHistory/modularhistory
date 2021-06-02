@@ -52,7 +52,9 @@ def process_flake8_output(output: str, interactive: bool = False):
             files_to_autoformat.add(filename)
 
 
-def _process_flake8_message(location, filename, code, message, options):
+def _process_flake8_message(
+    location: str, filename: str, code: str, message: str, options: LinterOptions
+):
     if not options.error_is_ignored(message, code, filename):
         explanation_url = get_violation_explanation_url(code)
         print(
