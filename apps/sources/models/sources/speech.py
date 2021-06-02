@@ -1,11 +1,16 @@
 """Model classes for spoken sources."""
 
+from typing import TYPE_CHECKING, Optional
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.places.models import Venue
 from apps.sources.models.source import Source
+
+if TYPE_CHECKING:
+    from core.models.model import Model
 
 SPEECH_TYPES = (
     ('speech', 'Speech'),
@@ -22,7 +27,8 @@ class TypeValidator:
 
     type: str
 
-    def __call__(self, value, *args, **kwargs):
+    def __call__(self, value: Optional['Model'], *args, **kwargs):
+        """Run the validator."""
         if value and value.type != self.type:
             raise ValidationError(f'{value} must be of type "{self.type}".')
 

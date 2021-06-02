@@ -1,8 +1,12 @@
 """Settings for debugging."""
 
 import re
+from typing import TYPE_CHECKING
 
 from core.environment import TESTING
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 # https://docs.djangoproject.com/en/dev/ref/settings#s-internal-ips
 INTERNAL_IPS = ['127.0.0.1', '172.27.0.5']
@@ -12,12 +16,12 @@ SILKY_PYTHON_PROFILER = True
 SILKY_ANALYZE_QUERIES = True
 SILKY_AUTHENTICATION = True  # User must login.
 SILKY_AUTHORISATION = True  # User must have permissions.
-SILKY_PERMISSIONS = lambda user: user.is_superuser
+SILKY_PERMISSIONS = lambda user: user.is_superuser  # noqa: E731
 
 PROFILE_ALL_REQUESTS = True
 
 
-def intercept(request) -> bool:
+def intercept(request: 'HttpRequest') -> bool:
     """Determine whether to intercept a request for profiling."""
     qualifiers = (PROFILE_ALL_REQUESTS or request.user.is_superuser,)
     disqualifiers = (
