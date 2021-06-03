@@ -163,8 +163,9 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
 
     variant_type = models.PositiveSmallIntegerField(
         verbose_name=_('variant type'),
+        choices=VariantType.choices,
         db_index=True,
-        default=VariantType.ORIGINAL.value,
+        default=VariantType.ORIGINAL,
     )
     original = models.ForeignKey(
         to='self',
