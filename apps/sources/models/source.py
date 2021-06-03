@@ -37,7 +37,11 @@ MAX_TITLE_LENGTH: int = 250
 
 COMPONENT_DELIMITER = ', '
 
-SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
+SOURCE_TYPES = (
+    ('P', 'Primary'),
+    ('S', 'Secondary'),
+    ('T', 'Tertiary'),
+)
 
 CITATION_PHRASE_OPTIONS = (
     (None, ''),
@@ -152,6 +156,16 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         blank=True,
     )
 
+    class VariantType(models.IntegerChoices):
+        ORIGINAL = 0, _('Original')
+        TRANSLATION = 1, _('Translation')
+        TRANSCRIPTION = 2, _('Transcription')
+
+    variant_type = models.PositiveSmallIntegerField(
+        verbose_name=_('variant type'),
+        db_index=True,
+        default=VariantType.ORIGINAL.value,
+    )
     original = models.ForeignKey(
         to='self',
         on_delete=models.PROTECT,

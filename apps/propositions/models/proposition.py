@@ -97,6 +97,15 @@ TYPE_CHOICES = (
 )
 
 
+class OccurrenceType(models.TextChoices):
+    OCCURRENCE = 'occurrence', _('Occurrence')
+    BIRTH = 'birth', _('Birth')
+    DEATH = 'death', _('Death')
+    SPEECH = 'speech', _('Speech')
+    COMPOSITION = 'composition', _('Composition')
+    PUBLICATION = 'publication', _('Publication')
+
+
 class PolymorphicProposition(  # noqa: WPS215
     SearchableModel,
     DatedModel,  # submodels like `Occurrence` require date
