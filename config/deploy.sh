@@ -21,6 +21,7 @@ healthy=false
 while [[ "$healthy" = false ]]; do
     for container in "${containers[@]}"; do
         echo "Waiting for $container container to be healthy..."
+        sleep 10
         ok=false
         while [[ "$ok" = false ]]; do
             status=$(docker-compose ps | grep "$container")

@@ -44,6 +44,7 @@ class DatedModel(Model):
         max_length=100,
         null=True,
         blank=True,
+        editable=False,
         verbose_name=_('date string'),
     )
     date_string.admin_order_field = 'date'  # type: ignore

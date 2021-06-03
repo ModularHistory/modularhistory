@@ -5,6 +5,7 @@ from django.contrib.admin.filters import ListFilter
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from apps.admin import TabularInline, admin_site
+from apps.admin.inlines import StackedInline
 from apps.search.admin import SearchableModelAdmin
 from apps.sources import models
 from apps.sources.admin.filters import AttributeeFilter, HasContainerFilter
@@ -165,7 +166,24 @@ class TextualSourceAdmin(SourceAdmin):
 class ArticleAdmin(TextualSourceAdmin):
     """Admin for articles."""
 
+    model = models.Article
+
     autocomplete_fields = SourceAdmin.autocomplete_fields + ['publication']
+
+
+class SectionsInline(StackedInline):
+
+    model = models.Section
+
+    fk_name = 'work'
+
+
+class BookAdmin(TextualSourceAdmin):
+    """Admin for books."""
+
+    model = models.Book
+
+    inlines = SourceAdmin.inlines + [SectionsInline]
 
 
 class SourcesInline(TabularInline):
@@ -229,7 +247,7 @@ admin_site.register(models.Source, PolymorphicSourceAdmin)
 
 admin_site.register(models.Affidavit, SourceAdmin)
 admin_site.register(models.Article, ArticleAdmin)
-admin_site.register(models.Book, TextualSourceAdmin)
+admin_site.register(models.Book, BookAdmin)
 admin_site.register(models.Correspondence, SourceAdmin)
 admin_site.register(models.Document, SourceAdmin)
 admin_site.register(models.Film, SourceAdmin)
