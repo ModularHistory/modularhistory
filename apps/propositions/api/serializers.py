@@ -15,6 +15,7 @@ class PropositionSerializer(ModelSerializer):
     slug = serpy.StrField()
     summary = serpy.StrField()
     elaboration = serpy.StrField()
+    dateString = serpy.StrField(attr='date_string')
     cachedImages = serpy.Field(attr='cached_images')
     primaryImage = serpy.Field(attr='primary_image')
     cachedCitations = serpy.Field(attr='cached_citations')
@@ -28,10 +29,10 @@ class PropositionSerializer(ModelSerializer):
 class OccurrenceSerializer(SearchableModelSerializer):
     """Serializer for occurrences."""
 
-    dateString = serpy.StrField(attr='date_string')
     summary = serpy.StrField()
     elaboration = serpy.StrField()
     postscript = serpy.StrField()
+    dateString = serpy.StrField(attr='date_string')
     cachedImages = serpy.Field(attr='cached_images')
     primaryImage = serpy.Field(attr='primary_image')
     cachedCitations = serpy.Field(attr='cached_citations')
