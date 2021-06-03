@@ -48,28 +48,31 @@ quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
 )
 
 
+def get_quote_fk(related_name: str) -> ManyToManyForeignKey:
+    """Return a foreign key field referencing a quote."""
+    return ManyToManyForeignKey(
+        to='quotes.Quote',
+        related_name=related_name,
+        verbose_name='quote',
+    )
+
+
 class Citation(AbstractCitation):
     """A relationship between a quote and a source."""
 
-    content_object = ManyToManyForeignKey(
-        to='quotes.Quote', related_name='citations', verbose_name='quote'
-    )
+    content_object = get_quote_fk(related_name='citations')
 
 
 class ImageRelation(AbstractImageRelation):
     """A relationship between a quote and an image."""
 
-    content_object = ManyToManyForeignKey(
-        to='quotes.Quote', related_name='_image_relations', verbose_name='quote'
-    )
+    content_object = get_quote_fk(related_name='_image_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
     """A relationship between a quote and another quote."""
 
-    content_object = ManyToManyForeignKey(
-        to='quotes.Quote', related_name='quote_relations', verbose_name='quote'
-    )
+    content_object = get_quote_fk(related_name='quote_relations')
 
 
 class Quote(
