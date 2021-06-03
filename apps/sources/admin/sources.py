@@ -2,7 +2,11 @@ import re
 from typing import TYPE_CHECKING, Sequence, Type, Union
 
 from django.contrib.admin.filters import ListFilter
-from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
+from polymorphic.admin import (
+    PolymorphicChildModelAdmin,
+    PolymorphicParentModelAdmin,
+    StackedPolymorphicInline,
+)
 
 from apps.admin import TabularInline, admin_site
 from apps.admin.inlines import StackedInline
@@ -176,6 +180,16 @@ class SectionsInline(StackedInline):
     model = models.Section
 
     fk_name = 'work'
+    exclude = SourceAdmin.exclude + [
+        'date',
+        'end_date',
+        'date_is_circa',
+        'location',
+        'release',
+        'original',
+    ]
+    readonly_fields = SourceAdmin.readonly_fields + ['source_ptr']
+    extra = 0
 
 
 class BookAdmin(TextualSourceAdmin):
