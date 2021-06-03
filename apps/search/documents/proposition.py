@@ -10,6 +10,8 @@ from apps.sources.models.source import Source
 
 @registry.register_document
 class PropositionDocument(Document):
+    """ElasticSearch document for propositions."""
+
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
         name = 'propositions'

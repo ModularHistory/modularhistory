@@ -9,7 +9,7 @@ from apps.topics.models.topic import Topic
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from apps.propositions.models.proposition import Proposition
+    from apps.propositions.models.proposition import PolymorphicProposition
 
 
 class TopicType(ModuleType):
@@ -27,6 +27,6 @@ class TopicType(ModuleType):
         return 'topics.topic'
 
     @staticmethod
-    def resolve_propositions(root: Topic, *args) -> 'QuerySet[Proposition]':
+    def resolve_propositions(root: Topic, *args) -> 'QuerySet[PolymorphicProposition]':
         """Return the value to be assigned to a proposition's `model` attribute."""
         return root.polymorphicproposition_set.all()

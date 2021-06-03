@@ -3,13 +3,14 @@ from django_elasticsearch_dsl.registries import registry
 
 from apps.images.models import Image
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
-from core.constants.content_types import ContentTypes
 
 from .base import Document
 
 
 @registry.register_document
 class ImageDocument(Document):
+    """ElasticSearch document for images."""
+
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
         name = 'images'

@@ -20,9 +20,11 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
     """
 
     def __init__(self):
+        """Construct the filter backend."""
         self.view = None
 
     def filter_queryset(self, request, queryset, view):
+        """Return the filtered queryset."""
         self.view = view
         return list(map(self.apply_meta, queryset))
 
@@ -46,6 +48,7 @@ class SortByFilterBackend(filters.BaseFilterBackend):
     """Filter that sorts queryset by SORT_BY_PARAM."""
 
     def filter_queryset(self, request, queryset, view):
+        """Return the filtered queryset."""
         sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
         score_sortable = (view.search._response.hits.max_score or 0) > 0
 

@@ -7,7 +7,7 @@ export default function ImageCard({ image, ...childProps }) {
     <ModuleCard module={image} className={"image-card"} style={style} {...childProps}>
       {image.captionHtml && (
         <>
-          <HTMLEllipsis unsafeHTML={image.captionHtml} maxLine="3" basedOn="words" trimRight />
+          <HTMLEllipsis unsafeHTML={image.captionHtml} maxLine="3" basedOn="words" />
           {image.providerString && (
             <div className="image-credit float-right">
               <p>{image.providerString}</p>

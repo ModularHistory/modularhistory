@@ -5,13 +5,14 @@ from apps.entities.models.entity import Entity
 from apps.quotes.models.quote import Quote
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
 from apps.sources.models.source import Source
-from core.constants.content_types import ContentTypes
 
 from .base import Document
 
 
 @registry.register_document
 class QuoteDocument(Document):
+    """ElasticSearch document for quotes."""
+
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
         name = 'quotes'

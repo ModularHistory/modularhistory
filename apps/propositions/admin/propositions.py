@@ -64,5 +64,5 @@ class PolymorphicPropositionAdmin(AbstractPropositionAdmin):
 
 
 admin_site.register(models.PolymorphicProposition, PolymorphicPropositionAdmin)
-admin_site.register(models.Proposition, PolymorphicPropositionAdmin)
+admin_site.register(models.Conclusion, PolymorphicPropositionAdmin)
 admin_site.register(models.Occurrence, PolymorphicPropositionAdmin)

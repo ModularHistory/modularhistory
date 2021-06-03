@@ -3,13 +3,14 @@ from django_elasticsearch_dsl.registries import registry
 
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
 from apps.sources.models.source import Source
-from core.constants.content_types import ContentTypes
 
 from .base import Document
 
 
 @registry.register_document
 class SourceDocument(Document):
+    """ElasticSearch document for sources."""
+
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
         name = 'sources'

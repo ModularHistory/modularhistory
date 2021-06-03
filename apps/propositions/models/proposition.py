@@ -272,7 +272,7 @@ class PolymorphicProposition(  # noqa: WPS215
         return dedupe_newlines(placeholder)
 
 
-class PropositionManager(Manager):
+class ConclusionManager(Manager):
     """Manager for propositions."""
 
     def get_queryset(self) -> 'QuerySet':
@@ -280,10 +280,10 @@ class PropositionManager(Manager):
         return super().get_queryset().filter(type='propositions.proposition')
 
 
-class Proposition(PolymorphicProposition):
+class Conclusion(PolymorphicProposition):
     """A proposition."""
 
     class Meta:
         proxy = True
 
-    objects = PropositionManager()
+    objects = ConclusionManager()

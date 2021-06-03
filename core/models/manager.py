@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class Manager(ModelManager):
     """Base manager for ModularHistory's models."""
 
-    def get_by_natural_key(self, *args):
+    def get_by_natural_key(self, *args) -> 'Model':
         """Retrieve a model instance by its natural key."""
         fields = self.model.natural_key_fields
         natural_key = {}
@@ -32,7 +32,7 @@ class Manager(ModelManager):
         self,
         datetime_value: Union[date, datetime, HistoricDateTime],
         datetime_attr: str = 'date',
-    ) -> Optional['Model']:
+    ) -> 'Model':
         """Return the model instance closest to the specified datetime_value."""
         qs = self.get_queryset()
         greater = qs.filter(date__gte=datetime_value).order_by(datetime_attr).first()

@@ -18,20 +18,22 @@ class ModelNameSet(Constant):
     topic = 'topic'
     fact = 'fact'
     proposition = 'proposition'
+    conclusion = 'conclusion'
 
 
 class ContentTypes(Constant):
     """Content type name constants (to avoid magic strings)."""
 
     citation = 'sources.citation'
+    conclusion = 'propositions.conclusion'
     entity = 'entities.entity'
     image = 'images.image'
     occurrence = 'propositions.occurrence'
     place = 'places.place'
+    proposition = 'propositions.proposition'
     quote = 'quotes.quote'
     source = 'sources.source'
     topic = 'topics.topic'
-    proposition = 'propositions.proposition'
 
 
 MODEL_CLASS_PATHS = {
@@ -39,10 +41,11 @@ MODEL_CLASS_PATHS = {
     ModelNameSet.entity: 'apps.entities.models.Entity',
     ModelNameSet.image: 'apps.images.models.Image',
     ModelNameSet.occurrence: 'apps.propositions.models.Occurrence',
+    ModelNameSet.proposition: 'apps.propositions.models.Proposition',
     ModelNameSet.place: 'apps.places.models.Place',
     ModelNameSet.quote: 'apps.quotes.models.Quote',
     ModelNameSet.source: 'apps.sources.models.Source',
-    ModelNameSet.proposition: 'apps.propositions.models.Proposition',
+    ModelNameSet.conclusion: 'apps.propositions.models.Conclusion',
 }
 
 

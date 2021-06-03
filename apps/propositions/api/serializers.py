@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 import serpy
 
 from apps.search.api.serializers import SearchableModelSerializer
 from core.models.model import ModelSerializer
+
+if TYPE_CHECKING:
+    from apps.propositions.models import Occurrence
 
 
 class PropositionSerializer(ModelSerializer):
@@ -32,6 +37,6 @@ class OccurrenceSerializer(SearchableModelSerializer):
     cachedCitations = serpy.Field(attr='cached_citations')
     tagsHtml = serpy.StrField(attr='tags_html')
 
-    def get_model(self, instance) -> str:  # noqa
+    def get_model(self, instance: 'Occurrence') -> str:
         """Return the model name of the instance."""
         return 'propositions.occurrence'

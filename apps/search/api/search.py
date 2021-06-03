@@ -1,6 +1,6 @@
 import logging
 from itertools import chain
-from typing import Optional
+from typing import TYPE_CHECKING, Optional, Sequence
 
 from elasticsearch_dsl import Search as DSLSearch
 
@@ -10,6 +10,10 @@ from apps.search.documents.occurrence import OccurrenceDocument
 from apps.search.documents.proposition import PropositionDocument
 from apps.search.documents.quote import QuoteDocument
 from apps.search.documents.source import SourceDocument
+
+if TYPE_CHECKING:
+    from core.models.model import Model
+
 
 SEARCHABLE_DOCUMENTS = {
     OccurrenceDocument.get_index_name(): OccurrenceDocument,
@@ -25,8 +29,8 @@ class Search(DSLSearch):
     results_count: int
     results_by_id: Optional[dict]
 
-    def to_queryset(self, view):
-        """Resolve elasticsearch results to django models."""
+    def to_queryset(self, view) -> Sequence['Model']:
+        """Resolve results from ElasticSearch to Django model instances."""
         response = self
 
         # Do not query again if the es result is already cached

@@ -8,9 +8,7 @@ export default function ModuleUnionCard({ module, ...childProps }) {
   switch (module.model) {
     case "images.image":
       // return <ImageCard image={module} {...childProps} />;
-      content = (
-        <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" trimRight />
-      );
+      content = <HTMLEllipsis unsafeHTML={module.captionHtml} maxLine="3" basedOn="words" />;
       break;
     case "propositions.occurrence":
       content = <div dangerouslySetInnerHTML={{ __html: module.summary }} />;

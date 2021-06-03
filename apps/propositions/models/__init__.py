@@ -4,10 +4,10 @@ from .argument import Argument
 from .occurrence import Occurrence
 from .proposition import (
     Citation,
+    Conclusion,
     ImageRelation,
     Location,
     PolymorphicProposition,
-    Proposition,
     QuoteRelation,
 )
 from .support import ArgumentSupport
