@@ -34,10 +34,15 @@ class LifespanApp:
         if self.scope['type'] == 'lifespan':
             while True:
                 message = await receive()
-                if message['type'] == 'lifespan.startup':
-                    await send({'type': 'lifespan.startup.complete'})
-                elif message['type'] == 'lifespan.shutdown':
-                    await send({'type': 'lifespan.shutdown.complete'})
+                message_type = message['type']
+                try:
+                    stage = message_type.split('.')[1]
+                except IndexError:
+                    continue
+                if stage not in ('startup', 'shutdown'):
+                    continue
+                await send({'type': f'lifespan.{stage}.complete'})
+                if stage == 'shutdown':
                     return
 
 
