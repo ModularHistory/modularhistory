@@ -40,7 +40,7 @@ class LifespanApp:
                     stage = message_type.split('.')[1]
                 except IndexError:
                     continue
-                if stage not in ('startup', 'shutdown'):
+                if stage not in {'startup', 'shutdown'}:
                     continue
                 await send({'type': f'lifespan.{stage}.complete'})
                 if stage == 'shutdown':
