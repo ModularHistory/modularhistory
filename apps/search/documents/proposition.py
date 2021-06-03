@@ -2,23 +2,22 @@ from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.entities.models.entity import Entity
-from apps.quotes.models.quote import Quote
+from apps.propositions.models.proposition import PolymorphicProposition
+from apps.search.documents.base import Document
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
 from apps.sources.models.source import Source
-from core.constants.content_types import ContentTypes
-
-from .base import Document
 
 
 @registry.register_document
-class QuoteDocument(Document):
+class PropositionDocument(Document):
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
-        name = 'quotes'
+        name = 'propositions'
 
-    text = fields.TextField(analyzer=html_field_analyzer)
-    context = fields.TextField(analyzer=html_field_analyzer)
-    attributees = fields.ObjectField(
+    title = fields.TextField(analyzer=html_field_analyzer)
+    summary = fields.TextField(analyzer=html_field_analyzer)
+    elaboration = fields.TextField(analyzer=html_field_analyzer)
+    related_entities = fields.ObjectField(
         properties={
             'id': fields.IntegerField(),
             'name': fields.TextField(),
@@ -39,8 +38,8 @@ class QuoteDocument(Document):
     )
 
     class Django:
-        model = Quote
+        model = PolymorphicProposition
         related_models = [Source, Entity]
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('attributees', 'sources', 'topics')
+        return super().get_queryset().prefetch_related('related_entities', 'sources', 'tags')

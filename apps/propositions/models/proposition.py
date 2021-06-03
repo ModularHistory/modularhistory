@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Match, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Manager
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -38,6 +37,7 @@ from core.fields.html_field import (
     PlaceholderGroups,
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
+from core.models.manager import Manager
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
 
@@ -178,10 +178,10 @@ class PolymorphicProposition(  # noqa: WPS215
     searchable_fields = [
         'title',
         'summary',
+        'tags__key',
         'elaboration',
         'related_entities__name',
         'related_entities__aliases',
-        'tags__key',
         'tags__aliases',
     ]
     serializer = PropositionSerializer

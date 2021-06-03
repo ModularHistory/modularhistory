@@ -1,13 +1,13 @@
 from typing import TYPE_CHECKING, Optional
 
 from django.core.exceptions import ValidationError
-from django.db.models import Manager
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.propositions.api.serializers import OccurrenceSerializer
 from apps.propositions.models.proposition import PolymorphicProposition
+from core.models.manager import Manager
 from core.utils.html import soupify
 
 if TYPE_CHECKING:

@@ -1,17 +1,17 @@
 import ModuleUnionCard from "@/components/cards/ModuleUnionCard";
 import ModuleDetail from "@/components/details/ModuleDetail";
+import ModuleModal from "@/components/details/ModuleModal";
 import Layout from "@/components/Layout";
 import Pagination from "@/components/Pagination";
 import SearchForm from "@/components/search/SearchForm";
+import { ModuleUnion } from "@/interfaces";
 import { Container, Drawer, useMediaQuery } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import axios from "axios";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import qs from "qs";
 import { FC, useCallback, useEffect, useState } from "react";
-import { ModuleUnion } from "@/interfaces";
-import ModuleModal from "@/components/details/ModuleModal";
-import { GetServerSideProps } from "next";
 
 function useTwoPaneState() {
   // This hook is used to track which card in the left pane
@@ -158,7 +158,7 @@ const Search: FC<SearchProps> = ({ searchResults }: SearchProps) => {
                   className="result 2pane-result"
                   data-href={module.absoluteUrl}
                   data-key={module.slug}
-                  key={module.absoluteUrl}
+                  key={module.slug}
                   data-index={index}
                   onClick={selectModule}
                 >

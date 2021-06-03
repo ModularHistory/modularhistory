@@ -7,11 +7,13 @@ from elasticsearch_dsl import Search as DSLSearch
 from apps.search.documents.entity import EntityDocument
 from apps.search.documents.image import ImageDocument
 from apps.search.documents.occurrence import OccurrenceDocument
+from apps.search.documents.proposition import PropositionDocument
 from apps.search.documents.quote import QuoteDocument
 from apps.search.documents.source import SourceDocument
 
 SEARCHABLE_DOCUMENTS = {
     OccurrenceDocument.get_index_name(): OccurrenceDocument,
+    PropositionDocument.get_index_name(): PropositionDocument,
     SourceDocument.get_index_name(): SourceDocument,
     EntityDocument.get_index_name(): EntityDocument,
     QuoteDocument.get_index_name(): QuoteDocument,
@@ -54,9 +56,7 @@ class Search(DSLSearch):
         for index, result_group in result_groups.items():
             document = SEARCHABLE_DOCUMENTS.get(index)
             if not document:
-                logging.error(
-                    f"Couldn't find document definition for this index = {index}"
-                )
+                logging.error(f"Couldn't find document definition for this index = {index}")
                 continue
 
             model = document.django.model

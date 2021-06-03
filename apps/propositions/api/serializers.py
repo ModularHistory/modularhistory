@@ -10,6 +10,10 @@ class PropositionSerializer(ModelSerializer):
     slug = serpy.StrField()
     summary = serpy.StrField()
     elaboration = serpy.StrField()
+    cachedImages = serpy.Field(attr='cached_images')
+    primaryImage = serpy.Field(attr='primary_image')
+    cachedCitations = serpy.Field(attr='cached_citations')
+    tagsHtml = serpy.StrField(attr='tags_html')
 
     def get_model(self, instance) -> str:
         """Return the model name of serialized propositions."""
@@ -30,4 +34,4 @@ class OccurrenceSerializer(SearchableModelSerializer):
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
-        return 'occurrences.occurrence'
+        return 'propositions.occurrence'

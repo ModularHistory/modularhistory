@@ -26,7 +26,7 @@ class ContentTypes(Constant):
     citation = 'sources.citation'
     entity = 'entities.entity'
     image = 'images.image'
-    occurrence = 'occurrences.occurrence'
+    occurrence = 'propositions.occurrence'
     place = 'places.place'
     quote = 'quotes.quote'
     source = 'sources.source'
@@ -54,8 +54,6 @@ def get_ct_id(ct_name: str) -> int:
         ct_id = cached_ct_id
     else:
         app_label, model = ct_name.split('.')
-        ct_id = ContentType.objects.get_by_natural_key(
-            app_label=app_label, model=model
-        ).id
+        ct_id = ContentType.objects.get_by_natural_key(app_label=app_label, model=model).id
         cache.set(cache_key, ct_id, timeout=None)
     return ct_id

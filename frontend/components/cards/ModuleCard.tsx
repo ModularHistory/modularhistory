@@ -144,7 +144,11 @@ const ModuleCard: FC<ModuleCardProps> = ({
     bgImage = module;
   }
   return (
-    <Card className={`m-2 ${classes.card} ${className || ""}`} style={style}>
+    <Card
+      className={`m-2 ${classes.card} ${className || ""}`}
+      style={style}
+      data-type={module.model}
+    >
       {false && process.env.ENVIRONMENT != "prod" && !module.verified && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED

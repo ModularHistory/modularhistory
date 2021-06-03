@@ -42,7 +42,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     case "images.image":
       details = <ImageDetail image={module as Image} />;
       break;
-    case "occurrences.occurrence":
+    case "propositions.occurrence":
       details = <OccurrenceDetail occurrence={module as Occurrence} />;
       break;
     case "propositions.proposition":

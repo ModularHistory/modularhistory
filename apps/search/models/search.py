@@ -9,7 +9,7 @@ from apps.dates.fields import HistoricDateTimeField
 from core.models.model import Model
 
 CONTENT_TYPE_OPTIONS: list[tuple[str, str]] = [
-    ('occurrences.occurrence', 'Occurrences'),
+    ('propositions.occurrence', 'Occurrences'),
     ('quotes.quote', 'Quotes'),
     ('images.image', 'Images'),
     ('sources.source', 'Sources'),
@@ -45,9 +45,7 @@ class UserSearch(Model):
 class Search(Model):
     """A search."""
 
-    query = models.CharField(
-        verbose_name=_('query'), max_length=100, null=True, blank=True
-    )
+    query = models.CharField(verbose_name=_('query'), max_length=100, null=True, blank=True)
     ordering = models.CharField(max_length=10, choices=ORDERING_OPTIONS)
     start_year = HistoricDateTimeField(null=True, blank=True)
     end_year = HistoricDateTimeField(null=True, blank=True)

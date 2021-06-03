@@ -1,3 +1,4 @@
+import logging
 import re
 from typing import Mapping, Optional, Type, Union
 
@@ -6,7 +7,6 @@ from django.conf import settings
 from django.contrib.admin import ListFilter
 from django.contrib.admin import ModelAdmin as BaseModelAdmin
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.sites.models import Site
 from django.db.models import Model
 from django.db.models.fields import Field
@@ -83,35 +83,24 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         return list(set(readonly_fields))
 
     def get_search_results(
-        self, request: HttpRequest, queryset: QuerySet, search_term: str
+        self, request: HttpRequest, queryset: QuerySet, search_term: str = ''
     ) -> tuple[QuerySet, bool]:
         """Return model instances matching the supplied search term."""
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         search_term = search_term.strip()
-        if search_term:
-            searchable_fields = (
-                getattr(self.model, 'searchable_fields', None) or self.search_fields
+        searchable_fields = (
+            getattr(self.model, 'searchable_fields', None) or self.search_fields
+        )
+        try:
+            queryset, use_distinct = (
+                self.model.objects.search(search_term, fields=searchable_fields),
+                False,
             )
-            if searchable_fields:
-                # Use Postgres full-text search.
-                weights = ['A', 'B', 'C', 'D']
-                vector = SearchVector(searchable_fields[0], weight=weights[0])
-                for index, field in enumerate(searchable_fields[1:]):
-                    try:
-                        weight = weights[index + 1]
-                    except IndexError:
-                        weight = 'D'
-                    vector += SearchVector(field, weight=weight)
-                search_terms = search_term.split(' ')
-                # https://www.postgresql.org/docs/current/functions-textsearch.html
-                query = f'{" & ".join(search_terms)}:*'
-                queryset = (
-                    self.model.objects.annotate(
-                        rank=SearchRank(vector, SearchQuery(query, search_type='raw'))
-                    )
-                    .filter(rank__gt=0)
-                    .order_by('-rank')
-                )
+        except AttributeError as err:
+            logging.error(err)
+            queryset, use_distinct = super().get_search_results(
+                request, queryset, search_term
+            )
         # If the request comes from the admin edit page for a model instance,
         # exclude the model instance from the search results. This prevents
         # inline admins from displaying an unwanted value in an autocomplete
