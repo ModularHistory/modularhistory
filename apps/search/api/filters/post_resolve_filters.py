@@ -1,12 +1,15 @@
 import logging
 from datetime import datetime
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from rest_framework import filters
 
 from apps.dates.structures import HistoricDateTime
 from apps.search.api.search import SEARCHABLE_DOCUMENTS
 from apps.search.models import SearchableDatedModel
+
+if TYPE_CHECKING:
+    from core.models.model import Model
 
 SORT_BY_PARAM = 'ordering'
 
@@ -28,20 +31,21 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
         self.view = view
         return list(map(self.apply_meta, queryset))
 
-    def apply_meta(self, model):
+    def apply_meta(self, model_instance: 'Model'):
+        """Attach search result meta info to a model instance."""
         document = next(
             (
                 document
                 for document in SEARCHABLE_DOCUMENTS.values()
-                if isinstance(model, document.django.model)
+                if isinstance(model_instance, document.django.model)
             ),
             None,
         )
         index = document.get_index_name()
-        key = f'{index}_{model.pk}'
+        key = f'{index}_{model_instance.pk}'
         hit = self.view.search.results_by_id[key]
-        model.meta = hit.meta
-        return model
+        model_instance.meta = hit.meta
+        return model_instance
 
 
 class SortByFilterBackend(filters.BaseFilterBackend):
