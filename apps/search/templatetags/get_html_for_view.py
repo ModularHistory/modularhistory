@@ -26,7 +26,7 @@ def get_html_for_view(
             raise KeyError(f'{e} was not found in {model_instance}')
     elif isinstance(model_instance, Model):
         model_name = f'{model_instance.__class__.__name__}'.lower()
-        app_name = model_instance.__class__.get_meta().app_label
+        app_name = model_instance.__class__._meta.app_label
     else:
         raise ValueError(
             'When rendering HTML for a serialized model instance, `template_name` '

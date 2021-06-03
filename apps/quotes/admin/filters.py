@@ -29,7 +29,7 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
     field_name = 'attributee_categories'
 
     _parameter_name = 'attributees__categories__pk__exact'
-    _rel = Entity.categories.through.get_meta().get_field('category').remote_field
+    _rel = Entity.categories.through._meta.get_field('category').remote_field
     m2m_cls = Category
 
     def __init__(self, request, query_params, model, model_admin):
@@ -40,9 +40,7 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
             if self.parameter_name is None:
                 self.parameter_name = self.field_name
                 if self.use_pk_exact:
-                    self.parameter_name = (
-                        f'{self.parameter_name}__{self.field_pk}__exact'
-                    )
+                    self.parameter_name = f'{self.parameter_name}__{self.field_pk}__exact'
             super(BaseAutocompleteFilter, self).__init__(
                 request, query_params, model, model_admin
             )

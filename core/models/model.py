@@ -66,15 +66,6 @@ class Model(DjangoModel):
         """Return a list of fields that can be used to search for instances of the model."""
         return cls.searchable_fields or []
 
-    @classmethod
-    def get_meta(cls):
-        """
-        Return the model's _meta attribute value.
-
-        This is used purely to avoid warnings about accessing a private attribute.
-        """
-        return cls._meta
-
     @property
     def admin_url(self) -> str:
         """Return the model instance's admin URL."""
@@ -227,7 +218,7 @@ class ModelSerializer(serpy.Serializer):
     id = serpy.IntField()
     model = serpy.MethodField()
 
-    def get_model(self, instance: Model) -> str:  # noqa
+    def get_model(self, instance: Model) -> str:
         """Return the model name of the instance."""
         model_cls: Type['Model'] = instance.__class__
-        return f'{model_cls.get_meta().app_label}.{model_cls.__name__.lower()}'
+        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'

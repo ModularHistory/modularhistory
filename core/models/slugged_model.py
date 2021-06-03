@@ -40,7 +40,7 @@ class SluggedModel(Model):
     def get_absolute_url(self):
         """Return the URL for the model instance detail page."""
         slug = getattr(self, 'slug', None)
-        return f'/{self.get_meta().app_label}/{slug or self.pk}'
+        return f'/{self._meta.app_label}/{slug or self.pk}'
 
     @property
     def absolute_url(self) -> str:

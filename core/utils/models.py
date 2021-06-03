@@ -20,7 +20,7 @@ def get_html_for_view(
     if isinstance(model_instance, dict):
         app_name, model_name = model_instance['model'].split('.')
     else:
-        app_name = model_instance.__class__.get_meta().app_label
+        app_name = model_instance.__class__._meta.app_label
         model_name = model_instance.__class__.__name__.lower()
     template_directory_name = app_name
     template_name = f'{template_directory_name}/_{template_name}.html'

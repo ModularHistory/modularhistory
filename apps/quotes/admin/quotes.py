@@ -103,7 +103,7 @@ class QuoteAdmin(SearchableModelAdmin):
         """
         qs = models.Quote.objects.prefetch_related('attributees', 'tags')
         ordering = self.get_ordering(request)
-        if ordering and ordering != models.Quote.get_meta().ordering:
+        if ordering and ordering != models.Quote._meta.ordering:
             qs = qs.order_by(*ordering)
         return qs
 
