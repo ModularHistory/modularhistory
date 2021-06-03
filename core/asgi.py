@@ -21,12 +21,32 @@ from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
 from apps.chat import routing  # noqa: E402
 from core.sentry import SentryMiddleware  # noqa: E402
 
+
+class LifespanApp:
+    """Temporary shim for https://github.com/django/channels/issues/1216."""
+
+    def __init__(self, scope):
+        """Construct the shim."""
+        self.scope = scope
+
+    async def __call__(self, receive, send):
+        """Respond to calls."""
+        if self.scope['type'] == 'lifespan':
+            while True:
+                message = await receive()
+                if message['type'] == 'lifespan.startup':
+                    await send({'type': 'lifespan.startup.complete'})
+                elif message['type'] == 'lifespan.shutdown':
+                    await send({'type': 'lifespan.shutdown.complete'})
+                    return
+
+
 application = SentryMiddleware(
     ProtocolTypeRouter(
         {
             'http': django_asgi_app,
-            'websocket': AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns))
-            # Just HTTP for now. (We can add other protocols later.)
+            'websocket': AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns)),
+            'lifespan': LifespanApp,
         }
     )
 )

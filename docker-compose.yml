@@ -21,9 +21,9 @@ services:
     healthcheck:
       test: celery -A core inspect ping -d celery@$$HOSTNAME
       timeout: 30s
-      interval: 20s
+      interval: 30s
       retries: 3
-      start_period: 15s
+      start_period: 20s
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
@@ -74,7 +74,7 @@ services:
       timeout: 7s
       interval: 30s
       retries: 2
-      start_period: 15s
+      start_period: 30s
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
