@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/3.0/howto/deployment/asgi/
 """
 
 import os
+from typing import Callable
 
 from django.core.asgi import get_asgi_application
 
@@ -25,11 +26,11 @@ from core.sentry import SentryMiddleware  # noqa: E402
 class LifespanApp:
     """Temporary shim for https://github.com/django/channels/issues/1216."""
 
-    def __init__(self, scope):
+    def __init__(self, scope: dict):
         """Construct the shim."""
         self.scope = scope
 
-    async def __call__(self, receive, send):
+    async def __call__(self, receive: Callable, send: Callable):
         """Respond to calls."""
         if self.scope['type'] == 'lifespan':
             while True:
