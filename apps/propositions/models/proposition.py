@@ -98,6 +98,8 @@ TYPE_CHOICES = (
 
 
 class OccurrenceType(models.TextChoices):
+    """Types of occurrences."""
+
     OCCURRENCE = 'occurrence', _('Occurrence')
     BIRTH = 'birth', _('Birth')
     DEATH = 'death', _('Death')

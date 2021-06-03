@@ -5,6 +5,7 @@ import regex as re
 from aenum import Constant
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import TextField
+from django.forms.renderers import BaseRenderer
 from django.forms.widgets import Textarea
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeText, mark_safe
@@ -118,7 +119,11 @@ class TrumbowygWidget(Textarea):
         js = ['//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/trumbowyg.min.js']
 
     def render(
-        self, name: str, value: str, attrs: dict = None, renderer: Type = None
+        self,
+        name: str,
+        value: str,
+        attrs: Optional[dict] = None,
+        renderer: Optional[BaseRenderer] = None,
     ) -> SafeText:
         """Render the widget."""
         output = super().render(name, value, attrs)
