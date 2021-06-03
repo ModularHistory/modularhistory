@@ -8,7 +8,7 @@ class CustomManyToManyField(models.ManyToManyField):
     """A field for an m2m relationship with a specific target model."""
 
     target_model: Union[str, Type[models.Model]]
-    through_model: Union[str, Type[models.Model]]
+    through_model_base = Union[str, Type[models.Model]]
 
     def __init__(self, **kwargs):
         """Construct the field."""
@@ -31,6 +31,6 @@ class CustomManyToManyField(models.ManyToManyField):
                 )
         else:
             through_class = through
-        if not issubclass(through_class, self.through_model):
-            raise TypeError(f'{through} does not inherit from {self.through_model}.')
+        if not issubclass(through_class, self.through_model_base):
+            raise TypeError(f'{through} does not inherit from {self.through_model_base}.')
         super().__init__(**kwargs)

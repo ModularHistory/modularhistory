@@ -14,7 +14,11 @@ from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime as DateTime
 from apps.entities.api.serializers import EntitySerializer
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.images.models.model_with_images import ModelWithImages
+from apps.images.models.model_with_images import (
+    AbstractImageRelation,
+    ImagesField,
+    ModelWithImages,
+)
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -42,6 +46,14 @@ PARTS_OF_SPEECH = (
     ('adj', 'adjective'),
     ('any', 'noun / adjective'),
 )
+
+
+class ImageRelation(AbstractImageRelation):
+    """A relation of an image to an entity."""
+
+    content_object = ManyToManyForeignKey(
+        to='entities.Entity', related_name='_image_relations', verbose_name='entity'
+    )
 
 
 class QuoteRelation(AbstractQuoteRelation):
@@ -103,9 +115,10 @@ class Entity(
     images = models.ManyToManyField(
         to='images.Image',
         through='entities.EntityImage',
-        related_name='entities',
+        related_name='_entities',
         blank=True,
     )
+    _images = ImagesField(through=ImageRelation)
     affiliated_entities = models.ManyToManyField(
         to='self', through='entities.Affiliation', blank=True
     )

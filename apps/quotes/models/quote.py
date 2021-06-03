@@ -11,7 +11,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.images.models.model_with_images import ModelWithImages
+from apps.images.models.model_with_images import (
+    AbstractImageRelation,
+    ImagesField,
+    ModelWithImages,
+)
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -45,15 +49,23 @@ quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
 
 
 class Citation(AbstractCitation):
-    """A relation between a quote and a source."""
+    """A relationship between a quote and a source."""
 
     content_object = ManyToManyForeignKey(
         to='quotes.Quote', related_name='citations', verbose_name='quote'
     )
 
 
+class ImageRelation(AbstractImageRelation):
+    """A relationship between a quote and an image."""
+
+    content_object = ManyToManyForeignKey(
+        to='quotes.Quote', related_name='_image_relations', verbose_name='quote'
+    )
+
+
 class QuoteRelation(AbstractQuoteRelation):
-    """A relation between a quote and a quote."""
+    """A relationship between a quote and another quote."""
 
     content_object = ManyToManyForeignKey(
         to='quotes.Quote', related_name='quote_relations', verbose_name='quote'
@@ -102,6 +114,7 @@ class Quote(
         related_name='quotes',
         blank=True,
     )
+    _images = ImagesField(through=ImageRelation)
     sources = SourcesField(through=Citation, related_name='quotes')
     related_quotes = RelatedQuotesField(
         through=QuoteRelation,

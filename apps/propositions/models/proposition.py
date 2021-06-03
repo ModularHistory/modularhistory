@@ -12,7 +12,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.models import DatedModel
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.images.models.model_with_images import ModelWithImages
+from apps.images.models.model_with_images import (
+    AbstractImageRelation,
+    ImagesField,
+    ModelWithImages,
+)
 from apps.places.models.model_with_locations import (
     AbstractLocationRelation,
     LocationsField,
@@ -78,6 +82,12 @@ class Location(AbstractLocationRelation):
     """A relationship between a proposition and a place."""
 
     content_object = get_proposition_fk(related_name='location_relations')
+
+
+class ImageRelation(AbstractImageRelation):
+    """A relationship between a proposition and an image."""
+
+    content_object = get_proposition_fk(related_name='image_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
@@ -155,6 +165,7 @@ class PolymorphicProposition(  # noqa: WPS215
     arguments: 'RelatedManager[Argument]'
 
     locations = LocationsField(through=Location)
+    _images = ImagesField(through=ImageRelation)
     related_quotes = RelatedQuotesField(
         through=QuoteRelation,
         related_name='propositions',

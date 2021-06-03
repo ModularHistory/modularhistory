@@ -38,7 +38,7 @@ class RelatedQuotesField(CustomManyToManyField):
     """Custom field for related quotes."""
 
     target_model = 'quotes.Quote'
-    through_model = AbstractQuoteRelation
+    through_model_base = AbstractQuoteRelation
 
     def __init__(self, through: Union[Type[AbstractQuoteRelation], str], **kwargs):
         """Construct the field."""

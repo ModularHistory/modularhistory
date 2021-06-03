@@ -208,11 +208,11 @@ class HTMLField(TextField):
         self.paragraphed = paragraphed
         super().__init__(**kwargs)
 
-    def clean(self, html_value: str, model_instance: 'Model') -> str:
+    def clean(self, html_value: str, model_instance: Optional['Model']) -> str:
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
         html = html.replace('{', '[').replace('}', ']')
-        if model_instance.pk:
+        if model_instance and model_instance.pk:
             html = model_instance.preprocess_html(html)
         # Update obj placeholders and reformat the HTML.
         try:

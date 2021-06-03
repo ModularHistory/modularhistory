@@ -43,7 +43,7 @@ class LocationsField(CustomManyToManyField):
     """Custom field for m2m relationship with locations."""
 
     target_model = 'places.Place'
-    through_model = AbstractLocationRelation
+    through_model_base = AbstractLocationRelation
 
     def __init__(self, through: Union[Type[AbstractLocationRelation], str], **kwargs):
         """Construct the field."""
@@ -91,7 +91,5 @@ class ModelWithLocations(Model):
         """Return a list of dictionaries representing the instance's locations."""
         return [
             location_relation.location.serialize()
-            for location_relation in self.location_relations.all().select_related(
-                'location'
-            )
+            for location_relation in self.location_relations.all().select_related('location')
         ]

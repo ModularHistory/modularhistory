@@ -20,7 +20,7 @@ class SourcesField(CustomManyToManyField):
     """Custom field for m2m relationship with sources."""
 
     target_model = 'sources.Source'
-    through_model = AbstractCitation
+    through_model_base = AbstractCitation
 
     def __init__(self, through: Union[Type[AbstractCitation], str], **kwargs):
         """Construct the field."""

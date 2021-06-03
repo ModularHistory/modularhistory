@@ -4,6 +4,7 @@ from .argument import Argument
 from .occurrence import Occurrence
 from .proposition import (
     Citation,
+    ImageRelation,
     Location,
     PolymorphicProposition,
     Proposition,

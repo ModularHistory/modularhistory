@@ -1,14 +1,52 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import Optional
+from typing import Optional, Type, Union
 
 from celery import shared_task
 from django.apps import apps
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from core.fields.custom_m2m_field import CustomManyToManyField
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
+from core.models.positioned_relation import PositionedRelation
+
+
+class AbstractImageRelation(PositionedRelation):
+    """
+    Abstract base model for image relations.
+
+    Models governing m2m relationships between `Image` and another model
+    should inherit from this abstract model.
+    """
+
+    image = ManyToManyForeignKey(
+        to='images.Image', related_name='_%(app_label)s_%(class)s_set'
+    )
+
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
+    class Meta:
+        abstract = True
+
+    def content_object(self) -> models.ForeignKey:
+        """Foreign key to the model that references the image."""
+        raise NotImplementedError
+
+
+class ImagesField(CustomManyToManyField):
+    """Custom field for m2m relationship with images."""
+
+    target_model = 'images.Image'
+    through_model_base = AbstractImageRelation
+
+    def __init__(self, through: Union[Type[AbstractImageRelation], str], **kwargs):
+        """Construct the field."""
+        kwargs['through'] = through
+        kwargs['verbose_name'] = _('images')
+        super().__init__(**kwargs)
 
 
 class ModelWithImages(Model):
@@ -21,17 +59,26 @@ class ModelWithImages(Model):
 
     images = SortedManyToManyField(
         to='images.Image',
-        related_name='%(class)s_set',
+        related_name='_%(class)s_set',
         blank=True,
         verbose_name=_('images'),
     )
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for ModelWithImages."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         abstract = True
+
+    @property
+    def _images(self) -> ImagesField:
+        """
+        Require implementation of an `images` field on inheriting models.
+
+        For example:
+        ``
+        images = ImagesField(through=ImageRelation)
+        ``
+        """
+        raise NotImplementedError
 
     @property
     def cached_images(self) -> list:
