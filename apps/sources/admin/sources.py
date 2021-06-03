@@ -2,11 +2,7 @@ import re
 from typing import TYPE_CHECKING, Sequence, Type, Union
 
 from django.contrib.admin.filters import ListFilter
-from polymorphic.admin import (
-    PolymorphicChildModelAdmin,
-    PolymorphicParentModelAdmin,
-    StackedPolymorphicInline,
-)
+from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from apps.admin import TabularInline, admin_site
 from apps.admin.inlines import StackedInline
@@ -176,6 +172,7 @@ class ArticleAdmin(TextualSourceAdmin):
 
 
 class SectionsInline(StackedInline):
+    """Inline admin for sections."""
 
     model = models.Section
 
