@@ -133,7 +133,6 @@ INSTALLED_APPS = [
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
-    'sortedm2m',  # https://github.com/jazzband/django-sortedm2m
     'typedmodels',  # https://github.com/craigds/django-typed-models
     # ---------------------------------
     # Elasticsearch

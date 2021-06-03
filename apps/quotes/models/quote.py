@@ -111,13 +111,7 @@ class Quote(
         blank=True,
         verbose_name=_('attributees'),
     )
-    images = models.ManyToManyField(
-        to='images.Image',
-        through='quotes.QuoteImage',
-        related_name='quotes',
-        blank=True,
-    )
-    _images = ImagesField(through=ImageRelation)
+    images = ImagesField(through=ImageRelation)
     sources = SourcesField(through=Citation, related_name='quotes')
     related_quotes = RelatedQuotesField(
         through=QuoteRelation,

@@ -165,7 +165,7 @@ class PolymorphicProposition(  # noqa: WPS215
     arguments: 'RelatedManager[Argument]'
 
     locations = LocationsField(through=Location)
-    _images = ImagesField(through=ImageRelation)
+    images = ImagesField(through=ImageRelation)
     related_quotes = RelatedQuotesField(
         through=QuoteRelation,
         related_name='propositions',

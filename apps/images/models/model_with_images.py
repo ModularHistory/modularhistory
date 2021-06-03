@@ -10,7 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.fields.sorted_m2m_field import SortedManyToManyField
 from core.models.model import Model
 from core.models.positioned_relation import PositionedRelation
 
@@ -56,13 +55,6 @@ class ModelWithImages(Model):
     Ideally, this class would be a mixin, but due to Django's model magic,
     it must be defined as an abstract model class.
     """
-
-    images = SortedManyToManyField(
-        to='images.Image',
-        related_name='_%(class)s_set',
-        blank=True,
-        verbose_name=_('images'),
-    )
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:

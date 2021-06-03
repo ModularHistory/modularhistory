@@ -112,13 +112,7 @@ class Entity(
         related_name='entities',
         blank=True,
     )
-    images = models.ManyToManyField(
-        to='images.Image',
-        through='entities.EntityImage',
-        related_name='_entities',
-        blank=True,
-    )
-    _images = ImagesField(through=ImageRelation)
+    images = ImagesField(through=ImageRelation)
     affiliated_entities = models.ManyToManyField(
         to='self', through='entities.Affiliation', blank=True
     )

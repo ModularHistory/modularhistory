@@ -7,7 +7,6 @@ import apps.dates.fields
 import core.fields
 import core.fields.html_field
 import core.fields.json_field
-import core.fields.sorted_m2m_field
 
 
 class Migration(migrations.Migration):
@@ -249,22 +248,20 @@ class Migration(migrations.Migration):
                 ),
                 (
                     'images',
-                    core.fields.sorted_m2m_field.SortedManyToManyField(
+                    models.ManyToManyField(
                         blank=True,
                         help_text=None,
                         related_name='polymorphicproposition_set',
-                        sort_value_field_name='position',
                         to='images.Image',
                         verbose_name='images',
                     ),
                 ),
                 (
                     'locations',
-                    core.fields.sorted_m2m_field.SortedManyToManyField(
+                    models.ManyToManyField(
                         blank=True,
                         help_text=None,
                         related_name='polymorphicproposition_set',
-                        sort_value_field_name='position',
                         to='places.Place',
                         verbose_name='locations',
                     ),

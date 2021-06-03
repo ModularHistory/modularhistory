@@ -7,6 +7,13 @@ import apps.images.models.model_with_images
 import core.fields.m2m_foreign_key
 
 
+def convert_data(apps, schema_editor):
+    Entity = apps.get_model('entities', 'Entity')
+    for entity in Entity.objects.all():
+        for i in entity.images.all():
+            entity._images.add(i)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -74,4 +81,5 @@ class Migration(migrations.Migration):
                 verbose_name='images',
             ),
         ),
+        migrations.RunPython(convert_data, migrations.RunPython.noop),
     ]

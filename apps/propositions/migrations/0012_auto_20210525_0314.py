@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 import apps.places.models.model_with_locations
 import core.fields.m2m_foreign_key
-import core.fields.sorted_m2m_field
 
 
 class Migration(migrations.Migration):
@@ -19,11 +18,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='polymorphicproposition',
             name='locations',
-            field=core.fields.sorted_m2m_field.SortedManyToManyField(
+            field=models.ManyToManyField(
                 blank=True,
                 help_text=None,
                 related_name='_polymorphicproposition_set',
-                sort_value_field_name='position',
                 to='places.Place',
                 verbose_name='locations',
             ),

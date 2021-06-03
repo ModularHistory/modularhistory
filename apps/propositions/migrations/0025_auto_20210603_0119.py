@@ -5,7 +5,13 @@ from django.db import migrations, models
 
 import apps.images.models.model_with_images
 import core.fields.m2m_foreign_key
-import core.fields.sorted_m2m_field
+
+
+def convert_data(apps, schema_editor):
+    Model = apps.get_model('propositions', 'PolymorphicProposition')
+    for instance in Model.objects.all():
+        for i in instance.images.all():
+            instance._images.add(i)
 
 
 class Migration(migrations.Migration):
@@ -19,11 +25,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='polymorphicproposition',
             name='images',
-            field=core.fields.sorted_m2m_field.SortedManyToManyField(
+            field=models.ManyToManyField(
                 blank=True,
                 help_text=None,
                 related_name='_polymorphicproposition_set',
-                sort_value_field_name='position',
                 to='images.Image',
                 verbose_name='images',
             ),
@@ -77,4 +82,5 @@ class Migration(migrations.Migration):
                 verbose_name='images',
             ),
         ),
+        migrations.RunPython(convert_data, migrations.RunPython.noop),
     ]
