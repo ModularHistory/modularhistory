@@ -14,11 +14,7 @@ from django.urls import reverse
 from django.utils.safestring import SafeString
 from rest_framework.serializers import Serializer
 
-from core.fields.html_field import (
-    OBJECT_PLACEHOLDER_REGEX,
-    TYPE_GROUP,
-    PlaceholderGroups,
-)
+from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.manager import Manager
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
@@ -94,9 +90,9 @@ class Model(DjangoModel):
         """Return the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
-            unique_together_is_valid = isinstance(
-                unique_together, (list, tuple)
-            ) and all(isinstance(field_name, str) for field_name in unique_together)
+            unique_together_is_valid = isinstance(unique_together, (list, tuple)) and all(
+                isinstance(field_name, str) for field_name in unique_together
+            )
             if not unique_together_is_valid:
                 raise ValueError(
                     'The `unique_together` value must be an iterable containing strings.'
@@ -176,9 +172,7 @@ class Model(DjangoModel):
     ) -> str:
         """Return a model instance's HTML based on a placeholder in the admin."""
         if not cls.get_admin_placeholder_regex().match(match.group(0)):
-            raise ValueError(
-                f'{match} does not match {cls.get_admin_placeholder_regex()}'
-            )
+            raise ValueError(f'{match} does not match {cls.get_admin_placeholder_regex()}')
 
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
