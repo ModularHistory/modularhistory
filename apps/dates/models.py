@@ -55,6 +55,22 @@ class DatedModel(Model):
 
         abstract = True
 
+    def save(self, *args, **kwargs):
+        """Save the entity to the database."""
+        self.date_string = self.get_date_string()
+        super().save(*args, **kwargs)
+
+    @property
+    def year_html(self) -> Optional[SafeString]:
+        """Return the HTML representation of the model instance's date's year."""
+        if not self.date:
+            return None
+        year_html = self.date.year_string
+        if self.date_is_circa and not self.date.month_is_known:
+            year_html = f'{CIRCA_PREFIX}{year_html}'
+            year_html = year_html.replace(f'{CIRCA_PREFIX}{CIRCA_PREFIX}', CIRCA_PREFIX)
+        return format_html(year_html)
+
     def get_date_string(self) -> str:
         """Return the string representation of the model instance's date."""
         date, date_string = self.get_date(), ''
@@ -76,17 +92,6 @@ class DatedModel(Model):
             if use_ce:
                 date_string = f'{date_string} CE'
         return date_string
-
-    @property
-    def year_html(self) -> Optional[SafeString]:
-        """Return the HTML representation of the model instance's date's year."""
-        if not self.date:
-            return None
-        year_html = self.date.year_string
-        if self.date_is_circa and not self.date.month_is_known:
-            year_html = f'{CIRCA_PREFIX}{year_html}'
-            year_html = year_html.replace(f'{CIRCA_PREFIX}{CIRCA_PREFIX}', CIRCA_PREFIX)
-        return format_html(year_html)
 
     def get_date(self) -> Optional[HistoricDateTime]:
         """

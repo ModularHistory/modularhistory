@@ -9,10 +9,9 @@ if TYPE_CHECKING:
     from apps.propositions.models import Occurrence
 
 
-class PropositionSerializer(ModelSerializer):
+class PropositionSerializer(SearchableModelSerializer):
     """Serializer for propositions."""
 
-    slug = serpy.StrField()
     summary = serpy.StrField()
     elaboration = serpy.StrField()
     dateString = serpy.StrField(attr='date_string')
@@ -26,17 +25,10 @@ class PropositionSerializer(ModelSerializer):
         return 'propositions.proposition'
 
 
-class OccurrenceSerializer(SearchableModelSerializer):
+class OccurrenceSerializer(PropositionSerializer):
     """Serializer for occurrences."""
 
-    summary = serpy.StrField()
-    elaboration = serpy.StrField()
     postscript = serpy.StrField()
-    dateString = serpy.StrField(attr='date_string')
-    cachedImages = serpy.Field(attr='cached_images')
-    primaryImage = serpy.Field(attr='primary_image')
-    cachedCitations = serpy.Field(attr='cached_citations')
-    tagsHtml = serpy.StrField(attr='tags_html')
 
     def get_model(self, instance: 'Occurrence') -> str:
         """Return the model name of the instance."""
