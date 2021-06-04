@@ -277,7 +277,7 @@ class ConclusionManager(Manager):
 
     def get_queryset(self) -> 'QuerySet':
         """Return the propositions of type `propositions.proposition`."""
-        return super().get_queryset().filter(type='propositions.proposition')
+        return super().get_queryset().filter(type='propositions.conclusion')
 
 
 class Conclusion(PolymorphicProposition):
