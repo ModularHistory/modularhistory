@@ -52,10 +52,10 @@ class AbstractPropositionAdmin(NestedModelAdmin, SearchableModelAdmin):
     list_per_page = 20
 
 
-class PolymorphicPropositionAdmin(AbstractPropositionAdmin):
+class PropositionAdmin(AbstractPropositionAdmin):
     """Admin for all propositions."""
 
-    model = models.PolymorphicProposition
+    model = models.Proposition
 
     list_display = AbstractPropositionAdmin.list_display + ['date_string', 'type']
     list_filter = AbstractPropositionAdmin.list_filter + ['type']
@@ -63,6 +63,6 @@ class PolymorphicPropositionAdmin(AbstractPropositionAdmin):
     search_fields = model.searchable_fields
 
 
-admin_site.register(models.PolymorphicProposition, PolymorphicPropositionAdmin)
-admin_site.register(models.Conclusion, PolymorphicPropositionAdmin)
-admin_site.register(models.Occurrence, PolymorphicPropositionAdmin)
+admin_site.register(models.Proposition, PropositionAdmin)
+admin_site.register(models.Conclusion, PropositionAdmin)
+admin_site.register(models.Occurrence, PropositionAdmin)

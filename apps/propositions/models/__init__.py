@@ -7,7 +7,7 @@ from .proposition import (
     Conclusion,
     ImageRelation,
     Location,
-    PolymorphicProposition,
+    Proposition,
     QuoteRelation,
 )
 from .support import ArgumentSupport

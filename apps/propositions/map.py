@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.contrib.sitemaps import Sitemap
 
-from apps.propositions.models import PolymorphicProposition
+from apps.propositions.models import Proposition
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -13,6 +13,6 @@ class PropositionSitemap(Sitemap):
 
     priority = 0.6
 
-    def items(self) -> 'QuerySet[PolymorphicProposition]':
+    def items(self) -> 'QuerySet[Proposition]':
         """Return the queryset of model instances to be included."""
-        return PolymorphicProposition.objects.filter(verified=True, hidden=False)
+        return Proposition.objects.filter(verified=True, hidden=False)

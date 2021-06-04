@@ -66,7 +66,7 @@ DEGREES_OF_CERTAINTY = (
 def get_proposition_fk(related_name: str) -> ManyToManyForeignKey:
     """Return a foreign key field referencing a proposition."""
     return ManyToManyForeignKey(
-        to='propositions.PolymorphicProposition',
+        to='propositions.Proposition',
         related_name=related_name,
         verbose_name='proposition',
     )
@@ -118,7 +118,7 @@ class OccurrenceType(models.TextChoices):
     PUBLICATION = 'publication', _('Publication')
 
 
-class PolymorphicProposition(  # noqa: WPS215
+class Proposition(  # noqa: WPS215
     SearchableModel,
     DatedModel,  # submodels like `Occurrence` require date
     ModelWithSources,
@@ -280,7 +280,7 @@ class ConclusionManager(Manager):
         return super().get_queryset().filter(type='propositions.proposition')
 
 
-class Conclusion(PolymorphicProposition):
+class Conclusion(Proposition):
     """A proposition."""
 
     class Meta:

@@ -55,7 +55,7 @@ class Speech(Source):
     )
 
     utterance = models.OneToOneField(
-        to='propositions.PolymorphicProposition',
+        to='propositions.Proposition',
         on_delete=models.PROTECT,
         related_name='speech',
         null=True,

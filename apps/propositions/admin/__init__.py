@@ -1,1 +1,1 @@
-from .propositions import PolymorphicPropositionAdmin
+from .propositions import PropositionAdmin

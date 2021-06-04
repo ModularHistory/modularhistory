@@ -17,31 +17,31 @@ if TYPE_CHECKING:
 class TagsInline(AbstractTagsInline, NestedTabularInline):
     """Inline admin for topic tags."""
 
-    model = models.PolymorphicProposition.tags.through
+    model = models.Proposition.tags.through
 
 
 class SourcesInline(AbstractSourcesInline, NestedTabularInline):
     """Inline admin for sources."""
 
-    model = models.PolymorphicProposition.sources.through
+    model = models.Proposition.sources.through
 
 
 class RelatedEntitiesInline(AbstractRelatedEntitiesInline, NestedTabularInline):
     """Inline admin for related entities."""
 
-    model = models.PolymorphicProposition.related_entities.through
+    model = models.Proposition.related_entities.through
 
 
 class ImagesInline(AbstractImagesInline, NestedTabularInline):
     """Inline admin for images."""
 
-    model = models.PolymorphicProposition.images.through
+    model = models.Proposition.images.through
 
 
 class LocationsInline(AbstractLocationsInline, NestedTabularInline):
     """Inline admin for locations."""
 
-    model = models.PolymorphicProposition.locations.through
+    model = models.Proposition.locations.through
 
 
 class PremisesInline(NestedTabularInline):
