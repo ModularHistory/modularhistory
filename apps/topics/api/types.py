@@ -22,7 +22,7 @@ class TopicType(ModuleType):
         exclude = []
 
     @staticmethod
-    def resolve_model(root, *args) -> str:
+    def resolve_model(root: Topic, *args) -> str:
         """Return the value to be assigned to a topic's `model` attribute."""
         return 'topics.topic'
 
