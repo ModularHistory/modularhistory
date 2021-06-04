@@ -17,21 +17,13 @@ containers=( "django" "celery_beat" "react" )
 for container in "${containers[@]}"; do
     docker-compose up -d "$container"
 done
+sleep 10
 healthy=false
 while [[ "$healthy" = false ]]; do
-    for container in "${containers[@]}"; do
-        echo "Waiting for $container container to be healthy..."
-        sleep 10
-        ok=false
-        while [[ "$ok" = false ]]; do
-            status=$(docker-compose ps | grep "$container")
-            echo "$status" | grep --quiet "starting" || ok=true
-            echo "$status" | grep --quiet "Up" || ok=false
-        done
-    done
-    docker-compose ps | grep "unhealthy" && healthy=false || healthy=true
+    healthy=true
+    [[ "$(docker-compose ps)" =~ (Exit|unhealthy|starting) ]] && healthy=false
+    if [[ "$healthy" = false ]]; then echo "Waiting for containers to be healthy..."; sleep 20; fi
 done
-docker-compose ps
 echo "Removing all images not used by existing containers... (https://docs.docker.com/config/pruning/#prune-images)"
 docker image prune -a -f
 docker system prune -f
