@@ -97,7 +97,7 @@ class QuoteRelation(AbstractQuoteRelation):
 
 
 TYPE_CHOICES = (
-    ('propositions.proposition', 'proposition'),
+    ('propositions.conclusion', 'conclusion'),
     ('propositions.occurrence', 'occurrence'),
     ('propositions.birth', 'birth'),
     ('propositions.death', 'death'),
