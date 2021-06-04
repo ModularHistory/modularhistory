@@ -239,7 +239,7 @@ class PolymorphicProposition(  # noqa: WPS215
             if preretrieved_html:
                 return str(preretrieved_html).strip()
         pk = int(match.group(PlaceholderGroups.PK))
-        proposition: Proposition = cls.objects.get(pk=pk)
+        proposition: PolymorphicProposition = cls.objects.get(pk=pk)
         return proposition.summary_link
 
     @classmethod
