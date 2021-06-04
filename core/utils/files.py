@@ -74,9 +74,7 @@ def sync(
     if storage_provider not in RcloneStorageProviders:  # type: ignore[operator]
         raise ValueError(f'Unknown storage provider: {storage_provider}')
     if storage_provider != RcloneStorageProviders.GOOGLE_DRIVE:
-        raise NotImplementedError(
-            f'Only {RcloneStorageProviders.GOOGLE_DRIVE} is supported.'
-        )
+        raise NotImplementedError(f'Only {RcloneStorageProviders.GOOGLE_DRIVE} is supported.')
     credentials = config('RCLONE_GDRIVE_SA_CREDENTIALS')
     local, remote = local_dir, f'{RcloneStorageProviders.GOOGLE_DRIVE}:{remote_dir}'
     if push:
@@ -120,7 +118,5 @@ def upload_to_mega(filepath: str, account: str = 'default'):
     logging.info(f'Upload result: {pformat(result)}')
     uploaded_file = mega_client.find(filename)
     if not uploaded_file:
-        raise Exception(
-            f'Could not find {filename} in Mega ({account}) after uploading.'
-        )
+        raise Exception(f'Could not find {filename} in Mega ({account}) after uploading.')
     return uploaded_file
