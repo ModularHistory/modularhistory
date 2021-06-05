@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='polymorphicproposition',
+            model_name='proposition',
             name='sources',
             field=apps.sources.models.model_with_sources.SourcesField(
                 blank=True,
@@ -32,11 +32,11 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicproposition',
+            model_name='proposition',
             name='tags',
             field=models.ManyToManyField(
                 blank=True,
-                related_name='polymorphicproposition_set',
+                related_name='proposition_set',
                 to='topics.Topic',
                 verbose_name='tags',
             ),
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             field=core.fields.m2m_foreign_key.ManyToManyForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='location_relations',
-                to='propositions.polymorphicproposition',
+                to='propositions.proposition',
                 verbose_name='proposition',
             ),
         ),
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
             field=core.fields.m2m_foreign_key.ManyToManyForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='image_relations',
-                to='propositions.polymorphicproposition',
+                to='propositions.proposition',
                 verbose_name='proposition',
             ),
         ),
@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
             field=core.fields.m2m_foreign_key.ManyToManyForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='citations',
-                to='propositions.polymorphicproposition',
+                to='propositions.proposition',
                 verbose_name='proposition',
             ),
         ),
@@ -113,7 +113,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='_argument_supports',
-                to='propositions.polymorphicproposition',
+                to='propositions.proposition',
             ),
         ),
         migrations.AddField(
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='arguments',
-                to='propositions.polymorphicproposition',
+                to='propositions.proposition',
                 verbose_name='conclusion',
             ),
         ),
@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(
                 related_name='supported_arguments',
                 through='propositions.ArgumentSupport',
-                to='propositions.PolymorphicProposition',
+                to='propositions.Proposition',
                 verbose_name='premises',
             ),
         ),
@@ -144,7 +144,7 @@ class Migration(migrations.Migration):
                 'indexes': [],
                 'constraints': [],
             },
-            bases=('propositions.polymorphicproposition',),
+            bases=('propositions.proposition',),
         ),
         migrations.CreateModel(
             name='Occurrence',
@@ -155,7 +155,7 @@ class Migration(migrations.Migration):
                 'indexes': [],
                 'constraints': [],
             },
-            bases=('propositions.polymorphicproposition',),
+            bases=('propositions.proposition',),
         ),
         migrations.AddConstraint(
             model_name='citation',

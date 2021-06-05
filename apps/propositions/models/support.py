@@ -10,7 +10,7 @@ class ArgumentSupport(PositionedRelation):
     """A support of an argument by a proposition."""
 
     premise = models.ForeignKey(
-        to='propositions.PolymorphicProposition',
+        to='propositions.Proposition',
         on_delete=models.CASCADE,
         related_name='_argument_supports',
     )

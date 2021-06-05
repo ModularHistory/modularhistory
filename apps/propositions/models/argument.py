@@ -20,7 +20,7 @@ class Argument(Model):
         null=True,
     )
     premises = models.ManyToManyField(
-        to='propositions.PolymorphicProposition',
+        to='propositions.Proposition',
         through='propositions.ArgumentSupport',
         through_fields=('argument', 'premise'),
         related_name='supported_arguments',
@@ -28,7 +28,7 @@ class Argument(Model):
         verbose_name=_('premises'),
     )
     conclusion = models.ForeignKey(
-        to='propositions.PolymorphicProposition',
+        to='propositions.Proposition',
         on_delete=models.CASCADE,
         related_name='arguments',
         verbose_name=_('conclusion'),

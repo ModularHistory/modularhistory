@@ -2,7 +2,7 @@ from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.entities.models.entity import Entity
-from apps.propositions.models.proposition import PolymorphicProposition
+from apps.propositions.models.proposition import Proposition
 from apps.search.documents.base import Document
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
 from apps.sources.models.source import Source
@@ -40,7 +40,7 @@ class PropositionDocument(Document):
     )
 
     class Django:
-        model = PolymorphicProposition
+        model = Proposition
         related_models = [Source, Entity]
 
     def get_queryset(self):

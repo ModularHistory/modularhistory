@@ -154,7 +154,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='PolymorphicProposition',
+            name='Proposition',
             fields=[
                 (
                     'id',
@@ -326,7 +326,7 @@ class Migration(migrations.Migration):
                     core.fields.m2m_foreign_key.ManyToManyForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='quote_relations',
-                        to='propositions.polymorphicproposition',
+                        to='propositions.proposition',
                         verbose_name='proposition',
                     ),
                 ),

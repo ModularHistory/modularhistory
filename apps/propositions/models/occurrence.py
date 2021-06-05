@@ -6,7 +6,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.propositions.api.serializers import OccurrenceSerializer
-from apps.propositions.models.proposition import PolymorphicProposition
+from apps.propositions.models.proposition import Proposition
 from core.models.manager import Manager
 from core.utils.html import soupify
 
@@ -28,7 +28,7 @@ class OccurrenceManager(Manager):
         return super().get_queryset().filter(type='propositions.occurrence')
 
 
-class Occurrence(PolymorphicProposition):
+class Occurrence(Proposition):
     """
     An occurrence, i.e., something that has happened.
 
