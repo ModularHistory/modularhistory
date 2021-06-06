@@ -32,7 +32,8 @@ class PropositionType(ModuleType):
 
     class Meta:
         model = Proposition
-        exclude = []
+        # https://github.com/graphql-python/graphene-django/issues/185
+        exclude = ['type']
 
     @staticmethod
     def resolve_arguments(root: Proposition, *args) -> 'QuerySet[Argument]':
