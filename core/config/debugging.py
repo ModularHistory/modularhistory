@@ -14,6 +14,7 @@ INTERNAL_IPS = ['127.0.0.1', '172.27.0.5']
 # https://github.com/jazzband/django-silk
 SILKY_PYTHON_PROFILER = True
 SILKY_ANALYZE_QUERIES = True
+SILKY_MAX_RECORDED_REQUESTS = 10000
 SILKY_AUTHENTICATION = True  # User must login.
 SILKY_AUTHORISATION = True  # User must have permissions.
 SILKY_PERMISSIONS = lambda user: user.is_superuser  # noqa: E731
