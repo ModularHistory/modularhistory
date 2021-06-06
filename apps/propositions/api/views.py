@@ -8,12 +8,14 @@ from apps.propositions.models import Proposition
 class PropositionViewSet(ModelViewSet):
     """API endpoint for viewing and editing propositions."""
 
-    queryset = Proposition.objects.all()
+    queryset = Proposition.objects.filter(type='propositions.conclusion')
     serializer_class = PropositionSerializer
 
 
 class PropositionListAPIView(ListAPIView):
     """API view for listing propositions."""
 
-    queryset = Proposition.objects.filter(hidden=False, verified=True)
+    queryset = Proposition.objects.filter(
+        type='propositions.conclusion', hidden=False, verified=True
+    )
     serializer_class = PropositionSerializer
