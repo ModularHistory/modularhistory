@@ -9,7 +9,7 @@ def fix_comma_positions(string: str) -> str:
 def components_to_string(components: Sequence[Optional[str]], delimiter: str = ', '):
     """Combine a sequence of HTML components into an HTML string."""
     # Remove blank values
-    components = [component for component in components if component]
+    components: list[str] = [component for component in components if component]
     # Join components; rearrange commas and double quotes
     return fix_comma_positions(delimiter.join(components))
 

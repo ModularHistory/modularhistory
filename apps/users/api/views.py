@@ -14,7 +14,6 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
-from graphql.error.located_error import GraphQLLocatedError
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request

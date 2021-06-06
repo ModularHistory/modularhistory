@@ -102,7 +102,7 @@ class Model(DjangoModel):
             'Model must have Meta.unique_together and/or `natural_key_fields` method defined.'
         )
 
-    def get_admin_url(self):
+    def get_admin_url(self) -> str:
         """Return the URL of the model instance's admin page."""
         model_name = (
             self._meta.model_name
@@ -134,7 +134,7 @@ class Model(DjangoModel):
             natural_key_values.append(value)
         return tuple(natural_key_values)
 
-    def preprocess_html(self, html: str):
+    def preprocess_html(self, html: str) -> str:
         """
         Preprocess the value of an HTML field belonging to the model instance.
 
