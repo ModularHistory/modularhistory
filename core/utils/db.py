@@ -72,7 +72,7 @@ def backup(
                     re.match(r'(.*DROP\ |--\n?$)', line),
                     # fmt: off
                     redact and not line.startswith(r'\.') and re.match(
-                        r'COPY public\.(users_user|.+user_id)', previous_line
+                        r'COPY public\.(users_user|.+user_id|silk_)', previous_line
                     )
                     # fmt: on
                 ]
