@@ -12,7 +12,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model as DjangoModel
 from django.urls import reverse
 from django.utils.safestring import SafeString
-from graphql.error.located_error import GraphQLLocatedError
 from rest_framework.serializers import Serializer
 
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
