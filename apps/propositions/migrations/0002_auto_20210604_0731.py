@@ -32,39 +32,39 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicproposition',
+            model_name='proposition',
             name='images',
             field=apps.images.models.model_with_images.ImagesField(
                 blank=True,
-                related_name='polymorphicproposition_set',
+                related_name='proposition_set',
                 through='propositions.ImageRelation',
                 to='images.Image',
                 verbose_name='images',
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicproposition',
+            model_name='proposition',
             name='locations',
             field=apps.places.models.model_with_locations.LocationsField(
                 blank=True,
-                related_name='polymorphicproposition_set',
+                related_name='proposition_set',
                 through='propositions.Location',
                 to='places.Place',
                 verbose_name='related quotes',
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicproposition',
+            model_name='proposition',
             name='related_entities',
             field=models.ManyToManyField(
                 blank=True,
-                related_name='polymorphicproposition_set',
+                related_name='proposition_set',
                 to='entities.Entity',
                 verbose_name='related entities',
             ),
         ),
         migrations.AddField(
-            model_name='polymorphicproposition',
+            model_name='proposition',
             name='related_quotes',
             field=apps.quotes.models.model_with_related_quotes.RelatedQuotesField(
                 blank=True,

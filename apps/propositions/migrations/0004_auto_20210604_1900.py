@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='polymorphicproposition',
+            model_name='proposition',
             name='type',
             field=models.CharField(
                 choices=[

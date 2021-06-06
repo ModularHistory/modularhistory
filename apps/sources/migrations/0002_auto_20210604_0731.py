@@ -115,7 +115,7 @@ class Migration(migrations.Migration):
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name='speech',
-                to='propositions.polymorphicproposition',
+                to='propositions.proposition',
                 validators=[apps.sources.models.sources.speech.SpeechTypeValidator],
             ),
         ),
