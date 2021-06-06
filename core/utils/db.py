@@ -34,10 +34,11 @@ CONTEXT = Context()
 def groom_backup_files():
     """Remove old and/or duplicate db backup files."""
     logging.info('Deduping backup files ...')
-    Context().run(f'fdupes -rdN {settings.BACKUPS_DIR}', warn=True)
+    context = Context()
+    context.run(f'fdupes -rdIN {settings.BACKUPS_DIR}', warn=True)
     logging.info('Removing old backup files ...')
     end = '{} \;'  # noqa: W605, P103
-    Context().run(
+    context.run(
         f'find {BACKUP_FILES_PATTERN} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}',
         warn=True,
     )

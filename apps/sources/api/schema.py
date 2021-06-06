@@ -1,5 +1,8 @@
+from typing import Optional
+
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
+from graphql.error.located_error import GraphQLLocatedError
 
 from apps.sources.api.types import SourceType
 from apps.sources.models.source import Source
@@ -17,12 +20,17 @@ class Query(graphene.ObjectType):
         return Source.objects.all()
 
     @staticmethod
-    def resolve_source(root, info, slug: str):
+    def resolve_source(root, info, slug: str) -> Optional[Source]:
         """Return the source specified by a 'source' query."""
         try:
             return Source.objects.get(slug=slug)
         except ObjectDoesNotExist:
-            return Source.objects.get(pk=slug)
+            if slug.isnumeric():
+                try:
+                    return Source.objects.get(pk=int(slug))
+                except GraphQLLocatedError:
+                    pass
+        return None
 
 
 # class Mutation(graphene.ObjectType):

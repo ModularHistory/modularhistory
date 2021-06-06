@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
+from graphql.error.located_error import GraphQLLocatedError
 
 from apps.topics.api.types import TopicType
 from apps.topics.models.topic import Topic
@@ -22,12 +23,17 @@ class Query(graphene.ObjectType):
         return Topic.objects.all()
 
     @staticmethod
-    def resolve_topic(root, info, slug: str) -> Topic:
+    def resolve_topic(root, info, slug: str) -> Optional[Topic]:
         """Return the topic specified by a 'topic' query."""
         try:
             return Topic.objects.get(slug=slug)
         except ObjectDoesNotExist:
-            return Topic.objects.get(pk=slug)
+            if slug.isnumeric():
+                try:
+                    return Topic.objects.get(pk=int(slug))
+                except GraphQLLocatedError:
+                    pass
+        return None
 
 
 # class Mutation(graphene.ObjectType):

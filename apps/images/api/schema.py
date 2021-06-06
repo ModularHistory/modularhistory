@@ -1,5 +1,8 @@
+from typing import Optional
+
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
+from graphql.error.located_error import GraphQLLocatedError
 
 from apps.images.api.types import ImageType
 from apps.images.models import Image
@@ -17,12 +20,17 @@ class Query(graphene.ObjectType):
         return Image.objects.all()
 
     @staticmethod
-    def resolve_image(root, info, slug: str):
+    def resolve_image(root, info, slug: str) -> Optional[Image]:
         """Return the image specified by an 'image' query."""
         try:
             return Image.objects.get(slug=slug)
         except ObjectDoesNotExist:
-            return Image.objects.get(pk=slug)
+            if slug.isnumeric():
+                try:
+                    return Image.objects.get(pk=int(slug))
+                except GraphQLLocatedError:
+                    pass
+        return None
 
 
 # class Mutation(graphene.ObjectType):

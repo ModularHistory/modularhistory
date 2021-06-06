@@ -27,26 +27,31 @@ export default EntityDetailPage;
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let entity = {};
   const { slug } = params;
-  const body = {
-    query: `{
-      entity(slug: "${slug}") {
-        name
-        slug
-        description
-        cachedImages
-        model
-        adminUrl
-      }
-    }`,
-  };
-  await axiosWithoutAuth
-    .post("http://django:8000/graphql/", body)
-    .then((response) => {
-      entity = response.data.data.entity;
-    })
-    .catch((_error) => {
-      entity = null;
-    });
+
+  if (slug) {
+    const body = {
+      query: `{
+        entity(slug: "${slug}") {
+          name
+          slug
+          description
+          cachedImages
+          model
+          adminUrl
+        }
+      }`,
+    };
+    await axiosWithoutAuth
+      .post("http://django:8000/graphql/", body)
+      .then((response) => {
+        entity = response.data.data.entity;
+      })
+      .catch((_error) => {
+        entity = null;
+      });
+  } else {
+    entity = null;
+  }
 
   if (!entity) {
     // https://nextjs.org/blog/next-10#notfound-support

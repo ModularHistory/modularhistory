@@ -8,15 +8,13 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
 from dj_rest_auth.registration.views import SocialConnectView
 from dj_rest_auth.registration.views import SocialLoginView as BaseSocialLoginView
-from dj_rest_auth.social_serializers import (
-    TwitterConnectSerializer,
-    TwitterLoginSerializer,
-)
+from dj_rest_auth.social_serializers import TwitterConnectSerializer, TwitterLoginSerializer
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
+from graphql.error.located_error import GraphQLLocatedError
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
