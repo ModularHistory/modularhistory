@@ -15,6 +15,6 @@ class EntityType(ModuleType):
         exclude = ['type']
 
     @staticmethod
-    def resolve_model(root, *args) -> str:
+    def resolve_model(root: Entity, *args) -> str:
         """Return the value to be assigned to an entity's `model` attribute."""
         return 'entities.entity'
