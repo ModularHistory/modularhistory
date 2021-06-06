@@ -8,6 +8,7 @@ from typing import Optional
 from zipfile import ZipFile
 
 from celery import shared_task
+from celery_singleton import Singleton
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -29,7 +30,7 @@ BACKUP_FILES_PATTERN = join(settings.BACKUPS_DIR, '*sql')
 CONTEXT = Context()
 
 
-@shared_task
+@shared_task(base=Singleton)
 def groom_backup_files():
     """Remove old and/or duplicate db backup files."""
     logging.info('Deduping backup files ...')
