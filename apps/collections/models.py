@@ -4,6 +4,8 @@ from django.db import models
 
 
 class Collection(models.Model):
+    """A user-created collection."""
+
     creator = models.ForeignKey(
         to='users.User',
         on_delete=models.SET_NULL,
@@ -12,3 +14,6 @@ class Collection(models.Model):
         editable=False,
         related_name='collections',
     )
+
+    def __str__(self) -> str:
+        return f'collection created by {self.creator}'

@@ -1,7 +1,7 @@
 """AutocompleteFilter based on https://github.com/farhan0581/django-admin-autocomplete-filter."""
 
 import re
-from typing import Type, Union
+from typing import TYPE_CHECKING, Type, Union
 
 from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter
 from django.db.models import QuerySet
@@ -11,6 +11,9 @@ from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 
 from core.models.model import Model
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 # https://github.com/farhan0581/django-admin-autocomplete-filter
@@ -25,7 +28,7 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
 
     m2m_cls: Union[Type['Model'], str]
 
-    def __init__(self, request, query_params, model, model_admin):
+    def __init__(self, request: 'HttpRequest', query_params, model, model_admin):
         """Construct the many-to-many autocomplete filter."""
         super().__init__(request, query_params, model, model_admin)
         m2m_cls: Type['Model']
@@ -49,11 +52,13 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
         # if the field is m2m.
         return self.title.replace(' ', '_')
 
-    def get_autocomplete_url(self, request, model_admin) -> str:
+    def get_autocomplete_url(self, request: 'HttpRequest', model_admin) -> str:
         """Return the URL used by the autocomplete filter."""
         return reverse(f'admin:{self.key}_search')
 
-    def queryset(self, request, queryset: 'QuerySet') -> 'QuerySet[Model]':
+    def queryset(
+        self, request: 'HttpRequest', queryset: 'QuerySet[Model]'
+    ) -> 'QuerySet[Model]':
         """Return the filtered queryset."""
         if self.value():
             return queryset.filter(**{self._parameter_name: self.value()})
