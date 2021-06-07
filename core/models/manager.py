@@ -40,7 +40,6 @@ class SearchableMixin:
 
     def search(self, term: str, fields: Iterable[str] = None) -> SearchResults:
         """Return search results."""
-        base = self.all()
         searchable_fields = fields or getattr(self.model, 'searchable_fields', None)
         if searchable_fields and term:
             model_name = self.model.__name__
@@ -90,12 +89,12 @@ class SearchableMixin:
                         key=lambda result: -results[result.pk],  # rank
                     )
                 results = (
-                    base.annotate(rank=SearchRank(vector, search))
+                    self.annotate(rank=SearchRank(vector, search))
                     .filter(rank__gt=0)
                     .order_by('-rank')
                 )
         else:
-            results = base
+            results = self.all()
         return results
 
 
