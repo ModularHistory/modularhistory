@@ -75,6 +75,7 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
         models.Interview,
         models.Entry,
         models.Piece,
+        models.Report,
         models.Section,
         models.Speech,
         models.Webpage,
@@ -253,6 +254,7 @@ admin_site.register(models.Film, SourceAdmin)
 admin_site.register(models.Interview, SourceAdmin)
 admin_site.register(models.Entry, SourceAdmin)
 admin_site.register(models.Piece, SourceAdmin)
+admin_site.register(models.Report, SourceAdmin)
 admin_site.register(models.Section, SourceAdmin)
 admin_site.register(models.Speech, SourceAdmin)
 admin_site.register(models.Webpage, SourceAdmin)
