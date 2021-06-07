@@ -96,13 +96,13 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         # field or, in the worst-case scenario, letting an admin errantly
         # create a relationship between a model instance and itself.
         referer = request.META.get('HTTP_REFERER') or ''
-        match, pk = re.match(r'.+/(\d+)/change', referer), None
+        match = re.match(r'.+/(\d+)/change', referer)
         if match:
             pk = int(match.group(1))
+            queryset = queryset.exclude(pk=pk)
         try:
-            base = self.model.objects if not pk else self.model.objects.exclude(pk=pk)
             queryset, use_distinct = (
-                base.search(search_term, fields=searchable_fields),
+                queryset.search(search_term, fields=searchable_fields),
                 False,
             )
         except AttributeError as err:
@@ -110,8 +110,6 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
             queryset, use_distinct = super().get_search_results(
                 request, queryset, search_term
             )
-            if pk:
-                queryset = queryset.exclude(pk=pk)
         return queryset, use_distinct
 
 

@@ -178,7 +178,7 @@ class Proposition(  # noqa: WPS215
     searchable_fields = [
         'title',
         'summary',
-        'tags__key',
+        'tags__name',
         'elaboration',
         'related_entities__name',
         'related_entities__aliases',

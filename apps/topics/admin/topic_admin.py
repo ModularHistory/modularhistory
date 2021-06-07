@@ -43,6 +43,7 @@ class TopicAdmin(ModelAdmin):
     exclude = ['key', 'cache']
     list_display = [
         'name',
+        'pk',
         'aliases',
         'slug',
         'path',
@@ -53,7 +54,7 @@ class TopicAdmin(ModelAdmin):
     ]
     list_filter = [RelatedTopicFilter, HasParentFilter]
     list_per_page = 25
-    ordering = ['name', 'path']
+    ordering = ['pk', 'name', 'path']
     readonly_fields = ['pretty_cache', 'slug', 'path']
     search_fields = [
         'name',

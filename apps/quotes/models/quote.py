@@ -135,7 +135,7 @@ class Quote(
         'attributees__name',
         'date__year',
         'sources__citation_string',
-        'tags__key',
+        'tags__name',
         'tags__aliases',
     ]
     serializer = QuoteSerializer

@@ -51,7 +51,7 @@ class Occurrence(Proposition):
         'date__year',
         'related_entities__name',
         'related_entities__aliases',
-        'tags__key',
+        'tags__name',
         'tags__aliases',
     ]
     serializer = OccurrenceSerializer

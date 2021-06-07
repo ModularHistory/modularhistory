@@ -13,12 +13,9 @@ from django.utils.safestring import SafeString
 from core.models.model import Model
 
 
+# https://github.com/farhan0581/django-admin-autocomplete-filter
 class AutocompleteFilter(BaseAutocompleteFilter):
-    """
-    Wrap admin_auto_filters.filters.AutocompleteFilter.
-
-    https://github.com/farhan0581/django-admin-autocomplete-filter
-    """
+    """Wraps admin_auto_filters.filters.AutocompleteFilter."""
 
     rendered_widget: SafeString
 
@@ -56,7 +53,7 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
         """Return the URL used by the autocomplete filter."""
         return reverse(f'admin:{self.key}_search')
 
-    def queryset(self, request, queryset) -> 'QuerySet[Model]':
+    def queryset(self, request, queryset: 'QuerySet') -> 'QuerySet[Model]':
         """Return the filtered queryset."""
         if self.value():
             return queryset.filter(**{self._parameter_name: self.value()})

@@ -165,6 +165,7 @@ INSTALLED_APPS = [
     # In-project apps
     # ---------------------------------
     'apps.chat.apps.ChatConfig',
+    'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',
     'apps.donations.apps.DonationsConfig',
     'apps.entities.apps.EntitiesConfig',

@@ -10,10 +10,8 @@ class TagSearchView(AutocompleteJsonView):
 
     def get_queryset(self) -> 'QuerySet[Topic]':
         """Return the filtered queryset."""
-        queryset = Topic.objects.all()
-        term = self.term
-        if term:
-            queryset = queryset.filter(
-                Q(key__icontains=term) | Q(aliases__icontains=term)
+        if self.term:
+            return Topic.objects.filter(
+                Q(key__icontains=self.term) | Q(aliases__icontains=self.term)
             )
-        return queryset
+        return Topic.objects.all()
