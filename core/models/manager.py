@@ -40,6 +40,7 @@ class SearchableMixin:
 
     def search(self, term: str, fields: Iterable[str] = None) -> SearchResults:
         """Return search results."""
+        base = self.all()
         searchable_fields = fields or getattr(self.model, 'searchable_fields', None)
         if searchable_fields and term:
             model_name = self.model.__name__
@@ -53,7 +54,14 @@ class SearchableMixin:
                 document = None
             if document:
                 query = Q('simple_query_string', query=term)
-                return document.search().query(query).to_queryset()
+                results = document.search().query(query).to_queryset()
+                # TODO: refactor?
+                # If starting with a queryset (which may already be filtered),
+                # ensure the search results don't include model instances that
+                # were excluded from the base queryset.
+                if isinstance(self, QuerySet):
+                    base = list(self.all())
+                    results = [result for result in results if result in base]
             else:
                 # Use Postgres full-text search.
                 weights = ['A', 'B', 'C', 'D']
@@ -81,12 +89,14 @@ class SearchableMixin:
                         self.filter(pk__in=results.keys()),
                         key=lambda result: -results[result.pk],  # rank
                     )
-                return (
-                    self.annotate(rank=SearchRank(vector, search))
+                results = (
+                    base.annotate(rank=SearchRank(vector, search))
                     .filter(rank__gt=0)
                     .order_by('-rank')
                 )
-        return self.all()
+        else:
+            results = base
+        return results
 
 
 class SearchableQuerySet(SearchableMixin, QuerySet):
