@@ -42,7 +42,7 @@
     "@typescript-eslint/eslint-plugin": "^4.26",
     "@typescript-eslint/parser": "^4.26",
     "cypress": "^7.4.0",
-    "eslint": "^7.27.0",
+    "eslint": "^7.28.0",
     "eslint-plugin-react": "^7.24.0",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.0",
