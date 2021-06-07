@@ -37,15 +37,15 @@
   "devDependencies": {
     "@types/jquery": "^3.5.5",
     "@types/next-auth": "^3.7.1",
-    "@types/node": "^15.9.0",
+    "@types/node": "^15.12.1",
     "@types/react": "^17.0.9",
     "@typescript-eslint/eslint-plugin": "^4.26",
     "@typescript-eslint/parser": "^4.26",
     "cypress": "^7.4.0",
-    "eslint": "^7.27.0",
+    "eslint": "^7.28.0",
     "eslint-plugin-react": "^7.24.0",
     "lint-staged": "^11.0.0",
-    "prettier": "^2.3.0",
+    "prettier": "^2.3.1",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "typescript": "^4.3.2"
