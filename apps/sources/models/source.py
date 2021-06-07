@@ -22,7 +22,7 @@ from apps.search.models import SearchableModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields.html_field import HTMLField
-from core.models.manager import Manager
+from core.models.manager import SearchableManager
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -52,7 +52,7 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class SourceManager(PolymorphicManager, Manager):
+class SourceManager(PolymorphicManager, SearchableManager):
     """Custom manager for sources."""
 
 

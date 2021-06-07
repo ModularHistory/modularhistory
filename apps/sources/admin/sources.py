@@ -1,4 +1,3 @@
-import re
 from typing import TYPE_CHECKING, Sequence, Type, Union
 
 from django.contrib.admin.filters import ListFilter
@@ -94,22 +93,22 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
     ordering = AbstractSourceAdmin.ordering
     readonly_fields = AbstractSourceAdmin.readonly_fields
 
-    def get_search_results(
-        self, request: 'HttpRequest', queryset: 'QuerySet', search_term: str
-    ) -> tuple['QuerySet', bool]:
-        """Return source instances matching the supplied search term."""
-        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
-        # If the request comes from the admin edit page for a model instance,
-        # exclude the model instance from the search results. This prevents
-        # inline admins from displaying an unwanted value in an autocomplete
-        # field or, in the worst-case scenario, letting an admin errantly
-        # create a relationship between a model instance and itself.
-        referer = request.META.get('HTTP_REFERER') or ''
-        match = re.match(r'.+/(\d+)/change', referer)
-        if match:
-            pk = int(match.group(1))
-            queryset = queryset.exclude(pk=pk)
-        return queryset, use_distinct
+    # def get_search_results(
+    #     self, request: 'HttpRequest', queryset: 'QuerySet', search_term: str
+    # ) -> tuple['QuerySet', bool]:
+    #     """Return source instances matching the supplied search term."""
+    #     queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+    #     # If the request comes from the admin edit page for a model instance,
+    #     # exclude the model instance from the search results. This prevents
+    #     # inline admins from displaying an unwanted value in an autocomplete
+    #     # field or, in the worst-case scenario, letting an admin errantly
+    #     # create a relationship between a model instance and itself.
+    #     referer = request.META.get('HTTP_REFERER') or ''
+    #     match = re.match(r'.+/(\d+)/change', referer)
+    #     if match:
+    #         pk = int(match.group(1))
+    #         queryset = queryset.exclude(pk=pk)
+    #     return queryset, use_distinct
 
     def get_fields(
         self, request: 'HttpRequest', model_instance: 'Model' = None

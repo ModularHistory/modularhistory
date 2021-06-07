@@ -86,14 +86,23 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         self, request: HttpRequest, queryset: QuerySet, search_term: str = ''
     ) -> tuple[QuerySet, bool]:
         """Return model instances matching the supplied search term."""
-        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         search_term = search_term.strip()
         searchable_fields = (
             getattr(self.model, 'searchable_fields', None) or self.search_fields
         )
+        # If the request comes from the admin edit page for a model instance,
+        # exclude the model instance from the search results. This prevents
+        # inline admins from displaying an unwanted value in an autocomplete
+        # field or, in the worst-case scenario, letting an admin errantly
+        # create a relationship between a model instance and itself.
+        referer = request.META.get('HTTP_REFERER') or ''
+        match, pk = re.match(r'.+/(\d+)/change', referer), None
+        if match:
+            pk = int(match.group(1))
         try:
+            base = self.model.objects if not pk else self.model.objects.exclude(pk=pk)
             queryset, use_distinct = (
-                self.model.objects.search(search_term, fields=searchable_fields),
+                base.search(search_term, fields=searchable_fields),
                 False,
             )
         except AttributeError as err:
@@ -101,16 +110,8 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
             queryset, use_distinct = super().get_search_results(
                 request, queryset, search_term
             )
-        # If the request comes from the admin edit page for a model instance,
-        # exclude the model instance from the search results. This prevents
-        # inline admins from displaying an unwanted value in an autocomplete
-        # field or, in the worst-case scenario, letting an admin errantly
-        # create a relationship between a model instance and itself.
-        referer = request.META.get('HTTP_REFERER') or ''
-        match = re.match(r'.+/(\d+)/change', referer)
-        if match:
-            pk = int(match.group(1))
-            queryset = queryset.exclude(pk=pk)
+            if pk:
+                queryset = queryset.exclude(pk=pk)
         return queryset, use_distinct
 
 

@@ -2,7 +2,7 @@
 
 import logging
 from pprint import pformat
-from typing import Any, ClassVar, Match, Optional, Pattern, Type
+from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Type
 
 import regex
 import serpy
@@ -15,9 +15,12 @@ from django.utils.safestring import SafeString
 from rest_framework.serializers import Serializer
 
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
-from core.models.manager import Manager
+from core.models.manager import SearchableManager, SearchableQuerySet
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
+
+if TYPE_CHECKING:
+    from django.db.models.manager import Manager
 
 FieldList = list[str]
 
@@ -34,7 +37,7 @@ class Views(Constant):
 class Model(DjangoModel):
     """Model with additional properties used in ModularHistory apps."""
 
-    objects: Manager = Manager()
+    objects: 'Manager' = SearchableManager.from_queryset(SearchableQuerySet)()
     searchable_fields: ClassVar[Optional[FieldList]] = None
     serializer: Type[Serializer]
     placeholder_regex: Optional[str] = None

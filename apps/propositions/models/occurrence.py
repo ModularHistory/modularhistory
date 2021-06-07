@@ -7,7 +7,7 @@ from django.utils.safestring import SafeString
 
 from apps.propositions.api.serializers import OccurrenceSerializer
 from apps.propositions.models.proposition import Proposition
-from core.models.manager import Manager
+from core.models.manager import SearchableManager
 from core.utils.html import soupify
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 TRUNCATED_DESCRIPTION_LENGTH: int = 250
 
 
-class OccurrenceManager(Manager):
+class OccurrenceManager(SearchableManager):
     """Manager for occurrences."""
 
     def get_queryset(self) -> 'QuerySet[Occurrence]':

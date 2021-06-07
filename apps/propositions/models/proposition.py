@@ -37,7 +37,7 @@ from core.fields.html_field import (
     PlaceholderGroups,
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.manager import Manager
+from core.models.manager import SearchableManager
 from core.utils.html import escape_quotes
 from core.utils.string import dedupe_newlines, truncate
 
@@ -272,7 +272,7 @@ class Proposition(  # noqa: WPS215
         return dedupe_newlines(placeholder)
 
 
-class ConclusionManager(Manager):
+class ConclusionManager(SearchableManager):
     """Manager for propositions."""
 
     def get_queryset(self) -> 'QuerySet':
