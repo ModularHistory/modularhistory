@@ -9,9 +9,9 @@ def fix_comma_positions(string: str) -> str:
 def components_to_string(components: Sequence[Optional[str]], delimiter: str = ', '):
     """Combine a sequence of HTML components into an HTML string."""
     # Remove blank values
-    components: list[str] = [component for component in components if component]
+    real_components: list[str] = [component for component in components if component]
     # Join components; rearrange commas and double quotes
-    return fix_comma_positions(delimiter.join(components))
+    return fix_comma_positions(delimiter.join(real_components))
 
 
 def truncate(string, max_length: int = 150, strip_newlines: bool = True):

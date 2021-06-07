@@ -13,6 +13,7 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
+from polymorphic.query import PolymorphicQuerySet
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.models import DatedModel
@@ -22,7 +23,7 @@ from apps.search.models import SearchableModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields.html_field import HTMLField
-from core.models.manager import SearchableManager
+from core.models.manager import SearchableManager, SearchableMixin
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -50,6 +51,10 @@ CITATION_PHRASE_OPTIONS = (
     ('quoted in', 'quoted in'),
     ('cited in', 'cited in'),
 )
+
+
+class SourceQuerySet(SearchableMixin, PolymorphicQuerySet):
+    """Custom queryset for sources."""
 
 
 class SourceManager(PolymorphicManager, SearchableManager):
@@ -191,7 +196,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
     class Meta:
         ordering = ['-date']
 
-    objects = SourceManager()
+    objects = SourceManager().from_queryset(SourceQuerySet)()
     searchable_fields = ['citation_string', 'description']
     serializer = SourceSerializer
     slug_base_fields = ('title',)
