@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Iterable, Optional, Sequence, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -23,7 +23,7 @@ from apps.search.models import SearchableModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields.html_field import HTMLField
-from core.models.manager import SearchableManager, SearchableMixin
+from core.models.manager import SearchableManager, SearchableMixin, SearchResults
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -55,6 +55,9 @@ CITATION_PHRASE_OPTIONS = (
 
 class SourceQuerySet(SearchableMixin, PolymorphicQuerySet):
     """Custom queryset for sources."""
+
+    def search(self, term: str, fields: Iterable[str]) -> SearchResults:
+        return super().search(term, fields=fields)
 
 
 class SourceManager(PolymorphicManager, SearchableManager):

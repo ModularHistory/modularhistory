@@ -23,11 +23,13 @@ class Report(Source, TextualMixin):
 
     def __html__(self) -> str:
         """Return the report's HTML representation."""
+        identifier = f'<i>{self.linked_title}</i>' if self.title else 'untitled report'
+        if self.number:
+            identifier += f' (Report No. {self.number})'
         components = [
             self.attributee_html,
-            self.linked_title if self.title else 'untitled document',
+            identifier,
+            self.publisher,
             self.date.string if self.date else '',
-            self.descriptive_phrase,
-            f'archived in {self.collection}' if self.collection else '',
         ]
         return self.components_to_html(components)

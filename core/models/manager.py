@@ -16,6 +16,8 @@ if TYPE_CHECKING:
     from apps.search.documents.base import Document
     from core.models.model import Model
 
+SearchResults = Union[QuerySet['Model'], Sequence['Model']]
+
 
 class SearchableMixin:
     """Mixin for adding search capability to manager and queryset classes."""
@@ -35,8 +37,6 @@ class SearchableMixin:
             lesser_diff = abs(getattr(lesser, datetime_attr) - datetime_value)
             return greater if greater_diff < lesser_diff else lesser
         return greater or lesser
-
-    SearchResults = Union[QuerySet['Model'], Sequence['Model']]
 
     def search(self, term: str, fields: Iterable[str] = None) -> SearchResults:
         """Return search results."""
@@ -59,8 +59,8 @@ class SearchableMixin:
                 # ensure the search results don't include model instances that
                 # were excluded from the base queryset.
                 if isinstance(self, QuerySet):
-                    base = list(self.all())
-                    results = [result for result in results if result in base]
+                    base_ids = self.values_list('pk', flat=True)
+                    results = [result for result in results if result.pk in base_ids]
             else:
                 # Use Postgres full-text search.
                 weights = ['A', 'B', 'C', 'D']

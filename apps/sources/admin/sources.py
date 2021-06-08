@@ -98,6 +98,10 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
         self, request: 'HttpRequest', queryset: 'QuerySet', search_term: str
     ) -> tuple['QuerySet', bool]:
         """Return source instances matching the supplied search term."""
+        queryset = queryset.non_polymorphic()
+        search_results = AbstractSourceAdmin.get_search_results(
+            self, request, queryset, search_term
+        )
         return AbstractSourceAdmin.get_search_results(self, request, queryset, search_term)
 
     def get_fields(
