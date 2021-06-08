@@ -4,8 +4,8 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING, Iterable, Optional, Sequence, Union
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import Manager as ModelManager
 from django.db.models import QuerySet
+from django.db.models.manager import Manager
 from django.utils.module_loading import import_string
 from elasticsearch_dsl import Q
 from typedmodels.models import TypedModelManager as BaseTypedModelManager
@@ -38,7 +38,9 @@ class SearchableMixin:
             return greater if greater_diff < lesser_diff else lesser
         return greater or lesser
 
-    def search(self, term: str, fields: Iterable[str] = None) -> SearchResults:
+    def search(
+        self: Union[Manager, QuerySet], term: str, fields: Iterable[str] = None
+    ) -> SearchResults:
         """Return search results."""
         searchable_fields = fields or getattr(self.model, 'searchable_fields', None)
         if searchable_fields and term:
@@ -109,7 +111,7 @@ class SearchableQuerySet(SearchableMixin, QuerySet):
         return self.get(**natural_key)
 
 
-class SearchableManager(SearchableMixin, ModelManager):
+class SearchableManager(SearchableMixin, Manager):
     """Base manager for ModularHistory's models."""
 
     def get_by_natural_key(self, *args) -> 'Model':
