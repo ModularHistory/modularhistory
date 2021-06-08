@@ -1,4 +1,3 @@
-import logging
 import re
 from typing import Mapping, Optional, Type, Union
 
@@ -100,13 +99,12 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         if match:
             pk = int(match.group(1))
             queryset = queryset.exclude(pk=pk)
-        try:
+        if callable(getattr(queryset, 'search', None)):
             queryset, use_distinct = (
                 queryset.search(search_term, fields=searchable_fields),
                 False,
             )
-        except AttributeError as err:
-            logging.error(err)
+        else:
             queryset, use_distinct = super().get_search_results(
                 request, queryset, search_term
             )
