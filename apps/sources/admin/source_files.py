@@ -21,11 +21,11 @@ class PdfFilter(SimpleListFilter):
     title = 'is PDF'
     parameter_name = 'is_pdf'
 
-    def lookups(self, request, model_admin):
+    def lookups(self, request: 'HttpRequest', model_admin):
         """Return an iterable of tuples (value, verbose value)."""
         return (YES, YES), (NO, NO)
 
-    def queryset(self, request, queryset):
+    def queryset(self, request: 'HttpRequest', queryset):
         """Return the filtered queryset."""
         if self.value() == YES:
             return queryset.filter(name__icontains='pdf')
@@ -41,7 +41,7 @@ class SourceFileAdmin(ModelAdmin):
     list_filter = [PdfFilter]
     ordering = ['name', 'uploaded_at', 'id']
 
-    def get_fields(self, request, model_instance=None):
+    def get_fields(self, request: 'HttpRequest', model_instance: Optional['Model'] = None):
         """Return reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
         if fields and PAGE_OFFSET_FIELD in fields:
@@ -50,8 +50,9 @@ class SourceFileAdmin(ModelAdmin):
         return fields
 
     def get_inlines(
-        self, request: 'HttpRequest', obj: Optional['Model']
+        self, request: 'HttpRequest', obj: Optional['Model'] = None
     ) -> List[Type['InlineModelAdmin']]:
+        """Return the inline admins to be displayed with the admin form."""
         inlines = super().get_inlines(request, obj=obj)
         referer = request.META.get('HTTP_REFERER') or ''
         if not referer.endswith('/add/'):

@@ -47,8 +47,8 @@ def get_year(year: int, year_system: str = CE) -> tuple[int, int, int]:
     elif year_system in {BCE, YBP}:
         year = year if year_system == BCE else year - BP_REFERENCE_YEAR
         year = round(year, sigfigs=HistoricDateTime.significant_figures)
-        # Build a year stamp with max 6 digits
-        scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
+        # Build a year stamp with max 6 digits, e.g., '1.3800e+10' for the Big Bang.
+        scientific_notation: str = '{:.4e}'.format(year)  # noqa: P101
         decimal_num_str, exponent_str = scientific_notation.split('e+')
         exponent = int(exponent_str)
         decimal_num = int(decimal_num_str.replace(PERIOD, ''))  # 10, 13800 for the Big Bang

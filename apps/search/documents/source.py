@@ -15,7 +15,7 @@ class SourceDocument(Document):
         settings = DEFAULT_INDEX_SETTINGS
         name = 'sources'
 
-    citation = fields.TextField(attr='citation_string', analyzer=html_field_analyzer)
+    citation_string = fields.TextField(analyzer=html_field_analyzer)
     description = fields.TextField(analyzer=html_field_analyzer)
 
     class Django:
