@@ -2,7 +2,7 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, Iterable, Optional, Sequence, Union
+from typing import Optional, Sequence, TYPE_CHECKING, Union
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -55,9 +55,6 @@ CITATION_PHRASE_OPTIONS = (
 
 class SourceQuerySet(SearchableMixin, PolymorphicQuerySet):
     """Custom queryset for sources."""
-
-    def search(self, term: str, fields: Iterable[str]) -> SearchResults:
-        return super().search(term, fields=fields)
 
 
 class SourceManager(PolymorphicManager, SearchableManager):
