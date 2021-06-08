@@ -379,7 +379,7 @@ cd frontend && nvm install && nvm use && npm ci --cache .npm && cd ..
 npm i -g prettier eslint
 
 # Update ctags
-ctags -R -f .vscode/.tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" --exclude="**/libraries/**" &>/dev/null
+ctags -R -f .vscode/.tags --exclude=".venv/**" --exclude=".backups/**" --exclude="**/node_modules/**" &>/dev/null
 
 # Set up Rclone (https://rclone.org/).
 rclone version &>/dev/null || {

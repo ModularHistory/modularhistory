@@ -11,28 +11,6 @@ function initializeListeners(element = null) {
         if (open_in_modal) {
             target_modal = $(this).attr('data-target');
         }
-        if (href.includes('.pdf')) {
-            event.preventDefault();
-            // TODO
-            href = `/static/libraries/pdfjs/web/viewer.html?file=${href}`;
-            if (open_in_modal) {
-                /*
-                    Evade XSS attacks by using $.find(target_modal) rather than
-                    $(target_modal), as target_modal could be manipulated to
-                    contain arbitrary JS.
-                */
-                $.find(target_modal).find('.modal-body').html(`
-                    <div class='embed-responsive embed-responsive-210by297'>
-                        <iframe class='embed-responsive-item' src='${href}' allowfullscreen></iframe>
-                    </div>
-                `);
-            } else {
-                window.open(href, '_blank');
-            }
-            return false;  // prevent modal from popping up
-        } else if (href.includes('.epub')) {
-            console.log('Opening ePub');
-        }
     });
 
     // Tooltips
