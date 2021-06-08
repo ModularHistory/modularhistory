@@ -9,6 +9,7 @@ from core.constants.strings import NO, YES
 
 if TYPE_CHECKING:
     from django.contrib.admin.options import InlineModelAdmin
+    from django.db.models import QuerySet
     from django.db.models.base import Model
     from django.http import HttpRequest
 
@@ -25,7 +26,7 @@ class PdfFilter(SimpleListFilter):
         """Return an iterable of tuples (value, verbose value)."""
         return (YES, YES), (NO, NO)
 
-    def queryset(self, request: 'HttpRequest', queryset):
+    def queryset(self, request: 'HttpRequest', queryset: 'QuerySet'):
         """Return the filtered queryset."""
         if self.value() == YES:
             return queryset.filter(name__icontains='pdf')
