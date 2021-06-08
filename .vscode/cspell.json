@@ -85,8 +85,8 @@
         "hte"
     ],
     "ignoreRegExpList": [
+        ".*r'",
         "'//.+",
-        "r'.+'",
         "END\\w+",
         "default='.*'",
         "[A-Z_]+(=|: ).*",

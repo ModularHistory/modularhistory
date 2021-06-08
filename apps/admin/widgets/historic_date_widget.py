@@ -48,14 +48,10 @@ def get_year(year: int, year_system: str = CE) -> tuple[int, int, int]:
         year = year if year_system == BCE else year - BP_REFERENCE_YEAR
         year = round(year, sigfigs=HistoricDateTime.significant_figures)
         # Build a year stamp with max 6 digits
-        scientific_notation: str = '{:.4e}'.format(
-            year
-        )  # '1.3800e+10' for the Big Bang
+        scientific_notation: str = '{:.4e}'.format(year)  # '1.3800e+10' for the Big Bang
         decimal_num_str, exponent_str = scientific_notation.split('e+')
         exponent = int(exponent_str)
-        decimal_num = int(
-            decimal_num_str.replace(PERIOD, '')
-        )  # 10, 13800 for the Big Bang
+        decimal_num = int(decimal_num_str.replace(PERIOD, ''))  # 10, 13800 for the Big Bang
         inv_exponent = EXPONENT_INVERSION_BASIS - exponent
         inv_decimal_num = DECIMAL_INVERSION_BASIS - int(decimal_num)
         second, microsecond = inv_exponent, inv_decimal_num
@@ -112,7 +108,7 @@ class HistoricDateWidget(MultiWidget):
 
     def __init__(self, attrs: Optional[dict] = None):
         """Construct the widget."""
-        default_attrs = {'style': 'margin-right: 1rem'}
+        default_attrs = {'style': 'margin-right: 0.5rem; min-width: 4rem;'}
         attrs = {**attrs, **default_attrs} if attrs else default_attrs
         placeholder, min, max = 'placeholder', 'min', 'max'
         today = date.today()
@@ -122,16 +118,9 @@ class HistoricDateWidget(MultiWidget):
             ),
             forms.Select(attrs=attrs, choices=year_systems),
             forms.Select(attrs=attrs, choices=SEASONS),
-            forms.NumberInput(
-                attrs={**attrs, **{placeholder: 'Month', min: 1, max: 12}}
-            ),
+            forms.NumberInput(attrs={**attrs, **{placeholder: 'Month', min: 1, max: 12}}),
             forms.NumberInput(attrs={**attrs, **{placeholder: 'Day', min: 1, max: 31}}),
-            forms.TimeInput(
-                attrs={
-                    **attrs,
-                    **{placeholder: 'Time', 'class': 'vTimeField hidden'},
-                }
-            ),
+            forms.HiddenInput(attrs={**attrs}),
         ]
         super().__init__(widgets, attrs)
 
@@ -166,9 +155,7 @@ class HistoricDateWidget(MultiWidget):
             else:
                 return nones
             # Convert value to HistoricDateTime
-            datetime_value = HistoricDateTime(
-                year, month, day, hour, minute, second, ms
-            )
+            datetime_value = HistoricDateTime(year, month, day, hour, minute, second, ms)
         return self._decompress_historic_datetime(datetime_value)
 
     def value_from_datadict(self, datadict, files, name) -> Optional[str]:

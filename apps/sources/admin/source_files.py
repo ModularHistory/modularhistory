@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, List, Optional, Type
+
 from django.contrib.admin import SimpleListFilter
 
 from apps.admin.model_admin import ModelAdmin, admin_site
@@ -5,11 +7,16 @@ from apps.sources import models
 from apps.sources.admin.sources import SourcesInline
 from core.constants.strings import NO, YES
 
+if TYPE_CHECKING:
+    from django.contrib.admin.options import InlineModelAdmin
+    from django.db.models.base import Model
+    from django.http import HttpRequest
+
 PAGE_OFFSET_FIELD = 'page_offset'
 
 
 class PdfFilter(SimpleListFilter):
-    """TODO: add docstring."""
+    """Filter for PDF source files."""
 
     title = 'is PDF'
     parameter_name = 'is_pdf'
@@ -31,7 +38,6 @@ class SourceFileAdmin(ModelAdmin):
 
     list_display = ['name', PAGE_OFFSET_FIELD, 'link', 'uploaded_at', 'id']
     search_fields = ['file', 'name']
-    inlines = [SourcesInline]
     list_filter = [PdfFilter]
     ordering = ['name', 'uploaded_at', 'id']
 
@@ -42,6 +48,15 @@ class SourceFileAdmin(ModelAdmin):
             fields.remove(PAGE_OFFSET_FIELD)
             fields.append(PAGE_OFFSET_FIELD)
         return fields
+
+    def get_inlines(
+        self, request: 'HttpRequest', obj: Optional['Model']
+    ) -> List[Type['InlineModelAdmin']]:
+        inlines = super().get_inlines(request, obj=obj)
+        referer = request.META.get('HTTP_REFERER') or ''
+        if not referer.endswith('/add/'):
+            inlines += [SourcesInline]
+        return inlines
 
 
 admin_site.register(models.SourceFile, SourceFileAdmin)
