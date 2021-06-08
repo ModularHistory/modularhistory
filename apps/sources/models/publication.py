@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
 from core.fields.html_field import HTMLField
+from core.models.manager import TypedModelManager
 from core.models.model import Model
 from core.utils.html import soupify
 
@@ -46,6 +47,7 @@ class Publication(TypedModel, AbstractPublication):
     class Meta:
         ordering = ['name']
 
+    objects = TypedModelManager()
     searchable_fields = ['name', 'aliases']
 
     def __str__(self) -> str:
@@ -79,16 +81,10 @@ class Publication(TypedModel, AbstractPublication):
 class Journal(Publication):
     """A journal that publishes articles."""
 
-    pass  # noqa: WPS604
-
 
 class Magazine(Publication):
     """A magazine that publishes articles."""
 
-    pass  # noqa: WPS604
-
 
 class Newspaper(Publication):
     """A newspaper that publishes articles."""
-
-    pass  # noqa: WPS604

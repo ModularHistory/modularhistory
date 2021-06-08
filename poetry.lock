@@ -967,6 +967,17 @@ python-versions = "*"
 Django = ">=2.1"
 
 [[package]]
+name = "django-postgresql-dag"
+version = "0.2.5"
+description = "Directed Acyclic Graph implementation for Django & Postgresql"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+transforms = ["networkx (>=2.5)", "pandas (>=1.2)"]
+
+[[package]]
 name = "django-redis"
 version = "4.12.1"
 description = "Full featured redis cache backend for Django."
@@ -3583,7 +3594,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "f7a4dda2bfbb1112d4e5d424b04e58f3c3a6f3074cf1f37a59f5d03cc7f44bcb"
+content-hash = "093c72be642a62287f30079751408debe8964da95184d93eb7990e7c21510396"
 
 [metadata.files]
 aenum = [
@@ -4096,6 +4107,10 @@ django-nine = [
 django-polymorphic = [
     {file = "django-polymorphic-3.0.0.tar.gz", hash = "sha256:9d886f19f031d26bb1391c055ed9be06fb226a04a4cec1842b372c58873b3caa"},
     {file = "django_polymorphic-3.0.0-py2.py3-none-any.whl", hash = "sha256:73b75eb44ea302bd32820f8661e469509d245ce7f7ff09cd2ad149e5c42034ff"},
+]
+django-postgresql-dag = [
+    {file = "django-postgresql-dag-0.2.5.tar.gz", hash = "sha256:7b9e3e0969996346892d24402427fbd2e93caffe5e24ce51effeeab721e6b11f"},
+    {file = "django_postgresql_dag-0.2.5-py3-none-any.whl", hash = "sha256:044489adb784e9d3d0aa2dd88a3134ce865ecbb3496965d28691d113ca20acce"},
 ]
 django-redis = [
     {file = "django-redis-4.12.1.tar.gz", hash = "sha256:306589c7021e6468b2656edc89f62b8ba67e8d5a1c8877e2688042263daa7a63"},

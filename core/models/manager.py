@@ -124,5 +124,3 @@ class SearchableManager(SearchableMixin, ModelManager):
 
 class TypedModelManager(BaseTypedModelManager, SearchableManager):
     """Wrapper for TypedModelManager."""
-
-    pass  # noqa: WPS604

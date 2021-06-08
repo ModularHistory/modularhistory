@@ -31,6 +31,7 @@ from core.fields.html_field import HTMLField
 from core.fields.json_field import JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models import store
+from core.models.manager import TypedModelManager
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -127,6 +128,7 @@ class Entity(
         verbose_name_plural = 'Entities'
         ordering = ['name']
 
+    objects = TypedModelManager()
     searchable_fields = ['name', 'aliases', 'description']
     serializer = EntitySerializer
     slug_base_fields = ('unabbreviated_name',)
