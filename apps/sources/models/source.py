@@ -2,7 +2,8 @@
 
 import logging
 import re
-from typing import Optional, Sequence, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Union
+from urllib.parse import urlparse
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -365,10 +366,13 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
             page_number = getattr(self, 'page_number', None)
             # TODO: refactor
             if page_number:
-                if 'www.sacred-texts.com' in url:
-                    url = f'{url}#page_{page_number}'
-                elif 'josephsmithpapers.org' in url:
-                    url = f'{url}/{page_number}'
+                sites = {
+                    'www.sacred-texts.com': '{url}#page_{page_number}'.format,
+                    'www.josephsmithpapers.org': '{url}/{page_number}'.format,
+                }
+                domain = urlparse(url).netloc
+                process = sites.get(domain, None)
+                url = process(url) if process else url
         return url
 
     def get_page_number_html(
