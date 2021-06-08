@@ -43,24 +43,23 @@ class SearchableMixin:
         searchable_fields = fields or getattr(self.model, 'searchable_fields', None)
         if searchable_fields and term:
             model_name = self.model.__name__
-            document: Optional['Document']
+            index: Optional['Document']
             try:
-                document = import_string(
+                index = import_string(
                     f'apps.search.documents.{model_name.lower()}.{model_name}Document'
                 )
             except ImportError as err:
                 print(err)
-                document = None
-            if document:
+                index = None
+            if index:
                 query = Q('simple_query_string', query=term)
-                results = document.search().query(query).to_queryset()
-                # TODO: refactor?
-                # If starting with a queryset (which may already be filtered),
+                results: QuerySet = index.search().query(query).to_queryset()
+                # If the calling object is a queryset (rather than a manager),
                 # ensure the search results don't include model instances that
-                # were excluded from the base queryset.
+                # were already filtered out of the queryset.
                 if isinstance(self, QuerySet):
                     base_ids = self.values_list('pk', flat=True)
-                    results = [result for result in results if result.pk in base_ids]
+                    results = results.filter(pk__in=base_ids)
             else:
                 # Use Postgres full-text search.
                 weights = ['A', 'B', 'C', 'D']

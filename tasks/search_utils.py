@@ -3,7 +3,7 @@
 import random
 import time
 from itertools import chain
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import django
 from elasticsearch_dsl import Q
@@ -16,12 +16,13 @@ from apps.search.documents.source import SourceDocument
 
 if TYPE_CHECKING:
     from invoke.context import Context
+    from apps.search.documents.base import Document
 
 from .command import command
 
 django.setup()
 
-SEARCHABLE_DOCUMENTS = [
+SEARCHABLE_DOCUMENTS: list['Document'] = [
     OccurrenceDocument,
     QuoteDocument,
     SourceDocument,
@@ -49,21 +50,23 @@ def search(
     end: int = 20,
 ):
     """Perform a search for testing purposes."""
-    _document = DOCUMENT_MAP.get(document, 'all')
+    index: Optional['Document'] = DOCUMENT_MAP.get(document, None)
+    if document != 'all' and not index:
+        raise ValueError(f'Invalid document name: {document}')
     print(f'Searching for = {query} in {document}...')
     query = Q('simple_query_string', query=query)
     tic = time.perf_counter_ns()
     if print_sql:
         from django.db import connection
-    if document == 'all':
+    if index:
+        s = index.search().query(query)[start:end]
+        queryset = list(s.to_queryset())
+    else:
         queryset = chain()
-        for document in SEARCHABLE_DOCUMENTS:
-            s = document.search().query(query)[start:end]
+        for index in SEARCHABLE_DOCUMENTS:
+            s = index.search().query(query)[start:end]
             queryset = chain(queryset, s.to_queryset())
         queryset = list(queryset)
-    else:
-        s = _document.search().query(query)[start:end]
-        queryset = list(s.to_queryset())
     toc = (time.perf_counter_ns() - tic) / 1000000
     print(f'Search returned n={len(queryset)}, resolved results in {toc} ms')
     if print_sql:

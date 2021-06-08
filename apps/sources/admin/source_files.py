@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional, Type
+from typing import TYPE_CHECKING, Optional, Type
 
 from django.contrib.admin import SimpleListFilter
 
@@ -52,7 +52,7 @@ class SourceFileAdmin(ModelAdmin):
 
     def get_inlines(
         self, request: 'HttpRequest', obj: Optional['Model'] = None
-    ) -> List[Type['InlineModelAdmin']]:
+    ) -> list[Type['InlineModelAdmin']]:
         """Return the inline admins to be displayed with the admin form."""
         inlines = super().get_inlines(request, obj=obj)
         referer = request.META.get('HTTP_REFERER') or ''
