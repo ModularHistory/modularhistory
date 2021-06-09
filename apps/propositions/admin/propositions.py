@@ -64,5 +64,3 @@ class PropositionAdmin(AbstractPropositionAdmin):
 
 
 admin_site.register(models.Proposition, PropositionAdmin)
-admin_site.register(models.Conclusion, PropositionAdmin)
-admin_site.register(models.Occurrence, PropositionAdmin)
