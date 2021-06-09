@@ -10,7 +10,7 @@ from django.contrib.sites.models import Site
 from django.db.models import Model
 from django.db.models.fields import Field
 from django.db.models.query import QuerySet
-from django.forms import Widget
+from django.forms import CharField, TextInput, Widget
 from django.http import HttpRequest
 from django_celery_beat.admin import PeriodicTaskAdmin
 from django_celery_beat.models import (
@@ -32,11 +32,18 @@ from apps.dates.fields import HistoricDateTimeField
 from core.constants.environments import Environments
 from core.fields.html_field import HTMLField, TrumbowygWidget
 from core.fields.json_field import JSONField
+from core.models.manager import SearchableQuerySet
 
 AdminListFilter = Union[str, Type[ListFilter]]
 
+char_counter_code = (
+    'if ($(this)).attr("maxLength")) {{ console.log("yes") }} else {{ console.log("no") }}'
+)
 
 FORM_FIELD_OVERRIDES: Mapping[Type[Field], Mapping[str, Type[Widget]]] = {
+    CharField: {
+        'widget': TextInput(attrs={'onClick': char_counter_code, 'style': 'width: 100%'})
+    },
     HistoricDateTimeField: {'widget': HistoricDateWidget},
     HTMLField: {'widget': TrumbowygWidget},
     JSONField: {'widget': JSONEditorWidget},
@@ -67,7 +74,7 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
                 ADMIN_CSS,
             )
         }
-        js = ()
+        js = ('scripts/admin.js',)
 
     def get_readonly_fields(
         self, request: HttpRequest, model_instance: Optional['Model'] = None
@@ -82,7 +89,10 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         return list(set(readonly_fields))
 
     def get_search_results(
-        self, request: HttpRequest, queryset: QuerySet, search_term: str = ''
+        self,
+        request: HttpRequest,
+        queryset: Union[QuerySet, SearchableQuerySet],
+        search_term: str = '',
     ) -> tuple[QuerySet, bool]:
         """Return model instances matching the supplied search term."""
         search_term = search_term.strip()
@@ -99,9 +109,9 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         if match:
             pk = int(match.group(1))
             queryset = queryset.exclude(pk=pk)
-        if callable(getattr(queryset, 'search', None)):
+        if isinstance(queryset, SearchableQuerySet):
             queryset, use_distinct = (
-                queryset.search(search_term, fields=searchable_fields),
+                queryset.search(search_term, elastic=False, fields=searchable_fields),
                 False,
             )
         else:

@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING, Iterable, Optional, Sequence, Union
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import QuerySet
+from django.db.models import Case, QuerySet, When
 from django.db.models.manager import Manager
 from django.utils.module_loading import import_string
 from elasticsearch_dsl import Q
@@ -39,21 +39,25 @@ class SearchableMixin:
         return greater or lesser
 
     def search(
-        self: Union[Manager, QuerySet], term: str, fields: Iterable[str] = None
+        self: Union[Manager, QuerySet],
+        term: str,
+        elastic: bool = True,
+        fields: Iterable[str] = None,
     ) -> SearchResults:
         """Return search results."""
         searchable_fields = fields or getattr(self.model, 'searchable_fields', None)
         if searchable_fields and term:
-            model_name = self.model.__name__
-            index: Optional['Document']
-            try:
-                index = import_string(
-                    f'apps.search.documents.{model_name.lower()}.{model_name}Document'
-                )
-            except ImportError as err:
-                print(err)
-                index = None
-            if index:
+            index = None
+            if elastic:
+                model_name = self.model.__name__
+                index: Optional['Document']
+                try:
+                    index = import_string(
+                        f'apps.search.documents.{model_name.lower()}.{model_name}Document'
+                    )
+                except ImportError as err:
+                    print(err)
+            if elastic and index:
                 query = Q('simple_query_string', query=term)
                 results: QuerySet = index.search().query(query).to_queryset()
                 # If the calling object is a queryset (rather than a manager),
@@ -78,22 +82,17 @@ class SearchableMixin:
                 # Use subquery as a workaround to guarantee distinct results in queryset.
                 guarantee_distinct_results = True
                 search = SearchQuery(query, search_type='raw')
-                if guarantee_distinct_results:
-                    results = {
-                        result.pk: result.rank
-                        for result in self.annotate(rank=SearchRank(vector, search)).filter(
-                            rank__gt=0
-                        )
-                    }
-                    return sorted(
-                        self.filter(pk__in=results.keys()),
-                        key=lambda result: -results[result.pk],  # rank
-                    )
                 results = (
                     self.annotate(rank=SearchRank(vector, search))
                     .filter(rank__gt=0)
                     .order_by('-rank')
                 )
+                if guarantee_distinct_results:
+                    result_ids = {result.pk: result.rank for result in results}.keys()
+                    ordering = Case(
+                        *[When(pk=pk, then=pos) for pos, pk in enumerate(result_ids)]
+                    )
+                    return self.filter(pk__in=result_ids).order_by(ordering)
         else:
             results = self.all()
         return results
@@ -101,14 +100,6 @@ class SearchableMixin:
 
 class SearchableQuerySet(SearchableMixin, QuerySet):
     """A searchable queryset."""
-
-    def get_by_natural_key(self, *args) -> 'Model':
-        """Retrieve a model instance by its natural key."""
-        fields = self.model.natural_key_fields
-        natural_key = {}
-        for index, field in enumerate(fields):
-            natural_key[field] = args[index]
-        return self.get(**natural_key)
 
 
 class SearchableManager(SearchableMixin, Manager):

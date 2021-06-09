@@ -13,12 +13,13 @@ from apps.search.documents.image import ImageDocument
 from apps.search.documents.occurrence import OccurrenceDocument
 from apps.search.documents.quote import QuoteDocument
 from apps.search.documents.source import SourceDocument
+from tasks.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context
+
     from apps.search.documents.base import Document
 
-from .command import command
 
 django.setup()
 

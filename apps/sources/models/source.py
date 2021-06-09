@@ -24,7 +24,7 @@ from apps.search.models import SearchableModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields.html_field import HTMLField
-from core.models.manager import SearchableManager, SearchableMixin
+from core.models.manager import SearchableManager, SearchableQuerySet
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -54,7 +54,7 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class SourceQuerySet(SearchableMixin, PolymorphicQuerySet):
+class SourceQuerySet(PolymorphicQuerySet, SearchableQuerySet):
     """Custom queryset for sources."""
 
 

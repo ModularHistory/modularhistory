@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Optional
 import django
 
 from core.utils import db
-
-from .command import command
+from tasks.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context

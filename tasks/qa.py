@@ -12,8 +12,7 @@ except ModuleNotFoundError:
 from typing import TYPE_CHECKING
 
 from core.utils import qa
-
-from .command import command
+from tasks.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context
