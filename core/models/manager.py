@@ -1,10 +1,11 @@
 """Manager classes for ModularHistory's models."""
 
 from datetime import date, datetime
-from typing import TYPE_CHECKING, Iterable, Optional, Sequence, Union
+from typing import Iterable, Optional, TYPE_CHECKING, Union
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import Case, QuerySet, When
+from django.db.models import Case, IntegerField, QuerySet, When
+from django.db.models.expressions import Value
 from django.db.models.manager import Manager
 from django.utils.module_loading import import_string
 from elasticsearch_dsl import Q
@@ -15,8 +16,6 @@ from apps.dates.structures import HistoricDateTime
 if TYPE_CHECKING:
     from apps.search.documents.base import Document
     from core.models.model import Model
-
-SearchResults = Union[QuerySet['Model'], Sequence['Model']]
 
 
 class SearchableMixin:
@@ -43,7 +42,7 @@ class SearchableMixin:
         term: str,
         elastic: bool = True,
         fields: Iterable[str] = None,
-    ) -> SearchResults:
+    ) -> QuerySet['Model']:
         """Return search results."""
         searchable_fields = fields or getattr(self.model, 'searchable_fields', None)
         if searchable_fields and term:
@@ -89,10 +88,15 @@ class SearchableMixin:
                 )
                 if guarantee_distinct_results:
                     result_ids = {result.pk: result.rank for result in results}.keys()
-                    ordering = Case(
-                        *[When(pk=pk, then=pos) for pos, pk in enumerate(result_ids)]
+                    return self.filter(pk__in=result_ids).order_by(
+                        Case(
+                            *[
+                                When(pk=pk, then=Value(pos))
+                                for pos, pk in enumerate(result_ids)
+                            ],
+                            output_field=IntegerField(),
+                        )
                     )
-                    return self.filter(pk__in=result_ids).order_by(ordering)
         else:
             results = self.all()
         return results
