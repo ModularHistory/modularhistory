@@ -15,44 +15,45 @@ window.addEventListener("load", function() {
                 });
             }
         });
-
-        // Initialize Trumbowyg editors for HTML fields.
-        $("textarea").trumbowyg({
-            resetCss: true,
-            autogrow: true,
-            autogrowOnEnter: true,
-            defaultLinkTarget: "_blank",
-            removeformatPasted: true,
-            btnsDef: {
-                image: {
-                    dropdown: [
-                        "upload",
-                        "insertImage",
-                        "base64",
-                        "noembed"
-                    ],
-                    ico: "insertImage"
-                }
-            },
-            btns: [
-                ['viewHTML'],
-                ['undo', 'redo'], // Only supported in Blink browsers
-                ['formatting'],
-                ['strong', 'em', 'del'],
-                ['superscript', 'subscript'],
-                ['link'],
-                ['image'],
-                ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-                ['unorderedList', 'orderedList'],
-                ['horizontalRule'],
-                ['removeformat'],
-                ['fullscreen']
-            ],
-            plugins: {},
-            tagsToRemove: ['script', 'link']
-        });
-        $("textarea").find('img[data-src]').each(function () {
-            $(this).attr('src', this.dataset.src);
-        });
+        if ($("textarea").length) {
+            // Initialize Trumbowyg editors for HTML fields.
+            $("textarea").trumbowyg({
+                resetCss: true,
+                autogrow: true,
+                autogrowOnEnter: true,
+                defaultLinkTarget: "_blank",
+                removeformatPasted: true,
+                btnsDef: {
+                    image: {
+                        dropdown: [
+                            "upload",
+                            "insertImage",
+                            "base64",
+                            "noembed"
+                        ],
+                        ico: "insertImage"
+                    }
+                },
+                btns: [
+                    ['viewHTML'],
+                    ['undo', 'redo'], // Only supported in Blink browsers
+                    ['formatting'],
+                    ['strong', 'em', 'del'],
+                    ['superscript', 'subscript'],
+                    ['link'],
+                    ['image'],
+                    ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                    ['unorderedList', 'orderedList'],
+                    ['horizontalRule'],
+                    ['removeformat'],
+                    ['fullscreen']
+                ],
+                plugins: {},
+                tagsToRemove: ['script', 'link']
+            });
+            $("textarea").find('img[data-src]').each(function () {
+                $(this).attr('src', this.dataset.src);
+            });
+        }
     })(django.jQuery);
 });

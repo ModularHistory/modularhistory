@@ -70,11 +70,16 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
+                '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/ui/trumbowyg.min.css',
                 BASE_CSS,
                 ADMIN_CSS,
             )
         }
-        js = ('scripts/admin.js',)
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
+            '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/trumbowyg.min.js',
+            'scripts/admin.js',
+        )
 
     def get_readonly_fields(
         self, request: HttpRequest, model_instance: Optional['Model'] = None

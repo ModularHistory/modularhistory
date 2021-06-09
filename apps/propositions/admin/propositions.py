@@ -58,7 +58,7 @@ class PropositionAdmin(AbstractPropositionAdmin):
     model = models.Proposition
 
     list_display = AbstractPropositionAdmin.list_display + ['date_string', 'type']
-    list_filter = AbstractPropositionAdmin.list_filter + ['type']
+    list_filter = ['type'] + AbstractPropositionAdmin.list_filter
     ordering = ['date', 'type']
     search_fields = model.searchable_fields
 

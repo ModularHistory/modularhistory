@@ -111,13 +111,6 @@ def process(html: str) -> str:
 class TrumbowygWidget(Textarea):
     """Trumbowyg widget for editing HTML fields."""
 
-    class Media:
-        css = {
-            'all': ('//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/ui/trumbowyg.min.css',)
-        }
-        # Note: Trumbowyg depends on jQuery.
-        js = ['//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/trumbowyg.min.js']
-
     def render(
         self,
         name: str,
