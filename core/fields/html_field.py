@@ -127,51 +127,52 @@ class TrumbowygWidget(Textarea):
     ) -> SafeText:
         """Render the widget."""
         output = super().render(name, value, attrs)
-        script = f'''
-            <script defer>
-                window.addEventListener("load", function() {{
-                    (function($) {{
-                        $("#id_{name}").trumbowyg({{
-                            resetCss: true,
-                            autogrow: true,
-                            autogrowOnEnter: true,
-                            defaultLinkTarget: "_blank",
-                            removeformatPasted: true,
-                            btnsDef: {{
-                                image: {{
-                                    dropdown: [
-                                        "upload",
-                                        "insertImage",
-                                        "base64",
-                                        "noembed"
-                                    ],
-                                    ico: "insertImage"
-                                }}
-                            }},
-                            btns: [
-                                ['viewHTML'],
-                                ['undo', 'redo'], // Only supported in Blink browsers
-                                ['formatting'],
-                                ['strong', 'em', 'del'],
-                                ['superscript', 'subscript'],
-                                ['link'],
-                                ['image'],
-                                ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
-                                ['unorderedList', 'orderedList'],
-                                ['horizontalRule'],
-                                ['removeformat'],
-                                ['fullscreen']
-                            ],
-                            plugins: {{}},
-                            tagsToRemove: ['script', 'link']
-                        }});
-                        $("#id_{name}").find('img[data-src]').each(function () {{
-                            $(this).attr('src', this.dataset.src);
-                        }});
-                    }})(django.jQuery);
-                }});
-            </script>
-        '''
+        script = ''
+        # f'''
+        #     <script defer>
+        #         window.addEventListener("load", function() {{
+        #             (function($) {{
+        #                 $("#id_{name}").trumbowyg({{
+        #                     resetCss: true,
+        #                     autogrow: true,
+        #                     autogrowOnEnter: true,
+        #                     defaultLinkTarget: "_blank",
+        #                     removeformatPasted: true,
+        #                     btnsDef: {{
+        #                         image: {{
+        #                             dropdown: [
+        #                                 "upload",
+        #                                 "insertImage",
+        #                                 "base64",
+        #                                 "noembed"
+        #                             ],
+        #                             ico: "insertImage"
+        #                         }}
+        #                     }},
+        #                     btns: [
+        #                         ['viewHTML'],
+        #                         ['undo', 'redo'], // Only supported in Blink browsers
+        #                         ['formatting'],
+        #                         ['strong', 'em', 'del'],
+        #                         ['superscript', 'subscript'],
+        #                         ['link'],
+        #                         ['image'],
+        #                         ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+        #                         ['unorderedList', 'orderedList'],
+        #                         ['horizontalRule'],
+        #                         ['removeformat'],
+        #                         ['fullscreen']
+        #                     ],
+        #                     plugins: {{}},
+        #                     tagsToRemove: ['script', 'link']
+        #                 }});
+        #                 $("#id_{name}").find('img[data-src]').each(function () {{
+        #                     $(this).attr('src', this.dataset.src);
+        #                 }});
+        #             }})(django.jQuery);
+        #         }});
+        #     </script>
+        # '''
         output += mark_safe(script)  # noqa: S703,S308
         return output
 

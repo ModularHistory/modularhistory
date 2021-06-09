@@ -16,8 +16,6 @@ function initializeListeners(element = null) {
     // Tooltips
     $(scope).tooltip({ selector: '[data-toggle="tooltip"]' });
 
-    $(scope).on()
-
     $(scope).dblclick(function (event) {
         let selection = window.getSelection();
         let node = selection.getRangeAt(0).commonAncestorContainer;
