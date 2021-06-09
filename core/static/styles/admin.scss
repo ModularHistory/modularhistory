@@ -44,10 +44,6 @@ div.readonly {
   > label {
     z-index: 10;
   }
-  > .mce-tinymce.mce-container.mce-panel {
-    margin-top: $label-height !important;
-    max-width: 100% !important;
-  }
 }
 
 td.field-source {
@@ -83,6 +79,10 @@ td.field-source {
       }
     }
   }
+}
+
+.inlinechangelink {
+  font-size: 0.7rem;
 }
 
 .trumbowyg-box {

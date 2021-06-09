@@ -247,9 +247,6 @@ div.readonly {
   position: relative; }
   .form-row > div > label {
     z-index: 10; }
-  .form-row > div > .mce-tinymce.mce-container.mce-panel {
-    margin-top: 2rem !important;
-    max-width: 100% !important; }
 
 td.field-source {
   max-width: 600px; }
@@ -270,6 +267,9 @@ td.field-source {
   list-style: none; }
   #changelist .results li.topic-tag ::after {
     content: ","; }
+
+.inlinechangelink {
+  font-size: 0.7rem; }
 
 .trumbowyg-box {
   display: inline-block;

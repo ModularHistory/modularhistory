@@ -65,7 +65,6 @@ class ArgumentsInline(TabularInline):
 
     model = models.Argument
 
-    extra = 0
     fields = ('position', 'type', '__html__', 'explanation')
     fk_name = 'conclusion'
     readonly_fields = ('__html__',)
