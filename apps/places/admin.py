@@ -12,7 +12,7 @@ class AbstractLocationsInline(TabularInline):
     """Inline admin for an occurrence's locations."""
 
     model: Type[Model]
-    extra = 1
+    extra = 0
     autocomplete_fields = ['location']
     verbose_name = 'location'
     verbose_name_plural = 'locations'

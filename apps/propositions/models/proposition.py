@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Match, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.template.defaultfilters import truncatechars_html
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -38,16 +39,20 @@ from core.fields.html_field import (
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
-from core.utils.html import escape_quotes
+from core.utils.html import escape_quotes, soupify
 from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
     from django.db.models.manager import RelatedManager
+    from django.db.models.query import QuerySet
 
+    from apps.entities.models.entity import Entity
+    from apps.images.models.image import Image
     from apps.propositions.models.argument import Argument
 
 
+TRUNCATED_DESCRIPTION_LENGTH: int = 250
 proposition_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>proposition)'  # noqa: WPS360
 )
@@ -198,6 +203,48 @@ class Proposition(  # noqa: WPS215
         elif self.type == 'propositions.proposition' and not self.certainty:
             raise ValidationError('Proposition needs a degree of certainty.')
         super().clean()
+
+    def save(self, *args, **kwargs):
+        """Save the occurrence to the database."""
+        super().save(*args, **kwargs)
+        if not self.images.exists():
+            image: Optional['Image'] = None
+            if self.related_entities.exists():
+                entity: 'Entity'
+                for entity in self.related_entities.all():
+                    if entity.images.exists():
+                        if self.date:
+                            image = entity.images.get_closest_to_datetime(self.date)
+                        else:
+                            image = entity.image
+            if image:
+                self.images.add(image)
+
+    def clean(self):
+        """Prepare the occurrence to be saved."""
+        super().clean()
+        if self.type == 'propositions.occurrence' and not self.date:
+            raise ValidationError('Occurrence needs a date.')
+
+    @property
+    def truncated_elaboration(self) -> Optional[SafeString]:
+        """Return the occurrence's elaboration, truncated."""
+        if not self.elaboration:
+            return None
+        elaboration = soupify(self.elaboration)
+        if elaboration.find('img'):
+            elaboration.find('img').decompose()
+        truncated_elaboration = (
+            truncatechars_html(elaboration.prettify(), TRUNCATED_DESCRIPTION_LENGTH)
+            .replace('<p>', '')
+            .replace('</p>', '')
+        )
+        return format_html(truncated_elaboration)
+
+    @property
+    def ordered_images(self) -> 'QuerySet':
+        """Careful!  These are occurrence-images, not images."""
+        return self.image_relations.all().select_related('image')
 
     @property
     def escaped_summary(self) -> SafeString:

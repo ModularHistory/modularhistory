@@ -157,11 +157,6 @@ class AbstractCitation(PositionedRelation):
         return format_html(html)
 
     @property
-    def number(self) -> int:
-        """Return the citation's 1-based index."""
-        return self.position + 1 if self.position else 0
-
-    @property
     def primary_page_number(self) -> Optional[int]:
         """Return the page number of the citation's primary page range."""
         try:

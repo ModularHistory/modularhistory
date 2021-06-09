@@ -61,10 +61,7 @@ class TaggableModel(SluggedModel, ModelWithCache):
         tags_html = ''
         if self.tag_keys:
             tags_html = ' '.join(
-                [
-                    f'<li class="topic-tag"><a>{tag_key}</a></li>'
-                    for tag_key in self.tag_keys
-                ]
+                [f'<li class="topic-tag"><a>{tag_key}</a></li>' for tag_key in self.tag_keys]
             )
         return format_html(tags_html)
 

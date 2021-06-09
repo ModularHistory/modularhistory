@@ -31,6 +31,8 @@ class TabularInline(BaseTabularInline):
         **kwargs,
     ) -> int:
         """Return the number of extra/blank rows to display."""
+        if self.extra == 0:
+            return self.extra
         if obj:
             if self.fk_name:
                 fk_name = self.fk_name

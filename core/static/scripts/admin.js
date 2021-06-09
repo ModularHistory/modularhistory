@@ -4,6 +4,7 @@ window.addEventListener("load", function() {
         $(document).find('[type="text"]').each(function() {
             const maxLength = $(this).attr('maxlength');
             if (maxLength) {
+                $(this).css('width', `${maxLength/2}em`);
                 let currentLength = $(this).val().length;
                 let remainingLength = parseInt(maxLength) - currentLength;
                 const id = `${this.id}-count`;

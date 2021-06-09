@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
-from nested_admin import NestedStackedInline, NestedTabularInline
-
+from apps.admin.inlines import TabularInline
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.images.admin import AbstractImagesInline
 from apps.places.admin import AbstractLocationsInline
@@ -14,37 +13,37 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
-class TagsInline(AbstractTagsInline, NestedTabularInline):
+class TagsInline(AbstractTagsInline):
     """Inline admin for topic tags."""
 
     model = models.Proposition.tags.through
 
 
-class SourcesInline(AbstractSourcesInline, NestedTabularInline):
+class SourcesInline(AbstractSourcesInline):
     """Inline admin for sources."""
 
     model = models.Proposition.sources.through
 
 
-class RelatedEntitiesInline(AbstractRelatedEntitiesInline, NestedTabularInline):
+class RelatedEntitiesInline(AbstractRelatedEntitiesInline):
     """Inline admin for related entities."""
 
     model = models.Proposition.related_entities.through
 
 
-class ImagesInline(AbstractImagesInline, NestedTabularInline):
+class ImagesInline(AbstractImagesInline):
     """Inline admin for images."""
 
     model = models.Proposition.images.through
 
 
-class LocationsInline(AbstractLocationsInline, NestedTabularInline):
+class LocationsInline(AbstractLocationsInline):
     """Inline admin for locations."""
 
     model = models.Proposition.locations.through
 
 
-class PremisesInline(NestedTabularInline):
+class PremisesInline(TabularInline):
     """Inline admin for a proposition's premises."""
 
     model = models.ArgumentSupport
@@ -61,13 +60,16 @@ class PremisesInline(NestedTabularInline):
         return super().get_queryset(request).select_related('premise')
 
 
-class ArgumentsInline(NestedStackedInline):
+class ArgumentsInline(TabularInline):
     """Inline admin for a proposition's supported propositions."""
 
     model = models.Argument
 
     extra = 0
-    inlines = [PremisesInline]
+    fields = ('position', 'type', '__html__', 'explanation')
+    fk_name = 'conclusion'
+    readonly_fields = ('__html__',)
+    show_change_link = True
     verbose_name = 'argument'
     verbose_name_plural = 'arguments'
 

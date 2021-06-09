@@ -21,7 +21,6 @@ from django_celery_beat.models import (
 )
 from django_celery_results.admin import TaskResultAdmin
 from django_celery_results.models import TaskResult
-from nested_admin import NestedModelAdmin as BaseNestedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin
 from sass_processor.processor import sass_processor
 
@@ -124,10 +123,6 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
                 request, queryset, search_term
             )
         return queryset, use_distinct
-
-
-class NestedModelAdmin(BaseNestedModelAdmin, ModelAdmin):
-    """Mix NestedModelAdmin with ModularHistory's custom admin."""
 
 
 class ContentTypeFields(Constant):

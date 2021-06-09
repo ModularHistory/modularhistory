@@ -205,15 +205,20 @@ class HTMLField(TextField):
             if self.paragraphed is None:
                 pass
             elif self.paragraphed:
-                # TODO: move this to a util method
+                # TODO: move this to a util method?
                 if html.startswith('<p') and html.endswith('</p>'):
                     pass
                 else:
                     html = f'<p>{html}</p>'
             else:  # if paragraphed is False
-                # TODO: move this to a util method
+                # TODO: move this to a util method?
                 if html.startswith('<p') and html.endswith('</p>'):
-                    html = soupify(html).p.decode_contents()
+                    html = ' '.join(
+                        [
+                            paragraph.decode_contents()
+                            for paragraph in soupify(html).find_all('p')
+                        ]
+                    )
             html = self.make_replacements(html)
         return html
 
