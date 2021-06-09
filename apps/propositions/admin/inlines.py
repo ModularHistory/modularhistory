@@ -75,4 +75,4 @@ class ArgumentsInline(TabularInline):
 
     def get_queryset(self, request: 'HttpRequest') -> 'QuerySet':
         """Return the queryset of model instances to be included."""
-        return super().get_queryset(request).order_by('type')
+        return super().get_queryset(request).order_by('position')

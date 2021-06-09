@@ -47,7 +47,7 @@ class Argument(PositionedRelation):
 
     def __str__(self) -> str:
         """Return the proposition's string representation."""
-        return soupify(self.__html__).get_text()
+        return f'Argument {self.number} for "{self.conclusion}"'
 
     @property
     def __html__(self) -> SafeString:
@@ -56,7 +56,7 @@ class Argument(PositionedRelation):
         if not self._state.adding:
             try:
                 _item = '<li>{}</li>'.format
-                premises = (
+                html = (
                     (
                         '<ol>'
                         f'{"".join([_item(str(premise)) for premise in self.premises.all()])}'
@@ -64,10 +64,6 @@ class Argument(PositionedRelation):
                     )
                     if self.premises.exists()
                     else ''
-                )
-                html = (
-                    f'<strong>Argument {self.number}</strong><br />'
-                    f'{premises}<br />{self.explanation}'
                 )
             except Exception as err:
                 logging.info(err)
