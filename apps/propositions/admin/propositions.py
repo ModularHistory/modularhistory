@@ -1,6 +1,6 @@
 from apps.admin.admin_site import admin_site
 from apps.admin.model_admin import ModelAdmin
-from apps.collections.admin import CollectionFilter
+from apps.collections.admin import AbstractCollectionsInline, CollectionFilter
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.propositions import models
 from apps.propositions.admin.filters import HasDateFilter, HasQuotesFilter, LocationFilter
@@ -18,6 +18,12 @@ from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
 from apps.topics.models.taggable_model import TopicFilter
 
 
+class CollectionsInline(AbstractCollectionsInline):
+    """Inline admin for collections."""
+
+    model = models.CollectionInclusion
+
+
 class AbstractPropositionAdmin(SearchableModelAdmin):
     """Abstract base admin for propositions."""
 
@@ -33,6 +39,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
         ImagesInline,
         RelatedEntitiesInline,
         LocationsInline,
+        CollectionsInline,
         TagsInline,
     ]
     list_display = [

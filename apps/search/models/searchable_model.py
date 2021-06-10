@@ -1,5 +1,7 @@
 """Base classes for models that appear in ModularHistory search results."""
 
+from typing import Sequence
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -37,7 +39,7 @@ class SearchableModel(TaggableModel, VerifiableModel):
 
         abstract = True
 
-    slug_base_field: str = 'key'
+    slug_base_fields: Sequence[str] = ('title',)
 
     def clean(self):
         """Prepare the model instance to be saved."""

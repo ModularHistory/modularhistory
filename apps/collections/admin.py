@@ -1,8 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type
 
-from django.contrib.admin.options import TabularInline
 from django.urls import reverse
 
+from apps.admin.inlines import TabularInline
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.admin.model_admin import admin_site
 from apps.collections import models
@@ -23,10 +23,12 @@ class CollectionAdmin(SearchableModelAdmin):
     search_fields = model.searchable_fields
 
 
-class CollectionsInline(TabularInline):
+class AbstractCollectionsInline(TabularInline):
     """Inline admin for collections."""
 
-    model = models.Collection
+    model: Type[models.AbstractCollectionInclusion]
+
+    autocomplete_fields = ['collection']
 
 
 class CollectionFilter(ManyToManyAutocompleteFilter):
