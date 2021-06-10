@@ -1,4 +1,4 @@
-from typing import Type
+from typing import TYPE_CHECKING, Type
 
 from django.db.models.aggregates import Count
 from image_cropping import ImageCroppingMixin
@@ -10,6 +10,10 @@ from apps.entities.models.entity import Entity
 from apps.images.models.image import Image
 from apps.images.models.video import Video
 from apps.search.admin import SearchableModelAdmin
+
+if TYPE_CHECKING:
+    from django.db.models import Model, QuerySet
+    from django.http import HttpRequest
 
 
 class EntityFilter(EntityAutocompleteFilter):
@@ -51,7 +55,7 @@ class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
 class AbstractImagesInline(TabularInline):
     """Abstract base inline for images."""
 
-    model: Type
+    model: Type['Model']
 
     autocomplete_fields = ['image']
     readonly_fields = ['admin_image_element']
@@ -63,7 +67,7 @@ class AbstractImagesInline(TabularInline):
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def admin_image_element(self, instance):
+    def admin_image_element(self, instance: 'Model'):
         """Return an inline image's admin image element."""
         return instance.image.admin_image_element
 
@@ -74,7 +78,7 @@ class HasMultipleImagesFilter(BooleanListFilter):
     title = 'has multiple images'
     parameter_name = 'has_multiple_images'
 
-    def queryset(self, request, queryset):
+    def queryset(self, request: 'HttpRequest', queryset: 'QuerySet') -> 'QuerySet':
         """Return the filtered queryset."""
         queryset = queryset.annotate(citation_count=Count('images'))
         if self.value() == 'Yes':

@@ -1,5 +1,6 @@
 from apps.admin.admin_site import admin_site
 from apps.admin.model_admin import ModelAdmin
+from apps.collections.admin import CollectionFilter
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.propositions import models
 from apps.propositions.admin.filters import HasDateFilter, HasQuotesFilter, LocationFilter
@@ -42,6 +43,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
     list_filter = [
         'verified',
         TopicFilter,
+        CollectionFilter,
         RelatedEntityFilter,
         HasDateFilter,
         HasQuotesFilter,

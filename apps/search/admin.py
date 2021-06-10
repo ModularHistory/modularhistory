@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Type
 from django.urls import path
 
 from apps.admin.model_admin import ModelAdmin, admin_site
+from apps.collections.views import CollectionSearchView
 from apps.entities.views import EntityCategorySearchView, EntitySearchView
 from apps.search import models
 from apps.topics.views import TagSearchView
@@ -91,6 +92,11 @@ class SearchableModelAdmin(ModelAdmin):
                 'tag_search/',
                 self.admin_site.admin_view(TagSearchView.as_view(model_admin=self)),
                 name='tag_search',
+            ),
+            path(
+                'collection_search/',
+                self.admin_site.admin_view(CollectionSearchView.as_view(model_admin=self)),
+                name='collection_search',
             ),
             path(
                 'entity_search/',

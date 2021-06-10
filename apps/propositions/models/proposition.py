@@ -44,7 +44,6 @@ from core.utils.html import escape_quotes, soupify
 from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
     from django.db.models.manager import RelatedManager
     from django.db.models.query import QuerySet
 
@@ -226,12 +225,6 @@ class Proposition(  # noqa: WPS215
                             image = entity.image
             if image:
                 self.images.add(image)
-
-    def clean(self):
-        """Prepare the occurrence to be saved."""
-        super().clean()
-        if self.type == 'propositions.occurrence' and not self.date:
-            raise ValidationError('Occurrence needs a date.')
 
     @property
     def truncated_elaboration(self) -> Optional[SafeString]:
