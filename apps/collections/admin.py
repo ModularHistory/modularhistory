@@ -39,7 +39,7 @@ class CollectionFilter(ManyToManyAutocompleteFilter):
     _parameter_name = 'collections__pk__exact'
     m2m_cls = models.Collection
 
-    def get_autocomplete_url(self, request: 'HttpRequest', model_admin):
+    def get_autocomplete_url(self, request: 'HttpRequest', model_admin) -> str:
         """Return the URL used for topic autocompletion."""
         return reverse('admin:collection_search')
 
