@@ -5,19 +5,28 @@ from image_cropping import ImageCroppingMixin
 
 from apps.admin import ModelAdmin, TabularInline, admin_site
 from apps.admin.list_filters.boolean_filters import BooleanListFilter
-from apps.entities.models.entity_image import EntityImage
+from apps.entities.admin.filters import EntityAutocompleteFilter
+from apps.entities.models.entity import Entity
 from apps.images.models.image import Image
 from apps.images.models.video import Video
 from apps.search.admin import SearchableModelAdmin
 
 
+class EntityFilter(EntityAutocompleteFilter):
+    """Autocomplete filter for depicted entities."""
+
+    title = 'entity'
+    field_name = 'entity_set'
+
+
 class EntitiesInline(TabularInline):
     """Inline admin for entities (in image admin)."""
 
-    model = EntityImage
+    model = Entity.images.through
     verbose_name = 'entity'
+    verbose_name_plural = 'entities'
     extra = 1
-    autocomplete_fields = ['entity']
+    autocomplete_fields = ['content_object']
 
 
 class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
@@ -30,6 +39,7 @@ class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
         'provider',
         'date_string',
     ]
+    list_filter = [EntityFilter]
     inlines = [EntitiesInline]
     search_fields = Image.searchable_fields
     readonly_fields = ['height', 'width', 'urls', 'pretty_cache']

@@ -12,5 +12,5 @@ class ManyToManyForeignKey(models.ForeignKey):
         if len(args) and not to:
             to = args[0]
         kwargs['on_delete'] = kwargs.get('on_delete') or models.CASCADE
-        kwargs['related_name'] = related_name or '%(class)s_relations'
+        kwargs['related_name'] = related_name or '%(app_label)s_%(class)s_relations'
         super().__init__(**kwargs)

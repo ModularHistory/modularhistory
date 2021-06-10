@@ -23,7 +23,7 @@ class AbstractImageRelation(PositionedRelation):
     """
 
     image = ManyToManyForeignKey(
-        to='images.Image', related_name='_%(app_label)s_%(class)s_set'
+        to='images.Image', related_name='%(app_label)s_%(class)s_set'
     )
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
@@ -61,7 +61,7 @@ class ModelWithImages(Model):
         abstract = True
 
     @property
-    def _images(self) -> ImagesField:
+    def images(self) -> ImagesField:
         """
         Require implementation of an `images` field on inheriting models.
 

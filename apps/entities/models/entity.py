@@ -10,6 +10,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
+from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime as DateTime
 from apps.entities.api.serializers import EntitySerializer
@@ -49,11 +50,19 @@ PARTS_OF_SPEECH = (
 )
 
 
+class CollectionInclusion(AbstractCollectionInclusion):
+    """An inclusion of an entity in a collection."""
+
+    content_object = ManyToManyForeignKey(
+        to='entities.Entity', related_name='collection_inclusions', verbose_name='entity'
+    )
+
+
 class ImageRelation(AbstractImageRelation):
     """A relation of an image to an entity."""
 
     content_object = ManyToManyForeignKey(
-        to='entities.Entity', related_name='_image_relations', verbose_name='entity'
+        to='entities.Entity', related_name='image_relations', verbose_name='entity'
     )
 
 

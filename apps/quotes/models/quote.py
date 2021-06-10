@@ -21,7 +21,6 @@ from apps.quotes.models.model_with_related_quotes import (
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
-from apps.quotes.models.quote_image import QuoteImage
 from apps.quotes.serializers import QuoteSerializer
 from apps.search.models.searchable_dated_model import SearchableDatedModel
 from apps.sources.models.citation import AbstractCitation
@@ -66,7 +65,7 @@ class Citation(AbstractCitation):
 class ImageRelation(AbstractImageRelation):
     """A relationship between a quote and an image."""
 
-    content_object = get_quote_fk(related_name='_image_relations')
+    content_object = get_quote_fk(related_name='image_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
@@ -182,7 +181,7 @@ class Quote(
             if image is None and self.related_occurrences.exists():
                 image = self.related_occurrences.first().primary_image
             if image:
-                QuoteImage.objects.create(quote=self, image=image)
+                ImageRelation.objects.create(content_object=self, image=image)
 
     def update_calculated_fields(self):
         """Update the quote's calculated fields."""

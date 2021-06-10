@@ -3,4 +3,3 @@
 from .quote import Citation, ImageRelation, Quote, QuoteRelation, quote_sorter_key
 from .quote_attribution import QuoteAttribution
 from .quote_bite import QuoteBite
-from .quote_image import QuoteImage

@@ -198,7 +198,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         ordering = ['-date']
 
     objects = SourceManager().from_queryset(SourceQuerySet)()
-    searchable_fields = ['citation_string', 'description']
+    searchable_fields = ['citation_string', 'tags__name', 'tags__aliases', 'description']
     serializer = SourceSerializer
     slug_base_fields = ('title',)
 
