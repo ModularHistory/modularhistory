@@ -1,5 +1,7 @@
 """Admin for the quotes app."""
 
+from typing import TYPE_CHECKING
+
 from django.db.models.query import QuerySet
 
 from apps.admin.admin_site import admin_site
@@ -20,6 +22,9 @@ from apps.sources.admin.filters.simple_filters import (
 )
 from apps.topics.admin.tags import AbstractTagsInline, HasTagsFilter
 from apps.topics.models.taggable_model import TopicFilter
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 class SourcesInline(AbstractSourcesInline):
@@ -92,7 +97,7 @@ class QuoteAdmin(SearchableModelAdmin):
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 
-    def get_queryset(self, request) -> 'QuerySet[models.Quote]':
+    def get_queryset(self, request: 'HttpRequest') -> 'QuerySet[models.Quote]':
         """
         Return the queryset of quotes to be displayed in the admin.
 
