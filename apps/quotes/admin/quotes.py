@@ -2,8 +2,6 @@
 
 from typing import TYPE_CHECKING
 
-from django.db.models.query import QuerySet
-
 from apps.admin.admin_site import admin_site
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.quotes import models
@@ -24,6 +22,7 @@ from apps.topics.admin.tags import AbstractTagsInline, HasTagsFilter
 from apps.topics.models.taggable_model import TopicFilter
 
 if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
     from django.http import HttpRequest
 
 
