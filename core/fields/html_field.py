@@ -24,11 +24,13 @@ if TYPE_CHECKING:
 ENTITY_NAME_REGEX = r'<span class=\"entity-name\" data-entity-id=\"(\d+)\">(.+?)</span>'
 
 REPLACEMENTS = (
-    # Prevent related videos from different channels from being displayed
+    # Prevent related videos from different channels from being displayed.
     (r'''(<iframe .*?src=["'].*youtube\.com\/[^\?]+?)(["'])''', r'\g<1>?rel=0\g<2>'),
-    # Remove empty divs & paragraphs
+    # Remove empty divs & paragraphs.
     (r'\n?<(?:div|p)>(?:(?:&nbsp;)+|[\s\n]+)?<\/(?:div|p)>', ''),
-    # Add bootstrap classes to HTML elements
+    # Remove <br> tags.
+    (r'<br ?/?>', ''),
+    # Add bootstrap classes to HTML elements.
     (r'<blockquote>', '<blockquote class="blockquote">'),
     (r'<table>', '<table class="table">'),
 )
