@@ -10,6 +10,7 @@ from apps.topics.views import TagSearchView
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
+    from django.urls.resolvers import URLPattern
 
     from apps.search.models import SearchableModel
 
@@ -22,7 +23,9 @@ class SearchableModelAdmin(ModelAdmin):
     exclude = ['cache', 'tags']
     readonly_fields = ['slug', 'pretty_cache']
 
-    def get_fields(self, request, model_instance=None):
+    def get_fields(
+        self, request: 'HttpRequest', model_instance: Optional['SearchableModel'] = None
+    ) -> list[str]:
         """Return reordered fields to be displayed in the admin."""
         fields = super().get_fields(request, model_instance)
         ordered_field_names = reversed(
@@ -88,7 +91,7 @@ class SearchableModelAdmin(ModelAdmin):
             )
         return fieldsets
 
-    def get_urls(self):
+    def get_urls(self) -> list['URLPattern']:
         """Return URLs used by searchable model admins."""
         urls = super().get_urls()
         custom_urls = [
