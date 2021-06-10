@@ -2,6 +2,8 @@
 
 from typing import TYPE_CHECKING
 
+from rangefilter.filters import DateRangeFilter
+
 from apps.admin.admin_site import admin_site
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.quotes import models
@@ -85,6 +87,7 @@ class QuoteAdmin(SearchableModelAdmin):
         AttributeeFilter,
         AttributeeCategoryFilter,
         AttributeeCountFilter,
+        ('date', DateRangeFilter),
     ]
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields + [

@@ -28,6 +28,10 @@ parallel = true
 # https://coverage.readthedocs.io/en/latest/config.html#html
 directory = ".coverage_html"
 
+[tool.django-stubs]
+django_settings_module = "core.settings"
+ignore_missing_model_attributes = true
+
 [tool.isort]
 # https://github.com/timothycrosley/isort/wiki/isort-Settings
 atomic = true
@@ -60,11 +64,7 @@ warn_unreachable = true
 plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 
 [[tool.mypy.overrides]]
-modules = "*.migrations.*"
-ignore_errors = true
-
-[[tool.mypy.overrides]]
-modules = "__init__"
+module = ["*.migrations.*", "__init__"]
 ignore_errors = true
 
 [tool.poetry]
@@ -169,6 +169,7 @@ Twisted = [
 ]
 uvicorn = { extras = ["standard"], version = "^0.12" }
 youtube-dl = "^2020.7.28"
+django-admin-rangefilter = "^0.8.1"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"

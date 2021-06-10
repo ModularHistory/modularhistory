@@ -1,3 +1,5 @@
+from rangefilter.filters import DateRangeFilter
+
 from apps.admin.admin_site import admin_site
 from apps.admin.model_admin import ModelAdmin
 from apps.collections.admin import AbstractCollectionsInline, CollectionFilter
@@ -59,6 +61,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
         HasSourceFilter,
         HasMultipleSourcesFilter,
         # HasMultipleImagesFilter,
+        ('date', DateRangeFilter),
     ]
     list_per_page = 20
 
