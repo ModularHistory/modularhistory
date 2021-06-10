@@ -13,11 +13,8 @@ class PositionedRelation(Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for PositionedRelation."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         abstract = True
 
     @property

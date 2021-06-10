@@ -45,6 +45,9 @@ class Argument(PositionedRelation):
         blank=True,
     )
 
+    class Meta:
+        unique_together = ['position', 'conclusion']
+
     def __str__(self) -> str:
         """Return the proposition's string representation."""
         return f'Argument {self.number} for "{self.conclusion}"'
