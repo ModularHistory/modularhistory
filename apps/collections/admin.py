@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.contrib.admin.options import TabularInline
 from django.urls import reverse
 
@@ -6,6 +8,9 @@ from apps.admin.model_admin import admin_site
 from apps.collections import models
 from apps.search.admin import SearchableModelAdmin
 from apps.topics.models.taggable_model import TopicFilter
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 class CollectionAdmin(SearchableModelAdmin):
@@ -32,7 +37,7 @@ class CollectionFilter(ManyToManyAutocompleteFilter):
     _parameter_name = 'collections__pk__exact'
     m2m_cls = models.Collection
 
-    def get_autocomplete_url(self, request, model_admin):
+    def get_autocomplete_url(self, request: 'HttpRequest', model_admin):
         """Return the URL used for topic autocompletion."""
         return reverse('admin:collection_search')
 

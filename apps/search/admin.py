@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Optional, Type
 
 from django.urls import path
 
@@ -9,6 +9,8 @@ from apps.search import models
 from apps.topics.views import TagSearchView
 
 if TYPE_CHECKING:
+    from django.http import HttpRequest
+
     from apps.search.models import SearchableModel
 
 
@@ -40,7 +42,9 @@ class SearchableModelAdmin(ModelAdmin):
                 fields.insert(0, field_name)
         return fields
 
-    def get_fieldsets(self, request, model_instance=None):
+    def get_fieldsets(
+        self, request: 'HttpRequest', model_instance: Optional['SearchableModel'] = None
+    ) -> list[tuple]:
         """Return the fieldsets to be displayed in the admin form."""
         fields, fieldsets = list(self.get_fields(request, model_instance)), []
         meta_fields = [
