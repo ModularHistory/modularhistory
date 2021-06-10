@@ -27,7 +27,8 @@ class CollectionsInline(AbstractCollectionsInline):
 class AbstractPropositionAdmin(SearchableModelAdmin):
     """Abstract base admin for propositions."""
 
-    exclude = SearchableModelAdmin.exclude + [
+    exclude = [
+        *SearchableModelAdmin.exclude,
         'related_entities',
         'sources',
         'images',

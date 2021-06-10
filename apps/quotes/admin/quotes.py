@@ -89,9 +89,6 @@ class QuoteAdmin(SearchableModelAdmin):
     ]
     search_fields = models.Quote.searchable_fields
 
-    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
-    date_hierarchy = 'date'
-
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 

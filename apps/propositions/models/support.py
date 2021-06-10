@@ -21,7 +21,10 @@ class ArgumentSupport(PositionedRelation):
     )
 
     class Meta:
-        unique_together = ['argument', 'premise']
+        unique_together = [
+            ['argument', 'premise'],
+            ['position', 'argument'],
+        ]
         verbose_name = _('support')
 
     def __str__(self) -> str:
