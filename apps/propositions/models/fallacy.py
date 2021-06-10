@@ -19,3 +19,7 @@ class Fallacy(models.Model):
         processed=False,
         blank=True,
     )
+
+    def __str__(self) -> str:
+        """Return the model instance's string representation."""
+        return self.name
