@@ -26,7 +26,6 @@ window.addEventListener("load", function() {
                 autogrow: true,
                 autogrowOnEnter: true,
                 defaultLinkTarget: "_blank",
-                removeformatPasted: true,
                 btnsDef: {
                     image: {
                         dropdown: [
