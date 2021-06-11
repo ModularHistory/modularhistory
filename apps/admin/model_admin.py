@@ -79,8 +79,8 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         }
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
-            '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/trumbowyg.min.js',
-            '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/plugins/table/trumbowyg.table.min.js',
+            f'{TRUMBOWYG_CDN_BASE_URL}/trumbowyg.min.js',
+            f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/trumbowyg.table.min.js',
             'scripts/admin.js',
         )
 
