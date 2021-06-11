@@ -57,6 +57,8 @@ else:
     MCE_CSS = 'styles/mce.css'
     ADMIN_CSS = 'styles/admin.css'
 
+TRUMBOWYG_CDN_BASE_URL = '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0'
+
 
 class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
     """Base admin class for ModularHistory's models."""
@@ -69,8 +71,8 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/ui/trumbowyg.min.css',
-                '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/plugins/table/ui/trumbowyg.table.min.css',
+                f'{TRUMBOWYG_CDN_BASE_URL}/ui/trumbowyg.min.css',
+                f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/ui/trumbowyg.table.min.css',
                 BASE_CSS,
                 ADMIN_CSS,
             )
