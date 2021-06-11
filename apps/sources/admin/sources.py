@@ -41,6 +41,16 @@ class AbstractSourceAdmin(SearchableModelAdmin):
         'attributee_string',
         'date_string',
     ]
+    list_filter = [
+        'verified',
+        HasContainerFilter,
+        # HasFileFilter,
+        # HasFilePageOffsetFilter,
+        # ImpreciseDateFilter,
+        'hidden',
+        AttributeeFilter,
+        SourceTypeFilter,
+    ]
     ordering = ['date', 'citation_string']
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
@@ -82,14 +92,8 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
     )
     list_display = AbstractSourceAdmin.list_display + ['ctype_name']
     list_filter: list[Union[str, Type[ListFilter]]] = [
-        'verified',
-        HasContainerFilter,
-        # HasFileFilter,
-        # HasFilePageOffsetFilter,
-        # ImpreciseDateFilter,
-        'hidden',
-        AttributeeFilter,
         SourceTypeFilter,
+        *AbstractSourceAdmin.list_filter,
     ]
     ordering = AbstractSourceAdmin.ordering
     readonly_fields = AbstractSourceAdmin.readonly_fields
@@ -100,13 +104,6 @@ class PolymorphicSourceAdmin(PolymorphicParentModelAdmin, AbstractSourceAdmin):
         """Return source instances matching the supplied search term."""
         queryset = queryset.non_polymorphic()
         return AbstractSourceAdmin.get_search_results(self, request, queryset, search_term)
-
-    def get_fields(
-        self, request: 'HttpRequest', model_instance: 'Model' = None
-    ) -> Sequence[str]:
-        """Return reordered fields to be displayed in the source admin form."""
-        fields = list(super().get_fields(request, model_instance))
-        return rearrange_fields(fields)
 
     def get_queryset(self, request: 'HttpRequest') -> 'QuerySet':
         """Return the queryset of sources to be displayed in the source admin."""
@@ -123,15 +120,13 @@ class SourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
 
     base_model = models.Source
 
-    autocomplete_fields = ['file', 'location']
+    autocomplete_fields = ['file', 'location', 'release', 'original']
     exclude = AbstractSourceAdmin.exclude
     inlines = AbstractSourceAdmin.inlines
     list_display = AbstractSourceAdmin.list_display
     # Without a hint, mypy seems unable to infer the type of `filter` in list comprehensions.
     filter: Union[str, Type[ListFilter]]
-    list_filter = [
-        filter for filter in PolymorphicSourceAdmin.list_filter if filter != SourceTypeFilter
-    ]
+    list_filter = AbstractSourceAdmin.list_filter
     list_per_page = 15
     readonly_fields = AbstractSourceAdmin.readonly_fields
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.save_as
@@ -150,7 +145,7 @@ class SourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
 class TextualSourceAdmin(SourceAdmin):
     """Admin for textual sources."""
 
-    autocomplete_fields = SourceAdmin.autocomplete_fields + ['original_edition']
+    autocomplete_fields = SourceAdmin.autocomplete_fields
 
 
 class ArticleAdmin(TextualSourceAdmin):
@@ -159,6 +154,14 @@ class ArticleAdmin(TextualSourceAdmin):
     model = models.Article
 
     autocomplete_fields = SourceAdmin.autocomplete_fields + ['publication']
+
+
+class SectionAdmin(TextualSourceAdmin):
+    """Admin for sections."""
+
+    model = models.Section
+
+    autocomplete_fields = [*TextualSourceAdmin.autocomplete_fields, 'work']
 
 
 class SectionsInline(StackedInline):
@@ -256,6 +259,6 @@ admin_site.register(models.Interview, SourceAdmin)
 admin_site.register(models.Entry, SourceAdmin)
 admin_site.register(models.Piece, SourceAdmin)
 admin_site.register(models.Report, SourceAdmin)
-admin_site.register(models.Section, SourceAdmin)
+admin_site.register(models.Section, SectionAdmin)
 admin_site.register(models.Speech, SourceAdmin)
 admin_site.register(models.Webpage, SourceAdmin)

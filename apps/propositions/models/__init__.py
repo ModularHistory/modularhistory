@@ -2,7 +2,7 @@
 
 from .argument import Argument
 from .fallacy import Fallacy, FallacyIdentification
-from .occurrence import Occurrence
+from .occurrence import Occurrence, Publication
 from .proposition import (
     Citation,
     CollectionInclusion,

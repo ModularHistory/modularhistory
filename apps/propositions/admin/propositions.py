@@ -77,6 +77,13 @@ class PropositionAdmin(AbstractPropositionAdmin):
     search_fields = model.searchable_fields
 
 
+class PublicationAdmin(AbstractPropositionAdmin):
+    """Admin for publications (as occurrences)."""
+
+    model = models.Publication
+    search_fields = model.searchable_fields
+
+
 class ArgumentAdmin(ModelAdmin):
     """Admin for arguments."""
 
@@ -85,4 +92,5 @@ class ArgumentAdmin(ModelAdmin):
 
 
 admin_site.register(models.Proposition, PropositionAdmin)
+admin_site.register(models.Publication, PublicationAdmin)
 admin_site.register(models.Argument, ArgumentAdmin)
