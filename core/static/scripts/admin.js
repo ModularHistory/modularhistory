@@ -4,7 +4,10 @@ window.addEventListener("load", function() {
         $(document).find('[type="text"]').each(function() {
             const maxLength = $(this).attr('maxlength');
             if (maxLength) {
-                $(this).css('width', `${maxLength/2}em`);
+                const width = `${maxLength/2}em`;
+                const labelWidth = $(this).prev('label').outerWidth();
+                const maxWidth = `${($(this).parent().innerWidth() - labelWidth) * 0.9}`;
+                $(this).css('width', `${width}`).css('max-width', `${maxWidth}`);
                 let currentLength = $(this).val().length;
                 let remainingLength = parseInt(maxLength) - currentLength;
                 const id = `${this.id}-count`;
