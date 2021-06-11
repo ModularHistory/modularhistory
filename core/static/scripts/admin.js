@@ -39,16 +39,17 @@ window.addEventListener("load", function() {
                 },
                 btns: [
                     ['viewHTML'],
-                    ['undo', 'redo'], // Only supported in Blink browsers
                     ['formatting'],
-                    ['strong', 'em', 'del'],
+                    ['strong', 'em', 'underline', 'del'],
                     ['superscript', 'subscript'],
-                    ['link'],
-                    ['image'],
+                    ['removeformat'],
                     ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
                     ['unorderedList', 'orderedList'],
                     ['horizontalRule'],
-                    ['removeformat'],
+                    ['table'],
+                    ['link'],
+                    ['image'],
+                    ['undo', 'redo'], // Only supported in Blink browsers
                     ['fullscreen']
                 ],
                 plugins: {},

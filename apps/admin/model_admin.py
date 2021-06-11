@@ -69,14 +69,16 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/ui/trumbowyg.min.css',
+                '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/ui/trumbowyg.min.css',
+                '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/plugins/table/ui/trumbowyg.table.min.css',
                 BASE_CSS,
                 ADMIN_CSS,
             )
         }
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
-            '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.23.0/trumbowyg.min.js',
+            '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/trumbowyg.min.js',
+            '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/plugins/table/trumbowyg.table.min.js',
             'scripts/admin.js',
         )
 
