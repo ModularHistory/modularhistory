@@ -338,7 +338,7 @@ def sync(
     push: bool = False,
 ):
     """Sync the db seed from source to destination, modifying destination only."""
-    return files.sync(
+    files.sync(
         local_dir=settings.DB_INIT_DIR,
         remote_dir='/database/',
         push=push,
