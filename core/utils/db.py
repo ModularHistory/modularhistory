@@ -26,22 +26,22 @@ DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400
 SECONDS_TO_KEEP_BACKUP = DAYS_TO_KEEP_BACKUP * SECONDS_IN_DAY
 BACKUP_FILES_PATTERN = join(settings.BACKUPS_DIR, '*sql')
-
 CONTEXT = Context()
 
 
 @shared_task(base=Singleton)
 def groom_backup_files():
     """Remove old and/or duplicate db backup files."""
-    logging.info('Deduping backup files ...')
     context = Context()
-    context.run(f'fdupes -rdIN {settings.BACKUPS_DIR}', warn=True)
-    logging.info('Removing old backup files ...')
+    logging.info('Pruning backup files ...')
     end = '{} \;'  # noqa: W605, P103
     context.run(
         f'find {BACKUP_FILES_PATTERN} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}',
         warn=True,
     )
+    # For each day, keep the first,
+    logging.info('Deduping backup files ...')
+    context.run(f'fdupes -rdIN {settings.BACKUPS_DIR}', warn=True)
 
 
 def backup(
