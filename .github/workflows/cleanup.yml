@@ -20,12 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
-      uses: mithro/actions-includes@main
-      if: runner.os == 'Linux'
-      continue-on-error: false
-      with:
-        workflow: .github/workflows/cleanup.yml
     - name: Remove old artifacts
       uses: c-hive/gha-remove-artifacts@v1.2.0
       with:
