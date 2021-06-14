@@ -439,15 +439,16 @@ fi
   exit 0
 }
 
+# Add container names to /etc/hosts.
+poetry run invoke setup.update-hosts
+
 # Seed a .env file.
 poetry run invoke seed --no-db
 
-# Build the Django image.
+# Build Docker images.
 # Note: This requires a .env file.
 docker-compose build django || _error "Failed to build django image."
-
-# Add container names to /etc/hosts.
-poetry run invoke setup.update-hosts
+docker-compose build react || _error "Failed to build react image."
 
 prompt="Seed db and env file [Y/n]? "
 if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
@@ -466,10 +467,6 @@ if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
     "
   }
 fi
-
-# Build the react container.
-# Note: This has to be done after a .env file exists.
-docker-compose build react || _error "Failed to build react image."
 
 read -rp "Sync media [Y/n]? " CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
