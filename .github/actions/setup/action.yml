@@ -65,6 +65,7 @@ runs:
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
+        poetry --version
         echo "${{ inputs.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
     # Load cached node_modules dir, if it exists.
