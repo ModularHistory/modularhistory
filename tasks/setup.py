@@ -102,17 +102,17 @@ def seed_env_file(context: 'Context', username: str, pat: str):
     # Wait for up to 10 minutes, pinging every 9 seconds.
     timeout, ping_interval, waited_seconds = 600, 10, 0
     artifacts = []
-    while waited_seconds < timeout:
+    while status and waited_seconds < timeout:
         print(
             f'Waiting for artifacts... status: {status} ' f'(total wait: {waited_seconds}s)'
         )
         sleep(ping_interval)
+        waited_seconds += ping_interval
         status = session.get(workflow_run_url).json().get('status')
         if status in ('success', 'completed'):
             artifacts = session.get(artifacts_url).json().get('artifacts')
             if artifacts:
                 break
-        waited_seconds += ping_interval
     else:
         raise TimeoutError(
             'Failed to complete workflow: '
