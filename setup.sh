@@ -450,7 +450,7 @@ poetry run invoke seed --no-db
 docker-compose build django || _error "Failed to build django image."
 docker-compose build react || _error "Failed to build react image."
 
-prompt="Seed db and env file [Y/n]? "
+prompt="Seed db [Y/n]? "
 if [[ -f "$PROJECT_DIR/.env" ]] && [[ -f "$PROJECT_DIR/.init/init.sql" ]]; then
   prompt="init.sql and .env files already exist. Seed new files [Y/n]? "
 fi
