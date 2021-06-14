@@ -98,6 +98,7 @@ djangorestframework-simplejwt = "^4.6.0"
 django-admin-autocomplete-filter = "==0.6.1"
 django-admin-env-notice = "^0.4"
 django-admin-honeypot = "^1.1.0"
+django-admin-rangefilter = "^0.8.1"
 django-admin-tools = "==0.9.0"
 django-allauth = "^0.44.0"
 django-autoslug = "^1.9.8"
@@ -168,7 +169,6 @@ Twisted = [
 ]
 uvicorn = { extras = ["standard"], version = "^0.12" }
 youtube-dl = "^2020.7.28"
-django-admin-rangefilter = "^0.8.1"
 
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"

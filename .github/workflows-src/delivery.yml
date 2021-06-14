@@ -97,7 +97,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
           echo "" && echo "Setting environment variables..."
           set -a && source .env && echo "Finished setting environment variables."
-          set +a; bash config/deploy.sh
+          set +a; bash config/scripts/deploy.sh
         ENDSSH
     - name: Create Sentry release
       uses: getsentry/action-release@v1.1.5

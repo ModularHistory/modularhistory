@@ -46,7 +46,12 @@ WORKDIR /modularhistory
 # Install project dependencies.
 COPY poetry.lock pyproject.toml /modularhistory/
 RUN poetry config virtualenvs.create false
-RUN if [ "$ENVIRONMENT" = "dev" ] ; then poetry install --no-interaction --no-ansi --no-root ; else poetry install --no-interaction --no-ansi --no-root --no-dev ; fi
+RUN \
+  if [ "$ENVIRONMENT" = "dev" ]; then poetry_args=""; pip_args="--dev"; \
+  else poetry_args="--no-dev"; pip_args=""; fi; \
+  poetry install --no-interaction --no-ansi --no-root $poetry_args || ( \
+  poetry export -f requirements.txt --without-hashes $pip_args -o requirements.txt \
+  && pip install --upgrade pip && pip install -r requirements.txt )
 
 # Create required directories.
 RUN mkdir -p -- \
