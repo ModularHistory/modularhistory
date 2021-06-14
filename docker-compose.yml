@@ -94,26 +94,6 @@ services:
       - ./_static:/modularhistory/_static
       - ./_media:/modularhistory/_media
 
-  flower:
-    command: bash config/init/flower.sh
-    depends_on:
-      - celery
-      - celery_beat
-      - django
-      - redis
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 5
-    env_file: .env
-    environment: *common-env-vars
-    image: "ghcr.io/modularhistory/django:$SHA"
-    networks:
-      default:
-        ipv4_address: 172.27.0.13
-    ports:
-      - "5555:5555"
-
   mongo:
     deploy:
       restart_policy:

@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-      ADMINS: "${{ github.actor }}, ${{ github.actor }}@users.noreply.github.com"
+      ADMINS: "${{ secrets.ADMINS }}"
       ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}

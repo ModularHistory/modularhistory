@@ -70,12 +70,6 @@ services:
     volumes:
       - .:/modularhistory
 
-  flower:
-    image: django:latest
-    volumes:
-      - .:/modularhistory
-      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-
   github_workflow_preprocessor:
     command: sh .github/preprocess.sh
     entrypoint: ''

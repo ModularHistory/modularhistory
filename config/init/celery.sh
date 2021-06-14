@@ -8,4 +8,4 @@ for writable_dir in "${writable_dirs[@]}"; do
         [[ "$ENVIRONMENT" = dev ]] && exit 1
     }
 done
-celery -A core worker --hostname=%h --loglevel=info
+celery -A -E core worker --hostname=%h --loglevel=info
