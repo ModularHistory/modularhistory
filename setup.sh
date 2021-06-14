@@ -306,8 +306,8 @@ poetry --version &>/dev/null || {
   }
 }
 # https://python-poetry.org/docs/configuration/
-poetry config virtualenvs.create true
-poetry config virtualenvs.in-project true
+poetry config virtualenvs.create true &>/dev/null
+poetry config virtualenvs.in-project true &>/dev/null
 poetry self update &>/dev/null
 echo "Using $(poetry --version) ..."
 
@@ -326,7 +326,7 @@ if [[ -d .venv ]]; then
   fi
 fi
 [[ -d .venv ]] || {
-  poetry env use "$HOME/.pyenv/versions/$required_py_version/bin/python"
+  poetry env use "$HOME/.pyenv/versions/$required_py_version/bin/python" &>/dev/null
 }
 activate_venv
 if [[ ! "$(python --version)" =~ .*"$required_py_version".* ]]; then
@@ -439,8 +439,11 @@ fi
   exit 0
 }
 
+# Seed a .env file.
+poetry run invoke seed --no-db
+
 # Build the Django image.
-# Note: This has to be done before running `invoke seed` within this script.
+# Note: This requires a .env file.
 docker-compose build django || _error "Failed to build django image."
 
 # Add container names to /etc/hosts.
@@ -453,11 +456,11 @@ fi
 read -rp "$prompt" CONT
 if [[ ! "$CONT" = "n" ]] && [[ ! $TESTING = true ]]; then
   # shellcheck disable=SC2015
-  poetry run invoke seed && echo "Finished seeding db and env file." || {
-    _print_red "Failed to seed dev environment."
+  poetry run invoke seed --no-env-file && echo "Finished seeding." || {
+    _print_red "Failed to seed database."
     _prompt_to_rerun
     _error "
-      Failed to seed dev environment. Try running the following in a new shell:
+      Failed to seed database. Try running the following in a new shell:
 
         ${BOLD}cd ~/modularhistory && poetry run invoke seed
     "
