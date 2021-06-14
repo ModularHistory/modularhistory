@@ -19,6 +19,7 @@ def pat_is_valid(username: str, pat: str) -> bool:
         auth=(username, pat),
         headers={'Accept': 'application/vnd.github.v3+json'},
     )
+    print(pat_validity_check.status_code)
     return pat_validity_check.status_code == 200
 
 
