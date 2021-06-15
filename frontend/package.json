@@ -13,7 +13,7 @@
     "@material-ui/lab": "^4.0.0-alpha.58",
     "@material-ui/styles": "^4.11.3",
     "@sentry/browser": "^6.6.0",
-    "@sentry/integrations": "^6.6.0",
+    "@sentry/integrations": "^6.7.0",
     "@sentry/node": "^6.6.0",
     "@sentry/webpack-plugin": "^1.15.0",
     "axios": "^0.21.1",
