@@ -50,6 +50,9 @@ services:
       dockerfile: Dockerfile.django
       args:
         ENVIRONMENT: dev
+    deploy:
+      restart_policy:
+        condition: none
     image: django:latest
     user: root
     volumes:
