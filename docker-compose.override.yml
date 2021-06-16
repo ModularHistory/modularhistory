@@ -33,6 +33,7 @@ services:
 
   celery:
     image: django:latest
+    user: root
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
