@@ -17,7 +17,9 @@ services:
       restart_policy:
         condition: on-failure
     env_file: .env
-    environment: *common-env-vars
+    environment:
+      <<: *common-env-vars
+      IS_CELERY: "True"
     healthcheck:
       test: celery -A core inspect ping -d celery@$$HOSTNAME
       timeout: 30s
@@ -46,7 +48,8 @@ services:
       restart_policy:
         condition: on-failure
     env_file: .env
-    environment: *common-env-vars
+    environment:
+      <<: *common-env-vars
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
