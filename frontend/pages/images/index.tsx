@@ -49,9 +49,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/api/images/", { params: context.query })
     .then((response) => {
       imagesData = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

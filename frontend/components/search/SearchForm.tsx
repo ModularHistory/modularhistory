@@ -22,7 +22,7 @@ import YearSelect from "./YearSelect";
 
 interface SearchFormStateType {
   state?: { [key: string]: any };
-  setState?: Dispatch<SetStateAction<any>>;
+  setState?: Dispatch<SetStateAction<boolean>>;
   setStateFromEvent?: ChangeEventHandler;
   disabled?: boolean;
 }

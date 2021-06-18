@@ -61,7 +61,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       topic = response.data.data.topic;
     })
-    .catch((_error) => {
+    .catch(() => {
       topic = null;
     });
   if (!topic) {

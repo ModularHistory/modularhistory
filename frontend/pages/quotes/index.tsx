@@ -60,9 +60,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/api/quotes/", { params: context.query })
     .then((response) => {
       quotesData = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

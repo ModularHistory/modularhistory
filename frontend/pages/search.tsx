@@ -207,9 +207,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     })
     .then((response) => {
       searchResults = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

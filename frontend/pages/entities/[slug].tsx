@@ -46,7 +46,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       .then((response) => {
         entity = response.data.data.entity;
       })
-      .catch((_error) => {
+      .catch(() => {
         entity = null;
       });
   } else {

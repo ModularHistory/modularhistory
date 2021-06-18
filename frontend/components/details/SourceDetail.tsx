@@ -6,7 +6,7 @@ interface SourceDetailProps {
 }
 
 const SourceDetail: FC<SourceDetailProps> = ({ source }: SourceDetailProps) => {
-  let titleHtml = source.title || source.citationString;
+  const titleHtml = source.title || source.citationString;
   return (
     <>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />

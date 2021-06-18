@@ -51,7 +51,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       proposition = response.data.data.proposition;
     })
-    .catch((_error) => {
+    .catch(() => {
       proposition = null;
     });
 

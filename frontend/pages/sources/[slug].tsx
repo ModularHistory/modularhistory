@@ -44,7 +44,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       source = response.data.data.source;
     })
-    .catch((_error) => {
+    .catch(() => {
       source = null;
     });
 

@@ -33,7 +33,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       occurrence = response.data;
     })
-    .catch((_error) => {
+    .catch(() => {
       occurrence = null;
     });
 

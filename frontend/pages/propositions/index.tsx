@@ -47,9 +47,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/api/propositions/", { params: context.query })
     .then((response) => {
       propositionsData = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

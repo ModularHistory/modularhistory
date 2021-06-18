@@ -58,9 +58,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/api/entities/", { params: context.query })
     .then((response) => {
       entitiesData = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

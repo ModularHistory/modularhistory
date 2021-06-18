@@ -51,9 +51,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/api/occurrences/", { params: context.query })
     .then((response) => {
       occurrencesData = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

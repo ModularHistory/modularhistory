@@ -47,7 +47,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       image = response.data.data.image;
     })
-    .catch((_error) => {
+    .catch(() => {
       image = null;
     });
 

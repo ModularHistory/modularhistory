@@ -43,6 +43,6 @@ if [ "$ENVIRONMENT" = prod ]; then
 else
     # Create superuser if necessary.
     python manage.py createsuperuser --no-input --username=admin --email=admin@example.com &>/dev/null
-    # Run dev server.
+    # Run the dev server.
     python manage.py runserver 0.0.0.0:8000
 fi

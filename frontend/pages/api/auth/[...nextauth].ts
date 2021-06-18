@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import NextAuth, {
+  Account,
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
@@ -67,14 +68,14 @@ const providers = [
 // https://next-auth.js.org/configuration/callbacks
 const callbacks: CallbacksOptions = {};
 
-callbacks.signIn = async function signIn(user: User, provider: any, _data) {
+callbacks.signIn = async function signIn(user: User, account: Account) {
   // Respond to the sign-in attempt. If the user signed in with credentials (i.e.,
   // a username and password), authentication with the back-end Django server will
   // have been completed before the signIn callback is reached. However, if the user
   // signed in with a social media account, authentication with the Django server
   // is still required.
-  if (provider.type != "credentials") {
-    user = await authenticateWithSocialMediaAccount(user, provider);
+  if (account.type != "credentials") {
+    user = await authenticateWithSocialMediaAccount(user, account);
   }
   // If there is no error, return true to permit signing in.
   // If there is an error, return false to reject the sign-in attempt.
@@ -82,7 +83,7 @@ callbacks.signIn = async function signIn(user: User, provider: any, _data) {
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback
-callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNewUser?: boolean) {
+callbacks.jwt = async function jwt(token, user?: User, account?) {
   // The arguments user, account, profile and isNewUser are only passed the first time
   // this callback is called on a new session, after the user signs in.
   if (user && account) {
@@ -141,7 +142,6 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
             if (error.response?.data) {
               console.error(error.response.data);
             }
-            // return Promise.reject(error);
             return null;
           });
         sessionPlus.user = userData;

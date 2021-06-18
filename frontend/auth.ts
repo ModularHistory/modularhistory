@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { Session, User } from "next-auth";
+import { Account, Session, User } from "next-auth";
 import { signIn, signOut } from "next-auth/client";
 import { JWT } from "next-auth/jwt";
 import { Router } from "next/router";
@@ -137,11 +137,11 @@ interface SocialMediaAccountCredentials {
 
 export const authenticateWithSocialMediaAccount = async (
   user: User,
-  provider: Record<string, string>
+  account: Account
 ): Promise<User> => {
-  const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
+  const url = makeDjangoApiUrl(`/users/auth/${account.provider}`);
   const credentials: SocialMediaAccountCredentials = { user };
-  switch (provider.provider) {
+  switch (account.provider) {
     // case "github": {
     //   // https://next-auth.js.org/providers/github
     //   // Retrieve email address, if necessary.
@@ -164,12 +164,12 @@ export const authenticateWithSocialMediaAccount = async (
     case "facebook":
     case "google":
     case "twitter":
-      credentials.access_token = provider.accessToken;
-      credentials.refresh_token = provider.refreshToken;
+      credentials.access_token = account.accessToken;
+      credentials.refresh_token = account.refreshToken;
       break;
     default:
       // eslint-disable-next-line no-console
-      console.error("Unsupported provider:", provider.provider);
+      console.error("Unsupported provider:", account.provider);
       return user;
   }
   await axios

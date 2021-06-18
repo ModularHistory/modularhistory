@@ -51,9 +51,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/graphql/?query={topics{name%20slug}}", {})
     .then((response) => {
       topicsData = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

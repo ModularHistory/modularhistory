@@ -33,7 +33,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       quote = response.data;
     })
-    .catch((_error) => {
+    .catch(() => {
       quote = null;
     });
 
