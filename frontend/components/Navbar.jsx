@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/client";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
@@ -98,10 +99,11 @@ export default function GlobalNavbar({ menuItems }) {
   if (session?.user) {
     if (session.user["avatar"]) {
       accountDropdownIcon = (
-        <img
+        <Image
           src={session.user.avatar}
           className="rounded-circle z-depth-0"
           alt={session.user.name}
+          width="35"
           height="35"
         />
       );
@@ -140,10 +142,9 @@ export default function GlobalNavbar({ menuItems }) {
       expand="md"
       collapseOnSelect
     >
-      <Link href={"/"}>
+      <Link href={"/"} passHref>
         <Navbar.Brand href={"/"} data-cy={"brand"}>
-          <img alt="Logo" src={logoImageSrc} style={{ width: "2.7rem", height: "2.5rem" }} />{" "}
-          ModularHistory
+          <Image alt="Logo" src={logoImageSrc} width="2.7rem" height="2.5rem" /> ModularHistory
         </Navbar.Brand>
       </Link>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />

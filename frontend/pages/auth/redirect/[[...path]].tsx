@@ -15,9 +15,9 @@ const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
   const router = useRouter();
   const [_session, loading] = useSession();
   const [redirect, setRedirect] = useState(null);
-  path = path ? `/${path}` : "";
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const redirectUrl = `${baseUrl}${path}`;
+  const redirectPath = path ? `/${path}` : "";
+  const redirectUrl = baseUrl + redirectPath;
   useEffect(() => {
     if (!loading) {
       // Choose redirect method based on whether the redirect URL
@@ -28,11 +28,11 @@ const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
         setRedirect(true);
       } else {
         // If Next.js, redirect using Next.js router.
-        console.log(`>>> Redirecting to ${path} with Next.js ...`);
-        router.push(path);
+        console.log(`>>> Redirecting to ${redirectPath} with Next.js ...`);
+        router.push(redirectPath);
       }
     }
-  }, [loading]);
+  }, [loading, redirectPath, redirectUrl, router]);
   return (
     <>
       {!redirect && (

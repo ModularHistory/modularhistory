@@ -5,6 +5,9 @@ const sharedRules = {
   "no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
   "@typescript-eslint/no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
   "react/react-in-jsx-scope": ["off"],
+  "@typescript-eslint/no-explicit-any": "off",
+  "react-hooks/exhaustive-deps": "off",
+  "react-hooks/rules-of-hooks": "off",
 };
 
 module.exports = {
@@ -14,7 +17,7 @@ module.exports = {
     node: true,
   },
   // https://eslint.org/docs/user-guide/configuring/configuration-files#extending-configuration-files
-  extends: ["eslint:recommended", "plugin:react/recommended"],
+  extends: ["eslint:recommended", "next"],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -30,9 +33,9 @@ module.exports = {
       files: ["*.ts", "*.tsx", "**/*.ts", "**/*.tsx"],
       extends: [
         "eslint:recommended",
-        "plugin:react/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
+        "next",
       ],
       // https://www.npmjs.com/package/@typescript-eslint/parser
       parser: "@typescript-eslint/parser",

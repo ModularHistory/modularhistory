@@ -59,7 +59,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
     const handle = () => window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     router.events.on("routeChangeComplete", handle);
     return () => router.events.off("routerChangeComplete", handle);
-  }, []);
+  }, [router.events]);
   return (
     <>
       <Head>

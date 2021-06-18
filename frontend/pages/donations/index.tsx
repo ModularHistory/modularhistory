@@ -19,14 +19,14 @@ const Donations: FC = () => {
         </div>
         <div className="pt-5 col-4 m-auto row">
           <Link href={"/donations/make"}>
-            <button className="col btn btn-primary mr-3" type="button">
+            <a className="col btn btn-primary mr-3" type="button">
               Donate Now &nbsp;<i className="fa fa-dollar-sign"></i>
-            </button>
+            </a>
           </Link>{" "}
           <Link href={"/about/"}>
-            <button className="col btn btn-primary ml-3" type="button">
+            <a className="col btn btn-primary ml-3" type="button">
               About &nbsp;<i className="fa fa-info-circle"></i>
-            </button>
+            </a>
           </Link>
         </div>
       </div>
