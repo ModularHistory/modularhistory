@@ -3,6 +3,7 @@ import ModuleCard from "@/components/cards/ModuleUnionCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
+import { Occurrence } from "@/interfaces";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -10,7 +11,9 @@ import Link from "next/link";
 import { FC } from "react";
 
 interface OccurrencesProps {
-  occurrencesData: any;
+  occurrencesData: {
+    results: Occurrence[];
+  };
 }
 
 const Occurrences: FC<OccurrencesProps> = ({ occurrencesData }: OccurrencesProps) => {

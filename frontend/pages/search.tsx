@@ -162,10 +162,7 @@ const Search: FC<SearchProps> = ({ searchResults }: SearchProps) => {
                   data-index={index}
                   onClick={selectModule}
                 >
-                  <ModuleUnionCard
-                    module={module}
-                    cardClass={index == moduleIndex ? "selected" : ""}
-                  />
+                  <ModuleUnionCard module={module} selected={index == moduleIndex} />
                 </a>
               ))}
             </div>

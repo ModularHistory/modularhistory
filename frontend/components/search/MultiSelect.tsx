@@ -1,7 +1,7 @@
-import React, { useContext, useState, useEffect } from "react";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { SearchFormContext } from "./SearchForm";
 
 const useStyles = makeStyles({
@@ -23,7 +23,27 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MultiSelect({ label, name, keyName, valueName, children }) {
+interface MultiSelectProps {
+  label: string;
+  name: string;
+  keyName: string;
+  valueName: string;
+  children: () => Promise<
+    Array<{
+      label: string;
+      key: string;
+      defaultChecked?: boolean;
+    }>
+  >;
+}
+
+const MultiSelect: FC<MultiSelectProps> = ({
+  label,
+  name,
+  keyName,
+  valueName,
+  children,
+}: MultiSelectProps) => {
   // A component for selecting multiple options from a list.
   // `Label` is the placeholder text initially rendered in the input field.
   // `name` is the query parameter key used in API requests.
@@ -99,4 +119,6 @@ export default function MultiSelect({ label, name, keyName, valueName, children 
       renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}
     />
   );
-}
+};
+
+export default MultiSelect;

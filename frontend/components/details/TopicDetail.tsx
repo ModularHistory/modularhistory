@@ -1,4 +1,4 @@
-import ModuleCard from "@/components/cards/ModuleUnionCard";
+import ModuleCard from "@/components/cards/ModuleCard";
 import { Topic } from "@/interfaces";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";

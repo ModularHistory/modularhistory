@@ -1,19 +1,21 @@
 import Layout from "@/components/Layout";
 import Link from "next/link";
-import React from "react";
+import React, { FC } from "react";
 
-export default function Donations() {
+const introduction = `
+  ModularHistory is a non-profit organization that helps people to learn about and
+  understand history. Donate to our cause because learning can't wait.
+`;
+
+const Donations: FC = () => {
   return (
-    <Layout>
+    <Layout title="Donations">
       <div className="text-center">
         <div className="pt-5">
           <p className="h1">Donate</p>
         </div>
         <div className="pt-5 m-auto col-6">
-          <p className="sm w-70">
-            Modular history is a non-profit organization that helps people to learn about and
-            understand history. Donate to our cause because learning can't wait.
-          </p>
+          <p className="sm w-70">{introduction}</p>
         </div>
         <div className="pt-5 col-4 m-auto row">
           <Link href={"/donations/make"}>
@@ -30,4 +32,6 @@ export default function Donations() {
       </div>
     </Layout>
   );
-}
+};
+
+export default Donations;

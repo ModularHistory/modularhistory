@@ -63,7 +63,7 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
             <header>
               <p className="h3">Help us keep ModularHistory running</p>
               <p>
-                ModularHistory provide its content for free. If you will like to help keep
+                ModularHistory provide its content for free. If you would like to help keep
                 ModularHistory afloat, you can use this form to make a donation.
               </p>
             </header>

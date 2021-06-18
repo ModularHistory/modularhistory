@@ -1,15 +1,21 @@
 import Link from "next/link";
-import React from "react";
+import React, { FC } from "react";
 
-const SocialIcon = ({ href, ariaLabel, spanClass }) => (
+interface SocialIconProps {
+  href: string;
+  ariaLabel: string;
+  spanClass: string;
+}
+
+const SocialIcon: FC<SocialIconProps> = ({ href, ariaLabel, spanClass }: SocialIconProps) => (
   <li style={{ display: "inline-block" }}>
-    <a target="_blank" rel="nofollow noopener" href={href} aria-label={ariaLabel}>
+    <a target="_blank" rel="nofollow noopener noreferrer" href={href} aria-label={ariaLabel}>
       <span className={`fab ${spanClass}`} />
     </a>
   </li>
 );
 
-export default function Footer() {
+const Footer: FC = () => {
   const socialIcons = (
     <ul className="list-social list-unstyled list-inline mx-5" style={{ display: "inline-block" }}>
       <SocialIcon
@@ -28,7 +34,7 @@ export default function Footer() {
         spanClass={"fa-pinterest"}
       />
       <SocialIcon
-        aria-label="YouTube"
+        ariaLabel="YouTube"
         href="https://www.youtube.com/channel/UCKyHzWH1tId0qvXtLbjyQ_A"
         spanClass="fa-youtube"
       />
@@ -65,4 +71,6 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;

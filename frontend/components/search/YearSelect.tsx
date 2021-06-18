@@ -1,14 +1,20 @@
-import TextField from "./StyledTextField";
 import { Grid, MenuItem } from "@material-ui/core";
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { SearchFormContext } from "./SearchForm";
+import TextField from "./StyledTextField";
 
-/**
- * A component for year range inputs in the search form.
- * `label` is displayed in the number input.
- * `name` is the query parameter key used in the search API request.
- */
-export default function YearSelect({ label, name }) {
+interface YearSelectProps {
+  label: string;
+  name: string;
+}
+
+const YearSelect: FC<YearSelectProps> = ({ label, name }: YearSelectProps) => {
+  /**
+   * A component for year range inputs in the search form.
+   * `label` is displayed in the number input.
+   * `name` is the query parameter key used in the search API request.
+   */
+
   const { state, setStateFromEvent, disabled } = useContext(SearchFormContext);
 
   // `typeName` is the query param key for the year type (e.g. "CE").
@@ -50,4 +56,6 @@ export default function YearSelect({ label, name }) {
       </Grid>
     </>
   );
-}
+};
+
+export default YearSelect;

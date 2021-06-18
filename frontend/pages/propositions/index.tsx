@@ -2,6 +2,7 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
+import { Proposition } from "@/interfaces";
 import Container from "@material-ui/core/Container";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -10,7 +11,9 @@ import Link from "next/link";
 import { FC } from "react";
 
 interface PropositionsProps {
-  propositionsData: any;
+  propositionsData: {
+    results: Proposition[];
+  };
 }
 
 const Propositions: FC<PropositionsProps> = ({ propositionsData }: PropositionsProps) => {

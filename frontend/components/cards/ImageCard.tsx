@@ -1,7 +1,13 @@
+import { Image } from "@/interfaces";
+import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 import ModuleCard from "./ModuleCard";
 
-export default function ImageCard({ image, ...childProps }) {
+interface ImageCardProps {
+  image: Image;
+}
+
+const ImageCard: FC<ImageCardProps> = ({ image, ...childProps }: ImageCardProps) => {
   const style = { width: `${image.width}px`, maxWidth: `100%` };
   return (
     <ModuleCard module={image} className={"image-card"} style={style} {...childProps}>
@@ -17,4 +23,6 @@ export default function ImageCard({ image, ...childProps }) {
       )}
     </ModuleCard>
   );
-}
+};
+
+export default ImageCard;

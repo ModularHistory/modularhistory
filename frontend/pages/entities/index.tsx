@@ -1,5 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ModuleCard from "@/components/cards/ModuleUnionCard";
+import ModuleCard from "@/components/cards/ModuleCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";

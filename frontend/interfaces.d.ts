@@ -37,6 +37,7 @@ export interface ModuleWithImages {
 export interface Quote extends SearchableModule, ModuleWithImages {
   title: string;
   attributeeHtml: string;
+  attributeeString: string;
   bite: string;
   dateString: string;
   html: string;

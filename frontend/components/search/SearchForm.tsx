@@ -22,7 +22,7 @@ import YearSelect from "./YearSelect";
 
 interface SearchFormStateType {
   state?: { [key: string]: any };
-  setState?: Dispatch<SetStateAction<boolean>>;
+  setState?: Dispatch<SetStateAction<any>>;
   setStateFromEvent?: ChangeEventHandler;
   disabled?: boolean;
 }
@@ -52,7 +52,7 @@ function useSearchFormState(): SearchFormStateType {
   useEffect(() => {
     // Remove any params we don't want sent to the next search page
     // and update form state when browser history is navigated.
-    const { page, ...query } = router.query;
+    const { _page, ...query } = router.query;
     setState(query);
   }, [router.query]);
 

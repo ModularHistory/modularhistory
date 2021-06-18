@@ -44,7 +44,7 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
 export default Topics;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   let topicsData = {};
 
   await axios

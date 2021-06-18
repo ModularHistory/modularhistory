@@ -5,10 +5,16 @@ import {
   Radio,
   RadioGroup as MuiRadioGroup,
 } from "@material-ui/core";
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { SearchFormContext } from "./SearchForm";
 
-export default function RadioGroup({ label, name, children }) {
+interface RadioGroupProps {
+  label: string;
+  name: string;
+  children: string[];
+}
+
+const RadioGroup: FC<RadioGroupProps> = ({ label, name, children }: RadioGroupProps) => {
   // A component for radio input in the search form.
   // `label` is displayed above the radio group.
   // `name` is the query parameter key used in the search API request.
@@ -38,4 +44,6 @@ export default function RadioGroup({ label, name, children }) {
       </MuiRadioGroup>
     </FormControl>
   );
-}
+};
+
+export default RadioGroup;

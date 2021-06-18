@@ -3,6 +3,7 @@ import ImageCard from "@/components/cards/ImageCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
+import { Image } from "@/interfaces";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -10,7 +11,9 @@ import Link from "next/link";
 import { FC } from "react";
 
 interface ImagesProps {
-  imagesData: any;
+  imagesData: {
+    results: Image[];
+  };
 }
 
 const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
