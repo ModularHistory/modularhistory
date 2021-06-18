@@ -5,9 +5,7 @@ const sharedRules = {
   "no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
   "@typescript-eslint/no-unused-vars": ["warn", { varsIgnorePattern: "^_" }],
   "react/react-in-jsx-scope": ["off"],
-  "@typescript-eslint/no-explicit-any": "off",
-  "react-hooks/exhaustive-deps": "off",
-  "react-hooks/rules-of-hooks": "off",
+  "@typescript-eslint/no-explicit-any": "off", // TODO: remove this line
 };
 
 module.exports = {

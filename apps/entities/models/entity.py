@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 from typing import TYPE_CHECKING, Optional, Type
 
 from django.core.exceptions import ValidationError
@@ -12,7 +11,7 @@ from typedmodels.models import TypedModel
 
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
-from apps.dates.structures import HistoricDateTime as DateTime
+from apps.dates.structures import HistoricDateTime
 from apps.entities.api.serializers import EntitySerializer
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import (
@@ -186,7 +185,7 @@ class Entity(
             .replace('</p>', '')
         )
 
-    def get_categorization(self, date: DateTime) -> Optional['Categorization']:
+    def get_categorization(self, date: HistoricDateTime) -> Optional['Categorization']:
         """Return the most applicable categorization based on the date."""
         if not self.categories.exists():
             return None
@@ -197,7 +196,7 @@ class Entity(
         return categorizations.order_by('date', 'category__weight').last()
 
     def get_categorizations(
-        self, date: Optional[DateTime] = None
+        self, date: Optional[HistoricDateTime] = None
     ) -> 'QuerySet[Categorization]':
         """Return a list of all applicable categorizations."""
         categorizations = (
@@ -208,7 +207,7 @@ class Entity(
         return categorizations.select_related('category')
 
     @store(attribute_name='categorization_string')
-    def get_categorization_string(self, date: Optional[DateTime] = None) -> str:
+    def get_categorization_string(self, date: Optional[HistoricDateTime] = None) -> str:
         """Intelligently build a categorization string, like `liberal scholar`."""
         categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
         if categorizations:
@@ -241,7 +240,7 @@ class Entity(
             # Prevent a RuntimeError when saving a new publication
             self.recast(self.type)
 
-    def get_date(self) -> Optional[DateTime]:
+    def get_date(self) -> Optional[HistoricDateTime]:
         """Date used for sorting search results."""
         return self.birth_date
 
@@ -290,6 +289,6 @@ class Organization(Entity):
         verbose_name_plural = 'Organizations'
 
     @property
-    def founding_date(self) -> datetime:
+    def founding_date(self) -> HistoricDateTime:
         """Return the date the organization was founded."""
         return self.birth_date

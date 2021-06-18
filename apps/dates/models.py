@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from django.db import models
@@ -75,7 +76,9 @@ class DatedModel(Model):
         """Return the string representation of the model instance's date."""
         date, date_string = self.get_date(), ''
         if date:
-            date_string = f'{date.string}'
+            date_string = (
+                f'{date.string}' if isinstance(date, HistoricDateTime) else f'{date}'
+            )
             date_string_requires_circa_prefix = (
                 date_string and self.date_is_circa and CIRCA_PREFIX not in date_string
             )
@@ -100,4 +103,11 @@ class DatedModel(Model):
         Override this to retrieve date values through other means,
         e.g., by inspecting related objects.
         """
-        return self.date or None
+        if self.date:
+            if not isinstance(self.date, HistoricDateTime):
+                logging.error(
+                    f'`date` attribute of {self.__class__.__name__} '
+                    f'has non-HistoricDateTime value of {self.date}'
+                )
+            return self.date
+        return None
