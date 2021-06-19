@@ -1,8 +1,11 @@
+from django_elasticsearch_dsl.registries import registry
+
 from apps.search.documents.config import DEFAULT_INDEX_SETTINGS
 
 from .proposition import PropositionDocument
 
 
+@registry.register_document
 class OccurrenceDocument(PropositionDocument):
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
