@@ -13,7 +13,7 @@ from invoke.context import Context
 from core.constants.misc import RcloneStorageProviders
 
 
-def envsubst(input_file) -> str:
+def envsubst(input_file: str) -> str:
     """Python implementation of envsubst."""
     with open(input_file, 'r') as base:
         content_after = content_before = base.read()
