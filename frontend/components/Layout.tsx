@@ -39,7 +39,7 @@ const Layout: FunctionComponent<LayoutProperties> = ({
     } else {
       deleteAuthCookies();
     }
-  }, [session?.clientSideCookies]);
+  }, [session]);
 
   return (
     <>

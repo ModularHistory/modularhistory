@@ -85,7 +85,7 @@ const Search: FC<SearchProps> = ({ searchResults }: SearchProps) => {
     const handle = () => setModuleIndex(0);
     router.events.on("routeChangeEnd", handle);
     return () => router.events.off("routeChangeEnd", handle);
-  }, []);
+  }, [router.events, setModuleIndex]);
 
   // get search string from URL params
   const query = router.query["query"];

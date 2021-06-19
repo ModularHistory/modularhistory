@@ -1,11 +1,13 @@
 import { Button, CircularProgress } from "@material-ui/core";
-
-import { useEffect, useContext } from "react";
 import { useRouter } from "next/router";
-
+import { FC, useContext, useEffect } from "react";
 import PageTransitionContext from "../PageTransitionContext";
 
-export default function SearchButton(props) {
+interface SearchButtonProps {
+  onClick: () => Promise<boolean>;
+}
+
+const SearchButton: FC<SearchButtonProps> = (props: SearchButtonProps) => {
   // A button with "Search" label.
   // The label changes to "Loading" with a circular progress indicator when a page transition occurs.
   // All props are passed along to the Mui Button.
@@ -16,7 +18,7 @@ export default function SearchButton(props) {
   // asynchronously download JS for the search page
   useEffect(() => {
     router.prefetch("/search");
-  }, []);
+  }, [router]);
 
   let buttonText;
   if (isLoading) {
@@ -35,4 +37,6 @@ export default function SearchButton(props) {
       {buttonText}
     </Button>
   );
-}
+};
+
+export default SearchButton;

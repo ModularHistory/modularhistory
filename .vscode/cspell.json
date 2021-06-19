@@ -57,6 +57,7 @@
         "pformat",
         "plpgsql",
         "postgres",
+        "prefetch",
         "psql",
         "psutil",
         "pympler",

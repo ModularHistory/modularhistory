@@ -2,6 +2,7 @@
 
 import { ServerStyleSheets } from "@material-ui/styles";
 import BaseDocument, { Head, Html, Main, NextScript } from "next/document";
+import Script from "next/script";
 import React from "react";
 
 class Document extends BaseDocument {
@@ -53,26 +54,11 @@ class Document extends BaseDocument {
           />
 
           {/* jQuery library */}
-          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" />
+          <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" />
           {/* Popper JS */}
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" />
+          <Script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" />
           {/* Latest compiled Bootstrap JavaScript */}
-          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" />
-
-          {/*/!* PDF.js *!/*/}
-          {/*/!* TODO: replace with node package and import where used*/}
-          {/*          https://www.npmjs.com/package/pdfjs-dist *!/*/}
-          {/*<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2/build/pdf.min.js" defer />*/}
-          {/*/!* Epub.js *!/*/}
-          {/*/!* TODO: likewise, https://www.npmjs.com/package/epubjs *!/*/}
-          {/*<script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js" defer />*/}
-
-          {/*{% if request.user.is_superuser %}*/}
-          {/*    <style>*/}
-          {/*        .edit-object-button {display: inline;}*/}
-          {/*    </style>*/}
-          {/*{% endif %}*/}
-          {/*<script type="text/javascript" src='{% static "scripts/base.js" %}' defer></script>*/}
+          <Script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" />
         </Head>
         <body>
           <Main />

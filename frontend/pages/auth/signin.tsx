@@ -42,11 +42,13 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const callbackUrl = `${router.query?.callbackUrl}`;
+  const redirectUrl = callbackUrl || process.env.BASE_URL;
   useEffect(() => {
     if (router.query?.error) {
       setError(`${router.query?.error}`);
     }
-  }, []);
+  }, [router.query?.error]);
   useEffect(() => {
     if (redirecting) {
       const url = redirectUrl ?? window.location.origin;
@@ -60,9 +62,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
         window.location.replace(url);
       }
     }
-  }, [redirecting]);
-  const callbackUrl = `${router.query?.callbackUrl}`;
-  const redirectUrl = callbackUrl || process.env.BASE_URL;
+  }, [redirecting, router, redirectUrl]);
   const handleCredentialLogin = async (event) => {
     event.preventDefault();
     if (!username || !password) {
