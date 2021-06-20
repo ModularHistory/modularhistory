@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Type, Union
 
 from django.db.models import Model
 from django.db.models.base import ModelBase
@@ -21,8 +21,9 @@ def get_html_for_view(
     if isinstance(model_instance, dict):
         app_name, model_name = model_instance['model'].split('.')
     else:
-        app_name = model_instance.__class__._meta.app_label
-        model_name = model_instance.__class__.__name__.lower()
+        model_cls: Type[Model] = model_instance.__class__
+        app_name = model_cls._meta.app_label
+        model_name = model_cls.__name__.lower()
     template_directory_name = app_name
     template_name = f'{template_directory_name}/_{template_name}.html'
     logging.debug(f'Rendering {template_name} for {model_instance}...')
@@ -42,9 +43,9 @@ def serialize_model(model: Optional[ModelBase]) -> Optional[Dict[str, str]]:
     Accepts a django.db.models.Model class and returns a serialized dict of
     it, so it may be sent to Celery workers over HTTP.
     """
-    if not isinstance(model, ModelBase):
-        return None
-    return {'app': model._meta.app_label, 'model': model._meta.model_name}
+    if model and isinstance(model, ModelBase):
+        return {'app': model._meta.app_label, 'model': model._meta.model_name}
+    return None
 
 
 def deserialize_model(serialized_model: Optional[Dict[str, str]]) -> Optional[Model]:
