@@ -63,7 +63,7 @@ COPY core/static /modularhistory/core/static
 
 # Grant necessary permissions to non-root user.
 RUN chown -R www-data:www-data /modularhistory && \
-  chmod g+w /usr/local/bin/wait-for-it.sh \
+  chmod g+w /usr/local/bin/wait-for-it.sh && \
   chmod g+w -R /modularhistory/_static
 
 # Make .next directory writable in dev environment.
