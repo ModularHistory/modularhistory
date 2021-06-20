@@ -108,11 +108,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     # ---------------------------------
-    # API- and auth-related apps
+    # API-related apps
     # ---------------------------------
     'corsheaders',  # https://github.com/adamchainz/django-cors-headers
+    'django_filters',  # https://github.com/carltongibson/django-filter
     'graphene_django',  # https://github.com/graphql-python/graphene-django
     'rest_framework',  # https://github.com/encode/django-rest-framework
+    # ---------------------------------
+    # Auth-related apps
+    # ---------------------------------
     'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
     # 'defender',  # https://github.com/jazzband/django-defender  # TODO
     # Note: dj_rest_auth must be loaded after rest_framework.
@@ -193,7 +197,7 @@ MIDDLEWARE = [
     # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
     # https://github.com/jazzband/django-silk
-    'silk.middleware.SilkyMiddleware',
+    # 'silk.middleware.SilkyMiddleware',
     # Update cache:
     # https://docs.djangoproject.com/en/dev/topics/cache/#order-of-middleware
     'django.middleware.cache.UpdateCacheMiddleware',

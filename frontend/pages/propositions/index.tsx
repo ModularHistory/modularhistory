@@ -1,7 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
-import Pagination from "@/components/Pagination";
 import { Proposition } from "@/interfaces";
 import Container from "@material-ui/core/Container";
 import List from "@material-ui/core/List";
@@ -11,30 +10,35 @@ import Link from "next/link";
 import { FC } from "react";
 
 interface PropositionsProps {
-  propositionsData: {
-    results: Proposition[];
-  };
+  topics: {
+    name: string;
+    slug: string;
+    conclusions: Proposition[];
+  }[];
 }
 
-const Propositions: FC<PropositionsProps> = ({ propositionsData }: PropositionsProps) => {
-  const propositions = propositionsData["results"] || [];
-  const propositionElements = propositions.map((proposition) => (
-    <ListItem key={proposition.slug}>
-      <Link href={`/propositions/${proposition.slug}`}>
-        <a>
-          <div dangerouslySetInnerHTML={{ __html: proposition.summary }} />
-        </a>
-      </Link>
-    </ListItem>
-  ));
-
+const Propositions: FC<PropositionsProps> = ({ topics }: PropositionsProps) => {
   return (
     <Layout title={"Propositions"}>
       <Container>
         <PageHeader>Propositions</PageHeader>
-        <Pagination count={propositionsData["total_pages"]} />
-        <List>{propositionElements}</List>
-        <Pagination count={propositionsData["total_pages"]} />
+        {topics &&
+          topics.map((topic) => (
+            <div key={topic.slug}>
+              <h2>{topic.name}</h2>
+              <List>
+                {topic.conclusions.map((proposition) => (
+                  <ListItem key={proposition.slug}>
+                    <Link href={`/propositions/${proposition.slug}`}>
+                      <a>
+                        <div dangerouslySetInnerHTML={{ __html: proposition.summary }} />
+                      </a>
+                    </Link>
+                  </ListItem>
+                ))}
+              </List>
+            </div>
+          ))}
       </Container>
     </Layout>
   );
@@ -43,18 +47,31 @@ const Propositions: FC<PropositionsProps> = ({ propositionsData }: PropositionsP
 export default Propositions;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  let propositionsData = {};
-
+export const getServerSideProps: GetServerSideProps = async () => {
+  let topics;
+  const body = {
+    query: `{
+      topicsWithConclusions {
+        name
+        slug
+        conclusions {
+          slug
+          summary
+        }
+      }
+    }`,
+  };
   await axiosWithoutAuth
-    .get("http://django:8000/api/propositions/", { params: context.query })
+    .post("http://django:8000/graphql/", body)
     .then((response) => {
-      propositionsData = response.data;
+      topics = response.data.data.topicsWithConclusions;
+    })
+    .catch(() => {
+      topics = [];
     });
-
   return {
     props: {
-      propositionsData,
+      topics,
     },
   };
 };
