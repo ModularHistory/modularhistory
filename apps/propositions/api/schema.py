@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Optional
 
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
-from graphql.error.located_error import GraphQLLocatedError
+from graphql.error import GraphQLError
 
 from apps.propositions.api.types import PropositionType
 from apps.propositions.models import Proposition
@@ -31,7 +31,7 @@ class Query(graphene.ObjectType):
             if slug.isnumeric():
                 try:
                     return Proposition.objects.get(pk=int(slug))
-                except GraphQLLocatedError:
+                except GraphQLError:
                     pass
         return None
 

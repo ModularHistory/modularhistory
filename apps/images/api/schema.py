@@ -2,7 +2,7 @@ from typing import Optional
 
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
-from graphql.error.located_error import GraphQLLocatedError
+from graphql.error import GraphQLError
 
 from apps.images.api.types import ImageType
 from apps.images.models import Image
@@ -28,7 +28,7 @@ class Query(graphene.ObjectType):
             if slug.isnumeric():
                 try:
                     return Image.objects.get(pk=int(slug))
-                except GraphQLLocatedError:
+                except GraphQLError:
                     pass
         return None
 
