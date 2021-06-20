@@ -86,12 +86,10 @@ def deserialize_model_instance(
     set kwargs select_for_update=True to lock the table row, preventing other
     threads from updating the instance while we work on it.
     """
-    if not serialized_instance:
+    if not serialized_instance or not serialized_instance.get('id'):
         return None
     model = deserialize_model(serialized_instance)
     if not model:
-        return None
-    if not serialized_instance.get('id'):
         return None
     if select_for_update:
         return (
