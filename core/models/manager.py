@@ -22,7 +22,7 @@ class SearchableMixin:
     """Mixin for adding search capability to manager and queryset classes."""
 
     def get_closest_to_datetime(
-        self,
+        self: Union[Manager, QuerySet],
         datetime_value: Union[date, datetime, HistoricDateTime],
         datetime_attr: str = 'date',
     ) -> 'Model':
