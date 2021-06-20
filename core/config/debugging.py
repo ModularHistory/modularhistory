@@ -27,7 +27,7 @@ def intercept(request: 'HttpRequest') -> bool:
     qualifiers = (PROFILE_ALL_REQUESTS or request.user.is_superuser,)
     disqualifiers = (
         TESTING,
-        re.search(r'(?:healthcheck)/', request.path),
+        re.search(r'(?:healthcheck|graphiql)/', request.path),
     )
     if any(qualifiers) and not any(disqualifiers):
         return True
