@@ -1,3 +1,4 @@
+import logoImage from "@/public/logo_head_white.png";
 import { useSession } from "next-auth/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +10,6 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "../auth";
 
-const logoImageSrc = "/static/logo_head_white.png";
 const globalMenuItems = [
   {
     title: "About",
@@ -144,7 +144,8 @@ export default function GlobalNavbar({ menuItems }) {
     >
       <Link href={"/"} passHref>
         <Navbar.Brand href={"/"} data-cy={"brand"}>
-          <Image alt="Logo" src={logoImageSrc} width="2.7rem" height="2.5rem" /> ModularHistory
+          <Image alt="Logo" src={logoImage} width="2.7rem" height="2.5rem" layout="fixed" />{" "}
+          ModularHistory
         </Navbar.Brand>
       </Link>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />

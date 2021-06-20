@@ -157,6 +157,8 @@ services:
         ipv4_address: 172.27.0.9
     ports:
       - "3000:3000"
+    volumes:
+      - ./_static:/modularhistory/_static
 
   redis:
     deploy:

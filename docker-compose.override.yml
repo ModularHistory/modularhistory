@@ -89,7 +89,7 @@ services:
       dockerfile: Dockerfile.react
       args:
         ENVIRONMENT: dev
-    command: npm run dev
+    # command: npm run dev
     environment:
       NEXTAUTH_URL: "http://modularhistory.dev.net"
       REACT_EDITOR: "code"
