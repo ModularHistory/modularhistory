@@ -197,7 +197,7 @@ MIDDLEWARE = [
     # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
     # https://github.com/jazzband/django-silk
-    # 'silk.middleware.SilkyMiddleware',
+    'silk.middleware.SilkyMiddleware',
     # Update cache:
     # https://docs.djangoproject.com/en/dev/topics/cache/#order-of-middleware
     'django.middleware.cache.UpdateCacheMiddleware',
