@@ -1,5 +1,4 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import { Proposition } from "@/interfaces";
@@ -16,9 +15,7 @@ interface PropositionProps {
 const PropositionDetailPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
     <Layout title={proposition.summary}>
-      <ModuleContainer>
-        <ModuleDetail module={proposition} />
-      </ModuleContainer>
+      <ModuleDetail module={proposition} />
     </Layout>
   );
 };
@@ -35,6 +32,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         model
         adminUrl
         arguments {
+          pk
           type
           explanation
           premises {

@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 class PropositionArgumentType(ModuleType):
     """GraphQL type for the Proposition model."""
 
+    pk = graphene.String()
+
     class Meta:
         model = Argument
         exclude = []
