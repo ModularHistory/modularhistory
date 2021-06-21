@@ -14,10 +14,9 @@ class VerifiableModel(Model):
     verified = models.BooleanField(verbose_name=_('verified'), default=False)
     verifications = GenericRelation('verifications.Verification')
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
         """Meta options for VerifiableModel."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 
