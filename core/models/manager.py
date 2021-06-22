@@ -1,7 +1,7 @@
 """Manager classes for ModularHistory's models."""
 
 from datetime import date, datetime
-from typing import Iterable, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Callable, Iterable, Optional, Type, Union
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import Case, IntegerField, QuerySet, When
@@ -14,12 +14,21 @@ from typedmodels.models import TypedModelManager as BaseTypedModelManager
 from apps.dates.structures import HistoricDateTime
 
 if TYPE_CHECKING:
+    from django.db.models.query import ValuesQuerySet
+
     from apps.search.documents.base import Document
     from core.models.model import Model
 
 
 class SearchableMixin:
     """Mixin for adding search capability to manager and queryset classes."""
+
+    all: Callable[..., QuerySet]
+    annotate: Callable[..., QuerySet]
+    filter: Callable[..., QuerySet]
+    first: Callable[..., Model]
+    model: Type[Model]
+    values_list: Callable[..., 'ValuesQuerySet']
 
     def get_closest_to_datetime(
         self: Union[Manager, QuerySet],
