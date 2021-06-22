@@ -11,6 +11,8 @@ from core.tests import TestSuite
 
 @pytest.fixture()
 def client_query(client):
+    """GraphQL query helper."""
+
     def func(*args, **kwargs):
         return graphql_query(*args, **kwargs, client=client)
 
