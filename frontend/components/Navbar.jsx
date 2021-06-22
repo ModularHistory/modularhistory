@@ -144,7 +144,13 @@ export default function GlobalNavbar({ menuItems }) {
     >
       <Link href={"/"} passHref>
         <Navbar.Brand href={"/"} data-cy={"brand"}>
-          <Image alt="Logo" src={logoImage} width="2.7rem" height="2.5rem" layout="fixed" />{" "}
+          <Image
+            alt="Logo"
+            src={"/public/logo_head_white.png"}
+            width="2.7rem"
+            height="2.5rem"
+            layout="fixed"
+          />{" "}
           ModularHistory
         </Navbar.Brand>
       </Link>
