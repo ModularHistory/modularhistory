@@ -208,8 +208,9 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
 
         Must be defined by models inheriting from Source.
         """
-        # Hack.
-        return self.ctype.model.objects.get(pk=self.pk).__html__()
+        if not self._state.adding:
+            return self.ctype.model.objects.get(pk=self.pk).__html__()  # hack
+        return f'{self.citation_html}'
 
     def __str__(self) -> str:
         """Return the source's string representation."""
