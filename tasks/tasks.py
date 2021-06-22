@@ -53,7 +53,7 @@ def build(  # noqa: S107
     context.run(
         f'echo {access_token} | docker login ghcr.io -u {github_actor} --password-stdin'
     )
-    for image_name in ('django', 'react'):
+    for image_name in ('django', 'react', 'webserver'):
         image = f'ghcr.io/modularhistory/{image_name}'
         print(f'Pulling {image}:latest...')
         context.run(f'docker pull {image}:latest', warn=True)

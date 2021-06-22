@@ -30,7 +30,7 @@ docker system prune -f
 # Only reload Nginx if necessary.
 [ -f nginx.conf.sha ] || touch nginx.conf.sha
 last_conf_sha="$(cat nginx.conf.sha)"
-current_conf_sha="$(shasum nginx.conf)"
+current_conf_sha="$(shasum config/nginx/prod/nginx.conf)"
 if [[ ! "$current_conf_sha" = "$last_conf_sha" ]]; then
     echo "
     Current nginx.conf hash ($current_conf_sha) does not match 
@@ -41,5 +41,5 @@ if [[ ! "$current_conf_sha" = "$last_conf_sha" ]]; then
     echo "" && echo "Restarting Nginx server..." && 
     lxc exec webserver -- service nginx reload
 fi
-shasum nginx.conf > nginx.conf.sha
+shasum config/nginx/prod/nginx.conf > nginx.conf.sha
 echo "" && echo "Done."

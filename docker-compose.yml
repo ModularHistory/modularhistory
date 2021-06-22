@@ -55,15 +55,6 @@ services:
       default:
         ipv4_address: 172.27.0.12
 
-  certbot:
-    depends_on:
-      - webserver
-    entrypoint: "sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    image: certbot/certbot
-    volumes:
-      - certbot_conf:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
-
   django:
     command: bash config/scripts/init/django.sh
     depends_on:
@@ -256,6 +247,13 @@ services:
       - "redisinsight:/db"
 
   webserver:
+    build:
+      context: .
+      network: host
+      dockerfile: Dockerfile.webserver
+      args:
+        CERTBOT_EMAIL: jacob@modularhistory.com
+        DOMAINS: modularhistory.com,www.modularhistory.com
     depends_on:
       - django
       - react
@@ -267,15 +265,15 @@ services:
       interval: 1m
       timeout: 10s
       retries: 3
-    image: nginx
+    image: "ghcr.io/modularhistory/webserver:$SHA"
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - .:/modularhistory
       - ./config/nginx/prod:/etc/nginx/conf.d
-      - certbot_conf:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+      - certbot:/var/www/certbot
     networks:
       default:
         ipv4_address: 172.27.0.5
@@ -290,8 +288,8 @@ networks:
 volumes:
   # `data` is used by both redis and mongodb
   data:
-  certbot_conf:
-  certbot_www:
+  letsencrypt:
+  certbot:
   postgres_data:
   search_data:
   redisinsight:
