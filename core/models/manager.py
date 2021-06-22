@@ -26,8 +26,8 @@ class SearchableMixin:
     all: Callable[..., QuerySet]
     annotate: Callable[..., QuerySet]
     filter: Callable[..., QuerySet]
-    first: Callable[..., Model]
-    model: Type[Model]
+    first: Callable[..., 'Model']
+    model: Type['Model']
     values_list: Callable[..., 'ValuesQuerySet']
 
     def get_closest_to_datetime(
