@@ -1,19 +1,28 @@
 """Tests for the entities app."""
 
+import json
+
 import pytest
-from django.test import Client
+from graphene_django.utils.testing import graphql_query
 
 from apps.entities.models import Person
 from core.tests import TestSuite
 
 
+@pytest.fixture()
+def client_query(client):
+    def func(*args, **kwargs):
+        return graphql_query(*args, **kwargs, client=client)
+
+    return func
+
+
 @pytest.mark.django_db()
 class EntitiesTestSuite(TestSuite):
-    """Tests for the admin app."""
+    """Tests for the entities app."""
 
-    def test_entity_query(self):
+    def test_entity_query(self, client_query):
         """Verify pages have 200 status."""
-        client = Client()
         name = 'Albert Einstein'
         person: Person = Person.objects.create(name=name)
         # fmt: off
@@ -30,8 +39,9 @@ class EntitiesTestSuite(TestSuite):
         }
         ''' % person.slug
         # fmt: on
-        response = client.post('/graphql/', {'query': query.strip()})
+        response = client_query(query)
+        assert response
         assert response.status_code == 200
-        response_content = f'{response.content}'
-        assert '"entity"' in response_content
-        assert f'"name":"{name}"' in response_content
+        content = json.loads(response.content)
+        assert 'errors' not in content
+        assert 'entity' in content
