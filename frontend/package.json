@@ -15,7 +15,7 @@
     "@material-ui/styles": "^4.11.3",
     "@react-spring/web": "^9.2.3",
     "@sentry/browser": "^6.7.0",
-    "@sentry/integrations": "^6.7.0",
+    "@sentry/integrations": "^6.7.2",
     "@sentry/node": "^6.7.0",
     "@sentry/webpack-plugin": "^1.15.0",
     "axios": "^0.21.1",
