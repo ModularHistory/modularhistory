@@ -16,7 +16,7 @@
     "@react-spring/web": "^9.2.3",
     "@sentry/browser": "^6.7.0",
     "@sentry/integrations": "^6.7.0",
-    "@sentry/node": "^6.7.0",
+    "@sentry/node": "^6.7.2",
     "@sentry/webpack-plugin": "^1.15.0",
     "axios": "^0.21.1",
     "braintree-web-drop-in-react": "^1.2.1",
