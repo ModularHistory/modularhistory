@@ -86,7 +86,6 @@ services:
       - "8000:8000"
     user: www-data
     volumes:
-      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
       # NOTE: www-data must be granted permission to write to these directories
       # both in the container and on the host machine. Permissions to write in
       # the container are granted in Dockerfile.django. Permissions to write on
@@ -206,6 +205,25 @@ services:
       - "8001:8001"
     volumes:
       - "redisinsight:/db"
+
+  webserver:
+    deploy:
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx/prod:/etc/nginx/conf.d
+      - .:/modularhistory
+    networks:
+      default:
+        ipv4_address: 172.27.0.5
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
