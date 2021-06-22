@@ -55,6 +55,15 @@ services:
       default:
         ipv4_address: 172.27.0.12
 
+  certbot:
+    depends_on:
+      - webserver
+    entrypoint: "sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    image: certbot/certbot
+    volumes:
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+
   django:
     command: bash config/scripts/init/django.sh
     depends_on:
@@ -95,6 +104,46 @@ services:
       - ./.init:/modularhistory/.init
       - ./_static:/modularhistory/_static
       - ./_media:/modularhistory/_media
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
+    environment:
+      # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
+      - node.name=modularhistory-es
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - xpack.ml.enabled=false
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - search_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      default:
+        ipv4_address: 172.27.0.15
+
+  kibana:
+    depends_on:
+      - elasticsearch
+    image: docker.elastic.co/kibana/kibana:7.8.1
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      default:
+        ipv4_address: 172.27.0.16
 
   mongo:
     deploy:
@@ -207,6 +256,9 @@ services:
       - "redisinsight:/db"
 
   webserver:
+    depends_on:
+      - django
+      - react
     deploy:
       restart_policy:
         condition: on-failure
@@ -218,51 +270,15 @@ services:
     image: nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./config/nginx/prod:/etc/nginx/conf.d
       - .:/modularhistory
+      - ./config/nginx/prod:/etc/nginx/conf.d
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
     networks:
       default:
         ipv4_address: 172.27.0.5
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
-    environment:
-      # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
-      - node.name=modularhistory-es
-      - cluster.name=es-docker-cluster
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - search_data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
-    networks:
-      default:
-        ipv4_address: 172.27.0.15
-
-  kibana:
-    depends_on:
-      - elasticsearch
-    image: docker.elastic.co/kibana/kibana:7.8.1
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    networks:
-      default:
-        ipv4_address: 172.27.0.16
 
 networks:
   default:
@@ -274,6 +290,8 @@ networks:
 volumes:
   # `data` is used by both redis and mongodb
   data:
+  certbot_conf:
+  certbot_www:
   postgres_data:
   search_data:
   redisinsight:
