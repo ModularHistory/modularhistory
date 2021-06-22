@@ -7,10 +7,10 @@ ignore_logger('graphql.execution.utils')
 
 GRAPHENE = {
     'SCHEMA': 'apps.graph.schema.schema',
-    'MIDDLEWARE': (
-        'graphene_django.debug.DjangoDebugMiddleware',
-        'core.config._graphene.SentryMiddleware',
-    ),
+    # 'MIDDLEWARE': (
+    #     'graphene_django.debug.DjangoDebugMiddleware',
+    #     'core.config._graphene.SentryMiddleware',
+    # ),
 }
 if IS_DEV:
     GRAPHENE['MIDDLEWARE'] = ('graphene_django.debug.DjangoDebugMiddleware',)
