@@ -46,4 +46,4 @@ class EntitiesTestSuite(TestSuite):
         assert response.status_code == 200
         content = json.loads(response.content)
         assert 'errors' not in content
-        assert 'entity' in content
+        assert 'entity' in f'{content}'
