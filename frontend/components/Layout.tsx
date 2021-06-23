@@ -23,7 +23,7 @@ const Layout: FunctionComponent<LayoutProperties> = ({
   useEffect(() => {
     // Set client-side cookies associated with the Django session.
     if (session) {
-      if (session.clientSideCookies) {
+      if (Array.isArray(session.clientSideCookies)) {
         session.clientSideCookies.forEach((cookie) => {
           document.cookie = cookie;
           const debugMessage =
