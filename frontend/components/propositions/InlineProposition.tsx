@@ -21,7 +21,7 @@ const InlineProposition: FC<InlinePropositionProps> = ({
       }}
     >
       {proposition.dateString && (
-        <span
+        <small
           style={{
             position: "absolute",
             top: 0,
@@ -33,7 +33,7 @@ const InlineProposition: FC<InlinePropositionProps> = ({
           }}
         >
           {proposition.dateString}
-        </span>
+        </small>
       )}
       <span style={{ padding: "5px 7px", display: "inline-block" }}>
         <Link href={proposition.absoluteUrl}>{proposition.summary}</Link>
