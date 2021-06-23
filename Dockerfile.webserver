@@ -1,6 +1,5 @@
 FROM nginx:stable
 
-# Allow ENVIRONMENT to be passed as a build argument.
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG ENVIRONMENT=dev
 ARG CERTBOT_EMAIL=jacob@modularhistory.com

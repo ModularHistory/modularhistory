@@ -5,7 +5,6 @@
 # https://hub.docker.com/_/node/
 FROM node:lts-buster AS builder
 
-# Allow ENVIRONMENT to be passed as a build argument.
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG ENVIRONMENT=dev
 
