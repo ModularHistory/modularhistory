@@ -57,7 +57,7 @@ jobs:
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
-      SERVER: kfred.dyndns.org
+      SERVER: modularhistory.com
       SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
       SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
       SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
@@ -90,11 +90,11 @@ jobs:
         mkdir -p ~/.ssh
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
         ssh-keyscan github.com >> ~/.ssh/known_hosts
-        ssh-add - <<< "${{ secrets.DODC_PRIVATE_KEY }}"
+        ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
         echo "Transferring files to $SERVER..."
-        scp -o StrictHostKeyChecking=no -P 2200 -r ./.env ./docker-compose.yml ./core/templates/error.htm ./config modularhistory@$SERVER:~/
+        scp -o StrictHostKeyChecking=no -P ${{ secrets.SSH_PORT }} -r ./.env ./docker-compose.yml ./core/templates/error.htm ./config modularhistory@$SERVER:~/
         echo "Starting SSH session with $SERVER..."
-        ssh -o StrictHostKeyChecking=no -p 2200 modularhistory@$SERVER << 'ENDSSH'
+        ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} modularhistory@$SERVER << 'ENDSSH'
           echo "" && echo "Setting environment variables..."
           set -a && source .env && echo "Finished setting environment variables."
           set +a; bash config/scripts/deploy.sh
