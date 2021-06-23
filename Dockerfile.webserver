@@ -4,6 +4,8 @@ FROM nginx:stable
 ARG ENVIRONMENT=dev
 ARG CERTBOT_EMAIL=jacob@modularhistory.com
 ARG DOMAIN_LIST=modularhistory.com,www.modularhistory.com
+ENV CERTBOT_EMAIL=$CERTBOT_EMAIL
+ENV DOMAIN_LIST=$DOMAIN_LIST
 
 RUN apt-get update \
   && apt-get install -y cron certbot python-certbot-nginx bash wget \
