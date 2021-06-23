@@ -43,7 +43,7 @@ def upload_db_seed(self: Task, *args, **kwargs):
     """Make and upload a db seed file."""
     environment = os.getenv('ENVIRONMENT')
     if environment == Environments.PROD:
-        kwargs |= {'redact': True, 'push': True, 'filename': 'init.sql'}
+        kwargs = {**{'redact': True, 'push': True, 'filename': 'init.sql'}, **kwargs}
         db.backup(*args, **kwargs)
     else:
         print(
