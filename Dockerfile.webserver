@@ -20,4 +20,4 @@ VOLUME /etc/letsencrypt
 
 EXPOSE 80 443
 
-CMD [ "sh", "-c", "if [ ! "$ENVIRONMENT" = "dev" ]; then certbot certonly --standalone --agree-tos -m "$CERTBOT_EMAIL" -n -d ${DOMAINS}; fi; cron && nginx -g 'daemon off;'" ]
+CMD [ "sh", "-c", "if [ ! $ENVIRONMENT = dev ]; then certbot certonly --standalone --agree-tos -m $CERTBOT_EMAIL -n -d ${DOMAINS}; fi; cron && nginx -g 'daemon off;'" ]
