@@ -3,10 +3,10 @@ FROM nginx:stable
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG ENVIRONMENT=dev
 ARG CERTBOT_EMAIL=jacob@modularhistory.com
-ARG DOMAIN_LIST=modularhistory.com,www.modularhistory.com
+ARG DOMAINS=modularhistory.com,www.modularhistory.com
 ENV ENVIRONMENT=$ENVIRONMENT
 ENV CERTBOT_EMAIL=$CERTBOT_EMAIL
-ENV DOMAIN_LIST=$DOMAIN_LIST
+ENV DOMAINS=$DOMAINS
 
 RUN apt-get update \
   && apt-get install -y cron certbot python-certbot-nginx bash wget \
