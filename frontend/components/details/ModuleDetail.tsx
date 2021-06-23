@@ -1,10 +1,10 @@
-import PropositionDetail from "@/components/details/PropositionDetail";
+import PropositionDetail from "@/components/propositions/PropositionDetail";
 import { Entity, Image, Occurrence, Proposition, Quote, Source, Topic } from "@/interfaces";
 import { useSession } from "next-auth/client";
 import { createRef, FC, useLayoutEffect } from "react";
 import EntityDetail from "./EntityDetail";
 import ImageDetail from "./ImageDetail";
-import OccurrenceDetail from "./OccurrenceDetail";
+import OccurrenceDetail from "../propositions/OccurrenceDetail";
 import QuoteDetail from "./QuoteDetail";
 import SourceDetail from "./SourceDetail";
 import TopicDetail from "./TopicDetail";

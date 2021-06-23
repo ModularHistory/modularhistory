@@ -8,6 +8,7 @@ import { TreeItem, TreeView } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
 import { animated, useSpring } from "@react-spring/web";
 import { FC } from "react";
+import InlineProposition from "./InlineProposition";
 
 function MinusSquare(props: SvgIconProps) {
   return (
@@ -109,7 +110,8 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
                   <StyledTreeItem
                     key={`${subindex}-${premise.slug}`}
                     nodeId={`${subindex}-${premise.slug}`}
-                    label={premise.summary}
+                    label={<InlineProposition proposition={premise} />}
+                    style={{ margin: "1rem" }}
                   />
                 ))}
             </StyledTreeItem>

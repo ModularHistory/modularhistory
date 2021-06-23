@@ -36,6 +36,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           type
           explanation
           premises {
+            absoluteUrl
+            dateString
             slug
             summary
             elaboration

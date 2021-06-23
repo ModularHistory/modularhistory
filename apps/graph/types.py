@@ -3,12 +3,11 @@ from graphene_django.types import DjangoObjectType
 
 
 class AbstractModuleType(graphene.ObjectType):
+    """Base GraphQL type for model instances."""
 
-    # required in order to use the ModuleDetail component
     model = graphene.String()
-
-    # required in order to render the admin link
     admin_url = graphene.String(source='admin_url')
+    absolute_url = graphene.String(source='absolute_url')
 
     class Meta:
         abstract = True
