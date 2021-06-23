@@ -18,7 +18,7 @@ RUN mkdir -p -- \
 # Install project dependencies.
 WORKDIR /modularhistory/frontend
 COPY frontend/package*.json /modularhistory/frontend/
-RUN npm ci --cache .npm
+RUN npm ci --cache .npm || (npm cache clean -f && npm ci)
 
 # Add source code required for compiling JS.
 COPY .env /modularhistory/.env
@@ -52,7 +52,7 @@ COPY --from=builder /modularhistory/frontend/.next /modularhistory/frontend/.nex
 
 # Install required dependencies.
 COPY frontend/package*.json /modularhistory/frontend/
-RUN if [ "$ENVIRONMENT" = "dev" ] ; then npm ci --cache .npm ; else npm ci --cache .npm --production ; fi
+RUN if [ "$ENVIRONMENT" = "dev" ]; then npm ci --cache .npm; else npm ci --cache .npm --production; fi
 
 # Copy necessary files.
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
