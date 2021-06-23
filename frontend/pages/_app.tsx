@@ -58,7 +58,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
     // but router.push() does not.)
     const handle = () => window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     router.events.on("routeChangeComplete", handle);
-    return () => router.events.off("routerChangeComplete", handle);
+    return () => router.events.off("routeChangeComplete", handle);
   }, [router.events]);
   return (
     <>

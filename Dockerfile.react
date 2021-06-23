@@ -18,7 +18,7 @@ RUN mkdir -p -- \
 # Install project dependencies.
 WORKDIR /modularhistory/frontend
 COPY frontend/package*.json /modularhistory/frontend/
-RUN npm ci --cache .npm || (npm cache clean -f && npm ci --cache .npm)
+RUN npm set cache .npm; npm ci || (npm cache clean -f && npm ci)
 
 # Add source code required for compiling JS.
 COPY .env /modularhistory/.env
