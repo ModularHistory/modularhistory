@@ -3,22 +3,11 @@
 
 import "next-auth";
 import { Session as NextAuthSession, User as NextAuthUser } from "next-auth";
+import "next-auth/client";
 import "next-auth/jwt";
 import { JWT as NextAuthJWT } from "next-auth/jwt";
 
-interface User extends NextAuthUser {
-  username: string;
-  isSuperuser: boolean;
-}
-
 declare module "next-auth" {
-  export interface Session extends NextAuthSession {
-    refreshToken?: string;
-    sessionIdCookie?: string;
-    clientSideCookies?: string[];
-    expired?: boolean;
-    user?: NextAuthUser | User;
-  }
   export interface User extends NextAuthUser {
     accessToken: string;
     accessTokenExpiry: number;
@@ -26,6 +15,15 @@ declare module "next-auth" {
     sessionIdCookie: string;
     clientSideCookies: string[];
     error?: string;
+    username?: string;
+    isSuperuser?: boolean;
+  }
+  export interface Session extends NextAuthSession {
+    refreshToken?: string;
+    sessionIdCookie?: string;
+    clientSideCookies?: string[];
+    expired?: boolean;
+    user?: User;
   }
 }
 
@@ -35,4 +33,9 @@ declare module "next-auth/jwt" {
     sessionIdCookie: string;
     clientSideCookies: string[];
   }
+}
+
+declare module "next-auth/client" {
+  import { Session } from "next-auth";
+  export function useSession(): [Session | null, boolean];
 }

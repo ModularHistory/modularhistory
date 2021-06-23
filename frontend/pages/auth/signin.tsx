@@ -127,7 +127,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
           {session?.user && !redirecting && (
             <Paper className="p-4 text-center">
               <p className="lead">
-                You are logged in as <strong>{session.user.username || session.user.email}</strong>.
+                You are logged in as <strong>{session.user.email}</strong>.
               </p>
               <br />
               <Button

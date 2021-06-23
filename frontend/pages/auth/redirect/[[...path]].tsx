@@ -69,7 +69,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     path = null;
   }
   const session = await getSession(context);
-  if (session) {
+  if (typeof session?.sessionIdCookie == "string") {
     const [cookieName, cookieValue] = session.sessionIdCookie.split(";")[0].split("=");
     setCookie(context, cookieName, cookieValue, {
       secure: process.env.ENVIRONMENT === "prod",

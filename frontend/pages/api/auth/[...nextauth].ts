@@ -103,7 +103,6 @@ callbacks.jwt = async function jwt(token, user?: User, account?) {
 
 // https://next-auth.js.org/configuration/callbacks#session-callback
 callbacks.session = async function session(session: Session, jwt: JWT) {
-  const sessionPlus: Session = { ...session };
   if (jwt) {
     // If the access token is expired, ...
     if (Date.now() > jwt.accessTokenExpiry) {
@@ -112,20 +111,20 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
       if (Date.now() > jwt.accessTokenExpiry) {
         // eslint-disable-next-line no-console
         console.log("くそっ！ サインアウトするしかない。");
-        sessionPlus.expired = true;
-        return sessionPlus;
+        session.expired = true;
+        return session;
       }
     }
     const accessToken = jwt.accessToken;
     if (jwt.sessionIdCookie) {
-      sessionPlus.sessionIdCookie = jwt.sessionIdCookie;
+      session.sessionIdCookie = jwt.sessionIdCookie;
     }
     if (accessToken) {
       const clientSideCookies = jwt.clientSideCookies;
-      sessionPlus.accessToken = accessToken;
-      sessionPlus.clientSideCookies = clientSideCookies;
+      session.accessToken = accessToken;
+      session.clientSideCookies = clientSideCookies;
       // TODO: Refactor? The point of this is to only make the request when necessary.
-      if (!sessionPlus.user?.username) {
+      if (!session.user || !session.user["username"]) {
         // Replace the session's `user` attribute (containing only name, image, and
         // a couple other fields) with full user details from the Django API.
         let userData;
@@ -144,11 +143,11 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
             }
             return null;
           });
-        sessionPlus.user = userData;
+        session.user = userData;
       }
     }
   }
-  return sessionPlus;
+  return session;
 };
 
 callbacks.redirect = async function redirect(url, baseUrl) {

@@ -83,8 +83,8 @@ const Search: FC<SearchProps> = ({ searchResults }: SearchProps) => {
   // Reset the selected module to 0 when a page transition occurs.
   useEffect(() => {
     const handle = () => setModuleIndex(0);
-    router.events.on("routeChangeEnd", handle);
-    return () => router.events.off("routeChangeEnd", handle);
+    router.events.on("routeChangeComplete", handle);
+    return () => router.events.off("routeChangeComplete", handle);
   }, [router.events, setModuleIndex]);
 
   // get search string from URL params
