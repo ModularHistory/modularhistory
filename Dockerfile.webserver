@@ -1,13 +1,16 @@
 FROM nginx:stable
 
-ARG CERTBOT_EMAIL
-ARG DOMAIN_LIST
+# Allow ENVIRONMENT to be passed as a build argument.
+# https://docs.docker.com/engine/reference/builder/#arg
+ARG ENVIRONMENT=dev
+ARG CERTBOT_EMAIL=jacob@modularhistory.com
+ARG DOMAIN_LIST=modularhistory.com,www.modularhistory.com
 
 RUN apt-get update \
   && apt-get install -y cron certbot python-certbot-nginx bash wget \
   && rm -rf /var/lib/apt/lists/*
 
-RUN certbot certonly --standalone --agree-tos -m "${CERTBOT_EMAIL}" -n -d ${DOMAINS}
+RUN [ "$ENVIRONMENT" = "dev" ] || certbot certonly --standalone --agree-tos -m "${CERTBOT_EMAIL}" -n -d ${DOMAINS}
 
 # && echo "PATH=$PATH" > /etc/cron.d/certbot-renew  \
 # && echo "@monthly certbot renew --nginx >> /var/log/cron.log 2>&1" >>/etc/cron.d/certbot-renew \
