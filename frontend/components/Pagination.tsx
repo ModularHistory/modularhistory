@@ -1,10 +1,10 @@
-import { Breakpoint, useMediaQuery, useTheme } from "@material-ui/core";
+import { Breakpoint, Theme, useMediaQuery, useTheme } from "@material-ui/core";
 import MuiPagination from "@material-ui/lab/Pagination";
 import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     // override bootstrap css
     "& button:focus": { outline: "none" },

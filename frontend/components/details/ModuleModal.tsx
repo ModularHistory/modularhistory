@@ -8,6 +8,7 @@ import {
   DialogProps,
   DialogTitle,
   IconButton,
+  Theme,
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
@@ -15,7 +16,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/styles";
 import { Dispatch, FC, SetStateAction } from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
