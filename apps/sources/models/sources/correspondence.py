@@ -20,7 +20,7 @@ class Correspondence(Source, DocumentMixin):
     """Correspondence from one entity to another."""
 
     type = models.CharField(
-        verbose_name=_('image type'),
+        verbose_name=_('correspondence type'),
         max_length=TYPE_MAX_LENGTH,
         choices=CORRESPONDENCE_TYPES,
         default=CORRESPONDENCE_TYPES[0][0],
@@ -35,7 +35,7 @@ class Correspondence(Source, DocumentMixin):
         """Return the correspondence's citation HTML string."""
         title_html = (
             f'<a href="{self.href}" target="_blank">'
-            f'{self.type_label} to {self.recipient or "unidentified recipient"}'
+            f'{self.type} to {self.recipient or "unidentified recipient"}'
             '</a>'
         )
         components = [
