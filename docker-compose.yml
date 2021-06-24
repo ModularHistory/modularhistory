@@ -271,6 +271,7 @@ services:
       - "443:443"
     volumes:
       - .:/modularhistory
+      - ./_media:/modularhistory/_media
       - ./config/nginx/prod:/etc/nginx/conf.d
       - letsencrypt:/etc/letsencrypt
       - certbot:/var/www/certbot

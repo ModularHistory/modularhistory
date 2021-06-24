@@ -4,6 +4,7 @@ import { PageTransitionContextProvider } from "@/components/PageTransitionContex
 import { initializeSentry } from "@/sentry";
 import "@/styles/globals.css";
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@material-ui/core/styles";
+import { StylesProvider } from "@material-ui/styles";
 import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
@@ -40,7 +41,6 @@ interface ExtendedAppProps extends AppProps {
 const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps) => {
   const router = useRouter();
   useEffect(() => {
-    console.warn("_app.tsx useEffect called");
     // Remove the server-side injected CSS.
     // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -89,10 +89,12 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
       <Provider session={pageProps.session}>
         <SessionKiller>
           <PageTransitionContextProvider>
-            <StyledEngineProvider>
-              <ThemeProvider theme={theme}>
-                <Component {...pageProps} err={err} />
-              </ThemeProvider>
+            <StyledEngineProvider injectFirst>
+              <StylesProvider>
+                <ThemeProvider theme={theme}>
+                  <Component {...pageProps} err={err} />
+                </ThemeProvider>
+              </StylesProvider>
             </StyledEngineProvider>
           </PageTransitionContextProvider>
         </SessionKiller>
