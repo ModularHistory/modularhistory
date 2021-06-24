@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import Autocomplete from "@material-ui/core/Autocomplete";
 import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { makeStyles } from "@material-ui/styles";
 import React, { FC, useContext, useEffect, useState } from "react";
 import { SearchFormContext } from "./SearchForm";
 

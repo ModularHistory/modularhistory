@@ -177,14 +177,14 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
-                      <Button color="primary" fullWidth type="submit" variant="contained">
+                      <Button fullWidth type="submit" variant="contained">
                         Sign in
                       </Button>
                     </Grid>
                   </Grid>
                 </form>
                 <Divider style={{ width: "100%", marginTop: "2rem", marginBottom: "2rem" }} />
-                <Grid id="social-sign-in" container justify="center">
+                <Grid id="social-sign-in" container justifyContent="center">
                   {socialAuthLoginComponents}
                 </Grid>
               </div>

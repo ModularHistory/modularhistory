@@ -2,7 +2,7 @@ import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { createStyles, makeStyles } from "@material-ui/styles";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";

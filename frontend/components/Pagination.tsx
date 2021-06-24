@@ -1,8 +1,8 @@
-import { FC, useState } from "react";
-import { useRouter } from "next/router";
+import { Breakpoint, useMediaQuery, useTheme } from "@material-ui/core";
 import MuiPagination from "@material-ui/lab/Pagination";
-import { makeStyles, useMediaQuery, useTheme } from "@material-ui/core";
-import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
+import { makeStyles } from "@material-ui/styles";
+import { useRouter } from "next/router";
+import { FC, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -1,11 +1,12 @@
 import ModuleContainer from "@/components/details/ModuleContainer";
 import { Proposition } from "@/interfaces";
+import { alpha, Theme } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
-import { createStyles, fade, makeStyles, Theme, withStyles } from "@material-ui/core/styles";
 import SvgIcon, { SvgIconProps } from "@material-ui/core/SvgIcon";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { TreeItem, TreeView } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
+import { createStyles, makeStyles, withStyles } from "@material-ui/styles";
 import { animated, useSpring } from "@react-spring/web";
 import { FC } from "react";
 import InlineProposition from "./InlineProposition";
@@ -60,7 +61,7 @@ const StyledTreeItem = withStyles((theme: Theme) =>
     group: {
       marginLeft: 7,
       paddingLeft: 18,
-      borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
+      borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`,
     },
   })
 )((props: TreeItemProps) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
