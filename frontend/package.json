@@ -14,7 +14,7 @@
     "@material-ui/core": "^5.0.0-alpha.37",
     "@material-ui/icons": "^5.0.0-alpha.37",
     "@material-ui/lab": "^5.0.0-alpha.37",
-    "@material-ui/styles": "^5.0.0-alpha.35",
+    "@material-ui/styles": "^5.0.0-alpha.36",
     "@react-spring/web": "^9.2.3",
     "@sentry/browser": "^6.7.2",
     "@sentry/integrations": "^6.7.2",
