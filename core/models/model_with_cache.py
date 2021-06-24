@@ -7,10 +7,10 @@ from pprint import pformat
 from typing import Callable, Optional, Union
 
 from core.fields.json_field import JSONField
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 
-class ModelWithCache(Model):
+class ModelWithCache(ExtendedModel):
     """A model with computed fields to be stored in JSON (to reduce db queries)."""
 
     cache = JSONField(null=True, blank=True, default=dict)
@@ -86,7 +86,9 @@ def store(
 
     def wrap(model_property):  # noqa: ANN201,WPS430
         @wraps(model_property)  # noqa: ANN201,WPS430
-        def wrapped_property(model_instance: Union[ModelWithCache, Model], *args, **kwargs):
+        def wrapped_property(
+            model_instance: Union[ModelWithCache, ExtendedModel], *args, **kwargs
+        ):
             # Avoid recursion errors when creating new model instances
             if model_instance.pk:
                 if isinstance(model_instance, ModelWithCache):

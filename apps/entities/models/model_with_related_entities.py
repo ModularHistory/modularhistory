@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
-from core.models.model import Model
+from core.models.model import ExtendedModel
 from core.models.model_with_cache import store
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 ATTRIBUTE_NAMES = ('attributees', 'involved_entities', 'affiliated_entities')
 
 
-class ModelWithRelatedEntities(Model):
+class ModelWithRelatedEntities(ExtendedModel):
     """
     A model that has related entities (attributees, involved entities, etc.).
 
@@ -51,9 +51,7 @@ class ModelWithRelatedEntities(Model):
     @store(attribute_name='serialized_entities')
     def serialized_entities(self) -> list[dict]:
         """Return a list of dictionaries representing the instance's images."""
-        return [
-            entity.serialize() for entity in self._related_entities.all().iterator()
-        ]
+        return [entity.serialize() for entity in self._related_entities.all().iterator()]
 
     def preprocess_html(self, html: str) -> str:
         """Modify the value of an HTML field during cleaning."""

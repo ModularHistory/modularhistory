@@ -8,12 +8,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 CIRCA_PREFIX = 'c. '
 
 
-class DatedModel(Model):
+class DatedModel(ExtendedModel):
     """A model with a date (e.g., a quote or occurrence)."""
 
     # `date_nullable` can be set to True by child models that require the

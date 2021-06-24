@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.model import Model
+from core.models.model import ExtendedModel
 from core.models.positioned_relation import PositionedRelation
 
 
@@ -47,7 +47,7 @@ class RelatedQuotesField(CustomManyToManyField):
         super().__init__(**kwargs)
 
 
-class ModelWithRelatedQuotes(Model):
+class ModelWithRelatedQuotes(ExtendedModel):
     """A model that has related quotes; e.g., an occurrence, topic, or person."""
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options

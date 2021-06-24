@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models.model import Model
+from core.models.model import ExtendedModel
 from core.utils.string import truncate
 
 
-class Chat(Model):
+class Chat(ExtendedModel):
     """A chat between volunteers/contributors/staff."""
 
     content = models.TextField(verbose_name=_('chat'))

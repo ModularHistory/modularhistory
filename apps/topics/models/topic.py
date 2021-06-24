@@ -8,7 +8,7 @@ from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
-from core.models.model import Model
+from core.models.model import ExtendedModel
 from core.models.model_with_cache import ModelWithCache, store
 from core.models.slugged_model import SluggedModel
 
@@ -16,7 +16,7 @@ NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
 
 
-class TopicTopicRelation(Model):
+class TopicTopicRelation(ExtendedModel):
     """A relationship between equivalent or closely related topics."""
 
     from_topic = ForeignKey(
@@ -34,7 +34,7 @@ class TopicTopicRelation(Model):
         return f'{self.from_topic} ~ {self.to_topic}'
 
 
-class TopicParentChildRelation(Model):
+class TopicParentChildRelation(ExtendedModel):
     """A relationship between a parent topic and child topic."""
 
     parent_topic = ForeignKey(

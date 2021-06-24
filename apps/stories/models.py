@@ -8,7 +8,7 @@ from apps.sources.models.model_with_sources import ModelWithSources
 from apps.stories.serializers import StorySerializer
 from core.fields.html_field import HTMLField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 HANDLE_MAX_LENGTH = 40
 
@@ -60,7 +60,7 @@ class Story(ModelWithSources):
         return self.handle
 
 
-class StoryElement(Model):
+class StoryElement(ExtendedModel):
     """An element or component of a story."""
 
     key = models.CharField(max_length=HANDLE_MAX_LENGTH, unique=True)
@@ -70,7 +70,7 @@ class StoryElement(Model):
         return self.key
 
 
-class StoryElementInclusion(Model):
+class StoryElementInclusion(ExtendedModel):
     """An element or component of a story."""
 
     story = models.ForeignKey(
@@ -91,7 +91,7 @@ class StoryElementInclusion(Model):
         return f'{self.story} << {self.story_element}'
 
 
-class StoryInspiration(Model):
+class StoryInspiration(ExtendedModel):
     """An inspiration of a story by another story."""
 
     upstream_story = models.ForeignKey(

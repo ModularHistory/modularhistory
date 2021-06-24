@@ -1,9 +1,12 @@
 import logging
 import re
-from typing import TYPE_CHECKING, Match, Optional
+from typing import TYPE_CHECKING, Match, Optional, Type
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.base import Model
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 from django.template.defaultfilters import truncatechars_html
 from django.urls import reverse
 from django.utils.html import format_html
@@ -40,6 +43,7 @@ from core.fields.html_field import (
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
+from core.models.model import ExtendedModel
 from core.utils.html import escape_quotes, soupify
 from core.utils.string import dedupe_newlines, truncate
 
@@ -107,6 +111,17 @@ class QuoteRelation(AbstractQuoteRelation):
     content_object = get_proposition_fk(related_name='quote_relations')
 
 
+class Conflict(Model):
+    """
+    A conflict between two propositions.
+
+    Conflicts are symmetrical.
+    """
+
+    proposition = get_proposition_fk(related_name='inward_conflicts')
+    conflicting_proposition = get_proposition_fk(related_name='outward_conflicts')
+
+
 TYPE_CHOICES = (
     ('propositions.conclusion', 'conclusion'),
     ('propositions.occurrence', 'occurrence'),
@@ -151,6 +166,7 @@ class Proposition(  # noqa: WPS215
         db_index=True,
         max_length=100,
     )
+
     summary = HTMLField(
         verbose_name=_('summary'),
         unique=True,
@@ -161,29 +177,37 @@ class Proposition(  # noqa: WPS215
         verbose_name=_('elaboration'),
         paragraphed=True,
     )
+
     certainty = models.PositiveSmallIntegerField(
         verbose_name=_('certainty'),
         null=True,
         blank=True,
         choices=DEGREES_OF_CERTAINTY,
     )
+    arguments: 'RelatedManager[Argument]'
+    conflicting_propositions = models.ManyToManyField(
+        to='self',
+        symmetrical=True,
+        verbose_name=_('conflicting propositions'),
+    )
+
+    sources = SourcesField(
+        through=Citation,
+        related_name='propositions',
+    )
+
+    images = ImagesField(through=ImageRelation)
+    locations = LocationsField(through=Location)
+    related_quotes = RelatedQuotesField(
+        through=QuoteRelation,
+        related_name='propositions',
+    )
+
     postscript = HTMLField(
         verbose_name=_('postscript'),
         blank=True,
         paragraphed=True,
         help_text='Content to be displayed below all related data',
-    )
-    arguments: 'RelatedManager[Argument]'
-
-    locations = LocationsField(through=Location)
-    images = ImagesField(through=ImageRelation)
-    related_quotes = RelatedQuotesField(
-        through=QuoteRelation,
-        related_name='propositions',
-    )
-    sources = SourcesField(
-        through=Citation,
-        related_name='propositions',
     )
 
     searchable_fields = [
@@ -334,3 +358,20 @@ class Conclusion(Proposition):
         proxy = True
 
     objects = ConclusionManager()
+
+
+@receiver(post_save, sender=Conflict)
+def post_save(sender: Type[Conflict], instance: Conflict, created: bool, **kwargs):
+    if created:
+        sender.objects.get_or_create(
+            proposition=instance.conflicting_proposition,
+            conflicting_proposition=instance.proposition,
+        )
+
+
+@receiver(post_delete, sender=Conflict)
+def post_delete(sender: Type[Conflict], instance: Conflict, **kwargs):
+    sender.objects.filter(
+        proposition=instance.conflicting_proposition,
+        conflicting_proposition=instance.proposition,
+    ).delete()

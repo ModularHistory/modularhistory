@@ -9,7 +9,7 @@ from apps.search.api.search import SEARCHABLE_DOCUMENTS
 from apps.search.models import SearchableDatedModel
 
 if TYPE_CHECKING:
-    from core.models.model import Model
+    from core.models.model import ExtendedModel
 
 SORT_BY_PARAM = 'ordering'
 
@@ -31,7 +31,7 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
         self.view = view
         return list(map(self.apply_meta, queryset))
 
-    def apply_meta(self, model_instance: 'Model'):
+    def apply_meta(self, model_instance: 'ExtendedModel'):
         """Attach search result meta info to a model instance."""
         document = next(
             (

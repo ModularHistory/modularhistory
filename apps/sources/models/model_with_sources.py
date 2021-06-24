@@ -13,7 +13,7 @@ from apps.sources.models.citation import AbstractCitation
 from core.constants.strings import EMPTY_STRING
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.html_field import HTMLField
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 
 class SourcesField(CustomManyToManyField):
@@ -29,7 +29,7 @@ class SourcesField(CustomManyToManyField):
         super().__init__(**kwargs)
 
 
-class ModelWithSources(Model):
+class ModelWithSources(ExtendedModel):
     """
     A model that has sources; e.g., a quote or occurrence.
 

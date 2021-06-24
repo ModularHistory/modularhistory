@@ -8,10 +8,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.utils.html import soupify
 
-from .model import Model
+from .model import ExtendedModel
 
 
-class SluggedModel(Model):
+class SluggedModel(ExtendedModel):
     """
     A model with a detail page and slug.
 

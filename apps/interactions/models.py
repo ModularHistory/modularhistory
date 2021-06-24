@@ -8,10 +8,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 
-class ContentInteraction(Model):
+class ContentInteraction(ExtendedModel):
     """Abstract base model for content interactions."""
 
     created_at = models.DateTimeField(auto_now_add=True)

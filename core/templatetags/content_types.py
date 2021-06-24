@@ -6,7 +6,7 @@ from django.apps import apps
 from django.utils.module_loading import import_string
 
 from core.constants.content_types import MODEL_CLASS_PATHS
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 register = template.Library()
 
@@ -18,7 +18,7 @@ def class_name(instance) -> str:
 
 
 @register.filter()
-def is_instance(instance: Union[dict, Model], arg: str) -> bool:
+def is_instance(instance: Union[dict, ExtendedModel], arg: str) -> bool:
     """
     Determine whether model_instance is an instance of the specified model class.
 

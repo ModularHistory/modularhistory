@@ -7,7 +7,7 @@ from typedmodels.models import TypedModel
 
 from core.fields.html_field import HTMLField
 from core.models.manager import TypedModelManager
-from core.models.model import Model
+from core.models.model import ExtendedModel
 from core.utils.html import soupify
 
 PUBLICATION_TYPES = (
@@ -17,7 +17,7 @@ PUBLICATION_TYPES = (
 )
 
 
-class AbstractPublication(Model):
+class AbstractPublication(ExtendedModel):
     """Abstract base class for publications."""
 
     name = models.CharField(

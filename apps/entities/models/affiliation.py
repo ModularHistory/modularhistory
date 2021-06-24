@@ -5,12 +5,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from core.fields.html_field import HTMLField
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 MAX_NAME_LENGTH: int = 100
 
 
-class _Engagement(Model):
+class _Engagement(ExtendedModel):
     """An engagement with a beginning and, perhaps, an end."""
 
     start_date = HistoricDateTimeField(null=True, blank=True)
@@ -58,7 +58,7 @@ class Affiliation(_Engagement):
         return f'{self.entity} — {self.affiliated_entity}'
 
 
-class Role(Model):
+class Role(ExtendedModel):
     """A role fulfilled by an entity within an organization."""
 
     name = models.CharField(max_length=MAX_NAME_LENGTH, unique=True)

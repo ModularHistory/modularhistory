@@ -4,12 +4,12 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from core.fields.html_field import HTMLField
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 NAME_MAX_LENGTH: int = 100
 
 
-class Idea(Model):
+class Idea(ExtendedModel):
     """An idea."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
@@ -28,7 +28,7 @@ class Idea(Model):
         return self.name
 
 
-class EntityIdea(Model):
+class EntityIdea(ExtendedModel):
     """An association or attribution of an idea to an entity."""
 
     entity = models.ForeignKey(

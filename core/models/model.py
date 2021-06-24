@@ -9,7 +9,7 @@ import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Model as DjangoModel
+from django.db.models import Model
 from django.urls import reverse
 from django.utils.safestring import SafeString
 from rest_framework.serializers import Serializer
@@ -34,7 +34,7 @@ class Views(Constant):
     CARD = 'card'
 
 
-class Model(DjangoModel):
+class ExtendedModel(Model):
     """Model with additional properties used in ModularHistory apps."""
 
     objects: 'Manager' = SearchableManager.from_queryset(SearchableQuerySet)()
@@ -221,7 +221,7 @@ class ModelSerializer(serpy.Serializer):
     id = serpy.IntField()
     model = serpy.MethodField()
 
-    def get_model(self, instance: Model) -> str:
+    def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        model_cls: Type['Model'] = instance.__class__
+        model_cls: Type['ExtendedModel'] = instance.__class__
         return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'

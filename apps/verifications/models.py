@@ -5,10 +5,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.interactions.models import ContentInteraction
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 
-class VerifiableModel(Model):
+class VerifiableModel(ExtendedModel):
     """An item that can, hopefully, be researched and verified."""
 
     verified = models.BooleanField(verbose_name=_('verified'), default=False)

@@ -17,7 +17,7 @@ from core.utils.string import dedupe_newlines, truncate
 if TYPE_CHECKING:
     from django.forms import Field
 
-    from core.models.model import Model
+    from core.models.model import ExtendedModel
 
 # group 1: entity pk
 # group 2: entity name
@@ -71,14 +71,14 @@ def process(html: str) -> str:
     This involves replacing model instance placeholders with their HTML.
     """
     logging.debug(f'Processing HTML: {truncate(html)}')
-    model_classes: dict[str, Type['Model']] = {}
+    model_classes: dict[str, Type['ExtendedModel']] = {}
     for match in object_placeholder_regex.finditer(html):
         placeholder = match.group(0)
         object_type = match.group(PlaceholderGroups.MODEL_NAME)
         logging.debug(f'Found {object_type} placeholder: {truncate(placeholder)}')
         model_cls_str = MODEL_CLASS_PATHS.get(object_type)
         if model_cls_str:
-            model_cls: Type['Model'] = model_classes.get(
+            model_cls: Type['ExtendedModel'] = model_classes.get(
                 model_cls_str, import_string(model_cls_str)
             )
             if model_cls_str not in model_classes:
@@ -156,7 +156,7 @@ class HTMLField(TextField):
         self.paragraphed = paragraphed
         super().__init__(**kwargs)
 
-    def clean(self, html_value: str, model_instance: Optional['Model']) -> str:
+    def clean(self, html_value: str, model_instance: Optional['ExtendedModel']) -> str:
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
         html = html.replace('{', '[').replace('}', ']')

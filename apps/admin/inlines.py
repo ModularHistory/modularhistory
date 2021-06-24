@@ -10,7 +10,7 @@ from apps.admin.model_admin import FORM_FIELD_OVERRIDES
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
-    from core.models.model import Model
+    from core.models.model import ExtendedModel
 
 
 class StackedInline(BaseStackedInline):
@@ -27,7 +27,7 @@ class TabularInline(BaseTabularInline):
     def get_extra(
         self,
         request: 'HttpRequest',
-        obj: Optional['Model'] = None,
+        obj: Optional['ExtendedModel'] = None,
         **kwargs,
     ) -> int:
         """Return the number of extra/blank rows to display."""
@@ -48,7 +48,7 @@ class TabularInline(BaseTabularInline):
         return 1
 
 
-def get_fk_name(model_instance: 'Model') -> str:
+def get_fk_name(model_instance: 'ExtendedModel') -> str:
     if model_instance._meta.proxy_for_model:
         fk_name = model_instance._meta.proxy_for_model.__name__
     elif getattr(model_instance, 'polymorphic_ctype_id', None):

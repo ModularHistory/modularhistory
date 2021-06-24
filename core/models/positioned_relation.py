@@ -3,12 +3,12 @@
 
 from django.db import models
 
-from .model import Model
+from .model import ExtendedModel
 
 FieldList = list[str]
 
 
-class PositionedRelation(Model):
+class PositionedRelation(ExtendedModel):
     """An m2m intermediate relation sortable by position."""
 
     position = models.PositiveSmallIntegerField(null=True, blank=True, default=0)

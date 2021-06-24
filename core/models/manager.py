@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from django.db.models.query import ValuesQuerySet
 
     from apps.search.documents.base import Document
-    from core.models.model import Model
+    from core.models.model import ExtendedModel
 
 
 class SearchableMixin:
@@ -26,15 +26,15 @@ class SearchableMixin:
     all: Callable[..., QuerySet]
     annotate: Callable[..., QuerySet]
     filter: Callable[..., QuerySet]
-    first: Callable[..., 'Model']
-    model: Type['Model']
+    first: Callable[..., 'ExtendedModel']
+    model: Type['ExtendedModel']
     values_list: Callable[..., 'ValuesQuerySet']
 
     def get_closest_to_datetime(
         self: Union[Manager, QuerySet],
         datetime_value: Union[date, datetime, HistoricDateTime],
         datetime_attr: str = 'date',
-    ) -> 'Model':
+    ) -> 'ExtendedModel':
         """Return the model instance closest to the specified datetime_value."""
         greater = self.filter(date__gte=datetime_value).order_by(datetime_attr).first()
         lesser = self.filter(date__lte=datetime_value).order_by(f'-{datetime_attr}').first()
@@ -51,7 +51,7 @@ class SearchableMixin:
         term: str,
         elastic: bool = True,
         fields: Iterable[str] = None,
-    ) -> QuerySet['Model']:
+    ) -> QuerySet['ExtendedModel']:
         """Return search results."""
         searchable_fields = fields or getattr(self.model, 'searchable_fields', None)
         if searchable_fields and term:
@@ -118,7 +118,7 @@ class SearchableQuerySet(SearchableMixin, QuerySet):
 class SearchableManager(SearchableMixin, Manager):
     """Base manager for ModularHistory's models."""
 
-    def get_by_natural_key(self, *args) -> 'Model':
+    def get_by_natural_key(self, *args) -> 'ExtendedModel':
         """Retrieve a model instance by its natural key."""
         fields = self.model.natural_key_fields
         natural_key = {}

@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.model import Model
+from core.models.model import ExtendedModel
 from core.models.positioned_relation import PositionedRelation
 
 
@@ -48,7 +48,7 @@ class ImagesField(CustomManyToManyField):
         super().__init__(**kwargs)
 
 
-class ModelWithImages(Model):
+class ModelWithImages(ExtendedModel):
     """
     A model that has one or more associated images.
 
