@@ -20,4 +20,7 @@ VOLUME /etc/letsencrypt
 
 EXPOSE 80 443
 
+# Switch from root to non-root user.
+USER www-data
+
 CMD [ "sh", "-c", "if [ ! $ENVIRONMENT = dev ]; then certbot certonly --standalone --agree-tos -m $CERTBOT_EMAIL -n -d ${DOMAINS}; fi; cron && nginx -g 'daemon off;'" ]
