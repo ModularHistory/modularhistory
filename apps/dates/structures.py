@@ -1,7 +1,5 @@
 """HistoricDateTime module."""
 
-# TODO: optimize memory by storing attributes in __init__?
-
 from datetime import datetime
 from decimal import Decimal, getcontext
 from typing import Optional
@@ -208,8 +206,7 @@ class HistoricDateTime(datetime):
             else:
                 # BCE dates
                 prettify_circa_year = (
-                    self.year_bce >= PRETTIFICATION_FLOOR
-                    and self.year_bce >= BCE_CIRCA_FLOOR
+                    self.year_bce >= PRETTIFICATION_FLOOR and self.year_bce >= BCE_CIRCA_FLOOR
                 )
                 if prettify_circa_year:
                     year_string = f'c. {prettify(self.year_bce)}'
