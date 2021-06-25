@@ -2,16 +2,7 @@ from typing import Optional
 
 from django.forms import ModelForm
 
-from apps.places.models import (
-    City,
-    Continent,
-    Country,
-    County,
-    Place,
-    Region,
-    State,
-    Venue,
-)
+from apps.places.models import City, Continent, Country, County, Place, Region, State, Venue
 
 
 class _PlaceForm(ModelForm):
@@ -20,7 +11,7 @@ class _PlaceForm(ModelForm):
     type: Optional[str] = None  # noqa: WPS125
 
     def __init__(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Construct the form."""
         super().__init__(*args, **kwargs)
         self.initial['type'] = self.type or self.instance.type
 
