@@ -247,15 +247,6 @@ services:
       - "redisinsight:/db"
 
   webserver:
-    build:
-      context: .
-      network: host
-      dockerfile: Dockerfile.webserver
-      args:
-        CERTBOT_EMAIL: jacob@modularhistory.com
-        DOMAINS: modularhistory.com,www.modularhistory.com
-        DDCLIENT_LOGIN: $CLOUDFLARE_EMAIL
-        DDCLIENT_PASSWORD: $CLOUDFLARE_PASSWORD
     depends_on:
       - django
       - react
@@ -263,6 +254,8 @@ services:
       restart_policy:
         condition: on-failure
     env_file: .env
+    environment:
+      DOMAINS: "modularhistory.com,www.modularhistory.com"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost"]
       interval: 1m
