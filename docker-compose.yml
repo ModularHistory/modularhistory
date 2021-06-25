@@ -254,7 +254,6 @@ services:
       args:
         CERTBOT_EMAIL: jacob@modularhistory.com
         DOMAINS: modularhistory.com,www.modularhistory.com
-        DDCLIENT_PROTOCOL: cloudflare
         DDCLIENT_LOGIN: $CLOUDFLARE_EMAIL
         DDCLIENT_PASSWORD: $CLOUDFLARE_PASSWORD
     depends_on:

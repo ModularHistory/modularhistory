@@ -12,6 +12,8 @@ services:
       dockerfile: Dockerfile.webserver
       args:
         ENVIRONMENT: dev
+        DDCLIENT_LOGIN: ""
+        DDCLIENT_PASSWORD: ""
     depends_on:
       - django
       - celery_beat
@@ -28,7 +30,7 @@ services:
     hostname: modularhistory.dev.net
     image: webserver
     ports:
-      - "80:80"
+      - "80:8080"
     volumes:
       - ./config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory

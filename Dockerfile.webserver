@@ -25,12 +25,16 @@ ENV DDCLIENT_PROTOCOL=${DDCLIENT_PROTOCOL}
 ENV DDCLIENT_LOGIN=${DDCLIENT_LOGIN}
 ENV DDCLIENT_PASSWORD=${DDCLIENT_PASSWORD}
 
-RUN apt-get update \
-  && apt-get install -y \
-  bash wget cron envsubst \
-  certbot python-certbot-nginx \
-  ddclient ca-certificates libjson-pp-perl \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+  apt-get install -y bash curl wget cron gettext certbot python-certbot-nginx perl libjson-pp-perl && \
+  DDCLIENT_VERSION=$(curl -sX GET "https://api.github.com/repos/ddclient/ddclient/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]') && \
+  mkdir -p /tmp/ddclient && \
+  curl -o /tmp/ddclient.tar.gz -L "https://github.com/ddclient/ddclient/archive/${DDCLIENT_VERSION}.tar.gz" && \
+  tar xf /tmp/ddclient.tar.gz -C /tmp/ddclient --strip-components=1 && \
+  install -Dm755 /tmp/ddclient/ddclient /usr/bin/ && \
+  mkdir -p /etc/ddclient/ && \
+  cp /tmp/ddclient/sample-get-ip-from-fritzbox /etc/ddclient/get-ip-from-fritzbox && \
+  rm -rf /var/lib/apt/lists/*
 
 # Create required directories.
 RUN mkdir -p -- /modularhistory/_static /modularhistory/_media
@@ -41,9 +45,7 @@ VOLUME /modularhistory/_media
 
 COPY core/templates/error.htm /modularhistory/error.htm
 COPY config/ddclient.conf /etc/ddclient.conf
-
-RUN envsubst < /etc/ddclient.conf > /etc/ddclient.conf.tmp \
-  && mv /etc/ddclient.conf.tmp /etc/ddclient/ddclient.conf
+COPY config/init/webserver.sh /modularhistory/webserver.sh
 
 RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
   && echo "@monthly certbot renew --nginx >> /var/log/cron.log 2>&1" >>/etc/cron.d/certbot-renew \
@@ -57,8 +59,9 @@ RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /etc/nginx/conf.d
 
 RUN touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
-  && touch /var/run/ddclient.pid && chown -R www-data:www-data /var/run/ddclient.pid
+  && touch /var/run/ddclient.pid && chown -R www-data:www-data /var/run/ddclient.pid \
+  && touch /var/run/crond.pid && chown -R www-data:www-data /var/run/crond.pid
 
 USER www-data
 
-CMD [ "sh", "-c", "if [ ! $ENVIRONMENT = dev ]; then ddclient -daemon -pid /var/run/ddclient.pid; certbot certonly --standalone --agree-tos -m $CERTBOT_EMAIL -n -d ${DOMAINS}; fi; cron && nginx -g 'daemon off;'" ]
+CMD [ "sh", "/modularhistory/webserver.sh" ]

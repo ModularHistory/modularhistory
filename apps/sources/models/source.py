@@ -209,7 +209,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         Must be defined by models inheriting from Source.
         """
         if not self._state.adding:
-            return self.ctype.model.objects.get(pk=self.pk).__html__()  # hack
+            return self.ctype.model_class().objects.get(pk=self.pk).__html__()  # hack
         raise NotImplementedError
 
     def __str__(self) -> str:
