@@ -270,8 +270,8 @@ services:
       - "80:8080"
       - "443:8443"
     volumes:
-      - .:/modularhistory
       - ./_media:/modularhistory/_media
+      - ./_static:/modularhistory/_static
       - ./config/nginx/prod:/etc/nginx/conf.d
       - letsencrypt:/etc/letsencrypt
       - certbot:/var/www/certbot
