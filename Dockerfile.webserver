@@ -32,13 +32,13 @@ RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
 
 EXPOSE ${HTTP_PORT} ${HTTPS_PORT}
 
-RUN chown -R nginx:nginx /modularhistory && chmod -R 755 /modularhistory \
-  && chown -R nginx:nginx /var/cache/nginx \
-  && chown -R nginx:nginx /var/log/nginx \
-  && chown -R nginx:nginx /etc/nginx/conf.d
+RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
+  && chown -R www-data:www-data /var/cache/nginx \
+  && chown -R www-data:www-data /var/log/nginx \
+  && chown -R www-data:www-data /etc/nginx/conf.d
 
-RUN touch /var/run/nginx.pid && chown -R nginx:nginx /var/run/nginx.pid
+RUN touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid
 
-USER nginx
+USER www-data
 
 CMD [ "sh", "-c", "if [ ! $ENVIRONMENT = dev ]; then certbot certonly --standalone --agree-tos -m $CERTBOT_EMAIL -n -d ${DOMAINS}; fi; cron && nginx -g 'daemon off;'" ]
