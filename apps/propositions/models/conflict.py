@@ -21,6 +21,10 @@ class Conflict(Model):
     proposition = get_proposition_fk(related_name='inward_conflicts')
     conflicting_proposition = get_proposition_fk(related_name='outward_conflicts')
 
+    def __str__(self) -> str:
+        """Return the conflict's string representation."""
+        return f'Conflict {self.pk}: {self.proposition} | {self.conflicting_proposition}'
+
 
 @receiver(post_save, sender=Conflict)
 def post_save(sender: Type[Conflict], instance: Conflict, created: bool, **kwargs):
