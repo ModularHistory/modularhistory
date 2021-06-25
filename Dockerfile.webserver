@@ -2,19 +2,34 @@ FROM nginx:stable
 
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG ENVIRONMENT=dev
+
 ARG CERTBOT_EMAIL=jacob@modularhistory.com
 ARG DOMAINS=modularhistory.com,www.modularhistory.com
+
 ARG HTTP_PORT=8080
 ARG HTTPS_PORT=8443
 
+ARG DDCLIENT_PROTOCOL=cloudflare
+ARG DDCLIENT_LOGIN
+ARG DDCLIENT_PASSWORD
+
 ENV ENVIRONMENT=$ENVIRONMENT
+
 ENV CERTBOT_EMAIL=$CERTBOT_EMAIL
 ENV DOMAINS=$DOMAINS
+
 ENV HTTP_PORT=${HTTP_PORT}
 ENV HTTPS_PORT=${HTTPS_PORT}
 
+ENV DDCLIENT_PROTOCOL=${DDCLIENT_PROTOCOL}
+ENV DDCLIENT_LOGIN=${DDCLIENT_LOGIN}
+ENV DDCLIENT_PASSWORD=${DDCLIENT_PASSWORD}
+
 RUN apt-get update \
-  && apt-get install -y cron certbot python-certbot-nginx bash wget \
+  && apt-get install -y \
+  bash wget cron envsubst \
+  certbot python-certbot-nginx \
+  ddclient ca-certificates libjson-pp-perl \
   && rm -rf /var/lib/apt/lists/*
 
 # Create required directories.
@@ -25,6 +40,10 @@ VOLUME /modularhistory/_static
 VOLUME /modularhistory/_media
 
 COPY core/templates/error.htm /modularhistory/error.htm
+COPY config/ddclient.conf /etc/ddclient.conf
+
+RUN envsubst < /etc/ddclient.conf > /etc/ddclient.conf.tmp \
+  && mv /etc/ddclient.conf.tmp /etc/ddclient/ddclient.conf
 
 RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
   && echo "@monthly certbot renew --nginx >> /var/log/cron.log 2>&1" >>/etc/cron.d/certbot-renew \
@@ -37,8 +56,9 @@ RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /var/log/nginx \
   && chown -R www-data:www-data /etc/nginx/conf.d
 
-RUN touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid
+RUN touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
+  && touch /var/run/ddclient.pid && chown -R www-data:www-data /var/run/ddclient.pid
 
 USER www-data
 
-CMD [ "sh", "-c", "if [ ! $ENVIRONMENT = dev ]; then certbot certonly --standalone --agree-tos -m $CERTBOT_EMAIL -n -d ${DOMAINS}; fi; cron && nginx -g 'daemon off;'" ]
+CMD [ "sh", "-c", "if [ ! $ENVIRONMENT = dev ]; then ddclient -daemon -pid /var/run/ddclient.pid; certbot certonly --standalone --agree-tos -m $CERTBOT_EMAIL -n -d ${DOMAINS}; fi; cron && nginx -g 'daemon off;'" ]

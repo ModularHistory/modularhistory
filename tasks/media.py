@@ -11,6 +11,7 @@ from tasks.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context
+
 django.setup()
 
 from django.conf import settings  # noqa: E402
