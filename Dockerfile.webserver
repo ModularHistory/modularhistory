@@ -45,7 +45,7 @@ VOLUME /modularhistory/_media
 
 COPY core/templates/error.htm /modularhistory/error.htm
 COPY config/ddclient.conf /etc/ddclient.conf
-COPY config/init/webserver.sh /modularhistory/webserver.sh
+COPY config/scripts/init/webserver.sh /modularhistory/webserver.sh
 
 RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
   && echo "@monthly certbot renew --nginx >> /var/log/cron.log 2>&1" >>/etc/cron.d/certbot-renew \
@@ -64,4 +64,4 @@ RUN touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
 
 USER www-data
 
-CMD [ "sh", "/modularhistory/webserver.sh" ]
+CMD [ "bash", "/modularhistory/webserver.sh" ]
