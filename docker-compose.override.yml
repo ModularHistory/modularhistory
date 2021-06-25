@@ -7,6 +7,11 @@ x-common-env-vars: &common-env-vars
 
 services:
   dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.webserver
+      args:
+        ENVIRONMENT: dev
     depends_on:
       - django
       - celery_beat
@@ -21,7 +26,7 @@ services:
       timeout: 10s
       retries: 3
     hostname: modularhistory.dev.net
-    image: nginx
+    image: webserver
     ports:
       - "80:80"
     volumes:

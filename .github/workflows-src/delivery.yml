@@ -39,6 +39,8 @@ jobs:
       ADMINS: ${{ secrets.ADMINS }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
       ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+      CLOUDFLARE_PASSWORD: ${{ secrets.CLOUDFLARE_PASSWORD }}
       CR_PAT: ${{ secrets.CR_PAT }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
