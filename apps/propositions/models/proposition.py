@@ -1,12 +1,9 @@
 import logging
 import re
-from typing import TYPE_CHECKING, Match, Optional, Type
+from typing import Match, Optional, TYPE_CHECKING
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.base import Model
-from django.db.models.signals import post_delete, post_save
-from django.dispatch import receiver
 from django.template.defaultfilters import truncatechars_html
 from django.urls import reverse
 from django.utils.html import format_html
@@ -111,17 +108,6 @@ class QuoteRelation(AbstractQuoteRelation):
     content_object = get_proposition_fk(related_name='quote_relations')
 
 
-class Conflict(Model):
-    """
-    A conflict between two propositions.
-
-    Conflicts are symmetrical.
-    """
-
-    proposition = get_proposition_fk(related_name='inward_conflicts')
-    conflicting_proposition = get_proposition_fk(related_name='outward_conflicts')
-
-
 TYPE_CHOICES = (
     ('propositions.conclusion', 'conclusion'),
     ('propositions.occurrence', 'occurrence'),
@@ -188,6 +174,7 @@ class Proposition(  # noqa: WPS215
     conflicting_propositions = models.ManyToManyField(
         to='self',
         symmetrical=True,
+        through='propositions.Conflict',
         verbose_name=_('conflicting propositions'),
     )
 
@@ -358,20 +345,3 @@ class Conclusion(Proposition):
         proxy = True
 
     objects = ConclusionManager()
-
-
-@receiver(post_save, sender=Conflict)
-def post_save(sender: Type[Conflict], instance: Conflict, created: bool, **kwargs):
-    if created:
-        sender.objects.get_or_create(
-            proposition=instance.conflicting_proposition,
-            conflicting_proposition=instance.proposition,
-        )
-
-
-@receiver(post_delete, sender=Conflict)
-def post_delete(sender: Type[Conflict], instance: Conflict, **kwargs):
-    sender.objects.filter(
-        proposition=instance.conflicting_proposition,
-        conflicting_proposition=instance.proposition,
-    ).delete()
