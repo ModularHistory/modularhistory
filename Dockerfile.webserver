@@ -4,23 +4,41 @@ FROM nginx:stable
 ARG ENVIRONMENT=dev
 ARG CERTBOT_EMAIL=jacob@modularhistory.com
 ARG DOMAINS=modularhistory.com,www.modularhistory.com
+ARG HTTP_PORT=8080
+ARG HTTPS_PORT=8443
+
 ENV ENVIRONMENT=$ENVIRONMENT
 ENV CERTBOT_EMAIL=$CERTBOT_EMAIL
 ENV DOMAINS=$DOMAINS
+ENV HTTP_PORT=${HTTP_PORT}
+ENV HTTPS_PORT=${HTTPS_PORT}
 
 RUN apt-get update \
   && apt-get install -y cron certbot python-certbot-nginx bash wget \
   && rm -rf /var/lib/apt/lists/*
 
+# Create required directories.
+RUN mkdir -p -- /modularhistory/_static /modularhistory/_media
+
+VOLUME /etc/letsencrypt
+VOLUME /modularhistory/_static
+VOLUME /modularhistory/_media
+
+COPY core/templates/error.htm /modularhistory/error.htm
+
 RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
   && echo "@monthly certbot renew --nginx >> /var/log/cron.log 2>&1" >>/etc/cron.d/certbot-renew \
   && crontab /etc/cron.d/certbot-renew
 
-VOLUME /etc/letsencrypt
+EXPOSE ${HTTP_PORT} ${HTTPS_PORT}
 
-EXPOSE 80 443
+RUN chown -R nginx:nginx /modularhistory && chmod -R 755 /modularhistory \
+  && chown -R nginx:nginx /var/cache/nginx \
+  && chown -R nginx:nginx /var/log/nginx \
+  && chown -R nginx:nginx /etc/nginx/conf.d
 
-# Switch from root to non-root user.
-USER www-data
+RUN touch /var/run/nginx.pid && chown -R nginx:nginx /var/run/nginx.pid
+
+USER nginx
 
 CMD [ "sh", "-c", "if [ ! $ENVIRONMENT = dev ]; then certbot certonly --standalone --agree-tos -m $CERTBOT_EMAIL -n -d ${DOMAINS}; fi; cron && nginx -g 'daemon off;'" ]
