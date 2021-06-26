@@ -29,7 +29,7 @@ class Search(DSLSearch):
     results_count: int
     results_by_id: Optional[dict]
 
-    def to_queryset(self, view) -> Sequence['ExtendedModel']:
+    def to_queryset(self, view) -> tuple[Sequence['ExtendedModel'], int]:
         """Resolve results from ElasticSearch to Django model instances."""
         response = self
 
@@ -39,7 +39,7 @@ class Search(DSLSearch):
             response = self.source(excludes=['*']).extra(track_scores=True)
             response = response.execute()
 
-        self.results_count = response.hits.total.value
+        self.results_count = int(response.hits.total.value)
         self._response = response
 
         logging.info(
