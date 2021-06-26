@@ -1,5 +1,6 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
+from glob import iglob
 from typing import TYPE_CHECKING, Optional
 
 import django
@@ -25,15 +26,11 @@ def autoformat(context: 'Context', filepaths: Optional[str] = None):
 
 
 @command
-def lint(context: 'Context'):
+def lint(context: 'Context', files: str = '**/*.py'):
     """Run linters."""
-    # Run Flake8
-    print('Running flake8...')
-    context.run('flake8 .')
-
-    # Run MyPy
-    print('Running mypy...')
-    context.run('mypy .')
+    for filepath in iglob(files, recursive=True):
+        # Run Flake8 and MyPy
+        context.run(f'flake8 {filepath}; mypy {filepath}', warn=True)
 
 
 @command
