@@ -23,7 +23,92 @@ env:
   SHA: ${{ github.sha }}
 
 jobs:
+  push-django:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - includes: ./.github/actions/setup
+      with:
+        os: ${{ runner.os }}
+        python-version: 3.9
+        # Fetch entire history so we can analyze commits since last tag.
+        fetch-depth: 0
+    - name: Inject environment vars
+      run: poetry run invoke setup.write-env-file
+    - includes: ./.github/actions/build
+      with:
+        os: ${{ runner.os }}
+        image: django
+    - name: Build and push Docker images
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
+  
+  push-react:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - includes: ./.github/actions/setup
+      with:
+        os: ${{ runner.os }}
+        python-version: 3.9
+        # Fetch entire history so we can analyze commits since last tag.
+        fetch-depth: 0
+    - name: Inject environment vars
+      run: poetry run invoke setup.write-env-file
+    - includes: ./.github/actions/build
+      with:
+        os: ${{ runner.os }}
+        image: react
+    - name: Build and push Docker images
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
+  
+  push-webserver:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - includes: ./.github/actions/setup
+      with:
+        os: ${{ runner.os }}
+        python-version: 3.9
+        # Fetch entire history so we can analyze commits since last tag.
+        fetch-depth: 0
+    - name: Inject environment vars
+      run: poetry run invoke setup.write-env-file
+    - includes: ./.github/actions/build
+      with:
+        os: ${{ runner.os }}
+        image: webserver
+    - name: Build and push Docker images
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
+
   deploy:
+    needs: [push-django, push-react, push-webserver]
     runs-on: ubuntu-latest
     services:
       postgres:

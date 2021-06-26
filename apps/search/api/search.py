@@ -12,7 +12,7 @@ from apps.search.documents.quote import QuoteDocument
 from apps.search.documents.source import SourceDocument
 
 if TYPE_CHECKING:
-    from core.models.model import ExtendedModel
+    from apps.search.models.searchable_model import SearchableModel
 
 
 SEARCHABLE_DOCUMENTS = {
@@ -29,7 +29,7 @@ class Search(DSLSearch):
     results_count: int
     results_by_id: Optional[dict]
 
-    def to_queryset(self, view) -> tuple[Sequence['ExtendedModel'], int]:
+    def to_queryset(self, view) -> tuple[Sequence['SearchableModel'], int]:
         """Resolve results from ElasticSearch to Django model instances."""
         response = self
 

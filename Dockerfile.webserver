@@ -19,10 +19,6 @@ RUN apt-get update && \
 # Create required directories.
 RUN mkdir -p -- /modularhistory/_static /modularhistory/_media
 
-VOLUME /etc/letsencrypt
-VOLUME /modularhistory/_static
-VOLUME /modularhistory/_media
-
 COPY core/templates/error.htm /modularhistory/error.htm
 COPY config/ddclient.conf /etc/ddclient.conf
 COPY config/scripts/init/webserver.sh /modularhistory/webserver.sh

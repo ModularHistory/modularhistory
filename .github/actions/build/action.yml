@@ -11,6 +11,14 @@ inputs:
   image:
     description: 'The name of the Docker image (e.g., "django")'
     required: true
+  push:
+    description: 'Whether to push the built image to its registry (default: false)'
+    required: false
+    default: false
+  environment:
+    description: 'Environment (build argument)'
+    required: false
+    default: prod
 runs:
   using: "includes"
   steps:
@@ -34,10 +42,13 @@ runs:
         password: ${{ secrets.CR_PAT }}
     -
       name: Build image
+      # https://github.com/docker/build-push-action
       uses: docker/build-push-action@v2
       with:
-        push: false
+        push: ${{ inputs.push }}
         load: true
+        build-args: |
+          ENVIRONMENT=${{ inputs.environment }}
         tags: |
           ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
           ghcr.io/modularhistory/${{ inputs.image }}:latest
