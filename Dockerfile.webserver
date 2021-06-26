@@ -17,7 +17,11 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 # Create required directories.
-RUN mkdir -p -- /modularhistory/_static /modularhistory/_media /var/log/letsencrypt
+RUN mkdir -p -- \
+  /modularhistory/_static \
+  /modularhistory/_media \
+  /var/log/letsencrypt \
+  /var/lib/letsencrypt
 
 COPY core/templates/error.htm /modularhistory/error.htm
 COPY config/ddclient.conf /etc/ddclient/ddclient.conf
@@ -35,7 +39,8 @@ RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /etc/nginx/conf.d \
   && chown -R www-data:www-data /etc/ddclient \
   && chown -R www-data:www-data /var/log/letsencrypt \
-  && chown -R www-data:www-data /etc/letsencrypt \
+  && chown -R www-data:www-data /var/lib/letsencrypt \
+  && chown -R www-data:www-data /etc/letsencrypt && chmod 770 /etc/letsencrypt \
   && touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
   && touch /var/run/ddclient.pid && chown -R www-data:www-data /var/run/ddclient.pid \
   && touch /var/run/crond.pid && chown -R www-data:www-data /var/run/crond.pid
