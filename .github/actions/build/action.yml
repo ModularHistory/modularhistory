@@ -46,7 +46,7 @@ runs:
       uses: docker/build-push-action@v2
       with:
         push: ${{ inputs.push }}
-        load: true
+        load: ${{ ! inputs.push }}
         build-args: |
           ENVIRONMENT=${{ inputs.environment }}
         tags: |
