@@ -61,6 +61,7 @@ env:
 
 jobs:
   push-django:
+    environment: prod
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -89,6 +90,7 @@ jobs:
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
   
   push-react:
+    environment: prod
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -117,6 +119,7 @@ jobs:
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
   
   push-webserver:
+    environment: prod
     runs-on: ubuntu-latest
     services:
       postgres:
