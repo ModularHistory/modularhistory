@@ -157,7 +157,7 @@ jobs:
     - name: Build image
       uses: docker/build-push-action@v2
       with:
-        push: false
+        push: true
         load: true
         build-args: |
           ENVIRONMENT=prod
@@ -181,8 +181,6 @@ jobs:
       with:
         image: ghcr.io/modularhistory/django:${{ github.sha }}
         args: --file=Dockerfile.django
-    - name: Build and push Docker images
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
   push-react:
     environment: prod
     runs-on: ubuntu-latest
@@ -275,7 +273,7 @@ jobs:
     - name: Build image
       uses: docker/build-push-action@v2
       with:
-        push: false
+        push: true
         load: true
         build-args: |
           ENVIRONMENT=prod
@@ -299,8 +297,6 @@ jobs:
       with:
         image: ghcr.io/modularhistory/react:${{ github.sha }}
         args: --file=Dockerfile.react
-    - name: Build and push Docker images
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
   push-webserver:
     environment: prod
     runs-on: ubuntu-latest
@@ -393,7 +389,7 @@ jobs:
     - name: Build image
       uses: docker/build-push-action@v2
       with:
-        push: false
+        push: true
         load: true
         build-args: |
           ENVIRONMENT=prod
@@ -417,8 +413,6 @@ jobs:
       with:
         image: ghcr.io/modularhistory/webserver:${{ github.sha }}
         args: --file=Dockerfile.webserver
-    - name: Build and push Docker images
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
   deploy:
     needs: [push-django, push-react, push-webserver]
     runs-on: ubuntu-latest
@@ -494,8 +488,6 @@ jobs:
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
-    - name: Build and push Docker images
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
     - name: Deploy images to server
       id: deploy-image
       run: |
