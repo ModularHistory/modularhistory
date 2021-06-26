@@ -66,6 +66,7 @@ env:
   X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
 jobs:
   push-django:
+    environment: prod
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -183,6 +184,7 @@ jobs:
     - name: Build and push Docker images
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
   push-react:
+    environment: prod
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -300,6 +302,7 @@ jobs:
     - name: Build and push Docker images
       run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
   push-webserver:
+    environment: prod
     runs-on: ubuntu-latest
     services:
       postgres:
