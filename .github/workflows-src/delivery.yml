@@ -86,9 +86,9 @@ jobs:
       with:
         os: ${{ runner.os }}
         image: django
-    - name: Build and push Docker images
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
-  
+        push: true
+        environment: prod
+
   push-react:
     environment: prod
     runs-on: ubuntu-latest
@@ -115,9 +115,9 @@ jobs:
       with:
         os: ${{ runner.os }}
         image: react
-    - name: Build and push Docker images
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
-  
+        push: true
+        environment: prod  
+    
   push-webserver:
     environment: prod
     runs-on: ubuntu-latest
@@ -144,9 +144,9 @@ jobs:
       with:
         os: ${{ runner.os }}
         image: webserver
-    - name: Build and push Docker images
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
-
+        push: true
+        environment: prod
+  
   deploy:
     needs: [push-django, push-react, push-webserver]
     runs-on: ubuntu-latest
@@ -170,8 +170,6 @@ jobs:
         fetch-depth: 0
     - name: Inject environment vars
       run: poetry run invoke setup.write-env-file
-    - name: Build and push Docker images
-      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
     - name: Deploy images to server
       id: deploy-image
       run: |
