@@ -1,21 +1,15 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import django
-
-try:
-    from core.linters import flake8 as lint_with_flake8
-    from core.linters import mypy as lint_with_mypy
-except ModuleNotFoundError:
-    print('Skipped importing nonexistent linting modules.')
-from typing import TYPE_CHECKING
 
 from core.utils import qa
 from tasks.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context
+
 django.setup()
 
 
@@ -31,27 +25,15 @@ def autoformat(context: 'Context', filepaths: Optional[str] = None):
 
 
 @command
-def flake8(context: 'Context', *args):
-    """Run flake8 linter."""
-    lint_with_flake8(interactive=True)
-
-
-@command
-def mypy(context: 'Context', *args):
-    """Run mypy static type checker."""
-    lint_with_mypy()
-
-
-@command
-def lint(context: 'Context', *args):
+def lint(context: 'Context'):
     """Run linters."""
     # Run Flake8
     print('Running flake8...')
-    lint_with_flake8(interactive=True)
+    context.run('flake8 .')
 
     # Run MyPy
     print('Running mypy...')
-    lint_with_mypy()
+    context.run('mypy .')
 
 
 @command
