@@ -95,7 +95,7 @@ class ModelWithSources(ExtendedModel):
 
     @property
     def source_file_url(self) -> Optional[str]:
-        """TODO: write docstring."""
+        """Return the URL of the source file."""
         if self.citation:
             return self.citation.source_file_url
         return None
