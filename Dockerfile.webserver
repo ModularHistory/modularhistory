@@ -17,7 +17,7 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 # Create required directories.
-RUN mkdir -p -- /modularhistory/_static /modularhistory/_media
+RUN mkdir -p -- /modularhistory/_static /modularhistory/_media /var/log/letsencrypt
 
 COPY core/templates/error.htm /modularhistory/error.htm
 COPY config/ddclient.conf /etc/ddclient/ddclient.conf
