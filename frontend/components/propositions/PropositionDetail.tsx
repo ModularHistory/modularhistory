@@ -1,6 +1,6 @@
 import ModuleContainer from "@/components/details/ModuleContainer";
 import { Proposition } from "@/interfaces";
-import { alpha, Theme } from "@material-ui/core";
+import { alpha, Button, Theme } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
 import SvgIcon, { SvgIconProps } from "@material-ui/core/SvgIcon";
 import { TransitionProps } from "@material-ui/core/transitions";
@@ -120,7 +120,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
           ))}
         </TreeView>
       )}
-      {!!proposition.conflictingPropositions.length && (
+      {(!!proposition.conflictingPropositions.length && (
         <div>
           <h2>Conflicting Propositions</h2>
           {proposition.conflictingPropositions.map((conflictingProposition) => (
@@ -133,6 +133,22 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
               <hr />
             </>
           ))}
+        </div>
+      )) || (
+        <div
+          style={{
+            marginTop: "2rem",
+            borderTop: "1px solid gray",
+            textAlign: "center",
+            paddingTop: "1rem",
+          }}
+        >
+          <p>This proposition is undisputed.</p>
+          <p>
+            <Button variant="contained" disabled>
+              Dispute
+            </Button>
+          </p>
         </div>
       )}
     </ModuleContainer>
