@@ -2,16 +2,8 @@ FROM nginx:stable
 
 LABEL org.opencontainers.image.source https://github.com/ModularHistory/modularhistory
 
-# https://docs.docker.com/engine/reference/builder/#arg
 ARG ENVIRONMENT=dev
-
-ARG HTTP_PORT=8080
-ARG HTTPS_PORT=8443
-
 ENV ENVIRONMENT=$ENVIRONMENT
-
-ENV HTTP_PORT=${HTTP_PORT}
-ENV HTTPS_PORT=${HTTPS_PORT}
 
 RUN apt-get update && \
   apt-get install -y bash curl wget cron gettext certbot python-certbot-nginx perl libjson-pp-perl && \
@@ -39,7 +31,7 @@ RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
   && echo "@monthly certbot renew --nginx >> /var/log/cron.log 2>&1" >>/etc/cron.d/certbot-renew \
   && crontab /etc/cron.d/certbot-renew
 
-EXPOSE ${HTTP_PORT} ${HTTPS_PORT}
+EXPOSE 8080/tcp 8443/tcp
 
 RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /var/cache/nginx \
@@ -51,5 +43,10 @@ RUN touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
   && touch /var/run/crond.pid && chown -R www-data:www-data /var/run/crond.pid
 
 USER www-data
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+  CMD [ -f /var/run/nginx.pid ] || (echo "nginx down"; exit 1); \
+  [ -f /var/run/ddclient.pid ] || (echo "ddclient down"; exit 1); \
+  [ -f /var/run/crond.pid ] || (echo "cron down"; exit 1)
 
 CMD [ "bash", "/modularhistory/webserver.sh" ]

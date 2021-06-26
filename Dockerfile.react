@@ -71,5 +71,8 @@ RUN if [ "$ENVIRONMENT" = "dev" ] ; then chmod g+w -R /modularhistory/frontend/.
 # Expose port 3000.
 EXPOSE 3000
 
+HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
+  CMD curl --fail http://localhost:3000/ || exit 1
+
 # Switch from root to non-root user.
 USER www-data

@@ -10,7 +10,6 @@ services:
   celery:
     command: bash config/scripts/init/celery.sh
     depends_on:
-      - django
       - redis
       - postgres
     deploy:
@@ -58,6 +57,7 @@ services:
   django:
     command: bash config/scripts/init/django.sh
     depends_on:
+      - celery
       - postgres
       - redis
       - elasticsearch
@@ -184,12 +184,6 @@ services:
     env_file: .env
     environment:
       NEXTAUTH_URL: "https://modularhistory.com"
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:3000/ || exit 1"]
-      timeout: 7s
-      interval: 7s
-      retries: 3
-      start_period: 12s
     image: "ghcr.io/modularhistory/react:$SHA"
     networks:
       default:
@@ -256,11 +250,6 @@ services:
     env_file: .env
     environment:
       DOMAINS: "modularhistory.com,www.modularhistory.com"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost"]
-      interval: 1m
-      timeout: 10s
-      retries: 3
     image: "ghcr.io/modularhistory/webserver:$SHA"
     ports:
       - "80:8080"
