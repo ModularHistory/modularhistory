@@ -392,6 +392,8 @@ jobs:
       with:
         push: false
         load: true
+        build-args: |
+          ENVIRONMENT=prod
         tags: |
           ghcr.io/modularhistory/django:${{ github.sha }}
           ghcr.io/modularhistory/django:latest
@@ -501,6 +503,8 @@ jobs:
       with:
         push: false
         load: true
+        build-args: |
+          ENVIRONMENT=prod
         tags: |
           ghcr.io/modularhistory/react:${{ github.sha }}
           ghcr.io/modularhistory/react:latest
@@ -610,6 +614,8 @@ jobs:
       with:
         push: false
         load: true
+        build-args: |
+          ENVIRONMENT=prod
         tags: |
           ghcr.io/modularhistory/webserver:${{ github.sha }}
           ghcr.io/modularhistory/webserver:latest

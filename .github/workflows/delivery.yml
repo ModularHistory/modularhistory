@@ -28,7 +28,359 @@ env:
   ENVIRONMENT: prod
   SHA: ${{ github.sha }}
 jobs:
+  push-django:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+        - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/delivery.yml
+    - name: Check out main branch
+      uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 0
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: 3.9
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.6
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: venv-cache
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Test poetry environment
+      id: venv-test
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      run: |
+        poetry --version
+        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        poetry install --no-root
+    - name: Cache node modules
+      uses: actions/cache@v2.1.5
+      id: node-modules-cache
+      with:
+        path: frontend/node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install JavaScript dependencies
+      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
+      run: |
+        cd frontend
+        npm ci
+        cd ..
+    - name: Create .env file
+      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+    - name: Inject environment vars
+      run: poetry run invoke setup.write-env-file
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: buildx-${{ runner.os }}-django-${{ github.sha }}
+        restore-keys: |
+          buildx-${{ runner.os }}-django-
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1.10.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - name: Build image
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        load: true
+        build-args: |
+          ENVIRONMENT=prod
+        tags: |
+          ghcr.io/modularhistory/django:${{ github.sha }}
+          ghcr.io/modularhistory/django:latest
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./Dockerfile.django
+        context: .
+        cache-from: type=local,src=/tmp/.buildx-cache/django
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/django
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    - name: Run Snyk to check image for vulnerabilities
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: ghcr.io/modularhistory/django:${{ github.sha }}
+        args: --file=Dockerfile.django
+    - name: Build and push Docker images
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
+  push-react:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+        - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/delivery.yml
+    - name: Check out main branch
+      uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 0
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: 3.9
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.6
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: venv-cache
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Test poetry environment
+      id: venv-test
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      run: |
+        poetry --version
+        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        poetry install --no-root
+    - name: Cache node modules
+      uses: actions/cache@v2.1.5
+      id: node-modules-cache
+      with:
+        path: frontend/node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install JavaScript dependencies
+      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
+      run: |
+        cd frontend
+        npm ci
+        cd ..
+    - name: Create .env file
+      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+    - name: Inject environment vars
+      run: poetry run invoke setup.write-env-file
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: buildx-${{ runner.os }}-react-${{ github.sha }}
+        restore-keys: |
+          buildx-${{ runner.os }}-react-
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1.10.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - name: Build image
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        load: true
+        build-args: |
+          ENVIRONMENT=prod
+        tags: |
+          ghcr.io/modularhistory/react:${{ github.sha }}
+          ghcr.io/modularhistory/react:latest
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./Dockerfile.react
+        context: .
+        cache-from: type=local,src=/tmp/.buildx-cache/react
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/react
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    - name: Run Snyk to check image for vulnerabilities
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: ghcr.io/modularhistory/react:${{ github.sha }}
+        args: --file=Dockerfile.react
+    - name: Build and push Docker images
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
+  push-webserver:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+        - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/delivery.yml
+    - name: Check out main branch
+      uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 0
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2.2.2
+      with:
+        python-version: 3.9
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info[:3]))")
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
+      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1.1.6
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Cache Python virtual environment
+      uses: actions/cache@v2
+      id: venv-cache
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Test poetry environment
+      id: venv-test
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
+    - name: Install Python dependencies
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      run: |
+        poetry --version
+        echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
+        poetry install --no-root
+    - name: Cache node modules
+      uses: actions/cache@v2.1.5
+      id: node-modules-cache
+      with:
+        path: frontend/node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install JavaScript dependencies
+      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
+      run: |
+        cd frontend
+        npm ci
+        cd ..
+    - name: Create .env file
+      run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+    - name: Inject environment vars
+      run: poetry run invoke setup.write-env-file
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: buildx-${{ runner.os }}-webserver-${{ github.sha }}
+        restore-keys: |
+          buildx-${{ runner.os }}-webserver-
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1.10.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - name: Build image
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        load: true
+        build-args: |
+          ENVIRONMENT=prod
+        tags: |
+          ghcr.io/modularhistory/webserver:${{ github.sha }}
+          ghcr.io/modularhistory/webserver:latest
+        builder: ${{ steps.buildx.outputs.name }}
+        file: ./Dockerfile.webserver
+        context: .
+        cache-from: type=local,src=/tmp/.buildx-cache/webserver
+        cache-to: type=local,dest=/tmp/.buildx-cache-new/webserver
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    - name: Run Snyk to check image for vulnerabilities
+      continue-on-error: true
+      uses: snyk/actions/docker@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: ghcr.io/modularhistory/webserver:${{ github.sha }}
+        args: --file=Dockerfile.webserver
+    - name: Build and push Docker images
+      run: poetry run invoke build --github-actor=$GITHUB_ACTOR --access-token=$CR_PAT --sha=$SHA --environment=prod --push
   deploy:
+    needs: [push-django, push-react, push-webserver]
     runs-on: ubuntu-latest
     services:
       postgres:
