@@ -378,9 +378,9 @@ jobs:
       uses: actions/cache@v2
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        key: buildx-${{ runner.os }}-django-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-buildx-
+          buildx-${{ runner.os }}-django-
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
       with:
@@ -487,9 +487,9 @@ jobs:
       uses: actions/cache@v2
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        key: buildx-${{ runner.os }}-react-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-buildx-
+          buildx-${{ runner.os }}-react-
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
       with:
@@ -596,9 +596,9 @@ jobs:
       uses: actions/cache@v2
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        key: buildx-${{ runner.os }}-webserver-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-buildx-
+          buildx-${{ runner.os }}-webserver-
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
       with:
