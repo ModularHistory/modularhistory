@@ -20,7 +20,7 @@ RUN apt-get update && \
 RUN mkdir -p -- /modularhistory/_static /modularhistory/_media
 
 COPY core/templates/error.htm /modularhistory/error.htm
-COPY config/ddclient.conf /etc/ddclient.conf
+COPY config/ddclient.conf /etc/ddclient/ddclient.conf
 COPY config/scripts/init/webserver.sh /modularhistory/webserver.sh
 
 RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
@@ -32,9 +32,11 @@ EXPOSE 8080/tcp 8443/tcp
 RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /var/cache/nginx \
   && chown -R www-data:www-data /var/log/nginx \
-  && chown -R www-data:www-data /etc/nginx/conf.d
-
-RUN touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
+  && chown -R www-data:www-data /etc/nginx/conf.d \
+  && chown -R www-data:www-data /etc/ddclient \
+  && chown -R www-data:www-data /var/log/letsencrypt \
+  && chown -R www-data:www-data /etc/letsencrypt \
+  && touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
   && touch /var/run/ddclient.pid && chown -R www-data:www-data /var/run/ddclient.pid \
   && touch /var/run/crond.pid && chown -R www-data:www-data /var/run/crond.pid
 

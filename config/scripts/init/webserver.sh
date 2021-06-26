@@ -4,7 +4,7 @@ echo 'Initializing webserver...'
 
 if [ ! "$ENVIRONMENT" = dev ]; then 
     echo 'Starting ddclient...' && 
-    envsubst < /etc/ddclient.conf > /etc/ddclient.conf.tmp && 
+    envsubst < /etc/ddclient/ddclient.conf > /etc/ddclient/ddclient.conf.tmp && 
     mv /etc/ddclient.conf.tmp /etc/ddclient/ddclient.conf && 
     ddclient -daemon -pid /var/run/ddclient.pid;
     echo 'Renewing SSL certificates...' && 
