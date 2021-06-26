@@ -62,16 +62,16 @@ class CelerySignalProcessor(BaseSignalProcessor):
             utils.update_indexed_at(instance, timestamp=time_of_retrieval)
 
     def setup(self):
-        # Listen to all model saves.
+        """Set up listeners."""
         models.signals.post_save.connect(self.handle_save)
         models.signals.post_delete.connect(self.handle_delete)
 
-        # Use to manage related objects update
+        # Manage related objects update.
         models.signals.m2m_changed.connect(self.handle_m2m_changed)
         models.signals.pre_delete.connect(self.handle_pre_delete)
 
     def teardown(self):
-        # Listen to all model saves.
+        """Destroy listeners."""
         models.signals.post_save.disconnect(self.handle_save)
         models.signals.post_delete.disconnect(self.handle_delete)
         models.signals.m2m_changed.disconnect(self.handle_m2m_changed)

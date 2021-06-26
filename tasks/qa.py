@@ -26,11 +26,12 @@ def autoformat(context: 'Context', filepaths: Optional[str] = None):
 
 
 @command
-def lint(context: 'Context', files: str = '**/*.py'):
+def lint(context: 'Context', files: str = '**/*.py', mypy: bool = True):
     """Run linters."""
+    _command = ('flake8 {filepath}; mypy {filepath}' if mypy else 'flake8 {filepath}').format
     for filepath in iglob(files, recursive=True):
-        # Run Flake8 and MyPy
-        context.run(f'flake8 {filepath}; mypy {filepath}', warn=True)
+        # Run linters.
+        context.run(_command(filepath=filepath), warn=True)
 
 
 @command
