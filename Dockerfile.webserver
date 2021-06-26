@@ -29,11 +29,8 @@ COPY config/scripts/init/webserver.sh /modularhistory/webserver.sh
 
 RUN echo "PATH=$PATH" > /etc/cron.d/certbot-renew \
   && echo "@monthly certbot renew --nginx >> /var/log/cron.log 2>&1" >>/etc/cron.d/certbot-renew \
-  && crontab /etc/cron.d/certbot-renew
-
-EXPOSE 8080/tcp 8443/tcp
-
-RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
+  && crontab /etc/cron.d/certbot-renew \
+  && chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && chown -R www-data:www-data /var/cache/nginx \
   && chown -R www-data:www-data /var/log/nginx \
   && chown -R www-data:www-data /etc/nginx/conf.d \
@@ -44,6 +41,8 @@ RUN chown -R www-data:www-data /modularhistory && chmod -R 755 /modularhistory \
   && touch /var/run/nginx.pid && chown -R www-data:www-data /var/run/nginx.pid \
   && touch /var/run/ddclient.pid && chown -R www-data:www-data /var/run/ddclient.pid \
   && touch /var/run/crond.pid && chown -R www-data:www-data /var/run/crond.pid
+
+EXPOSE 8080/tcp 8443/tcp
 
 USER www-data
 
