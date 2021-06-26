@@ -2,6 +2,8 @@
 
 echo 'Initializing webserver...'
 
+
+
 if [ ! "$ENVIRONMENT" = dev ]; then 
     echo 'Starting ddclient...' && 
     envsubst < /etc/ddclient/ddclient.conf > /etc/ddclient/ddclient.conf.tmp && 
