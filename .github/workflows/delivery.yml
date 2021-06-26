@@ -158,7 +158,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        load: true
+        load: false
         build-args: |
           ENVIRONMENT=prod
         tags: |
@@ -274,7 +274,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        load: true
+        load: false
         build-args: |
           ENVIRONMENT=prod
         tags: |
@@ -390,7 +390,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        load: true
+        load: false
         build-args: |
           ENVIRONMENT=prod
         tags: |
