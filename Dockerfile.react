@@ -66,7 +66,7 @@ RUN chown -R www-data:www-data /modularhistory && \
   chmod g+w -R /modularhistory/_static
 
 # Make .next directory writable in dev environment.
-RUN if [ "$ENVIRONMENT" = "dev" ] ; then chmod g+w -R /modularhistory/frontend/.next/ ; fi
+RUN if [ "$ENVIRONMENT" = "dev" ]; then chmod g+w -R /modularhistory/frontend/.next/; fi
 
 # Expose port 3000.
 EXPOSE 3000
