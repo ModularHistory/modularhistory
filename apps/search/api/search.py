@@ -1,6 +1,6 @@
 import logging
 from itertools import chain
-from typing import TYPE_CHECKING, Optional, Sequence
+from typing import TYPE_CHECKING, Optional, Sequence, Union
 
 from elasticsearch_dsl import Search as DSLSearch
 
@@ -29,7 +29,7 @@ class Search(DSLSearch):
     results_count: int
     results_by_id: Optional[dict]
 
-    def to_queryset(self, view) -> tuple[Sequence['SearchableModel'], int]:
+    def to_queryset(self, view) -> tuple[Union[Sequence['SearchableModel'], chain], int]:
         """Resolve results from ElasticSearch to Django model instances."""
         response = self
 
