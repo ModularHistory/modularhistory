@@ -8,10 +8,9 @@ inputs:
   os:
     description: 'Operating system'
     required: true
-  environment:
-    description: 'Environment (e.g., "dev" or "prod")'
-    required: false
-    default: ""
+  image:
+    description: 'The name of the Docker image (e.g., "django")'
+    required: true
 runs:
   # https://github.com/mithro/actions-includes
   using: "includes"
