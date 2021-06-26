@@ -76,6 +76,7 @@ export interface Proposition extends BaseModule {
   elaboration: string;
   certainty: string;
   arguments: Argument[];
+  conflictingPropositions: Proposition[];
 }
 
 export interface Topic extends BaseModule {

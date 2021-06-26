@@ -43,6 +43,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
             elaboration
           }
         }
+        conflictingPropositions {
+          slug
+          absoluteUrl
+          summary
+        }
       }
     }`,
   };

@@ -8,6 +8,7 @@ import { TreeItem, TreeView } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
 import { createStyles, makeStyles, withStyles } from "@material-ui/styles";
 import { animated, useSpring } from "@react-spring/web";
+import Link from "next/link";
 import { FC } from "react";
 import InlineProposition from "./InlineProposition";
 
@@ -92,7 +93,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
     <ModuleContainer>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
       <div dangerouslySetInnerHTML={{ __html: proposition.elaboration }} />
-      {proposition.arguments && (
+      {!!proposition.arguments.length && (
         <TreeView
           className={classes.tree}
           defaultExpanded={proposition.arguments.map((argument) => `${argument.pk}`)}
@@ -118,6 +119,21 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
             </StyledTreeItem>
           ))}
         </TreeView>
+      )}
+      {!!proposition.conflictingPropositions.length && (
+        <div>
+          <h2>Conflicting Propositions</h2>
+          {proposition.conflictingPropositions.map((conflictingProposition) => (
+            <>
+              <p key={conflictingProposition.slug}>
+                <Link href={conflictingProposition.absoluteUrl}>
+                  {conflictingProposition.summary}
+                </Link>
+              </p>
+              <hr />
+            </>
+          ))}
+        </div>
       )}
     </ModuleContainer>
   );
