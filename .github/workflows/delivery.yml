@@ -25,8 +25,45 @@ on:
     - config/hooks/**
 
 env:
+  ADMINS: ${{ secrets.ADMINS }}
+  ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+  ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+  CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+  CLOUDFLARE_PASSWORD: ${{ secrets.CLOUDFLARE_PASSWORD }}
+  CR_PAT: ${{ secrets.CR_PAT }}
+  EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
   ENVIRONMENT: prod
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+  IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+  MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
+  MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+  POSTGRES_DB: modularhistory
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
+  SERVER: ${{ secrets.SERVER }}
   SHA: ${{ github.sha }}
+  SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
+  SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
+  SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
+  SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
+  SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
+  SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
+  SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+  SOCIAL_AUTH_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
+  SOCIAL_AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
+  SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+  SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
 jobs:
   push-django:
     runs-on: ubuntu-latest
@@ -392,44 +429,6 @@ jobs:
         ports:
         - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    env:
-      ADMINS: ${{ secrets.ADMINS }}
-      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-      ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
-      CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
-      CLOUDFLARE_PASSWORD: ${{ secrets.CLOUDFLARE_PASSWORD }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-      EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
-      EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
-      EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
-      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
-      MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
-      MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      POSTGRES_DB: modularhistory
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
-      SERVER: ${{ secrets.SERVER }}
-      SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
-      SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
-      SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
-      SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
-      SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
-      SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
-      SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
-      SOCIAL_AUTH_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
-      SOCIAL_AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
-      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
-      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
-      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
     environment: prod
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
