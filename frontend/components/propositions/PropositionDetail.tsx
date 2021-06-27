@@ -129,18 +129,20 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
           <i className="fa fa-edit" />
         </a>
       )}
-      <Slider
-        style={{ margin: "2.5rem 0 0" }}
-        defaultValue={proposition.certainty}
-        getAriaValueText={getValueText}
-        valueLabelFormat={getValueLabelFormat}
-        valueLabelDisplay="on"
-        step={5}
-        marks
-        min={0}
-        max={4}
-        disabled
-      />
+      {proposition.certainty && (
+        <Slider
+          style={{ margin: "2.5rem 0 0" }}
+          defaultValue={proposition.certainty}
+          getAriaValueText={getValueText}
+          valueLabelFormat={getValueLabelFormat}
+          valueLabelDisplay="on"
+          step={5}
+          marks
+          min={0}
+          max={4}
+          disabled
+        />
+      )}
       <div
         dangerouslySetInnerHTML={{ __html: proposition.elaboration }}
         style={{ margin: "1rem 0" }}
