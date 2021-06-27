@@ -6,15 +6,16 @@ interface InlinePropositionProps {
   proposition: Proposition;
 }
 
-const certaintyColors = ["FFFFFF", "FF0000", "FFFF00", "lightgreen", "00FF00"];
+const defaultCertaintyColor = "white";
+const certaintyColors = ["red", "yellow", "greenyellow", "lightgreen", "green"];
 
 const InlineProposition: FC<InlinePropositionProps> = ({
   proposition,
   ...childProps
 }: InlinePropositionProps) => {
-  const certaintyColor = proposition.certainty
+  const certaintyColor = Number.isInteger(proposition.certainty)
     ? certaintyColors[proposition.certainty]
-    : "lightgray";
+    : defaultCertaintyColor;
   return (
     <span
       {...childProps}

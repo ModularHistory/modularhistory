@@ -107,7 +107,6 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
   const [session, loading] = useSession();
   const classes = useStyles();
   const titleHtml = proposition.summary;
-  console.log("Certainty is ", proposition.certainty);
   return (
     <div>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
