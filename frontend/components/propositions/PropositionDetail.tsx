@@ -146,7 +146,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
         dangerouslySetInnerHTML={{ __html: proposition.elaboration }}
         style={{ margin: "1rem 0" }}
       />
-      {proposition.arguments && (
+      {proposition.arguments && !!proposition.arguments.length && (
         <TreeView
           className={classes.tree}
           defaultExpanded={proposition.arguments.map((argument) => `${argument.pk}`)}
@@ -173,7 +173,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
           ))}
         </TreeView>
       )}
-      {(proposition.conflictingPropositions && (
+      {(proposition.conflictingPropositions && !!proposition.conflictingPropositions.length && (
         <div>
           <h2>Conflicting Propositions</h2>
           {proposition.conflictingPropositions.map((conflictingProposition) => (
@@ -193,7 +193,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
             marginTop: "2rem",
             borderTop: "1px solid gray",
             textAlign: "center",
-            paddingTop: "1rem",
+            paddingTop: "1.5rem",
           }}
         >
           <p>This proposition is undisputed.</p>

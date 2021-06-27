@@ -6,7 +6,7 @@ interface InlinePropositionProps {
   proposition: Proposition;
 }
 
-const certaintyColors = ["white", "yellow", "yellow", "lightgreen", "green"];
+const certaintyColors = ["FFFFFF", "FF0000", "FFFF00", "lightgreen", "00FF00"];
 
 const InlineProposition: FC<InlinePropositionProps> = ({
   proposition,

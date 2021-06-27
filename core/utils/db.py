@@ -272,7 +272,7 @@ def seed(
     print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
     print('Waiting for Postgres to finish recreating the database...')
-    sleep(10)  # Give postgres time to recreate the database.
+    sleep(15)  # Give postgres time to recreate the database.
     if migrate:
         context.run('docker-compose run django_helper python manage.py migrate')
     context.run(
