@@ -1,5 +1,5 @@
 import { Breakpoint, Theme, useMediaQuery, useTheme } from "@material-ui/core";
-import MuiPagination from "@material-ui/lab/Pagination";
+import MuiPagination from "@material-ui/core/Pagination";
 import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
