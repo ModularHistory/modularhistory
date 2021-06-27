@@ -147,7 +147,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
         dangerouslySetInnerHTML={{ __html: proposition.elaboration }}
         style={{ margin: "1rem 0" }}
       />
-      {!!proposition.arguments.length && (
+      {proposition.arguments && (
         <TreeView
           className={classes.tree}
           defaultExpanded={proposition.arguments.map((argument) => `${argument.pk}`)}
@@ -174,7 +174,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
           ))}
         </TreeView>
       )}
-      {(!!proposition.conflictingPropositions.length && (
+      {(proposition.conflictingPropositions && (
         <div>
           <h2>Conflicting Propositions</h2>
           {proposition.conflictingPropositions.map((conflictingProposition) => (
