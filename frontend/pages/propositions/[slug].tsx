@@ -1,4 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
 import { Proposition } from "@/interfaces";
@@ -15,7 +16,9 @@ interface PropositionProps {
 const PropositionDetailPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
     <Layout title={proposition.summary}>
-      <ModuleDetail module={proposition} />
+      <ModuleContainer>
+        <ModuleDetail module={proposition} />
+      </ModuleContainer>
     </Layout>
   );
 };

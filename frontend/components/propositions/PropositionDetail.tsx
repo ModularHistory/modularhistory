@@ -1,4 +1,3 @@
-import ModuleContainer from "@/components/details/ModuleContainer";
 import { Proposition } from "@/interfaces";
 import { alpha, Button, Theme } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
@@ -110,7 +109,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
   const titleHtml = proposition.summary;
   console.log("Certainty is ", proposition.certainty);
   return (
-    <ModuleContainer>
+    <div>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
       {!loading && session?.user?.["isSuperuser"] && (
         <a
@@ -205,7 +204,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
           </p>
         </div>
       )}
-    </ModuleContainer>
+    </div>
   );
 };
 
