@@ -74,7 +74,7 @@ export interface Argument extends BaseModule {
 export interface Proposition extends BaseModule {
   summary: string;
   elaboration: string;
-  certainty: string;
+  certainty: number;
   arguments: Argument[];
   conflictingPropositions: Proposition[];
 }

@@ -2,12 +2,14 @@ import ModuleContainer from "@/components/details/ModuleContainer";
 import { Proposition } from "@/interfaces";
 import { alpha, Button, Theme } from "@material-ui/core";
 import Collapse from "@material-ui/core/Collapse";
+import Slider from "@material-ui/core/Slider";
 import SvgIcon, { SvgIconProps } from "@material-ui/core/SvgIcon";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { TreeItem, TreeView } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
 import { createStyles, makeStyles, withStyles } from "@material-ui/styles";
 import { animated, useSpring } from "@react-spring/web";
+import { useSession } from "next-auth/client";
 import Link from "next/link";
 import { FC } from "react";
 import InlineProposition from "./InlineProposition";
@@ -86,13 +88,63 @@ interface PropositionDetailProps {
   proposition: Proposition;
 }
 
+const strengthTextValues = [
+  "No credible evidence",
+  "Some credible evidence",
+  "A preponderance of evidence",
+  "Beyond reasonable doubt",
+  "Beyond any shadow of a doubt",
+];
+
+function getValueText(value: number) {
+  return strengthTextValues[value];
+}
+
+function getValueLabelFormat(value: number) {
+  return strengthTextValues[value];
+}
+
 const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: PropositionDetailProps) => {
+  const [session, loading] = useSession();
   const classes = useStyles();
   const titleHtml = proposition.summary;
+  console.log("Certainty is ", proposition.certainty);
   return (
     <ModuleContainer>
       <h1 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
-      <div dangerouslySetInnerHTML={{ __html: proposition.elaboration }} />
+      {!loading && session?.user?.["isSuperuser"] && (
+        <a
+          href={proposition.adminUrl}
+          target="_blank"
+          className="edit-object-button"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            position: "absolute",
+            top: "1px",
+            right: "-2rem",
+            fontWeight: "bold",
+          }}
+        >
+          <i className="fa fa-edit" />
+        </a>
+      )}
+      <Slider
+        style={{ margin: "2.5rem 0 0" }}
+        defaultValue={proposition.certainty}
+        getAriaValueText={getValueText}
+        valueLabelFormat={getValueLabelFormat}
+        valueLabelDisplay="on"
+        step={5}
+        marks
+        min={0}
+        max={4}
+        disabled
+      />
+      <div
+        dangerouslySetInnerHTML={{ __html: proposition.elaboration }}
+        style={{ margin: "1rem 0" }}
+      />
       {!!proposition.arguments.length && (
         <TreeView
           className={classes.tree}

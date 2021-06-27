@@ -31,6 +31,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         elaboration
         model
         adminUrl
+        certainty
         arguments {
           pk
           type
@@ -38,6 +39,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           premises {
             absoluteUrl
             dateString
+            certainty
             slug
             summary
             elaboration

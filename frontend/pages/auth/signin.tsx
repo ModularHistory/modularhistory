@@ -98,21 +98,23 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   };
   const socialAuthLoginComponents = [];
   let SocialLoginButton;
-  Object.entries(providers).forEach(([, provider]) => {
-    if (provider.id === CREDENTIALS_KEY) {
-      return null;
-    }
-    SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
-    socialAuthLoginComponents.push(
-      <SocialLoginButton
-        key={provider.name}
-        style={{ minWidth: "245px", maxWidth: "245px" }}
-        onClick={() => handleSocialLogin(provider.id)}
-      >
-        Sign in with {provider.name}
-      </SocialLoginButton>
-    );
-  });
+  if (providers) {
+    Object.entries(providers).forEach(([, provider]) => {
+      if (provider.id === CREDENTIALS_KEY) {
+        return null;
+      }
+      SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
+      socialAuthLoginComponents.push(
+        <SocialLoginButton
+          key={provider.name}
+          style={{ minWidth: "245px", maxWidth: "245px" }}
+          onClick={() => handleSocialLogin(provider.id)}
+        >
+          Sign in with {provider.name}
+        </SocialLoginButton>
+      );
+    });
+  }
   if (loading) return null;
   return (
     <Layout title={"Sign in"}>
@@ -147,7 +149,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                   Sign in
                 </h1>
                 <form method="post" onSubmit={handleCredentialLogin}>
-                  <input type="hidden" name="csrfToken" value={csrfToken} />
+                  {csrfToken && <input type="hidden" name="csrfToken" value={csrfToken} />}
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <Grid container spacing={2}>
@@ -202,7 +204,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       providers: await providers(),
-      csrfToken: await csrfToken(context),
+      csrfToken: (await csrfToken(context)) || null,
     }, // passed to the page component as props
   };
 };

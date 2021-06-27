@@ -6,17 +6,23 @@ interface InlinePropositionProps {
   proposition: Proposition;
 }
 
+const certaintyColors = ["white", "yellow", "yellow", "lightgreen", "green"];
+
 const InlineProposition: FC<InlinePropositionProps> = ({
   proposition,
   ...childProps
 }: InlinePropositionProps) => {
+  const certaintyColor = proposition.certainty
+    ? certaintyColors[proposition.certainty]
+    : "lightgray";
   return (
     <span
       {...childProps}
       style={{
         position: "relative",
         display: "inline-block",
-        border: "1px solid lightgray",
+        border: `1px solid lightgray`,
+        boxShadow: `2px 0 0 1px ${certaintyColor} inset`,
         borderRadius: "5px",
       }}
     >

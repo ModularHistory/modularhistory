@@ -34,6 +34,8 @@ class PropositionType(ModuleType):
 
     class Meta:
         model = Proposition
+        # https://docs.graphene-python.org/projects/django/en/latest/queries/#choices-to-enum-conversion
+        convert_choices_to_enum = False
         # https://github.com/graphql-python/graphene-django/issues/185
         exclude = ['type']
 
