@@ -8,8 +8,8 @@ from core.models.model import ModelSerializer
 class TopicSerializer(ModelSerializer):
     """Serializer for topics."""
 
-    name = serpy.Field()
-    key = serpy.StrField()
+    name = serpy.StrField()
+    slug = serpy.StrField()
     aliases = serpy.StrField()
     description = serpy.StrField()
     path = serpy.StrField()

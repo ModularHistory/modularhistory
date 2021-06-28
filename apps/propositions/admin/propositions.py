@@ -10,6 +10,7 @@ from apps.propositions.admin.inlines import (
     ArgumentsInline,
     ImagesInline,
     LocationsInline,
+    PremiseGroupsInline,
     PremisesInline,
     RelatedEntitiesInline,
     SourcesInline,
@@ -88,7 +89,7 @@ class ArgumentAdmin(ModelAdmin):
     """Admin for arguments."""
 
     model = models.Argument
-    inlines = [PremisesInline]
+    inlines = [PremisesInline, PremiseGroupsInline]
 
 
 admin_site.register(models.Proposition, PropositionAdmin)

@@ -1,5 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ImageCard from "@/components/cards/ImageCard";
+import ImageCard from "@/components/images/ImageCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";

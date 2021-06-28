@@ -1,6 +1,6 @@
 import { Image } from "@/interfaces";
 import { FC } from "react";
-import ImageCard from "../cards/ImageCard";
+import ImageCard from "./ImageCard";
 
 interface ImageDetailProps {
   image: Image;

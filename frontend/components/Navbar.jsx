@@ -1,10 +1,9 @@
-import logoImage from "@/public/logo_head_white.png";
 import { useSession } from "next-auth/client";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import React from "react";
+import Image from "react-bootstrap/Image";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -144,7 +143,13 @@ export default function GlobalNavbar({ menuItems }) {
     >
       <Link href={"/"} passHref>
         <Navbar.Brand href={"/"} data-cy={"brand"}>
-          <Image alt="Logo" src={logoImage} width="2.7rem" height="2.5rem" layout="fixed" />{" "}
+          <Image
+            alt="Logo"
+            src="/static/logo_head_white.png"
+            width="50px"
+            height="45px"
+            layout="fixed"
+          />{" "}
           ModularHistory
         </Navbar.Brand>
       </Link>

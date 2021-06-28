@@ -1,6 +1,6 @@
 import { Entity } from "@/interfaces";
 import { FC } from "react";
-import ImageCard from "../cards/ImageCard";
+import ImageCard from "../images/ImageCard";
 
 interface EntityDetailProps {
   entity: Entity;

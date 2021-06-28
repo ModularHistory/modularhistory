@@ -1,7 +1,7 @@
 import { Image } from "@/interfaces";
 import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
-import ModuleCard from "./ModuleCard";
+import ModuleCard from "../cards/ModuleCard";
 
 interface ImageCardProps {
   image: Image;

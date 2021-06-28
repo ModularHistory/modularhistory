@@ -2,12 +2,12 @@ import PropositionDetail from "@/components/propositions/PropositionDetail";
 import { Entity, Image, Occurrence, Proposition, Quote, Source, Topic } from "@/interfaces";
 import { useSession } from "next-auth/client";
 import { createRef, FC, useLayoutEffect } from "react";
-import EntityDetail from "./EntityDetail";
-import ImageDetail from "./ImageDetail";
+import EntityDetail from "../entities/EntityDetail";
+import ImageDetail from "../images/ImageDetail";
 import OccurrenceDetail from "../propositions/OccurrenceDetail";
-import QuoteDetail from "./QuoteDetail";
-import SourceDetail from "./SourceDetail";
-import TopicDetail from "./TopicDetail";
+import QuoteDetail from "../quotes/QuoteDetail";
+import SourceDetail from "../sources/SourceDetail";
+import TopicDetail from "../topics/TopicDetail";
 
 interface ModuleDetailProps {
   module: Occurrence | Quote | Entity | Topic | Proposition | Image | Source;

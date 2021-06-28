@@ -12,6 +12,7 @@
         "crontabschedule",
         "CSRF",
         "ctype",
+        "datagrid",
         "dbbackup",
         "dbrestore",
         "dedupe",

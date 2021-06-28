@@ -23,8 +23,9 @@ const InlineProposition: FC<InlinePropositionProps> = ({
         position: "relative",
         display: "inline-block",
         border: `1px solid lightgray`,
-        boxShadow: `2px 0 0 1px ${certaintyColor} inset`,
+        boxShadow: `3px 0 0 1px ${certaintyColor} inset`,
         borderRadius: "5px",
+        paddingLeft: "0.1rem",
       }}
     >
       {proposition.dateString && (

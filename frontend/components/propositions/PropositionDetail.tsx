@@ -135,9 +135,9 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
           valueLabelFormat={getValueLabelFormat}
           valueLabelDisplay="on"
           step={5}
-          marks
           min={0}
           max={4}
+          marks
           disabled
         />
       )}

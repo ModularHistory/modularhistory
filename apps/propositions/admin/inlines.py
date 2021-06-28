@@ -60,6 +60,21 @@ class PremisesInline(TabularInline):
         return super().get_queryset(request).select_related('premise')
 
 
+class PremiseGroupsInline(TabularInline):
+    """Inline admin for a proposition's premises."""
+
+    model = models.PremiseGroup
+
+    extra = 0
+    sortable_field_name = 'position'
+    verbose_name = 'premise group'
+    verbose_name_plural = 'premise groups'
+
+    # def get_queryset(self, request: 'HttpRequest') -> 'QuerySet':
+    #     """Return the queryset of model instances to be included."""
+    #     return super().get_queryset(request).select_related('premise_groups')
+
+
 class ArgumentsInline(TabularInline):
     """Inline admin for a proposition's supported propositions."""
 

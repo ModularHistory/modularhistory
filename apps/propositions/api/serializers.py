@@ -14,6 +14,7 @@ class PropositionSerializer(SearchableModelSerializer):
 
     summary = serpy.StrField()
     elaboration = serpy.StrField()
+    certainty = serpy.IntField(required=False)
     dateString = serpy.StrField(attr='date_string')
     cachedImages = serpy.Field(attr='cached_images')
     primaryImage = serpy.Field(attr='primary_image')
