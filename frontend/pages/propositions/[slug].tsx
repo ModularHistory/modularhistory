@@ -1,8 +1,8 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ModuleContainer from "@/components/details/ModuleContainer";
-import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
+import PropositionDetail from "@/components/propositions/PropositionDetail";
 import { Proposition } from "@/interfaces";
+import { Button, Grid } from "@material-ui/core";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
@@ -16,9 +16,61 @@ interface PropositionProps {
 const PropositionDetailPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
     <Layout title={proposition.summary}>
-      <ModuleContainer>
-        <ModuleDetail module={proposition} />
-      </ModuleContainer>
+      <Grid
+        container
+        direction="row"
+        justifyContent="space-evenly"
+        alignItems="flex-start"
+        style={{ margin: "2rem 0" }}
+      >
+        <Grid item sm={12} md={6} lg={6} xl={4} style={{ margin: "0 3rem" }}>
+          <PropositionDetail proposition={proposition} />
+        </Grid>
+        {proposition.conflictingPropositions && (
+          <>
+            {(!!proposition.conflictingPropositions.length && (
+              <>
+                {proposition.conflictingPropositions.map((conflictingProposition) => (
+                  <Grid
+                    item
+                    key={conflictingProposition.slug}
+                    sm={12}
+                    md={6}
+                    lg={6}
+                    xl={4}
+                    style={{ margin: "0 3rem" }}
+                  >
+                    <PropositionDetail
+                      key={conflictingProposition.slug}
+                      proposition={conflictingProposition}
+                    />
+                  </Grid>
+                ))}
+              </>
+            )) || (
+              <Grid item container xs={12} justifyContent="center">
+                <Grid item xs={12} sm={6}>
+                  <div
+                    style={{
+                      margin: "2rem",
+                      borderTop: "1px solid gray",
+                      textAlign: "center",
+                      paddingTop: "1.5rem",
+                    }}
+                  >
+                    <p>This proposition is undisputed.</p>
+                    <p>
+                      <Button variant="contained" disabled>
+                        Dispute
+                      </Button>
+                    </p>
+                  </div>
+                </Grid>
+              </Grid>
+            )}
+          </>
+        )}
+      </Grid>
     </Layout>
   );
 };
@@ -52,6 +104,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           slug
           absoluteUrl
           summary
+          certainty
         }
       }
     }`,

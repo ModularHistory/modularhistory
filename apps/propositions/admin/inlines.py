@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from apps.admin.inlines import TabularInline
+from apps.admin.inlines import StackedInline, TabularInline
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
 from apps.images.admin import AbstractImagesInline
 from apps.places.admin import AbstractLocationsInline
@@ -58,6 +58,17 @@ class PremisesInline(TabularInline):
     def get_queryset(self, request: 'HttpRequest') -> 'QuerySet':
         """Return the queryset of model instances to be included."""
         return super().get_queryset(request).select_related('premise')
+
+
+class ConflictsInline(StackedInline):
+    """Inline admin for a proposition's conflicting propositions."""
+
+    model = models.Proposition.conflicting_propositions.through
+    fk_name = 'proposition'
+    autocomplete_fields = ['conflicting_proposition']
+    extra = 0
+    verbose_name = 'conflicting proposition'
+    verbose_name_plural = 'conflicting propositions'
 
 
 class PremiseGroupsInline(TabularInline):

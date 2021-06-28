@@ -8,6 +8,7 @@ from apps.propositions import models
 from apps.propositions.admin.filters import HasDateFilter, HasQuotesFilter, LocationFilter
 from apps.propositions.admin.inlines import (
     ArgumentsInline,
+    ConflictsInline,
     ImagesInline,
     LocationsInline,
     PremiseGroupsInline,
@@ -40,6 +41,7 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
     inlines = [
         ArgumentsInline,
         SourcesInline,
+        ConflictsInline,
         ImagesInline,
         RelatedEntitiesInline,
         LocationsInline,

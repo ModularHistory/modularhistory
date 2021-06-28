@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Match, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Match, Optional
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -62,6 +62,7 @@ logging.debug(f'Proposition placeholder pattern: {proposition_placeholder_regex}
 
 DEGREES_OF_CERTAINTY = (
     (None, '-------'),
+    (0, 'No credible evidence'),
     (1, 'Some credible evidence'),
     (2, 'A preponderance of evidence'),
     (3, 'Beyond reasonable doubt'),
