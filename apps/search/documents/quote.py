@@ -1,3 +1,5 @@
+from typing import Union
+
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
@@ -45,3 +47,6 @@ class QuoteDocument(Document):
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related('attributees', 'sources', 'topics')
+
+    def get_instances_from_related(self, related_instance: Union[Source, Entity]):
+        return related_instance.quotes.all()

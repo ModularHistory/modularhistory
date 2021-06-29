@@ -1,3 +1,5 @@
+from typing import Union
+
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
@@ -45,3 +47,9 @@ class PropositionDocument(Document):
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related('related_entities', 'sources', 'tags')
+
+    def get_instances_from_related(self, related_instance: Union[Source, Entity]):
+        try:
+            return related_instance.propositions.all()
+        except AttributeError:
+            return related_instance.proposition_set.all()

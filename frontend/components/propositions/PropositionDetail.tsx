@@ -1,25 +1,8 @@
 import { Proposition } from "@/interfaces";
-import { Theme } from "@material-ui/core";
 import Slider from "@material-ui/core/Slider";
-import { createStyles, makeStyles } from "@material-ui/styles";
 import { useSession } from "next-auth/client";
 import { FC } from "react";
 import ArgumentSet from "./ArgumentSet";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-    },
-    heading: {
-      fontSize: theme.typography.pxToRem(15),
-      fontWeight: theme.typography.fontWeightRegular,
-    },
-    tree: {
-      flexGrow: 1,
-    },
-  })
-);
 
 interface PropositionDetailProps {
   proposition: Proposition;
