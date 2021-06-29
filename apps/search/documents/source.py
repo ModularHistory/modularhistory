@@ -21,7 +21,7 @@ class SourceDocument(Document):
         attr='cached_tags',
         properties={
             'id': fields.IntegerField(),
-            'key': fields.TextField(),
+            'name': fields.TextField(),
             'aliases': fields.TextField(),
             'description': fields.TextField(analyzer=html_field_analyzer),
             'path': fields.TextField(),
