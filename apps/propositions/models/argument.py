@@ -90,7 +90,6 @@ class Argument(PositionedRelation):
         """Return the proposition's string representation."""
         return f'Argument {self.number} for "{self.conclusion}"'
 
-    @property
     def __html__(self) -> SafeString:
         """Return the proposition's string representation."""
         html = ''
