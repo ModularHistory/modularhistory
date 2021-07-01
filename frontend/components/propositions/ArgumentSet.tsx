@@ -99,7 +99,11 @@ const ArgumentSet: FC<ArgumentSetProps> = ({ argumentSet }: ArgumentSetProps) =>
         <StyledTreeItem
           key={argument.pk}
           nodeId={`${argument.pk}`}
-          label={argument.explanation || `Argument ${index + 1}`}
+          label={
+            <span
+              dangerouslySetInnerHTML={{ __html: argument.explanation || `Argument ${index + 1}` }}
+            />
+          }
         >
           {argument.premises &&
             argument.premises.map((premise, subindex) => (
