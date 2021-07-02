@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
 import graphene
-from graphene import relay
 
 from apps.graph.types import ModuleType
 from apps.propositions.api.types import PropositionType
@@ -24,7 +23,6 @@ class TopicType(ModuleType):
         model = Topic
         filter_fields = []
         exclude = []
-        interfaces = (relay.Node,)
 
     @staticmethod
     def resolve_model(root, *args) -> str:
