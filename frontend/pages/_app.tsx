@@ -77,6 +77,7 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
         <meta property="og:url" content="https://www.modularhistory.com/" />
         <meta property="og:title" content="ModularHistory" />
         <meta property="og:description" content="History, modularized." />
+        <meta name="facebook-domain-verification" content="dfnrpkj6k5hhiqtxmtxsgw23xr8bfr" />
       </Head>
       <noscript>
         <iframe

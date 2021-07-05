@@ -2,7 +2,6 @@
 
 import { ServerStyleSheets } from "@material-ui/styles";
 import BaseDocument, { Head, Html, Main, NextScript } from "next/document";
-import Script from "next/script";
 import React from "react";
 
 class Document extends BaseDocument {
@@ -54,11 +53,11 @@ class Document extends BaseDocument {
           />
 
           {/* jQuery library */}
-          <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" />
+          {/* <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" /> */}
           {/* Popper JS */}
-          <Script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" />
+          {/* <Script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" /> */}
           {/* Latest compiled Bootstrap JavaScript */}
-          <Script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" />
+          {/* <Script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" /> */}
         </Head>
         <body>
           <Main />
