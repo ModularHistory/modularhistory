@@ -517,7 +517,10 @@ class AbstractSource(Source):
     """
 
     source = models.OneToOneField(
-        Source, parent_link=True, on_delete=models.CASCADE, related_name='%(class)s'
+        Source,
+        parent_link=True,
+        on_delete=models.CASCADE,
+        related_name='%(class)s',
     )
 
     class Meta:

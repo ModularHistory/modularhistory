@@ -44,12 +44,11 @@ const providers = [
     clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
     clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
   }),
-  // TODO: Someday, enable troublesome GitHub login?
-  // // https://next-auth.js.org/providers/github
-  // Providers.GitHub({
-  //   clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
-  //   clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
-  // }),
+  // https://next-auth.js.org/providers/github
+  Providers.GitHub({
+    clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
+    clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
+  }),
   // https://next-auth.js.org/providers/credentials
   Providers.Credentials({
     id: "credentials",

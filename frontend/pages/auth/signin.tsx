@@ -186,9 +186,11 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                   </Grid>
                 </form>
                 <Divider style={{ width: "100%", marginTop: "2rem", marginBottom: "2rem" }} />
-                <Grid id="social-sign-in" container justifyContent="center">
-                  {socialAuthLoginComponents}
-                </Grid>
+                {(!!socialAuthLoginComponents.length && (
+                  <Grid id="social-sign-in" container justifyContent="center">
+                    {socialAuthLoginComponents}
+                  </Grid>
+                )) || <p className="text-center">Other sign-in options unavailable.</p>}
               </div>
             ))}
         </Box>

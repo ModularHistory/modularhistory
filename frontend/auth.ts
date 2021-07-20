@@ -142,19 +142,6 @@ export const authenticateWithSocialMediaAccount = async (
   const url = makeDjangoApiUrl(`/users/auth/${account.provider}`);
   const credentials: SocialMediaAccountCredentials = { user };
   switch (account.provider) {
-    // case "github": {
-    //   // https://next-auth.js.org/providers/github
-    //   // Retrieve email address, if necessary.
-    //   if (!user.email) {
-    //     const emailRes = await fetch("https://api.github.com/user/emails", {
-    //       headers: { Authorization: `token ${provider.accessToken}` },
-    //     });
-    //     const emails = await emailRes.json();
-    //     if (emails?.length !== 0) {
-    //       user.email = emails.find((emails) => emails.primary).email;
-    //     }
-    //   }
-    // }
     // https://next-auth.js.org/providers/discord
     // https://next-auth.js.org/providers/facebook
     // https://next-auth.js.org/providers/github
@@ -167,6 +154,22 @@ export const authenticateWithSocialMediaAccount = async (
       credentials.access_token = account.accessToken;
       credentials.refresh_token = account.refreshToken;
       break;
+    case "github": {
+      // https://next-auth.js.org/providers/github
+      // Retrieve email address, if necessary.
+      if (!user.email) {
+        const emailRes = await fetch("https://api.github.com/user/emails", {
+          headers: { Authorization: `token ${account.accessToken}` },
+        });
+        const emails = await emailRes.json();
+        if (emails?.length !== 0) {
+          user.email = emails.find((emails) => emails.primary).email;
+        }
+      }
+      credentials.access_token = account.accessToken;
+      credentials.refresh_token = account.refreshToken;
+      break;
+    }
     default:
       // eslint-disable-next-line no-console
       console.error("Unsupported provider:", account.provider);
