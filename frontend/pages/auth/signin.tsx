@@ -190,7 +190,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                   <Grid id="social-sign-in" container justifyContent="center">
                     {socialAuthLoginComponents}
                   </Grid>
-                )) || <p className="text-center">Other sign-in options unavailable.</p>}
+                )) || <p className="text-center">Other sign-in options are unavailable.</p>}
               </div>
             ))}
         </Box>

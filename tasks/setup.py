@@ -133,7 +133,7 @@ def seed_env_file(context: 'Context', username: str, pat: str):
     extract_zip(context, zip_filename, dest_filepath=dest_filepath)
 
 
-def extract_zip(context: 'Context', filename: str, dest_filepath: str = None):
+def extract_zip(context: 'Context', filename: str, dest_filepath: Optional[str] = None):
     """Extract the specified zip file to the specified destination."""
     try:
         with ZipFile(filename, 'r') as archive:
