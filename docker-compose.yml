@@ -176,8 +176,6 @@ services:
 
   react:
     command: npm run start
-    depends_on:
-      - django
     deploy:
       restart_policy:
         condition: on-failure
