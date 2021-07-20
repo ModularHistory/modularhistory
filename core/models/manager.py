@@ -50,7 +50,7 @@ class SearchableMixin:
         self: Union[Manager, QuerySet],
         term: str,
         elastic: bool = True,
-        fields: Iterable[str] = None,
+        fields: Optional[Iterable[str]] = None,
     ) -> QuerySet['ExtendedModel']:
         """Return search results."""
         searchable_fields = fields or getattr(self.model, 'searchable_fields', None)
