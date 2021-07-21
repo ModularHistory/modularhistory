@@ -74,16 +74,16 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment
-      id: venv-test
-      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
-      run: poetry run invoke debug
     - name: Install Python dependencies
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
       run: |
         poetry --version
         echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    - name: Test poetry environment
+      id: venv-test
+      if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
+      run: poetry run invoke debug
     - name: Cache node modules
       uses: actions/cache@v2.1.5
       id: node-modules-cache
