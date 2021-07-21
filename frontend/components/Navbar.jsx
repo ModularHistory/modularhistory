@@ -108,29 +108,24 @@ export default function GlobalNavbar({ menuItems }) {
         />
       );
     }
-    if (session.user.isSuperuser) {
-      accountControls = (
-        <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
-          <NavDropdown.Item href={`/users/${session.user.username}`}>Profile</NavDropdown.Item>
-          <NavDropdown.Item href="/_admin/">Administrate</NavDropdown.Item>
-          <Divider />
-          <NavDropdown.Item href={`/users/${session.user.username}/settings`}>
-            Settings
-          </NavDropdown.Item>
-          <NavDropdown.Item onClick={logout}>
-            <span className="glyphicon glyphicon-log-out" /> Logout
-          </NavDropdown.Item>
-        </NavDropdown>
-      );
-    } else {
-      accountControls = (
-        <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
-          <NavDropdown.Item onClick={logout}>
-            <span className="glyphicon glyphicon-log-out" /> Logout
-          </NavDropdown.Item>
-        </NavDropdown>
-      );
-    }
+    accountControls = (
+      <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
+        <NavDropdown.Item href={`/users/${session.user.username}`}>Profile</NavDropdown.Item>
+        <NavDropdown.Item href={`/users/${session.user.username}/settings`}>
+          Settings
+        </NavDropdown.Item>
+        {(session.user.isSuperuser && (
+          <>
+            <Divider style={{ margin: "0.5rem 0" }} />
+            <NavDropdown.Item href="/_admin/">Administrate</NavDropdown.Item>
+            <Divider style={{ margin: "0.5rem 0" }} />
+          </>
+        )) || <Divider style={{ margin: "0.5rem 0" }} />}
+        <NavDropdown.Item onClick={logout}>
+          <span className="glyphicon glyphicon-log-out" /> Logout
+        </NavDropdown.Item>
+      </NavDropdown>
+    );
   }
 
   return (

@@ -1,7 +1,7 @@
 import { Grid, MenuItem } from "@material-ui/core";
 import { FC, useContext } from "react";
 import { SearchFormContext } from "./SearchForm";
-import TextField from "./StyledTextField";
+import TextField from "../forms/StyledTextField";
 
 interface YearSelectProps {
   label: string;

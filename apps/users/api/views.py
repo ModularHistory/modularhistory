@@ -128,18 +128,23 @@ class TwitterConnect(TwitterMixin, SocialConnectView):
     serializer_class = TwitterConnectSerializer
 
 
-class Me(generics.RetrieveAPIView):
+class Profile(generics.RetrieveUpdateAPIView):
     """API view for details of the current user."""
 
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.UserSerializer
+    lookup_field = 'username'
+    queryset = User.objects.all()
 
-    def get_object(self):
-        """
-        Return the user object.
 
-        https://www.django-rest-framework.org/api-guide/generic-views/#get_objectself
-        """
+class Me(Profile):
+    """API view for details of the current user."""
+
+    permission_classes = (IsAuthenticated,)
+
+    # https://www.django-rest-framework.org/api-guide/generic-views/#get_object
+    def get_object(self, *args, **kwargs):
+        """Return the user object."""
         return self.request.user
 
 
@@ -151,12 +156,9 @@ class DeletionView(generics.DestroyAPIView):
     lookup_field = 'email'
     queryset = get_user_model().objects.all()
 
+    # https://www.django-rest-framework.org/api-guide/generic-views/#get_object
     def get_object(self):
-        """
-        Return the user object to be deleted.
-
-        https://www.django-rest-framework.org/api-guide/generic-views/#get_objectself
-        """
+        """Return the user object to be deleted."""
         user: 'User' = self.request.user  # type: ignore
         try:
             instance = self.queryset.get(email=user.email)
