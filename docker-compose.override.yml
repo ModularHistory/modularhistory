@@ -91,6 +91,7 @@ services:
     command: npm run dev
     environment:
       NEXTAUTH_URL: "http://modularhistory.dev.net"
+      NEXTAUTH_URL_INTERNAL: "http://react:3000"
       REACT_EDITOR: "code"
     image: react:latest
     user: root # avoid permissions issues with writing in build dir

@@ -101,7 +101,7 @@ export default function GlobalNavbar({ menuItems }) {
         <Image
           src={session.user.avatar}
           className="rounded-circle z-depth-0"
-          alt={session.user.name}
+          alt={session.user.name || session.user.username}
           width="35"
           height="35"
         />
@@ -110,7 +110,7 @@ export default function GlobalNavbar({ menuItems }) {
     if (session.user.isSuperuser) {
       accountControls = (
         <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
-          <NavDropdown.Item href="/users/profile">Profile</NavDropdown.Item>
+          <NavDropdown.Item href={`/users/${session.user.username}`}>Profile</NavDropdown.Item>
           {/* <NavDropdown.Item href="/users/setting">Settings</NavDropdown.Item> */}
           <NavDropdown.Item href="/_admin/">Administrate</NavDropdown.Item>
           {/* <NavDropdown.Item href="" className="hide-admin-controls">
