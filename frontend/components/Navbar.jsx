@@ -1,3 +1,4 @@
+import { Divider } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -111,11 +112,11 @@ export default function GlobalNavbar({ menuItems }) {
       accountControls = (
         <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
           <NavDropdown.Item href={`/users/${session.user.username}`}>Profile</NavDropdown.Item>
-          {/* <NavDropdown.Item href="/users/setting">Settings</NavDropdown.Item> */}
           <NavDropdown.Item href="/_admin/">Administrate</NavDropdown.Item>
-          {/* <NavDropdown.Item href="" className="hide-admin-controls">
-            Hide admin controls
-          </NavDropdown.Item> */}
+          <Divider />
+          <NavDropdown.Item href={`/users/${session.user.username}/settings`}>
+            Settings
+          </NavDropdown.Item>
           <NavDropdown.Item onClick={logout}>
             <span className="glyphicon glyphicon-log-out" /> Logout
           </NavDropdown.Item>
