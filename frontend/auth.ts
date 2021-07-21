@@ -25,7 +25,7 @@ export interface Credentials {
   password: string;
 }
 
-const makeDjangoApiUrl = (endpoint) => {
+export const makeDjangoApiUrl = (endpoint: string): string => {
   return `http://django:8000/api${endpoint}`;
 };
 

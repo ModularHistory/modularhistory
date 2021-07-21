@@ -16,6 +16,8 @@ SOCIALACCOUNT_QUERY_EMAIL = True
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'apps.users.api.serializers.UserSerializer',
 }
+OLD_PASSWORD_FIELD_ENABLED = True
+LOGOUT_ON_PASSWORD_CHANGE = False
 
 # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#json-web-token-jwt-support-optional
 REST_USE_JWT = True
