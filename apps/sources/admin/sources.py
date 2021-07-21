@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Sequence, Type, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Type, Union
 
 from django.contrib.admin.filters import ListFilter
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
@@ -136,7 +136,7 @@ class SourceAdmin(PolymorphicChildModelAdmin, SearchableModelAdmin):
     search_fields = base_model.searchable_fields
 
     def get_fields(
-        self, request: 'HttpRequest', model_instance: 'Model' = None
+        self, request: 'HttpRequest', model_instance: Optional['Model'] = None
     ) -> Sequence[str]:
         """Return reordered fields to be displayed in the admin."""
         return rearrange_fields(super().get_fields(request, model_instance))

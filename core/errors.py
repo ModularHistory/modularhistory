@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.template.response import TemplateResponse
 
@@ -6,7 +6,9 @@ if TYPE_CHECKING:
     from django.http import HttpRequest, HttpResponse
 
 
-def bad_request(request: 'HttpRequest', exception: Exception = None) -> 'HttpResponse':
+def bad_request(
+    request: 'HttpRequest', exception: Optional[Exception] = None
+) -> 'HttpResponse':
     """Handle a 400 error."""
     status = 400
     return TemplateResponse(
@@ -17,7 +19,9 @@ def bad_request(request: 'HttpRequest', exception: Exception = None) -> 'HttpRes
     )
 
 
-def permission_denied(request: 'HttpRequest', exception: Exception = None) -> 'HttpResponse':
+def permission_denied(
+    request: 'HttpRequest', exception: Optional[Exception] = None
+) -> 'HttpResponse':
     """Handle a 403 error."""
     status = 403
     return TemplateResponse(
@@ -28,7 +32,9 @@ def permission_denied(request: 'HttpRequest', exception: Exception = None) -> 'H
     )
 
 
-def not_found(request: 'HttpRequest', exception: Exception = None) -> 'HttpResponse':
+def not_found(
+    request: 'HttpRequest', exception: Optional[Exception] = None
+) -> 'HttpResponse':
     """Handle a 404 error."""
     status = 404
     return TemplateResponse(
@@ -39,7 +45,7 @@ def not_found(request: 'HttpRequest', exception: Exception = None) -> 'HttpRespo
     )
 
 
-def error(request: 'HttpRequest', exception: Exception = None) -> 'HttpResponse':
+def error(request: 'HttpRequest', exception: Optional[Exception] = None) -> 'HttpResponse':
     """Handle a 500 error."""
     status = 500
     return TemplateResponse(
