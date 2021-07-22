@@ -1,6 +1,6 @@
-import axios from "@/axiosWithAuth";
+import axiosWithoutAuth from "@/axiosWithoutAuth";
 import { AxiosResponse } from "axios";
-import { useSession } from "next-auth/client";
+import { signIn, useSession } from "next-auth/client";
 import { Provider } from "next-auth/providers";
 import { FC } from "react";
 import {
@@ -31,8 +31,13 @@ const SocialConnectButton: FC<SocialConnectButtonProps> = ({
 }: SocialConnectButtonProps) => {
   const Button = SOCIAL_LOGIN_BUTTONS[provider.id];
   const handleSocialConnect = async (provider_id: string) => {
-    await axios
-      .post(`/api/users/auth/${provider_id}/connect/`, {})
+    signIn(provider_id);
+    await axiosWithoutAuth
+      .post(`/api/users/auth/${provider_id}/connect/`, {
+        // headers: {
+        //   Authorization: `Bearer ${accessToken}`,
+        // },
+      })
       .then(function (response: AxiosResponse) {
         console.log(`${response}`);
       })

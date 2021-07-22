@@ -83,7 +83,7 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
             <Grid item sm={4}>
               <div className="profile-img">
                 <Image
-                  src={String(user.avatar || "/profile_pic_placeholder.png")}
+                  src={String(user.avatar || "/static/profile_pic_placeholder.png")}
                   className="rounded-circle z-depth-0"
                   alt={`profile image for ${user.name || user.username}`}
                   width="200"
@@ -156,7 +156,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
       console.error(error);
     });
-  console.log("socialAccounts:", socialAccounts);
   return {
     props: {
       user: session.user,

@@ -139,6 +139,7 @@ export const authenticateWithSocialMediaAccount = async (
   user: User,
   account: Account
 ): Promise<User> => {
+  console.log(">>>> User", user);
   const url = makeDjangoApiUrl(`/users/auth/${account.provider}`);
   const credentials: SocialMediaAccountCredentials = { user };
   switch (account.provider) {
