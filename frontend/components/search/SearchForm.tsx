@@ -1,4 +1,5 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
+import TextField from "@/components/forms/StyledTextField";
 import { Container, Grid, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
@@ -18,7 +19,6 @@ import CheckboxGroup from "./CheckboxGroup";
 import MultiSelect from "./MultiSelect";
 import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
-import TextField from "@/components/StyledTextField";
 import YearSelect from "./YearSelect";
 
 interface SearchFormStateType {
