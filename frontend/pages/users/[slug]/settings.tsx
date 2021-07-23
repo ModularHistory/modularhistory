@@ -149,6 +149,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     })
     .then(function (response: AxiosResponse) {
       socialAccounts = response.data.results;
+      console.log(socialAccounts);
     })
     .catch(function (error) {
       if (error.response?.data) {

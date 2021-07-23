@@ -33,11 +33,7 @@ const SocialConnectButton: FC<SocialConnectButtonProps> = ({
   const handleSocialConnect = async (provider_id: string) => {
     signIn(provider_id);
     await axiosWithoutAuth
-      .post(`/api/users/auth/${provider_id}/connect/`, {
-        // headers: {
-        //   Authorization: `Bearer ${accessToken}`,
-        // },
-      })
+      .post(`/api/users/auth/${provider_id}/connect/`, {})
       .then(function (response: AxiosResponse) {
         console.log(`${response}`);
       })
@@ -60,6 +56,7 @@ const SocialAccountList: FC<SocialAccountListProps> = ({
   accounts,
 }: SocialAccountListProps) => {
   const [_session, _loading] = useSession();
+  console.log(accounts);
   return (
     <div>
       {Object.keys(providers).map(
@@ -67,13 +64,21 @@ const SocialAccountList: FC<SocialAccountListProps> = ({
           providers[provider].name != "Credentials" && (
             <div key={index}>
               <p>{providers[provider].name}</p>
-              {(accounts.includes(providers[provider].name) && null) || (
-                <SocialConnectButton provider={providers[provider]} />
-              )}
+              {(accounts.find((account) => account["provider"] === providers[provider].id) && (
+                <p>
+                  Connected (
+                  {
+                    accounts.find((account) => account["provider"] === providers[provider].id)[
+                      "uid"
+                    ]
+                  }
+                  )
+                </p>
+              )) || <SocialConnectButton provider={providers[provider]} />}
             </div>
           )
       )}
-      {accounts}
+      {!!accounts}
     </div>
   );
 };
