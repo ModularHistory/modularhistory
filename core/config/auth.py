@@ -9,9 +9,6 @@ AUTH_USER_MODEL = 'users.User'
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = '/api/auth/signin'
 
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
-SOCIALACCOUNT_QUERY_EMAIL = True
-
 # https://dj-rest-auth.readthedocs.io/en/latest/configuration.html#configuration
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'apps.users.api.serializers.UserSerializer',
@@ -48,8 +45,6 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     # Necessary for Django admin login
     'django.contrib.auth.backends.ModelBackend',
-    # allauth-specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 # Provider specific settings:

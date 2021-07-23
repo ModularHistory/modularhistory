@@ -649,7 +649,6 @@ python-versions = ">=3.5"
 
 [package.dependencies]
 Django = ">=2.0"
-django-allauth = {version = ">=0.40.0,<0.45.0", optional = true, markers = "extra == \"with_social\""}
 djangorestframework = ">=3.7.0"
 
 [package.extras]
@@ -714,21 +713,6 @@ description = "A collection of tools for the django administration interface"
 category = "main"
 optional = false
 python-versions = "*"
-
-[[package]]
-name = "django-allauth"
-version = "0.44.0"
-description = "Integrated set of Django applications addressing authentication, registration, account management as well as 3rd party (social) account authentication."
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-Django = ">=2.0"
-pyjwt = {version = ">=1.7", extras = ["crypto"]}
-python3-openid = ">=3.0.8"
-requests = "*"
-requests-oauthlib = ">=0.3.0"
 
 [[package]]
 name = "django-appconf"
@@ -1201,26 +1185,25 @@ typing-extensions = ">=3.7.2"
 
 [[package]]
 name = "docker"
-version = "4.4.4"
+version = "5.0.0"
 description = "A Python library for the Docker Engine API."
 category = "dev"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.6"
 
 [package.dependencies]
 paramiko = {version = ">=2.4.2", optional = true, markers = "extra == \"ssh\""}
 pywin32 = {version = "227", markers = "sys_platform == \"win32\""}
 requests = ">=2.14.2,<2.18.0 || >2.18.0"
-six = ">=1.4.0"
 websocket-client = ">=0.32.0"
 
 [package.extras]
 ssh = ["paramiko (>=2.4.2)"]
-tls = ["pyOpenSSL (>=17.5.0)", "cryptography (>=1.3.4)", "idna (>=2.0.0)"]
+tls = ["pyOpenSSL (>=17.5.0)", "cryptography (>=3.4.7)", "idna (>=2.0.0)"]
 
 [[package]]
 name = "docker-compose"
-version = "1.28.6"
+version = "1.29.2"
 description = "Multi-container orchestration for Docker"
 category = "dev"
 optional = false
@@ -1229,7 +1212,7 @@ python-versions = ">=3.4"
 [package.dependencies]
 colorama = {version = ">=0.4,<1", markers = "sys_platform == \"win32\""}
 distro = ">=1.5.0,<2"
-docker = {version = ">=4.4.4,<5", extras = ["ssh"]}
+docker = {version = ">=5", extras = ["ssh"]}
 dockerpty = ">=0.4.1,<1"
 docopt = ">=0.6.1,<1"
 jsonschema = ">=2.5.1,<4"
@@ -1245,15 +1228,15 @@ tests = ["ddt (>=1.2.2,<2)", "pytest (<6)"]
 
 [[package]]
 name = "docker-image-size-limit"
-version = "0.4.0"
+version = "0.4.1"
 description = ""
 category = "dev"
 optional = false
 python-versions = ">=3.6,<4.0"
 
 [package.dependencies]
-docker = ">=3.7,<5.0"
-humanfriendly = ">=4.18,<9.0"
+docker = ">=3.7,<6.0"
+humanfriendly = ">=4.18,<10.0"
 
 [[package]]
 name = "dockerpty"
@@ -1634,7 +1617,7 @@ smmap = ">=3.0.1,<5"
 
 [[package]]
 name = "gitpython"
-version = "3.1.18"
+version = "3.1.19"
 description = "Python Git Library"
 category = "dev"
 optional = false
@@ -1642,6 +1625,7 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 gitdb = ">=4.0.1,<5"
+typing-extensions = {version = ">=3.7.4.3", markers = "python_version < \"3.10\""}
 
 [[package]]
 name = "gprof2dot"
@@ -1789,7 +1773,7 @@ test = ["Cython (==0.29.22)"]
 
 [[package]]
 name = "humanfriendly"
-version = "8.2"
+version = "9.2"
 description = "Human friendly output for text interfaces using Python"
 category = "dev"
 optional = false
@@ -2575,9 +2559,6 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 
-[package.dependencies]
-cryptography = {version = ">=3.3.1,<4.0.0", optional = true, markers = "extra == \"crypto\""}
-
 [package.extras]
 crypto = ["cryptography (>=3.3.1,<4.0.0)"]
 dev = ["sphinx", "sphinx-rtd-theme", "zope.interface", "cryptography (>=3.3.1,<4.0.0)", "pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)", "mypy", "pre-commit"]
@@ -2803,21 +2784,6 @@ description = "File type identification using libmagic"
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-
-[[package]]
-name = "python3-openid"
-version = "3.2.0"
-description = "OpenID support for modern servers and consumers."
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-defusedxml = "*"
-
-[package.extras]
-mysql = ["mysql-connector-python"]
-postgresql = ["psycopg2"]
 
 [[package]]
 name = "pytype"
@@ -3181,7 +3147,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "tomli"
-version = "1.0.4"
+version = "1.1.0"
 description = "A lil' TOML parser"
 category = "dev"
 optional = false
@@ -3494,7 +3460,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "3508dc80567565652c6b014fc6befcf66c2b1e3ae8d4c8128c6e56c8307dc060"
+content-hash = "5c224311a7400dbe96627efc443c0b0f13a08f32776a683be93a43321557c720"
 
 [metadata.files]
 aenum = [
@@ -3934,9 +3900,6 @@ django-admin-tools = [
     {file = "django-admin-tools-0.9.0.tar.gz", hash = "sha256:428d1b6a572ee364c35086d7bec34344cc43105839e5637dbb900b9cabd6adf8"},
     {file = "django_admin_tools-0.9.0-py2.py3-none-any.whl", hash = "sha256:d1ecc7664b17110c4c1a38e9709de932b7f711521951720b95705205983218a2"},
 ]
-django-allauth = [
-    {file = "django-allauth-0.44.0.tar.gz", hash = "sha256:e51af457466022f52154d74c8523ac69375120fad2acce6e239635d85e610b25"},
-]
 django-appconf = [
     {file = "django-appconf-1.0.4.tar.gz", hash = "sha256:be58deb54a43d77d2e1621fe59f787681376d3cd0b8bd8e4758ef6c3a6453380"},
     {file = "django_appconf-1.0.4-py2.py3-none-any.whl", hash = "sha256:1b1d0e1069c843ebe8ae5aa48ec52403b1440402b320c3e3a206a0907e97bb06"},
@@ -4085,16 +4048,16 @@ djangorestframework-stubs = [
     {file = "djangorestframework_stubs-1.4.0-py3-none-any.whl", hash = "sha256:f6ed5fb19c12aa752288ddc6ad28d4ca7c81681ca7f28a19aba9064b2a69489c"},
 ]
 docker = [
-    {file = "docker-4.4.4-py2.py3-none-any.whl", hash = "sha256:f3607d5695be025fa405a12aca2e5df702a57db63790c73b927eb6a94aac60af"},
-    {file = "docker-4.4.4.tar.gz", hash = "sha256:d3393c878f575d3a9ca3b94471a3c89a6d960b35feb92f033c0de36cc9d934db"},
+    {file = "docker-5.0.0-py2.py3-none-any.whl", hash = "sha256:fc961d622160e8021c10d1bcabc388c57d55fb1f917175afbe24af442e6879bd"},
+    {file = "docker-5.0.0.tar.gz", hash = "sha256:3e8bc47534e0ca9331d72c32f2881bb13b93ded0bcdeab3c833fb7cf61c0a9a5"},
 ]
 docker-compose = [
-    {file = "docker-compose-1.28.6.tar.gz", hash = "sha256:1d44906f7ab738ba2d1785130ed31b16111eee6dc5a1dbd7252091dae48c5281"},
-    {file = "docker_compose-1.28.6-py2.py3-none-any.whl", hash = "sha256:f757ac7bbff985dd9f957a9b935dc8e5960456d6291a6e5fc1ec4cf1747a1d01"},
+    {file = "docker-compose-1.29.2.tar.gz", hash = "sha256:4c8cd9d21d237412793d18bd33110049ee9af8dab3fe2c213bbd0733959b09b7"},
+    {file = "docker_compose-1.29.2-py2.py3-none-any.whl", hash = "sha256:8d5589373b35c8d3b1c8c1182c6e4a4ff14bffa3dd0b605fcd08f73c94cef809"},
 ]
 docker-image-size-limit = [
-    {file = "docker-image-size-limit-0.4.0.tar.gz", hash = "sha256:5a82d12a8f1bd9924873987191f9f198b004dd253ed5a29fcee5e4f7270e69ea"},
-    {file = "docker_image_size_limit-0.4.0-py3-none-any.whl", hash = "sha256:9833b8ceccc847abae0263b307ac6e40377cf1ad0bf5439a92728814c6c1bd67"},
+    {file = "docker-image-size-limit-0.4.1.tar.gz", hash = "sha256:6a76d9504fc9b752d80ac8b7fde2b33a9d2655a7d599dcc96c907f71926c8f82"},
+    {file = "docker_image_size_limit-0.4.1-py3-none-any.whl", hash = "sha256:9da2097dc8ffc27b4092da8eec779969b49ed4437baed5eb455a06bfa9358461"},
 ]
 dockerpty = [
     {file = "dockerpty-0.4.1.tar.gz", hash = "sha256:69a9d69d573a0daa31bcd1c0774eeed5c15c295fe719c61aca550ed1393156ce"},
@@ -4217,8 +4180,8 @@ gitdb = [
     {file = "gitdb-4.0.7.tar.gz", hash = "sha256:96bf5c08b157a666fec41129e6d327235284cca4c81e92109260f353ba138005"},
 ]
 gitpython = [
-    {file = "GitPython-3.1.18-py3-none-any.whl", hash = "sha256:fce760879cd2aebd2991b3542876dc5c4a909b30c9d69dfc488e504a8db37ee8"},
-    {file = "GitPython-3.1.18.tar.gz", hash = "sha256:b838a895977b45ab6f0cc926a9045c8d1c44e2b653c1fcc39fe91f42c6e8f05b"},
+    {file = "GitPython-3.1.19-py3-none-any.whl", hash = "sha256:17690588e36bd0cee21921ce621fad1e8be45a37afa486ff846fb8efcf53c34c"},
+    {file = "GitPython-3.1.19.tar.gz", hash = "sha256:18f4039b96b5567bc4745eb851737ce456a2d499cecd71e84f5c0950e92d0e53"},
 ]
 gprof2dot = [
     {file = "gprof2dot-2021.2.21.tar.gz", hash = "sha256:1223189383b53dcc8ecfd45787ac48c0ed7b4dbc16ee8b88695d053eea1acabf"},
@@ -4324,8 +4287,8 @@ httptools = [
     {file = "httptools-0.1.2.tar.gz", hash = "sha256:07659649fe6b3948b6490825f89abe5eb1cec79ebfaaa0b4bf30f3f33f3c2ba8"},
 ]
 humanfriendly = [
-    {file = "humanfriendly-8.2-py2.py3-none-any.whl", hash = "sha256:e78960b31198511f45fd455534ae7645a6207d33e512d2e842c766d15d9c8080"},
-    {file = "humanfriendly-8.2.tar.gz", hash = "sha256:bf52ec91244819c780341a3438d5d7b09f431d3f113a475147ac9b7b167a3d12"},
+    {file = "humanfriendly-9.2-py2.py3-none-any.whl", hash = "sha256:332da98c24cc150efcc91b5508b19115209272bfdf4b0764a56795932f854271"},
+    {file = "humanfriendly-9.2.tar.gz", hash = "sha256:f7dba53ac7935fd0b4a2fc9a29e316ddd9ea135fb3052d3d0279d10c18ff9c48"},
 ]
 humanize = [
     {file = "humanize-3.10.0-py3-none-any.whl", hash = "sha256:aab7625d62dd5e0a054c8413a47d1fa257f3bdd8e9a2442c2fe36061bdd1d9bf"},
@@ -5149,10 +5112,6 @@ python-magic = [
     {file = "python-magic-0.4.24.tar.gz", hash = "sha256:de800df9fb50f8ec5974761054a708af6e4246b03b4bdaee993f948947b0ebcf"},
     {file = "python_magic-0.4.24-py2.py3-none-any.whl", hash = "sha256:4fec8ee805fea30c07afccd1592c0f17977089895bdfaae5fec870a84e997626"},
 ]
-python3-openid = [
-    {file = "python3-openid-3.2.0.tar.gz", hash = "sha256:33fbf6928f401e0b790151ed2b5290b02545e8775f982485205a066f874aaeaf"},
-    {file = "python3_openid-3.2.0-py3-none-any.whl", hash = "sha256:6626f771e0417486701e0b4daff762e7212e820ca5b29fcc0d05f6f8736dfa6b"},
-]
 pytype = [
     {file = "pytype-2021.7.19-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:dcb525177f762869e6c992a03b0eb9a5941b9e255630ee6f8c6ca3b73d9f8a2e"},
     {file = "pytype-2021.7.19-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f40211fe4ea470a12041c00afa371064e81baae5a999ad2ab4808730021e6583"},
@@ -5371,8 +5330,8 @@ toml = [
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
 ]
 tomli = [
-    {file = "tomli-1.0.4-py3-none-any.whl", hash = "sha256:0713b16ff91df8638a6a694e295c8159ab35ba93e3424a626dd5226d386057be"},
-    {file = "tomli-1.0.4.tar.gz", hash = "sha256:be670d0d8d7570fd0ea0113bd7bb1ba3ac6706b4de062cc4c952769355c9c268"},
+    {file = "tomli-1.1.0-py3-none-any.whl", hash = "sha256:f4a182048010e89cbec0ae4686b21f550a7f2903f665e34a6de58ec15424f919"},
+    {file = "tomli-1.1.0.tar.gz", hash = "sha256:33d7984738f8bb699c9b0a816eb646a8178a69eaa792d258486776a5d21b8ca5"},
 ]
 tomlkit = [
     {file = "tomlkit-0.7.2-py2.py3-none-any.whl", hash = "sha256:173ad840fa5d2aac140528ca1933c29791b79a374a0861a80347f42ec9328117"},

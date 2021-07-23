@@ -15,6 +15,24 @@ AVATAR_WIDTH: int = 200
 AVATAR_HEIGHT: int = AVATAR_WIDTH
 
 
+class SocialAccount(models.Model):
+    """A social media account."""
+
+    class Provider(models.TextChoices):
+        DISCORD = 'discord', 'Discord'
+        FACEBOOK = 'facebook', 'Facebook'
+        GITHUB = 'github', 'GitHub'
+        GOOGLE = 'google', 'Google'
+        TWITTER = 'twitter', 'Twitter'
+
+    user = models.ForeignKey(to='users.User', on_delete=models.CASCADE)
+    provider = models.CharField(max_length=10, choices=Provider.choices)
+    uid = models.CharField(max_length=200)
+
+    class Meta:
+        unique_together = [('user', 'provider'), ('provider', 'uid')]
+
+
 class UserManager(BaseUserManager):
     """Manager for users."""
 
