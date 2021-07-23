@@ -56,7 +56,6 @@ const SocialAccountList: FC<SocialAccountListProps> = ({
   accounts,
 }: SocialAccountListProps) => {
   const [_session, _loading] = useSession();
-  console.log(accounts);
   return (
     <div>
       {Object.keys(providers).map(
@@ -78,7 +77,6 @@ const SocialAccountList: FC<SocialAccountListProps> = ({
             </div>
           )
       )}
-      {!!accounts}
     </div>
   );
 };
