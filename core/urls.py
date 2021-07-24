@@ -88,12 +88,10 @@ urlpatterns = [
     # ---------------------------------
     # Auth URLs
     # ---------------------------------
-    path('accounts/', include('allauth.urls'), name='socialaccount_signup'),
     path('api-auth/', include('rest_framework.urls')),
     # Note: This is required for internal auth requests.
     # https://github.com/iMerica/dj-rest-auth
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
     # ---------------------------------
     # Healthchecks
     # ---------------------------------

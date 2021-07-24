@@ -117,20 +117,10 @@ INSTALLED_APPS = [
     # ---------------------------------
     # Auth-related apps
     # ---------------------------------
-    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
     # 'defender',  # https://github.com/jazzband/django-defender  # TODO
+    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
     # Note: dj_rest_auth must be loaded after rest_framework.
     'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
-    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.
-    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
-    'allauth.account',
-    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.discord',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.github',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.twitter',
     # ---------------------------------
     # Model-related apps
     # ---------------------------------

@@ -2,7 +2,15 @@
 
 from rest_framework.serializers import BooleanField, ModelSerializer
 
-from apps.users.models import User
+from apps.users.models import SocialAccount, User
+
+
+class SocialAccountSerializer(ModelSerializer):
+    """Serializer for users."""
+
+    class Meta:
+        model = SocialAccount
+        exclude = []
 
 
 class UserSerializer(ModelSerializer):

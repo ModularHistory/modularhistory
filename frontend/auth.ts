@@ -139,8 +139,6 @@ export const authenticateWithSocialMediaAccount = async (
   user: User,
   account: Account
 ): Promise<User> => {
-  console.log(">>>> User", user);
-  const url = makeDjangoApiUrl(`/users/auth/${account.provider}`);
   const credentials: SocialMediaAccountCredentials = { user };
   switch (account.provider) {
     // https://next-auth.js.org/providers/discord
@@ -176,8 +174,10 @@ export const authenticateWithSocialMediaAccount = async (
       console.error("Unsupported provider:", account.provider);
       return user;
   }
+  console.log("user:", user);
+  console.log("account:", account);
   await axios
-    .post(url, credentials)
+    .post(makeDjangoApiUrl(`/users/auth/${account.provider}/`), { user, account, credentials })
     .then(function (response) {
       /*
         Attach necessary values to the user object.

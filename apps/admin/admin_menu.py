@@ -56,7 +56,6 @@ class AdminMenu(Menu):
             items.AppList(
                 title='Applications',
                 exclude=[
-                    'allauth.*',
                     'admin_honeypot.*',
                     'rest_framework.*',
                     'defender.*',
