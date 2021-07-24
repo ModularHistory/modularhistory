@@ -54,10 +54,13 @@ class SocialLoginSerializer(serializers.Serializer):
         provider = request.data['account']['provider']
         credentials = request.data['credentials']
         uid = credentials['user']['id']
+        access_token = credentials['access_token']
         if SocialAccount.objects.filter(provider=provider, uid=uid).exists():
             account = SocialAccount.objects.filter(provider=provider, uid=uid).first()
+            account.access_token = access_token
+            account.save()
         else:
-            account = SocialAccount(provider=provider, uid=uid)
+            account = SocialAccount(provider=provider, uid=uid, access_token=access_token)
             email = credentials['user'].get('email')
             if email and User.objects.filter(email=email).exists():
                 user = User.objects.get(email=email)

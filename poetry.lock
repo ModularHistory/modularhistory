@@ -793,6 +793,18 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "django-cryptography"
+version = "1.0"
+description = "Easily encrypt data in Django"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+cryptography = "*"
+django-appconf = "*"
+
+[[package]]
 name = "django-dbbackup"
 version = "3.3.0"
 description = "Management commands to help backup and restore a project database and media"
@@ -3460,7 +3472,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "5c224311a7400dbe96627efc443c0b0f13a08f32776a683be93a43321557c720"
+content-hash = "91724be034337c7e3d0f2a112a03b1eabe005ea0e8016761960b31c6ce831bc8"
 
 [metadata.files]
 aenum = [
@@ -3927,6 +3939,10 @@ django-cors-headers = [
 django-crispy-forms = [
     {file = "django-crispy-forms-1.12.0.tar.gz", hash = "sha256:d196db62ee8b4fc32d1f9583d0e4be1bb17328b662682c1ecb9fb77bbc0fcf77"},
     {file = "django_crispy_forms-1.12.0-py3-none-any.whl", hash = "sha256:a3320356c84d0cdc631e1ec7b8908aa0117bc2a5f0ab1d053d33eba08f584808"},
+]
+django-cryptography = [
+    {file = "django-cryptography-1.0.tar.gz", hash = "sha256:13de5cf8f1250744c104b9e24774d03aa6d8488959dd40cdc016934043652445"},
+    {file = "django_cryptography-1.0-py3-none-any.whl", hash = "sha256:0a99980b1cee7cc5e52f9b20b322620fea7cc124d770273e7bd285b20fd9d222"},
 ]
 django-dbbackup = [
     {file = "django-dbbackup-3.3.0.tar.gz", hash = "sha256:bb109735cae98b64ad084e5b461b7aca2d7b39992f10c9ed9435e3ebb6fb76c8"},
