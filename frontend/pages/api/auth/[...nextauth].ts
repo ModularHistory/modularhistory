@@ -48,7 +48,7 @@ const providers = [
   Providers.GitHub({
     clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
     clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
-    scope: "user:email repo",
+    scope: "user repo",
   }),
   // https://next-auth.js.org/providers/credentials
   Providers.Credentials({
