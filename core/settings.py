@@ -370,11 +370,8 @@ THUMBNAIL_PROCESSORS = (
 # https://github.com/jonasundderwolf/django-image-cropping#custom-jquery
 IMAGE_CROPPING_JQUERY_URL = None
 
-# https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
-# https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
-CRISPY_FAIL_SILENTLY = not DEBUG
-CRISPY_CLASS_CONVERTERS: dict[str, str] = {}
+CONTENT_MANAGER_EMAIL = config('CONTENT_MANAGER_EMAIL', default='')
+CONTENT_MANAGER_PAT = config('CONTENT_MANAGER_PAT', default='')
 
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],
