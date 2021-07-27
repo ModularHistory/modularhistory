@@ -275,10 +275,11 @@ def seed(
     sleep(15)  # Give postgres time to recreate the database.
     if migrate:
         context.run('docker-compose run django_helper python manage.py migrate')
+    email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
     context.run(
         "docker-compose run django_helper bash -c '"
         'python manage.py createsuperuser --no-input '
-        '--username=admin --email=admin@example.com &>/dev/null'
+        f'--username={email} --email={email} &>/dev/null'
         "'",
         pty=True,
     )

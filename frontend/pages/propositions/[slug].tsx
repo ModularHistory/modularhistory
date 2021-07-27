@@ -95,7 +95,7 @@ const PropositionDetailPage: FC<PropositionProps> = ({ proposition }: Propositio
             ))}
           </div>
         )) ||
-          (session.user?.["isSuperuser"] && (
+          (session?.user?.["isSuperuser"] && (
             <Grid item container xs={12} justifyContent="center">
               <Grid item xs={12} sm={6}>
                 <div

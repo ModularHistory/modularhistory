@@ -42,7 +42,7 @@ if [ "$ENVIRONMENT" = prod ]; then
       --workers 9 --max-requests 100 --max-requests-jitter 50
 else
     # Create superuser if necessary.
-    python manage.py createsuperuser --no-input --username=admin --email=admin@example.com &>/dev/null
+    python manage.py createsuperuser --no-input --username="$DJANGO_SUPERUSER_EMAIL" --email="$DJANGO_SUPERUSER_EMAIL" &>/dev/null
     # Run the dev server.
     python manage.py runserver 0.0.0.0:8000
 fi
