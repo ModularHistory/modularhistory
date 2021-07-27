@@ -8,7 +8,7 @@ import $ from "jquery";
 import { GetServerSideProps } from "next";
 import { FC, useRef, useState } from "react";
 import { Braintree, HostedField } from "react-braintree-fields";
-import axiosWithoutAuth from "../../axiosWithoutAuth";
+import axiosWithoutAuth from "@/axiosWithoutAuth";
 
 interface DonateProps {
   clientToken: string;
