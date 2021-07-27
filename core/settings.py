@@ -159,6 +159,7 @@ INSTALLED_APPS = [
     # In-project apps
     # ---------------------------------
     'apps.chat.apps.ChatConfig',
+    'apps.cms.apps.CmsConfig',
     'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',
     'apps.donations.apps.DonationsConfig',
@@ -372,6 +373,7 @@ IMAGE_CROPPING_JQUERY_URL = None
 
 CONTENT_MANAGER_EMAIL = config('CONTENT_MANAGER_EMAIL', default='')
 CONTENT_MANAGER_PAT = config('CONTENT_MANAGER_PAT', default='')
+CONTENT_REPO = config('CONTENT_REPO', default='test-content')
 
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],

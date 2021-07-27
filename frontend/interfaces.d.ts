@@ -1,5 +1,14 @@
+interface PullRequest {
+  url: string;
+}
+
+interface Issue {
+  url: string;
+}
+
 export interface BaseModule {
   model: string;
+  id: number;
   pk: number;
   slug: string;
   absoluteUrl: string;
@@ -7,6 +16,8 @@ export interface BaseModule {
   cachedImages?: Image[];
   verified?: boolean;
   dateString?: string;
+  pullRequests?: PullRequest[];
+  issues?: Issue[];
 }
 
 export interface SearchableModule extends BaseModule {

@@ -41,17 +41,17 @@ def accept_credentials(
         print()
         print(
             'To proceed, you will need a GitHub personal access token (PAT) '
-            'with "repo" and "workfow" permissions. For instructions on acquiring '
+            'with "repo" and "workflow" permissions. For instructions on acquiring '
             'a PAT, see the GitHub PAT documentation: \n'
             '    https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'  # noqa: E501
         )
         print()
-        username = input('Enter your GitHub username/email: ')
+        username = input('Enter your GitHub email address: ')
         pat = getpass('Enter your GitHub personal access token: ')
         signature = f'{username}:{pat}'
         while not pat_is_valid(username, pat):
             print('Invalid GitHub credentials.')
-            username = input('Enter your GitHub username/email: ')
+            username = input('Enter your GitHub email address: ')
             pat = input('Enter your Personal Access Token: ')
             signature = f'{username}:{pat}'
         with open(GITHUB_CREDENTIALS_FILE, 'w') as file:
