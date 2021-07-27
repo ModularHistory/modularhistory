@@ -99,7 +99,6 @@ export const authenticateWithCredentials = async (
       user = response.data["user"];
       if (!user) {
         // eslint-disable-next-line no-console
-        // console.log("Response did not contain user data.");
         return Promise.resolve(null);
       }
       /*
@@ -174,8 +173,6 @@ export const authenticateWithSocialMediaAccount = async (
       console.error("Unsupported provider:", account.provider);
       return user;
   }
-  console.log("user:", user);
-  console.log("account:", account);
   await axios
     .post(makeDjangoApiUrl(`/users/auth/${account.provider}/`), { user, account, credentials })
     .then(function (response) {

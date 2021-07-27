@@ -9,6 +9,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@draft-js-plugins/editor": "^4.1.0",
+    "@draft-js-plugins/inline-toolbar": "^4.1.2",
+    "@draft-js-plugins/static-toolbar": "^4.1.1",
     "@emotion/react": "^11.4.0",
     "@emotion/styled": "^11.3.0",
     "@material-ui/core": "^5.0.0-beta.1",
@@ -23,10 +26,12 @@
     "axios": "^0.21.1",
     "braintree-web-drop-in-react": "^1.2.1",
     "dotenv": "^10.0.0",
+    "draft-js": "^0.11.7",
     "jquery": "^3.6.0",
     "next": "^11.0.1",
     "next-auth": "^3.27.3",
     "nookies": "^2.5.2",
+    "npm": "^7.20.2",
     "prop-types": "^15.7.2",
     "qs": "^6.10.1",
     "ra-data-django-rest-framework": "^0.2.0",

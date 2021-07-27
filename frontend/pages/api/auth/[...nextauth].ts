@@ -14,7 +14,7 @@ import {
   authenticateWithCredentials,
   authenticateWithSocialMediaAccount,
   refreshAccessToken,
-} from "../../../auth";
+} from "@/auth";
 import axiosWithoutAuth from "../../../axiosWithAuth";
 
 const makeDjangoApiUrl = (endpoint) => {
@@ -124,7 +124,7 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
       session.accessToken = accessToken;
       session.clientSideCookies = clientSideCookies;
       // TODO: Refactor? The point of this is to only make the request when necessary.
-      if (!session.user || !session.user["username"]) {
+      if (!session.user?.["username"]) {
         // Replace the session's `user` attribute (containing only name, image, and
         // a couple other fields) with full user details from the Django API.
         let userData;
