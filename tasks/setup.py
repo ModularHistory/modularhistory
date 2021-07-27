@@ -33,14 +33,14 @@ HOSTS_FILEPATH = '/etc/hosts'
 WSL_HOSTS_FILEPATH = '/mnt/c/Windows/System32/drivers/etc/hosts'
 
 
-def dispatch_and_get_workflow(context: 'Context', session: Session) -> dict:
+def dispatch_and_get_workflow(context: 'Context', session: Session, email: str) -> dict:
     """Dispatch the seed workflow in GitHub, and return the workflow run id."""
     # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
     workflow_id = 'seed.yml'
     time_posted = datetime.utcnow().replace(microsecond=0)
     session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow_id}/dispatches',
-        data=json.dumps({'ref': 'main'}),
+        data=json.dumps({'ref': 'main', 'inputs': {'email': email}}),
     )
     sleep(5)
     workflow_runs: list[dict] = []
@@ -94,7 +94,11 @@ def seed_env_file(context: 'Context', username: str, pat: str):
     username, pat = github_utils.accept_credentials(username, pat)
     session = github_utils.initialize_session(username=username, pat=pat)
     print('Dispatching workflow...')
-    workflow_run = dispatch_and_get_workflow(context=context, session=session)
+    workflow_run = dispatch_and_get_workflow(
+        context=context,
+        session=session,
+        email=username,
+    )
     workflow_run_id = workflow_run['id']
     workflow_run_url = f'{GITHUB_ACTIONS_BASE_URL}/runs/{workflow_run_id}'
     status = workflow_run['status']

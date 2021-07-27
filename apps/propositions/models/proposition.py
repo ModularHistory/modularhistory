@@ -10,6 +10,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
+from apps.cms.models import AbstractModification, PullRequestsField
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.models import DatedModel
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
@@ -40,7 +41,6 @@ from core.fields.html_field import (
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
-from core.models.model import ExtendedModel
 from core.utils.html import escape_quotes, soupify
 from core.utils.string import dedupe_newlines, truncate
 
@@ -83,6 +83,12 @@ class CollectionInclusion(AbstractCollectionInclusion):
     """An inclusion of a proposition in a collection."""
 
     content_object = get_proposition_fk(related_name='collection_inclusions')
+
+
+class Modification(AbstractModification):
+    """A modification of a proposition."""
+
+    content_object = get_proposition_fk(related_name='modifications')
 
 
 class Citation(AbstractCitation):
@@ -190,6 +196,8 @@ class Proposition(  # noqa: WPS215
         through=QuoteRelation,
         related_name='propositions',
     )
+
+    pull_requests = PullRequestsField(through=Modification)
 
     postscript = HTMLField(
         verbose_name=_('postscript'),

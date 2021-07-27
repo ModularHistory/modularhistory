@@ -21,7 +21,7 @@ class SocialAccountList(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SocialAccountSerializer
 
-    def get_queryset(self):
+    def get_queryset(self):  # noqa: D102
         return SocialAccount.objects.filter(user=self.request.user)
 
 
@@ -31,7 +31,7 @@ class SocialConnect(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request: Request, *args, **kwargs):
-        """Override the post method to save data from the social media account."""
+        """Save data from the social media account."""
 
 
 class SocialDisconnect(generics.DestroyAPIView):
@@ -40,7 +40,7 @@ class SocialDisconnect(generics.DestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request: Request, *args, **kwargs):
-        """Override the post method to save data from the social media account."""
+        """Disconnect the social media account."""
 
 
 class SocialLoginSerializer(serializers.Serializer):
