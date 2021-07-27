@@ -42,13 +42,13 @@ class PropositionType(ModuleType):
         exclude = ['type']
 
     @staticmethod
-    def resolve_arguments(root: Proposition, *args) -> 'QuerySet[Argument]':
+    def resolve_arguments(root: Proposition, *args) -> 'QuerySet[Argument]':  # noqa: D102
         return root.arguments.all()
 
     @staticmethod
-    def resolve_pull_requests(root: Proposition, *args) -> 'QuerySet[Argument]':
+    def resolve_pull_requests(root: Proposition, *args) -> 'QuerySet[Argument]':  # noqa: D102
         return root.pull_requests.all()
 
     @staticmethod
-    def resolve_model(*args) -> str:
+    def resolve_model(*args) -> str:  # noqa: D102
         return 'propositions.proposition'

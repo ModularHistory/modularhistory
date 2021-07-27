@@ -72,7 +72,7 @@ class TopicFilter(ManyToManyAutocompleteFilter):
     _parameter_name = 'tags__pk__exact'
     m2m_cls = Topic
 
-    def get_autocomplete_url(self, request, model_admin):
+    def get_autocomplete_url(self, *args, **kwargs):
         """Return the URL used for topic autocompletion."""
         return reverse('admin:tag_search')
 
