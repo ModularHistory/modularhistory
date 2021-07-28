@@ -1,5 +1,3 @@
-import logging
-from pprint import pformat
 from typing import Optional
 
 from elasticsearch_dsl import Q
@@ -113,13 +111,10 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
                     | Q('terms', attributees__id=entity_ids)
                 ],
             )
-
         if topic_ids:
             qs = qs.query('bool', filter=[Q('terms', topics__id=topic_ids)])
-
         if suppress_unverified:
             qs = qs.query('bool', filter=[Q('match', verified=True)])
-
         if suppress_hidden:
             qs = qs.query('bool', filter=[Q('match', hidden=False)])
 
@@ -138,8 +133,6 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
             pre_tags=['<mark>'],
             post_tags=['</mark>'],
         )
-
-        logging.info(f'ES Indexes: {indexes}')
-        logging.info(f'ES Query: {pformat(qs.to_dict())}')
-
+        # logging.info(f'ES Indexes: {indexes}')
+        # logging.info(f'ES Query: {pformat(qs.to_dict())}')
         return qs
