@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
 import "../../core/static/styles/base.scss";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
 initializeSentry();
 
@@ -87,19 +88,21 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
           style={{ display: "none", visibility: "hidden" }}
         />
       </noscript>
-      <Provider session={pageProps.session}>
-        <SessionKiller>
-          <PageTransitionContextProvider>
-            <StyledEngineProvider injectFirst>
-              <StylesProvider>
-                <ThemeProvider theme={theme}>
-                  <Component {...pageProps} err={err} />
-                </ThemeProvider>
-              </StylesProvider>
-            </StyledEngineProvider>
-          </PageTransitionContextProvider>
-        </SessionKiller>
-      </Provider>
+      <GoogleReCaptchaProvider reCaptchaKey={"6LcN38QbAAAAAE5ZBWAyvcnFKrSNg55-XaBj1n0-"}>
+        <Provider session={pageProps.session}>
+          <SessionKiller>
+            <PageTransitionContextProvider>
+              <StyledEngineProvider injectFirst>
+                <StylesProvider>
+                  <ThemeProvider theme={theme}>
+                    <Component {...pageProps} err={err} />
+                  </ThemeProvider>
+                </StylesProvider>
+              </StyledEngineProvider>
+            </PageTransitionContextProvider>
+          </SessionKiller>
+        </Provider>
+      </GoogleReCaptchaProvider>
     </>
   );
 };
