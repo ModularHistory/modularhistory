@@ -65,6 +65,8 @@ class SocialLoginSerializer(serializers.Serializer):
             if email and User.objects.filter(email=email).exists():
                 user = User.objects.get(email=email)
                 account.user = user
+            else:
+                account.user = User.objects.create(username=email, email=email)
             account.save()
         attrs['user'] = account.user
         return attrs
