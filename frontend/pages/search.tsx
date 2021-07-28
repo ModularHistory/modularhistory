@@ -204,6 +204,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     })
     .then((response) => {
       searchResults = response.data;
+    })
+    .catch((error) => {
+      // TODO...
+      console.log(error);
     });
 
   return {
