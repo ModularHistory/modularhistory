@@ -67,6 +67,7 @@
         "pytestmark",
         "rapidapi",
         "rclone",
+        "Recaptcha",
         "referer",
         "removeformat",
         "repos",

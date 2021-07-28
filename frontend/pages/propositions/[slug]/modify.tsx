@@ -4,11 +4,42 @@ import Layout from "@/components/Layout";
 import { Proposition } from "@/interfaces";
 import "@draft-js-plugins/inline-toolbar/lib/plugin.css";
 import "@draft-js-plugins/static-toolbar/lib/plugin.css";
-import { Button, FormControl, Grid, TextField } from "@material-ui/core";
+import { Button, FormControl, Grid, TextField, useTheme } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
+import { makeStyles } from "@material-ui/styles";
 import { ContentState, convertFromHTML, EditorState } from "draft-js";
 import { GetStaticPaths, GetStaticProps } from "next";
-import { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+
+const useStyles = makeStyles({
+  root: {},
+  submitButton: {
+    margin: "1rem",
+  },
+});
+
+const ReCaptcha: FC = () => {
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
+  // Create an event handler so you can call the verification on button click event or form submit
+  const handleReCaptchaVerify = useCallback(async () => {
+    if (!executeRecaptcha) {
+      console.log("Execute recaptcha not yet available");
+      return;
+    }
+
+    const token = await executeRecaptcha("yourAction");
+    // Do whatever you want with the token
+  }, []);
+
+  // Use useEffect to trigger the verification as soon as the component is loaded.
+  useEffect(() => {
+    handleReCaptchaVerify();
+  }, [handleReCaptchaVerify]);
+
+  return <span></span>;
+};
 
 interface PropositionProps {
   proposition: Proposition;
@@ -17,6 +48,8 @@ interface PropositionProps {
 export const PropositionModificationForm: FC<PropositionProps> = ({
   proposition,
 }: PropositionProps) => {
+  const theme = useTheme();
+  const classes = useStyles(theme);
   const [summary, setSummary] = useState(proposition.summary);
   const [elaborationEditorState, setElaborationEditorState] = useState(() =>
     EditorState.createEmpty()
@@ -33,7 +66,7 @@ export const PropositionModificationForm: FC<PropositionProps> = ({
     event.preventDefault();
   };
   return (
-    <form method="post" onSubmit={handleSubmit}>
+    <form method="post" onSubmit={handleSubmit} className={classes.root}>
       {/* {error && <p className="text-center">{error}</p>} */}
       <FormControl fullWidth margin="dense">
         <TextField
@@ -47,16 +80,15 @@ export const PropositionModificationForm: FC<PropositionProps> = ({
       <div>
         <RichTextEditor editorState={elaborationEditorState} onChange={setElaborationEditorState} />
       </div>
-      <Button type="submit" color="primary" variant="outlined">
-        {"Create pull request"}
-      </Button>
+      <div style={{ textAlign: "center" }}>
+        <Button type="submit" color="primary" variant="outlined" className={classes.submitButton}>
+          {"Create pull request"}
+        </Button>
+      </div>
     </form>
   );
 };
 
-/**
- * A page that renders the HTML of a single proposition.
- */
 const PropositionModificationPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
     <Layout title={proposition.summary}>
