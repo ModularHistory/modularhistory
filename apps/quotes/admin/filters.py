@@ -87,7 +87,7 @@ class AttributeeCategoryFilter(ManyToManyAutocompleteFilter):
 
 
 class AttributeeCountFilter(SimpleListFilter):
-    """TODO: add docstring."""
+    """Filter for number of attributees."""
 
     title = 'attributee count'
     parameter_name = 'attributee_count'

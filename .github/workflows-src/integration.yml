@@ -129,8 +129,6 @@ jobs:
   check-types:
     name: Check types
     runs-on: ubuntu-latest
-    # TODO: remove continue-on-error: true
-    continue-on-error: true
     strategy:
       max-parallel: 3
       matrix:
