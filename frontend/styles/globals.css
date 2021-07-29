@@ -33,6 +33,7 @@ a:hover {
 }
 
 legend {
+  /* We need this `revert` to override bootstrap styles loaded in `_document.jsx`, which conflict with MUI styles */
   width: revert;
 }
 
