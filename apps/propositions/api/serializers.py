@@ -9,6 +9,10 @@ if TYPE_CHECKING:
     from apps.propositions.models import Occurrence
 
 
+class ArgumentSerializer(serpy.Serializer):
+    """Serializer for arguments."""
+
+
 class PropositionSerializer(SearchableModelSerializer):
     """Serializer for propositions."""
 
@@ -20,10 +24,15 @@ class PropositionSerializer(SearchableModelSerializer):
     primaryImage = serpy.Field(attr='primary_image')
     cachedCitations = serpy.Field(attr='cached_citations')
     tagsHtml = serpy.StrField(attr='tags_html')
+    arguments = ArgumentSerializer(many=True, attr='arguments.all', call=True)
 
     def get_model(self, instance) -> str:
         """Return the model name of serialized propositions."""
         return 'propositions.proposition'
+
+    def get_arguments(self, instance) -> str:
+        """Return the model name of serialized propositions."""
+        return ['propositions.proposition']
 
 
 class OccurrenceSerializer(PropositionSerializer):

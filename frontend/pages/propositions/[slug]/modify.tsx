@@ -1,6 +1,7 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
 import RichTextEditor from "@/components/cms/RichTextEditor";
 import Layout from "@/components/Layout";
+import PageHeader from "@/components/PageHeader";
 import { Proposition } from "@/interfaces";
 import "@draft-js-plugins/inline-toolbar/lib/plugin.css";
 import "@draft-js-plugins/static-toolbar/lib/plugin.css";
@@ -9,8 +10,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/styles";
 import { ContentState, convertFromHTML, EditorState } from "draft-js";
 import { GetStaticPaths, GetStaticProps } from "next";
-import React, { FC, useCallback, useEffect, useState } from "react";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import React, { FC, useEffect, useState } from "react";
 
 const useStyles = makeStyles({
   root: {},
@@ -18,28 +18,6 @@ const useStyles = makeStyles({
     margin: "1rem",
   },
 });
-
-const ReCaptcha: FC = () => {
-  const { executeRecaptcha } = useGoogleReCaptcha();
-
-  // Create an event handler so you can call the verification on button click event or form submit
-  const handleReCaptchaVerify = useCallback(async () => {
-    if (!executeRecaptcha) {
-      console.log("Execute recaptcha not yet available");
-      return;
-    }
-
-    const token = await executeRecaptcha("yourAction");
-    // Do whatever you want with the token
-  }, []);
-
-  // Use useEffect to trigger the verification as soon as the component is loaded.
-  useEffect(() => {
-    handleReCaptchaVerify();
-  }, [handleReCaptchaVerify]);
-
-  return <span></span>;
-};
 
 interface PropositionProps {
   proposition: Proposition;
@@ -50,6 +28,7 @@ export const PropositionModificationForm: FC<PropositionProps> = ({
 }: PropositionProps) => {
   const theme = useTheme();
   const classes = useStyles(theme);
+  const [title, setTitle] = useState(proposition.title);
   const [summary, setSummary] = useState(proposition.summary);
   const [elaborationEditorState, setElaborationEditorState] = useState(() =>
     EditorState.createEmpty()
@@ -68,6 +47,15 @@ export const PropositionModificationForm: FC<PropositionProps> = ({
   return (
     <form method="post" onSubmit={handleSubmit} className={classes.root}>
       {/* {error && <p className="text-center">{error}</p>} */}
+      <FormControl fullWidth margin="dense">
+        <TextField
+          id="title"
+          name="title"
+          value={title}
+          label={"Title"}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+      </FormControl>
       <FormControl fullWidth margin="dense">
         <TextField
           id="summary"
@@ -92,14 +80,9 @@ export const PropositionModificationForm: FC<PropositionProps> = ({
 const PropositionModificationPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
   return (
     <Layout title={proposition.summary}>
-      <Grid
-        container
-        direction="row"
-        justifyContent="space-evenly"
-        alignItems="flex-start"
-        style={{ margin: "2rem 0" }}
-      >
-        <Grid item sm={12} md={6} lg={6} xl={4} style={{ margin: "0 3rem" }}>
+      <PageHeader>Proposition {proposition.id}</PageHeader>
+      <Grid container direction="row" justifyContent="space-evenly" alignItems="flex-start">
+        <Grid item sm={12} md={6} lg={6} xl={6} style={{ margin: "0 3rem" }}>
           <a
             href={`https://github.com/ModularHistory/content/tree/main/propositions/${proposition.id}.toml`}
             rel="noreferrer"
@@ -122,6 +105,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     query: `{
       proposition(slug: "${slug}") {
         id
+        title
         summary
         elaboration
         model

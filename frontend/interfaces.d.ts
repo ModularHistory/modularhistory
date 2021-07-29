@@ -83,6 +83,7 @@ export interface Argument extends BaseModule {
 }
 
 export interface Proposition extends BaseModule {
+  title: string;
   summary: string;
   elaboration: string;
   certainty: number;
