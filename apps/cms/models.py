@@ -21,6 +21,9 @@ class AbstractScmItem(models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self) -> str:
+        return f'{self.title} (created by {self.creator}): {self.url}'
+
 
 class ContentContribution(models.Model):
     """A content contribution."""
@@ -37,6 +40,9 @@ class ContentContribution(models.Model):
         related_name='contributions',
         on_delete=models.PROTECT,
     )
+
+    def __str__(self) -> str:
+        return f'{self.branch} <-- {self.contributor}'
 
 
 class Branch(AbstractScmItem):
