@@ -85,7 +85,7 @@ branch=$(git branch --show-current)
     branch="${GITHUB_REF##*/}"
   else
     echo "Extracting branch name from GITHUB_HEAD_REF: $GITHUB_HEAD_REF ..."
-    branch="$GITHUB_HEAD_REF" 
+    branch="$GITHUB_HEAD_REF"
   fi
 }
 echo "On branch '${branch}'."
@@ -156,6 +156,9 @@ echo "Checking package manager ..."
 brew help &>/dev/null || {
   echo "Installing Homebrew ..."
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  if [[ "$os" == "$LINUX" ]]; then
+    _append_to_sh_profile 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+  fi
 }
 brew update
 outdated_formulae=$(brew outdated)
