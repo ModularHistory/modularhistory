@@ -8,7 +8,12 @@
 # using the script from https://github.com/mithro/actions-includes@main
 
 name: seed
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: Email address associated with GitHub account and ModularHistory account
+        required: true
 env:
   ENVIRONMENT: dev
   SHA: latest
@@ -19,6 +24,7 @@ jobs:
     env:
       ADMINS: '${{ secrets.ADMINS }}'
       ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      DJANGO_SUPERUSER_EMAIL: ${{ github.event.inputs.email }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
@@ -79,16 +85,20 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment
+    - name: Test poetry environment (A)
       id: venv-test
+      continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
         echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
     - name: Cache node modules
       uses: actions/cache@v2.1.5
       id: node-modules-cache

@@ -19,9 +19,6 @@ inputs:
     description: 'Environment (e.g., "dev" or "prod")'
     required: false
     default: ""
-  email:
-    description: 'Email address associated with GitHub account'
-    required: true
 
 runs:
   # https://github.com/mithro/actions-includes
