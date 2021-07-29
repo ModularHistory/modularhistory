@@ -69,7 +69,7 @@ class User(AbstractUser):
 
     @property
     def github_access_token(self) -> Optional[str]:
-        """Return the user's name."""
+        """Return the user's GitHub access token."""
         try:
             github_account: SocialAccount = SocialAccount.objects.filter(
                 user=self, provider='github'
