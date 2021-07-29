@@ -112,16 +112,20 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment
+    - name: Test poetry environment (A)
       id: venv-test
+      continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
         echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
     - name: Cache node modules
       uses: actions/cache@v2.1.5
       id: node-modules-cache
@@ -205,16 +209,20 @@ jobs:
       with:
         path: .venv
         key: venv-${{ matrix.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment
+    - name: Test poetry environment (A)
       id: venv-test
+      continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
         echo "${{ matrix.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
     - name: Cache node modules
       uses: actions/cache@v2.1.5
       id: node-modules-cache
@@ -238,7 +246,6 @@ jobs:
   check-types:
     name: Check types
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
       max-parallel: 3
       matrix:
@@ -279,16 +286,20 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment
+    - name: Test poetry environment (A)
       id: venv-test
+      continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
         echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
     - name: Cache node modules
       uses: actions/cache@v2.1.5
       id: node-modules-cache
@@ -348,16 +359,20 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment
+    - name: Test poetry environment (A)
       id: venv-test
+      continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
         echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
     - name: Cache node modules
       uses: actions/cache@v2.1.5
       id: node-modules-cache
@@ -459,16 +474,20 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment
+    - name: Test poetry environment (A)
       id: venv-test
+      continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
         echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
     - name: Cache node modules
       uses: actions/cache@v2.1.5
       id: node-modules-cache
@@ -570,16 +589,20 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-    - name: Test poetry environment
+    - name: Test poetry environment (A)
       id: venv-test
+      continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
         poetry --version
         echo "${{ runner.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
     - name: Cache node modules
       uses: actions/cache@v2.1.5
       id: node-modules-cache
