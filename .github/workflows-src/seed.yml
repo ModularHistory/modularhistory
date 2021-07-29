@@ -2,7 +2,12 @@
 
 name: seed
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Email address associated with GitHub account and ModularHistory account'
+        required: true
 
 env:
   ENVIRONMENT: dev
@@ -15,6 +20,7 @@ jobs:
     env:
       ADMINS: "${{ secrets.ADMINS }}"
       ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      DJANGO_SUPERUSER_EMAIL: ${{ github.event.inputs.email }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
@@ -48,6 +54,7 @@ jobs:
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
         environment: dev
+        email: ${{ github.event.inputs.email }}
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
