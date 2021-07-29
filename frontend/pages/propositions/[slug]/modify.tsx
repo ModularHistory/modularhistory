@@ -9,7 +9,10 @@ import { Button, FormControl, Grid, TextField, useTheme } from "@material-ui/cor
 import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/styles";
 import { ContentState, convertFromHTML, EditorState } from "draft-js";
-import { GetStaticPaths, GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
+import { Session } from "next-auth";
+import { getSession, signIn } from "next-auth/client";
+import { useRouter } from "next/router";
 import React, { FC, useEffect, useState } from "react";
 
 const useStyles = makeStyles({
@@ -21,6 +24,10 @@ const useStyles = makeStyles({
 
 interface PropositionProps {
   proposition: Proposition;
+}
+
+interface PropositionModificationPageProps extends PropositionProps {
+  session: Session;
 }
 
 export const PropositionModificationForm: FC<PropositionProps> = ({
@@ -77,30 +84,42 @@ export const PropositionModificationForm: FC<PropositionProps> = ({
   );
 };
 
-const PropositionModificationPage: FC<PropositionProps> = ({ proposition }: PropositionProps) => {
+const PropositionModificationPage: FC<PropositionModificationPageProps> = ({
+  proposition,
+  session,
+}: PropositionModificationPageProps) => {
+  const router = useRouter();
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+  // TODO
+  if (!session?.user?.email) {
+    signIn("github", { callbackUrl: `${baseUrl}/${router.asPath}` });
+  }
   return (
     <Layout title={proposition.summary}>
-      <PageHeader>Proposition {proposition.id}</PageHeader>
-      <Grid container direction="row" justifyContent="space-evenly" alignItems="flex-start">
-        <Grid item sm={12} md={6} lg={6} xl={6} style={{ margin: "0 3rem" }}>
-          <a
-            href={`https://github.com/ModularHistory/content/tree/main/propositions/${proposition.id}.toml`}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <EditIcon style={{ float: "right", margin: "1rem" }} />
-          </a>
-          <PropositionModificationForm proposition={proposition} />
+      <>
+        <PageHeader>Proposition {proposition.id}</PageHeader>
+        <Grid container direction="row" justifyContent="space-evenly" alignItems="flex-start">
+          <Grid item sm={12} md={6} lg={6} xl={6} style={{ margin: "0 3rem" }}>
+            <a
+              href={`https://github.com/ModularHistory/content/tree/main/propositions/${proposition.id}.toml`}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <EditIcon style={{ float: "right", margin: "1rem" }} />
+            </a>
+            <PropositionModificationForm proposition={proposition} />
+          </Grid>
         </Grid>
-      </Grid>
+      </>
     </Layout>
   );
 };
 export default PropositionModificationPage;
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let proposition: Proposition;
-  const { slug } = params;
+// https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  const { slug } = context.params;
   const body = {
     query: `{
       proposition(slug: "${slug}") {
@@ -136,6 +155,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       }
     }`,
   };
+  let proposition: Proposition;
   await axiosWithoutAuth
     .post("http://django:8000/graphql/", body)
     .then((response) => {
@@ -144,7 +164,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .catch(() => {
       proposition = null;
     });
-
   if (!proposition) {
     // https://nextjs.org/blog/next-10#notfound-support
     return {
@@ -152,16 +171,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     };
   }
   return {
-    props: {
-      proposition,
-    },
-    revalidate: 10,
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: "blocking",
+    props: { proposition, session }, // passed to the page component as props
   };
 };
