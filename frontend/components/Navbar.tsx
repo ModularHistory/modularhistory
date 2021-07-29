@@ -13,8 +13,10 @@ interface GlobalMenuItem {
   title: string;
   path: string;
   reactive?: boolean;
-  submenuItems?: Omit<GlobalMenuItem, "submenuItems">[];
+  submenuItems?: GlobalMenuItemWithoutSubmenuItems[];
 }
+
+type GlobalMenuItemWithoutSubmenuItems = Omit<GlobalMenuItem, "submenuItems">;
 
 const globalMenuItems: GlobalMenuItem[] = [
   {
@@ -40,13 +42,17 @@ const globalMenuItems: GlobalMenuItem[] = [
   },
 ];
 
-type WrappedNavLinkProps = Omit<GlobalMenuItem, "submenuItems">;
+function hasSubmenuItems(
+  menuItem: GlobalMenuItem
+): menuItem is GlobalMenuItem & Required<Pick<GlobalMenuItem, "submenuItems">> {
+  return menuItem.submenuItems !== undefined;
+}
 
-const WrappedNavLink: FC<WrappedNavLinkProps> = ({
+const WrappedNavLink: FC<GlobalMenuItemWithoutSubmenuItems> = ({
   title,
   path,
   reactive = true,
-}: WrappedNavLinkProps) => {
+}: GlobalMenuItemWithoutSubmenuItems) => {
   const router = useRouter();
   const active = router.pathname === path;
 
@@ -63,10 +69,7 @@ const WrappedNavLink: FC<WrappedNavLinkProps> = ({
   }
 };
 
-interface WrappedNavDropdownProps {
-  title: string;
-  submenuItems: Omit<GlobalMenuItem, "submenuItems">[];
-}
+type WrappedNavDropdownProps = Pick<GlobalMenuItem, "title" | "submenuItems">;
 
 const WrappedNavDropdown: FC<WrappedNavDropdownProps> = ({
   title,
@@ -162,7 +165,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
           {menuItems.map((item) =>
-            item.submenuItems ? (
+            hasSubmenuItems(item) ? (
               <WrappedNavDropdown key={item.title} {...item} />
             ) : (
               <WrappedNavLink key={item.title} {...item} />
