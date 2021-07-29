@@ -2,19 +2,27 @@ import { Divider } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import PropTypes from "prop-types";
-import React from "react";
+import React, { FC } from "react";
 import Image from "react-bootstrap/Image";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { AUTH_REDIRECT_PATH, handleLogin, handleLogout, LOGIN_PAGE_PATH } from "../auth";
 
-const globalMenuItems = [
+interface GlobalMenuItem {
+  title: string;
+  path: string;
+  reactive?: boolean;
+  submenuItems?: GlobalMenuItemWithoutSubmenuItems[];
+}
+
+type GlobalMenuItemWithoutSubmenuItems = Omit<GlobalMenuItem, "submenuItems">;
+
+const globalMenuItems: GlobalMenuItem[] = [
   {
     title: "About",
     path: "/about",
-    children: [
+    submenuItems: [
       { title: "About Us", path: "/about", reactive: true },
       { title: "Manifesto", path: "/manifesto", reactive: true },
     ],
@@ -25,7 +33,7 @@ const globalMenuItems = [
   {
     title: "Other",
     path: "/",
-    children: [
+    submenuItems: [
       { title: "Propositions", path: "/propositions", reactive: true },
       { title: "Sources", path: "/sources", reactive: true },
       { title: "Entities", path: "/entities", reactive: true },
@@ -34,7 +42,17 @@ const globalMenuItems = [
   },
 ];
 
-function WrappedNavLink({ title, path, as, reactive }) {
+function hasSubmenuItems(
+  menuItem: GlobalMenuItem
+): menuItem is GlobalMenuItem & Required<Pick<GlobalMenuItem, "submenuItems">> {
+  return menuItem.submenuItems !== undefined;
+}
+
+const WrappedNavLink: FC<GlobalMenuItemWithoutSubmenuItems> = ({
+  title,
+  path,
+  reactive = true,
+}: GlobalMenuItemWithoutSubmenuItems) => {
   const router = useRouter();
   const active = router.pathname === path;
 
@@ -45,37 +63,37 @@ function WrappedNavLink({ title, path, as, reactive }) {
   );
 
   if (reactive) {
-    return (
-      <Link href={path} as={as}>
-        {navLink}
-      </Link>
-    );
+    return <Link href={path}>{navLink}</Link>;
   } else {
     return navLink;
   }
-}
+};
 
-function WrappedNavDropdown({ title, children, ...childProps }) {
+type WrappedNavDropdownProps = Pick<GlobalMenuItem, "title" | "submenuItems">;
+
+const WrappedNavDropdown: FC<WrappedNavDropdownProps> = ({
+  title,
+  submenuItems,
+}: WrappedNavDropdownProps) => {
   return (
-    <NavDropdown renderMenuOnMount title={title} {...childProps}>
-      {children.map((item) => (
+    <NavDropdown renderMenuOnMount title={title} id={`${title}-dropdown`}>
+      {submenuItems.map((item) => (
         <WrappedNavLink key={item.path} {...item} />
       ))}
     </NavDropdown>
   );
-}
-
-// https://reactjs.org/docs/typechecking-with-proptypes.html
-WrappedNavDropdown.propTypes = {
-  title: PropTypes.string.isRequired,
-  children: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default function GlobalNavbar({ menuItems }) {
+interface GlobalNavbarProps {
+  menuItems?: GlobalMenuItem[];
+}
+
+const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) => {
   menuItems = menuItems || globalMenuItems;
 
   const router = useRouter();
-  const [session, loading] = useSession();
+  // TODO: Create session type and remove this cast to `any`.
+  const [session, loading] = useSession() as any;
 
   const login = (e) => {
     e.preventDefault();
@@ -139,13 +157,7 @@ export default function GlobalNavbar({ menuItems }) {
     >
       <Link href={"/"} passHref>
         <Navbar.Brand href={"/"} data-cy={"brand"}>
-          <Image
-            alt="Logo"
-            src="/static/logo_head_white.png"
-            width="50px"
-            height="45px"
-            layout="fixed"
-          />{" "}
+          <Image alt="Logo" src="/static/logo_head_white.png" width="50px" height="45px" />{" "}
           ModularHistory
         </Navbar.Brand>
       </Link>
@@ -153,7 +165,7 @@ export default function GlobalNavbar({ menuItems }) {
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
           {menuItems.map((item) =>
-            item.children ? (
+            hasSubmenuItems(item) ? (
               <WrappedNavDropdown key={item.title} {...item} />
             ) : (
               <WrappedNavLink key={item.title} {...item} />
@@ -164,8 +176,6 @@ export default function GlobalNavbar({ menuItems }) {
       </Navbar.Collapse>
     </Navbar>
   );
-}
-// https://reactjs.org/docs/typechecking-with-proptypes.html
-GlobalNavbar.propTypes = {
-  menuItems: PropTypes.array,
 };
+
+export default GlobalNavbar;

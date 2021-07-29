@@ -17,22 +17,26 @@ body {
   font-weight: 300;
 }
 
-{/* Enable correct behavior for sticky footer */}
+/* Enable correct behavior for sticky footer */
 #__next {
   display: flex;
   flex-direction: column;
   min-height: 100%;
 }
 
+a:hover {
+  text-decoration: none;
+}
+
 #footer a {
   color: white;
 }
 
-a:hover {
-  text-decoration: none;
+legend {
+  /* We need this `revert` to override bootstrap styles loaded in `_document.jsx`, which conflict with MUI styles */
+  width: revert;
 }
 
 * {
   box-sizing: border-box;
 }
-

@@ -53,7 +53,8 @@ function useSearchFormState(): SearchFormStateType {
   useEffect(() => {
     // Remove any params we don't want sent to the next search page
     // and update form state when browser history is navigated.
-    const { _page, ...query } = router.query;
+    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
+    const { page, ...query } = router.query;
     setState(query);
   }, [router.query]);
 
