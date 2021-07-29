@@ -54,7 +54,6 @@ jobs:
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
         environment: dev
-        email: ${{ github.event.inputs.email }}
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:
