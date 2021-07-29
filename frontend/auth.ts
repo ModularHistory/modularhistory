@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { Account, Session, User } from "next-auth";
 import { signIn, signOut } from "next-auth/client";
 import { JWT } from "next-auth/jwt";
-import { Router } from "next/router";
+import { NextRouter } from "next/router";
 import axios from "./axiosWithAuth";
 
 export const DJANGO_CSRF_COOKIE_NAME = "csrftoken";
@@ -29,7 +29,7 @@ export const makeDjangoApiUrl = (endpoint: string): string => {
   return `http://django:8000/api${endpoint}`;
 };
 
-export const handleLogin = (router: Router): void => {
+export const handleLogin = (router: NextRouter): void => {
   // If not already on the sign-in page, initiate the sign-in process.
   // (This prevents messing up the callbackUrl by reloading the sign-in page.)
   if (router.pathname != "/auth/signin") {
