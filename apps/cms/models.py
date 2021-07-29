@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from core.fields.custom_m2m_field import CustomManyToManyField
 
 
-class ScmItem(models.Model):
+class AbstractScmItem(models.Model):
     """Base model for pull requests and issues."""
 
     creator = models.ForeignKey(
@@ -22,11 +22,46 @@ class ScmItem(models.Model):
         abstract = True
 
 
-class PullRequest(ScmItem):
+class ContentContribution(models.Model):
+    """A content contribution."""
+
+    contributor = models.ForeignKey(
+        to='users.User',
+        related_name='content_contributions',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    branch = models.ForeignKey(
+        to='cms.Branch',
+        related_name='contributions',
+        on_delete=models.PROTECT,
+    )
+
+
+class Branch(AbstractScmItem):
+    """A branch in ModularHistory's content repo."""
+
+    contributors = models.ManyToManyField(
+        to='users.User',
+        through=ContentContribution,
+        related_name='branches_contributed_to',
+        blank=True,
+    )
+    source = models.ForeignKey(
+        to='self',
+        related_name='branches',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+    )
+
+
+class PullRequest(AbstractScmItem):
     """A pull request in ModularHistory's content repo."""
 
 
-class Issue(ScmItem):
+class Issue(AbstractScmItem):
     """An issue in ModularHistory's content repo."""
 
 

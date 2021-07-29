@@ -170,6 +170,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       notFound: true,
     };
   }
+
   return {
     props: { proposition, session }, // passed to the page component as props
   };
