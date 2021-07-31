@@ -141,6 +141,9 @@ class Review(models.Model):
         blank=True,
     )
 
+    def __str__(self) -> str:
+        return f'review of {self.pull_request} by {self.reviewer}'
+
 
 class AbstractModification(models.Model):
     """Base for m2m relationships with PullRequest."""

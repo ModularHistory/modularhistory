@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from apps.cms.models import Branch, PullRequest
+from apps.cms.models import Branch, Issue, PullRequest
 
 
 class BranchSerializer(serializers.ModelSerializer):
@@ -10,6 +10,14 @@ class BranchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Branch
+        exclude = []
+
+
+class IssueSerializer(serializers.ModelSerializer):
+    """Serializer for issues."""
+
+    class Meta:
+        model = Issue
         exclude = []
 
 
