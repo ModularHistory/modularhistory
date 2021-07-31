@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from apps.cms.models import Branch
+from apps.cms.models import Branch, PullRequest
 
 
 class BranchSerializer(serializers.ModelSerializer):
@@ -10,4 +10,15 @@ class BranchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Branch
+        exclude = []
+
+
+class PullRequestSerializer(serializers.ModelSerializer):
+    """Serializer for pull requests."""
+
+    source_branch = BranchSerializer()
+    target_branch = BranchSerializer()
+
+    class Meta:
+        model = PullRequest
         exclude = []

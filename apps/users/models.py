@@ -40,6 +40,9 @@ class SocialAccount(models.Model):
     class Meta:
         unique_together = [('user', 'provider'), ('provider', 'uid')]
 
+    def __str__(self) -> str:
+        return f'{self.provider} account {self.uid}'
+
 
 class UserManager(BaseUserManager):
     """Manager for users."""
