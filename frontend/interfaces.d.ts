@@ -1,8 +1,12 @@
 interface PullRequest {
+  number: number;
+  title: string;
   url: string;
 }
 
 interface Issue {
+  number: number;
+  title: string;
   url: string;
 }
 

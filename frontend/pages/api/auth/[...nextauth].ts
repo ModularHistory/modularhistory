@@ -94,7 +94,6 @@ callbacks.jwt = async function jwt(token, user?: User, account?) {
     token.sessionIdCookie = user.sessionIdCookie;
     token.clientSideCookies = user.clientSideCookies;
   }
-  console.log("Access token expiry:", token.accessTokenExpiry);
   // Refresh the access token if it is expired.
   if (Date.now() > token.accessTokenExpiry) {
     console.log("Refreshing access token...");
