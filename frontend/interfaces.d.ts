@@ -103,3 +103,17 @@ export interface StaticPage {
   title: string;
   content: string;
 }
+
+export interface Branch {
+  name: string;
+  url: string;
+}
+
+export interface PullRequest {
+  number: number;
+  url: string;
+  title: string;
+  body: string;
+  sourceBranch: Branch;
+  targetBranch: Branch;
+}

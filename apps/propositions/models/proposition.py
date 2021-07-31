@@ -215,6 +215,7 @@ class Proposition(  # noqa: WPS215
         'related_entities__aliases',
         'tags__aliases',
     ]
+    modifiable_fields = ['title', 'summary', 'elaboration']
     serializer = PropositionSerializer
     slug_base_fields = ('title', 'summary')
 

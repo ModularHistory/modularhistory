@@ -271,7 +271,18 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'core.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
-    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_RENDERER_CLASSES': (
+        # https://github.com/vbabiy/djangorestframework-camel-case
+        'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
+        'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        # https://github.com/vbabiy/djangorestframework-camel-case
+        'djangorestframework_camel_case.parser.CamelCaseFormParser',
+        'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
+        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+    ),
 }
 
 # Database
@@ -373,7 +384,7 @@ IMAGE_CROPPING_JQUERY_URL = None
 
 CONTENT_MANAGER_EMAIL = config('CONTENT_MANAGER_EMAIL', default='')
 CONTENT_MANAGER_PAT = config('CONTENT_MANAGER_PAT', default='')
-CONTENT_REPO = config('CONTENT_REPO', default='test-content')
+CONTENT_REPO = config('CONTENT_REPO', default='ModularHistory/test-content')
 
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],

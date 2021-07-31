@@ -7,7 +7,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics, permissions, serializers
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
@@ -81,7 +80,7 @@ class SocialLogin(LoginView):
 class Profile(generics.RetrieveUpdateAPIView):
     """API view for details of the current user."""
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
     lookup_field = 'username'
     queryset = User.objects.all()
@@ -90,7 +89,7 @@ class Profile(generics.RetrieveUpdateAPIView):
 class Me(Profile):
     """API view for details of the current user."""
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     # https://www.django-rest-framework.org/api-guide/generic-views/#get_object
     def get_object(self, *args, **kwargs):
@@ -101,7 +100,7 @@ class Me(Profile):
 class DeletionView(generics.DestroyAPIView):
     """API view for deleting a user's data."""
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
     lookup_field = 'email'
     queryset = get_user_model().objects.all()
