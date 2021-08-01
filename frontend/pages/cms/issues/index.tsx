@@ -9,11 +9,12 @@ import { FC } from "react";
 import { CmsPage } from "..";
 
 interface IssuesPageProps {
-  issues: Issue[];
   session: Session;
+  issues?: Issue[];
 }
 
 const IssuesPage: FC<IssuesPageProps> = (props: IssuesPageProps) => {
+  console.log(props.issues[0].number);
   return (
     <CmsPage title="Issues" activeTab={1} session={props.session}>
       <Container>
@@ -23,7 +24,7 @@ const IssuesPage: FC<IssuesPageProps> = (props: IssuesPageProps) => {
               props.issues.map((issue) => (
                 <TableRow key={issue.url}>
                   <TableCell>
-                    <Link href={`/cms/issues/${issue.number}`}>{issue.title}</Link>
+                    #{issue.number}: <Link href={`/cms/issues/${issue.number}`}>{issue.title}</Link>
                   </TableCell>
                 </TableRow>
               ))) || <p style={{ textAlign: "center" }}>There are no open issues.</p>}
@@ -37,16 +38,15 @@ const IssuesPage: FC<IssuesPageProps> = (props: IssuesPageProps) => {
 export default IssuesPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let issues = [];
   const session: Session = await getSession(context);
   if (!session?.accessToken) {
     return {
       props: {
-        issues,
         session,
       },
     };
   }
+  let issues = [];
   await axios
     .get("http://django:8000/api/cms/issues/", {
       params: context.query,

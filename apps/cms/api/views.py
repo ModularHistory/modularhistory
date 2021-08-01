@@ -64,10 +64,6 @@ class IssueListView(IssueAPIView, ListAPIView):
 
 
 class IssueView(IssueAPIView, RetrieveUpdateAPIView):
-    """View for displaying and/or updating an issue."""
-
-
-class IssueView(IssueAPIView, RetrieveUpdateAPIView):
     """View for retrieving and/or updating an issue in the content repo."""
 
     def retrieve(self, request: Request, number: int) -> Response:

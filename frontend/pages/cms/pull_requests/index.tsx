@@ -9,28 +9,30 @@ import Link from "next/link";
 import { FC } from "react";
 
 interface PullRequestsPageProps {
-  pullRequests: PullRequest[];
   session: Session;
+  pullRequests?: PullRequest[];
 }
 
 const PullRequestsPage: FC<PullRequestsPageProps> = (props: PullRequestsPageProps) => {
   return (
     <CmsPage title="Pull requests" activeTab={2} session={props.session}>
       <Container>
-        <Table>
-          <TableBody>
-            {(!!props.pullRequests?.length &&
-              props.pullRequests.map((pullRequest) => (
+        {(!!props.pullRequests?.length && (
+          <Table>
+            <TableBody>
+              {props.pullRequests.map((pullRequest) => (
                 <TableRow key={pullRequest.url}>
                   <TableCell>
+                    #{pullRequest.number}:{" "}
                     <Link href={`/cms/pull_requests/${pullRequest.number}`}>
                       {pullRequest.title}
                     </Link>
                   </TableCell>
                 </TableRow>
-              ))) || <p style={{ textAlign: "center" }}>There are no open pull requests.</p>}
-          </TableBody>
-        </Table>
+              ))}
+            </TableBody>
+          </Table>
+        )) || <p style={{ textAlign: "center" }}>There are no open pull requests.</p>}
       </Container>
     </CmsPage>
   );
@@ -39,16 +41,15 @@ const PullRequestsPage: FC<PullRequestsPageProps> = (props: PullRequestsPageProp
 export default PullRequestsPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let pullRequests = [];
   const session: Session = await getSession(context);
   if (!session?.accessToken) {
     return {
       props: {
-        pullRequests,
         session,
       },
     };
   }
+  let pullRequests = [];
   await axios
     .get("http://django:8000/api/cms/pull_requests/", {
       params: context.query,
