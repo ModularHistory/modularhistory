@@ -85,11 +85,11 @@ export const removeServerSideCookies = (cookies: string[]): string[] => {
   return clientSideCookies;
 };
 
-const getUserFromAuthResponse = async (response: AxiosResponse) => {
+const getUserFromAuthResponse = (response: AxiosResponse): User => {
   const user = response.data["user"];
   if (!user) {
     // eslint-disable-next-line no-console
-    return Promise.resolve(null);
+    return null;
   }
   /*
     Attach necessary values to the user object.
@@ -98,6 +98,9 @@ const getUserFromAuthResponse = async (response: AxiosResponse) => {
   */
   user.accessToken = response.data.accessToken;
   user.refreshToken = response.data.refreshToken;
+  if (!user.accessToken) {
+    console.error("No access token!");
+  }
   const cookies = response.headers["set-cookie"];
   cookies.forEach((cookie) => {
     if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {
@@ -180,7 +183,8 @@ export const authenticateWithSocialMediaAccount = async (
   await axios
     .post(makeDjangoApiUrl(`/users/auth/${account.provider}/`), { user, account, credentials })
     .then(function (response) {
-      return Promise.resolve(getUserFromAuthResponse(response));
+      // Copy user properties to the NextAuth user object.
+      Object.assign(user, getUserFromAuthResponse(response));
     })
     .catch(function (error) {
       user.error = `${error}`;
@@ -200,7 +204,8 @@ export const refreshAccessToken = async (jwt: JWT): Promise<JWT> => {
       refresh: jwt.refreshToken,
     })
     .then(function (response: AxiosResponse) {
-      if (response.data.access && response.data.accessTokenExpiration) {
+      const accessToken = response.data.access;
+      if (accessToken && response.data.accessTokenExpiration) {
         /*
           Example response:
           {
@@ -214,7 +219,7 @@ export const refreshAccessToken = async (jwt: JWT): Promise<JWT> => {
           ...jwt,
           // Fall back to old refresh token if necessary.
           refreshToken: response.data.refreshToken ?? jwt.refreshToken,
-          accessToken: response.data.access,
+          accessToken: accessToken,
           accessTokenExpiry,
           clientSideCookies,
           iat: Date.now() / 1000,

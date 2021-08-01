@@ -16,12 +16,12 @@ interface CmsPageProps extends LayoutProperties {
 
 export const CmsPage: FC<CmsPageProps> = (props: CmsPageProps) => {
   const handleTabChange = (event) => {
-    console.log("Handling tab change...");
     event.preventDefault();
   };
+  console.log(props.session.user.name);
   return (
     <Layout title={props.title}>
-      {(!props.session && (
+      {(!props.session?.user && (
         // TODO: make custom error page
         <Error statusCode={401} title={"Not authorized"}>
           Not authorized
