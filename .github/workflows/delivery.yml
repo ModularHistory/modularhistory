@@ -105,7 +105,7 @@ jobs:
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.7
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -225,7 +225,7 @@ jobs:
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.7
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -345,7 +345,7 @@ jobs:
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.7
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -466,7 +466,7 @@ jobs:
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.7
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
