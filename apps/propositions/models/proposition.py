@@ -10,7 +10,6 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
-from apps.cms.models import AbstractModification, PullRequestsField
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.models import DatedModel
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
@@ -83,12 +82,6 @@ class CollectionInclusion(AbstractCollectionInclusion):
     """An inclusion of a proposition in a collection."""
 
     content_object = get_proposition_fk(related_name='collection_inclusions')
-
-
-class Modification(AbstractModification):
-    """A modification of a proposition."""
-
-    content_object = get_proposition_fk(related_name='modifications')
 
 
 class Citation(AbstractCitation):
@@ -196,8 +189,6 @@ class Proposition(  # noqa: WPS215
         through=QuoteRelation,
         related_name='propositions',
     )
-
-    pull_requests = PullRequestsField(through=Modification)
 
     postscript = HTMLField(
         verbose_name=_('postscript'),

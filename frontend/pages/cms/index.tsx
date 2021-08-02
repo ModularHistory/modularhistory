@@ -36,19 +36,19 @@ export const CmsPage: FC<CmsPageProps> = (props: CmsPageProps) => {
               textColor="primary"
               centered
             >
-              <Link href={"/cms"}>
+              <Link href={"/moderation"}>
                 <a>
                   <Tab label="Content" />
                 </a>
               </Link>
-              <Link href={"/cms/issues"}>
+              <Link href={"/moderation/issues"}>
                 <a>
                   <Tab label="Issues" />
                 </a>
               </Link>
-              <Link href={"/cms/pull_requests"}>
+              <Link href={"/moderation/reviews"}>
                 <a>
-                  <Tab label="Pull requests" />
+                  <Tab label="Modification reviews" />
                 </a>
               </Link>
             </Tabs>
@@ -82,7 +82,7 @@ const CmsLandingPage: FC<CmsLandingPageProps> = (props: CmsLandingPageProps) => 
             {directories.map((directory) => (
               <TableRow key={directory.path}>
                 <TableCell>
-                  <Link href={`/cms/${directory.path}`}>{directory.name}</Link>
+                  <Link href={`/moderation/${directory.path}`}>{directory.name}</Link>
                 </TableCell>
               </TableRow>
             ))}

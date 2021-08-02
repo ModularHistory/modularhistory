@@ -24,7 +24,8 @@ const IssuesPage: FC<IssuesPageProps> = (props: IssuesPageProps) => {
               props.issues.map((issue) => (
                 <TableRow key={issue.url}>
                   <TableCell>
-                    #{issue.number}: <Link href={`/cms/issues/${issue.number}`}>{issue.title}</Link>
+                    #{issue.number}:{" "}
+                    <Link href={`/moderation/issues/${issue.number}`}>{issue.title}</Link>
                   </TableCell>
                 </TableRow>
               ))) || <p style={{ textAlign: "center" }}>There are no open issues.</p>}
@@ -48,7 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   let issues = [];
   await axios
-    .get("http://django:8000/api/cms/issues/", {
+    .get("http://django:8000/api/moderation/issues/", {
       params: context.query,
       headers: {
         Authorization: `Bearer ${session.accessToken}`,

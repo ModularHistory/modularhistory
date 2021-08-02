@@ -51,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   let pullRequest = null;
   await axiosWithAuth
-    .get(`http://django:8000/api/cms/pull_requests/${number}/`, {
+    .get(`http://django:8000/api/moderation/reviews/${number}/`, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
       },

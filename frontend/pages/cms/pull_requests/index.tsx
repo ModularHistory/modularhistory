@@ -24,7 +24,7 @@ const PullRequestsPage: FC<PullRequestsPageProps> = (props: PullRequestsPageProp
                 <TableRow key={pullRequest.url}>
                   <TableCell>
                     #{pullRequest.number}:{" "}
-                    <Link href={`/cms/pull_requests/${pullRequest.number}`}>
+                    <Link href={`/moderation/reviews/${pullRequest.number}`}>
                       {pullRequest.title}
                     </Link>
                   </TableCell>
@@ -51,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   let pullRequests = [];
   await axios
-    .get("http://django:8000/api/cms/pull_requests/", {
+    .get("http://django:8000/api/moderation/reviews/", {
       params: context.query,
       headers: {
         Authorization: `Bearer ${session.accessToken}`,

@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 import graphene
 from graphene.types.generic import GenericScalar
 
-from apps.cms.api.types import PullRequestType
 from apps.graph.types import ModuleType
 from apps.propositions.models.argument import Argument
 from apps.propositions.models.proposition import Proposition
@@ -31,7 +30,6 @@ class PropositionType(ModuleType):
     """GraphQL type for the Proposition model."""
 
     arguments = graphene.List(PropositionArgumentType)
-    pull_requests = graphene.List(PullRequestType)
     cached_images = GenericScalar(source='cached_images')
 
     class Meta:

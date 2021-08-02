@@ -10,7 +10,6 @@ from .proposition import (
     Conclusion,
     ImageRelation,
     Location,
-    Modification,
     Proposition,
     QuoteRelation,
 )

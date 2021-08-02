@@ -71,7 +71,6 @@ urlpatterns = [
     # App URLs
     # ---------------------------------
     path('chat/', include('apps.chat.urls', namespace='chat')),
-    path('api/cms/', include(_api('cms'), namespace='cms')),
     path('api/donations/', include(_api('donations'), namespace='donations_api')),
     path('api/entities/', include(_api('entities'), namespace='entities_api')),
     path('api/propositions/', include(_api('propositions'), namespace='propositions_api')),

@@ -1,18 +1,11 @@
 import logging
 import os
 from getpass import getpass
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 import requests
 from django.conf import settings
 from github import Github
-from github.GithubException import UnknownObjectException
-
-if TYPE_CHECKING:
-    from github.Branch import Branch
-    from github.PullRequest import PullRequest
-    from github.Repository import Repository
-
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'
@@ -79,54 +72,3 @@ def initialize_session(username: str, pat: str) -> requests.Session:
 def initialize_client(pat: str) -> Github:
     """Initialize and return a GitHub client."""
     return Github(pat)
-
-
-def create_branch(
-    client: Github,
-    source_branch_name: str,
-    target_branch_name: str,
-    repo: Optional['Repository'] = None,
-) -> 'Branch':
-    """Create a branch in ModularHistory's content repo."""
-    repo = repo or client.get_repo(settings.CONTENT_REPO)
-    source_branch = repo.get_branch(source_branch_name)
-    # Create the new branch in GitHub.
-    repo.create_git_ref(ref=f'refs/heads/{target_branch_name}', sha=source_branch.commit.sha)
-    return repo.get_branch(target_branch_name)
-
-
-def delete_branch(
-    client: Github,
-    branch_name: str,
-    repo: Optional['Repository'] = None,
-):
-    """Create a branch in ModularHistory's content repo."""
-    repo = repo or client.get_repo(settings.CONTENT_REPO)
-    try:
-        repo.get_git_ref(f'heads/{branch_name}').delete()
-    except UnknownObjectException:
-        logging.error(f'Branch "{branch_name}" does not exist.')
-
-
-def create_pull_request(
-    client: Github,
-    title: str,
-    body: str,
-    source_branch_name: str,
-    target_branch_name: str = 'main',
-    repo: Optional['Repository'] = None,
-) -> 'PullRequest':
-    """
-    Create a request to merge the source branch into the target branch.
-
-    The title should be something like "Change XYZ" and the body should
-    be a description of the changes included. See PyGitHub's documentation:
-    https://pygithub.readthedocs.io/en/latest/examples/PullRequest.html
-    """
-    repo = repo or client.get_repo(settings.CONTENT_REPO)
-    return repo.create_pull(
-        title=title,
-        body=body,
-        head=source_branch_name,
-        base=target_branch_name,
-    )
