@@ -27,7 +27,6 @@ artifacts/
 # Django
 /_media/
 /_static/
-/_content/
 *.log
 *.pot
 *.pyc
