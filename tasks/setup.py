@@ -38,11 +38,13 @@ def dispatch_and_get_workflow(context: 'Context', session: Session) -> dict:
     # https://docs.github.com/en/rest/reference/actions#list-workflow-runs-for-a-repository
     workflow_id = 'seed.yml'
     time_posted = datetime.utcnow().replace(microsecond=0)
+    url = f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow_id}/dispatches'
+    print(f'Posting to {url} ...')
     response = session.post(
         f'{GITHUB_ACTIONS_BASE_URL}/workflows/{workflow_id}/dispatches',
         data=json.dumps({'ref': 'main'}),
     )
-    print(response)
+    print(f'Response: {response}')
     sleep(5)
     workflow_runs: list[dict] = []
     time_waited, wait_interval, timeout = 0, 5, 30
