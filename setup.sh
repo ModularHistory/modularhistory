@@ -448,6 +448,14 @@ poetry run invoke setup.update-hosts
 # Seed a .env file.
 poetry run invoke seed --no-db
 
+# Check Docker's memory cap
+[[ "$os" == "$MAC_OS" ]] && {
+  mem_limit=$(docker stats --format "{{.MemUsage}}" --no-stream | head -1 | gsed -r -e 's/.+ \/ ([0-9]+).*/\1/')
+  if [[ "$mem_limit" -lt 2 ]]; then
+    _print_red "Consider increasing Docker's memory limit to 3–4 GB."
+  fi
+}
+
 # Build Docker images.
 # Note: This requires a .env file.
 docker-compose build django || _error "Failed to build django image."
@@ -500,14 +508,6 @@ docker-compose up -d dev && echo 'Finished.' || {
       ${BOLD}cd ~/modularhistory && docker-compose up -d dev
 
   "
-}
-
-# Check Docker's memory cap
-[[ "$os" == "$MAC_OS" ]] && {
-  mem_limit=$(docker stats --format "{{.MemUsage}}" --no-stream | head -1 | gsed -r -e 's/.+ \/ ([0-9]+).*/\1/')
-  if [[ "$mem_limit" -lt 2 ]]; then
-    _print_red "Consider increasing Docker's memory limit to 3–4 GB."
-  fi
 }
 
 shasum "$PROJECT_DIR/setup.sh" > "$PROJECT_DIR/.venv/.setup.sha"
