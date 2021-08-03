@@ -45,9 +45,7 @@ class ElasticPaginator(Paginator):
 
     def apply_filters(self, object_list):
         for backend in self.view.post_resolve_filters:
-            object_list = backend().filter_queryset(
-                self.view.request, object_list, self.view
-            )
+            object_list = backend().filter_queryset(self.view.request, object_list, self.view)
         return object_list
 
     def _get_page(self, *args, **kwargs):
@@ -92,9 +90,7 @@ class ElasticPageNumberPagination(TotalPagesMixin, PageNumberPagination):
         if not page_size:
             return None
 
-        orphans = min(
-            int(request.query_params.get(self.orphans_query_param, 0)), page_size
-        )
+        orphans = min(int(request.query_params.get(self.orphans_query_param, 0)), page_size)
         paginator = self.django_paginator_class(queryset, page_size, orphans=orphans)
         paginator.view = view
 

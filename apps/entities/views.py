@@ -28,7 +28,5 @@ class EntityCategorySearchView(AutocompleteJsonView):
         queryset = Category.objects.all()
         term = self.term
         if term:
-            queryset = queryset.filter(
-                Q(name__icontains=term) | Q(aliases__icontains=term)
-            )
+            queryset = queryset.filter(Q(name__icontains=term) | Q(aliases__icontains=term))
         return queryset

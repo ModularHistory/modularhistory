@@ -345,3 +345,8 @@ class Conclusion(Proposition):
         proxy = True
 
     objects = ConclusionManager()
+
+
+# moderation.register(
+#     Proposition,
+# )

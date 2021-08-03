@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
 
-
 class OccurrenceManager(SearchableManager):
     """Manager for occurrences."""
 

@@ -9,6 +9,7 @@
         "Bennion",
         "braintree",
         "buildx",
+        "clsdict",
         "crontabschedule",
         "CSRF",
         "ctype",

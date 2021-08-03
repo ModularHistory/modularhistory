@@ -1,7 +1,7 @@
 from sentry_sdk import capture_exception
+from sentry_sdk.integrations.logging import ignore_logger
 
 from core.environment import IS_PROD
-from sentry_sdk.integrations.logging import ignore_logger
 
 ignore_logger('graphql.execution.utils')
 

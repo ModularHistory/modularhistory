@@ -31,9 +31,7 @@ class Affidavit(Source, DocumentMixin):
                 f'before {self.certifier}'
             )
         else:
-            affidavit_string = (
-                f'affidavit sworn {self.date_string} before {self.certifier}'
-            )
+            affidavit_string = f'affidavit sworn {self.date_string} before {self.certifier}'
         components = [
             self.attributee_html,
             affidavit_string,

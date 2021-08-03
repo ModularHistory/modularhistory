@@ -52,9 +52,7 @@ class RegistrationForm(UserCreationForm):
                 css_class=DEFAULT_FIELD_CLASSES,
                 placeholder='Email address',
             ),
-            Field(
-                USERNAME_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Username'
-            ),
+            Field(USERNAME_FIELD, css_class=DEFAULT_FIELD_CLASSES, placeholder='Username'),
             Field('password1', css_class=DEFAULT_FIELD_CLASSES, placeholder='Password'),
             Field(
                 'password2',
@@ -62,9 +60,7 @@ class RegistrationForm(UserCreationForm):
                 placeholder='Confirm password',
             ),
             Submit('submit', 'Create account', css_class='btn btn-info btn-block my-4'),
-            HTML(
-                '<p>Already have an account? <a href="api/auth/signin">Sign in</a></p>'
-            ),
+            HTML('<p>Already have an account? <a href="api/auth/signin">Sign in</a></p>'),
         )
 
     def clean_email(self):
@@ -106,9 +102,7 @@ class RegistrationForm(UserCreationForm):
         """Prepare field values to be saved."""
         cleaned_data = super().clean()
         if cleaned_data.get('password1') != cleaned_data.get('password2'):
-            raise forms.ValidationError(
-                'Your passwords need to match. Please try again.'
-            )
+            raise forms.ValidationError('Your passwords need to match. Please try again.')
         return cleaned_data
 
 

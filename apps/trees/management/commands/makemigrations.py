@@ -94,8 +94,7 @@ class Command(CoreMakeMigrationsCommand):
                     adding_an_ltree_field = False
                     if isinstance(operation, CreateModel):
                         adding_an_ltree_field = any(
-                            isinstance(field, LtreeField)
-                            for _, field in operation.fields
+                            isinstance(field, LtreeField) for _, field in operation.fields
                         )
                         model_name = operation.name_lower
                     elif isinstance(operation, AddField):
@@ -113,9 +112,7 @@ class Command(CoreMakeMigrationsCommand):
                         return
                     with open(migration_filepath, 'r') as migration_file:
                         migration_file_content = migration_file.read()
-                    migration_file_content = insert_trees_dependency(
-                        migration_file_content
-                    )
+                    migration_file_content = insert_trees_dependency(migration_file_content)
                     migration_file_content = insert_run_sql_operation(
                         migration_file_content, app_name=app, model_name=model_name
                     )

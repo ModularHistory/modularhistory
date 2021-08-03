@@ -2,7 +2,6 @@ from django.db import models
 
 from apps.dates.models import DatedModel
 from apps.search.models.searchable_model import SearchableModel
-
 from core.fields.html_field import HTMLField
 
 PROVIDER_MAX_LENGTH: int = 200
