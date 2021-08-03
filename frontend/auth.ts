@@ -98,9 +98,6 @@ const getUserFromAuthResponse = (response: AxiosResponse): User => {
   */
   user.accessToken = response.data.accessToken;
   user.refreshToken = response.data.refreshToken;
-  if (!user.accessToken) {
-    console.error("No access token!");
-  }
   const cookies = response.headers["set-cookie"];
   cookies.forEach((cookie) => {
     if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {

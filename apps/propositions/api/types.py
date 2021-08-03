@@ -44,9 +44,5 @@ class PropositionType(ModuleType):
         return root.arguments.all()
 
     @staticmethod
-    def resolve_pull_requests(root: Proposition, *args) -> 'QuerySet[Argument]':  # noqa: D102
-        return root.pull_requests.all()
-
-    @staticmethod
     def resolve_model(*args) -> str:  # noqa: D102
         return 'propositions.proposition'

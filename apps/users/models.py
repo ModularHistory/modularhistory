@@ -1,11 +1,9 @@
 import logging
 from tempfile import NamedTemporaryFile
-from typing import Optional
 from urllib.request import urlopen
 
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -69,17 +67,6 @@ class User(AbstractUser):
     def __str__(self) -> str:
         """Return a string representation of the user."""
         return self.name or self.username
-
-    @property
-    def github_access_token(self) -> Optional[str]:
-        """Return the user's GitHub access token."""
-        try:
-            github_account: SocialAccount = SocialAccount.objects.filter(
-                user=self, provider='github'
-            ).first()
-            return github_account.access_token
-        except (ObjectDoesNotExist, AttributeError):
-            return None
 
     @property
     def name(self) -> str:

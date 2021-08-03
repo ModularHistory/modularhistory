@@ -382,10 +382,6 @@ THUMBNAIL_PROCESSORS = (
 # https://github.com/jonasundderwolf/django-image-cropping#custom-jquery
 IMAGE_CROPPING_JQUERY_URL = None
 
-CONTENT_MANAGER_EMAIL = config('CONTENT_MANAGER_EMAIL', default='')
-CONTENT_MANAGER_PAT = config('CONTENT_MANAGER_PAT', default='')
-CONTENT_REPO = config('CONTENT_REPO', default='ModularHistory/test-content')
-
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],
     ['Quotes', '/quotes/'],
