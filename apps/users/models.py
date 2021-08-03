@@ -73,7 +73,7 @@ class User(AbstractUser):
         """Return the user's name."""
         return self.get_full_name()
 
-    def update_avatar(self, url):
+    def update_avatar(self, url: str):
         """Update the user's avatar with the image located at the given URL."""
         if self.avatar:
             logging.info(f'{self} already has an avatar: {self.avatar}')

@@ -28,10 +28,6 @@ parallel = true
 # https://coverage.readthedocs.io/en/latest/config.html#html
 directory = ".coverage_html"
 
-[tool.django-stubs]
-django_settings_module = "core.settings"
-ignore_missing_model_attributes = true
-
 [tool.isort]
 # https://github.com/timothycrosley/isort/wiki/isort-Settings
 atomic = true
@@ -66,6 +62,10 @@ plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 [[tool.mypy.overrides]]
 module = ["*.migrations.*", "__init__"]
 ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "core.settings"
+ignore_missing_model_attributes = true
 
 [tool.poetry]
 name = "modularhistory"
