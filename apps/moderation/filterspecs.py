@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext as _
 
-from . import moderation
+from apps.moderation import moderation
 
 
 def _registered_content_types():

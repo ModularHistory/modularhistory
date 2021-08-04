@@ -5,6 +5,8 @@ from django.forms.models import ModelForm
 from django.urls import NoReverseMatch, reverse
 from django.utils.translation import ugettext as _
 
+from apps.admin import admin_site
+
 from . import moderation
 from .constants import (
     MODERATION_STATUS_APPROVED,
@@ -195,4 +197,4 @@ class ModeratedObjectAdmin(admin.ModelAdmin):
         return super().change_view(request, object_id, extra_context=extra_context)
 
 
-admin.site.register(ModeratedObject, ModeratedObjectAdmin)
+admin_site.register(ModeratedObject, ModeratedObjectAdmin)

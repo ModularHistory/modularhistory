@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
@@ -199,14 +200,13 @@ class GenericModerator:
 
     def inform_moderator(self, content_object, extra_context=None):
         '''Send notification to moderator'''
-        from .conf.settings import MODERATORS
 
         if self.notify_moderator:
             self.send(
                 content_object=content_object,
                 subject_template=self.subject_template_moderator,
                 message_template=self.message_template_moderator,
-                recipient_list=MODERATORS,
+                recipient_list=settings.MODERATORS,
                 extra_context=extra_context,
             )
 

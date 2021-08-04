@@ -3,6 +3,7 @@
 from datetime import datetime
 from typing import Optional, Union
 
+from dateutil.parser import isoparse
 from django.db.models import DateTimeField
 
 from apps.dates.structures import HistoricDateTime
@@ -52,19 +53,18 @@ class HistoricDateTimeField(DateTimeField):
         if not historic_datetime:
             return None
         elif isinstance(historic_datetime, str):
-            raise TypeError
+            historic_datetime = isoparse(historic_datetime)
         if isinstance(historic_datetime, HistoricDateTime):
             return historic_datetime
-        elif isinstance(historic_datetime, datetime):
-            return HistoricDateTime(
-                historic_datetime.year,
-                historic_datetime.month,
-                historic_datetime.day,
-                historic_datetime.hour,
-                historic_datetime.minute,
-                historic_datetime.second,
-                historic_datetime.microsecond,
-            )
+        return HistoricDateTime(
+            historic_datetime.year,
+            historic_datetime.month,
+            historic_datetime.day,
+            historic_datetime.hour,
+            historic_datetime.minute,
+            historic_datetime.second,
+            historic_datetime.microsecond,
+        )
 
     # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-python-objects-to-query-values
     def get_prep_value(

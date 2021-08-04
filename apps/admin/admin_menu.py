@@ -53,16 +53,6 @@ class AdminMenu(Menu):
         self.children += [
             items.MenuItem(_('Dashboard'), reverse('admin:index')),
             items.Bookmarks(),
-            items.AppList(
-                title='Applications',
-                exclude=[
-                    'admin_honeypot.*',
-                    'rest_framework.*',
-                    'defender.*',
-                    'django_celery_*',
-                    'django.contrib.*',
-                ],
-            ),
         ] + self._menu_items
 
     @property

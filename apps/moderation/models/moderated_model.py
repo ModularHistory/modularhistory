@@ -10,71 +10,43 @@
                 notify_user = False
 
 """
-import inspect
 
-from django.db.models import base
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.moderator import GenericModerator
 
-# from apps.moderation.register import ModerationManager
-from apps.moderation.utils import clear_builtins
 
-# moderation = ModerationManager()
+class ModeratedModel(models.Model):
+    """Base class for models of which instances must be moderated."""
 
+    # This field is used to decide whether model instances should be visible.
+    verified = models.BooleanField(
+        verbose_name=_('verified'),
+        default=False,
+    )
 
-class ModeratedModelBase(type):
-    """
-    Metaclass for the ``ModeratedModel`` type.
-
-        -- automatically registers ``ModeratedModel's``
-        -- resolves subclass ``Moderator`` into
-           a instance of ``GenericModerator``
-
-    """
-
-    def _resolve_moderator(cls):
-        """
-        ``ModeratedModel`` that defines the class Moderator
-        will have that class resolved into
-        a class derived from ``GenericModerator``
-
-        usage example:
-
-        class MyModel(ModeratedModel):
-            desc = models.TextField()
-
-            # ``Moderator`` below will extend ``GenericModerator``
-            # and will be used when the ``Model`` is registered
-            class Moderator:
-                notify_user = False
-
-        """
-        if hasattr(cls, 'Moderator') and inspect.isclass(cls.Moderator):
-            Moderator = cls.Moderator
-            # in python3 __dict__ is dictproxy
-            attrs = dict(Moderator.__dict__)
-            attrs = clear_builtins(attrs)
-            return type(f'{cls.__name__}Moderator', (GenericModerator,), attrs)
-        else:
-            return None
-
-    def __init__(cls, name, bases, clsdict):
-        """Register ``ModeratedModel``."""
-        super().__init__(name, bases, clsdict)
-
-        # if any(x.__name__ == 'ModeratedModel' for x in cls.mro()[1:]):
-        #     moderation.register(cls, cls._resolve_moderator())
-
-
-class ModelBase(ModeratedModelBase, base.ModelBase):
-    """
-    Metaclass for ``ModeratedModel``.
-
-    Enables ``ModeratedModel`` to inherit the behavior of django ``Model`` objects.
-
-    """
-
-
-class ModeratedModel(base.Model, metaclass=ModelBase):
     class Meta:
         abstract = True
+
+
+class Moderator(GenericModerator):
+    """Base moderator class for moderated models."""
+
+    visibility_column = 'verified'
+
+    # Allow multiple moderations per registered model instance.
+    keep_history = True
+
+    # Exclude fields from the object change list.
+    fields_exclude = ['cache']
+
+    auto_approve_for_staff = auto_approve_for_superusers = False
+
+    def is_auto_approve(self, obj, user):
+        """Determine whether to automatically approve a change."""
+        return super().is_auto_approve(obj, user)
+
+    def is_auto_reject(self, obj, user):
+        """Determine whether to automatically reject a change."""
+        return super().is_auto_reject(obj, user)

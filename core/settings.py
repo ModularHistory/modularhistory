@@ -311,6 +311,9 @@ GRAPH_MODELS = {
     'group_models': True,
 }
 
+# Email addresses to which moderation emails will be sent
+MODERATORS = ()
+
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 LANGUAGE_CODE = 'en-us'

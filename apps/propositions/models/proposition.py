@@ -18,6 +18,8 @@ from apps.images.models.model_with_images import (
     ImagesField,
     ModelWithImages,
 )
+from apps.moderation import moderation
+from apps.moderation.moderator import GenericModerator
 from apps.places.models.model_with_locations import (
     AbstractLocationRelation,
     LocationsField,
@@ -347,6 +349,8 @@ class Conclusion(Proposition):
     objects = ConclusionManager()
 
 
-# moderation.register(
-#     Proposition,
-# )
+class PropositionModerator(GenericModerator):
+    """Moderator class for propositions."""
+
+
+moderation.register(Proposition, PropositionModerator)
