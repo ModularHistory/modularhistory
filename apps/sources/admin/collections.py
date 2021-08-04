@@ -1,15 +1,15 @@
-from apps.admin import ModelAdmin, admin_site
+from apps.admin import ExtendedModelAdmin, admin_site
 from apps.sources import models
 
 
-class CollectionAdmin(ModelAdmin):
+class CollectionAdmin(ExtendedModelAdmin):
     """Admin for document collections."""
 
     search_fields = ['name', 'repository__name', 'repository__location__name']
     autocomplete_fields = ['repository']
 
 
-class RepositoryAdmin(ModelAdmin):
+class RepositoryAdmin(ExtendedModelAdmin):
     """Admin for document repositories."""
 
     search_fields = ['name', 'location__name']

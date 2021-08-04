@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation import moderation
 from apps.moderation.constants import (
-    MODERATION_DRAFT_STATE,
     MODERATION_READY_STATE,
     MODERATION_STATUS_APPROVED,
     MODERATION_STATUS_PENDING,
@@ -20,17 +19,17 @@ from apps.moderation.managers import ModeratedObjectManager
 from apps.moderation.signals import post_moderation, pre_moderation
 
 
-class DraftState(models.TextChoices):
+class DraftState(models.IntegerChoices):
     """Containment phrase options."""
 
-    READY = 'ready', _('Ready for moderation')
-    DRAFT = 'draft', _('Draft')
+    READY = 0, _('Ready for moderation')
+    DRAFT = 1, _('Draft')
 
 
-class ModerationStatus(models.TextChoices):
-    REJECTED = 'rejected', _('Rejected')
-    APPROVED = 'approved', _('Approved')
-    PENDING = 'pending', _('Pending')
+class ModerationStatus(models.IntegerChoices):
+    REJECTED = 0, _('Rejected')
+    APPROVED = 1, _('Approved')
+    PENDING = 2, _('Pending')
 
 
 class ModeratedObject(models.Model):
@@ -43,14 +42,14 @@ class ModeratedObject(models.Model):
     content_object = GenericForeignKey(ct_field='content_type', fk_field='object_pk')
     created = models.DateTimeField(auto_now_add=True, editable=False)
     updated = models.DateTimeField(auto_now=True)
-    state = models.SmallIntegerField(
+    state = models.PositiveSmallIntegerField(
         choices=DraftState.choices,
-        default=MODERATION_DRAFT_STATE,
+        default=DraftState.DRAFT.value,
         editable=False,
     )
-    status = models.SmallIntegerField(
+    status = models.PositiveSmallIntegerField(
         choices=ModerationStatus.choices,
-        default=MODERATION_STATUS_PENDING,
+        default=ModerationStatus.PENDING.value,
         editable=False,
     )
     by = models.ForeignKey(

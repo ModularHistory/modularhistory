@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Optional, Type
 
 from django.contrib.admin import SimpleListFilter
 
-from apps.admin.model_admin import ModelAdmin, admin_site
+from apps.admin.model_admin import ExtendedModelAdmin, admin_site
 from apps.sources import models
 from apps.sources.admin.sources import SourcesInline
 from core.constants.strings import NO, YES
@@ -34,7 +34,7 @@ class PdfFilter(SimpleListFilter):
             return queryset.exclude(name__icontains='pdf')
 
 
-class SourceFileAdmin(ModelAdmin):
+class SourceFileAdmin(ExtendedModelAdmin):
     """Admin for source files."""
 
     list_display = ['name', PAGE_OFFSET_FIELD, 'link', 'uploaded_at', 'id']

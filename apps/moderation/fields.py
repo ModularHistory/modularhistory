@@ -5,15 +5,13 @@ from django.db import models
 
 
 class SerializedObjectField(models.TextField):
-    '''Model field that stores serialized value of model class instance
-    and returns deserialized model instance
+    """
+    Model field for storing a serialized model class instance.
 
     >>> from django.db import models
     >>> import SerializedObjectField
-
     >>> class A(models.Model):
             object = SerializedObjectField(serialize_format='json')
-
     >>> class B(models.Model):
             field = models.CharField(max_length=10)
     >>> b = B(field='test')
@@ -27,7 +25,7 @@ class SerializedObjectField(models.TextField):
     >>> a.object.__dict__
     {'field': 'test', 'id': 1}
 
-    '''
+    """
 
     def __init__(self, serialize_format='json', *args, **kwargs):
         self.serialize_format = serialize_format
@@ -91,6 +89,8 @@ class SerializedObjectField(models.TextField):
                 value = self.value_from_object(kwargs['instance'])
 
                 if value:
+                    print(f'>>>>>g>>> {value} -->')
+                    print(f'{self._deserialize(value)}')
                     setattr(kwargs['instance'], self.attname, self._deserialize(value))
                 else:
                     setattr(kwargs['instance'], self.attname, None)

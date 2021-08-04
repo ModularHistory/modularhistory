@@ -1,9 +1,4 @@
-"""
-ModularHistory's custom admin menu.
-
-This custom admin menu is activated by the following line in settings.py:
-    ADMIN_TOOLS_MENU = 'core.admin_menu.AdminMenu'
-"""
+"""Custom admin menu."""
 
 from typing import Iterable
 
@@ -53,7 +48,9 @@ class AdminMenu(Menu):
         self.children += [
             items.MenuItem(_('Dashboard'), reverse('admin:index')),
             items.Bookmarks(),
-        ] + self._menu_items
+            *self._menu_items,
+            items.MenuItem(_('To Be Moderated'), '/_admin/moderation/moderatedobject/'),
+        ]
 
     @property
     def _menu_items(self):

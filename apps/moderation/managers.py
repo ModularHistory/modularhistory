@@ -1,6 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Q
 from django.db.models.manager import Manager
+from django.db.utils import ProgrammingError
 
 from . import moderation
 from .constants import MODERATION_READY_STATE
@@ -17,7 +18,7 @@ class ModerationObjectsManager(Manager):
         def __init__(self, base_object):
             self.base_object = base_object
             super(ModerationObjectsManager.MultipleModerations, self).__init__(
-                'Multiple moderations found for object/s: %s' % base_object
+                f'Multiple moderations found for object/s: {base_object}'
             )
 
     def __call__(self, base_manager, *args, **kwargs):
@@ -46,16 +47,18 @@ class ModerationObjectsManager(Manager):
         }
         return queryset.filter(Q(**only_no_relation_objects) | Q(**only_ready))
 
-    def exclude_objs_by_visibility_col(self, query_set):
-        return query_set.exclude(**{self.moderator.visibility_column: False})
+    def exclude_objs_by_visibility_col(self, queryset):
+        return queryset.exclude(**{self.moderator.visibility_column: False})
 
     def get_queryset(self):
-        query_set = super().get_queryset()
-
-        if self.moderator.visibility_column:
-            return self.exclude_objs_by_visibility_col(query_set)
-
-        return self.filter_moderated_objects(query_set)
+        queryset = super().get_queryset()
+        try:
+            if self.moderator.visibility_column:
+                return self.exclude_objs_by_visibility_col(queryset)
+            return self.filter_moderated_objects(queryset)
+        except ProgrammingError:
+            # Migrations might not have been run yet to add the ModeratedObject table.
+            return queryset
 
     @property
     def moderator(self):

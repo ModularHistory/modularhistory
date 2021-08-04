@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Type
 from django.db.models.aggregates import Count
 from image_cropping import ImageCroppingMixin
 
-from apps.admin import ModelAdmin, TabularInline, admin_site
+from apps.admin import ExtendedModelAdmin, TabularInline, admin_site
 from apps.admin.list_filters.boolean_filters import BooleanListFilter
 from apps.entities.admin.filters import EntityAutocompleteFilter
 from apps.entities.models.entity import Entity
@@ -87,7 +87,7 @@ class HasMultipleImagesFilter(BooleanListFilter):
             return queryset.filter(citation_count__gte=2)
 
 
-class VideoAdmin(ModelAdmin):
+class VideoAdmin(ExtendedModelAdmin):
     """Admin for videos."""
 
     list_display = ['title', 'url']

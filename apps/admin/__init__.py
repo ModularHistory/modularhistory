@@ -1,4 +1,4 @@
 """Admin app for ModularHistory."""
 
 from .inlines import StackedInline, TabularInline
-from .model_admin import ModelAdmin, admin_site
+from .model_admin import ExtendedModelAdmin, admin_site

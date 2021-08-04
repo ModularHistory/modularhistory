@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.admin import ModelAdmin, admin_site
+from apps.admin import ExtendedModelAdmin, admin_site
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.admin.list_filters.boolean_filters import HasRelationFilter
 from apps.topics import models
@@ -29,7 +29,7 @@ class HasParentFilter(HasRelationFilter):
     relation = 'parent'
 
 
-class TopicAdmin(ModelAdmin):
+class TopicAdmin(ExtendedModelAdmin):
     """Admin for topics."""
 
     model = models.Topic
