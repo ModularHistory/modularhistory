@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import ModelForm, model_to_dict
 
-from .constants import MODERATION_STATUS_PENDING, MODERATION_STATUS_REJECTED
+from apps.moderation.models.moderated_object import ModeratedObject
 
 
 class BaseModeratedObjectForm(ModelForm):
@@ -15,7 +15,10 @@ class BaseModeratedObjectForm(ModelForm):
             try:
                 if (
                     instance.moderated_object.status
-                    in [MODERATION_STATUS_PENDING, MODERATION_STATUS_REJECTED]
+                    in [
+                        ModeratedObject.ModerationStatus.PENDING.value,
+                        ModeratedObject.ModerationStatus.REJECTED.value,
+                    ]
                     and not instance.moderated_object.moderator.visible_until_rejected
                 ):
                     initial = model_to_dict(instance.moderated_object.changed_object)

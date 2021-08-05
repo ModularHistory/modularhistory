@@ -8,9 +8,9 @@ from tests.models import ModelWithVisibilityField, ModelWithWrongVisibilityField
 from tests.utils import setup_moderation, teardown_moderation
 
 from apps.moderation.constants import MODERATION_STATUS_APPROVED
-from apps.moderation.managers import ModerationObjectsManager
 from apps.moderation.message_backends import BaseMessageBackend
 from apps.moderation.models import ModeratedObject
+from apps.moderation.models.moderated_model.manager import ModeratedModelManager
 from apps.moderation.moderator import GenericModerator
 
 
@@ -28,7 +28,7 @@ class GenericModeratorTestCase(TestCase):
     def test_create_generic_moderator(self):
         self.assertEqual(self.moderator.model_class, UserProfile)
         self.assertEqual(self.moderator.manager_names, ['objects'])
-        self.assertEqual(self.moderator.moderation_manager_class, ModerationObjectsManager)
+        self.assertEqual(self.moderator.moderation_manager_class, ModeratedModelManager)
         self.assertEqual(self.moderator.auto_approve_for_staff, True)
         self.assertEqual(self.moderator.auto_approve_for_groups, None)
         self.assertEqual(self.moderator.auto_reject_for_groups, None)
@@ -42,7 +42,7 @@ class GenericModeratorTestCase(TestCase):
         moderator = UserProfileModerator(UserProfile)
         self.assertEqual(moderator.model_class, UserProfile)
         self.assertEqual(moderator.manager_names, ['objects'])
-        self.assertEqual(moderator.moderation_manager_class, ModerationObjectsManager)
+        self.assertEqual(moderator.moderation_manager_class, ModeratedModelManager)
         self.assertEqual(moderator.auto_approve_for_staff, False)
         self.assertEqual(moderator.auto_approve_for_groups, ['admins', 'moderators'])
         self.assertEqual(moderator.auto_reject_for_groups, ['others'])

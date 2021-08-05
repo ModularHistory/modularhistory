@@ -1,11 +1,16 @@
+from typing import TYPE_CHECKING, Type
+
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Q
 from django.db.models.manager import Manager
 from django.db.utils import ProgrammingError
 
-from . import moderation
-from .constants import MODERATION_READY_STATE
-from .queryset import ModeratedObjectQuerySet
+from apps.moderation import moderation
+from apps.moderation.models.moderated_object import ModeratedObject
+from apps.moderation.queryset import ModeratedObjectQuerySet
+
+if TYPE_CHECKING:
+    from apps.moderation.models.moderated_model import ModeratedModel
 
 
 class MetaClass(type(Manager)):
@@ -13,11 +18,14 @@ class MetaClass(type(Manager)):
         return super(MetaClass, cls).__new__(cls, name, bases, attrs)
 
 
-class ModerationObjectsManager(Manager):
+class ModeratedModelManager(Manager):
+
+    model: Type['ModeratedModel']
+
     class MultipleModerations(Exception):
         def __init__(self, base_object):
             self.base_object = base_object
-            super(ModerationObjectsManager.MultipleModerations, self).__init__(
+            super(ModeratedModelManager.MultipleModerations, self).__init__(
                 f'Multiple moderations found for object/s: {base_object}'
             )
 
@@ -43,7 +51,7 @@ class ModerationObjectsManager(Manager):
             '_relation_object': None,
         }
         only_ready = {
-            '_relation_object__state': MODERATION_READY_STATE,
+            '_relation_object__state': ModeratedObject.DraftState.READY.value,
         }
         return queryset.filter(Q(**only_no_relation_objects) | Q(**only_ready))
 
@@ -63,23 +71,3 @@ class ModerationObjectsManager(Manager):
     @property
     def moderator(self):
         return moderation.get_moderator(self.model)
-
-
-class ModeratedObjectManager(Manager):
-    def get_queryset(self):
-        return ModeratedObjectQuerySet(self.model, using=self._db)
-
-    def get_for_instance(self, instance):
-        '''Returns ModeratedObject for given model instance'''
-        try:
-            moderated_object = self.get(
-                object_pk=instance.pk,
-                content_type=ContentType.objects.get_for_model(instance.__class__),
-            )
-        except self.model.MultipleObjectsReturned:
-            # Get the most recent one
-            moderated_object = self.filter(
-                object_pk=instance.pk,
-                content_type=ContentType.objects.get_for_model(instance.__class__),
-            ).order_by('-updated')[0]
-        return moderated_object

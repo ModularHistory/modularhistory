@@ -6,7 +6,8 @@ from django.db.models.fields import BooleanField
 from django.db.models.manager import Manager
 from django.template.loader import render_to_string
 
-from .managers import ModerationObjectsManager
+from apps.moderation.models.moderated_model.manager import ModeratedModelManager
+
 from .message_backends import (
     BaseMessageBackend,
     BaseMultipleMessageBackend,
@@ -21,7 +22,7 @@ class GenericModerator:
     """
 
     manager_names = ['objects']
-    moderation_manager_class = ModerationObjectsManager
+    moderation_manager_class = ModeratedModelManager
     bypass_moderation_after_approval = False
     visible_until_rejected = False
     keep_history = False

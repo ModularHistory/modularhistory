@@ -6,8 +6,8 @@ from django.test.testcases import TestCase
 from tests.models import ModelWithSlugField2, ModelWithVisibilityField, UserProfile
 from tests.utils import setup_moderation, teardown_moderation
 
-from apps.moderation.managers import ModerationObjectsManager
 from apps.moderation.models import ModeratedObject
+from apps.moderation.models.moderated_model.manager import ModeratedModelManager
 from apps.moderation.moderator import GenericModerator
 
 
@@ -30,7 +30,7 @@ class ModerationObjectsManagerTestCase(TestCase):
         teardown_moderation()
 
     def test_moderation_objects_manager(self):
-        ManagerClass = ModerationObjectsManager()(Manager)
+        ManagerClass = ModeratedModelManager()(Manager)
 
         self.assertEqual(
             str(ManagerClass.__bases__),
@@ -42,7 +42,7 @@ class ModerationObjectsManagerTestCase(TestCase):
         """Test filter_moderated_objects returns empty queryset
         for object that has moderated object"""
 
-        ManagerClass = ModerationObjectsManager()(Manager)
+        ManagerClass = ModeratedModelManager()(Manager)
         manager = ManagerClass()
         manager.model = UserProfile
 
@@ -68,7 +68,7 @@ class ModerationObjectsManagerTestCase(TestCase):
         )
 
     def test_exclude_objs_by_visibility_col(self):
-        ManagerClass = ModerationObjectsManager()(Manager)
+        ManagerClass = ModeratedModelManager()(Manager)
         manager = ManagerClass()
         manager.model = ModelWithVisibilityField
 
@@ -129,7 +129,7 @@ class ModeratedObjectManagerTestCase(TestCase):
     def test_instance_with_many_moderations(self):
         # Register a moderator that keeps the history
         # un-register UserProfile
-        from moderation import moderation
+        from apps.moderation import moderation
 
         class KeepHistoryModerator(GenericModerator):
             keep_history = True

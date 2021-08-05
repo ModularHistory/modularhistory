@@ -14,8 +14,8 @@ from apps.moderation.constants import (
 )
 from apps.moderation.fields import SerializedObjectField
 from apps.moderation.helpers import automoderate
-from apps.moderation.managers import ModerationObjectsManager
 from apps.moderation.models import ModeratedObject
+from apps.moderation.models.moderated_model import ModeratedModelManager
 from apps.moderation.moderator import GenericModerator
 from apps.moderation.register import ModerationManager, RegistrationError
 
@@ -210,7 +210,7 @@ class ModerateTestCase(TestCase):
         moderated_object = ModeratedObject.objects.create(content_object=self.profile)
         moderated_object.approve(by=self.user)
 
-        with self.assertRaises(ModerationObjectsManager.MultipleModerations):
+        with self.assertRaises(ModeratedModelManager.MultipleModerations):
             self.profile.__class__.objects.get(id=self.profile.id)
 
     def test_approve_new_moderated_object(self):

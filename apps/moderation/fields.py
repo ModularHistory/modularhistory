@@ -1,7 +1,26 @@
+
 from django.conf import settings
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from rest_framework.utils.encoders import JSONEncoder
+
+
+def serialize(value_set):
+    return serializers.serialize(
+        'json',
+        value_set,
+        cls=JSONEncoder,
+    )
+
+
+def deserialize(value):
+    return serializers.deserialize(
+        'json',
+        value.encode(settings.DEFAULT_CHARSET),
+        ignorenonexistent=True,
+        cls=JSONEncoder,
+    )
 
 
 class SerializedObjectField(models.TextField):
@@ -27,14 +46,13 @@ class SerializedObjectField(models.TextField):
 
     """
 
-    def __init__(self, serialize_format='json', *args, **kwargs):
+    def __init__(self, serialize_format: str = 'json', *args, **kwargs):
         self.serialize_format = serialize_format
         super().__init__(*args, **kwargs)
 
     def _serialize(self, value):
         if not value:
             return ''
-
         value_set = [value]
         if value._meta.parents:
             value_set += [
@@ -42,16 +60,11 @@ class SerializedObjectField(models.TextField):
                 for f in list(value._meta.parents.values())
                 if f is not None
             ]
-
-        return serializers.serialize(self.serialize_format, value_set)
+        serialized_value = serialize(value_set)
+        return serialized_value
 
     def _deserialize(self, value):
-        obj_generator = serializers.deserialize(
-            self.serialize_format,
-            value.encode(settings.DEFAULT_CHARSET),
-            ignorenonexistent=True,
-        )
-
+        obj_generator = deserialize(value)
         obj = next(obj_generator).object
         for parent in obj_generator:
             for f in parent.object._meta.fields:
@@ -87,10 +100,7 @@ class SerializedObjectField(models.TextField):
                 and issubclass(sender, self.class_name)
             ) and hasattr(kwargs['instance'], self.attname):
                 value = self.value_from_object(kwargs['instance'])
-
                 if value:
-                    print(f'>>>>>g>>> {value} -->')
-                    print(f'{self._deserialize(value)}')
                     setattr(kwargs['instance'], self.attname, self._deserialize(value))
                 else:
                     setattr(kwargs['instance'], self.attname, None)

@@ -53,9 +53,7 @@ class HistoricDateTimeField(DateTimeField):
         if not historic_datetime:
             return None
         elif isinstance(historic_datetime, str):
-            print(f'>>> {historic_datetime}')
             historic_datetime = isoparse(historic_datetime)
-            print(f'{historic_datetime}')
         if isinstance(historic_datetime, HistoricDateTime):
             return historic_datetime
         return HistoricDateTime(

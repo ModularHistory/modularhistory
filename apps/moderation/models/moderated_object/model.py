@@ -7,32 +7,24 @@ from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation import moderation
-from apps.moderation.constants import (
-    MODERATION_READY_STATE,
-    MODERATION_STATUS_APPROVED,
-    MODERATION_STATUS_PENDING,
-    MODERATION_STATUS_REJECTED,
-)
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.fields import SerializedObjectField
-from apps.moderation.managers import ModeratedObjectManager
+from .manager import ModeratedObjectManager
 from apps.moderation.signals import post_moderation, pre_moderation
 
 
-class DraftState(models.IntegerChoices):
-    """Containment phrase options."""
-
-    READY = 0, _('Ready for moderation')
-    DRAFT = 1, _('Draft')
-
-
-class ModerationStatus(models.IntegerChoices):
-    REJECTED = 0, _('Rejected')
-    APPROVED = 1, _('Approved')
-    PENDING = 2, _('Pending')
-
-
 class ModeratedObject(models.Model):
+    class DraftState(models.IntegerChoices):
+        """Containment phrase options."""
+
+        READY = 0, _('Ready for moderation')
+        DRAFT = 1, _('Draft')
+
+    class ModerationStatus(models.IntegerChoices):
+        REJECTED = 0, _('Rejected')
+        APPROVED = 1, _('Approved')
+        PENDING = 2, _('Pending')
+
     content_type = models.ForeignKey(
         ContentType, null=True, blank=True, on_delete=models.SET_NULL, editable=False
     )
@@ -111,9 +103,9 @@ class ModeratedObject(models.Model):
             changed_object = self.changed_object
         status, reason = self._get_moderation_status_and_reason(changed_object, user)
 
-        if status == MODERATION_STATUS_REJECTED:
+        if status == self.ModerationStatus.REJECTED.value:
             self.reject(by=self.by, reason=reason)
-        elif status == MODERATION_STATUS_APPROVED:
+        elif status == self.ModerationStatus.APPROVED.value:
             self.approve(by=self.by, reason=reason)
         else:  # MODERATION_STATUS_PENDING
             self.save()
@@ -126,13 +118,12 @@ class ModeratedObject(models.Model):
         '''
         reason = self.moderator.is_auto_reject(obj, user)
         if reason:
-            return MODERATION_STATUS_REJECTED, reason
+            return self.ModerationStatus.REJECTED.value, reason
         else:
             reason = self.moderator.is_auto_approve(obj, user)
             if reason:
-                return MODERATION_STATUS_APPROVED, reason
-
-        return MODERATION_STATUS_PENDING, None
+                return self.ModerationStatus.APPROVED.value, reason
+        return self.ModerationStatus.PENDING, None
 
     def get_object_for_this_type(self):
         pk = self.object_pk
@@ -176,8 +167,8 @@ class ModeratedObject(models.Model):
         # ModeratedObject.
 
         if (
-            self.status == MODERATION_STATUS_PENDING
-            and new_status == MODERATION_STATUS_APPROVED
+            self.status == self.ModerationStatus.PENDING.value
+            and new_status == self.ModerationStatus.APPROVED.value
             and not self.moderator.visible_until_rejected
         ):
             base_object = self.changed_object
@@ -191,10 +182,10 @@ class ModeratedObject(models.Model):
             base_object = obj_class._default_unmoderated_manager.get(pk=pk)
             base_object_force_save = False
 
-        if new_status == MODERATION_STATUS_APPROVED:
+        if new_status == self.ModerationStatus.APPROVED.value:
             # This version is now approved, and will be reverted to if
             # future changes are rejected by a moderator.
-            self.state = MODERATION_READY_STATE
+            self.state = self.DraftState.READY.value
 
         self.status = new_status
         self.on = datetime.datetime.now()
@@ -205,9 +196,9 @@ class ModeratedObject(models.Model):
         if self.moderator.visibility_column:
             old_visible = getattr(base_object, self.moderator.visibility_column)
 
-            if new_status == MODERATION_STATUS_APPROVED:
+            if new_status == self.ModerationStatus.APPROVED.value:
                 new_visible = True
-            elif new_status == MODERATION_STATUS_REJECTED:
+            elif new_status == self.ModerationStatus.REJECTED.value:
                 new_visible = False
             else:  # MODERATION_STATUS_PENDING
                 new_visible = self.moderator.visible_until_rejected
@@ -246,7 +237,7 @@ class ModeratedObject(models.Model):
         return False
 
     def approve(self, by=None, reason=None):
-        self._send_signals_and_moderate(MODERATION_STATUS_APPROVED, by, reason)
+        self._send_signals_and_moderate(self.ModerationStatus.APPROVED.value, by, reason)
 
     def reject(self, by=None, reason=None):
-        self._send_signals_and_moderate(MODERATION_STATUS_REJECTED, by, reason)
+        self._send_signals_and_moderate(self.ModerationStatus.REJECTED.value, by, reason)
