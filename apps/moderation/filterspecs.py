@@ -3,13 +3,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext as _
 
-from apps.moderation import moderation
-
 
 def _registered_content_types():
     'Return sorted content types for all registered models.'
     content_types = []
-    registered = list(moderation._registered_models.keys())
+    # TODO
+    # registered = list(moderation._registered_models.keys())
+    registered = []
     registered.sort(key=lambda obj: obj.__name__)
     for model in registered:
         content_types.append(ContentType.objects.get_for_model(model))

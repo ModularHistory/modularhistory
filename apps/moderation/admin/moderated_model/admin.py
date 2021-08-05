@@ -1,17 +1,16 @@
+from typing import Type
+
 from django.utils.translation import ugettext as _
 
 from apps.admin.model_admin import ExtendedModelAdmin
-from apps.moderation.constants import (
-    MODERATION_STATUS_APPROVED,
-    MODERATION_STATUS_PENDING,
-    MODERATION_STATUS_REJECTED,
-)
-from apps.moderation.forms import BaseModeratedObjectForm
+from apps.moderation.constants import ModerationStatus
+from apps.moderation.forms import BaseModerationForm
 from apps.moderation.helpers import automoderate
-from apps.moderation.models import ModeratedObject
+from apps.moderation.models import Change
+from apps.moderation.models.moderated_model.model import ModeratedModel
 
 
-class ModerationAdmin(ExtendedModelAdmin):
+class ModeratedModelAdmin(ExtendedModelAdmin):
     """Admin for models requiring moderation."""
 
     admin_integration_enabled = True
@@ -26,7 +25,7 @@ class ModerationAdmin(ExtendedModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         if obj and self.admin_integration_enabled:
-            self.form = self.get_moderated_object_form(obj.__class__)
+            self.form = self.get_moderation_form(obj.__class__)
 
         return super().get_form(request, obj, **kwargs)
 
@@ -43,13 +42,13 @@ class ModerationAdmin(ExtendedModelAdmin):
 
     def send_message(self, request, object_id):
         try:
-            obj = self.model.unmoderated_objects.get(pk=object_id)
-            moderated_obj = ModeratedObject.objects.get_for_instance(obj)
+            obj = self.model.unmoderations.get(pk=object_id)
+            moderated_obj = Change.objects.get_for_instance(obj)
             moderator = moderated_obj.moderator
             msg = self.get_moderation_message(
                 moderated_obj.status, moderated_obj.reason, moderator.visible_until_rejected
             )
-        except ModeratedObject.DoesNotExist:
+        except Change.DoesNotExist:
             msg = self.get_moderation_message()
 
         self.message_user(request, msg)
@@ -59,7 +58,7 @@ class ModerationAdmin(ExtendedModelAdmin):
         automoderate(obj, request.user)
 
     def get_moderation_message(self, status=None, reason=None, visible_until_rejected=False):
-        if status == MODERATION_STATUS_PENDING:
+        if status == ModerationStatus.PENDING:
             if visible_until_rejected:
                 return _(
                     'Object is viewable on site, '
@@ -70,17 +69,17 @@ class ModerationAdmin(ExtendedModelAdmin):
                     'Object is not viewable on site, '
                     'it will be visible if moderator accepts it'
                 )
-        elif status == MODERATION_STATUS_REJECTED:
+        elif status == ModerationStatus.REJECTED:
             return _('Object has been rejected by moderator, ' 'reason: %s' % reason)
-        elif status == MODERATION_STATUS_APPROVED:
+        elif status == ModerationStatus.APPROVED:
             return _('Object has been approved by moderator ' 'and is visible on site')
         elif status is None:
             return _('This object is not registered with ' 'the moderation system.')
 
-    def get_moderated_object_form(self, model_class):
-        class ModeratedObjectForm(BaseModeratedObjectForm):
+    def get_moderation_form(self, model_class: Type[ModeratedModel]):
+        class ModerationForm(BaseModerationForm):
             class Meta:
                 model = model_class
                 fields = '__all__'
 
-        return ModeratedObjectForm
+        return ModerationForm

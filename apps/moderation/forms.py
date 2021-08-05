@@ -1,10 +1,10 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import ModelForm, model_to_dict
 
-from apps.moderation.models.moderated_object import ModeratedObject
+from apps.moderation.models.change import Change
 
 
-class BaseModeratedObjectForm(ModelForm):
+class BaseModerationForm(ModelForm):
     class Meta:
         exclude = '__all__'
 
@@ -14,14 +14,14 @@ class BaseModeratedObjectForm(ModelForm):
         if instance:
             try:
                 if (
-                    instance.moderated_object.status
+                    instance.moderation.status
                     in [
-                        ModeratedObject.ModerationStatus.PENDING.value,
-                        ModeratedObject.ModerationStatus.REJECTED.value,
+                        Change.ModerationStatus.PENDING.value,
+                        Change.ModerationStatus.REJECTED.value,
                     ]
-                    and not instance.moderated_object.moderator.visible_until_rejected
+                    and not instance.moderation.moderator.visible_until_rejected
                 ):
-                    initial = model_to_dict(instance.moderated_object.changed_object)
+                    initial = model_to_dict(instance.moderation.changed_object)
                     kwargs.setdefault('initial', {})
                     kwargs['initial'].update(initial)
             except ObjectDoesNotExist:

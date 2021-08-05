@@ -1,4 +1,5 @@
 import datetime
+from typing import TYPE_CHECKING, Type
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -6,94 +7,85 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
-from apps.moderation import moderation
+from apps.moderation.constants import DraftState as _DraftState
+from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.fields import SerializedObjectField
-from .manager import ModeratedObjectManager
 from apps.moderation.signals import post_moderation, pre_moderation
 
+from .manager import ChangeSetManager
 
-class ModeratedObject(models.Model):
+if TYPE_CHECKING:
+    from apps.moderation.models.moderated_model import ModeratedModel
+
+
+class AbstractChange(models.Model):
+    """Base model for the `Change` and `ChangeSet` models."""
+
+    description = models.TextField(blank=True, null=True)
+
     class DraftState(models.IntegerChoices):
-        """Containment phrase options."""
+        """Possible draft states."""
 
-        READY = 0, _('Ready for moderation')
-        DRAFT = 1, _('Draft')
+        DRAFT = _DraftState.DRAFT, _('Draft')
+        READY = _DraftState.READY, _('Ready for moderation')
 
     class ModerationStatus(models.IntegerChoices):
-        REJECTED = 0, _('Rejected')
-        APPROVED = 1, _('Approved')
-        PENDING = 2, _('Pending')
+        """Possible moderation statuses."""
 
-    content_type = models.ForeignKey(
-        ContentType, null=True, blank=True, on_delete=models.SET_NULL, editable=False
-    )
-    object_pk = models.PositiveIntegerField(
-        null=True, blank=True, editable=False, db_index=True
-    )
-    content_object = GenericForeignKey(ct_field='content_type', fk_field='object_pk')
-    created = models.DateTimeField(auto_now_add=True, editable=False)
-    updated = models.DateTimeField(auto_now=True)
-    state = models.PositiveSmallIntegerField(
-        choices=DraftState.choices,
-        default=DraftState.DRAFT.value,
-        editable=False,
-    )
-    status = models.PositiveSmallIntegerField(
-        choices=ModerationStatus.choices,
-        default=ModerationStatus.PENDING.value,
-        editable=False,
-    )
-    by = models.ForeignKey(
-        getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
-        blank=True,
-        null=True,
-        editable=False,
-        on_delete=models.SET_NULL,
-        related_name='moderated_objects',
-    )
-    on = models.DateTimeField(editable=False, blank=True, null=True)
-    reason = models.TextField(blank=True, null=True)
-    changed_object = SerializedObjectField(serialize_format='json', editable=False)
-    changed_by = models.ForeignKey(
-        getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
+        PENDING = _ModerationStatus.PENDING, _('Pending')
+        APPROVED = _ModerationStatus.APPROVED, _('Approved')
+        REJECTED = _ModerationStatus.REJECTED, _('Rejected')
+
+    class Meta:
+        abstract = True
+
+
+class ChangeSet(AbstractChange):
+    """A set of changes to one or more moderated model instances."""
+
+    initiator = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         editable=True,
         on_delete=models.SET_NULL,
-        related_name='changed_by_set',
+        related_name='initiated_changesets',
+    )
+    created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_date = models.DateTimeField(auto_now=True, editable=False)
+    state = models.PositiveSmallIntegerField(
+        choices=AbstractChange.DraftState.choices,
+        default=AbstractChange.DraftState.DRAFT.value,
+        editable=False,
+    )
+    status = models.PositiveSmallIntegerField(
+        choices=AbstractChange.ModerationStatus.choices,
+        default=AbstractChange.ModerationStatus.PENDING.value,
+        editable=False,
     )
 
-    objects = ModeratedObjectManager()
-
-    content_type.content_type_filter = True
-
-    def __init__(self, *args, **kwargs):
-        self.instance = kwargs.get('content_object')
-        super().__init__(*args, **kwargs)
+    objects = ChangeSetManager()
 
     def __str__(self):
-        return '%s' % self.changed_object
+        return f'Changeset #{self.pk}, initiated {self.created_date} by {self.initiator}'
 
     def save(self, *args, **kwargs):
         if self.instance:
             self.changed_object = self.instance
-
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _('Moderated Object')
-        verbose_name_plural = _('Moderated Objects')
-        ordering = ['status', 'created']
+        verbose_name = _('modification')
+        verbose_name_plural = _('modifications')
+        ordering = ['status', 'created_date']
 
-    def automoderate(self, user=None):
-        '''Auto moderate object for given user.
-        Returns status of moderation.
-        '''
+    def automoderate(self, user=None) -> AbstractChange.ModerationStatus:
+        """Auto-moderate the modification based on the user; return the moderation status."""
         if user is None:
-            user = self.changed_by
+            user = self.initiator
         else:
-            self.changed_by = user
+            self.initiator = user
             # No need to save here, both reject() and approve() will save us.
             # Just save below if the moderation result is PENDING.
 
@@ -107,15 +99,15 @@ class ModeratedObject(models.Model):
             self.reject(by=self.by, reason=reason)
         elif status == self.ModerationStatus.APPROVED.value:
             self.approve(by=self.by, reason=reason)
-        else:  # MODERATION_STATUS_PENDING
+        else:  # PENDING
             self.save()
 
         return status
 
     def _get_moderation_status_and_reason(self, obj, user):
-        '''
+        """
         Returns tuple of moderation status and reason for auto moderation
-        '''
+        """
         reason = self.moderator.is_auto_reject(obj, user)
         if reason:
             return self.ModerationStatus.REJECTED.value, reason
@@ -136,13 +128,12 @@ class ModeratedObject(models.Model):
         return None
 
     def get_admin_moderate_url(self):
-        return '/admin/moderation/moderatedobject/%s/change/' % self.pk
+        return f'/admin/moderation/moderatedobject/{self.pk}/change/'
 
     @property
     def moderator(self):
-        model_class = self.content_type.model_class()
-
-        return moderation.get_moderator(model_class)
+        model_class: Type['ModeratedModel'] = self.content_type.model_class()
+        return model_class.Moderator(model_class)  # TODO: singleton?
 
     def _send_signals_and_moderate(self, new_status, by, reason):
         pre_moderation.send(
@@ -159,12 +150,12 @@ class ModeratedObject(models.Model):
             status=new_status,
         )
 
-    def _moderate(self, new_status, by, reason):
+    def _moderate(self, new_status, moderator, reason):
         # See register.py pre_save_handler() for the case where the model is
         # reset to its old values, and the new values are stored in the
-        # ModeratedObject. In such cases, on approval, we should restore the
+        # Moderation. In such cases, on approval, we should restore the
         # changes to the base object by saving the one attached to the
-        # ModeratedObject.
+        # Moderation.
 
         if (
             self.status == self.ModerationStatus.PENDING.value
@@ -176,7 +167,7 @@ class ModeratedObject(models.Model):
         else:
             # The model in the database contains the most recent data already,
             # or we're not ready to approve the changes stored in
-            # ModeratedObject.
+            # Moderation.
             obj_class = self.changed_object.__class__
             pk = self.changed_object.pk
             base_object = obj_class._default_unmoderated_manager.get(pk=pk)
@@ -189,7 +180,7 @@ class ModeratedObject(models.Model):
 
         self.status = new_status
         self.on = datetime.datetime.now()
-        self.by = by
+        self.moderator = moderator
         self.reason = reason
         self.save()
 
@@ -200,7 +191,7 @@ class ModeratedObject(models.Model):
                 new_visible = True
             elif new_status == self.ModerationStatus.REJECTED.value:
                 new_visible = False
-            else:  # MODERATION_STATUS_PENDING
+            else:  # PENDING
                 new_visible = self.moderator.visible_until_rejected
 
             if new_visible != old_visible:
@@ -215,8 +206,8 @@ class ModeratedObject(models.Model):
                 # inherited visibility_column.
                 base_object._save_parents(base_object.__class__, None, None)
 
-        if self.changed_by:
-            self.moderator.inform_user(self.content_object, self.changed_by)
+        if self.initiator:
+            self.moderator.inform_user(self.content_object, self.initiator)
 
     def has_object_been_changed(self, original_obj, only_excluded=False):
         excludes = includes = []

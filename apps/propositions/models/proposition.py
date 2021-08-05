@@ -18,8 +18,7 @@ from apps.images.models.model_with_images import (
     ImagesField,
     ModelWithImages,
 )
-from apps.moderation import moderation
-from apps.moderation.moderator import GenericModerator
+from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.places.models.model_with_locations import (
     AbstractLocationRelation,
     LocationsField,
@@ -31,7 +30,6 @@ from apps.quotes.models.model_with_related_quotes import (
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
-from apps.search.models import SearchableModel
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.fields.html_field import (
@@ -133,7 +131,7 @@ class OccurrenceType(models.TextChoices):
 
 
 class Proposition(  # noqa: WPS215
-    SearchableModel,
+    SearchableModeratedModel,
     DatedModel,  # submodels like `Occurrence` require date
     ModelWithSources,
     ModelWithRelatedEntities,
@@ -347,10 +345,3 @@ class Conclusion(Proposition):
         proxy = True
 
     objects = ConclusionManager()
-
-
-class PropositionModerator(GenericModerator):
-    """Moderator class for propositions."""
-
-
-moderation.register(Proposition, PropositionModerator)

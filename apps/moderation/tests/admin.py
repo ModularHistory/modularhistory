@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from apps.moderation.admin import ModerationAdmin
+from apps.moderation.admin import ChangeSetAdmin
 
 from .models import Book
 
 
-class BookAdmin(ModerationAdmin):
+class BookAdmin(ChangeSetAdmin):
     pass
 
 

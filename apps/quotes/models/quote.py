@@ -10,19 +10,20 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
+from apps.dates.models import DatedModel
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
 from apps.images.models.model_with_images import (
     AbstractImageRelation,
     ImagesField,
     ModelWithImages,
 )
+from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
 from apps.quotes.serializers import QuoteSerializer
-from apps.search.models.searchable_dated_model import SearchableDatedModel
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.constants.strings import EMPTY_STRING
@@ -75,7 +76,8 @@ class QuoteRelation(AbstractQuoteRelation):
 
 
 class Quote(
-    SearchableDatedModel,
+    SearchableModeratedModel,
+    DatedModel,
     ModelWithSources,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,

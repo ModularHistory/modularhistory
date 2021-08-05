@@ -5,22 +5,22 @@ from django.forms.models import ModelForm
 from django.urls import NoReverseMatch, reverse
 
 from apps.admin import admin_site
-from apps.moderation import moderation
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.filterspecs import RegisteredContentTypeListFilter
-from apps.moderation.models import ModeratedObject
+from apps.moderation.models import ChangeSet
+from apps.moderation.models.moderated_model.model import ModeratedModel
 
 from .actions import approve_objects, reject_objects, set_objects_as_pending
 
 available_filters = (('content_type', RegisteredContentTypeListFilter), 'status')
 
 
-class ModeratedObjectAdmin(admin.ModelAdmin):
-    date_hierarchy = 'created'
-    list_display = ('content_object', 'content_type', 'created', 'status', 'by', 'on')
+class ChangeSetAdmin(admin.ModelAdmin):
+    date_hierarchy = 'created_date'
+    list_display = ('created_date', 'status', 'moderator')
     list_filter = available_filters
     change_form_template = 'moderation/moderate_object.html'
-    change_list_template = 'moderation/moderated_objects_list.html'
+    change_list_template = 'moderation/moderations_list.html'
     actions = [reject_objects, approve_objects, set_objects_as_pending]
     fieldsets = (('Object moderation', {'fields': ('reason',)}),)
 
@@ -36,28 +36,24 @@ class ModeratedObjectAdmin(admin.ModelAdmin):
     def content_object(self, obj):
         return str(obj.changed_object)
 
-    def get_moderated_object_form(self, model_class):
-        class ModeratedObjectForm(ModelForm):
+    def get_moderation_form(self, model_class):
+        class ModerationForm(ModelForm):
             class Meta:
                 model = model_class
                 fields = '__all__'
 
-        return ModeratedObjectForm
+        return ModerationForm
 
     def change_view(self, request, object_id, extra_context=None):
-        moderated_object = ModeratedObject.objects.get(pk=object_id)
-
-        changed_obj = moderated_object.changed_object
-
-        moderator = moderation.get_moderator(changed_obj.__class__)
-
+        moderation = ChangeSet.objects.get(pk=object_id)
+        changed_obj: ModeratedModel = moderation.changed_object
+        moderator = changed_obj.__class__.Moderator(changed_obj.__class__)
         if moderator.visible_until_rejected:
             old_object = changed_obj
-            new_object = moderated_object.get_object_for_this_type()
+            new_object = moderation.get_object_for_this_type()
         else:
-            old_object = moderated_object.get_object_for_this_type()
+            old_object = moderation.get_object_for_this_type()
             new_object = changed_obj
-
         changes = list(
             get_changes_between_models(
                 old_object,
@@ -68,14 +64,14 @@ class ModeratedObjectAdmin(admin.ModelAdmin):
         )
 
         if request.POST:
-            admin_form = self.get_form(request, moderated_object)(request.POST)
+            admin_form = self.get_form(request, moderation)(request.POST)
 
             if admin_form.is_valid():
                 reason = admin_form.cleaned_data['reason']
                 if 'approve' in request.POST:
-                    moderated_object.approve(request.user, reason)
+                    moderation.approve(request.user, reason)
                 elif 'reject' in request.POST:
-                    moderated_object.reject(request.user, reason)
+                    moderation.reject(request.user, reason)
 
         content_type = ContentType.objects.get_for_model(changed_obj.__class__)
         try:
@@ -94,4 +90,4 @@ class ModeratedObjectAdmin(admin.ModelAdmin):
         return super().change_view(request, object_id, extra_context=extra_context)
 
 
-admin_site.register(ModeratedObject, ModeratedObjectAdmin)
+admin_site.register(ChangeSet, ChangeSetAdmin)

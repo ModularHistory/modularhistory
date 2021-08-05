@@ -19,12 +19,12 @@ from apps.images.models.model_with_images import (
     ImagesField,
     ModelWithImages,
 )
+from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
-from apps.search.models import SearchableModel
 from core.constants.strings import EMPTY_STRING
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
@@ -75,7 +75,7 @@ class QuoteRelation(AbstractQuoteRelation):
 
 class Entity(
     TypedModel,
-    SearchableModel,
+    SearchableModeratedModel,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,

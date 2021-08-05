@@ -4,17 +4,17 @@ from typing import TYPE_CHECKING, Type
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.query import QuerySet
 
-from apps.moderation import moderation
+from apps.moderation.constants import DraftState, ModerationStatus
 from apps.moderation.signals import post_many_moderation, pre_many_moderation
 
 if TYPE_CHECKING:
+    from apps.moderation.models.change import Change
     from apps.moderation.models.moderated_model import ModeratedModel
-    from apps.moderation.models.moderated_object import ModeratedObject
 
 
-class ModeratedObjectQuerySet(QuerySet):
+class ChangeQuerySet(QuerySet):
 
-    model: Type['ModeratedObject']
+    model: Type['Change']
 
     def approve(self, cls: Type['ModeratedModel'], by, reason=None):
         self._send_signals_and_moderate(
@@ -30,7 +30,7 @@ class ModeratedObjectQuerySet(QuerySet):
         )
 
     def moderator(self, cls: Type['ModeratedModel']):
-        return moderation.get_moderator(cls)
+        return cls.Moderator(cls)
 
     def _send_signals_and_moderate(self, cls: Type['ModeratedModel'], new_status, by, reason):
         pre_many_moderation.send(
@@ -41,24 +41,24 @@ class ModeratedObjectQuerySet(QuerySet):
             sender=cls, queryset=self, status=new_status, by=by, reason=reason
         )
 
-    def _moderate(self, cls: Type['ModeratedModel'], new_status, by, reason):
+    def _moderate(self, cls: Type['ModeratedModel'], new_status, moderator, reason):
         mod = self.moderator(cls)
         ct = ContentType.objects.get_for_model(cls)
         update_kwargs = {
             'status': new_status,
-            'on': datetime.now(),
-            'by': by,
+            'date': datetime.now(),
+            'moderator': moderator,
             'reason': reason,
         }
-        if new_status == self.model.ModerationStatus.APPROVED.value:
-            update_kwargs['state'] = self.model.DraftState.READY.value
+        if new_status == ModerationStatus.APPROVED:
+            update_kwargs['state'] = DraftState.READY
         self.update(update_kwargs)
         if mod.visibility_column:
-            if new_status == self.model.ModerationStatus.APPROVED.value:
+            if new_status == ModerationStatus.APPROVED:
                 new_visible = True
-            elif new_status == self.model.ModerationStatus.REJECTED.value:
+            elif new_status == ModerationStatus.REJECTED:
                 new_visible = False
-            else:  # MODERATION_STATUS_PENDING
+            else:  # PENDING
                 new_visible = mod.visibile_until_rejected
             cls.objects.filter(
                 id__in=self.filter(content_type=ct).values_list('object_id', flat=True)

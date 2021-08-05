@@ -1,6 +1,6 @@
 from django.utils.translation import ugettext as _
 
-from apps.moderation.constants import MODERATION_STATUS_PENDING
+from apps.moderation.constants import ModerationStatus
 from apps.moderation.filterspecs import RegisteredContentTypeListFilter
 
 available_filters = (('content_type', RegisteredContentTypeListFilter), 'status')
@@ -23,7 +23,7 @@ reject_objects.short_description = _('Reject selected moderated objects')
 
 
 def set_objects_as_pending(modeladmin, request, queryset):
-    queryset.update(status=MODERATION_STATUS_PENDING)
+    queryset.update(status=ModerationStatus.PENDING)
 
 
 set_objects_as_pending.short_description = _('Set selected moderated' ' objects as Pending')

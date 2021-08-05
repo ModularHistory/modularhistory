@@ -14,7 +14,7 @@ from apps.moderation.diff import (
     get_diff_operations,
     html_to_list,
 )
-from apps.moderation.models import ModeratedObject
+from apps.moderation.models import Change
 
 _norm_whitespace_re = re.compile(r'\s+')
 
@@ -91,7 +91,7 @@ class ImageChangeObjectTestCase(unittest.TestCase):
         )
 
 
-class DiffModeratedObjectTestCase(TestCase):
+class DiffModerationTestCase(TestCase):
     fixtures = ['test_users.json', 'test_moderation.json']
 
     def setUp(self):
@@ -99,12 +99,12 @@ class DiffModeratedObjectTestCase(TestCase):
 
     def test_get_changes_between_models(self):
         self.profile.description = 'New description'
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
+        moderation = Change(content_object=self.profile)
+        moderation.save()
 
         self.profile = UserProfile.objects.get(user__username='moderator')
 
-        changes = get_changes_between_models(moderated_object.changed_object, self.profile)
+        changes = get_changes_between_models(moderation.changed_object, self.profile)
 
         self.assertIn(
             "'userprofile__description': Change object: New description - " 'Old description',
@@ -119,12 +119,12 @@ class DiffModeratedObjectTestCase(TestCase):
 
     def test_foreign_key_changes(self):
         self.profile.user = User.objects.get(username='admin')
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
+        moderation = Change(content_object=self.profile)
+        moderation.save()
 
         self.profile = UserProfile.objects.get(user__username='moderator')
 
-        changes = get_changes_between_models(moderated_object.changed_object, self.profile)
+        changes = get_changes_between_models(moderation.changed_object, self.profile)
 
         self.assertIn("'userprofile__user': Change object: 4 - 1", str(changes))
         self.assertIn(
@@ -139,13 +139,13 @@ class DiffModeratedObjectTestCase(TestCase):
 
     def test_foreign_key_changes_resolve_foreignkeys(self):
         self.profile.user = User.objects.get(username='admin')
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
+        moderation = Change(content_object=self.profile)
+        moderation.save()
 
         self.profile = UserProfile.objects.get(user__username='moderator')
 
         changes = get_changes_between_models(
-            moderated_object.changed_object, self.profile, resolve_foreignkeys=True
+            moderation.changed_object, self.profile, resolve_foreignkeys=True
         )
 
         self.assertIn("'userprofile__user': Change object: admin - moderator", str(changes))
@@ -160,7 +160,7 @@ class DiffModeratedObjectTestCase(TestCase):
         )
 
     def test_get_changes_between_models_image(self):
-        '''Verify proper diff for ImageField fields'''
+        """Verify proper diff for ImageField fields"""
 
         image1 = ModelWithImage(image='tmp/test1.jpg')
         image1.save()
@@ -180,13 +180,13 @@ class DiffModeratedObjectTestCase(TestCase):
 
     def test_excluded_fields_should_be_excluded_from_changes(self):
         self.profile.description = 'New description'
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
+        moderation = Change(content_object=self.profile)
+        moderation.save()
 
         self.profile = UserProfile.objects.get(user__username='moderator')
 
         changes = get_changes_between_models(
-            moderated_object.changed_object, self.profile, excludes=['description']
+            moderation.changed_object, self.profile, excludes=['description']
         )
 
         self.assertIn("'userprofile__user': Change object: 1 - 1", str(changes))
@@ -259,9 +259,9 @@ class DateFieldTestCase(TestCase):
         self.obj2.save()
 
     def test_date_field_in_model_object_should_be_unicode(self):
-        '''Test if when model field value is not unicode, then when getting
+        """Test if when model field value is not unicode, then when getting
         changes between models, all changes should be unicode.
-        '''
+        """
         changes = get_changes_between_models(self.obj1, self.obj2)
 
         date_change = changes['modelwithdatefield__date']
@@ -270,9 +270,9 @@ class DateFieldTestCase(TestCase):
         self.assertTrue(isinstance(date_change.change[1], str))
 
     def test_html_to_list_should_return_list(self):
-        '''Test if changes dict generated from model that has non unicode field
+        """Test if changes dict generated from model that has non unicode field
         is properly used by html_to_list function
-        '''
+        """
         changes = get_changes_between_models(self.obj1, self.obj2)
 
         date_change = changes['modelwithdatefield__date']

@@ -1,23 +1,15 @@
 from django.contrib.auth.models import Group, User
-from django.db import models
 from django.test.testcases import TestCase
-from django.test.utils import override_settings
 from tests.models import ModelWithSlugField2, ProxyProfile, SuperUserProfile, UserProfile
 from tests.utils import setup_moderation, teardown_moderation
 
-from apps.moderation.constants import (
-    MODERATION_DRAFT_STATE,
-    MODERATION_READY_STATE,
-    MODERATION_STATUS_APPROVED,
-    MODERATION_STATUS_PENDING,
-    MODERATION_STATUS_REJECTED,
-)
+from apps.moderation.constants import ModerationStatus
 from apps.moderation.fields import SerializedObjectField
 from apps.moderation.helpers import automoderate
-from apps.moderation.models import ModeratedObject
+from apps.moderation.models import Change
 from apps.moderation.models.moderated_model import ModeratedModelManager
 from apps.moderation.moderator import GenericModerator
-from apps.moderation.register import ModerationManager, RegistrationError
+from apps.moderation.register import ModerationManager
 
 
 class SerializationTestCase(TestCase):
@@ -95,33 +87,31 @@ class SerializationTestCase(TestCase):
         )
 
     def test_deserialzed_object(self):
-        moderated_object = ModeratedObject(content_object=self.profile)
+        moderation = Change(content_object=self.profile)
         self.profile.description = 'New description'
-        moderated_object.changed_object = self.profile
-        moderated_object.save()
-        pk = moderated_object.pk
+        moderation.changed_object = self.profile
+        moderation.save()
+        pk = moderation.pk
 
-        moderated_object = ModeratedObject.objects.get(pk=pk)
+        moderation = Change.objects.get(pk=pk)
 
-        self.assertEqual(moderated_object.changed_object.description, 'New description')
+        self.assertEqual(moderation.changed_object.description, 'New description')
 
-        self.assertEqual(moderated_object.content_object.description, 'Old description')
+        self.assertEqual(moderation.content_object.description, 'Old description')
 
     def test_change_of_deserialzed_object(self):
         self.profile.description = 'New description'
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
-        pk = moderated_object.pk
+        moderation = Change(content_object=self.profile)
+        moderation.save()
+        pk = moderation.pk
 
         self.profile.description = 'New changed description'
-        moderated_object.changed_object = self.profile.description
-        moderated_object.save()
+        moderation.changed_object = self.profile.description
+        moderation.save()
 
-        moderated_object = ModeratedObject.objects.get(pk=pk)
+        moderation = Change.objects.get(pk=pk)
 
-        self.assertEqual(
-            moderated_object.changed_object.description, 'New changed description'
-        )
+        self.assertEqual(moderation.changed_object.description, 'New changed description')
 
     def test_serialize_proxy_model(self):
         'Handle proxy models in the serialization.'
@@ -169,18 +159,18 @@ class ModerateTestCase(TestCase):
     def tearDown(self):
         teardown_moderation()
 
-    def test_objects_with_no_moderated_object_are_visible(self):
+    def test_objects_with_no_moderation_are_visible(self):
         """
         Simulate conditions where moderation is added to a model which
         already has existing objects, which should remain visible.
         """
 
-        ModeratedObject.objects.all().delete()
+        Change.objects.all().delete()
 
         self.assertEqual(
             [self.profile],
             list(self.profile.__class__.objects.all()),
-            'Objects with no attached ModeratedObject should be visible ' 'by default.',
+            'Objects with no attached Moderation should be visible ' 'by default.',
         )
 
     def test_approval_status_pending(self):
@@ -189,31 +179,29 @@ class ModerateTestCase(TestCase):
         self.profile.description = 'New description'
         self.profile.save()
 
-        self.assertEqual(self.profile.moderated_object.status, MODERATION_STATUS_PENDING)
+        self.assertEqual(self.profile.moderation.status, ModerationStatus.PENDING)
 
     def test_moderate(self):
         self.profile.description = 'New description'
         self.profile.save()
 
-        self.profile.moderated_object._moderate(
-            MODERATION_STATUS_APPROVED, self.user, 'Reason'
-        )
+        self.profile.moderation._moderate(ModerationStatus.APPROVED, self.user, 'Reason')
 
-        self.assertEqual(self.profile.moderated_object.status, MODERATION_STATUS_APPROVED)
-        self.assertEqual(self.profile.moderated_object.by, self.user)
-        self.assertEqual(self.profile.moderated_object.reason, 'Reason')
+        self.assertEqual(self.profile.moderation.status, ModerationStatus.APPROVED)
+        self.assertEqual(self.profile.moderation.by, self.user)
+        self.assertEqual(self.profile.moderation.reason, 'Reason')
 
     def test_multiple_moderations_throws_exception_by_default(self):
         self.profile.description = 'New description'
         self.profile.save()
 
-        moderated_object = ModeratedObject.objects.create(content_object=self.profile)
-        moderated_object.approve(by=self.user)
+        moderation = Change.objects.create(content_object=self.profile)
+        moderation.approve(by=self.user)
 
         with self.assertRaises(ModeratedModelManager.MultipleModerations):
             self.profile.__class__.objects.get(id=self.profile.id)
 
-    def test_approve_new_moderated_object(self):
+    def test_approve_new_moderation(self):
         """
         When a newly created object is approved, it should become visible
         in standard querysets.
@@ -225,15 +213,15 @@ class ModerateTestCase(TestCase):
         profile.save()
         self.assertEqual(
             MODERATION_DRAFT_STATE,
-            profile.moderated_object.state,
+            profile.moderation.state,
             'Before first approval, the profile should be in draft state, '
             'to hide it from querysets.',
         )
 
-        profile.moderated_object.approve(self.user)
+        profile.moderation.approve(self.user)
         self.assertEqual(
             MODERATION_READY_STATE,
-            profile.moderated_object.state,
+            profile.moderation.state,
             'After first approval, the profile should be in ready state, '
             'to show it in querysets.',
         )
@@ -247,7 +235,7 @@ class ModerateTestCase(TestCase):
             'New profile objects should be visible after being accepted',
         )
 
-    def test_reject_new_moderated_object(self):
+    def test_reject_new_moderation(self):
         """
         When a newly created object is rejected, it should remain invisible
         in standard querysets.
@@ -259,22 +247,20 @@ class ModerateTestCase(TestCase):
         profile.save()
         self.assertEqual(
             MODERATION_DRAFT_STATE,
-            profile.moderated_object.state,
+            profile.moderation.state,
             'Before first approval, the profile should be in draft state, '
             'to hide it from querysets.',
         )
 
-        profile.moderated_object.reject(self.user)
+        profile.moderation.reject(self.user)
         self.assertEqual(
             MODERATION_DRAFT_STATE,
-            profile.moderated_object.state,
+            profile.moderation.state,
             'After rejection, the profile should still be in draft state, '
             'to hide it from querysets.',
         )
 
-        user_profile = self.profile.__class__.unmoderated_objects.get(
-            url='http://www.test.com'
-        )
+        user_profile = self.profile.__class__.unmoderations.get(url='http://www.test.com')
         self.assertEqual(user_profile.description, 'Profile for new user')
         self.assertEqual(
             [],
@@ -282,7 +268,7 @@ class ModerateTestCase(TestCase):
             'New profile objects should be hidden after being rejected',
         )
 
-    def test_approve_modified_moderated_object(self):
+    def test_approve_modified_moderation(self):
         """
         When a previously approved object is updated and approved, it should
         remain visible in standard querysets, with the new data saved in the
@@ -290,11 +276,11 @@ class ModerateTestCase(TestCase):
         """
         self.profile.description = 'New description'
         self.profile.save()
-        self.profile.moderated_object.approve(self.user)
+        self.profile.moderation.approve(self.user)
 
         self.assertEqual(
             MODERATION_READY_STATE,
-            self.profile.moderated_object.state,
+            self.profile.moderation.state,
             'After first approval, the profile should be in ready state, '
             'to show it in querysets.',
         )
@@ -307,22 +293,22 @@ class ModerateTestCase(TestCase):
             'Modified profile objects should be visible after being accepted',
         )
 
-    def test_reject_modified_moderated_object(self):
+    def test_reject_modified_moderation(self):
         """
         When a previously approved object is updated and rejected, it should
         remain visible in standard querysets, but with the old (previously
         approved) data saved in the object.
         """
-        ModeratedObject.objects.create(content_object=self.profile)
-        self.profile.moderated_object.approve(self.user)
+        Change.objects.create(content_object=self.profile)
+        self.profile.moderation.approve(self.user)
 
         self.profile.description = 'New description'
         self.profile.save()
 
-        self.profile.moderated_object.reject(self.user)
+        self.profile.moderation.reject(self.user)
         self.assertEqual(
             MODERATION_READY_STATE,
-            self.profile.moderated_object.state,
+            self.profile.moderation.state,
             'After rejection, the profile should still be in ready state, '
             'to show it in querysets, but with the old data.',
         )
@@ -330,7 +316,7 @@ class ModerateTestCase(TestCase):
         user_profile = self.profile.__class__.objects.get(id=self.profile.id)
 
         self.assertEqual(user_profile.description, 'Old description')
-        self.assertEqual(self.profile.moderated_object.status, MODERATION_STATUS_REJECTED)
+        self.assertEqual(self.profile.moderation.status, ModerationStatus.REJECTED)
         self.assertEqual(
             [self.profile],
             list(self.profile.__class__.objects.filter(pk=self.profile.pk)),
@@ -343,12 +329,12 @@ class ModerateTestCase(TestCase):
         self.profile.description = 'Another bad description'
         self.profile.save()
 
-        self.profile.moderated_object.reject(self.user)
+        self.profile.moderation.reject(self.user)
 
         user_profile = self.profile.__class__.objects.get(id=self.profile.id)
 
         self.assertEqual(user_profile.description, 'Old description')
-        self.assertEqual(self.profile.moderated_object.status, MODERATION_STATUS_REJECTED)
+        self.assertEqual(self.profile.moderation.status, ModerationStatus.REJECTED)
         self.assertEqual(
             [self.profile],
             list(self.profile.__class__.objects.filter(pk=self.profile.pk)),
@@ -358,25 +344,25 @@ class ModerateTestCase(TestCase):
 
     def test_has_object_been_changed_should_be_true(self):
         self.profile.description = 'Old description'
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
-        moderated_object.approve(by=self.user)
+        moderation = Change(content_object=self.profile)
+        moderation.save()
+        moderation.approve(by=self.user)
 
         user_profile = self.profile.__class__.objects.get(id=self.profile.id)
 
         self.profile.description = 'New description'
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
+        moderation = Change(content_object=self.profile)
+        moderation.save()
 
-        value = moderated_object.has_object_been_changed(user_profile)
+        value = moderation.has_object_been_changed(user_profile)
 
         self.assertEqual(value, True)
 
     def test_has_object_been_changed_should_be_false(self):
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
+        moderation = Change(content_object=self.profile)
+        moderation.save()
 
-        value = moderated_object.has_object_been_changed(self.profile)
+        value = moderation.has_object_been_changed(self.profile)
 
         self.assertEqual(value, False)
 
@@ -405,7 +391,7 @@ class AutoModerateTestCase(TestCase):
         self.profile.save()
 
         status = automoderate(self.profile, self.user)
-        self.assertEqual(status, MODERATION_STATUS_APPROVED)
+        self.assertEqual(status, ModerationStatus.APPROVED)
 
         profile = UserProfile.objects.get(user__username='moderator')
         self.assertEqual(profile.description, 'New description')
@@ -421,42 +407,9 @@ class AutoModerateTestCase(TestCase):
 
         status = automoderate(self.profile, self.user)
 
-        profile = UserProfile.unmoderated_objects.get(user__username='moderator')
+        profile = UserProfile.unmoderations.get(user__username='moderator')
 
-        self.assertEqual(status, MODERATION_STATUS_REJECTED)
+        self.assertEqual(status, ModerationStatus.REJECTED)
         self.assertEqual(profile.description, 'Old description')
 
-    def test_model_not_registered_with_moderation(self):
-        obj = ModelWithSlugField2(slug='test')
-        obj.save()
-
-        self.assertRaises(RegistrationError, automoderate, obj, self.user)
-
-
-@override_settings(AUTH_USER_MODEL='tests.CustomUser')
-class ModerateCustomUserTestCase(ModerateTestCase):
-    def setUp(self):
-        from django.conf import settings
-        from tests.models import CustomUser, UserProfileWithCustomUser
-
-        self.user = CustomUser.objects.create(username='custom_user', password='aaaa')
-        self.copy_m = ModeratedObject.by
-        ModeratedObject.by = models.ForeignKey(
-            getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
-            blank=True,
-            null=True,
-            editable=False,
-            on_delete=models.SET_NULL,
-            related_name='moderated_objects',
-        )
-
-        self.profile = UserProfileWithCustomUser.objects.create(
-            user=self.user, description='Old description', url='http://google.com'
-        )
-        self.moderation = setup_moderation([UserProfileWithCustomUser])
-
-    def tearDown(self):
         teardown_moderation()
-        ModeratedObject.by = self.copy_m
-
-    # The actual tests are inherited from ModerateTestCase

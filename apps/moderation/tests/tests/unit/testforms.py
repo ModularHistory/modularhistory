@@ -5,7 +5,7 @@ from django.test.testcases import TestCase
 from tests.models import ModelWithImage, UserProfile
 from tests.utils import setup_moderation, teardown_moderation
 
-from apps.moderation.forms import BaseModeratedObjectForm
+from apps.moderation.forms import BaseModerationForm
 
 
 class FormsTestCase(TestCase):
@@ -14,21 +14,21 @@ class FormsTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.get(username='moderator')
 
-        class ModeratedObjectForm(BaseModeratedObjectForm):
+        class ModerationForm(BaseModerationForm):
             extra = CharField(required=False)
 
             class Meta:
                 model = UserProfile
                 fields = '__all__'
 
-        self.ModeratedObjectForm = ModeratedObjectForm
+        self.ModerationForm = ModerationForm
         self.moderation = setup_moderation([UserProfile, ModelWithImage])
 
     def tearDown(self):
         teardown_moderation()
 
     def test_create_form_class(self):
-        form = self.ModeratedObjectForm()
+        form = self.ModerationForm()
         self.assertEqual(form._meta.model.__name__, 'UserProfile')
 
     def test_if_form_is_initialized_new_object(self):
@@ -37,7 +37,7 @@ class FormsTestCase(TestCase):
         )
         profile.save()
 
-        form = self.ModeratedObjectForm(instance=profile)
+        form = self.ModerationForm(instance=profile)
         self.assertEqual(form.initial['description'], 'New description')
 
     def test_if_form_is_initialized_existing_object(self):
@@ -46,12 +46,12 @@ class FormsTestCase(TestCase):
         )
         profile.save()
 
-        profile.moderated_object.approve(by=self.user)
+        profile.moderation.approve(by=self.user)
 
         profile.description = 'Changed description'
         profile.save()
 
-        form = self.ModeratedObjectForm(instance=profile)
+        form = self.ModerationForm(instance=profile)
 
         profile = UserProfile.objects.get(id=1)
 
@@ -62,8 +62,8 @@ class FormsTestCase(TestCase):
         object = ModelWithImage(image='my_image.jpg')
         object.save()
 
-        object = ModelWithImage.unmoderated_objects.get(id=1)
-        form = self.ModeratedObjectForm(instance=object)
+        object = ModelWithImage.unmoderations.get(id=1)
+        form = self.ModerationForm(instance=object)
         self.assertTrue(
             isinstance(form.initial['image'], ImageFieldFile),
             'image in form.initial is instance of ImageField File',
@@ -77,7 +77,7 @@ class FormsTestCase(TestCase):
         profile.save()
         self.moderation.register(UserProfile)
 
-        form = self.ModeratedObjectForm(instance=profile)
+        form = self.ModerationForm(instance=profile)
 
         self.assertEqual(form.initial['description'], 'old description')
 
@@ -87,7 +87,7 @@ class FormsTestCase(TestCase):
         )
         profile.save()
 
-        form = self.ModeratedObjectForm(initial={'extra': 'value'}, instance=profile)
+        form = self.ModerationForm(initial={'extra': 'value'}, instance=profile)
 
         self.assertEqual(form.initial['description'], 'New description')
         self.assertEqual(form.initial['extra'], 'value')

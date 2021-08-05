@@ -1,17 +1,15 @@
-from django import VERSION
 from django.contrib.auth.models import User
-from django.core.exceptions import MultipleObjectsReturned
 from django.db.models.manager import Manager
 from django.test.testcases import TestCase
 from tests.models import ModelWithSlugField2, ModelWithVisibilityField, UserProfile
 from tests.utils import setup_moderation, teardown_moderation
 
-from apps.moderation.models import ModeratedObject
+from apps.moderation.models import Change
 from apps.moderation.models.moderated_model.manager import ModeratedModelManager
 from apps.moderation.moderator import GenericModerator
 
 
-class ModerationObjectsManagerTestCase(TestCase):
+class ModeratedModelManagerManagerTestCase(TestCase):
     fixtures = ['test_users.json', 'test_moderation.json']
 
     def setUp(self):
@@ -34,12 +32,12 @@ class ModerationObjectsManagerTestCase(TestCase):
 
         self.assertEqual(
             str(ManagerClass.__bases__),
-            "(<class 'moderation.managers.ModerationObjectsManager'>"
+            "(<class 'moderation.managers.ModeratedModelManager'>"
             ", <class 'django.db.models.manager.Manager'>)",
         )
 
-    def test_filter_moderated_objects_returns_empty_queryset(self):
-        """Test filter_moderated_objects returns empty queryset
+    def test_filter_moderations_returns_empty_queryset(self):
+        """Test filter_moderations returns empty queryset
         for object that has moderated object"""
 
         ManagerClass = ModeratedModelManager()(Manager)
@@ -47,17 +45,17 @@ class ModerationObjectsManagerTestCase(TestCase):
         manager.model = UserProfile
 
         query_set = UserProfile._default_manager.all()
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
+        moderation = Change(content_object=self.profile)
+        moderation.save()
 
-        self.assertEqual(str(list(manager.filter_moderated_objects(query_set))), '[]')
+        self.assertEqual(str(list(manager.filter_moderations(query_set))), '[]')
 
-    def test_filter_moderated_objects_returns_object(self):
-        """Test if filter_moderated_objects return object when object
+    def test_filter_moderations_returns_object(self):
+        """Test if filter_moderations return object when object
         doesn't have moderated object or deserialized object is <> object"""
-        moderated_object = ModeratedObject(content_object=self.profile)
-        moderated_object.save()
-        moderated_object.approve()
+        moderation = Change(content_object=self.profile)
+        moderation.save()
+        moderation.approve()
 
         self.profile.description = 'New'
         self.profile.save()
@@ -82,79 +80,3 @@ class ModerationObjectsManagerTestCase(TestCase):
         self.assertEqual(
             str(list(query_set)), '[<ModelWithVisibilityField: test 2 - is public True>]'
         )
-
-
-class ModeratedObjectManagerTestCase(TestCase):
-    fixtures = ['test_users.json']
-
-    def setUp(self):
-        self.moderation = setup_moderation([UserProfile, ModelWithSlugField2])
-
-        self.user = User.objects.get(username='admin')
-
-    def tearDown(self):
-        teardown_moderation()
-
-    def test_objects_with_same_object_id_django(self):
-        model1 = ModelWithSlugField2(slug='test')
-        model1.save()
-
-        model2 = UserProfile(
-            description='Profile for new user',
-            url='http://www.yahoo.com',
-            user=User.objects.get(username='user1'),
-        )
-
-        model2.save()
-
-        self.assertRaises(
-            MultipleObjectsReturned, ModeratedObject.objects.get, object_pk=model2.pk
-        )
-
-        moderated_obj1 = ModeratedObject.objects.get_for_instance(model1)
-        moderated_obj2 = ModeratedObject.objects.get_for_instance(model2)
-
-        self.assertEqual(
-            repr(moderated_obj2), '<ModeratedObject: user1 - http://www.yahoo.com>'
-        )
-        if VERSION < (2, 0):
-            self.assertEqual(
-                repr(moderated_obj1), '<ModeratedObject: ModelWithSlugField2 object>'
-            )
-        else:
-            self.assertEqual(
-                repr(moderated_obj1), '<ModeratedObject: ModelWithSlugField2 object (1)>'
-            )
-
-    def test_instance_with_many_moderations(self):
-        # Register a moderator that keeps the history
-        # un-register UserProfile
-        from apps.moderation import moderation
-
-        class KeepHistoryModerator(GenericModerator):
-            keep_history = True
-
-        moderation.unregister(UserProfile)
-        moderation.register(UserProfile, KeepHistoryModerator)
-
-        profile = UserProfile(
-            description='Profile for new user', url='http://www.yahoo.com', user=self.user
-        )
-        profile.save()
-
-        # There should only be one ModeratedObject
-        self.assertEqual(1, ModeratedObject.objects.count())
-
-        profile.url = 'http://www.google.com'
-        profile.save()
-
-        # Should now be two
-        self.assertEqual(2, ModeratedObject.objects.count())
-
-        # Getting for instance should return the one with the google url
-        moderated_object = ModeratedObject.objects.get_for_instance(profile)
-        self.assertEqual(profile.url, moderated_object.changed_object.url)
-
-        # Get the first object, and does it have the yahoo address
-        moderated_object_pk1 = ModeratedObject.objects.get(pk=1)
-        self.assertEqual('http://www.yahoo.com', moderated_object_pk1.changed_object.url)

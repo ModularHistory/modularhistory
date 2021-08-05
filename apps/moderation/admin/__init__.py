@@ -1,1 +1,2 @@
-from .moderated_objects.admin import ModeratedObjectAdmin
+from .change.admin import ChangeAdmin
+from .changeset.admin import ChangeSetAdmin

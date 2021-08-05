@@ -5,11 +5,10 @@ from typing import Sequence
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.moderation.models.moderated_model import ModeratedModel
 from apps.topics.models.taggable_model import TaggableModel
 
 
-class SearchableModel(TaggableModel, ModeratedModel):
+class SearchableModel(TaggableModel):
     """
     A model that shows up in ModularHistory's search results; e.g., a quote or occurrence.
 

@@ -20,7 +20,7 @@ from apps.dates.fields import HistoricDateTimeField
 from apps.dates.models import DatedModel
 from apps.dates.structures import HistoricDateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.search.models import SearchableModel
+from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields.html_field import HTMLField
@@ -62,7 +62,12 @@ class SourceManager(PolymorphicManager, SearchableManager):
     """Custom manager for sources."""
 
 
-class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEntities):
+class Source(
+    PolymorphicModel,
+    SearchableModeratedModel,
+    DatedModel,
+    ModelWithRelatedEntities,
+):
     """A source of content or information."""
 
     content = HTMLField(

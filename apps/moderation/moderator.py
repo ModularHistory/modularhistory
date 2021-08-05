@@ -61,13 +61,13 @@ class GenericModerator:
                     self.fields_exclude.append(field.name)
 
     def is_auto_approve(self, obj, user):
-        '''
+        """
         Checks if change on obj by user need to be auto approved
         Returns False if change is not auto approve or reason(Unicode) if
         change need to be auto approved.
 
         Overwrite this method if you want to provide your custom logic.
-        '''
+        """
         if self.auto_approve_for_groups and self._check_user_in_groups(
             user, self.auto_approve_for_groups
         ):
@@ -80,13 +80,13 @@ class GenericModerator:
         return False
 
     def is_auto_reject(self, obj, user):
-        '''
+        """
         Checks if change on obj by user need to be auto rejected
         Returns False if change is not auto reject or reason(Unicode) if
         change need to be auto rejected.
 
         Overwrite this method if you want to provide your custom logic.
-        '''
+        """
         is_anon = user.is_anonymous
         if callable(is_anon):
             is_anon = is_anon()
@@ -100,9 +100,9 @@ class GenericModerator:
         return False
 
     def reason(self, reason, user=None, obj=None):
-        '''Returns moderation reason for auto moderation.  Optional user
+        """Returns moderation reason for auto moderation.  Optional user
         and object can be passed for a more custom reason.
-        '''
+        """
         return reason
 
     def _check_user_in_groups(self, user, groups):
@@ -144,10 +144,10 @@ class GenericModerator:
         extra_context=None,
     ):
         context = {
-            'moderated_object': content_object.moderated_object,
+            'moderation': content_object.moderation,
             'content_object': content_object,
             'site': Site.objects.get_current(),
-            'content_type': content_object.moderated_object.content_type,
+            'content_type': content_object.moderation.content_type,
         }
 
         if extra_context:
@@ -170,7 +170,7 @@ class GenericModerator:
                     subject_template,
                     ctx.update(
                         {
-                            'moderated_object': mobj,
+                            'moderation': mobj,
                             'content_object': mobj.content_object,
                             'site': site,
                             'content_type': mobj.content_type,
@@ -182,7 +182,7 @@ class GenericModerator:
                     message_template,
                     ctx.update(
                         {
-                            'moderated_object': mobj,
+                            'moderation': mobj,
                             'content_object': mobj.content_object,
                             'site': site,
                             'content_type': mobj.content_type,
@@ -200,7 +200,7 @@ class GenericModerator:
         multiple_backend.send(datatuples)
 
     def inform_moderator(self, content_object, extra_context=None):
-        '''Send notification to moderator'''
+        """Send notification to moderator"""
 
         if self.notify_moderator:
             self.send(
@@ -212,9 +212,9 @@ class GenericModerator:
             )
 
     def inform_user(self, content_object, user, extra_context=None):
-        '''
+        """
         Send notification to user when object is approved or rejected
-        '''
+        """
         if extra_context:
             extra_context.update({'user': user})
         else:
@@ -229,9 +229,9 @@ class GenericModerator:
             )
 
     def inform_users(self, queryset, extra_context=None):
-        '''
+        """
         Send notifications to users when their objects are approved or rejected
-        '''
+        """
         if self.notify_user:
             self.send_many(
                 queryset=queryset.exclude(changed_by=None).select_related(

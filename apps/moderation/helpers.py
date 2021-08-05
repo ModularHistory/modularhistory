@@ -1,25 +1,17 @@
-from .register import RegistrationError
-
-
 def automoderate(instance, user):
-    '''
+    """
     Auto moderates given model instance on user. Returns moderation status:
     0 - Rejected
     1 - Approved
-    '''
-    try:
-        status = instance.moderated_object.automoderate(user)
-    except AttributeError:
-        msg = '%s has been registered with Moderation.' % instance.__class__
-        raise RegistrationError(msg)
-
+    """
+    status = instance.moderation.automoderate(user)
     return status
 
 
 def import_moderator(app):
-    '''
+    """
     Import moderator module and register all models it contains with moderation
-    '''
+    """
     import imp
     from importlib import import_module
 
@@ -39,9 +31,9 @@ def import_moderator(app):
 
 
 def auto_discover():
-    '''
+    """
     Auto register all apps that have module moderator with moderation
-    '''
+    """
     from django.conf import settings
 
     for app in [app for app in settings.INSTALLED_APPS if app != 'moderation']:

@@ -3,7 +3,7 @@ from django.test.testcases import TestCase
 from tests.models import ModelWithVisibilityField, UserProfile
 from tests.utils import setup_moderation, teardown_moderation
 
-from apps.moderation.constants import MODERATION_STATUS_APPROVED
+from apps.moderation.constants import ModerationStatus
 from apps.moderation.helpers import automoderate
 from apps.moderation.moderator import GenericModerator
 
@@ -29,7 +29,7 @@ class CSRFMiddlewareTestCase(TestCase):
         user = User.objects.get(username='admin')
         self.client.force_login(user)
 
-        url = profile.moderated_object.get_admin_moderate_url()
+        url = profile.moderation.get_admin_moderate_url()
 
         post_data = {'approve': 'Approve'}
 
@@ -39,30 +39,7 @@ class CSRFMiddlewareTestCase(TestCase):
 
         profile = UserProfile.objects.get(pk=profile.pk)
 
-        self.assertEqual(profile.moderated_object.status, MODERATION_STATUS_APPROVED)
-
-
-class AutomoderationRuntimeErrorRegressionTestCase(TestCase):
-    fixtures = ['test_users.json', 'test_moderation.json']
-
-    def setUp(self):
-        setup_moderation([UserProfile])
-
-        self.user = User.objects.get(username='admin')
-
-    def tearDown(self):
-        teardown_moderation()
-
-    def test_RuntimeError(self):
-        from apps.moderation.helpers import automoderate
-
-        profile = UserProfile.objects.get(user__username='moderator')
-        profile.description = 'Change description'
-        profile.save()
-        profile.moderated_object.changed_by = self.user
-        profile.moderated_object.save()
-        automoderate(profile, self.user)
-        profile.moderated_object.save()
+        self.assertEqual(profile.moderation.status, ModerationStatus.APPROVED)
 
 
 class BypassOverwritesUpdatedObjectRegressionTestCase(TestCase):
@@ -91,7 +68,7 @@ class BypassOverwritesUpdatedObjectRegressionTestCase(TestCase):
             'pending, so it should be hidden',
         )
         # So approve it
-        obj.moderated_object.approve(by=self.user, reason='test')
+        obj.moderation.approve(by=self.user, reason='test')
         # Now it should be visible, with the new description
         obj = ModelWithVisibilityField.objects.get()
         self.assertEqual('initial', obj.test)

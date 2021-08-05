@@ -105,6 +105,6 @@ msgstr "Ablehnen"
 msgid "Approve"
 msgstr "Freigeben"
 
-#: moderation/templates/moderation/moderated_objects_list.html:4
+#: moderation/templates/moderation/moderations_list.html:4
 msgid "Select object to moderate"
 msgstr "Wähle Objekt zur Moderation aus"

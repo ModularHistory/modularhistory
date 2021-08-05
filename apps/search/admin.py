@@ -5,7 +5,7 @@ from django.urls import path
 from apps.admin.model_admin import ExtendedModelAdmin, admin_site
 from apps.collections.views import CollectionSearchView
 from apps.entities.views import EntityCategorySearchView, EntitySearchView
-from apps.moderation.admin.moderation import ModerationAdmin
+from apps.moderation.admin.moderated_model import ModeratedModelAdmin
 from apps.search import models
 from apps.topics.views import TagSearchView
 
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from apps.search.models import SearchableModel
 
 
-class SearchableModelAdmin(ModerationAdmin):
+class SearchableModelAdmin(ModeratedModelAdmin):
     """Model admin for searchable models."""
 
     model: Type['SearchableModel']

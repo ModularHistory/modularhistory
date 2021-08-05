@@ -1,6 +1,16 @@
-MODERATION_READY_STATE = 0
-MODERATION_DRAFT_STATE = 1
+from aenum import Constant
 
-MODERATION_STATUS_REJECTED = 0
-MODERATION_STATUS_APPROVED = 1
-MODERATION_STATUS_PENDING = 2
+
+class ModerationStatus(Constant):
+    """."""
+
+    PENDING = 0
+    APPROVED = 1
+    REJECTED = 2
+
+
+class DraftState(Constant):
+    """."""
+
+    DRAFT = 0
+    READY = 1

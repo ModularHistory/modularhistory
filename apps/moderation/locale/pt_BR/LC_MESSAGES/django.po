@@ -100,6 +100,6 @@ msgstr "Aprovar"
 msgid "Reject"
 msgstr "Rejeitar"
 
-#: templates/moderation/moderated_objects_list.html:4
+#: templates/moderation/moderations_list.html:4
 msgid "Select object to moderate"
 msgstr "Selecione o objeto para moderar"
