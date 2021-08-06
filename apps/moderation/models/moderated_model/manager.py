@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 
 class ModeratedModelManager(Manager):
+    """Manager for moderated models."""
 
     model: Type['ModeratedModel']
 

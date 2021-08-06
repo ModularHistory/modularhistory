@@ -48,16 +48,18 @@ class Change(AbstractChange):
         editable=False,
     )
     content_type.content_type_filter = True
-    object_pk = models.PositiveIntegerField(
+    object_id = models.PositiveIntegerField(
         null=True,
         blank=True,
         editable=False,
         db_index=True,
     )
+    # `content_object` holds the existing (unmodified) instance.
     content_object = GenericForeignKey(
         ct_field='content_type',
-        fk_field='object_pk',
+        fk_field='object_id',
     )
+    # `changed_object` holds the modified instance, serialized.
     changed_object = SerializedObjectField(editable=False)
     contributors = models.ManyToManyField(
         to=settings.AUTH_USER_MODEL,
@@ -65,12 +67,12 @@ class Change(AbstractChange):
     )
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     updated_date = models.DateTimeField(auto_now=True, editable=False)
-    state = models.PositiveSmallIntegerField(
+    draft_state = models.PositiveSmallIntegerField(
         choices=AbstractChange.DraftState.choices,
         default=AbstractChange.DraftState.DRAFT.value,
         editable=False,
     )
-    status = models.PositiveSmallIntegerField(
+    moderation_status = models.PositiveSmallIntegerField(
         choices=AbstractChange.ModerationStatus.choices,
         default=AbstractChange.ModerationStatus.PENDING.value,
         editable=False,

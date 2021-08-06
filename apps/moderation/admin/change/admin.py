@@ -12,12 +12,12 @@ from apps.moderation.models.moderated_model.model import ModeratedModel
 
 from .actions import approve_objects, reject_objects, set_objects_as_pending
 
-available_filters = (('content_type', RegisteredContentTypeListFilter), 'status')
+available_filters = (('content_type', RegisteredContentTypeListFilter), 'moderation_status')
 
 
 class ChangeAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_date'
-    list_display = ('content_object', 'content_type', 'created_date', 'status')
+    list_display = ('content_object', 'content_type', 'created_date', 'moderation_status')
     list_filter = available_filters
     change_form_template = 'moderation/moderate_object.html'
     change_list_template = 'moderation/moderations_list.html'
@@ -48,12 +48,8 @@ class ChangeAdmin(admin.ModelAdmin):
         moderation = ChangeSet.objects.get(pk=object_id)
         changed_obj: ModeratedModel = moderation.changed_object
         moderator = changed_obj.__class__.Moderator(changed_obj.__class__)
-        if moderator.visible_until_rejected:
-            old_object = changed_obj
-            new_object = moderation.get_object_for_this_type()
-        else:
-            old_object = moderation.get_object_for_this_type()
-            new_object = changed_obj
+        old_object = moderation.get_object_for_this_type()
+        new_object = changed_obj
         changes = list(
             get_changes_between_models(
                 old_object,

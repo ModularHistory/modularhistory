@@ -45,7 +45,7 @@ class ChangeQuerySet(QuerySet):
         mod = self.moderator(cls)
         ct = ContentType.objects.get_for_model(cls)
         update_kwargs = {
-            'status': new_status,
+            'moderation_status': new_status,
             'date': datetime.now(),
             'moderator': moderator,
             'reason': reason,

@@ -3,7 +3,7 @@ from django.utils.translation import ugettext as _
 from apps.moderation.constants import ModerationStatus
 from apps.moderation.filterspecs import RegisteredContentTypeListFilter
 
-available_filters = (('content_type', RegisteredContentTypeListFilter), 'status')
+available_filters = (('content_type', RegisteredContentTypeListFilter), 'moderation_status')
 
 
 def approve_objects(modeladmin, request, queryset):

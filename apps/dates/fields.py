@@ -18,15 +18,13 @@ class HistoricDateTimeField(DateTimeField):
 
     year: int
 
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
     def from_db_value(
         self, datetime_value: Optional[DateTime], *args
     ) -> Optional[HistoricDateTime]:
         """
         Convert a value as returned by the database to a Python object.
-
         This method is the reverse of get_prep_value().
-
-        https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if datetime_value is None:
             return datetime_value
@@ -47,7 +45,6 @@ class HistoricDateTimeField(DateTimeField):
     ) -> Optional[HistoricDateTime]:
         """
         Convert the value into the correct Python object.
-
         This method acts as the reverse of value_to_string(), and is also called in clean().
         """
         if not historic_datetime:

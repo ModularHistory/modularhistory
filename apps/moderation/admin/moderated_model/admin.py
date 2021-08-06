@@ -6,7 +6,6 @@ from apps.admin.model_admin import ExtendedModelAdmin
 from apps.moderation.constants import ModerationStatus
 from apps.moderation.forms import BaseModerationForm
 from apps.moderation.helpers import automoderate
-from apps.moderation.models import Change
 from apps.moderation.models.moderated_model.model import ModeratedModel
 
 
@@ -15,24 +14,22 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
 
     admin_integration_enabled = True
 
-    def get_queryset(self, request):
-        # Modified from django.contrib.admin.options.BaseModelAdmin
-        qs = self.model._default_unmoderated_manager.get_queryset()
-        ordering = self.get_ordering(request)
-        if ordering:
-            qs = qs.order_by(*ordering)
-        return qs
+    # def get_queryset(self, request):
+    #     # Modified from django.contrib.admin.options.BaseModelAdmin
+    #     qs = self.model._default_unmoderated_manager.get_queryset()
+    #     ordering = self.get_ordering(request)
+    #     if ordering:
+    #         qs = qs.order_by(*ordering)
+    #     return qs
 
     def get_form(self, request, obj=None, **kwargs):
         if obj and self.admin_integration_enabled:
             self.form = self.get_moderation_form(obj.__class__)
-
         return super().get_form(request, obj, **kwargs)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        if self.admin_integration_enabled:
-            self.send_message(request, object_id)
-
+        # if self.admin_integration_enabled:
+        #     self.send_message(request, object_id)
         try:
             return super().change_view(
                 request, object_id, form_url=form_url, extra_context=extra_context
@@ -40,41 +37,33 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         except TypeError:
             return super().change_view(request, object_id, extra_context=extra_context)
 
-    def send_message(self, request, object_id):
-        try:
-            obj = self.model.unmoderations.get(pk=object_id)
-            moderated_obj = Change.objects.get_for_instance(obj)
-            moderator = moderated_obj.moderator
-            msg = self.get_moderation_message(
-                moderated_obj.status, moderated_obj.reason, moderator.visible_until_rejected
-            )
-        except Change.DoesNotExist:
-            msg = self.get_moderation_message()
+    # def send_message(self, request, object_id):
+    #     try:
+    #         obj = self.model.unmoderations.get(pk=object_id)
+    #         moderated_obj = Change.objects.get_for_instance(obj)
+    #         moderator = moderated_obj.moderator
+    #         msg = self.get_moderation_message(moderated_obj.status, moderated_obj.reason)
+    #     except Change.DoesNotExist:
+    #         msg = self.get_moderation_message()
 
-        self.message_user(request, msg)
+    #     self.message_user(request, msg)
 
     def save_model(self, request, obj, form, change):
         obj.save()
         automoderate(obj, request.user)
 
-    def get_moderation_message(self, status=None, reason=None, visible_until_rejected=False):
+    def get_moderation_message(self, status=None, reason=None):
         if status == ModerationStatus.PENDING:
-            if visible_until_rejected:
-                return _(
-                    'Object is viewable on site, '
-                    'it will be removed if moderator rejects it'
-                )
-            else:
-                return _(
-                    'Object is not viewable on site, '
-                    'it will be visible if moderator accepts it'
-                )
+            return _(
+                'Object is not viewable on site, '
+                'it will be visible if moderator accepts it'
+            )
         elif status == ModerationStatus.REJECTED:
-            return _('Object has been rejected by moderator, ' 'reason: %s' % reason)
+            return _(f'Object has been rejected by moderator (reason: {reason}).')
         elif status == ModerationStatus.APPROVED:
-            return _('Object has been approved by moderator ' 'and is visible on site')
+            return _('Object has been approved by moderator and is visible on site.')
         elif status is None:
-            return _('This object is not registered with ' 'the moderation system.')
+            return _('This object is not registered with the moderation system.')
 
     def get_moderation_form(self, model_class: Type[ModeratedModel]):
         class ModerationForm(BaseModerationForm):

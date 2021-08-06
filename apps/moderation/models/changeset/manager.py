@@ -6,7 +6,6 @@ from django.db.models.manager import Manager
 from apps.moderation.queryset import ChangeQuerySet
 
 if TYPE_CHECKING:
-    from apps.moderation.models.changeset import ChangeSet
     from apps.moderation.models.change import Change
 
 
@@ -21,13 +20,13 @@ class ChangeSetManager(Manager):
         """Returns Moderation for given model instance"""
         try:
             moderation = self.get(
-                object_pk=instance.pk,
+                object_id=instance.pk,
                 content_type=ContentType.objects.get_for_model(instance.__class__),
             )
         except self.model.MultipleObjectsReturned:
             # Get the most recent one
             moderation = self.filter(
-                object_pk=instance.pk,
+                object_id=instance.pk,
                 content_type=ContentType.objects.get_for_model(instance.__class__),
             ).order_by('-updated')[0]
         return moderation

@@ -1,7 +1,5 @@
 from typing import Type
 
-from django.contrib.contenttypes.fields import GenericRelation
-
 from apps.moderation.models import Change
 from apps.moderation.models.moderated_model.model import ModeratedModel
 from apps.moderation.moderator import GenericModerator
@@ -10,12 +8,6 @@ from .constants import DraftState, ModerationStatus
 
 
 class ModerationManager:
-    def __init__(self, *args, **kwargs):
-        """Initializes the moderation manager."""
-        self._registered_models = {}
-
-        super().__init__(*args, **kwargs)
-
     def register(self, model_class, moderator_class=None):
         """Registers model class with moderation"""
         if moderator_class is None:
@@ -34,7 +26,6 @@ class ModerationManager:
             # Any of this stuff could fail, and we don't want to register the
             # model if these aren't successful, so we wrap it with a
             # try/except/else block
-            self._add_fields_to_model_class(moderator_class_instance)
             self._connect_signals(model_class)
         except Exception:
             raise
@@ -46,72 +37,6 @@ class ModerationManager:
 
         signals.pre_save.connect(self.pre_save_handler, sender=model_class)
         signals.post_save.connect(self.post_save_handler, sender=model_class)
-
-    def _add_moderation_to_class(self, model_class):
-        if hasattr(model_class, '_relation_object'):
-            relation_object = getattr(model_class, '_relation_object')
-        else:
-            relation_object = GenericRelation(Change, object_id_field='object_pk')
-
-        model_class.add_to_class('_relation_object', relation_object)
-
-        def get_moderation(self):
-            if not hasattr(self, '_moderation'):
-                if self._relation_object.count() > 0:
-                    self._moderation = (
-                        getattr(self, '_relation_object').filter().order_by('-updated')[0]
-                    )
-                else:
-                    self._moderation = getattr(self, '_relation_object').get()
-            return self._moderation
-
-        model_class.add_to_class('moderation', property(get_moderation))
-
-    def _add_fields_to_model_class(self, moderator_class_instance):
-        """Sets moderation manager on model class,
-        adds generic relation to Moderation,
-        sets _default_manager on model class as instance of
-        ModeratedModelManager
-        """
-        model_class = moderator_class_instance.model_class
-        base_managers = moderator_class_instance.base_managers
-        moderation_manager_class = moderator_class_instance.moderation_manager_class
-
-        for manager_name, mgr_class in base_managers:
-            if moderation_manager_class not in mgr_class.__bases__:
-                ModeratedManager = type(
-                    str('Moderated{}'.format(mgr_class.__name__)),
-                    (moderation_manager_class, mgr_class),
-                    {},
-                )
-
-                manager = ModeratedManager()
-
-                # We need to do this manually, because Django 1.10 doesn't
-                # easily let us remove or replace a manager, which is what
-                # we want to do. So instead of using the existing
-                # add_to_class/contribute_to_class functions, we just find
-                # the manager with the same name and swap it out for the
-                # new manager we created, then expire the class's cached
-                # properties.
-                manager_names = [m.name for m in model_class._meta.local_managers]
-                manager.name = manager_name
-                manager.model = model_class
-                try:
-                    manager_index = manager_names.index(manager_name)
-                except Exception:
-                    model_class._meta.local_managers = [manager]
-                else:
-                    model_class._meta.local_managers[manager_index] = manager
-                finally:
-                    model_class._meta._expire_cache()
-
-                model_class.add_to_class('unmoderated_{}'.format(manager_name), mgr_class())
-        unmoderated_manager = getattr(
-            model_class, 'unmoderated_{}'.format(model_class._default_manager.name)
-        )
-        model_class.add_to_class('_default_unmoderated_manager', unmoderated_manager)
-        self._add_moderation_to_class(model_class)
 
     def unregister(self, model_class):
         """Unregister model class from moderation"""
@@ -174,7 +99,7 @@ class ModerationManager:
         if unchanged_obj:
             moderated_obj = self._get_or_create_moderation(instance, unchanged_obj, moderator)
             if not (
-                moderated_obj.status == ModerationStatus.APPROVED
+                moderated_obj.moderation_status == ModerationStatus.APPROVED
                 or moderator.bypass_moderation_after_approval
             ):
                 moderated_obj.save()
@@ -228,12 +153,9 @@ class ModerationManager:
 
         else:
             if moderation.has_object_been_changed(instance):
-                if moderator.visible_until_rejected:
-                    moderation.changed_object = instance
-                else:
-                    moderation.changed_object = self._get_updated_object(
-                        instance, unchanged_obj, moderator
-                    )
+                moderation.changed_object = self._get_updated_object(
+                    instance, unchanged_obj, moderator
+                )
             elif moderation.has_object_been_changed(instance, only_excluded=True):
                 moderation.changed_object = self._get_updated_object(
                     instance, unchanged_obj, moderator
@@ -261,9 +183,8 @@ class ModerationManager:
         if kwargs['created_date']:
             old_object = sender._default_unmoderated_manager.get(pk=pk)
             moderated_obj = Change(content_object=old_object)
-            if not moderator.visible_until_rejected:
-                # Hide it by placing in draft state
-                moderated_obj.state = DraftState.DRAFT
+            # Hide it by placing in draft state
+            moderated_obj.draft_state = DraftState.DRAFT
             moderated_obj.save()
             moderator.inform_moderator(instance)
             return
@@ -281,16 +202,12 @@ class ModerationManager:
 
         if moderated_obj.has_object_been_changed(instance):
             copied_instance = self._copy_model_instance(instance)
-
-            if not moderator.visible_until_rejected:
-                # Save instance with old data from changed_object, undoing
-                # the changes that save() just saved to the database.
-                moderated_obj.changed_object.save_base(raw=True)
-
-                # Save the new data in moderation, so it will be applied
-                # to the real record when the moderator approves the change.
-                moderated_obj.changed_object = copied_instance
-
+            # Save instance with old data from changed_object, undoing
+            # the changes that save() just saved to the database.
+            moderated_obj.changed_object.save_base(raw=True)
+            # Save the new data in moderation, so it will be applied
+            # to the real record when the moderator approves the change.
+            moderated_obj.changed_object = copied_instance
             moderated_obj.status = ModerationStatus.PENDING
             moderated_obj.save()
             moderator.inform_moderator(instance)

@@ -1,25 +1,19 @@
-"""
-    This module enables automatic Model registration with custom Moderators
-
-        class MyModel(ModeratedModel):
-            desc = models.TextField()
-
-            class Moderator:
-                notify_user = False
-
-"""
-
+from typing import TYPE_CHECKING, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.moderation.constants import ModerationStatus
 from apps.moderation.models.moderated_model.manager import (
     ModeratedModelManager,
     SearchableModeratedModelManager,
 )
 from apps.moderation.moderator import GenericModerator
 from apps.search.models.searchable_model import SearchableModel
+
+if TYPE_CHECKING:
+    from apps.moderation.models.change import Change
 
 
 class ModeratedModel(models.Model):
@@ -37,6 +31,18 @@ class ModeratedModel(models.Model):
 
     class Meta:
         abstract = True
+
+    @property
+    def change_in_progress(self) -> Optional['Change']:
+        return (
+            self.modifications.filter(moderation_status=ModerationStatus.PENDING).first()
+            if self.has_change_in_progress
+            else None
+        )
+
+    @property
+    def has_change_in_progress(self) -> bool:
+        return self.modifications.filter(moderation_status=ModerationStatus.PENDING).exists()
 
     class Moderator(GenericModerator):
         """Base moderator class for moderated models."""

@@ -2,15 +2,12 @@ import datetime
 from typing import TYPE_CHECKING, Type
 
 from django.conf import settings
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import DraftState as _DraftState
 from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
-from apps.moderation.fields import SerializedObjectField
 from apps.moderation.signals import post_moderation, pre_moderation
 
 from .manager import ChangeSetManager
@@ -54,12 +51,12 @@ class ChangeSet(AbstractChange):
     )
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     updated_date = models.DateTimeField(auto_now=True, editable=False)
-    state = models.PositiveSmallIntegerField(
+    draft_state = models.PositiveSmallIntegerField(
         choices=AbstractChange.DraftState.choices,
         default=AbstractChange.DraftState.DRAFT.value,
         editable=False,
     )
-    status = models.PositiveSmallIntegerField(
+    moderation_status = models.PositiveSmallIntegerField(
         choices=AbstractChange.ModerationStatus.choices,
         default=AbstractChange.ModerationStatus.PENDING.value,
         editable=False,
@@ -78,7 +75,7 @@ class ChangeSet(AbstractChange):
     class Meta:
         verbose_name = _('modification')
         verbose_name_plural = _('modifications')
-        ordering = ['status', 'created_date']
+        ordering = ['moderation_status', 'created_date']
 
     def automoderate(self, user=None) -> AbstractChange.ModerationStatus:
         """Auto-moderate the modification based on the user; return the moderation status."""
@@ -88,13 +85,8 @@ class ChangeSet(AbstractChange):
             self.initiator = user
             # No need to save here, both reject() and approve() will save us.
             # Just save below if the moderation result is PENDING.
-
-        if self.moderator.visible_until_rejected:
-            changed_object = self.get_object_for_this_type()
-        else:
-            changed_object = self.changed_object
+        changed_object = self.changed_object
         status, reason = self._get_moderation_status_and_reason(changed_object, user)
-
         if status == self.ModerationStatus.REJECTED.value:
             self.reject(by=self.by, reason=reason)
         elif status == self.ModerationStatus.APPROVED.value:
@@ -118,7 +110,7 @@ class ChangeSet(AbstractChange):
         return self.ModerationStatus.PENDING, None
 
     def get_object_for_this_type(self):
-        pk = self.object_pk
+        pk = self.object_id
         obj = self.content_type.model_class()._default_unmoderated_manager.get(pk=pk)
         return obj
 
@@ -158,9 +150,8 @@ class ChangeSet(AbstractChange):
         # Moderation.
 
         if (
-            self.status == self.ModerationStatus.PENDING.value
+            self.moderation_status == self.ModerationStatus.PENDING.value
             and new_status == self.ModerationStatus.APPROVED.value
-            and not self.moderator.visible_until_rejected
         ):
             base_object = self.changed_object
             base_object_force_save = True
@@ -176,9 +167,9 @@ class ChangeSet(AbstractChange):
         if new_status == self.ModerationStatus.APPROVED.value:
             # This version is now approved, and will be reverted to if
             # future changes are rejected by a moderator.
-            self.state = self.DraftState.READY.value
+            self.draft_state = self.DraftState.READY.value
 
-        self.status = new_status
+        self.moderation_status = new_status
         self.on = datetime.datetime.now()
         self.moderator = moderator
         self.reason = reason
@@ -186,14 +177,10 @@ class ChangeSet(AbstractChange):
 
         if self.moderator.visibility_column:
             old_visible = getattr(base_object, self.moderator.visibility_column)
-
             if new_status == self.ModerationStatus.APPROVED.value:
                 new_visible = True
-            elif new_status == self.ModerationStatus.REJECTED.value:
+            else:
                 new_visible = False
-            else:  # PENDING
-                new_visible = self.moderator.visible_until_rejected
-
             if new_visible != old_visible:
                 setattr(base_object, self.moderator.visibility_column, new_visible)
                 base_object_force_save = True

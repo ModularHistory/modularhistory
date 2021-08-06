@@ -159,13 +159,9 @@ class ModerationAdminSendMessageTestCase(TestCase):
             user=User.objects.get(username='user1'),
             super_power='text',
         )
-
         profile.save()
-
         self.moderation.register(SuperUserProfile)
-
         self.admin.send_message(self.request, profile.pk)
-
         args, kwargs = self.request._messages.add.call_args
         level, message, tags = args
         self.assertEqual(
@@ -173,7 +169,7 @@ class ModerationAdminSendMessageTestCase(TestCase):
         )
 
     def test_send_message_status_pending(self):
-        self.moderated_obj.status = ModerationStatus.PENDING
+        self.moderated_obj.moderation_status = ModerationStatus.PENDING
         self.moderated_obj.save()
 
         self.admin.send_message(self.request, self.profile.pk)
@@ -186,7 +182,7 @@ class ModerationAdminSendMessageTestCase(TestCase):
         )
 
     def test_send_message_status_rejected(self):
-        self.moderated_obj.status = ModerationStatus.REJECTED
+        self.moderated_obj.moderation_status = ModerationStatus.REJECTED
         self.moderated_obj.reason = 'Reason for rejection'
         self.moderated_obj.save()
 
@@ -200,7 +196,7 @@ class ModerationAdminSendMessageTestCase(TestCase):
         )
 
     def test_send_message_status_approved(self):
-        self.moderated_obj.status = ModerationStatus.APPROVED
+        self.moderated_obj.moderation_status = ModerationStatus.APPROVED
         self.moderated_obj.save()
 
         self.admin.send_message(self.request, self.profile.pk)

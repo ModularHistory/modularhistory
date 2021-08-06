@@ -1,5 +1,6 @@
 import re
 from pprint import pprint
+from typing import Any, Optional, Union
 
 from django.conf import settings
 from django.core import serializers
@@ -9,7 +10,6 @@ from rest_framework.utils.encoders import JSONEncoder
 
 
 def serialize(value_set):
-    print(f'>>> before serialize: {value_set}')
     return serializers.serialize(
         'json',
         value_set,
@@ -18,8 +18,6 @@ def serialize(value_set):
 
 
 def deserialize(value):
-    print(f'>>> before deserialize:')
-    pprint(re.match(r'.+("date".{30})', value).group(1))
     return serializers.deserialize(
         'json',
         value.encode(settings.DEFAULT_CHARSET),
@@ -28,32 +26,58 @@ def deserialize(value):
     )
 
 
-class SerializedObjectField(models.TextField):
+class SerializedObjectField(models.JSONField):
     """
     Model field for storing a serialized model class instance.
-
-    >>> from django.db import models
-    >>> import SerializedObjectField
-    >>> class A(models.Model):
-            object = SerializedObjectField(serialize_format='json')
-    >>> class B(models.Model):
-            field = models.CharField(max_length=10)
-    >>> b = B(field='test')
-    >>> b.save()
-    >>> a = A()
-    >>> a.object = b
-    >>> a.save()
-    >>> a = A.object.get(pk=1)
-    >>> a.object
-    <B: B object>
-    >>> a.object.__dict__
-    {'field': 'test', 'id': 1}
-
     """
 
-    def __init__(self, serialize_format: str = 'json', *args, **kwargs):
-        self.serialize_format = serialize_format
+    def __init__(self, *args, **kwargs):
+        """Construct the field."""
+        kwargs['encoder'] = JSONEncoder
+        # kwargs['decoder'] = ''  # TODO?
         super().__init__(*args, **kwargs)
+
+    def deconstruct(self) -> tuple:
+        """Reduce the field to its serialized form for migrations."""
+        name, path, args, kwargs = super().deconstruct()
+        del kwargs['encoder']
+        return name, path, args, kwargs
+
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
+    def from_db_value(self, value: Optional[str], *args) -> Optional[models.Model]:
+        """
+        Convert a value as returned by the database to a Python object.
+        This method is the reverse of `get_prep_value()`.
+        """
+        # value: Union[list, dict] = super().from_db_value(value, *args)
+        return self._deserialize(value)
+
+    def get_prep_value(self, value: Any) -> Any:
+        """
+        Convert a Python object to the value to be stored in the database.
+        This method is the reverse of `from_db_value()`.
+        """
+        return self._serialize(value)
+
+    # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-values-to-python-objects
+    def to_python(
+        self, value: Optional[Union[models.Model, dict, list, str]]
+    ) -> Optional[models.Model]:
+        """
+        Convert the value into the correct Python object.
+        This method acts as the reverse of value_to_string(), and is also called in clean().
+        """
+        if not value:
+            return None
+        elif isinstance(value, models.Model):
+            return value
+        elif isinstance(value, str):
+            return self._deserialize(value)
+        elif isinstance(value, dict):
+            raise Exception(value)
+        elif isinstance(value, list):
+            raise Exception(value)
+        raise TypeError(value)
 
     def _serialize(self, value):
         print('\n>>> _serialize:')
@@ -85,58 +109,4 @@ class SerializedObjectField(models.TextField):
                     except ValueError:
                         # Return None for changed_object if None not allowed
                         return None
-        pprint(getattr(obj, 'date', ''))
-        print('\n')
         return obj
-
-    def db_type(self, connection=None):
-        return 'text'
-
-    def pre_save(self, model_instance, add):
-        value = getattr(model_instance, self.attname, None)
-        pre_save_value = self._serialize(value)
-        print('\n>>> pre_save:')
-        pprint(re.match(r'.+("date".{30})', pre_save_value).group(1))
-        print('\n')
-        return pre_save_value
-
-    def contribute_to_class(self, cls, name):
-        self.class_name = cls
-        super().contribute_to_class(cls, name)
-        models.signals.post_init.connect(self.post_init)
-
-    def post_init(self, **kwargs):
-        if 'sender' in kwargs and 'instance' in kwargs:
-            sender = kwargs['sender']
-            if (
-                sender == self.class_name
-                or sender._meta.proxy
-                and issubclass(sender, self.class_name)
-            ) and hasattr(kwargs['instance'], self.attname):
-                print('\n>>> post_init >>>')
-                instance = kwargs['instance']
-                if isinstance(instance, str):
-                    try:
-                        pprint(
-                            'changed_object: '
-                            + re.match(
-                                r'.+("date".{30})', kwargs['instance'].changed_object
-                            ).group(1)
-                        )
-                    except Exception:
-                        pass
-                else:
-                    try:
-                        pprint('changed_object: ' + kwargs['instance'].changed_object.date)
-                    except Exception:
-                        pass
-                value = self.value_from_object(kwargs['instance'])
-                if value:
-                    setattr(kwargs['instance'], self.attname, self._deserialize(value))
-                else:
-                    setattr(kwargs['instance'], self.attname, None)
-                try:
-                    pprint('value: ' + re.match(r'.+("date".{30})', value).group(1))
-                except Exception as err:
-                    print(value)
-                print('exiting post_init\n')

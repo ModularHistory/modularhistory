@@ -24,7 +24,6 @@ class GenericModerator:
     manager_names = ['objects']
     moderation_manager_class = ModeratedModelManager
     bypass_moderation_after_approval = False
-    visible_until_rejected = False
     keep_history = False
 
     fields_exclude = []

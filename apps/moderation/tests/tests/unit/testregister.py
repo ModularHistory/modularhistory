@@ -100,7 +100,7 @@ class RegistrationTestCase(TestCase):
         profile = UserProfile.objects.get(user__username='moderator')
         # Pretend that it was created before django-moderation was installed,
         # by deleting the Moderation.
-        Change.objects.filter(object_pk=profile.pk).delete()
+        Change.objects.filter(object_id=profile.pk).delete()
 
         # We should be able to load it
         profile = UserProfile.objects.get(user__username='moderator')
@@ -316,42 +316,6 @@ class ModerationManagerTestCase(TestCase):
 
         self.assertEqual(moderation._registered_models, {})
 
-    def test_save_new_instance_after_add_and_remove_fields_from_class(self):
-        """Test if after removing moderation from model class new
-        instance of model can be created"""
-
-        class CustomManager(Manager):
-            pass
-
-        moderator = GenericModerator(UserProfile)
-        self.moderation._add_fields_to_model_class(moderator)
-
-        self.moderation._remove_fields(moderator)
-
-        profile = UserProfile(
-            description='Profile for new user',
-            url='http://www.yahoo.com',
-            user=User.objects.get(username='user1'),
-        )
-
-        profile.save()
-
-        up = UserProfile._default_manager.filter(url='http://www.yahoo.com')
-        self.assertEqual(up.count(), 1)
-
-    def test_add_fields_to_model_class(self):
-        class CustomManager(Manager):
-            pass
-
-        moderator = GenericModerator(UserProfile)
-        self.moderation._add_fields_to_model_class(moderator)
-
-        self.assertEqual(UserProfile.objects.__class__.__name__, 'ModeratedManager')
-        self.assertEqual(hasattr(UserProfile, 'moderation'), True)
-
-        # clean up
-        self.moderation._remove_fields(moderator)
-
     def test_get_or_create_moderation_exist(self):
         self.moderation.register(UserProfile)
         profile = UserProfile.objects.get(user__username='moderator')
@@ -447,7 +411,7 @@ class LoadingFixturesTestCase(TestCase):
 
         profile = UserProfile.objects.get(user__username='moderator')
 
-        self.assertRaises(ObjectDoesNotExist, Change.objects.get, object_pk=profile.pk)
+        self.assertRaises(ObjectDoesNotExist, Change.objects.get, object_id=profile.pk)
 
     def test_moderation_is_created_when_not_loaded_from_fixture(self):
         profile = UserProfile(
@@ -458,7 +422,7 @@ class LoadingFixturesTestCase(TestCase):
 
         profile.save()
 
-        moderated_objs = Change.objects.filter(object_pk=profile.pk)
+        moderated_objs = Change.objects.filter(object_id=profile.pk)
         self.assertEqual(moderated_objs.count(), 1)
 
 
@@ -548,7 +512,7 @@ class ModerationSignalsTestCase(TestCase):
 
         profile.save()
 
-        self.assertRaises(ObjectDoesNotExist, Change.objects.get, object_pk=profile.pk)
+        self.assertRaises(ObjectDoesNotExist, Change.objects.get, object_id=profile.pk)
 
     def test_post_save_handler_for_existing_object(self):
         from django.db.models import signals
