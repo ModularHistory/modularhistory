@@ -1,3 +1,4 @@
+import logging
 from typing import TYPE_CHECKING, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
@@ -42,7 +43,13 @@ class ModeratedModel(models.Model):
 
     @property
     def has_change_in_progress(self) -> bool:
-        return self.modifications.filter(moderation_status=ModerationStatus.PENDING).exists()
+        try:
+            return self.modifications.filter(
+                moderation_status=ModerationStatus.PENDING
+            ).exists()
+        except Exception as err:
+            logging.error(err)
+            return False
 
     class Moderator(GenericModerator):
         """Base moderator class for moderated models."""

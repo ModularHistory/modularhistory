@@ -66,6 +66,8 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
             return _('This object is not registered with the moderation system.')
 
     def get_moderation_form(self, model_class: Type[ModeratedModel]):
+        """Return the form to be used to propose changes to a moderated model instance."""
+
         class ModerationForm(BaseModerationForm):
             class Meta:
                 model = model_class

@@ -27,9 +27,7 @@ def deserialize(value):
 
 
 class SerializedObjectField(models.JSONField):
-    """
-    Model field for storing a serialized model class instance.
-    """
+    """Model field for storing a serialized model instance."""
 
     def __init__(self, *args, **kwargs):
         """Construct the field."""

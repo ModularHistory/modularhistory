@@ -56,10 +56,8 @@ class ChangeQuerySet(QuerySet):
         if mod.visibility_column:
             if new_status == ModerationStatus.APPROVED:
                 new_visible = True
-            elif new_status == ModerationStatus.REJECTED:
+            else:
                 new_visible = False
-            else:  # PENDING
-                new_visible = mod.visibile_until_rejected
             cls.objects.filter(
                 id__in=self.filter(content_type=ct).values_list('object_id', flat=True)
             ).update(**{mod.visibility_column: new_visible})

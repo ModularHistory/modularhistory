@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Type
 
 from django.db.models import Count, Q
 from django.db.models.manager import Manager
-from django.db.utils import ProgrammingError
 
 from apps.moderation.models.change import Change
 from core.models.manager import SearchableManager
@@ -37,19 +36,6 @@ class ModeratedModelManager(Manager):
             '_relation_object__state': Change.DraftState.READY.value,
         }
         return queryset.filter(Q(**only_no_relation_objects) | Q(**only_ready))
-
-    def exclude_objs_by_visibility_col(self, queryset):
-        return queryset.exclude(**{self.moderator.visibility_column: False})
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        try:
-            if self.moderator.visibility_column:
-                return self.exclude_objs_by_visibility_col(queryset)
-            return self.filter_moderations(queryset)
-        except ProgrammingError:
-            # Migrations might not have been run yet to add the Moderation table.
-            return queryset
 
     @property
     def moderator(self):
