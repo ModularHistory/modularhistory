@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Type
 
 from django.db.models.manager import Manager
 
-from apps.moderation.queryset import ChangeQuerySet
+from apps.moderation.models.change.queryset import ChangeQuerySet
 
 if TYPE_CHECKING:
     from apps.moderation.models.change import Change
