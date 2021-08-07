@@ -19,7 +19,7 @@ class ChangeSetAdmin(admin.ModelAdmin):
     change_form_template = 'moderation/changesets/moderate_changeset.html'
     change_list_template = 'moderation/changesets/changesets_list.html'
     actions = [reject_objects, approve_objects, set_objects_as_pending]
-    fieldsets = (('Object moderation', {'fields': ('reason',)}),)
+    fieldsets = (('Object moderation', {'fields': ('description',)}),)
 
     def get_actions(self, request):
         """Return the batch actions available to the admin list view."""
@@ -45,8 +45,7 @@ class ChangeSetAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, extra_context=None):
         moderation = ChangeSet.objects.get(pk=object_id)
         changed_obj: ModeratedModel = moderation.changed_object
-        moderator = changed_obj.__class__.Moderator(changed_obj.__class__)
-        old_object = moderation.get_object_for_this_type()
+        old_object = moderation.unchanged_object
         new_object = changed_obj
         changes = list(
             get_changes_between_models(

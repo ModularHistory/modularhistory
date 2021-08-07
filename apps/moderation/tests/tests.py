@@ -14,7 +14,7 @@ class TestModeration:
         original_summary = 'summary'
         changed_summary = 'changed summary'
 
-        # Create a model instance.
+        # Create and save a model instance.
         p = Proposition(
             type='propositions.conclusion',
             summary=original_summary,
@@ -23,7 +23,7 @@ class TestModeration:
         )
         p.save()
 
-        # Create a `Change` instance in which a field is modified.
+        # Create and save a `Change` instance in which a field is modified.
         p.summary = changed_summary
         change = Change(
             content_type=ContentType.objects.get_for_model(Proposition),
@@ -32,9 +32,16 @@ class TestModeration:
         )
         assert change.changed_object.summary == changed_summary
         change.save()
-        change.refresh_from_db()
 
-        # Verify the change state is separate from the moderated model instance state.
-        assert change.changed_object.summary == changed_summary
+        # Modify another field.
+        changed_title = 'changed title'
+        change.changed_object.title = changed_title
+        change.save()
+
+        # Verify the change state is separate from the model instance state.
+        change.refresh_from_db()
         p.refresh_from_db()
+        assert change.changed_object.summary == changed_summary
         assert p.summary == original_summary
+        assert change.changed_object.title == changed_title
+        assert change.changed_object.title != p.title

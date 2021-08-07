@@ -7,7 +7,7 @@ from django.urls import NoReverseMatch, reverse
 from apps.admin import admin_site
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.filterspecs import RegisteredContentTypeListFilter
-from apps.moderation.models import Change, ChangeSet
+from apps.moderation.models import Change
 from apps.moderation.models.moderated_model.model import ModeratedModel
 
 from .actions import approve_objects, reject_objects, set_objects_as_pending
@@ -20,7 +20,7 @@ class ChangeAdmin(admin.ModelAdmin):
     change_form_template = 'moderation/changes/moderate_change.html'
     change_list_template = 'moderation/changes/changes_list.html'
     actions = [reject_objects, approve_objects, set_objects_as_pending]
-    fieldsets = (('Object moderation', {'fields': ('reason',)}),)
+    fieldsets = (('Object moderation', {'fields': ('description',)}),)
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -43,35 +43,33 @@ class ChangeAdmin(admin.ModelAdmin):
         return ModerationForm
 
     def change_view(self, request, object_id, extra_context=None):
-        moderation = ChangeSet.objects.get(pk=object_id)
-        changed_obj: ModeratedModel = moderation.changed_object
-        moderator = changed_obj.__class__.Moderator(changed_obj.__class__)
-        old_object = moderation.get_object_for_this_type()
-        new_object = changed_obj
+        change: Change = Change.objects.get(pk=object_id)
+        object_after_change: ModeratedModel = change.changed_object
+        object_before_change: ModeratedModel = change.unchanged_object
         changes = list(
             get_changes_between_models(
-                old_object,
-                new_object,
-                moderator.fields_exclude,
-                resolve_foreignkeys=moderator.resolve_foreignkeys,
+                object_before_change,
+                object_after_change,
+                [],  # TODO: moderator.fields_exclude,
+                resolve_foreignkeys=True,
             ).values()
         )
 
         if request.POST:
-            admin_form = self.get_form(request, moderation)(request.POST)
+            admin_form = self.get_form(request, change)(request.POST)
 
             if admin_form.is_valid():
                 reason = admin_form.cleaned_data['reason']
                 if 'approve' in request.POST:
-                    moderation.approve(request.user, reason)
+                    change.approve(request.user, reason)
                 elif 'reject' in request.POST:
-                    moderation.reject(request.user, reason)
+                    change.reject(request.user, reason)
 
-        content_type = ContentType.objects.get_for_model(changed_obj.__class__)
+        content_type = ContentType.objects.get_for_model(object_after_change.__class__)
         try:
             object_admin_url = reverse(
                 'admin:%s_%s_change' % (content_type.app_label, content_type.model),
-                args=(changed_obj.pk,),
+                args=(object_after_change.pk,),
             )
         except NoReverseMatch:
             object_admin_url = None

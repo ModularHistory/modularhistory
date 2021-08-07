@@ -16,9 +16,9 @@ class Moderation(models.Model):
     class ModerationOutcome(models.IntegerChoices):
         """Possible moderation outcomes."""
 
+        REJECTED = ModerationStatus.REJECTED, _('Rejected')
         PENDING = ModerationStatus.PENDING, _('Pending')
         APPROVED = ModerationStatus.APPROVED, _('Approved')
-        REJECTED = ModerationStatus.REJECTED, _('Rejected')
 
     moderator = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
@@ -35,6 +35,7 @@ class Moderation(models.Model):
         related_name='moderations',
     )
     verdict = models.PositiveSmallIntegerField(choices=ModerationOutcome.choices)
+    reason = models.TextField(blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True, editable=False)
 
     objects = ModerationManager()

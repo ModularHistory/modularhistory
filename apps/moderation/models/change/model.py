@@ -5,13 +5,14 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
+from apps.moderation.constants import ModerationStatus
 from apps.moderation.fields import SerializedObjectField
 from apps.moderation.models.changeset.model import AbstractChange
 
 from .manager import ChangeManager
 
 if TYPE_CHECKING:
-    pass
+    from apps.moderation.models.moderated_model import ModeratedModel
 
 
 class ContentContribution(models.Model):
@@ -87,3 +88,15 @@ class Change(AbstractChange):
 
     def __str__(self) -> str:
         return f'Change #{self.pk}, affecting {self.content_object}'
+
+    @property
+    def unchanged_object(self) -> 'ModeratedModel':
+        # TODO: account for possibility the change has been approved but not yet merged
+        if self.moderation_status == ModerationStatus.APPROVED:
+            prior_state = Change.objects.filter(
+                content_type=self.content_type,
+                object_id=self.object_id,
+                moderation_status=ModerationStatus.APPROVED,
+            )
+            return self.content_object
+        return self.content_object

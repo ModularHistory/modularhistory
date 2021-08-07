@@ -4,9 +4,10 @@ from aenum import Constant
 class ModerationStatus(Constant):
     """."""
 
-    PENDING = 0
-    APPROVED = 1
-    REJECTED = 2
+    REJECTED = 0
+    PENDING = 1
+    APPROVED = 2
+    MERGED = 3
 
 
 class DraftState(Constant):

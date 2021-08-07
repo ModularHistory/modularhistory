@@ -32,8 +32,8 @@ class TextChange(BaseChange):
             return value1
 
         return self.render_diff(
-            'moderation/html_diff.html',
-            {'diff_operations': get_diff_operations(*self.change)},
+            template='moderation/changes/html_diff.html',
+            context={'diff_operations': get_diff_operations(*self.change)},
         )
 
 

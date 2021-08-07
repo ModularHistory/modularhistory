@@ -23,6 +23,7 @@ class AbstractChange(models.Model):
     """Base model for the `Change` and `ChangeSet` models."""
 
     description = models.TextField(blank=True, null=True)
+    # reason = ArrayField()  # TODO: expansion/elaboration, correction, improvement, etc.
 
     class DraftState(models.IntegerChoices):
         """Possible draft states."""
@@ -33,9 +34,10 @@ class AbstractChange(models.Model):
     class ModerationStatus(models.IntegerChoices):
         """Possible moderation statuses."""
 
+        REJECTED = _ModerationStatus.REJECTED, _('Rejected')
         PENDING = _ModerationStatus.PENDING, _('Pending')
         APPROVED = _ModerationStatus.APPROVED, _('Approved')
-        REJECTED = _ModerationStatus.REJECTED, _('Rejected')
+        MERGED = _ModerationStatus.MERGED, _('Merged')
 
     class Meta:
         abstract = True
@@ -112,11 +114,6 @@ class ChangeSet(AbstractChange):
             if reason:
                 return self.ModerationStatus.APPROVED.value, reason
         return self.ModerationStatus.PENDING, None
-
-    def get_object_for_this_type(self):
-        pk = self.object_id
-        obj = self.content_type.model_class()._default_unmoderated_manager.get(pk=pk)
-        return obj
 
     def get_absolute_url(self):
         if hasattr(self.changed_object, 'get_absolute_url'):
