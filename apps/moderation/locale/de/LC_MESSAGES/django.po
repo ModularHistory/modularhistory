@@ -93,10 +93,6 @@ msgstr "Moderierte Objekte"
 msgid "Change object"
 msgstr "Bearbeite Objekt"
 
-#: moderation/templates/moderation/moderate_object.html:18
-msgid "Object differences"
-msgstr "Objekt Unterschiede"
-
 #: moderation/templates/moderation/moderate_object.html:36
 msgid "Reject"
 msgstr "Ablehnen"

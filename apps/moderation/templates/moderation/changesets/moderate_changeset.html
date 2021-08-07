@@ -54,7 +54,7 @@ id="moderatedobject_form">{% csrf_token %}
 
 <div>
 	<fieldset class="module aligned ">
-	<h2>{% trans "Object differences" %}</h2>
+	<h2>Diff</h2>
 
 	{% for change in changes %}
 	<div class="form-row {{ change.verbose_name }}">
@@ -74,7 +74,6 @@ id="moderatedobject_form">{% csrf_token %}
 		<p class="deletelink-box">
 			<input type="submit" value="{% trans 'Reject' %}" name="reject"  />
 		</p>
-
 		<input type="submit" value="{% trans 'Approve' %}" name="approve" />
 	</div>
 

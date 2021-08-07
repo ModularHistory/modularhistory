@@ -5,7 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.query import QuerySet
 
 from apps.moderation.constants import DraftState, ModerationStatus
-from apps.moderation.signals import post_many_moderation, pre_many_moderation
 
 if TYPE_CHECKING:
     from apps.moderation.models.change import Change
@@ -26,15 +25,6 @@ class ChangeQuerySet(QuerySet):
 
     def reject(self, cls: Type['ModeratedModel'], by, reason=None):
         self._send_signals_and_moderate(cls, ModerationStatus.REJECTED, by, reason)
-
-    def _send_signals_and_moderate(self, cls: Type['ModeratedModel'], new_status, by, reason):
-        pre_many_moderation.send(
-            sender=cls, queryset=self, status=new_status, by=by, reason=reason
-        )
-        self._moderate(cls, new_status, by, reason)
-        post_many_moderation.send(
-            sender=cls, queryset=self, status=new_status, by=by, reason=reason
-        )
 
     def _moderate(self, cls: Type['ModeratedModel'], new_status, moderator, reason):
         visibility_column = 'verified'

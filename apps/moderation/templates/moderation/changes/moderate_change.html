@@ -41,44 +41,42 @@ background:#BBFFBB none repeat scroll 0 0;
 {% endblock %}
 
 {% block content %}
-{% block object-tools %}
-{% if object_admin_url %}
-	<ul class="object-tools">
-	<li><a href="{{ object_admin_url }}" class="historylink">{% trans "Change object" %}</a></li>
-	</ul>
-{% endif %}
-{% endblock %}{# object-tools #}
-<form enctype="multipart/form-data" action="" method="post"
-id="moderatedobject_form">{% csrf_token %}
-
-
-<div>
-	<fieldset class="module aligned ">
-	<h2>{% trans "Object differences" %}</h2>
-
-	{% for change in changes %}
-	<div class="form-row {{ change.verbose_name }}">
+	{% block object-tools %}
+		{% if object_admin_url %}
+			<ul class="object-tools">
+				<li>
+					<a href="{{ object_admin_url }}" class="historylink">
+						{% trans "Change object" %}
+					</a>
+				</li>
+			</ul>
+		{% endif %}
+	{% endblock %}
+	<form enctype="multipart/form-data" action="" method="post" id="moderatedobject_form">
+		{% csrf_token %}
 		<div>
-			<label style="font-size: 14px; font-weight: bold;">{{ change.verbose_name }}</label><p style="width:800px;">{{ change.diff|safe }}</p>
-		</div>
-
+			<fieldset class="module aligned ">
+				<h2>Diff</h2>
+				{% for change in changes %}
+				<div class="form-row {{ change.verbose_name }}">
+					<div>
+						<label style="font-size: 14px; font-weight: bold;">
+							{{ change.verbose_name }}
+						</label>
+						<p style="width:800px;">{{ change.diff|safe }}</p>
+					</div>
+				</div>
+				{% endfor %}
+			</fieldset>
+			{% for fieldset in adminform %}
+				{% include "admin/includes/fieldset.html" %}
+			{% endfor %}
+			<div class="submit-row">
+				<p class="deletelink-box">
+					<input type="submit" value="{% trans 'Reject' %}" name="reject" />
+				</p>
+				<input type="submit" value="{% trans 'Approve' %}" name="approve" />
+			</div>
+		</form>
 	</div>
-	{% endfor %}
-	</fieldset>
-
-	{% for fieldset in adminform %}
-		{% include "admin/includes/fieldset.html" %}
-	{% endfor %}
-
-	<div class="submit-row">
-		<p class="deletelink-box">
-			<input type="submit" value="{% trans 'Reject' %}" name="reject"  />
-		</p>
-
-		<input type="submit" value="{% trans 'Approve' %}" name="approve" />
-	</div>
-
-</form>
-</div>
-
 {% endblock %}

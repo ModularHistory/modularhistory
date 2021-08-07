@@ -71,18 +71,6 @@ class Change(AbstractChange):
         to=settings.AUTH_USER_MODEL,
         through=ContentContribution,
     )
-    created_date = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_date = models.DateTimeField(auto_now=True, editable=False)
-    draft_state = models.PositiveSmallIntegerField(
-        choices=AbstractChange.DraftState.choices,
-        default=AbstractChange.DraftState.DRAFT.value,
-        editable=False,
-    )
-    moderation_status = models.PositiveSmallIntegerField(
-        choices=AbstractChange.ModerationStatus.choices,
-        default=AbstractChange.ModerationStatus.PENDING.value,
-        editable=False,
-    )
 
     objects = ChangeManager()
 

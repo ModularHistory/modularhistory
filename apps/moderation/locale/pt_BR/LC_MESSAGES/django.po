@@ -88,10 +88,6 @@ msgstr "Itens Moderados"
 msgid "Change object"
 msgstr "Alterar objeto"
 
-#: templates/moderation/moderate_object.html:49
-msgid "Object differences"
-msgstr "Diferenças do objeto"
-
 #: templates/moderation/moderate_object.html:68
 msgid "Approve"
 msgstr "Aprovar"

@@ -20,7 +20,7 @@ class ChangeAdmin(admin.ModelAdmin):
     change_form_template = 'moderation/changes/moderate_change.html'
     change_list_template = 'moderation/changes/changes_list.html'
     actions = [reject_objects, approve_objects, set_objects_as_pending]
-    fieldsets = (('Object moderation', {'fields': ('description',)}),)
+    fieldsets = (('Moderation', {'fields': ('description',)}),)
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -57,7 +57,6 @@ class ChangeAdmin(admin.ModelAdmin):
 
         if request.POST:
             admin_form = self.get_form(request, change)(request.POST)
-
             if admin_form.is_valid():
                 reason = admin_form.cleaned_data['reason']
                 if 'approve' in request.POST:

@@ -2,6 +2,7 @@ import datetime
 from typing import TYPE_CHECKING, Type
 
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
@@ -23,25 +24,59 @@ if TYPE_CHECKING:
 class AbstractChange(models.Model):
     """Base model for the `Change` and `ChangeSet` models."""
 
-    description = models.TextField(blank=True, null=True)
-    # reason = ArrayField()  # TODO: expansion/elaboration, correction, improvement, etc.
+    class Reason(models.IntegerChoices):
+        """Reasons for a change."""
+
+        ELABORATION = 0, _('Elaboration or expansion')
+        CONTENT_CORRECTION = 1, _('Correction of content')
+        GRAMMAR = 2, _('Correction of grammar or punctuation')
 
     class DraftState(models.IntegerChoices):
-        """Possible draft states."""
+        """Draft states."""
 
         DRAFT = _DraftState.DRAFT, _('Draft')
         READY = _DraftState.READY, _('Ready for moderation')
 
     class ModerationStatus(models.IntegerChoices):
-        """Possible moderation statuses."""
+        """Moderation statuses."""
 
         REJECTED = _ModerationStatus.REJECTED, _('Rejected')
         PENDING = _ModerationStatus.PENDING, _('Pending')
         APPROVED = _ModerationStatus.APPROVED, _('Approved')
         MERGED = _ModerationStatus.MERGED, _('Merged')
 
+    reasons = ArrayField(
+        base_field=models.PositiveSmallIntegerField(choices=Reason.choices),
+        null=True,
+        blank=True,
+        help_text=_('Reason(s) for change(s)'),
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text=_('Description of changes made'),
+    )
+    draft_state = models.PositiveSmallIntegerField(
+        choices=DraftState.choices,
+        default=DraftState.DRAFT.value,
+        editable=False,
+    )
+    moderation_status = models.PositiveSmallIntegerField(
+        choices=ModerationStatus.choices,
+        default=ModerationStatus.PENDING.value,
+        editable=False,
+    )
+    created_date = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_date = models.DateTimeField(auto_now=True, editable=False)
+
     class Meta:
         abstract = True
+
+    def approve(self, by=None, reason=None):
+        self._send_signals_and_moderate(_ModerationStatus.APPROVED, by, reason)
+
+    def reject(self, by=None, reason=None):
+        self._send_signals_and_moderate(_ModerationStatus.REJECTED, by, reason)
 
 
 class ChangeSet(AbstractChange):
@@ -55,18 +90,6 @@ class ChangeSet(AbstractChange):
         editable=True,
         on_delete=models.SET_NULL,
         related_name='initiated_changesets',
-    )
-    created_date = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_date = models.DateTimeField(auto_now=True, editable=False)
-    draft_state = models.PositiveSmallIntegerField(
-        choices=AbstractChange.DraftState.choices,
-        default=AbstractChange.DraftState.DRAFT.value,
-        editable=False,
-    )
-    moderation_status = models.PositiveSmallIntegerField(
-        choices=AbstractChange.ModerationStatus.choices,
-        default=AbstractChange.ModerationStatus.PENDING.value,
-        editable=False,
     )
 
     objects = ChangeSetManager()
@@ -216,9 +239,3 @@ class ChangeSet(AbstractChange):
                 return True
 
         return False
-
-    def approve(self, by=None, reason=None):
-        self._send_signals_and_moderate(_ModerationStatus.APPROVED, by, reason)
-
-    def reject(self, by=None, reason=None):
-        self._send_signals_and_moderate(_ModerationStatus.REJECTED, by, reason)
