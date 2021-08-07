@@ -1,6 +1,6 @@
 """ModularHistory's HistoricDateTimeField (for use in models)."""
 
-from datetime import datetime as DateTime
+from datetime import datetime as DateTime  # noqa: N812
 from typing import Optional, Union
 
 from dateutil.parser import isoparse

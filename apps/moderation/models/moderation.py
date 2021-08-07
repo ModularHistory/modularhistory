@@ -40,6 +40,9 @@ class Moderation(models.Model):
 
     objects = ModerationManager()
 
+    def __str__(self) -> str:
+        return f'Verdict: {self.verdict} (moderation of {self.change} by {self.moderator})'
+
     def retract(self):
         """Retract the moderation."""
         self.delete()
