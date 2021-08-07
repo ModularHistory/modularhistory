@@ -5,7 +5,7 @@ import serpy
 from apps.search.api.serializers import SearchableModelSerializer
 
 if TYPE_CHECKING:
-    from apps.propositions.models import Occurrence
+    from apps.propositions.models import Occurrence, Proposition
 
 
 class PropositionSerializer(SearchableModelSerializer):
@@ -19,7 +19,7 @@ class PropositionSerializer(SearchableModelSerializer):
     primaryImage = serpy.Field(attr='primary_image')
     cachedCitations = serpy.Field(attr='cached_citations')
 
-    def get_model(self, instance) -> str:
+    def get_model(self, instance: 'Proposition') -> str:
         """Return the model name of serialized propositions."""
         return 'propositions.proposition'
 
