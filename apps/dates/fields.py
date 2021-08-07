@@ -20,6 +20,7 @@ class HistoricDateTimeField(DateTimeField):
     def from_db_value(self, value: Optional[DateTime], *args) -> Optional[HistoricDateTime]:
         """
         Convert a value as returned by the database to a Python object.
+
         This method is the reverse of get_prep_value().
         """
         if value is None:
@@ -39,6 +40,7 @@ class HistoricDateTimeField(DateTimeField):
     def to_python(self, value: Optional[Union[DateTime, str]]) -> Optional[HistoricDateTime]:
         """
         Convert the value into the correct Python object.
+
         This method acts as the reverse of value_to_string(), and is also called in clean().
         """
         if not value:

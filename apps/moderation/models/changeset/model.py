@@ -1,15 +1,15 @@
 import datetime
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Optional, Type
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
-# from apps.moderation.constants import ModerationStatus, DraftState
 from apps.moderation.constants import DraftState as _DraftState
 from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
+from apps.moderation.models.moderation import Moderation
 from apps.moderation.signals import post_moderation, pre_moderation
 
 from .manager import ChangeSetManager
@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
     from apps.moderation.models.change import Change
     from apps.moderation.models.moderated_model import ModeratedModel
+    from apps.users.models import User
 
 
 class AbstractChange(models.Model):
@@ -72,11 +73,36 @@ class AbstractChange(models.Model):
     class Meta:
         abstract = True
 
-    def approve(self, by=None, reason=None):
-        self._send_signals_and_moderate(_ModerationStatus.APPROVED, by, reason)
+    def approve(
+        self,
+        moderator: Optional['User'] = None,
+        reason: Optional[str] = None,
+    ) -> Moderation:
+        """Add an approval."""
+        # self._send_signals_and_moderate(_ModerationStatus.APPROVED, by, reason)
+        return Moderation.objects.create(
+            moderator=moderator,
+            change=self,
+            verdict=_ModerationStatus.APPROVED,
+            reason=reason,
+        )
 
-    def reject(self, by=None, reason=None):
-        self._send_signals_and_moderate(_ModerationStatus.REJECTED, by, reason)
+    def reject(
+        self,
+        moderator: Optional['User'] = None,
+        reason: Optional[str] = None,
+    ) -> Moderation:
+        """Reject the change."""
+        # self._send_signals_and_moderate(_ModerationStatus.REJECTED, by, reason)
+        moderation: Moderation = Moderation.objects.create(
+            moderator=moderator,
+            change=self,
+            verdict=_ModerationStatus.REJECTED,
+            reason=reason,
+        )
+        self.moderation_status = _ModerationStatus.REJECTED
+        self.save()
+        return moderation
 
 
 class ChangeSet(AbstractChange):

@@ -40,6 +40,10 @@ class Moderation(models.Model):
 
     objects = ModerationManager()
 
+    def retract(self):
+        """Retract the moderation."""
+        self.delete()
+
 
 class ApprovalManager(ModerationManager):
     def get_queryset(self) -> QuerySet['Approval']:
