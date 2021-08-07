@@ -1,20 +1,17 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import ModerationStatus
+from apps.moderation.models.change import Change
 from apps.moderation.models.moderated_model.manager import (
     ModeratedModelManager,
     SearchableModeratedModelManager,
 )
-from apps.moderation.moderator import GenericModerator
 from apps.search.models.searchable_model import SearchableModel
-
-if TYPE_CHECKING:
-    from apps.moderation.models.change import Change
 
 
 class ModeratedModel(models.Model):
@@ -22,7 +19,7 @@ class ModeratedModel(models.Model):
 
     modifications = GenericRelation(to='moderation.Change')
 
-    # This field is used to decide whether model instances should be visible.
+    # This field is used to determine whether model instances should be visible to users.
     verified = models.BooleanField(
         verbose_name=_('verified'),
         default=False,
@@ -32,6 +29,12 @@ class ModeratedModel(models.Model):
 
     class Meta:
         abstract = True
+
+    # def save(self, *args, **kwargs):
+    #     """."""
+    #     # extant_object = self.__class__.objects.get(pk=self.pk)
+    #     # return
+    #     super().save(*args, **kwargs)
 
     @property
     def change_in_progress(self) -> Optional['Change']:
@@ -51,26 +54,24 @@ class ModeratedModel(models.Model):
             logging.error(err)
             return False
 
-    class Moderator(GenericModerator):
-        """Base moderator class for moderated models."""
+    # class Moderator(GenericModerator):
+    #     """Base moderator class for moderated models."""
 
-        visibility_column = 'verified'
+    #     # Allow multiple moderations per registered model instance.
+    #     keep_history = True
 
-        # Allow multiple moderations per registered model instance.
-        keep_history = True
+    #     # Exclude fields from the object change list.
+    #     fields_exclude = ['cache']
 
-        # Exclude fields from the object change list.
-        fields_exclude = ['cache']
+    #     auto_approve_for_staff = auto_approve_for_superusers = False
 
-        auto_approve_for_staff = auto_approve_for_superusers = False
+    #     def is_auto_approve(self, obj, user):
+    #         """Determine whether to automatically approve a change."""
+    #         return super().is_auto_approve(obj, user)
 
-        def is_auto_approve(self, obj, user):
-            """Determine whether to automatically approve a change."""
-            return super().is_auto_approve(obj, user)
-
-        def is_auto_reject(self, obj, user):
-            """Determine whether to automatically reject a change."""
-            return super().is_auto_reject(obj, user)
+    #     def is_auto_reject(self, obj, user):
+    #         """Determine whether to automatically reject a change."""
+    #         return super().is_auto_reject(obj, user)
 
 
 class SearchableModeratedModel(SearchableModel, ModeratedModel):

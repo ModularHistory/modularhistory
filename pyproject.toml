@@ -233,7 +233,7 @@ wordcloud = "^1.8.0"
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra --ds='core.settings' --capture=no --ignore conftest.py -p no:cacheprovider --disable-warnings"
-norecursedirs = ["*env", ".nox"]
+norecursedirs = ["*env", ".nox", ".cache", ".pytype", "config"]
 python_files = [
     "tests.py",
     "*_tests.py",

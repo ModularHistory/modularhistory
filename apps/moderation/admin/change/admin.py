@@ -12,15 +12,13 @@ from apps.moderation.models.moderated_model.model import ModeratedModel
 
 from .actions import approve_objects, reject_objects, set_objects_as_pending
 
-available_filters = (('content_type', RegisteredContentTypeListFilter), 'moderation_status')
-
 
 class ChangeAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_date'
     list_display = ('content_object', 'content_type', 'created_date', 'moderation_status')
-    list_filter = available_filters
-    change_form_template = 'moderation/moderate_object.html'
-    change_list_template = 'moderation/moderations_list.html'
+    list_filter = (('content_type', RegisteredContentTypeListFilter), 'moderation_status')
+    change_form_template = 'moderation/changes/moderate_change.html'
+    change_list_template = 'moderation/changes/changes_list.html'
     actions = [reject_objects, approve_objects, set_objects_as_pending]
     fieldsets = (('Object moderation', {'fields': ('reason',)}),)
 

@@ -39,7 +39,12 @@ class ContentContribution(models.Model):
 class Change(AbstractChange):
     """A modification of a moderated model instance."""
 
-    set = models.ForeignKey(to='moderation.ChangeSet', on_delete=models.CASCADE)
+    set = models.ForeignKey(
+        to='moderation.ChangeSet',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
     content_type = models.ForeignKey(
         to=ContentType,
         null=True,

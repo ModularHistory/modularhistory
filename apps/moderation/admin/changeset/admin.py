@@ -6,25 +6,23 @@ from django.urls import NoReverseMatch, reverse
 
 from apps.admin import admin_site
 from apps.moderation.diff import get_changes_between_models
-from apps.moderation.filterspecs import RegisteredContentTypeListFilter
 from apps.moderation.models import ChangeSet
 from apps.moderation.models.moderated_model.model import ModeratedModel
 
 from .actions import approve_objects, reject_objects, set_objects_as_pending
 
-available_filters = (('content_type', RegisteredContentTypeListFilter), 'moderation_status')
-
 
 class ChangeSetAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_date'
-    list_display = ('created_date', 'moderation_status', 'moderator')
-    list_filter = available_filters
-    change_form_template = 'moderation/moderate_object.html'
-    change_list_template = 'moderation/moderations_list.html'
+    list_display = ('created_date', 'moderation_status')
+    list_filter = ('moderation_status',)
+    change_form_template = 'moderation/changesets/moderate_changeset.html'
+    change_list_template = 'moderation/changesets/changesets_list.html'
     actions = [reject_objects, approve_objects, set_objects_as_pending]
     fieldsets = (('Object moderation', {'fields': ('reason',)}),)
 
     def get_actions(self, request):
+        """Return the batch actions available to the admin list view."""
         actions = super().get_actions(request)
         # Remove the delete_selected action if it exists
         try:

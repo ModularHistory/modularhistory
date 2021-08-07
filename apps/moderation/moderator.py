@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.fields import BooleanField
 from django.db.models.manager import Manager
 from django.template.loader import render_to_string
 
@@ -29,8 +28,6 @@ class GenericModerator:
     fields_exclude = []
     resolve_foreignkeys = True
 
-    visibility_column = None
-
     auto_approve_for_superusers = True
     auto_approve_for_staff = True
     auto_approve_for_groups = None
@@ -50,7 +47,6 @@ class GenericModerator:
 
     def __init__(self, model_class):
         self.model_class = model_class
-        self._validate_options()
         self.base_managers = self._get_base_managers()
 
         moderated_fields = getattr(model_class, 'moderated_fields', None)
@@ -258,24 +254,3 @@ class GenericModerator:
             base_manager = Manager
 
         return base_manager
-
-    def _validate_options(self):
-        if self.visibility_column:
-            try:  # Django 1.10+
-                field_type = type(self.model_class._meta.get_field(self.visibility_column))
-            except AttributeError:
-                field_type = type(
-                    self.model_class._meta.get_field_by_name(self.visibility_column)[0]
-                )
-
-            if field_type != BooleanField:
-                msg = (
-                    'visibility_column field: %s on model %s should '
-                    'be BooleanField type but is %s'
-                )
-                msg %= (
-                    self.moderator.visibility_column,
-                    self.changed_object.__class__,
-                    field_type,
-                )
-                raise AttributeError(msg)

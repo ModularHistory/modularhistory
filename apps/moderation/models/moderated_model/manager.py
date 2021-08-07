@@ -37,10 +37,6 @@ class ModeratedModelManager(Manager):
         }
         return queryset.filter(Q(**only_no_relation_objects) | Q(**only_ready))
 
-    @property
-    def moderator(self):
-        return self.model.Moderator(self.model)
-
 
 class SearchableModeratedModelManager(SearchableManager, ModeratedModelManager):
     """Manager for moderated models of which users can search for instances."""

@@ -21,6 +21,7 @@ APPS_TO_INCLUDE = (
     'sources',
     'users',
     'staticpages',
+    'moderation',
 )
 
 
@@ -49,7 +50,6 @@ class AdminMenu(Menu):
             items.MenuItem(_('Dashboard'), reverse('admin:index')),
             items.Bookmarks(),
             *self._menu_items,
-            items.MenuItem(_('To Be Moderated'), '/_admin/moderation/change/'),
         ]
 
     @property

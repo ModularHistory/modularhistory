@@ -8,13 +8,13 @@ from apps.moderation.constants import DraftState, ModerationStatus
 from apps.moderation.signals import post_many_moderation, pre_many_moderation
 
 if TYPE_CHECKING:
-    from apps.moderation.models.change import Change
+    from apps.moderation.models.changeset import ChangeSet
     from apps.moderation.models.moderated_model import ModeratedModel
 
 
-class ChangeQuerySet(QuerySet):
+class ChangeSetQuerySet(QuerySet):
 
-    model: Type['Change']
+    model: Type['ChangeSet']
 
     def approve(self, cls: Type['ModeratedModel'], by, reason=None):
         self._send_signals_and_moderate(

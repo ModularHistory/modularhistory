@@ -1,11 +1,12 @@
 from typing import Type
 
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
 
 from apps.admin.model_admin import ExtendedModelAdmin
 from apps.moderation.constants import ModerationStatus
 from apps.moderation.forms import BaseModerationForm
-from apps.moderation.helpers import automoderate
+from apps.moderation.models.change import Change
 from apps.moderation.models.moderated_model.model import ModeratedModel
 
 
@@ -27,15 +28,15 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
             self.form = self.get_moderation_form(obj.__class__)
         return super().get_form(request, obj, **kwargs)
 
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        # if self.admin_integration_enabled:
-        #     self.send_message(request, object_id)
-        try:
-            return super().change_view(
-                request, object_id, form_url=form_url, extra_context=extra_context
-            )
-        except TypeError:
-            return super().change_view(request, object_id, extra_context=extra_context)
+    # def change_view(self, request, object_id, form_url='', extra_context=None):
+    #     # if self.admin_integration_enabled:
+    #     #     self.send_message(request, object_id)
+    #     try:
+    #         return super().change_view(
+    #             request, object_id, form_url=form_url, extra_context=extra_context
+    #         )
+    #     except TypeError:
+    #         return super().change_view(request, object_id, extra_context=extra_context)
 
     # def send_message(self, request, object_id):
     #     try:
@@ -48,9 +49,23 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
 
     #     self.message_user(request, msg)
 
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        automoderate(obj, request.user)
+    def save_model(self, request, instance: 'ModeratedModel', form, change):
+        print(f'>>>> save_model')
+        if self.admin_integration_enabled:
+            if instance.has_change_in_progress:
+                change = instance.change_in_progress
+                change.changed_object = instance
+                change.save()
+            else:
+                change = Change.objects.create(
+                    content_type=ContentType.objects.get_for_model(instance.__class__),
+                    object_id=instance.pk,
+                    moderation_status=ModerationStatus.PENDING,
+                    changed_object=instance,
+                )
+        else:
+            instance.save()
+        # obj.moderation.automoderate(request.user)  # TODO
 
     def get_moderation_message(self, status=None, reason=None):
         if status == ModerationStatus.PENDING:

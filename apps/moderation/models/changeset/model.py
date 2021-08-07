@@ -13,6 +13,9 @@ from apps.moderation.signals import post_moderation, pre_moderation
 from .manager import ChangeSetManager
 
 if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
+
+    from apps.moderation.models.change import Change
     from apps.moderation.models.moderated_model import ModeratedModel
 
 
@@ -41,6 +44,7 @@ class AbstractChange(models.Model):
 class ChangeSet(AbstractChange):
     """A set of changes to one or more moderated model instances."""
 
+    changes: 'RelatedManager[Change]'
     initiator = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         blank=True,
@@ -175,14 +179,15 @@ class ChangeSet(AbstractChange):
         self.reason = reason
         self.save()
 
-        if self.moderator.visibility_column:
-            old_visible = getattr(base_object, self.moderator.visibility_column)
+        visibility_column = 'verified'
+        if visibility_column:
+            old_visible = getattr(base_object, visibility_column)
             if new_status == self.ModerationStatus.APPROVED.value:
                 new_visible = True
             else:
                 new_visible = False
             if new_visible != old_visible:
-                setattr(base_object, self.moderator.visibility_column, new_visible)
+                setattr(base_object, visibility_column, new_visible)
                 base_object_force_save = True
 
         if base_object_force_save:
