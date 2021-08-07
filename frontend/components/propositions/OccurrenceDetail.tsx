@@ -1,6 +1,7 @@
 import { Occurrence } from "@/interfaces";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
+import Tag from "../topics/Tag";
 
 interface OccurrenceDetailProps {
   occurrence: Occurrence;
@@ -39,8 +40,13 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
       {occurrence.summary != occurrence.title && <p className="lead">{occurrence.summary}</p>}
       <div dangerouslySetInnerHTML={{ __html: occurrence.elaboration }} />
       {occurrence.postscript && <p dangerouslySetInnerHTML={{ __html: occurrence.postscript }} />}
-      {occurrence.tagsHtml && (
-        <ul className="tags" dangerouslySetInnerHTML={{ __html: occurrence.tagsHtml }} />
+
+      {!!occurrence.cachedTags?.length && (
+        <ul className="tags">
+          {occurrence.cachedTags.map((topic) => (
+            <Tag key={topic.pk} topic={topic} />
+          ))}
+        </ul>
       )}
 
       <footer className="footer sources-footer">

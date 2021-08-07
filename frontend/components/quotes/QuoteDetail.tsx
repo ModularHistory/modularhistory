@@ -1,3 +1,4 @@
+import Tag from "@/components/topics/Tag";
 import { Quote } from "@/interfaces";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
@@ -10,9 +11,7 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
   const titleHtml = [quote.attributeeHtml, quote.dateString]
     .filter((html) => Boolean(html))
     .join(", ");
-
   const firstImage = quote.cachedImages?.[0];
-
   return (
     <>
       <h2 className="text-center card-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
@@ -25,8 +24,12 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
 
       <div dangerouslySetInnerHTML={{ __html: quote.html }} />
 
-      {quote.tagsHtml && (
-        <ul className="tags" dangerouslySetInnerHTML={{ __html: quote.tagsHtml }} />
+      {!!quote.cachedTags?.length && (
+        <ul className="tags">
+          {quote.cachedTags.map((topic) => (
+            <Tag key={topic.pk} topic={topic} />
+          ))}
+        </ul>
       )}
 
       <footer className="footer sources-footer">
