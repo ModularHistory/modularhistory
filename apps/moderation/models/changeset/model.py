@@ -129,8 +129,8 @@ class ChangeSet(AbstractChange):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _('modification')
-        verbose_name_plural = _('modifications')
+        verbose_name = _('change set')
+        verbose_name_plural = _('change sets')
         ordering = ['moderation_status', 'created_date']
 
     def automoderate(self, user=None) -> AbstractChange.ModerationStatus:
