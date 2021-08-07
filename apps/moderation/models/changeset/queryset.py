@@ -19,15 +19,13 @@ class ChangeSetQuerySet(QuerySet):
     def approve(self, cls: Type['ModeratedModel'], by, reason=None):
         self._send_signals_and_moderate(
             cls,
-            self.model.ModerationStatus.APPROVED.value,
+            ModerationStatus.APPROVED,
             by,
             reason,
         )
 
     def reject(self, cls: Type['ModeratedModel'], by, reason=None):
-        self._send_signals_and_moderate(
-            cls, self.model.ModerationStatus.REJECTED.value, by, reason
-        )
+        self._send_signals_and_moderate(cls, ModerationStatus.REJECTED, by, reason)
 
     def _send_signals_and_moderate(self, cls: Type['ModeratedModel'], new_status, by, reason):
         pre_many_moderation.send(

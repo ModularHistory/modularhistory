@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
+# from apps.moderation.constants import ModerationStatus, DraftState
 from apps.moderation.constants import DraftState as _DraftState
 from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
@@ -93,9 +94,9 @@ class ChangeSet(AbstractChange):
             # Just save below if the moderation result is PENDING.
         changed_object = self.changed_object
         status, reason = self._get_moderation_status_and_reason(changed_object, user)
-        if status == self.ModerationStatus.REJECTED.value:
+        if status == _ModerationStatus.REJECTED:
             self.reject(by=self.by, reason=reason)
-        elif status == self.ModerationStatus.APPROVED.value:
+        elif status == _ModerationStatus.APPROVED:
             self.approve(by=self.by, reason=reason)
         else:  # PENDING
             self.save()
@@ -108,12 +109,12 @@ class ChangeSet(AbstractChange):
         """
         reason = self.moderator.is_auto_reject(obj, user)
         if reason:
-            return self.ModerationStatus.REJECTED.value, reason
+            return _ModerationStatus.REJECTED, reason
         else:
             reason = self.moderator.is_auto_approve(obj, user)
             if reason:
-                return self.ModerationStatus.APPROVED.value, reason
-        return self.ModerationStatus.PENDING, None
+                return _ModerationStatus.APPROVED, reason
+        return _ModerationStatus.PENDING, None
 
     def get_absolute_url(self):
         if hasattr(self.changed_object, 'get_absolute_url'):
@@ -151,8 +152,8 @@ class ChangeSet(AbstractChange):
         # Moderation.
 
         if (
-            self.moderation_status == self.ModerationStatus.PENDING.value
-            and new_status == self.ModerationStatus.APPROVED.value
+            self.moderation_status == _ModerationStatus.PENDING
+            and new_status == _ModerationStatus.APPROVED
         ):
             base_object = self.changed_object
             base_object_force_save = True
@@ -165,10 +166,10 @@ class ChangeSet(AbstractChange):
             base_object = obj_class._default_unmoderated_manager.get(pk=pk)
             base_object_force_save = False
 
-        if new_status == self.ModerationStatus.APPROVED.value:
+        if new_status == _ModerationStatus.APPROVED:
             # This version is now approved, and will be reverted to if
             # future changes are rejected by a moderator.
-            self.draft_state = self.DraftState.READY.value
+            self.draft_state = _DraftState.READY
 
         self.moderation_status = new_status
         self.on = datetime.datetime.now()
@@ -179,7 +180,7 @@ class ChangeSet(AbstractChange):
         visibility_column = 'verified'
         if visibility_column:
             old_visible = getattr(base_object, visibility_column)
-            if new_status == self.ModerationStatus.APPROVED.value:
+            if new_status == _ModerationStatus.APPROVED:
                 new_visible = True
             else:
                 new_visible = False
@@ -217,7 +218,7 @@ class ChangeSet(AbstractChange):
         return False
 
     def approve(self, by=None, reason=None):
-        self._send_signals_and_moderate(self.ModerationStatus.APPROVED.value, by, reason)
+        self._send_signals_and_moderate(_ModerationStatus.APPROVED, by, reason)
 
     def reject(self, by=None, reason=None):
-        self._send_signals_and_moderate(self.ModerationStatus.REJECTED.value, by, reason)
+        self._send_signals_and_moderate(_ModerationStatus.REJECTED, by, reason)
