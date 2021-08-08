@@ -58,9 +58,18 @@ class Change(AbstractChange):
 
     @property
     def unchanged_object(self) -> 'ModeratedModel':
-        """Return the object prior to application of the change."""
+        """
+        Return the object prior to application of the change.
+
+        If the change has not yet been saved to the moderated model instance,
+        then the "object before change" is simply the moderated model instance.
+
+        If the change has already been applied, regardless of whether additional
+        changes have been applied since the time this change was applied, the
+        value of `object_before_change` is the `object_after_change` value of the
+        change that immediately preceded this one.
+        """
         if self.merged_date:
-            # TODO: confirm this works correctly!
             prior_change: Change = Change.objects.filter(
                 content_type=self.content_type,
                 object_id=self.object_id,

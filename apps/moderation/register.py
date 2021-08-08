@@ -127,45 +127,6 @@ class ModerationManager:
 
         return unchanged_obj
 
-    def _get_or_create_moderation(self, instance, unchanged_obj, moderator):
-        """
-        Get or create Moderation instance.
-        If moderated object is not equal instance then serialize unchanged
-        in moderated object in order to use it later in post_save_handler
-        """
-
-        def get_new_instance(unchanged_obj):
-            moderation = Change(content_object=unchanged_obj)
-            moderation.changed_object = unchanged_obj
-            return moderation
-
-        try:
-            moderation = Change.objects.get_for_instance(instance)
-            if moderation is None:
-                moderation = get_new_instance(unchanged_obj)
-            elif moderator.keep_history and moderation.has_object_been_changed(instance):
-                # We're keeping history and this isn't an update of an existing
-                # moderation
-                moderation = get_new_instance(unchanged_obj)
-
-        except Change.DoesNotExist:
-            moderation = get_new_instance(unchanged_obj)
-
-        else:
-            if moderation.has_object_been_changed(instance):
-                moderation.changed_object = self._get_updated_object(
-                    instance, unchanged_obj, moderator
-                )
-            elif moderation.has_object_been_changed(instance, only_excluded=True):
-                moderation.changed_object = self._get_updated_object(
-                    instance, unchanged_obj, moderator
-                )
-
-        return moderation
-
-    def get_moderator(self, model_class: Type[ModeratedModel]):
-        return model_class.Moderator(model_class)
-
     def post_save_handler(self, sender, instance, **kwargs):
         """
         Creates new moderation object if instance is created,

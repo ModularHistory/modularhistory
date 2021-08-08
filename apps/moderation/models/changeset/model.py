@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -142,11 +142,6 @@ class ChangeSet(AbstractChange):
 
     def __str__(self):
         return f'Changeset #{self.pk}, initiated {self.created_date} by {self.initiator}'
-
-    def save(self, *args, **kwargs):
-        if self.instance:
-            self.changed_object = self.instance
-        super().save(*args, **kwargs)
 
     @property
     def change_ids(self) -> list[int]:
