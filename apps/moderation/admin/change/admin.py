@@ -34,6 +34,7 @@ class ChangeAdmin(admin.ModelAdmin):
     fieldsets = (('Moderation', {'fields': ('description',)}),)
 
     def get_actions(self, request: 'HttpRequest'):
+        """Return the bulk actions available to the admin."""
         actions = super().get_actions(request)
         # Remove the delete_selected action if it exists
         try:
