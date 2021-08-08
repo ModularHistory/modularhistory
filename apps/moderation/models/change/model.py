@@ -58,7 +58,7 @@ class Change(AbstractChange):
 
     @property
     def unchanged_object(self) -> 'ModeratedModel':
-        """Return the moderated model instance prior to application of the change."""
+        """Return the object prior to application of the change."""
         if self.merged_date:
             # TODO: confirm this works correctly!
             prior_change: Change = Change.objects.filter(
