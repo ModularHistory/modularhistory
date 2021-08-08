@@ -1,5 +1,5 @@
 import datetime
-from typing import TYPE_CHECKING, Optional, Type
+from typing import Optional, TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.moderation.constants import DraftState as _DraftState
 from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
-from apps.moderation.models.change.model import ContentContribution
+from apps.moderation.models.contribution import ContentContribution
 from apps.moderation.models.moderation import Moderation
 from apps.moderation.signals import post_moderation, pre_moderation
 
@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
     from apps.moderation.models.change import Change
-    from apps.moderation.models.moderated_model import ModeratedModel
     from apps.users.models import User
 
 
@@ -55,7 +54,7 @@ class AbstractChange(models.Model):
         null=True,
         editable=True,
         on_delete=models.SET_NULL,
-        related_name='initiated_changesets',
+        related_name='initiated_%(class)ss',
     )
     reasons = ArrayField(
         base_field=models.PositiveSmallIntegerField(choices=Reason.choices),

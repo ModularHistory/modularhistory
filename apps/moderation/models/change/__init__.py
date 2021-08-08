@@ -1,2 +1,2 @@
 from .manager import ChangeManager
-from .model import Change, ContentContribution
+from .model import Change
