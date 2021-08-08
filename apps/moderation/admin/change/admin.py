@@ -31,9 +31,6 @@ class ChangeAdmin(admin.ModelAdmin):
             pass
         return actions
 
-    def content_object(self, obj):
-        return str(obj.object_after_change)
-
     def get_moderation_form(self, model_class):
         class ModerationForm(ModelForm):
             class Meta:
@@ -44,8 +41,8 @@ class ChangeAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, extra_context=None):
         change: Change = Change.objects.get(pk=object_id)
-        object_after_change: ModeratedModel = change.object_after_change
-        object_before_change: ModeratedModel = change.object_before_change
+        object_after_change: ModeratedModel = change.changed_object
+        object_before_change: ModeratedModel = change.unchanged_object
         changes = list(
             get_changes_between_models(
                 object_before_change,
