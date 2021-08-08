@@ -28,7 +28,7 @@ class SerializedObjectField(JSONField):
         return name, path, args, kwargs
 
     # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
-    def from_db_value(self, value, expression, connection) -> Optional[Model]:
+    def from_db_value(self, value, *args) -> Optional[Model]:
         """
         Convert a value as returned by the database to a Python object.
         This method is the reverse of `get_prep_value()`.
