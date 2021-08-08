@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional, Type
 
-from django.contrib.contenttypes.models import ContentType
 from django.db.models.query import QuerySet
 
 from apps.moderation.constants import DraftState, ModerationStatus
@@ -39,25 +38,15 @@ class ChangeQuerySet(QuerySet):
         reason: Optional[str] = None,
     ):
         """Update the moderation status of the changes."""
-        visibility_column = 'verified'
-        ct = ContentType.objects.get_for_model(cls)
-        update_kwargs = {
+        kwargs = {
             'moderation_status': verdict,
             'date': datetime.now(),
             'moderator': moderator,
             'reason': reason,
         }
         if verdict == ModerationStatus.APPROVED:
-            update_kwargs['state'] = DraftState.READY
-        self.update(update_kwargs)
-        if visibility_column:
-            if verdict == ModerationStatus.APPROVED:
-                new_visible = True
-            else:
-                new_visible = False
-            cls.objects.filter(
-                id__in=self.filter(content_type=ct).values_list('object_id', flat=True)
-            ).update(**{visibility_column: new_visible})
+            kwargs['state'] = DraftState.READY
+        self.update(kwargs)
         # mod.inform_users(self.exclude(changed_by=None).select_related('changed_by__email'))
         post_moderation.send(
             sender=self.content_type.model_class(),

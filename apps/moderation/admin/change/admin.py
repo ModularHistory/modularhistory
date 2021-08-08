@@ -22,7 +22,7 @@ class ChangeAdmin(admin.ModelAdmin):
     """
     Admin for changes proposed to moderated model instances.
 
-    This admin enables users with moderation privileges to accept or reject changes.
+    This enables users with moderation privileges to accept or reject changes.
     """
 
     date_hierarchy = 'created_date'
