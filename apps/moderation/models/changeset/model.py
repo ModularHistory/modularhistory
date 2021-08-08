@@ -2,6 +2,7 @@ import datetime
 from typing import TYPE_CHECKING, Optional, Type
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
@@ -9,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.moderation.constants import DraftState as _DraftState
 from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
+from apps.moderation.models.change.model import ContentContribution
 from apps.moderation.models.moderation import Moderation
 from apps.moderation.signals import post_moderation, pre_moderation
 
@@ -16,6 +18,7 @@ from .manager import ChangeSetManager
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
+    from django.db.models.query import QuerySet
 
     from apps.moderation.models.change import Change
     from apps.moderation.models.moderated_model import ModeratedModel
@@ -46,6 +49,14 @@ class AbstractChange(models.Model):
         APPROVED = _ModerationStatus.APPROVED, _('Approved')
         MERGED = _ModerationStatus.MERGED, _('Merged')
 
+    initiator = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        editable=True,
+        on_delete=models.SET_NULL,
+        related_name='initiated_changesets',
+    )
     reasons = ArrayField(
         base_field=models.PositiveSmallIntegerField(choices=Reason.choices),
         null=True,
@@ -80,10 +91,24 @@ class AbstractChange(models.Model):
     ) -> Moderation:
         """Add an approval."""
         # self._send_signals_and_moderate(_ModerationStatus.APPROVED, by, reason)
+        return self.moderate(
+            verdict=_ModerationStatus.APPROVED,
+            moderator=moderator,
+            change=self,
+            reason=reason,
+        )
+
+    def moderate(
+        self,
+        verdict: ModerationStatus,
+        moderator: Optional['User'] = None,
+        reason: Optional[str] = None,
+    ) -> Moderation:
+        """Moderate the change."""
         return Moderation.objects.create(
             moderator=moderator,
             change=self,
-            verdict=_ModerationStatus.APPROVED,
+            verdict=verdict,
             reason=reason,
         )
 
@@ -94,10 +119,9 @@ class AbstractChange(models.Model):
     ) -> Moderation:
         """Reject the change."""
         # self._send_signals_and_moderate(_ModerationStatus.REJECTED, by, reason)
-        moderation: Moderation = Moderation.objects.create(
-            moderator=moderator,
-            change=self,
+        moderation: Moderation = self.moderate(
             verdict=_ModerationStatus.REJECTED,
+            moderator=moderator,
             reason=reason,
         )
         self.moderation_status = _ModerationStatus.REJECTED
@@ -109,16 +133,13 @@ class ChangeSet(AbstractChange):
     """A set of changes to one or more moderated model instances."""
 
     changes: 'RelatedManager[Change]'
-    initiator = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        editable=True,
-        on_delete=models.SET_NULL,
-        related_name='initiated_changesets',
-    )
 
     objects = ChangeSetManager()
+
+    class Meta:
+        verbose_name = _('change set')
+        verbose_name_plural = _('change sets')
+        ordering = ['moderation_status', 'created_date']
 
     def __str__(self):
         return f'Changeset #{self.pk}, initiated {self.created_date} by {self.initiator}'
@@ -128,55 +149,19 @@ class ChangeSet(AbstractChange):
             self.changed_object = self.instance
         super().save(*args, **kwargs)
 
-    class Meta:
-        verbose_name = _('change set')
-        verbose_name_plural = _('change sets')
-        ordering = ['moderation_status', 'created_date']
-
-    def automoderate(self, user=None) -> AbstractChange.ModerationStatus:
-        """Auto-moderate the modification based on the user; return the moderation status."""
-        if user is None:
-            user = self.initiator
-        else:
-            self.initiator = user
-            # No need to save here, both reject() and approve() will save us.
-            # Just save below if the moderation result is PENDING.
-        changed_object = self.changed_object
-        status, reason = self._get_moderation_status_and_reason(changed_object, user)
-        if status == _ModerationStatus.REJECTED:
-            self.reject(by=self.by, reason=reason)
-        elif status == _ModerationStatus.APPROVED:
-            self.approve(by=self.by, reason=reason)
-        else:  # PENDING
-            self.save()
-
-        return status
-
-    def _get_moderation_status_and_reason(self, obj, user):
-        """
-        Returns tuple of moderation status and reason for auto moderation
-        """
-        reason = self.moderator.is_auto_reject(obj, user)
-        if reason:
-            return _ModerationStatus.REJECTED, reason
-        else:
-            reason = self.moderator.is_auto_approve(obj, user)
-            if reason:
-                return _ModerationStatus.APPROVED, reason
-        return _ModerationStatus.PENDING, None
-
-    def get_absolute_url(self):
-        if hasattr(self.changed_object, 'get_absolute_url'):
-            return self.changed_object.get_absolute_url()
-        return None
-
-    def get_admin_moderate_url(self):
-        return f'/admin/moderation/moderatedobject/{self.pk}/change/'
+    @property
+    def change_ids(self) -> list[int]:
+        return self.changes.all().values_list('id', flat=True)
 
     @property
-    def moderator(self):
-        model_class: Type['ModeratedModel'] = self.content_type.model_class()
-        return model_class.Moderator(model_class)  # TODO: singleton?
+    def contributions(self) -> 'QuerySet[ContentContribution]':
+        return ContentContribution.objects.filter(change_id__in=self.change_ids)
+
+    @property
+    def contributors(self) -> 'QuerySet[User]':
+        return get_user_model().objects.filter(
+            content_contributions__change_id__in=self.change_ids
+        )
 
     def _send_signals_and_moderate(self, new_status, by, reason):
         pre_moderation.send(

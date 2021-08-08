@@ -65,7 +65,6 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
                 )
         else:
             instance.save()
-        # obj.moderation.automoderate(request.user)  # TODO
 
     def get_moderation_message(self, status=None, reason=None):
         if status == ModerationStatus.PENDING:
