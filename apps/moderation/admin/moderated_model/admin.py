@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -44,7 +44,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         request: 'HttpRequest',
         instance: 'ModeratedModel',
         form: 'ModelForm',
-        change,
+        change: Any,
     ):
         """Save changes after the admin form is submitted."""
         # If admin integration for moderated models is active, save the changes to
@@ -52,11 +52,11 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         # or create a new `Change` instance.
         if self.admin_integration_enabled:
             if instance.has_change_in_progress:
-                change = instance.change_in_progress
-                change.changed_object = instance
-                change.save()
+                _change = instance.change_in_progress
+                _change.changed_object = instance
+                _change.save()
             else:
-                change = Change.objects.create(
+                _change = Change.objects.create(
                     content_type=ContentType.objects.get_for_model(instance.__class__),
                     object_id=instance.pk,
                     moderation_status=ModerationStatus.PENDING,
