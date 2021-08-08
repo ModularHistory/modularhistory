@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Optional, Type
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.query import QuerySet
@@ -8,23 +8,32 @@ from apps.moderation.constants import DraftState, ModerationStatus
 
 if TYPE_CHECKING:
     from apps.moderation.models.changeset import ChangeSet
+    from apps.users.models import User
 
 
 class ChangeSetQuerySet(QuerySet):
 
     model: Type['ChangeSet']
 
-    def approve(self, moderator, reason=None):
-        self._send_signals_and_moderate(
-            ModerationStatus.APPROVED,
-            moderator,
-            reason,
+    def approve(self, moderator: Optional['User'], reason: Optional[str] = None):
+        """Approve the change sets."""
+        self._moderate(
+            verdict=ModerationStatus.APPROVED,
+            moderator=moderator,
+            reason=reason,
         )
 
-    def reject(self, moderator, reason=None):
-        self._send_signals_and_moderate(ModerationStatus.REJECTED, moderator, reason)
+    def reject(self, moderator: Optional['User'], reason=None):
+        """Reject the change sets."""
+        self._moderate(ModerationStatus.REJECTED, moderator, reason)
 
-    def _moderate(self, verdict, moderator, reason):
+    def _moderate(
+        self,
+        verdict: int,
+        moderator: Optional['User'],
+        reason: Optional[str] = None,
+    ):
+        """Update the moderation status of the change sets."""
         visibility_column = 'verified'
         ct = ContentType.objects.get_for_model(cls)
         update_kwargs = {

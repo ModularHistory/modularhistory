@@ -19,6 +19,12 @@ if TYPE_CHECKING:
 
 
 class ChangeAdmin(admin.ModelAdmin):
+    """
+    Admin for changes proposed to moderated model instances.
+
+    This admin enables users with moderation privileges to accept or reject changes.
+    """
+
     date_hierarchy = 'created_date'
     list_display = ('content_object', 'content_type', 'created_date', 'moderation_status')
     list_filter = (ContentTypeFilter, 'moderation_status')

@@ -35,9 +35,10 @@ class ChangeQuerySet(QuerySet):
     def _moderate(
         self,
         verdict: int,
-        moderator,
+        moderator: Optional['User'],
         reason: Optional[str] = None,
     ):
+        """Update the moderation status of the changes."""
         visibility_column = 'verified'
         ct = ContentType.objects.get_for_model(cls)
         update_kwargs = {
