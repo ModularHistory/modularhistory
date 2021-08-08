@@ -54,15 +54,16 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         if self.admin_integration_enabled:
             if instance.has_change_in_progress:
                 change = instance.change_in_progress
-                change.changed_object = instance
+                change.object_after_change = instance
                 change.save()
             else:
                 change = Change.objects.create(
                     content_type=ContentType.objects.get_for_model(instance.__class__),
                     object_id=instance.pk,
                     moderation_status=ModerationStatus.PENDING,
-                    changed_object=instance,
+                    object_after_change=instance,
                 )
+                print(f'>>>> Created change: {change}')
         else:
             instance.save()
 

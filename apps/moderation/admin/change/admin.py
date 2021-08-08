@@ -5,8 +5,8 @@ from django.forms.models import ModelForm
 from django.urls import NoReverseMatch, reverse
 
 from apps.admin import admin_site
+from apps.admin.list_filters.type_filter import ContentTypeFilter
 from apps.moderation.diff import get_changes_between_models
-from apps.moderation.filterspecs import RegisteredContentTypeListFilter
 from apps.moderation.models import Change
 from apps.moderation.models.moderated_model.model import ModeratedModel
 
@@ -16,7 +16,7 @@ from .actions import approve_objects, reject_objects, set_objects_as_pending
 class ChangeAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_date'
     list_display = ('content_object', 'content_type', 'created_date', 'moderation_status')
-    list_filter = (('content_type', RegisteredContentTypeListFilter), 'moderation_status')
+    list_filter = (ContentTypeFilter, 'moderation_status')
     change_form_template = 'moderation/changes/moderate_change.html'
     change_list_template = 'moderation/changes/changes_list.html'
     actions = [reject_objects, approve_objects, set_objects_as_pending]
@@ -32,7 +32,7 @@ class ChangeAdmin(admin.ModelAdmin):
         return actions
 
     def content_object(self, obj):
-        return str(obj.changed_object)
+        return str(obj.object_after_change)
 
     def get_moderation_form(self, model_class):
         class ModerationForm(ModelForm):
@@ -44,8 +44,8 @@ class ChangeAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, extra_context=None):
         change: Change = Change.objects.get(pk=object_id)
-        object_after_change: ModeratedModel = change.changed_object
-        object_before_change: ModeratedModel = change.unchanged_object
+        object_after_change: ModeratedModel = change.object_after_change
+        object_before_change: ModeratedModel = change.object_before_change
         changes = list(
             get_changes_between_models(
                 object_before_change,
