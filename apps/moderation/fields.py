@@ -18,7 +18,6 @@ class SerializedObjectField(JSONField):
     def __init__(self, *args, **kwargs):
         """Construct the field."""
         kwargs['encoder'] = JSONEncoder
-        # kwargs['decoder'] = JSONEncoder
         super().__init__(*args, **kwargs)
 
     def deconstruct(self) -> tuple:
@@ -28,14 +27,15 @@ class SerializedObjectField(JSONField):
         return name, path, args, kwargs
 
     # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
-    def from_db_value(self, value, *args) -> Optional[Model]:
+    def from_db_value(self, value: str, *args) -> Optional[Model]:
         """
         Convert a value as returned by the database to a Python object.
         This method is the reverse of `get_prep_value()`.
         """
         if value is None:
             return value
-        data = json.loads(value, cls=self.decoder)
+        data: list = json.loads(value, cls=self.decoder)
+        print(f'>>>>> from_db_value>>> {type(data)}: {data=}')
         return self._deserialize(data)
 
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.Field.get_prep_value
@@ -50,7 +50,11 @@ class SerializedObjectField(JSONField):
 
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.Field.get_db_prep_value
     def get_db_prep_value(self, value, connection, prepared: bool) -> str:
-        return super().get_db_prep_value(self.get_prep_value(value), connection, prepared)
+        return self.get_prep_value(value)
+
+    def pre_save(self, model_instance: Model, add: bool) -> list:
+        value = getattr(model_instance, self.attname, None)
+        return self._serialize(value)
 
     # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-values-to-python-objects
     def to_python(self, value: Optional[Union[Model, dict, list, str]]) -> Optional[Model]:

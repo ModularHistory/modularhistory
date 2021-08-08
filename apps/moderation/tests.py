@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.contenttypes.models import ContentType
 
+from apps.dates.structures import HistoricDateTime
 from apps.moderation.models.change import Change
 from apps.propositions.models import Proposition
 
@@ -20,6 +21,7 @@ class TestModeration:
             summary=original_summary,
             elaboration='<p>elaboration</p>',
             certainty=1,
+            date=HistoricDateTime(2000, 1, 1, 1, 1, 1, microsecond=1),
         )
         p.save()
 
@@ -45,3 +47,4 @@ class TestModeration:
         assert p.summary == original_summary
         assert change.changed_object.title == changed_title
         assert change.changed_object.title != p.title
+        assert change.changed_object.date == change.content_object.date
