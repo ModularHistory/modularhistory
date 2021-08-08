@@ -48,9 +48,9 @@ class SerializedObjectField(JSONField):
             return super().get_prep_value(self._serialize(value))
         return super().get_prep_value(value)
 
-    # # https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.Field.get_db_prep_value
-    # def get_db_prep_value(self, value, connection, prepared: bool) -> str:
-    #     return super().get_db_prep_value(self.get_prep_value(value), connection, prepared)
+    # https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.Field.get_db_prep_value
+    def get_db_prep_value(self, value, connection, prepared: bool) -> str:
+        return super().get_db_prep_value(self.get_prep_value(value), connection, prepared)
 
     # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-values-to-python-objects
     def to_python(self, value: Optional[Union[Model, dict, list, str]]) -> Optional[Model]:
