@@ -15,7 +15,6 @@ class BaseModerationForm(ModelForm):
         if instance:
             if instance.has_change_in_progress:
                 initial = model_to_dict(instance.change_in_progress.changed_object)
-                print(f'>>>>>>>>> instance has change in progress: {initial}')
                 kwargs.setdefault('initial', {})
                 kwargs['initial'].update(initial)
 

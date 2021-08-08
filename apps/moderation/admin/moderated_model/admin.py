@@ -50,7 +50,6 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
     #     self.message_user(request, msg)
 
     def save_model(self, request, instance: 'ModeratedModel', form, change):
-        print(f'>>>> save_model')
         if self.admin_integration_enabled:
             if instance.has_change_in_progress:
                 change = instance.change_in_progress
@@ -63,7 +62,6 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
                     moderation_status=ModerationStatus.PENDING,
                     object_after_change=instance,
                 )
-                print(f'>>>> Created change: {change}')
         else:
             instance.save()
 

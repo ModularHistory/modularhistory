@@ -34,9 +34,7 @@ class SerializedObjectField(JSONField):
         """
         if value is None:
             return value
-        data: list = json.loads(value, cls=self.decoder)
-        print(f'>>>>> from_db_value>>> {type(data)}: {data=}')
-        return self._deserialize(data)
+        return self._deserialize(json.loads(value, cls=self.decoder))
 
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.Field.get_prep_value
     def get_prep_value(self, value: Optional[Union[Model, str]]) -> str:
