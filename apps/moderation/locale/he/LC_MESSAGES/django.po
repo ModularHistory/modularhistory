@@ -40,10 +40,6 @@ msgstr "העצם אושר על-ידי המנחה וכעת גלוי באתר"
 msgid "This object is not registered with the moderation system."
 msgstr "העצם אינו רשום במערכת מעקב השינויים."
 
-#: filterspecs.py:53
-msgid "All"
-msgstr "הכל"
-
 #: templates/moderation/moderate_object.html:28
 msgid "Change object"
 msgstr "שינוי עצם"

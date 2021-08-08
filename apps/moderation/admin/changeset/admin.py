@@ -6,8 +6,6 @@ from apps.admin import admin_site
 from apps.admin.inlines import StackedInline
 from apps.moderation.models import Change, ChangeSet
 
-from .actions import approve_objects, reject_objects, set_objects_as_pending
-
 if TYPE_CHECKING:
     from django.http.request import HttpRequest
 
@@ -21,7 +19,6 @@ class ChangesInline(StackedInline):
 
 
 class ChangeSetAdmin(admin.ModelAdmin):
-    actions = [reject_objects, approve_objects, set_objects_as_pending]
     date_hierarchy = 'created_date'
     fieldsets = (('Moderation', {'fields': ('description',)}),)
     inlines = [ChangesInline]

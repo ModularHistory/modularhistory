@@ -19,15 +19,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: admin.py:22
-msgid "Approve selected moderated objects"
+msgid "Approve selected changes"
 msgstr ""
 
 #: admin.py:29
-msgid "Reject selected moderated objects"
+msgid "Reject selected changes"
 msgstr "Rejeitar itens moderados selecionados"
 
 #: admin.py:35
-msgid "Set selected moderated objects as Pending"
+msgid "Set selected changes as pending"
 msgstr "Definir itans moderados selecionados como pendentes"
 
 #: admin.py:81
@@ -35,8 +35,7 @@ msgid "Object is viewable on site, it will be removed if moderator rejects it"
 msgstr "Objeto é visível no site e será removido se o moderador rejeitá-lo"
 
 #: admin.py:84
-msgid ""
-"Object is not viewable on site, it will be visible if moderator accepts it"
+msgid "Object is not viewable on site, it will be visible if moderator accepts it"
 msgstr "Objeto não é visível no site e será visível se o moderador aceitá-lo."
 
 #: admin.py:87
@@ -51,10 +50,6 @@ msgstr "O objeto foi aprovado pelo moderador e está visível no site"
 #: admin.py:93
 msgid "This object is not registered with the moderation system."
 msgstr "Este objeto não está registrado no sistema de moderação."
-
-#: filterspecs.py:55
-msgid "All"
-msgstr "Todos"
 
 #: models.py:29
 msgid "Ready for moderation"

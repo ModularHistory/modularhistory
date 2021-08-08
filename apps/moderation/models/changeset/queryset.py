@@ -8,38 +8,36 @@ from apps.moderation.constants import DraftState, ModerationStatus
 
 if TYPE_CHECKING:
     from apps.moderation.models.changeset import ChangeSet
-    from apps.moderation.models.moderated_model import ModeratedModel
 
 
 class ChangeSetQuerySet(QuerySet):
 
     model: Type['ChangeSet']
 
-    def approve(self, cls: Type['ModeratedModel'], by, reason=None):
+    def approve(self, moderator, reason=None):
         self._send_signals_and_moderate(
-            cls,
             ModerationStatus.APPROVED,
-            by,
+            moderator,
             reason,
         )
 
-    def reject(self, cls: Type['ModeratedModel'], by, reason=None):
-        self._send_signals_and_moderate(cls, ModerationStatus.REJECTED, by, reason)
+    def reject(self, moderator, reason=None):
+        self._send_signals_and_moderate(ModerationStatus.REJECTED, moderator, reason)
 
-    def _moderate(self, cls: Type['ModeratedModel'], new_status, moderator, reason):
+    def _moderate(self, verdict, moderator, reason):
         visibility_column = 'verified'
         ct = ContentType.objects.get_for_model(cls)
         update_kwargs = {
-            'moderation_status': new_status,
+            'moderation_status': verdict,
             'date': datetime.now(),
             'moderator': moderator,
             'reason': reason,
         }
-        if new_status == ModerationStatus.APPROVED:
+        if verdict == ModerationStatus.APPROVED:
             update_kwargs['state'] = DraftState.READY
         self.update(update_kwargs)
         if visibility_column:
-            if new_status == ModerationStatus.APPROVED:
+            if verdict == ModerationStatus.APPROVED:
                 new_visible = True
             else:
                 new_visible = False

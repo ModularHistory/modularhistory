@@ -12,7 +12,7 @@ from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.models.contribution import ContentContribution
 from apps.moderation.models.moderation import Moderation
-from apps.moderation.signals import post_moderation, pre_moderation
+from apps.moderation.signals import post_moderation
 
 from .manager import ChangeSetManager
 
@@ -89,7 +89,6 @@ class AbstractChange(models.Model):
         reason: Optional[str] = None,
     ) -> Moderation:
         """Add an approval."""
-        # self._send_signals_and_moderate(_ModerationStatus.APPROVED, by, reason)
         return self.moderate(
             verdict=_ModerationStatus.APPROVED,
             moderator=moderator,
@@ -99,17 +98,25 @@ class AbstractChange(models.Model):
 
     def moderate(
         self,
-        verdict: ModerationStatus,
+        verdict: int,
         moderator: Optional['User'] = None,
         reason: Optional[str] = None,
     ) -> Moderation:
         """Moderate the change."""
-        return Moderation.objects.create(
+        if verdict not in self.ModerationStatus.values:
+            raise ValueError(f'Verdict value must be one of {self.ModerationStatus.values}.')
+        moderation: Moderation = Moderation.objects.create(
             moderator=moderator,
             change=self,
             verdict=verdict,
             reason=reason,
         )
+        post_moderation.send(
+            sender=self.content_type.model_class(),
+            instance=self.content_object,
+            status=verdict,
+        )
+        return moderation
 
     def reject(
         self,
@@ -117,7 +124,6 @@ class AbstractChange(models.Model):
         reason: Optional[str] = None,
     ) -> Moderation:
         """Reject the change."""
-        # self._send_signals_and_moderate(_ModerationStatus.REJECTED, by, reason)
         moderation: Moderation = self.moderate(
             verdict=_ModerationStatus.REJECTED,
             moderator=moderator,
@@ -155,21 +161,6 @@ class ChangeSet(AbstractChange):
     def contributors(self) -> 'QuerySet[User]':
         return get_user_model().objects.filter(
             content_contributions__change_id__in=self.change_ids
-        )
-
-    def _send_signals_and_moderate(self, new_status, by, reason):
-        pre_moderation.send(
-            sender=self.changed_object.__class__,
-            instance=self.changed_object,
-            status=new_status,
-        )
-
-        self._moderate(new_status, by, reason)
-
-        post_moderation.send(
-            sender=self.content_type.model_class(),
-            instance=self.content_object,
-            status=new_status,
         )
 
     def _moderate(self, new_status, moderator, reason):
@@ -226,6 +217,12 @@ class ChangeSet(AbstractChange):
 
         if self.initiator:
             self.moderator.inform_user(self.content_object, self.initiator)
+
+        post_moderation.send(
+            sender=self.content_type.model_class(),
+            instance=self.content_object,
+            status=new_status,
+        )
 
     def has_object_been_changed(self, original_obj, only_excluded=False):
         excludes = includes = []

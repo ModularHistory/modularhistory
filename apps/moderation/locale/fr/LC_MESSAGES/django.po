@@ -18,15 +18,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: moderation/admin.py:38
-msgid "Approve selected moderated objects"
+msgid "Approve selected changes"
 msgstr "Approuver les objets modérés sélectionnés"
 
 #: moderation/admin.py:46
-msgid "Reject selected moderated objects"
+msgid "Reject selected changes"
 msgstr "Rejeter les objets modérés sélectionnés"
 
 #: moderation/admin.py:53
-msgid "Set selected moderated objects as Pending"
+msgid "Set selected changes as pending"
 msgstr "Définir les objets modérés sélectionnés comme étant en attente"
 
 #: moderation/admin.py:107
@@ -54,10 +54,6 @@ msgstr ""
 #: moderation/admin.py:119
 msgid "This object is not registered with the moderation system."
 msgstr "Cet objet n'est pas enregistré auprès du système de modération."
-
-#: moderation/filterspecs.py:57
-msgid "All"
-msgstr "Tous"
 
 #: moderation/models.py:30
 msgid "Ready for moderation"

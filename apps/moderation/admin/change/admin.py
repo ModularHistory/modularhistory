@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import django
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
@@ -12,6 +14,9 @@ from apps.moderation.models.moderated_model.model import ModeratedModel
 
 from .actions import approve_objects, reject_objects, set_objects_as_pending
 
+if TYPE_CHECKING:
+    from django.http.request import HttpRequest
+
 
 class ChangeAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_date'
@@ -22,7 +27,7 @@ class ChangeAdmin(admin.ModelAdmin):
     actions = [reject_objects, approve_objects, set_objects_as_pending]
     fieldsets = (('Moderation', {'fields': ('description',)}),)
 
-    def get_actions(self, request):
+    def get_actions(self, request: 'HttpRequest'):
         actions = super().get_actions(request)
         # Remove the delete_selected action if it exists
         try:
@@ -39,7 +44,7 @@ class ChangeAdmin(admin.ModelAdmin):
 
         return ModerationForm
 
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request: 'HttpRequest', object_id, extra_context=None):
         change: Change = Change.objects.get(pk=object_id)
         object_after_change: ModeratedModel = change.changed_object
         object_before_change: ModeratedModel = change.unchanged_object
