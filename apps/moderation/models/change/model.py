@@ -49,6 +49,7 @@ class Change(AbstractChange):
         to=settings.AUTH_USER_MODEL,
         through='moderation.ContentContribution',
     )
+    merged_date = models.DateTimeField(null=True, blank=True, editable=False)
 
     objects = ChangeManager()
 
@@ -58,11 +59,13 @@ class Change(AbstractChange):
     @property
     def unchanged_object(self) -> 'ModeratedModel':
         # TODO: account for possibility the change has been approved but not yet merged
-        if self.moderation_status == ModerationStatus.APPROVED:
-            prior_state = Change.objects.filter(
+        if self.merged_date:
+            # TODO: confirm this works correctly!
+            prior_change: Change = Change.objects.filter(
                 content_type=self.content_type,
                 object_id=self.object_id,
-                moderation_status=ModerationStatus.APPROVED,
-            )
-            return self.content_object
+                moderation_status=ModerationStatus.MERGED,
+                merged_date__lt=self.merged_date,
+            ).order_by('-merged_date')[0]
+            return prior_change.changed_object
         return self.content_object
