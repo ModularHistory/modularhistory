@@ -16,19 +16,32 @@ if TYPE_CHECKING:
 
 
 class Change(AbstractChange):
-    """A modification of a moderated model instance."""
+    """
+    A modification of a moderated model instance.
 
+    A `Change` instance moves through the moderation statuses defined in `AbstractChange`,
+    beginning with "pending" and then transitioning to "rejected" or "approved" depending
+    on the verdict of moderators. If a change is approved, it will be applied to the
+    moderated model instance that it references, at which point its status will finally be
+    transitioned to "merged".
+    """
+
+    # Changes can stand alone or be included in `ChangeSet` instances.
     set = models.ForeignKey(
         to='moderation.ChangeSet',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
+
+    # Django's content types framework is used to store references to moderated model
+    # instances, which can belong to various models.
+    # https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/
     content_type = models.ForeignKey(
         to=ContentType,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
         editable=False,
     )
     content_type.content_type_filter = True
@@ -38,17 +51,24 @@ class Change(AbstractChange):
         editable=False,
         db_index=True,
     )
-    # `content_object` holds the existing (unmodified) instance.
     content_object = GenericForeignKey(
         ct_field='content_type',
         fk_field='object_id',
     )
-    # `changed_object` holds the modified instance, serialized.
+
+    # `changed_object` holds the modified model instance. In the database, it is a JSON blob
+    # (resulting from serialization), but in our Python application, it is the model instance
+    # with changes applied. As such, `changed_object` can be compared with the
+    # `unchanged_object` property to get the change diff.
     changed_object = SerializedObjectField(editable=False)
+
     contributors = models.ManyToManyField(
         to=settings.AUTH_USER_MODEL,
         through='moderation.ContentContribution',
     )
+
+    # `merged_date` must be set automatically when change is applied to the moderated
+    # model instance and the moderation status is updated from "approved" to "merged".
     merged_date = models.DateTimeField(null=True, blank=True, editable=False)
 
     objects = ChangeManager()
