@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class ChangeQuerySet(QuerySet):
+    """Lazy database lookup for a set of `Change` instances."""
 
     model: Type['Change']
 
