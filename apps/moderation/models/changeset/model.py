@@ -147,15 +147,17 @@ class ChangeSet(AbstractChange):
 
     @property
     def change_ids(self) -> list[int]:
-        """Return a list of the ids of the changes in the change set."""
+        """Return a list of ids of changes in the change set."""
         return self.changes.all().values_list('id', flat=True)
 
     @property
     def contributions(self) -> 'QuerySet[ContentContribution]':
+        """Return a queryset of contributions to changes in the change set."""
         return ContentContribution.objects.filter(change_id__in=self.change_ids)
 
     @property
     def contributors(self) -> 'QuerySet[User]':
+        """Return a queryset of users who have contributed to changes in the change set."""
         return get_user_model().objects.filter(
             content_contributions__change_id__in=self.change_ids
         )
