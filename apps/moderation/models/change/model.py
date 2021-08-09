@@ -86,6 +86,11 @@ class Change(AbstractChange):
         return f'Change #{self.pk}, affecting {self.content_object}'
 
     @property
+    def is_approved(self) -> bool:
+        """Return a boolean reflecting whether the change is approved."""
+        return self.moderation_status == ModerationStatus.APPROVED
+
+    @property
     def unchanged_object(self) -> 'ModeratedModel':
         """
         Return the object prior to application of the change.
@@ -114,7 +119,7 @@ class Change(AbstractChange):
 
         Return a boolean reflecting whether the change was applied successfully.
         """
-        if self.moderation_status == ModerationStatus.APPROVED:
+        if self.is_approved:
             # Draft state should already be set to "ready".
             self.draft_state = DraftState.READY
             try:

@@ -418,17 +418,18 @@ jobs:
       id: build
       uses: docker/build-push-action@v2
       with:
-        push: false
-        load: true
         build-args: |
           ENVIRONMENT=prod
+        builder: ${{ steps.buildx.outputs.name }}
+        cache-from: type=gha,scope=django
+        cache-to: type=gha,mode=max,scope=django
+        context: .
+        file: ./build/Dockerfile.django
+        load: true
+        push: false
         tags: |
           ghcr.io/modularhistory/django:${{ github.sha }}
           ghcr.io/modularhistory/django:latest
-        builder: ${{ steps.buildx.outputs.name }}
-        file: ./build/Dockerfile.django
-        cache-from: type=gha,scope=django
-        cache-to: type=gha,mode=max,scope=django
     - name: Run Snyk to check image for vulnerabilities
       continue-on-error: true
       uses: snyk/actions/docker@master
@@ -527,17 +528,18 @@ jobs:
       id: build
       uses: docker/build-push-action@v2
       with:
-        push: false
-        load: true
         build-args: |
           ENVIRONMENT=prod
+        builder: ${{ steps.buildx.outputs.name }}
+        cache-from: type=gha,scope=react
+        cache-to: type=gha,mode=max,scope=react
+        context: .
+        file: ./build/Dockerfile.react
+        load: true
+        push: false
         tags: |
           ghcr.io/modularhistory/react:${{ github.sha }}
           ghcr.io/modularhistory/react:latest
-        builder: ${{ steps.buildx.outputs.name }}
-        file: ./build/Dockerfile.react
-        cache-from: type=gha,scope=react
-        cache-to: type=gha,mode=max,scope=react
     - name: Run Snyk to check image for vulnerabilities
       continue-on-error: true
       uses: snyk/actions/docker@master
@@ -636,17 +638,18 @@ jobs:
       id: build
       uses: docker/build-push-action@v2
       with:
-        push: false
-        load: true
         build-args: |
           ENVIRONMENT=prod
+        builder: ${{ steps.buildx.outputs.name }}
+        cache-from: type=gha,scope=webserver
+        cache-to: type=gha,mode=max,scope=webserver
+        context: .
+        file: ./build/Dockerfile.webserver
+        load: true
+        push: false
         tags: |
           ghcr.io/modularhistory/webserver:${{ github.sha }}
           ghcr.io/modularhistory/webserver:latest
-        builder: ${{ steps.buildx.outputs.name }}
-        file: ./build/Dockerfile.webserver
-        cache-from: type=gha,scope=webserver
-        cache-to: type=gha,mode=max,scope=webserver
     - name: Run Snyk to check image for vulnerabilities
       continue-on-error: true
       uses: snyk/actions/docker@master
