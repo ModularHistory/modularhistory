@@ -2,8 +2,7 @@
 
 import logging
 from typing import Optional, Type, Union
-
-from celery import shared_task
+from core.celery import app
 from django.apps import apps
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -96,7 +95,7 @@ class ModelWithImages(ExtendedModel):
             return None
 
 
-@shared_task
+@app.task
 def cache_images(model: str, instance_id: int, images: list):
     """Save cached images to a model instance."""
     if not images:

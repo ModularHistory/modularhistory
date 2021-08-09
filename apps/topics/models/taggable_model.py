@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from celery import shared_task
+from core.celery import app
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
@@ -77,7 +77,7 @@ class TopicFilter(ManyToManyAutocompleteFilter):
         return reverse('admin:tag_search')
 
 
-@shared_task
+@app.task
 def cache_tags(model: str, instance_id: int, tags: list):
     """Save cached tags to a model instance."""
     if not tags:

@@ -36,22 +36,14 @@ class ChangeAdmin(admin.ModelAdmin):
     def get_actions(self, request: 'HttpRequest'):
         """Return the bulk actions available to the admin."""
         actions = super().get_actions(request)
-        # Remove the delete_selected action if it exists
+        # Remove the delete_selected action if it exists.
         try:
             del actions['delete_selected']
         except KeyError:
             pass
         return actions
 
-    def get_moderation_form(self, model_class):
-        class ModerationForm(ModelForm):
-            class Meta:
-                model = model_class
-                fields = '__all__'
-
-        return ModerationForm
-
-    def change_view(self, request: 'HttpRequest', object_id, extra_context=None):
+    def change_view(self, request: 'HttpRequest', object_id: int, extra_context=None):
         change: Change = Change.objects.get(pk=object_id)
         object_after_change: ModeratedModel = change.changed_object
         object_before_change: ModeratedModel = change.unchanged_object

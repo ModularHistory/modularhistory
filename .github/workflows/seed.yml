@@ -74,6 +74,10 @@ jobs:
         sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
+    - name: Install PyInvoke config
+      run: |
+        sudo cp config/invoke.yaml /etc/invoke.yaml
+      shell: bash
     - name: Install and configure Poetry
       uses: snok/install-poetry@v1.1.6
       with:
