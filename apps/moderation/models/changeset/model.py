@@ -89,11 +89,13 @@ class AbstractChange(models.Model):
         reason: Optional[str] = None,
     ) -> Moderation:
         """Add an approval."""
-        return self.moderate(
+        approval = self.moderate(
             verdict=_ModerationStatus.APPROVED,
             moderator=moderator,
             reason=reason,
         )
+        handle_moderation.delay(approval.pk)
+        return approval
 
     def moderate(
         self,
@@ -110,7 +112,6 @@ class AbstractChange(models.Model):
             verdict=verdict,
             reason=reason,
         )
-        handle_moderation.delay(moderation.pk)
         return moderation
 
     def reject(
