@@ -29,7 +29,7 @@ from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
 if TYPE_CHECKING:
-    from apps.entities.models import Entity
+    from apps.entities.models.entity import Entity
     from apps.sources.models.source_containment import SourceContainment
 
 MAX_CITATION_STRING_LENGTH: int = 500
