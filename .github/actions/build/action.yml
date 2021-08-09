@@ -73,9 +73,9 @@ runs:
         tags: |
           ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
           ghcr.io/modularhistory/${{ inputs.image }}:latest
-        builder: ${{ steps.buildx.outputs.name }}
+        # builder: ${{ steps.buildx.outputs.name }}
         file: ./build/Dockerfile.${{ inputs.image }}
-        context: ./build
+        # context: ./build
         cache-to: type=local,dest=/tmp/.buildx-cache-new/${{ inputs.image }}
     -
       name: Move cache

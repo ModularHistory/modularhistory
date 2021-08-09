@@ -161,26 +161,13 @@ class ChangeSet(AbstractChange):
         )
 
     def _moderate(self, verdict: int, moderator: Optional['User'], reason: Optional[str]):
-        # See register.py pre_save_handler() for the case where the model is
-        # reset to its old values, and the new values are stored in the
-        # Moderation. In such cases, on approval, we should restore the
-        # changes to the base object by saving the one attached to the
+        # The model in the database contains the most recent data already,
+        # or we're not ready to approve the changes stored in
         # Moderation.
-
-        if (
-            self.moderation_status == _ModerationStatus.PENDING
-            and verdict == _ModerationStatus.APPROVED
-        ):
-            base_object = self.changed_object
-            base_object_force_save = True
-        else:
-            # The model in the database contains the most recent data already,
-            # or we're not ready to approve the changes stored in
-            # Moderation.
-            obj_class = self.changed_object.__class__
-            pk = self.changed_object.pk
-            base_object = obj_class._default_unmoderated_manager.get(pk=pk)
-            base_object_force_save = False
+        obj_class = self.changed_object.__class__
+        pk = self.changed_object.pk
+        base_object = obj_class._default_unmoderated_manager.get(pk=pk)
+        base_object_force_save = False
 
         if verdict == _ModerationStatus.APPROVED:
             # This version is now approved, and will be reverted to if
