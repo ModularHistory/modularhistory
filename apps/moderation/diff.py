@@ -15,10 +15,10 @@ class FieldChange:
         value1, value2 = self.change
         return 'Change object: {} - {}'.format(value1, value2)
 
-    def __init__(self, verbose_name, field, change):
+    def __init__(self, verbose_name, field, before_and_after: tuple):
         self.verbose_name = verbose_name
         self.field = field
-        self.change = change
+        self.change = before_and_after
 
     def render_diff(self, template, context):
         from django.template.loader import render_to_string
@@ -75,21 +75,30 @@ def get_change(field, model1, model2, resolve_foreignkeys=False) -> FieldChange:
 
 
 def get_changes_between_models(
-    model1, model2, excludes=None, includes=None, resolve_foreignkeys=False
+    object_before_change,
+    object_after_change,
+    excluded_fields=None,
+    included_fields=None,
+    resolve_foreignkeys=False,
 ) -> dict:
     changes = {}
-    if excludes is None:
-        excludes = []
-    if includes is None:
-        includes = []
-    for field in model1._meta.fields:
-        if includes and field.name not in includes:
+    if excluded_fields is None:
+        excluded_fields = []
+    if included_fields is None:
+        included_fields = []
+    for field in object_before_change._meta.fields:
+        if any(
+            [
+                included_fields and field.name not in included_fields,
+                field.name in excluded_fields,
+                isinstance(field, (fields.AutoField,)),
+            ]
+        ):
             continue
-        if not (isinstance(field, (fields.AutoField,))):
-            if field.name in excludes:
-                continue
-            name = f'{model1.__class__.__name__.lower()}__{field.name}'
-            changes[name] = get_change(field, model1, model2, resolve_foreignkeys)
+        name = f'{object_before_change.__class__.__name__.lower()}__{field.name}'
+        changes[name] = get_change(
+            field, object_before_change, object_after_change, resolve_foreignkeys
+        )
     return changes
 
 
@@ -114,19 +123,22 @@ def html_to_list(html) -> list:
     return [''.join(element) for element in [_f for _f in pattern.findall(html) if _f]]
 
 
-def get_change_for_type(verbose_name, change, field) -> FieldChange:
+def get_change_for_type(
+    verbose_name: str,
+    before_and_after: tuple,
+    field: fields.Field,
+) -> FieldChange:
     if isinstance(field, ImageField):
         change = ImageChange(
-            'Current %(verbose_name)s / '
-            'New %(verbose_name)s' % {'verbose_name': verbose_name},
-            field,
-            change,
+            f'Current {verbose_name} / New {verbose_name}',
+            field=field,
+            before_and_after=before_and_after,
         )
     else:
-        value1, value2 = change
+        value1, value2 = before_and_after
         change = TextChange(
             verbose_name,
-            field,
-            (str(value1), str(value2)),
+            field=field,
+            before_and_after=(str(value1), str(value2)),
         )
     return change

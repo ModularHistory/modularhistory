@@ -52,7 +52,7 @@ class ChangeAdmin(admin.ModelAdmin):
             get_changes_between_models(
                 object_before_change,
                 object_after_change,
-                [],  # TODO: moderator.fields_exclude,
+                excluded_fields=object_before_change.Moderation.excluded_fields,
                 resolve_foreignkeys=True,
             ).values()
         )
@@ -67,14 +67,13 @@ class ChangeAdmin(admin.ModelAdmin):
         content_type = ContentType.objects.get_for_model(object_after_change.__class__)
         try:
             object_admin_url = reverse(
-                'admin:%s_%s_change' % (content_type.app_label, content_type.model),
+                f'admin:{content_type.app_label}_{content_type.model}_change',
                 args=(object_after_change.pk,),
             )
         except NoReverseMatch:
             object_admin_url = None
         extra_context = {
             'changes': changes,
-            'django_version': django.get_version()[:3],
             'object_admin_url': object_admin_url,
         }
         return super().change_view(request, object_id, extra_context=extra_context)

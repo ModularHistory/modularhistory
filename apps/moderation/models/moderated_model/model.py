@@ -30,6 +30,9 @@ class ModeratedModel(models.Model):
     class Meta:
         abstract = True
 
+    class Moderation:
+        excluded_fields = ['cache']
+
     @property
     def change_in_progress(self) -> Optional['Change']:
         return (
