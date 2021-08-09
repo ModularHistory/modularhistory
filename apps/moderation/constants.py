@@ -1,5 +1,7 @@
 from aenum import Constant
 
+N_REQUIRED_APPROVALS: int = 3
+
 
 class ModerationStatus(Constant):
     """Options for status of changes to moderated model instances."""

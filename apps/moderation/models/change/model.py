@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -9,11 +9,18 @@ from django.db import models, transaction
 from apps.moderation.constants import DraftState, ModerationStatus
 from apps.moderation.fields import SerializedObjectField
 from apps.moderation.models.changeset.model import AbstractChange
+from apps.moderation.models.moderation import Moderation
+from apps.moderation.tasks import handle_approval
 
 from .manager import ChangeManager
 
 if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
+    from django.db.models.query import QuerySet
+
+    from apps.moderation.models.change import Change
     from apps.moderation.models.moderated_model import ModeratedModel
+    from apps.users.models import User
 
 
 class Change(AbstractChange):
@@ -26,6 +33,8 @@ class Change(AbstractChange):
     moderated model instance that it references, at which point its status will finally be
     transitioned to "merged".
     """
+
+    moderations: 'QuerySet[Moderation]'
 
     # Changes can stand alone or be included in `ChangeSet` instances.
     set = models.ForeignKey(
@@ -119,3 +128,49 @@ class Change(AbstractChange):
             return True
         logging.info(f'Ignored request to apply unapproved change: {self}')
         return False
+
+    def approve(
+        self,
+        moderator: Optional['User'] = None,
+        reason: Optional[str] = None,
+    ) -> Moderation:
+        """Add an approval."""
+        approval = self.moderate(
+            verdict=ModerationStatus.APPROVED,
+            moderator=moderator,
+            reason=reason,
+        )
+        handle_approval.delay(approval.pk)
+        return approval
+
+    def moderate(
+        self,
+        verdict: int,
+        moderator: Optional['User'] = None,
+        reason: Optional[str] = None,
+    ) -> Moderation:
+        """Moderate the change."""
+        if verdict not in self._ModerationStatus.values:
+            raise ValueError(f'Verdict value must be one of {self._ModerationStatus.values}.')
+        moderation: Moderation = Moderation.objects.create(
+            moderator=moderator,
+            change=self,
+            verdict=verdict,
+            reason=reason,
+        )
+        return moderation
+
+    def reject(
+        self,
+        moderator: Optional['User'] = None,
+        reason: Optional[str] = None,
+    ) -> Moderation:
+        """Reject the change."""
+        moderation: Moderation = self.moderate(
+            verdict=ModerationStatus.REJECTED,
+            moderator=moderator,
+            reason=reason,
+        )
+        self.moderation_status = ModerationStatus.REJECTED
+        self.save()
+        return moderation

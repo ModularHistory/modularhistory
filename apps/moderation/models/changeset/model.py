@@ -8,11 +8,9 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
-from apps.moderation.constants import DraftState
-from apps.moderation.constants import ModerationStatus
+from apps.moderation.constants import N_REQUIRED_APPROVALS, DraftState, ModerationStatus
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.models.contribution import ContentContribution
-from apps.moderation.models.moderation import Moderation
 from apps.moderation.tasks import handle_approval
 
 from .manager import ChangeSetManager
@@ -27,6 +25,8 @@ if TYPE_CHECKING:
 
 class AbstractChange(models.Model):
     """Base model for the `Change` and `ChangeSet` models."""
+
+    n_required_approvals = N_REQUIRED_APPROVALS
 
     class Reason(models.IntegerChoices):
         """Reasons for a change."""
@@ -84,58 +84,11 @@ class AbstractChange(models.Model):
     class Meta:
         abstract = True
 
-    def approve(
-        self,
-        moderator: Optional['User'] = None,
-        reason: Optional[str] = None,
-    ) -> Moderation:
-        """Add an approval."""
-        approval = self.moderate(
-            verdict=ModerationStatus.APPROVED,
-            moderator=moderator,
-            reason=reason,
-        )
-        handle_approval.delay(approval.pk)
-        return approval
-
-    def moderate(
-        self,
-        verdict: int,
-        moderator: Optional['User'] = None,
-        reason: Optional[str] = None,
-    ) -> Moderation:
-        """Moderate the change."""
-        if verdict not in self._ModerationStatus.values:
-            raise ValueError(f'Verdict value must be one of {self._ModerationStatus.values}.')
-        moderation: Moderation = Moderation.objects.create(
-            moderator=moderator,
-            change=self,
-            verdict=verdict,
-            reason=reason,
-        )
-        return moderation
-
-    def reject(
-        self,
-        moderator: Optional['User'] = None,
-        reason: Optional[str] = None,
-    ) -> Moderation:
-        """Reject the change."""
-        moderation: Moderation = self.moderate(
-            verdict=ModerationStatus.REJECTED,
-            moderator=moderator,
-            reason=reason,
-        )
-        self.moderation_status = ModerationStatus.REJECTED
-        self.save()
-        return moderation
-
 
 class ChangeSet(AbstractChange):
     """A set of changes to one or more moderated model instances."""
 
     changes: 'RelatedManager[Change]'
-    moderations: 'RelatedManager[Moderation]'
 
     objects = ChangeSetManager()
 
