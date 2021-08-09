@@ -1,17 +1,14 @@
-import datetime
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
-from django.db import models, transaction
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import N_REQUIRED_APPROVALS, DraftState, ModerationStatus
-from apps.moderation.diff import get_changes_between_models
 from apps.moderation.models.contribution import ContentContribution
-from apps.moderation.tasks import handle_approval
 
 from .manager import ChangeSetManager
 
@@ -127,25 +124,4 @@ class ChangeSet(AbstractChange):
                 return False
             return True
         logging.info(f'Ignored request to apply unapproved changeset: {self}')
-        return False
-
-    def _moderate(self, verdict: int, moderator: Optional['User'], reason: Optional[str]):
-        """TODO"""
-
-    def has_object_been_changed(self, original_obj, only_excluded=False):
-        excludes = includes = []
-        if only_excluded:
-            includes = self.moderator.fields_exclude
-        else:
-            excludes = self.moderator.fields_exclude
-
-        changes = get_changes_between_models(
-            original_obj, self.changed_object, excludes, includes
-        )
-
-        for change in changes:
-            left_change, right_change = changes[change].change
-            if left_change != right_change:
-                return True
-
         return False

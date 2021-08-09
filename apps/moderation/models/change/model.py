@@ -15,7 +15,6 @@ from apps.moderation.tasks import handle_approval
 from .manager import ChangeManager
 
 if TYPE_CHECKING:
-    from django.db.models.manager import RelatedManager
     from django.db.models.query import QuerySet
 
     from apps.moderation.models.change import Change
