@@ -8,7 +8,7 @@ x-common-env-vars: &common-env-vars
 services:
   dev:
     build:
-      context: .
+      context: ./build
       dockerfile: Dockerfile.webserver
       args:
         ENVIRONMENT: dev
@@ -45,7 +45,7 @@ services:
 
   django:
     build:
-      context: .
+      context: ./build
       dockerfile: Dockerfile.django
       args:
         ENVIRONMENT: dev
@@ -84,7 +84,7 @@ services:
 
   react:
     build:
-      context: .
+      context: ./build
       dockerfile: Dockerfile.react
       args:
         ENVIRONMENT: dev

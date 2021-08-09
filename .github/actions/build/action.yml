@@ -53,8 +53,8 @@ runs:
           ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
           ghcr.io/modularhistory/${{ inputs.image }}:latest
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile.${{ inputs.image }}
-        context: .
+        file: ./build/Dockerfile.${{ inputs.image }}
+        context: ./build
         cache-from: type=local,src=/tmp/.buildx-cache/${{ inputs.image }}
         cache-to: type=local,dest=/tmp/.buildx-cache-new/${{ inputs.image }}
     -

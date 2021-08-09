@@ -8,7 +8,7 @@ import django
 from decouple import config
 
 from core.constants.environments import Environments
-from tasks.command import command
+from commands.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context

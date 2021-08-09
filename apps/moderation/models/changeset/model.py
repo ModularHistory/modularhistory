@@ -12,7 +12,6 @@ from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.models.contribution import ContentContribution
 from apps.moderation.models.moderation import Moderation
-from apps.moderation.signals import post_moderation
 
 from .manager import ChangeSetManager
 
@@ -110,11 +109,12 @@ class AbstractChange(models.Model):
             verdict=verdict,
             reason=reason,
         )
-        post_moderation.send(
-            sender=self.content_type.model_class(),
-            instance=self.content_object,
-            status=verdict,
-        )
+        # TODO: celery task
+        # post_moderation.send(
+        #     sender=self.content_type.model_class(),
+        #     instance=self.content_object,
+        #     status=verdict,
+        # )
         return moderation
 
     def reject(
@@ -217,11 +217,12 @@ class ChangeSet(AbstractChange):
         if self.initiator:
             self.moderator.inform_user(self.content_object, self.initiator)
 
-        post_moderation.send(
-            sender=self.content_type.model_class(),
-            instance=self.content_object,
-            status=new_status,
-        )
+        # TODO: celery task
+        # post_moderation.send(
+        #     sender=self.content_type.model_class(),
+        #     instance=self.content_object,
+        #     status=verdict,
+        # )
 
     def has_object_been_changed(self, original_obj, only_excluded=False):
         excludes = includes = []

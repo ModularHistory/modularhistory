@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import django
 
 from core.utils import media
-from tasks.command import command
+from commands.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context

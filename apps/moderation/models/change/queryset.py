@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Optional, Type
 from django.db.models.query import QuerySet
 
 from apps.moderation.constants import DraftState, ModerationStatus
-from apps.moderation.signals import post_moderation
 
 if TYPE_CHECKING:
     from apps.moderation.models.change import Change
@@ -49,8 +48,9 @@ class ChangeQuerySet(QuerySet):
             kwargs['state'] = DraftState.READY
         self.update(kwargs)
         # mod.inform_users(self.exclude(changed_by=None).select_related('changed_by__email'))
-        post_moderation.send(
-            sender=self.content_type.model_class(),
-            instance=self.content_object,
-            status=verdict,
-        )
+        # TODO: celery task
+        # post_moderation.send(
+        #     sender=self.content_type.model_class(),
+        #     instance=self.content_object,
+        #     status=verdict,
+        # )

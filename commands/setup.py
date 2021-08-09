@@ -21,7 +21,7 @@ from core.constants.strings import NEGATIVE
 from core.utils import db as db_utils
 from core.utils import files as file_utils
 from core.utils import github as github_utils
-from tasks.command import command
+from commands.command import command
 
 if TYPE_CHECKING:
     from invoke.context import Context
