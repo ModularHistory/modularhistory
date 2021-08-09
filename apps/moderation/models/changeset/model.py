@@ -12,7 +12,7 @@ from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.models.contribution import ContentContribution
 from apps.moderation.models.moderation import Moderation
-from apps.moderation.tasks import handle_moderation
+from apps.moderation.tasks import handle_approval
 
 from .manager import ChangeSetManager
 
@@ -94,7 +94,7 @@ class AbstractChange(models.Model):
             moderator=moderator,
             reason=reason,
         )
-        handle_moderation.delay(approval.pk)
+        handle_approval.delay(approval.pk)
         return approval
 
     def moderate(
