@@ -142,11 +142,12 @@ class ChangeSet(AbstractChange):
         verbose_name_plural = _('change sets')
         ordering = ['moderation_status', 'created_date']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Changeset #{self.pk}, initiated {self.created_date} by {self.initiator}'
 
     @property
     def change_ids(self) -> list[int]:
+        """Return a list of the ids of the changes in the change set."""
         return self.changes.all().values_list('id', flat=True)
 
     @property
@@ -159,7 +160,7 @@ class ChangeSet(AbstractChange):
             content_contributions__change_id__in=self.change_ids
         )
 
-    def _moderate(self, new_status, moderator, reason):
+    def _moderate(self, verdict: int, moderator: Optional['User'], reason: Optional[str]):
         # See register.py pre_save_handler() for the case where the model is
         # reset to its old values, and the new values are stored in the
         # Moderation. In such cases, on approval, we should restore the
@@ -168,7 +169,7 @@ class ChangeSet(AbstractChange):
 
         if (
             self.moderation_status == _ModerationStatus.PENDING
-            and new_status == _ModerationStatus.APPROVED
+            and verdict == _ModerationStatus.APPROVED
         ):
             base_object = self.changed_object
             base_object_force_save = True
@@ -181,12 +182,12 @@ class ChangeSet(AbstractChange):
             base_object = obj_class._default_unmoderated_manager.get(pk=pk)
             base_object_force_save = False
 
-        if new_status == _ModerationStatus.APPROVED:
+        if verdict == _ModerationStatus.APPROVED:
             # This version is now approved, and will be reverted to if
             # future changes are rejected by a moderator.
             self.draft_state = _DraftState.READY
 
-        self.moderation_status = new_status
+        self.moderation_status = verdict
         self.on = datetime.datetime.now()
         self.moderator = moderator
         self.reason = reason
@@ -195,7 +196,7 @@ class ChangeSet(AbstractChange):
         visibility_column = 'verified'
         if visibility_column:
             old_visible = getattr(base_object, visibility_column)
-            if new_status == _ModerationStatus.APPROVED:
+            if verdict == _ModerationStatus.APPROVED:
                 new_visible = True
             else:
                 new_visible = False
