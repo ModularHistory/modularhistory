@@ -42,7 +42,9 @@ class ChangeAdmin(admin.ModelAdmin):
             pass
         return actions
 
+    # https://docs.djangoproject.com/en/3.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.change_view
     def change_view(self, request: 'HttpRequest', object_id: int, extra_context=None):
+        """Return the Django view for the change moderation page."""
         change: Change = Change.objects.get(pk=object_id)
         object_after_change: ModeratedModel = change.changed_object
         object_before_change: ModeratedModel = change.unchanged_object
@@ -54,16 +56,14 @@ class ChangeAdmin(admin.ModelAdmin):
                 resolve_foreignkeys=True,
             ).values()
         )
-
         if request.POST:
             admin_form = self.get_form(request, change)(request.POST)
             if admin_form.is_valid():
                 reason = admin_form.cleaned_data['reason']
                 if 'approve' in request.POST:
-                    change.approve(request.user, reason)
+                    change.approve(moderator=request.user, reason=reason)
                 elif 'reject' in request.POST:
-                    change.reject(request.user, reason)
-
+                    change.reject(moderator=request.user, reason=reason)
         content_type = ContentType.objects.get_for_model(object_after_change.__class__)
         try:
             object_admin_url = reverse(
@@ -72,7 +72,6 @@ class ChangeAdmin(admin.ModelAdmin):
             )
         except NoReverseMatch:
             object_admin_url = None
-
         extra_context = {
             'changes': changes,
             'django_version': django.get_version()[:3],

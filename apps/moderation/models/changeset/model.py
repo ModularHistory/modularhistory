@@ -67,12 +67,12 @@ class AbstractChange(models.Model):
     )
     draft_state = models.PositiveSmallIntegerField(
         choices=_DraftState.choices,
-        default=_DraftState.DRAFT.value,
+        default=_DraftState.DRAFT.value,  # type: ignore
         editable=False,
     )
     moderation_status = models.PositiveSmallIntegerField(
         choices=_ModerationStatus.choices,
-        default=_ModerationStatus.PENDING.value,
+        default=_ModerationStatus.PENDING.value,  # type: ignore
         editable=False,
     )
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
