@@ -12,6 +12,7 @@ from apps.moderation.constants import ModerationStatus as _ModerationStatus
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.models.contribution import ContentContribution
 from apps.moderation.models.moderation import Moderation
+from apps.moderation.tasks import handle_moderation
 
 from .manager import ChangeSetManager
 
@@ -109,12 +110,7 @@ class AbstractChange(models.Model):
             verdict=verdict,
             reason=reason,
         )
-        # TODO: celery task
-        # post_moderation.send(
-        #     sender=self.content_type.model_class(),
-        #     instance=self.content_object,
-        #     status=verdict,
-        # )
+        handle_moderation.delay(moderation.pk)
         return moderation
 
     def reject(

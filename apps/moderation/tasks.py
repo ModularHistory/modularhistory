@@ -7,4 +7,4 @@ def handle_moderation(moderation_id: int):
     """Post-process a moderation."""
     moderation: Moderation = Moderation.objects.get(pk=moderation_id)
     change = moderation.change
-    pass
+    print(f'Debugging: {moderation=}; {change=}')
