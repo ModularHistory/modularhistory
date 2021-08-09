@@ -171,8 +171,8 @@ jobs:
           ghcr.io/modularhistory/django:${{ github.sha }}
           ghcr.io/modularhistory/django:latest
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile.django
-        context: .
+        file: ./build/Dockerfile.django
+        context: ./build
         cache-from: type=local,src=/tmp/.buildx-cache/django
         cache-to: type=local,dest=/tmp/.buildx-cache-new/django
     - name: Move cache
@@ -291,8 +291,8 @@ jobs:
           ghcr.io/modularhistory/react:${{ github.sha }}
           ghcr.io/modularhistory/react:latest
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile.react
-        context: .
+        file: ./build/Dockerfile.react
+        context: ./build
         cache-from: type=local,src=/tmp/.buildx-cache/react
         cache-to: type=local,dest=/tmp/.buildx-cache-new/react
     - name: Move cache
@@ -411,8 +411,8 @@ jobs:
           ghcr.io/modularhistory/webserver:${{ github.sha }}
           ghcr.io/modularhistory/webserver:latest
         builder: ${{ steps.buildx.outputs.name }}
-        file: ./Dockerfile.webserver
-        context: .
+        file: ./build/Dockerfile.webserver
+        context: ./build
         cache-from: type=local,src=/tmp/.buildx-cache/webserver
         cache-to: type=local,dest=/tmp/.buildx-cache-new/webserver
     - name: Move cache
