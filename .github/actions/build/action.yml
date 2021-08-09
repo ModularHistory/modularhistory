@@ -48,6 +48,7 @@ runs:
         file: ./build/Dockerfile.${{ inputs.image }}
         load: ${{ ! inputs.push }}
         push: ${{ inputs.push }}
+        secret-files: ENV_FILE=./.env
         tags: |
           ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
           ghcr.io/modularhistory/${{ inputs.image }}:latest

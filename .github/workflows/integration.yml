@@ -427,6 +427,7 @@ jobs:
         file: ./build/Dockerfile.django
         load: true
         push: false
+        secret-files: ENV_FILE=./.env
         tags: |
           ghcr.io/modularhistory/django:${{ github.sha }}
           ghcr.io/modularhistory/django:latest
@@ -537,6 +538,7 @@ jobs:
         file: ./build/Dockerfile.react
         load: true
         push: false
+        secret-files: ENV_FILE=./.env
         tags: |
           ghcr.io/modularhistory/react:${{ github.sha }}
           ghcr.io/modularhistory/react:latest
@@ -647,6 +649,7 @@ jobs:
         file: ./build/Dockerfile.webserver
         load: true
         push: false
+        secret-files: ENV_FILE=./.env
         tags: |
           ghcr.io/modularhistory/webserver:${{ github.sha }}
           ghcr.io/modularhistory/webserver:latest
