@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 import django
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
-from django.forms.models import ModelForm
 from django.urls import NoReverseMatch, reverse
 
 from apps.admin import admin_site

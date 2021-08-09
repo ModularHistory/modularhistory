@@ -2,11 +2,12 @@
 
 import logging
 from typing import Optional, Type, Union
-from core.celery import app
+
 from django.apps import apps
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from core.celery import app
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
