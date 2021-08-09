@@ -1,4 +1,5 @@
 import datetime
+import logging
 from typing import TYPE_CHECKING, Optional
 
 from django.conf import settings
@@ -7,8 +8,8 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 
-from apps.moderation.constants import DraftState as _DraftState
-from apps.moderation.constants import ModerationStatus as _ModerationStatus
+from apps.moderation.constants import DraftState
+from apps.moderation.constants import ModerationStatus
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.models.contribution import ContentContribution
 from apps.moderation.models.moderation import Moderation
@@ -34,19 +35,19 @@ class AbstractChange(models.Model):
         CONTENT_CORRECTION = 1, _('Correction of content')
         GRAMMAR = 2, _('Correction of grammar or punctuation')
 
-    class DraftState(models.IntegerChoices):
+    class _DraftState(models.IntegerChoices):
         """Draft states."""
 
-        DRAFT = _DraftState.DRAFT, _('Draft')
-        READY = _DraftState.READY, _('Ready for moderation')
+        DRAFT = DraftState.DRAFT, _('Draft')
+        READY = DraftState.READY, _('Ready for moderation')
 
-    class ModerationStatus(models.IntegerChoices):
+    class _ModerationStatus(models.IntegerChoices):
         """Moderation statuses."""
 
-        REJECTED = _ModerationStatus.REJECTED, _('Rejected')
-        PENDING = _ModerationStatus.PENDING, _('Pending')
-        APPROVED = _ModerationStatus.APPROVED, _('Approved')
-        MERGED = _ModerationStatus.MERGED, _('Merged')
+        REJECTED = ModerationStatus.REJECTED, _('Rejected')
+        PENDING = ModerationStatus.PENDING, _('Pending')
+        APPROVED = ModerationStatus.APPROVED, _('Approved')
+        MERGED = ModerationStatus.MERGED, _('Merged')
 
     initiator = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
@@ -68,13 +69,13 @@ class AbstractChange(models.Model):
         help_text=_('Description of changes made'),
     )
     draft_state = models.PositiveSmallIntegerField(
-        choices=DraftState.choices,
-        default=_DraftState.DRAFT,
+        choices=_DraftState.choices,
+        default=DraftState.DRAFT,
         editable=False,
     )
     moderation_status = models.PositiveSmallIntegerField(
-        choices=ModerationStatus.choices,
-        default=_ModerationStatus.PENDING,
+        choices=_ModerationStatus.choices,
+        default=ModerationStatus.PENDING,
         editable=False,
     )
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
@@ -90,7 +91,7 @@ class AbstractChange(models.Model):
     ) -> Moderation:
         """Add an approval."""
         approval = self.moderate(
-            verdict=_ModerationStatus.APPROVED,
+            verdict=ModerationStatus.APPROVED,
             moderator=moderator,
             reason=reason,
         )
@@ -104,8 +105,8 @@ class AbstractChange(models.Model):
         reason: Optional[str] = None,
     ) -> Moderation:
         """Moderate the change."""
-        if verdict not in self.ModerationStatus.values:
-            raise ValueError(f'Verdict value must be one of {self.ModerationStatus.values}.')
+        if verdict not in self._ModerationStatus.values:
+            raise ValueError(f'Verdict value must be one of {self._ModerationStatus.values}.')
         moderation: Moderation = Moderation.objects.create(
             moderator=moderator,
             change=self,
@@ -121,11 +122,11 @@ class AbstractChange(models.Model):
     ) -> Moderation:
         """Reject the change."""
         moderation: Moderation = self.moderate(
-            verdict=_ModerationStatus.REJECTED,
+            verdict=ModerationStatus.REJECTED,
             moderator=moderator,
             reason=reason,
         )
-        self.moderation_status = _ModerationStatus.REJECTED
+        self.moderation_status = ModerationStatus.REJECTED
         self.save()
         return moderation
 
@@ -134,6 +135,7 @@ class ChangeSet(AbstractChange):
     """A set of changes to one or more moderated model instances."""
 
     changes: 'RelatedManager[Change]'
+    moderations: 'RelatedManager[Moderation]'
 
     objects = ChangeSetManager()
 
@@ -162,54 +164,20 @@ class ChangeSet(AbstractChange):
             content_contributions__change_id__in=self.change_ids
         )
 
+    def apply(self) -> bool:
+        """Apply the change set to the referenced model instances."""
+        if self.moderation_status == ModerationStatus.APPROVED:
+            try:
+                self.changes.all().apply()
+            except Exception as err:
+                logging.error(err)
+                return False
+            return True
+        logging.info(f'Ignored request to apply unapproved changeset: {self}')
+        return False
+
     def _moderate(self, verdict: int, moderator: Optional['User'], reason: Optional[str]):
-        # The model in the database contains the most recent data already,
-        # or we're not ready to approve the changes stored in
-        # Moderation.
-        obj_class = self.changed_object.__class__
-        pk = self.changed_object.pk
-        base_object = obj_class._default_unmoderated_manager.get(pk=pk)
-        base_object_force_save = False
-
-        if verdict == _ModerationStatus.APPROVED:
-            # This version is now approved, and will be reverted to if
-            # future changes are rejected by a moderator.
-            self.draft_state = _DraftState.READY
-
-        self.moderation_status = verdict
-        self.on = datetime.datetime.now()
-        self.moderator = moderator
-        self.reason = reason
-        self.save()
-
-        visibility_column = 'verified'
-        if visibility_column:
-            old_visible = getattr(base_object, visibility_column)
-            if verdict == _ModerationStatus.APPROVED:
-                new_visible = True
-            else:
-                new_visible = False
-            if new_visible != old_visible:
-                setattr(base_object, visibility_column, new_visible)
-                base_object_force_save = True
-
-        if base_object_force_save:
-            # avoid triggering pre/post_save_handler
-            with transaction.atomic(using=None, savepoint=False):
-                base_object.save_base(raw=True)
-                # The _save_parents call is required for models with an
-                # inherited visibility_column.
-                base_object._save_parents(base_object.__class__, None, None)
-
-        if self.initiator:
-            self.moderator.inform_user(self.content_object, self.initiator)
-
-        # TODO: celery task
-        # post_moderation.send(
-        #     sender=self.content_type.model_class(),
-        #     instance=self.content_object,
-        #     status=verdict,
-        # )
+        """TODO"""
 
     def has_object_been_changed(self, original_obj, only_excluded=False):
         excludes = includes = []

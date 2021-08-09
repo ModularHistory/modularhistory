@@ -2,6 +2,7 @@ import logging
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
@@ -27,7 +28,7 @@ class SocialAccount(models.Model):
         TWITTER = 'twitter', 'Twitter'
 
     user = models.ForeignKey(
-        to='users.User',
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='social_accounts',
     )

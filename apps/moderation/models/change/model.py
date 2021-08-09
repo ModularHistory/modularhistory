@@ -1,11 +1,12 @@
+import logging
 from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
+from django.db import models, transaction
 
-from apps.moderation.constants import ModerationStatus
+from apps.moderation.constants import DraftState, ModerationStatus
 from apps.moderation.fields import SerializedObjectField
 from apps.moderation.models.changeset.model import AbstractChange
 
@@ -98,3 +99,23 @@ class Change(AbstractChange):
             ).order_by('-merged_date')[0]
             return prior_change.changed_object
         return self.content_object
+
+    def apply(self) -> bool:
+        """
+        Apply the change to the referenced model instance.
+
+        Return a boolean reflecting whether the change was applied successfully.
+        """
+        if self.moderation_status == ModerationStatus.APPROVED:
+            # Draft state should already be set to "ready".
+            self.draft_state = DraftState.READY
+            try:
+                with transaction.atomic():
+                    model_instance: 'ModeratedModel' = self.changed_object
+                    model_instance.save()
+            except Exception as err:
+                logging.error(err)
+                return False
+            return True
+        logging.info(f'Ignored request to apply unapproved change: {self}')
+        return False

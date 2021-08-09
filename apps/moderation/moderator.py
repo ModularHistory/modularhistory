@@ -20,79 +20,13 @@ class GenericModerator:
     Encapsulates moderation options for a given model.
     """
 
-    manager_names = ['objects']
-    moderation_manager_class = ModeratedModelManager
-    bypass_moderation_after_approval = False
-    keep_history = False
-
-    fields_exclude = []
     resolve_foreignkeys = True
-
-    auto_approve_for_superusers = True
-    auto_approve_for_staff = True
-    auto_approve_for_groups = None
-
-    auto_reject_for_anonymous = True
-    auto_reject_for_groups = None
-
-    notify_moderator = True
-    notify_user = True
-
     message_backend_class = EmailMessageBackend
     multiple_message_backend_class = EmailMultipleMessageBackend
     subject_template_moderator = 'moderation/notification_subject_moderator.txt'
     message_template_moderator = 'moderation/notification_message_moderator.txt'
     subject_template_user = 'moderation/notification_subject_user.txt'
     message_template_user = 'moderation/notification_message_user.txt'
-
-    def __init__(self, model_class):
-        self.model_class = model_class
-        self.base_managers = self._get_base_managers()
-
-        moderated_fields = getattr(model_class, 'moderated_fields', None)
-        if moderated_fields:
-            for field in model_class._meta.fields:
-                if field.name not in moderated_fields:
-                    self.fields_exclude.append(field.name)
-
-    def is_auto_approve(self, obj, user):
-        """
-        Checks if change on obj by user need to be auto approved
-        Returns False if change is not auto approve or reason(Unicode) if
-        change need to be auto approved.
-
-        Overwrite this method if you want to provide your custom logic.
-        """
-        if self.auto_approve_for_groups and self._check_user_in_groups(
-            user, self.auto_approve_for_groups
-        ):
-            return self.reason('Auto-approved: User in allowed group')
-        if self.auto_approve_for_superusers and user.is_superuser:
-            return self.reason('Auto-approved: Superuser')
-        if self.auto_approve_for_staff and user.is_staff:
-            return self.reason('Auto-approved: Staff')
-
-        return False
-
-    def is_auto_reject(self, obj, user):
-        """
-        Checks if change on obj by user need to be auto rejected
-        Returns False if change is not auto reject or reason(Unicode) if
-        change need to be auto rejected.
-
-        Overwrite this method if you want to provide your custom logic.
-        """
-        is_anon = user.is_anonymous
-        if callable(is_anon):
-            is_anon = is_anon()
-        if self.auto_reject_for_anonymous and is_anon:
-            return self.reason('Auto-rejected: Anonymous User')
-        if self.auto_reject_for_groups and self._check_user_in_groups(
-            user, self.auto_reject_for_groups
-        ):
-            return self.reason('Auto-rejected: User in disallowed group')
-
-        return False
 
     def reason(self, reason, user=None, obj=None):
         """Returns moderation reason for auto moderation.  Optional user
@@ -236,21 +170,3 @@ class GenericModerator:
                 message_template=self.message_template_user,
                 extra_context=extra_context,
             )
-
-    def _get_base_managers(self):
-        base_managers = []
-
-        for manager_name in self.manager_names:
-            base_managers.append(
-                (manager_name, self._get_base_manager(self.model_class, manager_name))
-            )
-        return base_managers
-
-    def _get_base_manager(self, model_class, manager_name):
-        """Returns base manager class for given model class"""
-        if hasattr(model_class, manager_name):
-            base_manager = getattr(model_class, manager_name).__class__
-        else:
-            base_manager = Manager
-
-        return base_manager

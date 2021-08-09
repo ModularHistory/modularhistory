@@ -30,12 +30,6 @@ class ModeratedModel(models.Model):
     class Meta:
         abstract = True
 
-    # def save(self, *args, **kwargs):
-    #     """."""
-    #     # extant_object = self.__class__.objects.get(pk=self.pk)
-    #     # return
-    #     super().save(*args, **kwargs)
-
     @property
     def change_in_progress(self) -> Optional['Change']:
         return (
@@ -53,25 +47,6 @@ class ModeratedModel(models.Model):
         except Exception as err:
             logging.error(err)
             return False
-
-    # class Moderator(GenericModerator):
-    #     """Base moderator class for moderated models."""
-
-    #     # Allow multiple moderations per registered model instance.
-    #     keep_history = True
-
-    #     # Exclude fields from the object change list.
-    #     fields_exclude = ['cache']
-
-    #     auto_approve_for_staff = auto_approve_for_superusers = False
-
-    #     def is_auto_approve(self, obj, user):
-    #         """Determine whether to automatically approve a change."""
-    #         return super().is_auto_approve(obj, user)
-
-    #     def is_auto_reject(self, obj, user):
-    #         """Determine whether to automatically reject a change."""
-    #         return super().is_auto_reject(obj, user)
 
 
 class SearchableModeratedModel(SearchableModel, ModeratedModel):
