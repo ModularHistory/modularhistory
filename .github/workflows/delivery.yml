@@ -160,7 +160,6 @@ jobs:
         password: ${{ secrets.CR_PAT }}
     - name: Build image
       id: build
-      continue-on-error: true
       uses: docker/build-push-action@v2
       with:
         push: true
@@ -275,7 +274,6 @@ jobs:
         password: ${{ secrets.CR_PAT }}
     - name: Build image
       id: build
-      continue-on-error: true
       uses: docker/build-push-action@v2
       with:
         push: true
@@ -390,7 +388,6 @@ jobs:
         password: ${{ secrets.CR_PAT }}
     - name: Build image
       id: build
-      continue-on-error: true
       uses: docker/build-push-action@v2
       with:
         push: true

@@ -36,7 +36,6 @@ runs:
     -
       name: Build image
       id: build
-      continue-on-error: true
       # https://github.com/docker/build-push-action
       uses: docker/build-push-action@v2
       with:
