@@ -26,14 +26,6 @@ runs:
       name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v1
-    # -
-    #   name: Cache Docker layers
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: /tmp/.buildx-cache
-    #     key: buildx-${{ inputs.os }}-${{ inputs.image }}-${{ github.sha }}
-    #     restore-keys: |
-    #       buildx-${{ inputs.os }}-${{ inputs.image }}-
     -
       name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
@@ -41,27 +33,9 @@ runs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
-    # -
-    #   name: Build image
-    #   id: build-with-cache
-    #   continue-on-error: true
-    #   # https://github.com/docker/build-push-action
-    #   uses: docker/build-push-action@v2
-    #   with:
-    #     push: ${{ inputs.push }}
-    #     load: ${{ ! inputs.push }}
-    #     build-args: |
-    #       ENVIRONMENT=${{ inputs.environment }}
-    #     tags: |
-    #       ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
-    #       ghcr.io/modularhistory/${{ inputs.image }}:latest
-    #     builder: ${{ steps.buildx.outputs.name }}
-    #     file: ./build/Dockerfile.${{ inputs.image }}
-    #     cache-from: type=local,src=/tmp/.buildx-cache/${{ inputs.image }}
-    #     cache-to: type=local,dest=/tmp/.buildx-cache-new/${{ inputs.image }}
     -
       name: Build image
-      id: build-with-cache
+      id: build
       continue-on-error: true
       # https://github.com/docker/build-push-action
       uses: docker/build-push-action@v2
@@ -77,29 +51,6 @@ runs:
         file: ./build/Dockerfile.${{ inputs.image }}
         cache-from: type=gha,scope=${{ inputs.image }}
         cache-to: type=gha,mode=max,scope=${{ inputs.image }}
-    # -
-    #   name: Build image (retry)
-    #   id: build-without-cache
-    #   if: ${{ steps.build-with-cache.outcome == 'failure' }}
-    #   uses: docker/build-push-action@v2
-    #   with:
-    #     push: ${{ inputs.push }}
-    #     load: ${{ ! inputs.push }}
-    #     build-args: |
-    #       ENVIRONMENT=${{ inputs.environment }}
-    #     tags: |
-    #       ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
-    #       ghcr.io/modularhistory/${{ inputs.image }}:latest
-    #     file: ./build/Dockerfile.${{ inputs.image }}
-    #     cache-to: type=local,dest=/tmp/.buildx-cache-new/${{ inputs.image }}
-    # -
-    #   name: Move cache
-    #   # Temp fix
-    #   # https://github.com/docker/build-push-action/issues/252
-    #   # https://github.com/moby/buildkit/issues/1896
-    #   run: |
-    #     rm -rf /tmp/.buildx-cache
-    #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
     -
       name: Run Snyk to check image for vulnerabilities
       # Snyk can be used to break the build when it detects vulnerabilities.
