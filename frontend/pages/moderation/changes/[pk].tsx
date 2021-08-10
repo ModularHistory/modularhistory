@@ -1,5 +1,6 @@
 import axiosWithAuth from "@/axiosWithAuth";
 import PageHeader from "@/components/PageHeader";
+import { Change } from "@/interfaces";
 import { Grid } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
 import { GetServerSideProps } from "next";
@@ -15,19 +16,15 @@ interface ChangePageProps {
 
 const ChangePage: FC<ChangePageProps> = (props: ChangePageProps) => {
   const { change, session } = props;
-  const title = change ? `Pull request #${change.number}` : "eek";
+  const title = change ? `Change #${change.id}` : "eek";
   return (
     <CmsPage title={title} session={session} activeTab={2}>
       {session?.user && change && (
         <Container>
-          <PageHeader>
-            Pull request {change.number}: {change.title}
-          </PageHeader>
+          <PageHeader>Change {change.id}</PageHeader>
           <Grid container direction="row" justifyContent="space-evenly" alignItems="flex-start">
             <Grid item sm={12} md={6} lg={6} xl={6} style={{ margin: "0 3rem" }}>
-              <p>
-                From {change.sourceBranch.name} to {change.targetBranch.name}
-              </p>
+              <p>{change.changedObject}</p>
             </Grid>
           </Grid>
         </Container>
@@ -39,7 +36,7 @@ const ChangePage: FC<ChangePageProps> = (props: ChangePageProps) => {
 export default ChangePage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { number } = context.params;
+  const { pk } = context.params;
   const session = await getSession(context);
   if (!session?.user) {
     return {
@@ -50,7 +47,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   let change = null;
   await axiosWithAuth
-    .get(`http://django:8000/api/moderation/reviews/${number}/`, {
+    .get(`http://django:8000/api/moderation/changes/${pk}/`, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
       },
