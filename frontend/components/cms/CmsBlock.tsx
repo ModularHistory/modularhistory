@@ -1,29 +1,14 @@
 import { ModuleUnion } from "@/interfaces";
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/styles";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { FC } from "react";
-
-const useStyles = makeStyles({
-  root: {},
-});
 
 interface CmsBlockProps {
   module: ModuleUnion;
 }
 
 const CmsBlock: FC<CmsBlockProps> = ({ module }: CmsBlockProps) => {
-  const classes = useStyles();
-  const router = useRouter();
-  const openIssuePage = () => {
-    console.log();
-  };
-  const openChangePage = () => {
-    console.log(module.absoluteUrl);
-    router.push(`${module.absoluteUrl}/modify`);
-  };
   return (
     <>
       {(!!module.changes?.length && (
@@ -45,7 +30,7 @@ const CmsBlock: FC<CmsBlockProps> = ({ module }: CmsBlockProps) => {
             >
               <p>No changes are under review for this module.</p>
               <p>
-                <Link href={`${module.absoluteUrl}modify`}>
+                <Link href={`${module.absoluteUrl}/modify`}>
                   <a>
                     <Button variant="contained">Submit a change for review</Button>
                   </a>
