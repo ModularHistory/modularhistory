@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import send_mass_mail
 from django.db import models
-from django.db.models.query import QuerySet
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
@@ -14,7 +13,6 @@ if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
     from apps.moderation.models.change import Change
-    from apps.moderation.models.moderation import Moderation
     from apps.users.models import User
 
 
@@ -97,7 +95,7 @@ class Moderation(models.Model):
 
 
 class ApprovalManager(ModerationManager):
-    def get_queryset(self) -> QuerySet['Approval']:
+    def get_queryset(self) -> 'QuerySet[Approval]':
         return super().get_queryset().filter(verdict=ModerationStatus.APPROVED)
 
 
@@ -109,7 +107,7 @@ class Approval(Moderation):
 
 
 class RejectionManager(ModerationManager):
-    def get_queryset(self) -> QuerySet['Rejection']:
+    def get_queryset(self) -> 'QuerySet[Rejection]':
         return super().get_queryset().filter(verdict=ModerationStatus.REJECTED)
 
 
