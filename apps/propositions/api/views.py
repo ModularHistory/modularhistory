@@ -1,13 +1,8 @@
-from typing import TYPE_CHECKING
-
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
 from apps.moderation.serializers import get_moderated_model_serializer
 from apps.propositions.api.serializers import PropositionSerializer
 from apps.propositions.models import Proposition
-
-if TYPE_CHECKING:
-    from rest_framework.request import Request
 
 
 class PropositionListAPIView(ListAPIView):

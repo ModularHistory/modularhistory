@@ -70,6 +70,7 @@ class ModeratedModel(models.Model):
                     'verbose_name': getattr(field, 'verbose_name', field.name),
                     'editable': getattr(field, 'editable', True),
                     'choices': getattr(field, 'choices', None),
+                    'help_text': getattr(field, 'help_text', None),
                     'type': field.__class__.__name__,
                 }
             )
