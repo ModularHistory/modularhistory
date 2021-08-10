@@ -16,7 +16,7 @@ interface ChangePageProps {
 
 const ChangePage: FC<ChangePageProps> = (props: ChangePageProps) => {
   const { change, session } = props;
-  const title = change ? `Change #${change.id}` : "eek";
+  const title = `Change #${change.id}`;
   return (
     <CmsPage title={title} session={session} activeTab={2}>
       {session?.user && change && (
