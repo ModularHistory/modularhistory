@@ -3,7 +3,6 @@ import { User } from "@sentry/node";
 export interface BaseModule {
   model: string;
   id: number;
-  pk: number;
   slug: string;
   absoluteUrl: string;
   adminUrl: string;
@@ -20,7 +19,7 @@ export interface SearchableModule extends BaseModule {
 }
 
 export interface Citation {
-  pk: string;
+  id: number;
   html: string;
 }
 

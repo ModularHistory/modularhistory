@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class PropositionArgumentType(ModuleType):
     """GraphQL type for the Proposition model."""
 
-    pk = graphene.String()
+    id = graphene.Int()
 
     class Meta:
         model = Argument
