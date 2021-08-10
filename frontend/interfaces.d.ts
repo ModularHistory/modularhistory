@@ -1,14 +1,4 @@
-interface PullRequest {
-  number: number;
-  title: string;
-  url: string;
-}
-
-interface Issue {
-  number: number;
-  title: string;
-  url: string;
-}
+import { User } from "@sentry/node";
 
 export interface BaseModule {
   model: string;
@@ -20,7 +10,7 @@ export interface BaseModule {
   cachedImages?: Image[];
   verified?: boolean;
   dateString?: string;
-  pullRequests?: PullRequest[];
+  changes?: Change[];
   issues?: Issue[];
 }
 
@@ -113,11 +103,17 @@ export interface Branch {
   url: string;
 }
 
-export interface PullRequest {
-  number: number;
+export interface Change {
+  id: number;
   url: string;
+  initiator: User;
+  description: string;
+  changedObject?: ModuleUnion;
+  unchangedObject?: ModuleUnion;
+}
+
+export interface Issue {
+  id: number;
   title: string;
-  body: string;
-  sourceBranch: Branch;
-  targetBranch: Branch;
+  url: string;
 }

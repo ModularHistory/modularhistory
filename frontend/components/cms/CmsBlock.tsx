@@ -25,10 +25,10 @@ const CmsBlock: FC<CmsBlockProps> = ({ module }: CmsBlockProps) => {
   };
   return (
     <>
-      {(!!module.pullRequests?.length && (
+      {(!!module.changes?.length && (
         <div>
-          {module.pullRequests.map((pullRequest) => (
-            <p key={pullRequest.url}>{pullRequest.url}</p>
+          {module.changes.map((change) => (
+            <p key={change.url}>{change.url}</p>
           ))}
         </div>
       )) || (

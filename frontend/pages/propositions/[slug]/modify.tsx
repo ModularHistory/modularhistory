@@ -77,7 +77,7 @@ export const PropositionModificationForm: FC<PropositionProps> = ({
       </div>
       <div style={{ textAlign: "center" }}>
         <Button type="submit" color="primary" variant="outlined" className={classes.submitButton}>
-          {"Create pull request"}
+          {"Request review"}
         </Button>
       </div>
     </form>
@@ -149,7 +149,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           summary
           certainty
         }
-        pullRequests {
+        changes {
           url
         }
       }

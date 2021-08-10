@@ -1,5 +1,5 @@
-import { PullRequest } from "@/interfaces";
-import { CmsPage } from "@/pages/cms";
+import { Change } from "@/interfaces";
+import { CmsPage } from "@/pages/moderation";
 import { Container, Table, TableBody, TableCell, TableRow } from "@material-ui/core";
 import axios from "axios";
 import { GetServerSideProps } from "next";
@@ -8,37 +8,35 @@ import { getSession } from "next-auth/client";
 import Link from "next/link";
 import { FC } from "react";
 
-interface PullRequestsPageProps {
+interface ChangesPageProps {
   session: Session;
-  pullRequests?: PullRequest[];
+  changes?: Change[];
 }
 
-const PullRequestsPage: FC<PullRequestsPageProps> = (props: PullRequestsPageProps) => {
+const ChangesPage: FC<ChangesPageProps> = (props: ChangesPageProps) => {
   return (
-    <CmsPage title="Pull requests" activeTab={2} session={props.session}>
+    <CmsPage title="Changes" activeTab={2} session={props.session}>
       <Container>
-        {(!!props.pullRequests?.length && (
+        {(!!props.changes?.length && (
           <Table>
             <TableBody>
-              {props.pullRequests.map((pullRequest) => (
-                <TableRow key={pullRequest.url}>
+              {props.changes.map((change) => (
+                <TableRow key={change.id}>
                   <TableCell>
-                    #{pullRequest.number}:{" "}
-                    <Link href={`/moderation/reviews/${pullRequest.number}`}>
-                      {pullRequest.title}
-                    </Link>
+                    #{change.id}:{" "}
+                    <Link href={`/moderation/changes/${change.id}`}>{change.description}</Link>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        )) || <p style={{ textAlign: "center" }}>There are no open pull requests.</p>}
+        )) || <p style={{ textAlign: "center" }}>There are no changes to review.</p>}
       </Container>
     </CmsPage>
   );
 };
 
-export default PullRequestsPage;
+export default ChangesPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session: Session = await getSession(context);
@@ -49,16 +47,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  let pullRequests = [];
+  let changes = [];
   await axios
-    .get("http://django:8000/api/moderation/reviews/", {
+    .get("http://django:8000/api/moderation/changes/", {
       params: context.query,
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
       },
     })
     .then((response) => {
-      pullRequests = response.data.results;
+      changes = response.data.results;
     })
     .catch((error) => {
       // TODO...
@@ -66,7 +64,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
   return {
     props: {
-      pullRequests,
+      changes,
       session,
     },
   };

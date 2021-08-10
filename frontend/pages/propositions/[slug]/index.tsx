@@ -112,7 +112,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           summary
           certainty
         }
-        pullRequests {
+        changes {
           url
         }
       }
