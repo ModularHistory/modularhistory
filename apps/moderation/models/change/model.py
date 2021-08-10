@@ -45,7 +45,7 @@ class Change(AbstractChange):
 
     # Django's content types framework is used to store references to moderated model
     # instances, which can belong to various models.
-    # https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/
+    # https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/
     content_type = models.ForeignKey(
         to=ContentType,
         on_delete=models.SET_NULL,
@@ -73,7 +73,14 @@ class Change(AbstractChange):
 
     contributors = models.ManyToManyField(
         to=settings.AUTH_USER_MODEL,
+        related_name='changes_contributed_to',
         through='moderation.ContentContribution',
+    )
+    moderators = models.ManyToManyField(
+        to=settings.AUTH_USER_MODEL,
+        related_name='changes_moderated',
+        through='moderation.Moderation',
+        blank=True,
     )
 
     # `merged_date` must be set automatically when change is applied to the moderated

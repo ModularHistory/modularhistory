@@ -36,22 +36,25 @@ class SerializedObjectField(JSONField):
             return value
         return self._deserialize(json.loads(value, cls=self.decoder))
 
-    # https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.Field.get_prep_value
-    def get_prep_value(self, value: Optional[Union[Model, str]]) -> str:
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.get_prep_value
+    def get_prep_value(self, value: Optional[Union[Model, list, str]]) -> str:
         """
         Convert a Python object to the value to be stored in the database.
         This method is the reverse of `from_db_value()`.
         """
         if isinstance(value, Model):
-            return super().get_prep_value(self._serialize(value))
+            value = self._serialize(value)
         return super().get_prep_value(value)
 
-    # https://docs.djangoproject.com/en/3.2/ref/models/fields/#django.db.models.Field.get_db_prep_value
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.get_db_prep_value
     def get_db_prep_value(self, value, connection, prepared: bool) -> str:
         return self.get_prep_value(value)
 
+    # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.pre_save
     def pre_save(self, model_instance: Model, add: bool) -> list:
-        value = getattr(model_instance, self.attname, None)
+        """Preprocess the field value immediately before saving."""
+        # Convert the field value from a model instance to a serialized Python object.
+        value: Optional[Model] = getattr(model_instance, self.attname, None)
         return self._serialize(value)
 
     # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-values-to-python-objects
@@ -82,7 +85,6 @@ class SerializedObjectField(JSONField):
                 if f is not None
             ]
         serialized_value = PythonSerializer().serialize(value_set)
-        # pprint(re.match(r'.+("date".{30})', serialized_value).group(1))
         return serialized_value
 
     def _deserialize(self, objects: list) -> Model:

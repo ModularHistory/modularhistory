@@ -1,9 +1,21 @@
+from typing import TYPE_CHECKING
+
 from django.conf import settings
+from django.contrib.sites.models import Site
+from django.core.mail import send_mass_mail
 from django.db import models
 from django.db.models.query import QuerySet
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import ModerationStatus
+
+if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
+
+    from apps.moderation.models.change import Change
+    from apps.moderation.models.moderation import Moderation
+    from apps.users.models import User
 
 
 class ModerationManager(models.Manager):
@@ -42,6 +54,42 @@ class Moderation(models.Model):
 
     def __str__(self) -> str:
         return f'Verdict: {self.verdict} (moderation of {self.change} by {self.moderator})'
+
+    def notify_users(self, moderation: 'Moderation'):
+        """Notify users of the moderation."""
+        # TODO: ensure the notification is only sent once per moderation
+        change: 'Change' = moderation.change
+        contributors: 'QuerySet[User]' = change.contributors.all()
+        moderators: 'QuerySet[User]' = change.moderators.all()
+        # https://docs.djangoproject.com/en/dev/ref/models/querysets/#union
+        users = contributors.union(moderators)
+        site = Site.objects.get_current()
+        ctx = {
+            'moderation': moderation,
+            'content_object': change.content_object,
+            'site': site,
+            'content_type': change.content_type,
+        }
+        # https://docs.djangoproject.com/en/dev/topics/email/#send-mass-mail
+        send_mass_mail(
+            tuple(
+                # (subject, message, from_email, recipient_list)
+                tuple(
+                    render_to_string(
+                        'moderation_notification_subject.txt',
+                        ctx.update({'user': change.changed_by}),
+                    ),
+                    render_to_string(
+                        'moderation_notification_body.txt',
+                        ctx.update({'user': change.changed_by}),
+                    ),
+                    f'do.not.reply@{site.domain}',
+                    [user.email],
+                )
+                for user in users
+            ),
+            fail_silently=True,
+        )
 
     def retract(self):
         """Retract the moderation."""

@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-import django
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.urls import NoReverseMatch, reverse
@@ -42,7 +41,7 @@ class ChangeAdmin(admin.ModelAdmin):
             pass
         return actions
 
-    # https://docs.djangoproject.com/en/3.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.change_view
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.change_view
     def change_view(self, request: 'HttpRequest', object_id: int, extra_context=None):
         """Return the Django view for the change moderation page."""
         change: Change = Change.objects.get(pk=object_id)

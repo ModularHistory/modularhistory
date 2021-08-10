@@ -42,3 +42,6 @@ def handle_approval(approval_id: int):
         else:
             # Apply the change.
             change.apply()
+
+    # Notify users of the approval.
+    approval.notify_users()

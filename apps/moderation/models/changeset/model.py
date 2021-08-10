@@ -52,7 +52,7 @@ class AbstractChange(models.Model):
         null=True,
         editable=True,
         on_delete=models.SET_NULL,
-        related_name='initiated_%(class)ss',
+        related_name='%(class)ss_initiated',
     )
     reasons = ArrayField(
         base_field=models.PositiveSmallIntegerField(choices=Reason.choices),
