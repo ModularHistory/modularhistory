@@ -14,19 +14,3 @@ class ChangeSetManager(Manager):
 
     def get_queryset(self):
         return ChangeSetQuerySet(self.model, using=self._db)
-
-    # TODO: clean up
-    # def get_for_instance(self, instance):
-    #     """Returns Moderation for given model instance"""
-    #     try:
-    #         moderation = self.get(
-    #             object_id=instance.pk,
-    #             content_type=ContentType.objects.get_for_model(instance.__class__),
-    #         )
-    #     except self.model.MultipleObjectsReturned:
-    #         # Get the most recent one
-    #         moderation = self.filter(
-    #             object_id=instance.pk,
-    #             content_type=ContentType.objects.get_for_model(instance.__class__),
-    #         ).order_by('-updated')[0]
-    #     return moderation

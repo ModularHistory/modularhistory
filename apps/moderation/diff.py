@@ -1,26 +1,28 @@
-# -*- coding: utf-8 -*-
-
 import difflib
 import re
+from typing import TYPE_CHECKING
 
 from django.db.models import ImageField, fields
 from django.db.models.fields.related import ForeignObject
 from django.utils.html import escape
 
+if TYPE_CHECKING:
+    from apps.moderation.models.moderated_model import ModeratedModel
+
 
 class FieldChange:
     """Base class for a change to a field's value."""
 
-    def __repr__(self):
-        value1, value2 = self.change
-        return 'Change object: {} - {}'.format(value1, value2)
-
-    def __init__(self, verbose_name, field, before_and_after: tuple):
+    def __init__(self, verbose_name: str, field, before_and_after: tuple):
         self.verbose_name = verbose_name
         self.field = field
         self.change = before_and_after
 
-    def render_diff(self, template, context):
+    def __repr__(self) -> str:
+        value_before, value_after = self.change
+        return f'Change object: {value_before} - {value_after}'
+
+    def render_diff(self, template, context) -> str:
         from django.template.loader import render_to_string
 
         return render_to_string(template, context)
@@ -32,10 +34,9 @@ class TextChange(FieldChange):
     @property
     def diff(self) -> str:
         """Render the diff."""
-        value1, value2 = escape(self.change[0]), escape(self.change[1])
-        if value1 == value2:
-            return value1
-
+        value_before, value_after = escape(self.change[0]), escape(self.change[1])
+        if value_before == value_after:
+            return value_before
         return self.render_diff(
             template='moderation/changes/html_diff.html',
             context={'diff_operations': get_diff_operations(*self.change)},
@@ -55,28 +56,41 @@ class ImageChange(FieldChange):
         )
 
 
-def get_change(field, model1, model2, resolve_foreignkeys=False) -> FieldChange:
+def get_field_change(
+    field: fields.Field,
+    object_before_change: 'ModeratedModel',
+    object_after_change: 'ModeratedModel',
+    resolve_foreignkeys: bool = True,
+) -> FieldChange:
     """Return a FieldChange object for the field."""
     try:
-        value1 = getattr(model1, f'get_{field.name}_display')()
-        value2 = getattr(model2, f'get_{field.name}_display')()
+        value_before = getattr(object_before_change, f'get_{field.name}_display')()
+        value_after = getattr(object_after_change, f'get_{field.name}_display')()
     except AttributeError:
         if isinstance(field, ForeignObject) and resolve_foreignkeys:
-            value1 = str(getattr(model1, field.name))
-            value2 = str(getattr(model2, field.name))
+            value_before = str(getattr(object_before_change, field.name))
+            value_after = str(getattr(object_after_change, field.name))
         else:
-            value1 = field.value_from_object(model1)
-            value2 = field.value_from_object(model2)
-    return get_change_for_type(
-        field.verbose_name,
-        (value1, value2),
-        field,
-    )
+            value_before = field.value_from_object(object_before_change)
+            value_after = field.value_from_object(object_after_change)
+    if isinstance(field, ImageField):
+        change = ImageChange(
+            f'Current {field.verbose_name} / New {field.verbose_name}',
+            field=field,
+            before_and_after=(value_before, value_after),
+        )
+    else:
+        change = TextChange(
+            field.verbose_name,
+            field=field,
+            before_and_after=(str(value_before), str(value_after)),
+        )
+    return change
 
 
 def get_changes_between_models(
-    object_before_change,
-    object_after_change,
+    object_before_change: 'ModeratedModel',
+    object_after_change: 'ModeratedModel',
     excluded_fields=None,
     included_fields=None,
     resolve_foreignkeys=False,
@@ -86,6 +100,7 @@ def get_changes_between_models(
         excluded_fields = []
     if included_fields is None:
         included_fields = []
+    field: fields.Field
     for field in object_before_change._meta.fields:
         if any(
             [
@@ -96,7 +111,7 @@ def get_changes_between_models(
         ):
             continue
         name = f'{object_before_change.__class__.__name__.lower()}__{field.name}'
-        changes[name] = get_change(
+        changes[name] = get_field_change(
             field, object_before_change, object_after_change, resolve_foreignkeys
         )
     return changes
@@ -121,24 +136,3 @@ def html_to_list(html) -> list:
         re.UNICODE,
     )
     return [''.join(element) for element in [_f for _f in pattern.findall(html) if _f]]
-
-
-def get_change_for_type(
-    verbose_name: str,
-    before_and_after: tuple,
-    field: fields.Field,
-) -> FieldChange:
-    if isinstance(field, ImageField):
-        change = ImageChange(
-            f'Current {verbose_name} / New {verbose_name}',
-            field=field,
-            before_and_after=before_and_after,
-        )
-    else:
-        value1, value2 = before_and_after
-        change = TextChange(
-            verbose_name,
-            field=field,
-            before_and_after=(str(value1), str(value2)),
-        )
-    return change
