@@ -1,7 +1,13 @@
+from typing import TYPE_CHECKING
+
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 
+from apps.moderation.serializers import get_moderated_model_serializer
 from apps.propositions.api.serializers import PropositionSerializer
 from apps.propositions.models import Proposition
+
+if TYPE_CHECKING:
+    from rest_framework.request import Request
 
 
 class PropositionListAPIView(ListAPIView):
@@ -14,8 +20,16 @@ class PropositionListAPIView(ListAPIView):
 
 
 class PropositionAPIView(RetrieveAPIView):
-    """API view for a single occurrences."""
+    """API view for retrieving a proposition."""
 
     queryset = Proposition.objects.all()
     serializer_class = PropositionSerializer
+    lookup_field = 'slug'
+
+
+class PropositionModerationAPIView(RetrieveAPIView):
+    """API view for retrieving a proposition for moderation."""
+
+    queryset = Proposition.objects.all()
+    serializer_class = get_moderated_model_serializer(Proposition)
     lookup_field = 'slug'

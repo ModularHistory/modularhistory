@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
@@ -12,6 +12,9 @@ from apps.moderation.models.moderated_model.manager import (
     SearchableModeratedModelManager,
 )
 from apps.search.models.searchable_model import SearchableModel
+
+if TYPE_CHECKING:
+    from django.db.models.fields import Field
 
 
 class ModeratedModel(models.Model):
@@ -48,6 +51,29 @@ class ModeratedModel(models.Model):
         except Exception as err:
             logging.error(err)
             return False
+
+    def get_moderated_fields(self) -> list[dict]:
+        """
+        Return a serialized list of the model's moderated fields.
+
+        This can be used to construct forms intelligently in front-end code.
+        """
+        fields = []
+        field: 'Field'
+        for field in self._meta.get_fields():
+            if field.name in self.Moderation.excluded_fields:
+                continue
+            print(field.__dict__)
+            fields.append(
+                {
+                    'name': field.name,
+                    'verbose_name': getattr(field, 'verbose_name', field.name),
+                    'editable': getattr(field, 'editable', True),
+                    'choices': getattr(field, 'choices', None),
+                    'type': field.__class__.__name__,
+                }
+            )
+        return fields
 
 
 class SearchableModeratedModel(SearchableModel, ModeratedModel):
