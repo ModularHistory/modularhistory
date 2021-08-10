@@ -83,50 +83,15 @@ export default PropositionDetailPage;
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let proposition: Proposition;
   const { slug } = params;
-  const body = {
-    query: `{
-      proposition(slug: "${slug}") {
-        id
-        absoluteUrl
-        summary
-        elaboration
-        model
-        adminUrl
-        certainty
-        arguments {
-          pk
-          type
-          explanation
-          premises {
-            absoluteUrl
-            dateString
-            certainty
-            slug
-            summary
-            elaboration
-          }
-        }
-        conflictingPropositions {
-          slug
-          absoluteUrl
-          summary
-          certainty
-        }
-        changes {
-          url
-        }
-      }
-    }`,
-  };
   await axiosWithoutAuth
-    .post("http://django:8000/graphql/", body)
+    .get(`http://django:8000/api/propositions/${slug}/`)
     .then((response) => {
-      proposition = response.data.data.proposition;
+      proposition = response.data;
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log(error);
       proposition = null;
     });
-
   if (!proposition) {
     // https://nextjs.org/blog/next-10#notfound-support
     return {

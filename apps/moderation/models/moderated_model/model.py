@@ -17,7 +17,7 @@ from apps.search.models.searchable_model import SearchableModel
 class ModeratedModel(models.Model):
     """Base class for models of which instances must be moderated."""
 
-    modifications = GenericRelation(to='moderation.Change')
+    changes = GenericRelation(to='moderation.Change')
 
     # This field is used to determine whether model instances should be visible to users.
     verified = models.BooleanField(
@@ -36,7 +36,7 @@ class ModeratedModel(models.Model):
     @property
     def change_in_progress(self) -> Optional['Change']:
         return (
-            self.modifications.filter(moderation_status=ModerationStatus.PENDING).first()
+            self.changes.filter(moderation_status=ModerationStatus.PENDING).first()
             if self.has_change_in_progress
             else None
         )
@@ -44,9 +44,7 @@ class ModeratedModel(models.Model):
     @property
     def has_change_in_progress(self) -> bool:
         try:
-            return self.modifications.filter(
-                moderation_status=ModerationStatus.PENDING
-            ).exists()
+            return self.changes.filter(moderation_status=ModerationStatus.PENDING).exists()
         except Exception as err:
             logging.error(err)
             return False

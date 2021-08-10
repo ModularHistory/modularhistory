@@ -6,7 +6,6 @@ import { Proposition } from "@/interfaces";
 import "@draft-js-plugins/inline-toolbar/lib/plugin.css";
 import "@draft-js-plugins/static-toolbar/lib/plugin.css";
 import { Button, FormControl, Grid, TextField, useTheme } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/styles";
 import { ContentState, convertFromHTML, EditorState } from "draft-js";
 import { GetServerSideProps } from "next";
@@ -100,13 +99,6 @@ const PropositionModificationPage: FC<PropositionModificationPageProps> = ({
         <PageHeader>Proposition {proposition.id}</PageHeader>
         <Grid container direction="row" justifyContent="space-evenly" alignItems="flex-start">
           <Grid item sm={12} md={6} lg={6} xl={6} style={{ margin: "0 3rem" }}>
-            <a
-              href={`https://github.com/ModularHistory/content/tree/main/propositions/${proposition.id}.toml`}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <EditIcon style={{ float: "right", margin: "1rem" }} />
-            </a>
             <PropositionModificationForm proposition={proposition} />
           </Grid>
         </Grid>
@@ -120,48 +112,14 @@ export default PropositionModificationPage;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
   const { slug } = context.params;
-  const body = {
-    query: `{
-      proposition(slug: "${slug}") {
-        id
-        title
-        summary
-        elaboration
-        model
-        adminUrl
-        certainty
-        arguments {
-          pk
-          type
-          explanation
-          premises {
-            absoluteUrl
-            dateString
-            certainty
-            slug
-            summary
-            elaboration
-          }
-        }
-        conflictingPropositions {
-          slug
-          absoluteUrl
-          summary
-          certainty
-        }
-        changes {
-          url
-        }
-      }
-    }`,
-  };
   let proposition: Proposition;
   await axiosWithoutAuth
-    .post("http://django:8000/graphql/", body)
+    .get(`http://django:8000/api/propositions/${slug}/`)
     .then((response) => {
-      proposition = response.data.data.proposition;
+      proposition = response.data;
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log(error);
       proposition = null;
     });
   if (!proposition) {
@@ -170,7 +128,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       notFound: true,
     };
   }
-
   return {
     props: { proposition, session }, // passed to the page component as props
   };

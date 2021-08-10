@@ -6,4 +6,5 @@ app_name = 'propositions'
 
 urlpatterns = [
     path('', views.PropositionListAPIView.as_view()),
+    path('<slug:slug>/', views.PropositionAPIView.as_view()),
 ]

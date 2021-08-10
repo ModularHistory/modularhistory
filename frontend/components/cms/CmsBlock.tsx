@@ -2,6 +2,7 @@ import { ModuleUnion } from "@/interfaces";
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/styles";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC } from "react";
 
@@ -44,9 +45,11 @@ const CmsBlock: FC<CmsBlockProps> = ({ module }: CmsBlockProps) => {
             >
               <p>No changes are under review for this module.</p>
               <p>
-                <Button variant="contained" onClick={openChangePage}>
-                  Submit a change for review
-                </Button>
+                <Link href={`${module.absoluteUrl}modify`}>
+                  <a>
+                    <Button variant="contained">Submit a change for review</Button>
+                  </a>
+                </Link>
               </p>
             </div>
           </Grid>
@@ -71,9 +74,11 @@ const CmsBlock: FC<CmsBlockProps> = ({ module }: CmsBlockProps) => {
             >
               <p>No issues have been reported for this module.</p>
               <p>
-                <Button variant="contained" onClick={openIssuePage}>
-                  Report an issue
-                </Button>
+                <Link href="/">
+                  <a>
+                    <Button variant="contained">Report an issue</Button>
+                  </a>
+                </Link>
               </p>
             </div>
           </Grid>

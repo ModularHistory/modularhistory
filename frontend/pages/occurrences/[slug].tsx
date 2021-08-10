@@ -27,7 +27,6 @@ export default OccurrenceDetailPage;
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let occurrence = {};
   const { slug } = params;
-
   await axios
     .get(`http://django:8000/api/occurrences/${slug}/`)
     .then((response) => {
@@ -36,14 +35,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .catch(() => {
       occurrence = null;
     });
-
   if (!occurrence) {
     // https://nextjs.org/blog/next-10#notfound-support
     return {
       notFound: true,
     };
   }
-
   return {
     props: {
       occurrence,
