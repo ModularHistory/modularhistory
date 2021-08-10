@@ -74,7 +74,7 @@ class Moderation(models.Model):
         send_mass_mail(
             tuple(
                 # (subject, message, from_email, recipient_list)
-                tuple(
+                (
                     render_to_string(
                         'moderation_notification_subject.txt',
                         ctx.update({'user': change.changed_by}),

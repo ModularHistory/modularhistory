@@ -3,7 +3,6 @@
 from decouple import config
 
 DEFAULT_EMAIL_PORT = 25
-DEFAULT_FROM_EMAIL = f'do.not.reply@modularhistory.com'
 
 # https://docs.djangoproject.com/en/dev/topics/email/
 # https://docs.djangoproject.com/en/dev/ref/settings#s-email-backend
