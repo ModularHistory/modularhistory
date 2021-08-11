@@ -7,9 +7,7 @@ from django.core.serializers.python import Serializer as PythonSerializer
 from django.db.models import JSONField, Model
 from rest_framework.utils.encoders import JSONEncoder
 
-
-def deserialize(value_set: list, **options):
-    yield from PythonDeserializer(value_set, **options)
+SerializedModel = list[dict]
 
 
 class SerializedObjectField(JSONField):
@@ -18,12 +16,14 @@ class SerializedObjectField(JSONField):
     def __init__(self, *args, **kwargs):
         """Construct the field."""
         kwargs['encoder'] = JSONEncoder
+        kwargs['editable'] = False
         super().__init__(*args, **kwargs)
 
     def deconstruct(self) -> tuple:
         """Reduce the field to its serialized form for migrations."""
         name, path, args, kwargs = super().deconstruct()
         del kwargs['encoder']
+        del kwargs['editable']
         return name, path, args, kwargs
 
     # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
@@ -34,16 +34,16 @@ class SerializedObjectField(JSONField):
         """
         if value is None:
             return value
-        return self._deserialize(json.loads(value, cls=self.decoder))
+        return deserialize_instance(json.loads(value, cls=self.decoder))
 
     # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.get_prep_value
-    def get_prep_value(self, value: Optional[Union[Model, list, str]]) -> str:
+    def get_prep_value(self, value: Optional[Union[Model, SerializedModel, str]]) -> str:
         """
         Convert a Python object to the value to be stored in the database.
         This method is the reverse of `from_db_value()`.
         """
         if isinstance(value, Model):
-            value = self._serialize(value)
+            value = serialize_instance(value)
         return super().get_prep_value(value)
 
     # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.get_db_prep_value
@@ -51,14 +51,16 @@ class SerializedObjectField(JSONField):
         return self.get_prep_value(value)
 
     # https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.pre_save
-    def pre_save(self, model_instance: Model, add: bool) -> list:
+    def pre_save(self, model_instance: Model, add: bool) -> SerializedModel:
         """Preprocess the field value immediately before saving."""
         # Convert the field value from a model instance to a serialized Python object.
         value: Optional[Model] = getattr(model_instance, self.attname, None)
-        return self._serialize(value)
+        return serialize_instance(value)
 
     # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-values-to-python-objects
-    def to_python(self, value: Optional[Union[Model, dict, list, str]]) -> Optional[Model]:
+    def to_python(
+        self, value: Optional[Union[Model, SerializedModel, str]]
+    ) -> Optional[Model]:
         """
         Convert the value into the correct Python object.
         This method acts as the reverse of value_to_string(), and is also called in clean().
@@ -69,41 +71,48 @@ class SerializedObjectField(JSONField):
         elif isinstance(value, str):
             return self.from_db_value(value)
         elif isinstance(value, list):
-            return self._deserialize(value)
+            return deserialize_instance(value)
         elif isinstance(value, Model):
             return value
         raise TypeError(value)
 
-    def _serialize(self, value: Model) -> list:
-        if not isinstance(value, Model):
-            raise TypeError(value)
-        value_set = [value]
-        if value._meta.parents:
-            value_set += [
-                getattr(value, f.name)
-                for f in list(value._meta.parents.values())
-                if f is not None
-            ]
-        serialized_value = PythonSerializer().serialize(value_set)
-        return serialized_value
 
-    def _deserialize(self, objects: list) -> Model:
-        obj_generator = deserialize(objects, ignorenonexistent=True)
-        try:
-            obj = next(obj_generator)
-        except Exception as err:
-            print()
-            raise
-        unsaved_instance = obj.object
-        for parent in obj_generator:
-            for f in parent.object._meta.fields:
+def _deserialize(value_set: list, **options):
+    yield from PythonDeserializer(value_set, **options)
+
+
+def serialize_instance(instance: Model) -> SerializedModel:
+    if not isinstance(instance, Model):
+        raise TypeError(instance)
+    value_set = [instance]
+    if instance._meta.parents:
+        value_set += [
+            getattr(instance, f.name)
+            for f in list(instance._meta.parents.values())
+            if f is not None
+        ]
+    serialized_value = PythonSerializer().serialize(value_set)
+    return serialized_value
+
+
+def deserialize_instance(serialized_instance: SerializedModel) -> Model:
+    """Given a serialized model instance, return a model instance."""
+    obj_generator = _deserialize(serialized_instance, ignorenonexistent=True)
+    try:
+        obj = next(obj_generator)
+    except Exception as err:
+        print()
+        raise
+    unsaved_instance = obj.object
+    for parent in obj_generator:
+        for f in parent.object._meta.fields:
+            try:
+                setattr(unsaved_instance, f.name, getattr(parent.object, f.name))
+            except ObjectDoesNotExist:
                 try:
-                    setattr(unsaved_instance, f.name, getattr(parent.object, f.name))
-                except ObjectDoesNotExist:
-                    try:
-                        # Try to set non-existant foreign key reference to None
-                        setattr(unsaved_instance, f.name, None)
-                    except ValueError:
-                        # Return None for changed_object if None not allowed
-                        return None
-        return unsaved_instance
+                    # Try to set non-existant foreign key reference to None
+                    setattr(unsaved_instance, f.name, None)
+                except ValueError:
+                    # Return None for changed_object if None not allowed
+                    return None
+    return unsaved_instance
