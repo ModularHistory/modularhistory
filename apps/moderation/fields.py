@@ -101,12 +101,7 @@ def serialize_instance(instance: Model) -> SerializedModel:
 def deserialize_instance(serialized_instance: SerializedModel) -> Model:
     """Given a serialized model instance, return a model instance."""
     obj_generator = _deserialize(serialized_instance, ignorenonexistent=True)
-    try:
-        obj = next(obj_generator)
-    except Exception as err:
-        print()
-        raise
-    unsaved_instance = obj.object
+    unsaved_instance = next(obj_generator).object
     for parent in obj_generator:
         for f in parent.object._meta.fields:
             try:
