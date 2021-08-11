@@ -1,11 +1,7 @@
-
 from django.conf import settings
 from django.db import models
 
-from apps.moderation.fields import (
-    SerializedObjectField,
-)
-from core.fields.json_field import JSONField
+from apps.moderation.fields import SerializedObjectField
 
 
 class ContentContribution(models.Model):

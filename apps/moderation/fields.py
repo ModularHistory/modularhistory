@@ -30,6 +30,7 @@ class SerializedObjectField(JSONField):
     def from_db_value(self, value: str, *args) -> Optional[Model]:
         """
         Convert a value as returned by the database to a Python object.
+
         This method is the reverse of `get_prep_value()`.
         """
         if value is None:
@@ -40,6 +41,7 @@ class SerializedObjectField(JSONField):
     def get_prep_value(self, value: Optional[Union[Model, SerializedModel, str]]) -> str:
         """
         Convert a Python object to the value to be stored in the database.
+
         This method is the reverse of `from_db_value()`.
         """
         if isinstance(value, Model):
@@ -63,6 +65,7 @@ class SerializedObjectField(JSONField):
     ) -> Optional[Model]:
         """
         Convert the value into the correct Python object.
+
         This method acts as the reverse of value_to_string(), and is also called in clean().
         """
         value = super().to_python(value)
