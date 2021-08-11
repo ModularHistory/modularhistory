@@ -97,11 +97,6 @@ export interface StaticPage {
   content: string;
 }
 
-export interface Branch {
-  name: string;
-  url: string;
-}
-
 export interface Change {
   id: number;
   url: string;
@@ -113,6 +108,6 @@ export interface Change {
 
 export interface Issue {
   id: number;
-  title: string;
   url: string;
+  title: string;
 }
