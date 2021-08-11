@@ -6,12 +6,10 @@ interface PageHeaderProps {
 
 const PageHeader: FC<PageHeaderProps> = ({ children }: PageHeaderProps) => {
   return (
-    <h1
-      className="page-header text-center my-3"
-      style={{ padding: "0.5rem", margin: "0 15%", borderBottom: "1px solid lightgray" }}
-    >
-      {children}
-    </h1>
+    <>
+      <h1 className="page-header text-center my-3">{children}</h1>
+      <hr />
+    </>
   );
 };
 

@@ -46,7 +46,7 @@ const OccurrenceDetail: FC<OccurrenceDetailProps> = ({ occurrence }: OccurrenceD
       <footer className="footer sources-footer">
         <ol className="citations">
           {occurrence.cachedCitations.map((citation) => {
-            const id = `citation-${citation.id}`;
+            const id = `citation-${citation.pk}`;
             return (
               <li
                 className="source"

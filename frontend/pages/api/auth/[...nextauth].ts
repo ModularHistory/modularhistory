@@ -1,9 +1,3 @@
-import {
-  authenticateWithCredentials,
-  authenticateWithSocialMediaAccount,
-  refreshAccessToken,
-} from "@/auth";
-import axiosWithAuth from "@/axiosWithAuth";
 import { AxiosResponse } from "axios";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import NextAuth, {
@@ -16,6 +10,12 @@ import NextAuth, {
 } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Providers from "next-auth/providers";
+import {
+  authenticateWithCredentials,
+  authenticateWithSocialMediaAccount,
+  refreshAccessToken,
+} from "../../../auth";
+import axiosWithoutAuth from "../../../axiosWithAuth";
 
 const makeDjangoApiUrl = (endpoint) => {
   return `http://django:8000/api${endpoint}`;
@@ -96,7 +96,6 @@ callbacks.jwt = async function jwt(token, user?: User, account?) {
   }
   // Refresh the access token if it is expired.
   if (Date.now() > token.accessTokenExpiry) {
-    console.log("Refreshing access token...");
     token = await refreshAccessToken(token);
   }
   return Promise.resolve(token);
@@ -125,11 +124,11 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
       session.accessToken = accessToken;
       session.clientSideCookies = clientSideCookies;
       // TODO: Refactor? The point of this is to only make the request when necessary.
-      if (!session.user?.["username"]) {
+      if (!session.user || !session.user["username"]) {
         // Replace the session's `user` attribute (containing only name, image, and
         // a couple other fields) with full user details from the Django API.
         let userData;
-        await axiosWithAuth
+        await axiosWithoutAuth
           .get(makeDjangoApiUrl("/users/me/"), {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -140,11 +139,7 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
           })
           .catch(function (error) {
             if (error.response?.data) {
-              console.error(
-                "Failed to retrieve user data:",
-                error.response.data,
-                `${Date.now()} <> ${jwt.accessTokenExpiry}`
-              );
+              console.error(error.response.data);
             }
             return null;
           });

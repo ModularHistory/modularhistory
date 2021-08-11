@@ -33,9 +33,9 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
         <ol className="citations">
           {quote.cachedCitations.map((citation) => (
             <li
-              key={citation.id}
+              key={citation.pk}
               className="source"
-              id={`citation-${citation.id}`}
+              id={`citation-${citation.pk}`}
               dangerouslySetInnerHTML={{ __html: citation.html }}
             />
           ))}

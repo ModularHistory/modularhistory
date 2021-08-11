@@ -151,10 +151,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       socialAccounts = response.data.results;
     })
     .catch(function (error) {
-      console.error(
-        "Failed to retrieve social accounts:",
-        error.response?.data ? error.response.data : error
-      );
+      if (error.response?.data) {
+        console.error(error.response.data);
+      }
+      console.error(error);
     });
   return {
     props: {
