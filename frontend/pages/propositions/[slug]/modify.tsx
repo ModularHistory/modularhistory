@@ -1,5 +1,6 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import { fieldComponents } from "@/components/cms/fields";
+import { intrinsicFieldComponents } from "@/components/cms/fields/intrinsic";
+import { relatedFieldComponents } from "@/components/cms/fields/related";
 import { ModelField } from "@/components/cms/fields/types";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
@@ -8,8 +9,7 @@ import { Button, FormControl, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { GetServerSideProps } from "next";
 import { Session } from "next-auth";
-import { getSession, signIn } from "next-auth/client";
-import { useRouter } from "next/router";
+import { getSession } from "next-auth/client";
 import React, { FC } from "react";
 
 const useStyles = makeStyles({
@@ -42,11 +42,18 @@ export const PropositionModificationForm: FC<PropositionProps> = ({
     <form method="post" onSubmit={handleSubmit} className={classes.root}>
       <div>
         {proposition.fields.map((field) => {
-          const FieldComponent = fieldComponents[field.type];
-          if (FieldComponent) {
+          if (intrinsicFieldComponents[field.type]) {
+            const FieldComponent = intrinsicFieldComponents[field.type];
             return (
-              <FormControl fullWidth margin="normal">
-                <FieldComponent key={field.name} value={proposition[field.name]} {...field} />
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <FieldComponent value={proposition[field.name]} {...field} />
+              </FormControl>
+            );
+          } else if (relatedFieldComponents[field.type]) {
+            const FieldComponent = relatedFieldComponents[field.type];
+            return (
+              <FormControl fullWidth margin="normal" key={field.name}>
+                <FieldComponent object={proposition} {...field} />
               </FormControl>
             );
           } else {
@@ -68,12 +75,6 @@ const PropositionModificationPage: FC<PropositionModificationPageProps> = ({
   proposition,
   session,
 }: PropositionModificationPageProps) => {
-  const router = useRouter();
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  // TODO
-  if (!session?.user?.email) {
-    signIn("github", { callbackUrl: `${baseUrl}/${router.asPath}` });
-  }
   return (
     <Layout title={proposition.summary}>
       <PageHeader>Proposition {proposition.id}</PageHeader>

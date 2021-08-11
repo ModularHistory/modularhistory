@@ -24,3 +24,11 @@ export interface IntegerFieldProps extends FieldProps {
   value?: number;
   choices?: Array<string | number>[]; // [[0, "Zero"], [1, "One"]]
 }
+
+export interface ManyToOneFieldProps extends FieldProps {
+  object: any;
+}
+
+export interface OneToOneFieldProps extends FieldProps {
+  object: any;
+}

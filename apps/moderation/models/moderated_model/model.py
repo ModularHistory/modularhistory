@@ -34,7 +34,7 @@ class ModeratedModel(models.Model):
         abstract = True
 
     class Moderation:
-        excluded_fields = ['cache']
+        excluded_fields = ['cache', 'date_string']
 
     @property
     def change_in_progress(self) -> Optional['Change']:
@@ -63,11 +63,14 @@ class ModeratedModel(models.Model):
         for field in self._meta.get_fields():
             if field.name in self.Moderation.excluded_fields:
                 continue
+            verbose_name = getattr(field, 'verbose_name', None)
+            if not verbose_name:  # temporary heuristic -- TODO
+                continue
             print(field.__dict__)
             fields.append(
                 {
                     'name': field.name,
-                    'verbose_name': getattr(field, 'verbose_name', field.name),
+                    'verbose_name': verbose_name,
                     'editable': getattr(field, 'editable', True),
                     'choices': getattr(field, 'choices', None),
                     'help_text': getattr(field, 'help_text', None),
