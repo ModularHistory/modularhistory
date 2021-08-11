@@ -18,13 +18,11 @@ interface TagProps {
 const Tag: FC<TagProps> = ({ topic }: TagProps) => {
   const classes = useStyles();
   return (
-    <li style={{ display: "inline", margin: "2px", listStyle: "none" }}>
-      <Link href={topic.absoluteUrl || `/topics/${topic.slug}`}>
-        <a>
-          <Chip label={topic.name} className={classes.tag} size="small" clickable />
-        </a>
-      </Link>
-    </li>
+    <Link href={topic.absoluteUrl || `/topics/${topic.slug}`}>
+      <a>
+        <Chip label={topic.name} className={classes.tag} size="small" clickable />
+      </a>
+    </Link>
   );
 };
 

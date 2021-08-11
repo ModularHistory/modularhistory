@@ -2,6 +2,7 @@ import Tag from "@/components/topics/Tag";
 import { Quote } from "@/interfaces";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
+import TagList from "../topics/TagList";
 
 interface QuoteDetailProps {
   quote: Quote;
@@ -24,13 +25,7 @@ const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
 
       <div dangerouslySetInnerHTML={{ __html: quote.html }} />
 
-      {!!quote.cachedTags?.length && (
-        <ul className="tags">
-          {quote.cachedTags.map((topic) => (
-            <Tag key={topic.pk} topic={topic} />
-          ))}
-        </ul>
-      )}
+      {!!quote.cachedTags?.length && <TagList topics={quote.cachedTags} />}
 
       <footer className="footer sources-footer">
         <ol className="citations">
