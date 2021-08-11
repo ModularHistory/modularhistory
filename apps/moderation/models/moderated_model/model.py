@@ -63,15 +63,16 @@ class ModeratedModel(models.Model):
         for field in self._meta.get_fields():
             if field.name in self.Moderation.excluded_fields:
                 continue
-            verbose_name = getattr(field, 'verbose_name', None)
-            if not verbose_name:  # temporary heuristic -- TODO
+            verbose_name = getattr(field, 'verbose_name', None)  # default to None
+            editable = getattr(field, 'editable', True)  # default to True
+            if not verbose_name or not editable:  # temporary heuristic -- TODO
                 continue
             print(field.__dict__)
             fields.append(
                 {
                     'name': field.name,
                     'verbose_name': verbose_name,
-                    'editable': getattr(field, 'editable', True),
+                    'editable': editable,
                     'choices': getattr(field, 'choices', None),
                     'help_text': getattr(field, 'help_text', None),
                     'type': field.__class__.__name__,
