@@ -53,17 +53,17 @@ class Moderation(models.Model):
     def __str__(self) -> str:
         return f'Verdict: {self.verdict} (moderation of {self.change} by {self.moderator})'
 
-    def notify_users(self, moderation: 'Moderation'):
+    def notify_users(self):
         """Notify users of the moderation."""
         # TODO: ensure the notification is only sent once per moderation
-        change: 'Change' = moderation.change
+        change: 'Change' = self.change
         contributors: 'QuerySet[User]' = change.contributors.all()
         moderators: 'QuerySet[User]' = change.moderators.all()
         # https://docs.djangoproject.com/en/dev/ref/models/querysets/#union
         users = contributors.union(moderators)
         site = Site.objects.get_current()
         ctx = {
-            'moderation': moderation,
+            'moderation': self,
             'content_object': change.content_object,
             'site': site,
             'content_type': change.content_type,
