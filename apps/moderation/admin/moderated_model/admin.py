@@ -1,4 +1,4 @@
-from typing import Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -31,7 +31,6 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
     ) -> 'ModelForm':
         """Return the form to be used in the admin to make changes to a model instance."""
         excluded_fields = self.exclude or []
-        print(excluded_fields)
         if obj and self.admin_integration_enabled:
 
             class _Form(SoftModificationForm):
