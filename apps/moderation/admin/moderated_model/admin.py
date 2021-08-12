@@ -30,12 +30,14 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         **kwargs,
     ) -> Union['ModelForm']:
         """Return the form to be used in the admin to make changes to a model instance."""
+        excluded_fields = self.exclude or []
+        print(excluded_fields)
         if obj and self.admin_integration_enabled:
 
             class _Form(SoftModificationForm):
                 class Meta:
                     model = obj.__class__
-                    fields = '__all__'
+                    exclude = excluded_fields
 
             return _Form
         return super().get_form(request, obj, **kwargs)
