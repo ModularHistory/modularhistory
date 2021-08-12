@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.db import models
 
 from apps.search.models.searchable_model import SearchableModel
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
-from django.conf import settings
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
@@ -54,7 +54,7 @@ class Collection(SearchableModel):
         blank=True,
     )
 
-    objects: CollectionManager = CollectionManager()
+    objects = CollectionManager()
     searchable_fields = ['title', 'creator__name']
 
     def __str__(self) -> str:
