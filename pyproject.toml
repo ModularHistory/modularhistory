@@ -3,7 +3,8 @@ requires = ["poetry>=1.1.6"]
 build-backend = "poetry.masonry.api"
 
 [tool.black]
-# https://black.readthedocs.io/en/stable/pyproject_toml.html
+# https://black.readthedocs.io/en/stable/
+# https://github.com/psf/black/blob/main/pyproject.toml
 line-length = 94
 skip-string-normalization = true
 include = '\.py$'
@@ -12,7 +13,6 @@ exclude = '''
   /(
       \.eggs
     | \.git
-    | \.mypy_cache
     | \.cache
     | \.venv
   )/
@@ -38,33 +38,36 @@ multi_line_output = 3         # vertical hanging indent
 skip_gitignore = true         # ignore files listed in .gitignore
 use_parentheses = true
 
-[tool.mypy]
-python_version = 3.9
-cache_dir = ".cache/mypy"
-# https://mypy.readthedocs.io/en/stable/config_file.html#confval-check_untyped_defs
-check_untyped_defs = true
-# https://mypy.readthedocs.io/en/stable/config_file.html#confval-disallow_untyped_calls
-disallow_untyped_calls = false
-# https://mypy.readthedocs.io/en/stable/config_file.html#confval-ignore_errors
-ignore_errors = false
-# https://mypy.readthedocs.io/en/stable/config_file.html#confval-no_implicit_optional
-no_implicit_optional = true
-show_error_codes = true
-strict_equality = true
-warn_unused_ignores = false
-warn_redundant_casts = true
-warn_unused_configs = true
-# https://mypy.readthedocs.io/en/stable/config_file.html#confval-warn_unreachable
-warn_unreachable = true
-plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+## TODO: Wait until mypy config bugs in pyproject.toml are resolved.
+# [tool.mypy]
+# python_version = 3.9
+# cache_dir = ".cache/mypy"
+# # https://mypy.readthedocs.io/en/stable/config_file.html#confval-check_untyped_defs
+# check_untyped_defs = true
+# # https://mypy.readthedocs.io/en/stable/config_file.html#confval-disallow_untyped_calls
+# disallow_untyped_calls = false
+# # https://mypy.readthedocs.io/en/stable/config_file.html#confval-ignore_errors
+# ignore_errors = false
+# https://mypy.readthedocs.io/en/stable/config_file.html#confval-ignore_missing_imports
+# ignore_missing_imports = true
+# # https://mypy.readthedocs.io/en/stable/config_file.html#confval-no_implicit_optional
+# no_implicit_optional = true
+# show_error_codes = true
+# strict_equality = true
+# warn_unused_ignores = false
+# warn_redundant_casts = true
+# warn_unused_configs = true
+# # https://mypy.readthedocs.io/en/stable/config_file.html#confval-warn_unreachable
+# warn_unreachable = true
+# plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 
-[[tool.mypy.overrides]]
-module = ["*.migrations.*", "__init__"]
-ignore_errors = true
+# [[tool.mypy.overrides]]
+# module = ["*.migrations.*", "__init__"]
+# ignore_errors = true
 
-[tool.django-stubs]
-django_settings_module = "core.settings"
-ignore_missing_model_attributes = true
+# [tool.django-stubs]
+# django_settings_module = "core.settings"
+# ignore_missing_model_attributes = true
 
 [tool.poetry]
 name = "modularhistory"
@@ -211,6 +214,7 @@ graphene-types = "^0.15.1"
 hypothesis = { extras = ["datetime", "django", "pytest"], version = "^5.39" }
 isort = "^5.6.4"
 libsass = "^0.20.1"
+mypy = "^0.910"
 pep8-naming = "^0.11.1"
 pylint = "^2.6.0"
 pyre-check = "^0.9.3"

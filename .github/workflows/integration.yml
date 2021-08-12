@@ -329,6 +329,12 @@ jobs:
         cd ..
     - name: Create .env file
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
+    - name: Cache type stubs
+      id: cache-stubs
+      uses: actions/cache@v2
+      with:
+        path: .pytype
+        key: ${{ matrix.python-version }}-type-stubs
     - name: Run static type checker
       run: poetry run pytype *
   build-django:

@@ -143,6 +143,13 @@ jobs:
       with:
         os: ${{ runner.os }}
         python-version: ${{ matrix.python-version }}
+    - 
+      name: Cache type stubs
+      id: cache-stubs
+      uses: actions/cache@v2
+      with:
+        path: .pytype
+        key: ${{ matrix.python-version }}-type-stubs
     -
       name: Run static type checker
       run: poetry run pytype *
