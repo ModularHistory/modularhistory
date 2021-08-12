@@ -12,10 +12,10 @@ class CelerySignalProcessor(BaseSignalProcessor):
     """
     Celery signal processor for ElasticSearch DSL.
 
-    Allows automatic updates on the index as delayed background tasks
-    using Celery. Note: Processing deletes is still handled synchronously.
-    By the time the Celery worker would pick up the delete job, the
-    model instance would already be deleted.
+    Allows automatic updates on the index as delayed background tasks using Celery.
+
+    Note: Processing deletes is still handled synchronously, since by the time the Celery
+    worker would pick up the delete job, the model instance would already be deleted.
     """
 
     NO_INDEXED_AT_FIELD = -1
