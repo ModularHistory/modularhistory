@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import Any, Optional, TYPE_CHECKING
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -28,7 +28,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         request: 'HttpRequest',
         obj: Optional[ModeratedModel] = None,
         **kwargs,
-    ) -> Union['ModelForm']:
+    ) -> 'ModelForm':
         """Return the form to be used in the admin to make changes to a model instance."""
         excluded_fields = self.exclude or []
         print(excluded_fields)
