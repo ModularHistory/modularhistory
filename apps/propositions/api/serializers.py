@@ -3,9 +3,10 @@ from typing import TYPE_CHECKING
 import serpy
 
 from apps.search.api.serializers import SearchableModelSerializer
-from core.models.model import ModelSerializer
 
 if TYPE_CHECKING:
+    pass
+
     from apps.propositions.models import Occurrence
 
 
@@ -29,10 +30,6 @@ class PropositionSerializer(SearchableModelSerializer):
     def get_model(self, instance) -> str:
         """Return the model name of serialized propositions."""
         return 'propositions.proposition'
-
-    def get_arguments(self, instance) -> str:
-        """Return the model name of serialized propositions."""
-        return ['propositions.proposition']
 
 
 class OccurrenceSerializer(PropositionSerializer):
