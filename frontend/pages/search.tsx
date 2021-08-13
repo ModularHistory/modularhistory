@@ -221,14 +221,14 @@ const SearchResultsLeftPane: FC<PaneProps> = ({
 };
 
 const SearchResultsRightPane: FC<PaneProps> = ({
-  results,
+  results: modules,
   moduleIndex,
   isModalOpen,
   setModalOpen,
 }) => {
   // media query value is based on /core/static/styles/serp.css
   const smallScreen = useMediaQuery("(max-width: 660px)");
-  const selectedModule = results[moduleIndex] || results[0];
+  const selectedModule = modules[moduleIndex] || modules[0];
 
   if (smallScreen) {
     return <ModuleModal module={selectedModule} open={isModalOpen} setOpen={setModalOpen} />;
