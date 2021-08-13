@@ -152,7 +152,7 @@ jobs:
         key: ${{ matrix.python-version }}-type-stubs
     -
       name: Run static type checker
-      run: poetry run pytype *
+      run: poetry run pytype --config=./setup.cfg .
 
   build-django:
     name: Build Django image
