@@ -54,6 +54,7 @@ const Pagination: FC<PaginationProps> = ({ count }: PaginationProps) => {
   // increase pagination size based on viewport size
   const breakpoints: Breakpoint[] = ["sm", "md"];
   const sibCount = breakpoints
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     .map((breakpoint) => useMediaQuery(theme.breakpoints.up(breakpoint)))
     .reduce((sum, current) => sum + Number(current), 1);
 
