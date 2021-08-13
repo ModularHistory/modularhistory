@@ -9,7 +9,6 @@ import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
 import "../../core/static/styles/base.scss";
@@ -39,7 +38,6 @@ interface ExtendedAppProps extends AppProps {
 }
 
 const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps) => {
-  const router = useRouter();
   useEffect(() => {
     // Remove the server-side injected CSS.
     // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.

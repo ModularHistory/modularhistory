@@ -97,7 +97,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
       })
       // TODO: add more resilient error handling
       .catch(console.error);
-  }, []);
+  }, [children, keyName, valueName]);
 
   // user input event handler
   const handleChange = (event, value) => {
