@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.urls import NoReverseMatch, reverse
 
-from apps.admin import admin_site
+from apps.admin.admin_site import admin_site
 from apps.admin.list_filters.type_filter import ContentTypeFilter
 from apps.moderation.diff import get_changes_between_models
 from apps.moderation.models import Change
