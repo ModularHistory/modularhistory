@@ -8,6 +8,7 @@ const sharedRules = {
   "@typescript-eslint/no-explicit-any": "off",
   "react-hooks/exhaustive-deps": "off", // TODO: remove this line
   "react-hooks/rules-of-hooks": "off", // TODO: remove this line
+  "@typescript-eslint/explicit-module-boundary-types": "off",
 };
 
 module.exports = {

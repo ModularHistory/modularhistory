@@ -55,14 +55,8 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
       const url = "/api/csrf/set/";
       axiosWithoutAuth.get(url);
     }
+  }, []);
 
-    // Scroll to the top of the page whenever router.push() is used.
-    // (The next/Link component automatically handles page scrolling,
-    // but router.push() does not.)
-    const handle = () => window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-    router.events.on("routeChangeComplete", handle);
-    return () => router.events.off("routeChangeComplete", handle);
-  }, [router.events]);
   return (
     <>
       <Head>
