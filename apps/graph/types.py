@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import graphene
 from graphene_django.types import DjangoObjectType
 
-from apps.moderation.api.types import ChangeType
+from apps.moderation.api.schema import ChangeType
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
