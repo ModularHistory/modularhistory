@@ -7,7 +7,10 @@ html_field_analyzer = analyzer(
     char_filter=['html_strip'],
 )
 
-DEFAULT_INDEX_SETTINGS = {'number_of_shards': 1, 'number_of_replicas': 0}
+DEFAULT_INDEX_SETTINGS = {
+    'number_of_shards': 1,
+    'number_of_replicas': 0,
+}
 
 
 def get_index_name_for_ct(ct_name: str):
