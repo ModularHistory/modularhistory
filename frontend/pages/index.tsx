@@ -19,8 +19,8 @@ const useStyles = makeStyles({
   },
 });
 
-function useQueryState(...args) {
-  const [query, setQuery] = useState(...args);
+function useQueryState(initialState) {
+  const [query, setQuery] = useState(initialState);
   return [query, ({ target: { value } }) => setQuery(value)];
 }
 
@@ -30,7 +30,7 @@ export default function Home() {
   const [query, setQuery] = useQueryState("");
 
   // event handler for pressing enter or clicking search button
-  const search = ({ key }) => {
+  const search = ({ key }: any) => {
     if (key && key !== "Enter") return;
     router.push({
       pathname: "/search/",
@@ -39,7 +39,13 @@ export default function Home() {
   };
 
   const searchForm = (
-    <Grid container direction={"column"} spacing={2} alignItems={"center"} justify={"center"}>
+    <Grid
+      container
+      direction={"column"}
+      spacing={2}
+      alignItems={"center"}
+      justifyContent={"center"}
+    >
       <Grid item>
         <TextField
           id={"id_query"}

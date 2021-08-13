@@ -1,11 +1,9 @@
-import { Button, CircularProgress } from "@material-ui/core";
+import { Button, ButtonProps, CircularProgress } from "@material-ui/core";
 import { useRouter } from "next/router";
 import { FC, useContext, useEffect } from "react";
 import PageTransitionContext from "../PageTransitionContext";
 
-interface SearchButtonProps {
-  onClick: () => Promise<boolean>;
-}
+type SearchButtonProps = ButtonProps & { onClick: ButtonProps["onClick"] };
 
 const SearchButton: FC<SearchButtonProps> = (props: SearchButtonProps) => {
   // A button with "Search" label.

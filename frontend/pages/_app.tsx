@@ -9,7 +9,6 @@ import { NextPage } from "next";
 import { Provider, signOut, useSession } from "next-auth/client";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect } from "react";
 import Cookies from "universal-cookie";
 import "../../core/static/styles/base.scss";
@@ -39,7 +38,6 @@ interface ExtendedAppProps extends AppProps {
 }
 
 const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps) => {
-  const router = useRouter();
   useEffect(() => {
     // Remove the server-side injected CSS.
     // See https://github.com/mui-org/material-ui/blob/master/examples/nextjs/.
@@ -55,14 +53,8 @@ const App: NextPage<AppProps> = ({ Component, pageProps, err }: ExtendedAppProps
       const url = "/api/csrf/set/";
       axiosWithoutAuth.get(url);
     }
+  }, []);
 
-    // Scroll to the top of the page whenever router.push() is used.
-    // (The next/Link component automatically handles page scrolling,
-    // but router.push() does not.)
-    const handle = () => window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-    router.events.on("routeChangeComplete", handle);
-    return () => router.events.off("routeChangeComplete", handle);
-  }, [router.events]);
   return (
     <>
       <Head>
