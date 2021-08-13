@@ -166,7 +166,7 @@ class HTMLField(TextField):
         return html
 
     def pre_save(self, model_instance: 'ExtendedModel', add: bool) -> str:
-        value: Optional[str] = getattr(model_instance, self.attname, None)
+        value: str = getattr(model_instance, self.attname, '')
         try:
             value = self._clean(value, model_instance=model_instance)
         except Exception as err:
