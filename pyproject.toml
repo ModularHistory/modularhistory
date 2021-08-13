@@ -48,7 +48,7 @@ use_parentheses = true
 # disallow_untyped_calls = false
 # # https://mypy.readthedocs.io/en/stable/config_file.html#confval-ignore_errors
 # ignore_errors = false
-# https://mypy.readthedocs.io/en/stable/config_file.html#confval-ignore_missing_imports
+# # https://mypy.readthedocs.io/en/stable/config_file.html#confval-ignore_missing_imports
 # ignore_missing_imports = true
 # # https://mypy.readthedocs.io/en/stable/config_file.html#confval-no_implicit_optional
 # no_implicit_optional = true
