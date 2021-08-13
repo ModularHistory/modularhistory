@@ -1,13 +1,6 @@
-from typing import TYPE_CHECKING
-
 import serpy
 
 from apps.search.api.serializers import SearchableModelSerializer
-
-if TYPE_CHECKING:
-    pass
-
-    from apps.propositions.models import Occurrence
 
 
 class ArgumentSerializer(serpy.Serializer):
@@ -37,6 +30,6 @@ class OccurrenceSerializer(PropositionSerializer):
 
     postscript = serpy.StrField()
 
-    def get_model(self, instance: 'Occurrence') -> str:
+    def get_model(self, instance) -> str:
         """Return the model name of the instance."""
         return 'propositions.occurrence'
