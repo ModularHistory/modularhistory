@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.contrib import admin
 
-from apps.admin import admin_site
+from apps.admin.admin_site import admin_site
 from apps.admin.inlines import StackedInline
 from apps.moderation.models import Change, ChangeSet
 
