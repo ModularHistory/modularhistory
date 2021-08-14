@@ -88,7 +88,6 @@ INSTALLED_APPS = [
     'admin_honeypot',  # https://github.com/dmpayton/django-admin-honeypot
     'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
-    'massadmin',  # https://github.com/burke-software/django-mass-edit
     'rangefilter',  # https://github.com/silentsokolov/django-admin-rangefilter
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
     'trumbowyg',  # https://github.com/sandino/django-trumbowyg

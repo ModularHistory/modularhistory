@@ -58,7 +58,7 @@ const ModuleModal: FC<ModuleModalProps> = (props: ModuleModalProps) => {
         <ModuleDetail module={module} />
       </DialogContent>
       <DialogActions>
-        <Button component={"a"} href={`/${module.absoluteUrl}`} target={"_blank"}>
+        <Button component={"a"} href={`${module.absoluteUrl}`} target={"_blank"}>
           Open in new tab
         </Button>
       </DialogActions>

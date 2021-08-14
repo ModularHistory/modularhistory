@@ -1,7 +1,5 @@
 html,
 body {
-  /*padding: 0;*/
-  /*margin: 0;*/
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -33,7 +31,7 @@ a:hover {
 }
 
 legend {
-  /* We need this `revert` to override bootstrap styles loaded in `_document.jsx`, which conflict with MUI styles */
+  /* We need this `revert` to override bootstrap styles loaded in `_document.tsx`, which conflict with MUI styles */
   width: revert;
 }
 

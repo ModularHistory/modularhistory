@@ -3,7 +3,7 @@ import React from "react";
 
 export default function Success() {
   return (
-    <Layout>
+    <Layout title="Success">
       <div className="pt-5">
         <p className="h1 mt-5">Donated Successfully.</p>
         <div className="mt-3 pt-5 h3">
