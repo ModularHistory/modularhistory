@@ -26,10 +26,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     for (const img of images) {
       if (img.dataset["src"]) img.src = img.dataset["src"];
     }
-    // force switching between modules to scroll
-    // to the top of the new module
-    ref.current.parentElement.scrollTop = 0;
-  }, [module]);
+  }, [ref]);
 
   let details;
   switch (module.model) {
@@ -58,7 +55,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
       details = <TopicDetail topic={module as Topic} />;
       break;
     default:
-      details = <pre>{JSON.stringify(module)}</pre>;
+      throw new Error(`Unknown module type encountered: ${module.model}`);
   }
 
   return (
