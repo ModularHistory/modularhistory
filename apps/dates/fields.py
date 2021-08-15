@@ -45,10 +45,10 @@ class HistoricDateTimeField(DateTimeField):
         """
         if not value:
             return None
+        elif isinstance(value, HistoricDateTime):
+            return value
         elif isinstance(value, str):
             value = isoparse(value)
-        if isinstance(value, HistoricDateTime):
-            return value
         return HistoricDateTime(
             value.year,
             value.month,
