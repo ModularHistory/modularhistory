@@ -30,8 +30,8 @@ class Query(graphene.ObjectType):
         return Change.objects.all()
 
     @staticmethod
-    def resolve_entity(root, info, id: int) -> Optional[Entity]:
-        """Return the entity specified by a 'change' query."""
+    def resolve_change(root, info, id: int) -> Optional[Entity]:
+        """Return the change specified by a 'change' query."""
         try:
             return Change.objects.get(id=id)
         except ObjectDoesNotExist:
