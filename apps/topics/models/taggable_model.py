@@ -2,12 +2,10 @@
 
 from typing import Optional
 
-from celery import shared_task
+from core.celery import app
 from django.apps import apps
 from django.db import models
 from django.urls import reverse
-from django.utils.html import format_html
-from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
@@ -56,14 +54,14 @@ class TaggableModel(SluggedModel, ModelWithCache):
         return ''
 
     @property
-    def tags_html(self) -> SafeString:
+    def tags_html(self) -> str:
         """Return the model instance's tags as an HTML string of <li> elements."""
         tags_html = ''
         if self.tag_keys:
             tags_html = ' '.join(
                 [f'<li class="topic-tag"><a>{tag_key}</a></li>' for tag_key in self.tag_keys]
             )
-        return format_html(tags_html)
+        return tags_html
 
 
 class TopicFilter(ManyToManyAutocompleteFilter):
@@ -74,12 +72,12 @@ class TopicFilter(ManyToManyAutocompleteFilter):
     _parameter_name = 'tags__pk__exact'
     m2m_cls = Topic
 
-    def get_autocomplete_url(self, request, model_admin):
+    def get_autocomplete_url(self, *args, **kwargs):
         """Return the URL used for topic autocompletion."""
         return reverse('admin:tag_search')
 
 
-@shared_task
+@app.task
 def cache_tags(model: str, instance_id: int, tags: list):
     """Save cached tags to a model instance."""
     if not tags:

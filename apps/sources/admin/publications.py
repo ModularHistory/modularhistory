@@ -1,8 +1,8 @@
-from apps.admin import ModelAdmin, StackedInline, admin_site
+from apps.admin import ExtendedModelAdmin, StackedInline, admin_site
 from apps.sources import models
 
 
-class PublicationAdmin(ModelAdmin):
+class PublicationAdmin(ExtendedModelAdmin):
     """Admin for publications."""
 
     list_display = ['__str__', 'description']

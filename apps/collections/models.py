@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.db import models
 
 from apps.search.models.searchable_model import SearchableModel
@@ -32,7 +33,7 @@ class Collection(SearchableModel):
     """A collection of model instances."""
 
     creator = models.ForeignKey(
-        to='users.User',
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -53,7 +54,7 @@ class Collection(SearchableModel):
         blank=True,
     )
 
-    objects: CollectionManager = CollectionManager()
+    objects = CollectionManager()
     searchable_fields = ['title', 'creator__name']
 
     def __str__(self) -> str:

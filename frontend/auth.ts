@@ -85,53 +85,56 @@ export const removeServerSideCookies = (cookies: string[]): string[] => {
   return clientSideCookies;
 };
 
+const getUserFromAuthResponse = (response: AxiosResponse): User => {
+  const user = response.data["user"];
+  if (!user) {
+    // eslint-disable-next-line no-console
+    return null;
+  }
+  /*
+    Attach necessary values to the user object.
+    Subsequently, the JWT callback reads these values from the user object
+    and attaches them to the token object that it returns.
+  */
+  user.accessToken = response.data.accessToken;
+  user.refreshToken = response.data.refreshToken;
+  const cookies = response.headers["set-cookie"];
+  cookies.forEach((cookie) => {
+    if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {
+      user.accessTokenExpiry = Date.parse(cookie.match(/expires=(.+?);/)[1]);
+    } else if (cookie.startsWith(`sessionid=`)) {
+      user.sessionIdCookie = cookie;
+    }
+  });
+  user.clientSideCookies = removeServerSideCookies(cookies);
+  return user;
+};
+
 export const authenticateWithCredentials = async (
   credentials: Record<string, string>
 ): Promise<User | null> => {
   const url = makeDjangoApiUrl("/users/auth/login/");
-  let user;
+  let user = null;
   await axios
     .post(url, {
       username: credentials.username,
       password: credentials.password,
     })
     .then(function (response: AxiosResponse) {
-      user = response.data["user"];
-      if (!user) {
-        // eslint-disable-next-line no-console
-        // console.log("Response did not contain user data.");
-        return Promise.resolve(null);
-      }
-      /*
-        Attach necessary values to the user object.
-        Subsequently, the JWT callback reads these values from the user object
-        and attaches them to the token object that it returns.
-      */
-      user.accessToken = response.data.access_token;
-      user.refreshToken = response.data.refresh_token;
-      const cookies = response.headers["set-cookie"];
-      cookies.forEach((cookie) => {
-        if (cookie.startsWith(`${ACCESS_TOKEN_COOKIE_NAME}=`)) {
-          user.accessTokenExpiry = Date.parse(cookie.match(/expires=(.+?);/)[1]);
-        } else if (cookie.startsWith(`sessionid=`)) {
-          user.sessionIdCookie = cookie;
-        }
-      });
-      user.clientSideCookies = removeServerSideCookies(cookies);
+      user = getUserFromAuthResponse(response);
     })
     .catch(function (error) {
       // eslint-disable-next-line no-console
       console.error(`${error}`);
-      return Promise.resolve(null);
     });
   return Promise.resolve(user);
 };
 
 interface SocialMediaAccountCredentials {
-  access_token?: string;
+  accessToken?: string;
   code?: string;
-  token_secret?: string;
-  refresh_token?: string;
+  tokenSecret?: string;
+  refreshToken?: string;
   user: User;
 }
 
@@ -150,8 +153,8 @@ export const authenticateWithSocialMediaAccount = async (
     case "facebook":
     case "google":
     case "twitter":
-      credentials.access_token = account.accessToken;
-      credentials.refresh_token = account.refreshToken;
+      credentials.accessToken = account.accessToken;
+      credentials.refreshToken = account.refreshToken;
       break;
     case "github": {
       // https://next-auth.js.org/providers/github
@@ -165,8 +168,8 @@ export const authenticateWithSocialMediaAccount = async (
           user.email = emails.find((emails) => emails.primary).email;
         }
       }
-      credentials.access_token = account.accessToken;
-      credentials.refresh_token = account.refreshToken;
+      credentials.accessToken = account.accessToken;
+      credentials.refreshToken = account.refreshToken;
       break;
     }
     default:
@@ -174,19 +177,11 @@ export const authenticateWithSocialMediaAccount = async (
       console.error("Unsupported provider:", account.provider);
       return user;
   }
-  console.log("user:", user);
-  console.log("account:", account);
   await axios
     .post(makeDjangoApiUrl(`/users/auth/${account.provider}/`), { user, account, credentials })
     .then(function (response) {
-      /*
-        Attach necessary values to the user object.
-        Subsequently, the JWT callback reads these values from the user object
-        and attaches them to the token object that it returns.
-      */
-      user.accessToken = response.data.access_token;
-      user.refreshToken = response.data.refresh_token;
-      user.clientSideCookies = response.headers["set-cookie"];
+      // Copy user properties to the NextAuth user object.
+      Object.assign(user, getUserFromAuthResponse(response));
     })
     .catch(function (error) {
       user.error = `${error}`;
@@ -206,7 +201,8 @@ export const refreshAccessToken = async (jwt: JWT): Promise<JWT> => {
       refresh: jwt.refreshToken,
     })
     .then(function (response: AxiosResponse) {
-      if (response.data.access && response.data.access_token_expiration) {
+      const accessToken = response.data.access;
+      if (accessToken && response.data.accessTokenExpiration) {
         /*
           Example response:
           {
@@ -214,13 +210,13 @@ export const refreshAccessToken = async (jwt: JWT): Promise<JWT> => {
             "access_token_expiration": "2021-03-25T20:24:03.605165Z"
           }
         */
-        const accessTokenExpiry = Date.parse(response.data.access_token_expiration);
+        const accessTokenExpiry = Date.parse(response.data.accessTokenExpiration);
         const clientSideCookies = removeServerSideCookies(response.headers["set-cookie"]);
         jwt = {
           ...jwt,
           // Fall back to old refresh token if necessary.
-          refreshToken: response.data.refresh_token ?? jwt.refreshToken,
-          accessToken: response.data.access,
+          refreshToken: response.data.refreshToken ?? jwt.refreshToken,
+          accessToken: accessToken,
           accessTokenExpiry,
           clientSideCookies,
           iat: Date.now() / 1000,

@@ -1,18 +1,21 @@
 """API views for the account app."""
 
 
+from typing import TYPE_CHECKING
+
 from dj_rest_auth.views import LoginView
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics, permissions, serializers
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from apps.users.api.serializers import SocialAccountSerializer, UserSerializer
 from apps.users.models import SocialAccount, User
+
+if TYPE_CHECKING:
+    from rest_framework.request import Request
 
 
 class SocialAccountList(generics.ListAPIView):
@@ -21,7 +24,7 @@ class SocialAccountList(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = SocialAccountSerializer
 
-    def get_queryset(self):
+    def get_queryset(self):  # noqa: D102
         return SocialAccount.objects.filter(user=self.request.user)
 
 
@@ -30,8 +33,8 @@ class SocialConnect(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request: Request, *args, **kwargs):
-        """Override the post method to save data from the social media account."""
+    def post(self, request: 'Request', *args, **kwargs):
+        """Save data from the social media account."""
 
 
 class SocialDisconnect(generics.DestroyAPIView):
@@ -39,8 +42,8 @@ class SocialDisconnect(generics.DestroyAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request: Request, *args, **kwargs):
-        """Override the post method to save data from the social media account."""
+    def post(self, request: 'Request', *args, **kwargs):
+        """Disconnect the social media account."""
 
 
 class SocialLoginSerializer(serializers.Serializer):
@@ -50,7 +53,7 @@ class SocialLoginSerializer(serializers.Serializer):
     id_token = serializers.CharField(required=False, allow_blank=True)
 
     def validate(self, attrs):
-        request: Request = self.context['request']
+        request: 'Request' = self.context['request']
         provider = request.data['account']['provider']
         credentials = request.data['credentials']
         uid = credentials['user']['id']
@@ -81,7 +84,7 @@ class SocialLogin(LoginView):
 class Profile(generics.RetrieveUpdateAPIView):
     """API view for details of the current user."""
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
     lookup_field = 'username'
     queryset = User.objects.all()
@@ -90,7 +93,7 @@ class Profile(generics.RetrieveUpdateAPIView):
 class Me(Profile):
     """API view for details of the current user."""
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     # https://www.django-rest-framework.org/api-guide/generic-views/#get_object
     def get_object(self, *args, **kwargs):
@@ -101,7 +104,7 @@ class Me(Profile):
 class DeletionView(generics.DestroyAPIView):
     """API view for deleting a user's data."""
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
     lookup_field = 'email'
     queryset = get_user_model().objects.all()

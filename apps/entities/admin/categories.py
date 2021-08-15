@@ -1,11 +1,11 @@
-from apps.admin.model_admin import ModelAdmin, admin_site
+from apps.admin.model_admin import ExtendedModelAdmin, admin_site
 from apps.entities import models
 
 CATEGORY_NAME_FIELD = 'name'
 ALIASES_FIELD = 'aliases'
 
 
-class CategoryAdmin(ModelAdmin):
+class CategoryAdmin(ExtendedModelAdmin):
     """Admin for entity categories."""
 
     list_display = [

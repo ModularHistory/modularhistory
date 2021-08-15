@@ -89,7 +89,7 @@ const ArgumentSet: FC<ArgumentSetProps> = ({ argumentSet }: ArgumentSetProps) =>
   return (
     <TreeView
       className={classes.tree}
-      defaultExpanded={argumentSet.map((argument) => `${argument.pk}`)}
+      defaultExpanded={argumentSet.map((argument) => `${argument.id}`)}
       defaultCollapseIcon={<MinusSquare />}
       defaultExpandIcon={<PlusSquare />}
       defaultEndIcon={<CloseSquare />}
@@ -97,8 +97,8 @@ const ArgumentSet: FC<ArgumentSetProps> = ({ argumentSet }: ArgumentSetProps) =>
     >
       {argumentSet.map((argument, index) => (
         <StyledTreeItem
-          key={argument.pk}
-          nodeId={`${argument.pk}`}
+          key={argument.id}
+          nodeId={`${argument.id}`}
           label={
             <span
               dangerouslySetInnerHTML={{ __html: argument.explanation || `Argument ${index + 1}` }}

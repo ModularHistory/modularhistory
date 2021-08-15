@@ -164,13 +164,14 @@ INSTALLED_APPS = [
     'apps.entities.apps.EntitiesConfig',
     'apps.forums.apps.ForumsConfig',
     'apps.graph.apps.GraphConfig',
-    'apps.interactions.apps.InteractionsConfig',
-    'apps.search.apps.SearchConfig',
     'apps.images.apps.ImagesConfig',
+    'apps.interactions.apps.InteractionsConfig',
+    'apps.moderation.apps.ModerationConfig',
     'apps.occurrences.apps.OccurrencesConfig',
     'apps.places.apps.LocationsConfig',
     'apps.propositions.apps.PropositionsConfig',
     'apps.quotes.apps.QuotesConfig',
+    'apps.search.apps.SearchConfig',
     'apps.sources.apps.SourcesConfig',
     'apps.staticpages.apps.StaticPagesConfig',
     'apps.stories.apps.StoriesConfig',
@@ -269,7 +270,18 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'core.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
-    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_RENDERER_CLASSES': (
+        # https://github.com/vbabiy/djangorestframework-camel-case
+        'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
+        'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        # https://github.com/vbabiy/djangorestframework-camel-case
+        'djangorestframework_camel_case.parser.CamelCaseFormParser',
+        'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
+        'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+    ),
 }
 
 # Database
@@ -297,6 +309,9 @@ GRAPH_MODELS = {
     ],
     'group_models': True,
 }
+
+# Email addresses to which moderation emails will be sent
+MODERATORS = ()
 
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
@@ -368,9 +383,6 @@ THUMBNAIL_PROCESSORS = (
 ) + ThumbnailSettings.THUMBNAIL_PROCESSORS
 # https://github.com/jonasundderwolf/django-image-cropping#custom-jquery
 IMAGE_CROPPING_JQUERY_URL = None
-
-CONTENT_MANAGER_EMAIL = config('CONTENT_MANAGER_EMAIL', default='')
-CONTENT_MANAGER_PAT = config('CONTENT_MANAGER_PAT', default='')
 
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],

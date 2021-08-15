@@ -2,6 +2,7 @@ import logging
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
@@ -26,13 +27,20 @@ class SocialAccount(models.Model):
         GOOGLE = 'google', 'Google'
         TWITTER = 'twitter', 'Twitter'
 
-    user = models.ForeignKey(to='users.User', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='social_accounts',
+    )
     provider = models.CharField(max_length=10, choices=Provider.choices)
     uid = models.CharField(max_length=200)
     access_token = encrypt(models.CharField(max_length=200))
 
     class Meta:
         unique_together = [('user', 'provider'), ('provider', 'uid')]
+
+    def __str__(self) -> str:
+        return f'{self.provider} account {self.uid}'
 
 
 class UserManager(BaseUserManager):
@@ -66,7 +74,7 @@ class User(AbstractUser):
         """Return the user's name."""
         return self.get_full_name()
 
-    def update_avatar(self, url):
+    def update_avatar(self, url: str):
         """Update the user's avatar with the image located at the given URL."""
         if self.avatar:
             logging.info(f'{self} already has an avatar: {self.avatar}')

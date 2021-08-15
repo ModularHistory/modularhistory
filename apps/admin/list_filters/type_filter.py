@@ -1,22 +1,58 @@
-from typing import TYPE_CHECKING, Optional, Sequence, Type
+from typing import TYPE_CHECKING, Any, Optional, Sequence, Type
 
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 from polymorphic.admin import PolymorphicParentModelAdmin
 
 if TYPE_CHECKING:
+    from django.db.models import Model
+    from django.http import HttpRequest
     from polymorphic.models import PolymorphicModel
     from typedmodels.models import TypedModel
 
 
-class PolymorphicContentTypeFilter(SimpleListFilter):
-    """Filters sources by type."""
+class ContentTypeFilter(SimpleListFilter):
+    """Filter by content type."""
 
     title = 'content type'
+    parameter_name = 'content_type_id'
+
+    def __init__(
+        self,
+        request: 'HttpRequest',
+        params: dict[str, str],
+        model: Type['Model'],
+        model_admin: Any,
+    ) -> None:
+        self.model = model
+        super().__init__(request, params, model, model_admin)
+
+    def lookups(self, request: 'HttpRequest', model_admin):
+        """Return an iterable of tuples (value, verbose value)."""
+        if self.model:
+            ids = (
+                self.model.objects.order_by(self.parameter_name)
+                .values_list(self.parameter_name, flat=True)
+                .distinct()
+            )
+            return [(ct.id, f'{ct.model}') for ct in ContentType.objects.filter(id__in=ids)]
+        return super().lookups(request, model_admin)
+
+    def queryset(self, request: 'HttpRequest', queryset):
+        """Return the queryset filtered by type."""
+        content_type_id = self.value()
+        if not content_type_id:
+            return queryset
+        return queryset.filter(**{self.parameter_name: content_type_id})
+
+
+class PolymorphicContentTypeFilter(ContentTypeFilter):
+    """Filters sources by type."""
+
     parameter_name = 'polymorphic_ctype_id'
     model_options: Optional[Sequence[Type['PolymorphicModel']]] = None
 
-    def lookups(self, request, model_admin: PolymorphicParentModelAdmin):
+    def lookups(self, request: 'HttpRequest', model_admin: PolymorphicParentModelAdmin):
         """Return an iterable of tuples (value, verbose value)."""
         if self.model_options:
             lookups = []
@@ -33,13 +69,6 @@ class PolymorphicContentTypeFilter(SimpleListFilter):
                 key=lambda ctype_tuple: ctype_tuple[1],
             )
 
-    def queryset(self, request, queryset):
-        """Return the queryset filtered by type."""
-        content_type_id = self.value()
-        if not content_type_id:
-            return queryset
-        return queryset.filter(**{self.parameter_name: content_type_id})
-
 
 class TypeFilter(SimpleListFilter):
     """Filters sources by type."""
@@ -48,11 +77,11 @@ class TypeFilter(SimpleListFilter):
     parameter_name = 'type'
     base_model: Type['TypedModel']
 
-    def lookups(self, request, model_admin):
+    def lookups(self, request: 'HttpRequest', model_admin):
         """Return an iterable of tuples (value, verbose value)."""
         return self.base_model._meta.get_field('type').choices
 
-    def queryset(self, request, queryset):
+    def queryset(self, request: 'HttpRequest', queryset):
         """Return the queryset filtered by type."""
         type_value = self.value()
         if not type_value:

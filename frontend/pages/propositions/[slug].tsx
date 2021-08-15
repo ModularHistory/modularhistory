@@ -79,40 +79,10 @@ export default PropositionDetailPage;
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let proposition = {};
   const { slug } = params;
-  const body = {
-    query: `{
-      proposition(slug: "${slug}") {
-        summary
-        elaboration
-        model
-        adminUrl
-        certainty
-        arguments {
-          pk
-          type
-          explanation
-          premises {
-            absoluteUrl
-            dateString
-            certainty
-            slug
-            summary
-            elaboration
-          }
-        }
-        conflictingPropositions {
-          slug
-          absoluteUrl
-          summary
-          certainty
-        }
-      }
-    }`,
-  };
   await axiosWithoutAuth
-    .post("http://django:8000/graphql/", body)
+    .get(`http://django:8000/api/propositions/${slug}/`)
     .then((response) => {
-      proposition = response.data.data.proposition;
+      proposition = response.data;
     })
     .catch(() => {
       proposition = null;

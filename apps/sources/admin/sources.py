@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, Sequence, Type, Union
 from django.contrib.admin.filters import ListFilter
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
-from apps.admin import admin_site
+from apps.admin.admin_site import admin_site
 from apps.admin.inlines import StackedInline
 from apps.search.admin import SearchableModelAdmin
 from apps.sources import models

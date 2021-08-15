@@ -1,17 +1,20 @@
 """Classes for models with related entities."""
 
 import logging
-from typing import Optional, Type, Union
+from typing import TYPE_CHECKING, Optional, Type, Union
 
-from celery import shared_task
 from django.apps import apps
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from core.celery import app
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
 from core.models.positioned_relation import PositionedRelation
+
+if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
 
 
 class AbstractImageRelation(PositionedRelation):
@@ -56,9 +59,30 @@ class ModelWithImages(ExtendedModel):
     it must be defined as an abstract model class.
     """
 
+    image_relations: 'QuerySet[AbstractImageRelation]'
+
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
         abstract = True
+
+    @property
+    def image_relations(self) -> 'QuerySet[AbstractImageRelation]':
+        """
+        Require the intermediate model to specify `related_name='image_relations'`.
+
+        Models inheriting from ModelWithImages must have a m2m relationship
+        with the Image model with a `through` model that inherits from
+        AbstractImageRelation and uses `related_name='image_relations'`.
+        For example:
+
+        ``
+        class ImageRelation(AbstractImageRelation):
+            content_object = ManyToManyForeignKey(
+                to='propositions.Proposition',
+                related_name='image_relations',
+            )
+        ``
+        """
 
     @property
     def images(self) -> ImagesField:
@@ -96,7 +120,7 @@ class ModelWithImages(ExtendedModel):
             return None
 
 
-@shared_task
+@app.task
 def cache_images(model: str, instance_id: int, images: list):
     """Save cached images to a model instance."""
     if not images:

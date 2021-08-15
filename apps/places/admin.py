@@ -2,7 +2,7 @@ from typing import Type
 
 from django.db.models import Model
 
-from apps.admin import ModelAdmin, TabularInline, admin_site
+from apps.admin import ExtendedModelAdmin, TabularInline, admin_site
 from apps.admin.list_filters import AutocompleteFilter
 from apps.places import models
 from apps.places.forms import PlaceForm
@@ -32,7 +32,7 @@ class LocationFilter(AutocompleteFilter):
     field_name = 'location'
 
 
-class LocationAdmin(ModelAdmin):
+class LocationAdmin(ExtendedModelAdmin):
     """Admin for locations."""
 
     model = models.Place

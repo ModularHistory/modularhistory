@@ -6,10 +6,9 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.models.taggable_model import TaggableModel
-from apps.verifications.models import VerifiableModel
 
 
-class SearchableModel(TaggableModel, VerifiableModel):
+class SearchableModel(TaggableModel):
     """
     A model that shows up in ModularHistory's search results; e.g., a quote or occurrence.
 

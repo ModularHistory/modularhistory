@@ -159,16 +159,26 @@ class HTMLField(TextField):
     def clean(self, html_value: str, model_instance: Optional['ExtendedModel']) -> str:
         """Return a cleaned, ready-to-save instance of HTML."""
         html = super().clean(value=html_value, model_instance=model_instance)
-        html = html.replace('{', '[').replace('}', ']')
-        if model_instance and model_instance.pk:
-            html = model_instance.preprocess_html(html)
-        # Update obj placeholders and reformat the HTML.
         try:
-            html = self.update_placeholders(html)
-            html = self.format_html(html)
+            html = self._clean(html, model_instance=model_instance)
         except Exception as err:
             raise ValidationError(f'{err}')
         return html
+
+    def pre_save(self, model_instance: 'ExtendedModel', add: bool) -> str:
+        value: str = getattr(model_instance, self.attname, '')
+        try:
+            value = self._clean(value, model_instance=model_instance)
+        except Exception as err:
+            logging.error(err)
+        return value
+
+    def _clean(self, value: str, model_instance: Optional['ExtendedModel']) -> str:
+        value = self.format(value)
+        if model_instance and model_instance.pk:
+            value = model_instance.preprocess_html(value)
+        value = self.update_placeholders(value)
+        return value
 
     def formfield(self, **kwargs) -> 'Field':
         """Return the default form field for this field."""
@@ -199,9 +209,10 @@ class HTMLField(TextField):
                 )
         return html
 
-    def format_html(self, html: str) -> str:
+    def format(self, html: str) -> str:
         """Add or remove <p> tags if necessary."""
         if html:
+            html = html.replace('{', '[').replace('}', ']')
             html = self.make_deletions(html)
             html = dedupe_newlines(html)
             if self.paragraphed is None:
