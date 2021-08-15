@@ -3,6 +3,8 @@
 # Note: Environment variables are set in production environment 
 # before this script is run.
 
+echo "" && echo "Updating PyInvoke config..."
+cp config/invoke.yaml "$HOME/.invoke.yaml"
 echo "" && echo "Logging in to the container registry..."
 echo "$CR_PAT" | docker login ghcr.io -u iacobfred --password-stdin || {
     echo "GHCR login failed."; exit 1
