@@ -247,9 +247,6 @@ div.readonly {
   position: relative; }
   .form-row > div > label {
     z-index: 10; }
-  .form-row > div > .mce-tinymce.mce-container.mce-panel {
-    margin-top: 2rem !important;
-    max-width: 100% !important; }
 
 td.field-source {
   max-width: 600px; }
@@ -270,5 +267,31 @@ td.field-source {
   list-style: none; }
   #changelist .results li.topic-tag ::after {
     content: ","; }
+
+.inlinechangelink {
+  font-size: 0.7rem; }
+
+.trumbowyg-box {
+  display: inline-block;
+  margin: 0;
+  width: inherit; }
+
+.trumbowyg-button-pane {
+  margin: 0 !important;
+  padding: 0 !important; }
+
+.trumbowyg-editor.trumbowyg-reset-css p, .trumbowyg-editor.trumbowyg-reset-css blockquote {
+  padding: 0 !important; }
+
+.trumbowyg-modal-box label {
+  float: none;
+  padding: 0;
+  width: auto; }
+
+.trumbowyg-button-pane li button.trumbowyg-video-button {
+  background-position: 5px -520px; }
+
+.trumbowyg-box, .trumbowyg-editor {
+  min-height: 150px; }
 
 /*# sourceMappingURL=admin.css.map */

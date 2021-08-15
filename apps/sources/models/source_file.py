@@ -13,17 +13,24 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from core.fields.file_field import SourceFileField, upload_to
-from core.models.model import Model
+from core.models.model import ExtendedModel
 from core.templatetags.media import media as fix_url
 
 
-class SourceFile(Model):
+class SourceFile(ExtendedModel):
     """A source file with page numbers."""
 
     file = SourceFileField(
-        upload_to=upload_to('sources/'), null=True, blank=True, unique=True
+        upload_to=upload_to('sources/'),
+        null=True,
+        blank=True,
+        unique=True,
     )
-    name = models.CharField(max_length=100, null=True, blank=True, unique=True)
+    name = models.CharField(
+        max_length=100,
+        blank=True,
+        unique=True,
+    )
     page_offset = models.SmallIntegerField(
         default=0,
         blank=True,

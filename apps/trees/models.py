@@ -10,11 +10,10 @@ from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 from apps.trees.fields import LtreeField
-from core.models.abstract_model import AbstractModelMeta
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 
-class TreeModel(Model, metaclass=AbstractModelMeta):
+class TreeModel(ExtendedModel):
     """Implements Postgres ltree for self-referencing hierarchy."""
 
     parent = models.ForeignKey(
@@ -39,10 +38,10 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
     # where each node is represented by its key.
     path = LtreeField()
 
-    class Meta:
-        """Meta options for DatedModel."""
+    id: int
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
+    class Meta:
         abstract = True
         ordering = ('path',)
 
@@ -72,25 +71,20 @@ class TreeModel(Model, metaclass=AbstractModelMeta):
         return super().clean()
 
     @property
-    def ancestors(self) -> QuerySet:
+    def ancestors(self) -> QuerySet['TreeModel']:
         """Return the model instances's ancestors, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(
-            path__descendant=self.path
-        )
+        queryset = self.__class__.objects.filter(path__descendant=self.path)
+        return queryset.exclude(id=self.id)
 
     @property
-    def descendants(self) -> QuerySet:
+    def descendants(self) -> QuerySet['TreeModel']:
         """Return the model instances's descendants, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(
-            path__ancestor=self.path
-        )
+        return self.__class__.objects.exclude(id=self.id).filter(path__ancestor=self.path)
 
     @property
-    def siblings(self) -> QuerySet:
+    def siblings(self) -> QuerySet['TreeModel']:
         """Return the model instances's siblings, based on its LTree field."""
-        return self.__class__.objects.exclude(pk=self.pk).filter(
-            parent_id=self.parent_id
-        )
+        return self.__class__.objects.exclude(id=self.id).filter(parent_id=self.parent_id)
 
     def get_key(self) -> str:
         """Calculate the model instance's key value based on its name."""

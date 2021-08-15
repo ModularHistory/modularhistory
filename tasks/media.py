@@ -2,12 +2,15 @@
 
 import os
 from os.path import join
+from typing import TYPE_CHECKING
 
 import django
 
 from core.utils import media
+from tasks.command import command
 
-from .command import command
+if TYPE_CHECKING:
+    from invoke.context import Context
 
 django.setup()
 
@@ -24,14 +27,14 @@ GITHUB_CREDENTIALS_FILE = '.github/.credentials'
 
 
 @command
-def backup(context, redact: bool = False, push: bool = False):
+def backup(context: 'Context', redact: bool = False, push: bool = False):
     """Create a media backup file."""
     # based on https://github.com/django-dbbackup/django-dbbackup#mediabackup
     media.backup(context, redact=redact, push=push)
 
 
 @command
-def sync(context, push: bool = False):
+def sync(context: 'Context', push: bool = False):
     """Sync media from source to destination, modifying destination only."""
     context.run(f'mkdir -p {settings.MEDIA_ROOT}', warn=True)
     print(
@@ -45,7 +48,5 @@ def sync(context, push: bool = False):
     media.sync(context, push=push)
     restore_from_tar = False
     if restore_from_tar and os.path.exists(join(BACKUPS_DIR, 'media.tar.gz')):
-        context.run(
-            f'python manage.py mediarestore -z --noinput -i {MEDIA_INIT_FILE} -q'
-        )
+        context.run(f'python manage.py mediarestore -z --noinput -i {MEDIA_INIT_FILE} -q')
     print('Media sync complete.')

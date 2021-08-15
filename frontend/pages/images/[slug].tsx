@@ -2,18 +2,18 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { ImageModule } from "@/interfaces";
+import { Image } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
 interface ImageProps {
-  image: ImageModule;
+  image: Image;
 }
 
 /**
  * A page that renders the HTML of a single image.
  */
-const Image: FC<ImageProps> = ({ image }: ImageProps) => {
+const ImageDetailPage: FC<ImageProps> = ({ image }: ImageProps) => {
   return (
     <Layout title={image.captionHtml}>
       <ModuleContainer>
@@ -22,7 +22,7 @@ const Image: FC<ImageProps> = ({ image }: ImageProps) => {
     </Layout>
   );
 };
-export default Image;
+export default ImageDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let image = {};
@@ -47,7 +47,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       image = response.data.data.image;
     })
-    .catch((_error) => {
+    .catch(() => {
       image = null;
     });
 

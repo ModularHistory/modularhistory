@@ -5,8 +5,9 @@ from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
-from core.fields import HTMLField
-from core.models.model import Model
+from core.fields.html_field import HTMLField
+from core.models.manager import TypedModelManager
+from core.models.model import ExtendedModel
 from core.utils.html import soupify
 
 PUBLICATION_TYPES = (
@@ -16,17 +17,24 @@ PUBLICATION_TYPES = (
 )
 
 
-class AbstractPublication(Model):
+class AbstractPublication(ExtendedModel):
     """Abstract base class for publications."""
 
     name = models.CharField(
-        verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
+        verbose_name=_('name'),
+        max_length=100,
+        blank=True,
+        unique=True,
     )
     aliases = models.CharField(
-        verbose_name=_('aliases'), max_length=100, null=True, blank=True
+        verbose_name=_('aliases'),
+        max_length=100,
+        blank=True,
     )
     description = HTMLField(
-        verbose_name=_('description'), null=True, blank=True, paragraphed=True
+        verbose_name=_('description'),
+        blank=True,
+        paragraphed=True,
     )
 
     class Meta:
@@ -36,19 +44,10 @@ class AbstractPublication(Model):
 class Publication(TypedModel, AbstractPublication):
     """A publication, such as a newspaper, magazine, or journal."""
 
-    name = models.CharField(
-        verbose_name=_('name'), max_length=100, null=True, blank=True, unique=True
-    )
-    aliases = models.CharField(
-        verbose_name=_('aliases'), max_length=100, null=True, blank=True
-    )
-    description = HTMLField(
-        verbose_name=_('description'), null=True, blank=True, paragraphed=True
-    )
-
     class Meta:
         ordering = ['name']
 
+    objects = TypedModelManager()
     searchable_fields = ['name', 'aliases']
 
     def __str__(self) -> str:
@@ -82,16 +81,10 @@ class Publication(TypedModel, AbstractPublication):
 class Journal(Publication):
     """A journal that publishes articles."""
 
-    pass  # noqa: WPS604
-
 
 class Magazine(Publication):
     """A magazine that publishes articles."""
 
-    pass  # noqa: WPS604
-
 
 class Newspaper(Publication):
     """A newspaper that publishes articles."""
-
-    pass  # noqa: WPS604

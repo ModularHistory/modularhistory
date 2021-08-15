@@ -36,7 +36,6 @@ Imgur
 inferable
 jquery
 js
-jsonstore
 mixins
 modularhistory
 monkeypatch

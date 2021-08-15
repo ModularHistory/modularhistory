@@ -14,7 +14,6 @@ class Interview(Source):
     interviewers = models.CharField(
         verbose_name=_('interviewers'),
         max_length=INTERVIEWERS_MAX_LENGTH,
-        null=True,
         blank=True,
     )
 

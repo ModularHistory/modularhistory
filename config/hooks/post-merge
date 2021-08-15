@@ -8,8 +8,10 @@ branch=$(git branch --show-current)
 prompt_to_run_setup_script=false
 post_merge_hook_changed=false
 setup_sha_file=".venv/.setup.sha"
+poetry_sha_file=".venv/.poetry.sha"
 bold=$(tput bold)
 normal=$(tput sgr0)
+docker-compose ps | grep "dev" | grep --quiet "Up" && dev_up=true || dev_up=false
 
 # Check if the setup script hasn't yet been run.
 if [[ ! -f $setup_sha_file ]]; then
@@ -17,7 +19,7 @@ if [[ ! -f $setup_sha_file ]]; then
 # Otherwise, if on the main branch...
 elif [[ "$branch" = "main" ]]; then
   # Check if the setup script has changed since it was last run.
-  echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=true
+  # echo "$changed_files" | grep --quiet 'setup.sh' && prompt_to_run_setup_script=true
   [[ "$(head -n1 < $setup_sha_file | cut -d ' ' -f1)" == "$(shasum setup.sh | head -n1 | cut -d ' ' -f1)" ]] || prompt_to_run_setup_script=true
 fi
 
@@ -40,29 +42,41 @@ if [[ -d config/hooks ]]; then
   done
 fi
 
-# Update django dependencies.
+# Update django dependencies if necessary.
 echo "$changed_files" | grep --quiet 'poetry.lock' && {
-  # Install dependencies.
-  poetry install --no-root
-  # Rebuild the django image.
-  docker-compose build django
-  docker-compose ps | grep --quiet 'django' && {
-    # Recreate running containers.
-    docker-compose up -d django
-  }
+  if [[ ! -f $poetry_sha_file ]]; then
+    build_django=true
+  elif [[ "$branch" = "main" ]]; then
+    # Check if Python dependencies have changed.
+    [[ "$(head -n1 < $poetry_sha_file | cut -d ' ' -f1)" == "$(shasum poetry.lock | head -n1 | cut -d ' ' -f1)" ]] || build_django=true
+  fi
+  if [[ $build_django = true ]]; then
+    # Install dependencies.
+    poetry install --no-root
+    # Rebuild the django image.
+    docker-compose build django
+    docker-compose ps | grep --quiet 'django' && {
+      # Recreate running containers.
+      docker-compose up -d django
+    }
+    shasum poetry.lock > "$poetry_sha_file"
+  fi
 }
 
 # Check if migrations have changed.
 echo "$changed_files" | grep --quiet 'migrations/' && {
   # TODO: Determine more intelligently whether seeding is required?
-  echo "${bold}
-    The database schema has been modified.${normal} You might not 
-    be able to run the django container successfully until you 
-    re-seed your db. To seed your db, use this command:
+  poetry run invoke db.seed --remote --migrate || {
+    echo "${bold}
+      The database schema has been modified.${normal} You might not 
+      be able to run the django container successfully until you 
+      re-seed your db. To seed your db, use this command:
 
-      poetry run invoke db.seed --remote --migrate
+        poetry run invoke db.seed --remote --migrate
 
-  "
+    "
+  }
+  [[ "$dev_up" = true ]] && docker-compose up -d dev
 }
 
 # Prompt to update hooks if necessary.

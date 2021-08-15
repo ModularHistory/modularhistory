@@ -1,24 +1,23 @@
+from typing import Union
+
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
 from apps.entities.models.entity import Entity
 from apps.quotes.models.quote import Quote
-from apps.search.documents.config import (
-    DEFAULT_INDEX_SETTINGS,
-    get_index_name_for_ct,
-    html_field_analyzer,
-)
+from apps.search.documents.config import DEFAULT_INDEX_SETTINGS, html_field_analyzer
 from apps.sources.models.source import Source
-from core.constants.content_types import ContentTypes
 
 from .base import Document
 
 
 @registry.register_document
 class QuoteDocument(Document):
+    """ElasticSearch document for quotes."""
+
     class Index:
         settings = DEFAULT_INDEX_SETTINGS
-        name = get_index_name_for_ct(ContentTypes.quote)
+        name = 'quotes'
 
     text = fields.TextField(analyzer=html_field_analyzer)
     context = fields.TextField(analyzer=html_field_analyzer)
@@ -35,7 +34,7 @@ class QuoteDocument(Document):
         attr='cached_tags',
         properties={
             'id': fields.IntegerField(),
-            'key': fields.TextField(),
+            'name': fields.TextField(),
             'aliases': fields.TextField(),
             'description': fields.TextField(analyzer=html_field_analyzer),
             'path': fields.TextField(),
@@ -47,6 +46,7 @@ class QuoteDocument(Document):
         related_models = [Source, Entity]
 
     def get_queryset(self):
-        return (
-            super().get_queryset().prefetch_related('attributees', 'sources', 'topics')
-        )
+        return super().get_queryset().prefetch_related('attributees', 'sources', 'topics')
+
+    def get_instances_from_related(self, related_instance: Union[Source, Entity]):
+        return related_instance.quotes.all()

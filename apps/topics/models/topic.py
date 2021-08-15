@@ -6,8 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
-from core.fields import ArrayField, HTMLField
-from core.models.model import Model
+from core.fields.array_field import ArrayField
+from core.fields.html_field import HTMLField
+from core.models.model import ExtendedModel
 from core.models.model_with_cache import ModelWithCache, store
 from core.models.slugged_model import SluggedModel
 
@@ -15,7 +16,7 @@ NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
 
 
-class TopicTopicRelation(Model):
+class TopicTopicRelation(ExtendedModel):
     """A relationship between equivalent or closely related topics."""
 
     from_topic = ForeignKey(
@@ -33,7 +34,7 @@ class TopicTopicRelation(Model):
         return f'{self.from_topic} ~ {self.to_topic}'
 
 
-class TopicParentChildRelation(Model):
+class TopicParentChildRelation(ExtendedModel):
     """A relationship between a parent topic and child topic."""
 
     parent_topic = ForeignKey(
@@ -61,7 +62,10 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
         null=True,
         blank=True,
     )
-    description = HTMLField(null=True, blank=True, paragraphed=True)
+    description = HTMLField(
+        blank=True,
+        paragraphed=True,
+    )
     parent_topics = ManyToManyField(
         to='self',
         through=TopicParentChildRelation,
@@ -84,7 +88,7 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
         # 'description'
     ]
     serializer = TopicSerializer
-    slug_base_field = 'name'
+    slug_base_fields = ('name',)
 
     class Meta:
         ordering = ['name']
@@ -97,17 +101,13 @@ class Topic(TreeModel, SluggedModel, ModelWithCache):
     @store(attribute_name='child_topics_string')
     def child_topics_string(self) -> str:
         """Return a list of the topic's child topics as a string."""
-        return TOPIC_STRING_DELIMITER.join(
-            [str(topic) for topic in self.child_topics.all()]
-        )
+        return TOPIC_STRING_DELIMITER.join([str(topic) for topic in self.child_topics.all()])
 
     @property  # type: ignore
     @store(attribute_name='parent_topics_string')
     def parent_topics_string(self) -> str:
         """Return a list of the topic's parent topics as a string."""
-        return TOPIC_STRING_DELIMITER.join(
-            [str(topic) for topic in self.parent_topics.all()]
-        )
+        return TOPIC_STRING_DELIMITER.join([str(topic) for topic in self.parent_topics.all()])
 
     @property  # type: ignore
     @store(attribute_name='related_topics_string')

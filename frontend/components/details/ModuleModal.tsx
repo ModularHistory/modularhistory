@@ -1,21 +1,22 @@
+import ModuleDetail from "@/components/details/ModuleDetail";
+import { ModuleUnion } from "@/interfaces";
 import {
   Button,
   Dialog,
-  DialogProps,
   DialogActions,
   DialogContent,
+  DialogProps,
   DialogTitle,
   IconButton,
-  makeStyles,
-  useTheme,
+  Theme,
   useMediaQuery,
+  useTheme,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import { FC, SetStateAction, Dispatch } from "react";
-import ModuleDetail from "@/components/details/ModuleDetail";
-import { ModuleUnion } from "@/interfaces";
+import { makeStyles } from "@material-ui/styles";
+import { Dispatch, FC, SetStateAction } from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(2),
@@ -57,7 +58,7 @@ const ModuleModal: FC<ModuleModalProps> = (props: ModuleModalProps) => {
         <ModuleDetail module={module} />
       </DialogContent>
       <DialogActions>
-        <Button color="primary" component={"a"} href={`/${module.absoluteUrl}`} target={"_blank"}>
+        <Button component={"a"} href={`${module.absoluteUrl}`} target={"_blank"}>
           Open in new tab
         </Button>
       </DialogActions>

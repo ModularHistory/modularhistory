@@ -5,7 +5,6 @@
 # https://hub.docker.com/_/node/
 FROM node:lts-buster AS builder
 
-# Allow ENVIRONMENT to be passed as a build argument.
 # https://docs.docker.com/engine/reference/builder/#arg
 ARG ENVIRONMENT=dev
 
@@ -19,7 +18,7 @@ RUN mkdir -p -- \
 # Install project dependencies.
 WORKDIR /modularhistory/frontend
 COPY frontend/package*.json /modularhistory/frontend/
-RUN npm ci --cache .npm
+RUN npm set cache .npm; npm ci || (npm cache clean -f && npm ci)
 
 # Add source code required for compiling JS.
 COPY .env /modularhistory/.env
@@ -43,7 +42,8 @@ ARG ENVIRONMENT
 # Create required directories.
 RUN mkdir -p -- \
   /modularhistory/modularhistory \
-  /modularhistory/frontend
+  /modularhistory/frontend \
+  /modularhistory/_static
 
 WORKDIR /modularhistory/frontend
 
@@ -52,7 +52,7 @@ COPY --from=builder /modularhistory/frontend/.next /modularhistory/frontend/.nex
 
 # Install required dependencies.
 COPY frontend/package*.json /modularhistory/frontend/
-RUN if [ "$ENVIRONMENT" = "dev" ] ; then npm ci --cache .npm ; else npm ci --cache .npm --production ; fi
+RUN if [ "$ENVIRONMENT" = "dev" ]; then npm ci --cache .npm; else npm ci --cache .npm --production; fi
 
 # Copy necessary files.
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
@@ -61,13 +61,18 @@ COPY .env /modularhistory/.env
 COPY core/static /modularhistory/core/static
 
 # Grant necessary permissions to non-root user.
-RUN chown -R www-data:www-data /modularhistory && chmod +x /usr/local/bin/wait-for-it.sh
+RUN chown -R www-data:www-data /modularhistory && \
+  chmod g+w /usr/local/bin/wait-for-it.sh && \
+  chmod g+w -R /modularhistory/_static
 
 # Make .next directory writable in dev environment.
-RUN if [ "$ENVIRONMENT" = "dev" ] ; then chmod g+w -R /modularhistory/frontend/.next/ ; fi
+RUN if [ "$ENVIRONMENT" = "dev" ]; then chmod g+w -R /modularhistory/frontend/.next/; fi
 
 # Expose port 3000.
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=7s --start-period=60s --retries=3 \
+  CMD curl --fail http://localhost:3000/ || exit 1
 
 # Switch from root to non-root user.
 USER www-data

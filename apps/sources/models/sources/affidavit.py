@@ -14,7 +14,6 @@ class Affidavit(Source, DocumentMixin):
 
     certifier = models.CharField(
         max_length=NAME_MAX_LENGTH,
-        null=True,
         blank=True,
     )
 

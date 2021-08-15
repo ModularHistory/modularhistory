@@ -106,45 +106,43 @@ const Donate: FC<DonateProps> = (props: DonateProps) => {
   return (
     <Layout title="Donate">
       <Container>
-        <div className={classes.root}>
-          {(!clientToken && <p className="lead">Loading...</p>) || (
-            <div>
-              <header>
-                <p className="h3">Help us keep ModularHistory running</p>
-                <p>
-                  ModularHistory provide its content for free. If you will like to help keep
-                  ModularHistory afloat, you can use this form to make a donation.
-                </p>
-              </header>
-              <div className="row col-12 p-0 m-0 mt-3">
-                <div className="col pl-0">
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="name"
-                    id="name"
-                    placeholder="Name"
-                    required
-                  />
-                </div>
-                <div className="col pr-0">
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="amount"
-                    id="amount"
-                    placeholder="Amount"
-                    required
-                  />
-                </div>
+        {(!clientToken && <p className="lead">Loading...</p>) || (
+          <div>
+            <header>
+              <p className="h3">Help us keep ModularHistory running</p>
+              <p>
+                ModularHistory provide its content for free. If you would like to help keep
+                ModularHistory afloat, you can use this form to make a donation.
+              </p>
+            </header>
+            <div className="row col-12 p-0 m-0 mt-3">
+              <div className="col pl-0">
+                <input
+                  type="text"
+                  className="form-control"
+                  name="name"
+                  id="name"
+                  placeholder="Name"
+                  required
+                />
+              </div>
+              <div className="col pr-0">
+                <input
+                  type="number"
+                  className="form-control"
+                  name="amount"
+                  id="amount"
+                  placeholder="Amount"
+                  required
+                />
               </div>
               <DropIn options={{ authorization: clientToken }} onInstance={(_) => setInstance(_)} />
               <Button variant="contained" color="primary" onClick={makeDonation}>
                 Make donation
               </Button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </Container>
     </Layout>
   );

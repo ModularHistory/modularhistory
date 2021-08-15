@@ -1,10 +1,10 @@
 """
 Utils for checks.
 
-https://docs.djangoproject.com/en/3.1/topics/checks/
+https://docs.djangoproject.com/en/dev/topics/checks/
 """
 
-from typing import List, Pattern
+from typing import Pattern
 
 COLORS = {
     'error': 'red',
@@ -44,7 +44,7 @@ def colored(text, color=None, attrs=None):
     return text
 
 
-def match(regex_list: List[Pattern], string: str) -> bool:
+def match(regex_list: list[Pattern], string: str) -> bool:
     """Return whether the string matches any of the patterns in the regex list."""
     for regex in regex_list:
         if regex.search(string):

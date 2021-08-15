@@ -63,7 +63,7 @@ backups/
 .init/
 
 # Testing / linting / coverage reports
-.cache
+.cache/
 .coverage_html/
 .hypothesis/
 .nox/
@@ -71,12 +71,10 @@ backups/
 .pyre/
 .selenium/
 .tox/
-htmlcov/
 .coverage
 .coverage.*
-*.cover
+monkeytype.sqlite3
 coverage.xml
-nosetests.xml
 **/cypress/screenshots/
 **/cypress/videos/
 

@@ -1,7 +1,7 @@
 """Model classes for the quotes app."""
 
 import logging
-from typing import TYPE_CHECKING, List, Match
+from typing import TYPE_CHECKING, Match
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -11,23 +11,25 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.images.models.model_with_images import ModelWithImages
-from apps.quotes.manager import QuoteManager
+from apps.images.models.model_with_images import (
+    AbstractImageRelation,
+    ImagesField,
+    ModelWithImages,
+)
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
-from apps.quotes.models.quote_image import QuoteImage
 from apps.quotes.serializers import QuoteSerializer
 from apps.search.models.searchable_dated_model import SearchableDatedModel
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.constants.strings import EMPTY_STRING
-from core.fields import HTMLField
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
+    HTMLField,
     PlaceholderGroups,
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
@@ -41,24 +43,35 @@ if TYPE_CHECKING:
 BITE_MAX_LENGTH: int = 400
 
 quote_placeholder_regex = OBJECT_PLACEHOLDER_REGEX.replace(
-    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>quote)'
+    TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>quote)'  # noqa: WPS360
 )
 
 
-class Citation(AbstractCitation):
-    """A relation between a quote and a source."""
-
-    content_object = ManyToManyForeignKey(
-        to='quotes.Quote', related_name='citations', verbose_name='quote'
+def get_quote_fk(related_name: str) -> ManyToManyForeignKey:
+    """Return a foreign key field referencing a quote."""
+    return ManyToManyForeignKey(
+        to='quotes.Quote',
+        related_name=related_name,
+        verbose_name='quote',
     )
+
+
+class Citation(AbstractCitation):
+    """A relationship between a quote and a source."""
+
+    content_object = get_quote_fk(related_name='citations')
+
+
+class ImageRelation(AbstractImageRelation):
+    """A relationship between a quote and an image."""
+
+    content_object = get_quote_fk(related_name='image_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
-    """A relation between a quote and a quote."""
+    """A relationship between a quote and another quote."""
 
-    content_object = ManyToManyForeignKey(
-        to='quotes.Quote', related_name='quote_relations', verbose_name='quote'
-    )
+    content_object = get_quote_fk(related_name='quote_relations')
 
 
 class Quote(
@@ -71,24 +84,24 @@ class Quote(
     """A quote."""
 
     text = HTMLField(verbose_name='text', paragraphed=True, processed=False)
-    bite = HTMLField(verbose_name='bite', null=True, blank=True, processed=False)
+    bite = HTMLField(verbose_name='bite', blank=True, processed=False)
     pretext = HTMLField(
         verbose_name='pretext',
-        null=True,
         blank=True,
         paragraphed=False,
         help_text='Content to be displayed before the quote',
     )
     context = HTMLField(
         verbose_name='context',
-        null=True,
         blank=True,
         paragraphed=True,
         help_text='Content to be displayed after the quote',
     )
     date = HistoricDateTimeField(null=True)
     attributee_html = models.TextField(
-        verbose_name=_('attributee HTML'), null=True, blank=True, editable=False
+        verbose_name=_('attributee HTML'),
+        blank=True,
+        editable=False,
     )
     attributees = models.ManyToManyField(
         to='entities.Entity',
@@ -97,12 +110,7 @@ class Quote(
         blank=True,
         verbose_name=_('attributees'),
     )
-    images = models.ManyToManyField(
-        to='images.Image',
-        through='quotes.QuoteImage',
-        related_name='quotes',
-        blank=True,
-    )
+    images = ImagesField(through=ImageRelation)
     sources = SourcesField(through=Citation, related_name='quotes')
     related_quotes = RelatedQuotesField(
         through=QuoteRelation,
@@ -114,12 +122,11 @@ class Quote(
     class Meta:
         """Meta options for Quote."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         unique_together = ['date', 'bite']
         ordering = ['date']
 
-    objects: QuoteManager = QuoteManager()  # type: ignore
     placeholder_regex = quote_placeholder_regex
     searchable_fields = [
         'text',
@@ -127,11 +134,11 @@ class Quote(
         'attributees__name',
         'date__year',
         'sources__citation_string',
-        'tags__key',
+        'tags__name',
         'tags__aliases',
     ]
     serializer = QuoteSerializer
-    slug_base_field = 'title'
+    slug_base_fields = ('title',)
 
     def __str__(self) -> str:
         """Return the quote's string representation, for debugging and internal use."""
@@ -174,7 +181,7 @@ class Quote(
             if image is None and self.related_occurrences.exists():
                 image = self.related_occurrences.first().primary_image
             if image:
-                QuoteImage.objects.create(quote=self, image=image)
+                ImageRelation.objects.create(content_object=self, image=image)
 
     def update_calculated_fields(self):
         """Update the quote's calculated fields."""
@@ -251,9 +258,7 @@ class Quote(
             f'</blockquote>'
         )
         components = [
-            f'<p class="quote-context">{self.pretext}</p>'
-            if self.pretext
-            else EMPTY_STRING,
+            f'<p class="quote-context">{self.pretext}</p>' if self.pretext else EMPTY_STRING,
             blockquote,
             f'<div class="quote-context">{self.context}</div>'
             if self.context
@@ -263,7 +268,7 @@ class Quote(
         return format_html(html)
 
     @property
-    def ordered_attributees(self) -> List['Entity']:
+    def ordered_attributees(self) -> list['Entity']:
         """
         Return an ordered list of the quote's attributees.
 

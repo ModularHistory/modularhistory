@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import Type
 
 from apps.admin.inlines import TabularInline
 
@@ -18,7 +18,7 @@ class AbstractSourcesInline(TabularInline):
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def get_fields(self, request, model_instance) -> List[str]:
+    def get_fields(self, request, model_instance) -> list[str]:
         fields = super().get_fields(request, model_instance)
         ordered_fields = ['citation_phrase']
         for field in ordered_fields:

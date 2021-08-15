@@ -4,13 +4,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
-from core.fields import HTMLField
-from core.models.model import Model
+from core.fields.html_field import HTMLField
+from core.models.model import ExtendedModel
 
 MAX_NAME_LENGTH: int = 100
 
 
-class _Engagement(Model):
+class _Engagement(ExtendedModel):
     """An engagement with a beginning and, perhaps, an end."""
 
     start_date = HistoricDateTimeField(null=True, blank=True)
@@ -19,7 +19,7 @@ class _Engagement(Model):
     class Meta:
         """Meta options for the _Engagement model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 
@@ -49,7 +49,7 @@ class Affiliation(_Engagement):
     class Meta:
         """Meta options for the Affiliation model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         unique_together = ['entity', 'affiliated_entity', 'start_date']
 
@@ -58,11 +58,11 @@ class Affiliation(_Engagement):
         return f'{self.entity} — {self.affiliated_entity}'
 
 
-class Role(Model):
+class Role(ExtendedModel):
     """A role fulfilled by an entity within an organization."""
 
     name = models.CharField(max_length=MAX_NAME_LENGTH, unique=True)
-    description = HTMLField(null=True, blank=True)
+    description = HTMLField(blank=True)
     organization = models.ForeignKey(
         to='entities.Entity',
         related_name='roles',
@@ -73,7 +73,7 @@ class Role(Model):
     class Meta:
         """Meta options for the Role model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name = _('role')
 
@@ -101,7 +101,7 @@ class RoleFulfillment(_Engagement):
     class Meta:
         """Meta options for the RoleFulfillment model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         unique_together = ['affiliation', 'role', 'start_date']
         verbose_name = _('role fulfillment')

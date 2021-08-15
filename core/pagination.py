@@ -6,7 +6,7 @@ from rest_framework.pagination import (
 class TotalPagesMixin(DjangoRestFrameworkPageNumberPagination):
     """Adds total page count to pagination."""
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data: dict):
         """Add total_pages to the response."""
         response = super().get_paginated_response(data=data)
         response.data['total_pages'] = self.page.paginator.num_pages

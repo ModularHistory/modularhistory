@@ -4,10 +4,8 @@ from datetime import datetime
 from typing import Optional, Union
 
 from django.db.models import DateTimeField
-from django.forms import Field
 
 from apps.dates.structures import HistoricDateTime
-from core.forms import HistoricDateFormField
 
 DateTime = datetime
 
@@ -19,24 +17,15 @@ class HistoricDateTimeField(DateTimeField):
 
     year: int
 
-    def formfield(self, **kwargs) -> Field:
-        """Return the form field to be used for historic datetimes."""
-        return super(DateTimeField, self).formfield(
-            **{
-                'form_class': HistoricDateFormField,
-                **kwargs,
-            }
-        )
-
     def from_db_value(
-        self, datetime_value: Optional[DateTime], expression, connection
+        self, datetime_value: Optional[DateTime], *args
     ) -> Optional[HistoricDateTime]:
         """
         Convert a value as returned by the database to a Python object.
 
         This method is the reverse of get_prep_value().
 
-        https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.Field.from_db_value
+        https://docs.djangoproject.com/en/dev/ref/models/fields/#django.db.models.Field.from_db_value
         """
         if datetime_value is None:
             return datetime_value
@@ -51,7 +40,7 @@ class HistoricDateTimeField(DateTimeField):
             datetime_value.microsecond,
         )
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-values-to-python-objects
+    # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-values-to-python-objects
     def to_python(
         self, historic_datetime: Optional[Union[DateTime, str]]
     ) -> Optional[HistoricDateTime]:
@@ -77,7 +66,7 @@ class HistoricDateTimeField(DateTimeField):
                 historic_datetime.microsecond,
             )
 
-    # https://docs.djangoproject.com/en/3.1/howto/custom-model-fields/#converting-python-objects-to-query-values
+    # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-python-objects-to-query-values
     def get_prep_value(
         self, historic_datetime: Optional[HistoricDateTime]
     ) -> Optional[DateTime]:

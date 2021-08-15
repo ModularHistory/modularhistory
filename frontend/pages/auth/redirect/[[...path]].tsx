@@ -15,24 +15,24 @@ const Redirect: FC<RedirectProps> = ({ path }: RedirectProps) => {
   const router = useRouter();
   const [_session, loading] = useSession();
   const [redirect, setRedirect] = useState(null);
-  path = path ? `/${path}` : "";
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const redirectUrl = `${baseUrl}${path}`;
+  const redirectPath = path ? `/${path}` : "";
+  const redirectUrl = baseUrl + redirectPath;
   useEffect(() => {
     if (!loading) {
       // Choose redirect method based on whether the redirect URL
       // specifies a Django-served page or a Next.js-served page.
-      if (/(\/admin\/?.*)/.test(redirectUrl)) {
+      if (/(\/_?admin\/?.*)/.test(redirectUrl)) {
         // If Django, redirect using meta tag.
-        console.log(`>>>> Redirecting to ${redirectUrl} with meta`);
+        console.log(`>>> Redirecting to ${redirectUrl} with meta ...`);
         setRedirect(true);
       } else {
         // If Next.js, redirect using Next.js router.
-        console.log(`>>>> Redirecting to ${path} with Next.js`);
-        router.push(path);
+        console.log(`>>> Redirecting to ${redirectPath} with Next.js ...`);
+        router.push(redirectPath);
       }
     }
-  }, [loading]);
+  }, [loading, redirectPath, redirectUrl, router]);
   return (
     <>
       {!redirect && (
@@ -69,7 +69,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     path = null;
   }
   const session = await getSession(context);
-  if (session) {
+  if (typeof session?.sessionIdCookie == "string") {
     const [cookieName, cookieValue] = session.sessionIdCookie.split(";")[0].split("=");
     setCookie(context, cookieName, cookieValue, {
       secure: process.env.ENVIRONMENT === "prod",

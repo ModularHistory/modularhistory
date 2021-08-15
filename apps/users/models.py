@@ -7,12 +7,32 @@ from django.contrib.auth.models import UserManager as BaseUserManager
 from django.core.files import File
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django_cryptography.fields import encrypt
 
 from core.fields.file_field import upload_to
 
 AVATAR_QUALITY: int = 70
 AVATAR_WIDTH: int = 200
 AVATAR_HEIGHT: int = AVATAR_WIDTH
+
+
+class SocialAccount(models.Model):
+    """A social media account."""
+
+    class Provider(models.TextChoices):
+        DISCORD = 'discord', 'Discord'
+        FACEBOOK = 'facebook', 'Facebook'
+        GITHUB = 'github', 'GitHub'
+        GOOGLE = 'google', 'Google'
+        TWITTER = 'twitter', 'Twitter'
+
+    user = models.ForeignKey(to='users.User', on_delete=models.CASCADE)
+    provider = models.CharField(max_length=10, choices=Provider.choices)
+    uid = models.CharField(max_length=200)
+    access_token = encrypt(models.CharField(max_length=200))
+
+    class Meta:
+        unique_together = [('user', 'provider'), ('provider', 'uid')]
 
 
 class UserManager(BaseUserManager):

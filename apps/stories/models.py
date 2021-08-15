@@ -6,14 +6,16 @@ from django.utils.translation import ugettext_lazy as _
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources
 from apps.stories.serializers import StorySerializer
-from core.fields import HTMLField
+from core.fields.html_field import HTMLField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 HANDLE_MAX_LENGTH = 40
 
 
 class Citation(AbstractCitation):
+    """A relationship between a story and a source."""
+
     content_object = ManyToManyForeignKey(
         to='stories.Story',
         related_name='citations',
@@ -51,14 +53,14 @@ class Story(ModelWithSources):
 
     searchable_fields = ['handle', 'description']
     serializer = StorySerializer
-    slug_base_field = 'handle'
+    slug_base_fields = ('handle',)
 
     def __str__(self) -> str:
         """Return the fact's string representation."""
         return self.handle
 
 
-class StoryElement(Model):
+class StoryElement(ExtendedModel):
     """An element or component of a story."""
 
     key = models.CharField(max_length=HANDLE_MAX_LENGTH, unique=True)
@@ -68,21 +70,28 @@ class StoryElement(Model):
         return self.key
 
 
-class StoryElementInclusion(Model):
+class StoryElementInclusion(ExtendedModel):
     """An element or component of a story."""
 
-    story = models.ForeignKey(to='stories.Story', on_delete=models.CASCADE)
-    story_element = models.ForeignKey(
-        to='stories.StoryElement', on_delete=models.CASCADE
+    story = models.ForeignKey(
+        to='stories.Story',
+        on_delete=models.CASCADE,
     )
-    justification = HTMLField(null=True, blank=True, paragraphed=True)
+    story_element = models.ForeignKey(
+        to='stories.StoryElement',
+        on_delete=models.CASCADE,
+    )
+    justification = HTMLField(
+        blank=True,
+        paragraphed=True,
+    )
 
     def __str__(self) -> str:
         """Return the story element's string representation."""
         return f'{self.story} << {self.story_element}'
 
 
-class StoryInspiration(Model):
+class StoryInspiration(ExtendedModel):
     """An inspiration of a story by another story."""
 
     upstream_story = models.ForeignKey(
@@ -95,3 +104,7 @@ class StoryInspiration(Model):
         on_delete=models.CASCADE,
         related_name='inspirations_in',
     )
+
+    def __str__(self) -> str:
+        """Return the story element's string representation."""
+        return f'{self.upstream_story.handle} --> {self.downstream_story.handle}'

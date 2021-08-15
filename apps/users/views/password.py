@@ -6,7 +6,7 @@ class PasswordChangeView(auth_views.PasswordChangeView):
     """
     Allow a user to change their password.
 
-    https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordChangeView
+    https://docs.djangoproject.com/en/dev/topics/auth/default/#django.contrib.auth.views.PasswordChangeView
     """
 
     template_name = 'users/password_change_form.html'
@@ -17,7 +17,7 @@ class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
     """
     The page shown after a user has changed their password.
 
-    https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordChangeDoneView
+    https://docs.djangoproject.com/en/dev/topics/auth/default/#django.contrib.auth.views.PasswordChangeDoneView
     """
 
     template_name = 'users/password_change_done.html'
@@ -29,7 +29,7 @@ class PasswordResetView(auth_views.PasswordResetView):
 
     Sends the link to the user’s registered email address.
 
-    https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetView
+    https://docs.djangoproject.com/en/dev/topics/auth/default/#django.contrib.auth.views.PasswordResetView
     """
 
     template_name = 'users/password_reset_form.html'
@@ -43,7 +43,7 @@ class PasswordResetDoneView(auth_views.PasswordResetDoneView):
 
     This view is called by default if PasswordResetView does not explicitly set success_url.
 
-    https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetDoneView
+    https://docs.djangoproject.com/en/dev/topics/auth/default/#django.contrib.auth.views.PasswordResetDoneView
     """
 
     template_name = 'users/password_reset_done.html'
@@ -53,7 +53,7 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     """
     Present a form for entering a new password.
 
-    https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetConfirmView
+    https://docs.djangoproject.com/en/dev/topics/auth/default/#django.contrib.auth.views.PasswordResetConfirmView
     """
 
     template_name = 'users/password_reset_confirm.html'
@@ -63,7 +63,7 @@ class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     """
     Present a view which informs the user that the password has been successfully changed.
 
-    https://docs.djangoproject.com/en/3.1/topics/auth/default/#django.contrib.auth.views.PasswordResetCompleteView
+    https://docs.djangoproject.com/en/dev/topics/auth/default/#django.contrib.auth.views.PasswordResetCompleteView
     """
 
     template_name = 'users/password_reset_complete.html'

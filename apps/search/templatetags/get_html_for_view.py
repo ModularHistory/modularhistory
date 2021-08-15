@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 import inflect
 from django.template import Library, loader
@@ -7,14 +7,14 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 
 from apps.search.templatetags.highlight import highlight
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 register = Library()
 
 
 @register.filter(is_safe=True)
 def get_html_for_view(
-    model_instance: Union[Dict, Model],
+    model_instance: Union[dict, ExtendedModel],
     view_name: str,
     text_to_highlight: Optional[str] = None,
 ) -> SafeString:
@@ -24,9 +24,9 @@ def get_html_for_view(
             app_name, model_name = model_instance['model'].split('.')
         except KeyError as e:
             raise KeyError(f'{e} was not found in {model_instance}')
-    elif isinstance(model_instance, Model):
+    elif isinstance(model_instance, ExtendedModel):
         model_name = f'{model_instance.__class__.__name__}'.lower()
-        app_name = model_instance.__class__.get_meta().app_label
+        app_name = model_instance.__class__._meta.app_label
     else:
         raise ValueError(
             'When rendering HTML for a serialized model instance, `template_name` '

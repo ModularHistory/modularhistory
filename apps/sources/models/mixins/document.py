@@ -26,7 +26,6 @@ class DocumentMixin(PageNumbersMixin):
         help_text='aka acquisition number',
     )
     location_info = models.TextField(
-        null=True,
         blank=True,
         help_text=(
             'Ex: John Alexander Papers, Series 1: Correspondence, 1831-1848, Folder 1'
@@ -34,11 +33,10 @@ class DocumentMixin(PageNumbersMixin):
     )
     descriptive_phrase = models.CharField(
         max_length=DESCRIPTIVE_PHRASE_MAX_LENGTH,
-        null=True,
         blank=True,
         help_text='e.g., "on such-and-such letterhead" or "signed by so-and-so"',
     )
-    information_url = models.CharField(
+    information_url = models.URLField(
         max_length=URL_MAX_LENGTH,
         null=True,
         blank=True,
@@ -48,5 +46,5 @@ class DocumentMixin(PageNumbersMixin):
     class Meta:
         """Meta options."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
         abstract = True

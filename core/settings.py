@@ -2,32 +2,27 @@
 Django settings for modularhistory.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/3.1/topics/settings/
+https://docs.djangoproject.com/en/dev/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/3.1/ref/settings/
+https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
-import sys
 from os.path import join
-from typing import Dict
 
 from decouple import config
 from django.conf.locale.en import formats as en_formats
 from easy_thumbnails.conf import Settings as ThumbnailSettings
 from split_settings.tools import include
 
-from core.constants.environments import Environments
-from core.environment import DOCKERIZED, ENVIRONMENT, IS_DEV, IS_PROD
+from core.environment import DOCKERIZED, ENVIRONMENT, IS_DEV, IS_PROD, TESTING
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s.u'
 
-TESTING: bool = 'test' in sys.argv
-
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-debug
-# DEBUG must be False in production (for security)
-DEBUG = IS_DEV
+# https://docs.djangoproject.com/en/dev/ref/settings#s-debug
+# DEBUG must be False in production (for security).
+DEBUG = IS_DEV and not config('IS_CELERY', cast=bool, default=False)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +31,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_URL = config('BASE_URL', default='http://localhost')
 
 # --- URL MODIFICATION SETTINGS ---
-# https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
+# https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.common
 # Do not prepend www to modularhistory.com.
 # The Nginx reverse proxy chops off the "www." from incoming requests.
 PREPEND_WWW = False
@@ -44,21 +39,21 @@ PREPEND_WWW = False
 APPEND_SLASH = not DOCKERIZED
 
 # --- SECURITY SETTINGS ---
-# https://docs.djangoproject.com/en/3.1/ref/settings/#secure-proxy-ssl-header
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-ssl-redirect
+# https://docs.djangoproject.com/en/dev/ref/settings#s-secure-ssl-redirect
 SECURE_SSL_REDIRECT = False  # SSL redirect is handled by Nginx reverse proxy in prod.
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-session-cookie-samesite
+# https://docs.djangoproject.com/en/dev/ref/settings#s-session-cookie-samesite
 SESSION_COOKIE_SECURE = IS_PROD
-# https://docs.djangoproject.com/en/3.1/ref/settings/#session-cookie-samesite
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-samesite
 SESSION_COOKIE_SAMESITE = 'Lax' if (IS_PROD or DOCKERIZED) else 'None'
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-csrf-cookie-secure
+# https://docs.djangoproject.com/en/dev/ref/settings#s-csrf-cookie-secure
 CSRF_COOKIE_SECURE = IS_PROD
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-secure-referrer-policy
-# https://docs.djangoproject.com/en/3.1/ref/middleware/#referrer-policy
+# https://docs.djangoproject.com/en/dev/ref/settings#s-secure-referrer-policy
+# https://docs.djangoproject.com/en/dev/ref/middleware/#referrer-policy
 SECURE_REFERRER_POLICY = 'same-origin'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-allowed-hosts
+# https://docs.djangoproject.com/en/dev/ref/settings#s-allowed-hosts
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
     default='localhost, 127.0.0.1, 0.0.0.0, django',
@@ -93,8 +88,9 @@ INSTALLED_APPS = [
     'admin_honeypot',  # https://github.com/dmpayton/django-admin-honeypot
     'django_admin_env_notice',  # https://github.com/dizballanze/django-admin-env-notice
     'flat_json_widget',  # https://github.com/openwisp/django-flat-json-widget
-    'massadmin',  # https://github.com/burke-software/django-mass-edit
+    'rangefilter',  # https://github.com/silentsokolov/django-admin-rangefilter
     'tinymce',  # https://django-tinymce.readthedocs.io/en/latest/
+    'trumbowyg',  # https://github.com/sandino/django-trumbowyg
     # ---------------------------------
     # Django core apps
     # ---------------------------------
@@ -106,36 +102,30 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django.contrib.redirects',
     'django.contrib.sessions',
+    'django.contrib.sitemaps',
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.forms',
     # ---------------------------------
-    # API- and auth-related apps
+    # API-related apps
     # ---------------------------------
     'corsheaders',  # https://github.com/adamchainz/django-cors-headers
+    'django_filters',  # https://github.com/carltongibson/django-filter
     'graphene_django',  # https://github.com/graphql-python/graphene-django
     'rest_framework',  # https://github.com/encode/django-rest-framework
-    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
+    # ---------------------------------
+    # Auth-related apps
+    # ---------------------------------
     # 'defender',  # https://github.com/jazzband/django-defender  # TODO
+    'rest_framework.authtoken',  # https://github.com/iMerica/dj-rest-auth#quick-setup
     # Note: dj_rest_auth must be loaded after rest_framework.
     'dj_rest_auth',  # https://github.com/iMerica/dj-rest-auth
-    # Note: allauth is a dependency of dj_rest_auth.registration and depends on django.contrib.sites.
-    'allauth',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
-    'allauth.account',
-    'dj_rest_auth.registration',  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.discord',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.github',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.twitter',
     # ---------------------------------
     # Model-related apps
     # ---------------------------------
     'autoslug',  # https://django-autoslug.readthedocs.io/en/latest/
     'image_cropping',  # https://github.com/jonasundderwolf/django-image-cropping
     'polymorphic',  # https://django-polymorphic.readthedocs.io/en/stable/
-    'sortedm2m',  # https://github.com/jazzband/django-sortedm2m
     'typedmodels',  # https://github.com/craigds/django-typed-models
     # ---------------------------------
     # Elasticsearch
@@ -144,13 +134,10 @@ INSTALLED_APPS = [
     # ---------------------------------
     # Debugging- and profiling-related apps
     # ---------------------------------
-    'debug_toolbar',  # https://django-debug-toolbar.readthedocs.io/en/latest/
-    'pympler',  # https://pympler.readthedocs.io/en/latest/index.html
     'silk',  # https://github.com/jazzband/django-silk
     # ---------------------------------
     # Miscellaneous third-party apps
     # ---------------------------------
-    'bootstrap_datepicker_plus',  # https://django-bootstrap-datepicker-plus.readthedocs.io/en/latest/
     'cachalot',  # https://django-cachalot.readthedocs.io/
     'channels',  # https://channels.readthedocs.io/en/latest/index.html
     'crispy_forms',  # https://django-crispy-forms.readthedocs.io/
@@ -158,15 +145,12 @@ INSTALLED_APPS = [
     'django_celery_beat',  # https://github.com/celery/django-celery-beat
     'django_celery_results',  # https://github.com/celery/django-celery-results
     'django_extensions',  # https://github.com/django-extensions/django-extensions
-    'django_replicated',  # https://github.com/yandex/django_replicated
     'django_select2',  # https://django-select2.readthedocs.io/en/latest/index.html
     'decouple',  # https://github.com/henriquebastos/python-decouple/
     'easy_thumbnails',  # https://github.com/jonasundderwolf/django-image-cropping
-    'extra_views',  # https://django-extra-views.readthedocs.io/en/latest/index.html
     'health_check',  # https://github.com/KristianOellegaard/django-health-check
     'health_check.contrib.psutil',  # disk and memory utilization; requires psutil
     'health_check.contrib.redis',
-    'lockdown',  # https://github.com/Dunedan/django-lockdown
     'meta',  # https://django-meta.readthedocs.io/en/latest/
     'sass_processor',  # https://github.com/jrief/django-sass-processor
     'watchman',  # https://github.com/mwarkentin/django-watchman
@@ -174,6 +158,7 @@ INSTALLED_APPS = [
     # In-project apps
     # ---------------------------------
     'apps.chat.apps.ChatConfig',
+    'apps.collections.apps.CollectionsConfig',
     'apps.dates.apps.DatesConfig',
     'apps.donations.apps.DonationsConfig',
     'apps.entities.apps.EntitiesConfig',
@@ -198,37 +183,35 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     # CORS middleware "should be placed as high as possible"
     'corsheaders.middleware.CorsMiddleware',
-    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.security
+    # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.security
     'django.middleware.security.SecurityMiddleware',
     # https://github.com/jazzband/django-silk
     'silk.middleware.SilkyMiddleware',
     # Update cache:
-    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    # https://docs.djangoproject.com/en/dev/topics/cache/#order-of-middleware
     'django.middleware.cache.UpdateCacheMiddleware',
     # Set the `site` attribute on the request, so request.site returns the current site:
     # 'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    # https://docs.djangoproject.com/en/3.1/topics/http/sessions/
+    # https://docs.djangoproject.com/en/dev/topics/http/sessions/
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.middleware.common
+    # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.middleware.common
     'django.middleware.common.CommonMiddleware',
     # Fetch from cache:
-    # https://docs.djangoproject.com/en/3.1/topics/cache/#order-of-middleware
+    # https://docs.djangoproject.com/en/dev/topics/cache/#order-of-middleware
     'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     # Add the `user` attribute to the request:
-    # https://docs.djangoproject.com/en/3.1/ref/middleware/#module-django.contrib.auth.middleware
+    # https://docs.djangoproject.com/en/dev/ref/middleware/#module-django.contrib.auth.middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # Protect against brute-force login:
     # https://github.com/jazzband/django-defender
     # 'defender.middleware.FailedLoginMiddleware',  # TODO
-    # https://django-debug-toolbar.readthedocs.io/en/latest/
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Staticpage middleware (based on Django's Flatpage middleware):
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/flatpages/#using-the-middleware
+    # https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/#using-the-middleware
     'apps.staticpages.middleware.StaticPageFallbackMiddleware',
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/redirects/
+    # https://docs.djangoproject.com/en/dev/ref/contrib/redirects/
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     # Memory profiler
     # 'core.middleware.PymplerMiddleware',  # TODO
@@ -251,7 +234,7 @@ TEMPLATES = [
                 # https://github.com/dizballanze/django-admin-env-notice#quickstart
                 'django_admin_env_notice.context_processors.from_settings',
             ],
-            # https://docs.djangoproject.com/en/3.1/ref/templates/api/#loader-types
+            # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types
             'loaders': [
                 (
                     'django.template.loaders.cached.Loader',
@@ -290,7 +273,7 @@ REST_FRAMEWORK = {
 }
 
 # Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -302,8 +285,21 @@ DATABASES = {
     },
 }
 
+GRAPH_MODELS = {
+    'app_labels': [
+        'images',
+        'places',
+        'propositions',
+        'quotes',
+        'sources',
+        'topics',
+        'users',
+    ],
+    'group_models': True,
+}
+
 # Internationalization
-# https://docs.djangoproject.com/en/3.1/topics/i18n/
+# https://docs.djangoproject.com/en/dev/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -315,7 +311,7 @@ MEGA_USERNAME = config('MEGA_USERNAME', default=None)
 MEGA_PASSWORD = config('MEGA_PASSWORD', default=None)
 
 # Static files (CSS, JavaScript, images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
+# https://docs.djangoproject.com/en/dev/howto/static-files/
 STATIC_URL = '/static/'
 SHARED_STATICFILES_DIR = os.path.join(BASE_DIR, 'core/static')
 STATICFILES_DIRS = (SHARED_STATICFILES_DIR,)
@@ -323,7 +319,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '_static')
 SASS_PROCESSOR_ROOT = SHARED_STATICFILES_DIR
 
 # Media files (images, etc. uploaded by users)
-# https://docs.djangoproject.com/en/3.1/topics/files/
+# https://docs.djangoproject.com/en/dev/topics/files/
 MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
 MEDIA_URL = '/media/'
 
@@ -343,7 +339,7 @@ DB_INIT_FILEPATH = os.path.join(DB_INIT_DIR, DB_INIT_FILENAME)
 # https://github.com/jrief/django-sass-processor
 SASS_PRECISION = 8
 
-# https://docs.djangoproject.com/en/3.1/topics/logging/
+# https://docs.djangoproject.com/en/dev/topics/logging/
 if DEBUG:
     LOGGING = {
         'version': 1,
@@ -373,11 +369,8 @@ THUMBNAIL_PROCESSORS = (
 # https://github.com/jonasundderwolf/django-image-cropping#custom-jquery
 IMAGE_CROPPING_JQUERY_URL = None
 
-# https://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
-# https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html
-CRISPY_FAIL_SILENTLY = not DEBUG
-CRISPY_CLASS_CONVERTERS: Dict[str, str] = {}
+CONTENT_MANAGER_EMAIL = config('CONTENT_MANAGER_EMAIL', default='')
+CONTENT_MANAGER_PAT = config('CONTENT_MANAGER_PAT', default='')
 
 MENU_ITEMS = [
     ['Occurrences', '/occurrences/'],
@@ -396,7 +389,7 @@ SETTINGS_EXPORT = [
 
 RAPIDAPI_KEY = config('X_RAPIDAPI_KEY', default='')
 
-# https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
+# https://docs.djangoproject.com/en/dev/ref/contrib/sites/
 SITE_ID = 1
 
 CONFIG_DIR = join(BASE_DIR, 'config')

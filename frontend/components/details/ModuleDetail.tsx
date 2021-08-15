@@ -1,31 +1,16 @@
-import PropositionDetail from "@/components/details/PropositionDetail";
-import {
-  EntityModule,
-  ImageModule,
-  OccurrenceModule,
-  PropositionModule,
-  QuoteModule,
-  SourceModule,
-  TopicModule,
-} from "@/interfaces";
+import PropositionDetail from "@/components/propositions/PropositionDetail";
+import { Entity, Image, Occurrence, Proposition, Quote, Source, Topic } from "@/interfaces";
 import { useSession } from "next-auth/client";
 import { createRef, FC, useLayoutEffect } from "react";
-import EntityDetail from "./EntityDetail";
-import ImageDetail from "./ImageDetail";
-import OccurrenceDetail from "./OccurrenceDetail";
-import QuoteDetail from "./QuoteDetail";
-import SourceDetail from "./SourceDetail";
-import TopicDetail from "./TopicDetail";
+import EntityDetail from "../entities/EntityDetail";
+import ImageDetail from "../images/ImageDetail";
+import OccurrenceDetail from "../propositions/OccurrenceDetail";
+import QuoteDetail from "../quotes/QuoteDetail";
+import SourceDetail from "../sources/SourceDetail";
+import TopicDetail from "../topics/TopicDetail";
 
 interface ModuleDetailProps {
-  module:
-    | OccurrenceModule
-    | QuoteModule
-    | EntityModule
-    | TopicModule
-    | PropositionModule
-    | ImageModule
-    | SourceModule;
+  module: Occurrence | Quote | Entity | Topic | Proposition | Image | Source;
 }
 
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
@@ -41,10 +26,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     for (const img of images) {
       if (img.dataset["src"]) img.src = img.dataset["src"];
     }
-    // force switching between modules to scroll
-    // to the top of the new module
-    ref.current.parentElement.scrollTop = 0;
-  }, [module]);
+  }, [ref]);
 
   let details;
   switch (module.model) {
@@ -52,29 +34,28 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
     //       may appear on the SERP.
     case "entities.person":
     case "entities.organization":
-      details = <EntityDetail entity={module as EntityModule} />;
+      details = <EntityDetail entity={module as Entity} />;
       break;
     case "images.image":
-      details = <ImageDetail image={module as ImageModule} />;
+      details = <ImageDetail image={module as Image} />;
       break;
-    case "occurrences.occurrence":
-      console.log(">>>", module.cachedImages);
-      details = <OccurrenceDetail occurrence={module as OccurrenceModule} />;
+    case "propositions.occurrence":
+      details = <OccurrenceDetail occurrence={module as Occurrence} />;
       break;
     case "propositions.proposition":
-      details = <PropositionDetail proposition={module as PropositionModule} />;
+      details = <PropositionDetail proposition={module as Proposition} />;
       break;
     case "quotes.quote":
-      details = <QuoteDetail quote={module as QuoteModule} />;
+      details = <QuoteDetail quote={module as Quote} />;
       break;
     case "sources.source":
-      details = <SourceDetail source={module as SourceModule} />;
+      details = <SourceDetail source={module as Source} />;
       break;
     case "topics.topic":
-      details = <TopicDetail topic={module as TopicModule} />;
+      details = <TopicDetail topic={module as Topic} />;
       break;
     default:
-      details = <pre>{JSON.stringify(module)}</pre>;
+      throw new Error(`Unknown module type encountered: ${module.model}`);
   }
 
   return (

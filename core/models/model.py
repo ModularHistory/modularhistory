@@ -2,35 +2,29 @@
 
 import logging
 from pprint import pformat
-from typing import Any, ClassVar, Dict, List, Match, Optional, Pattern, Tuple, Type
+from typing import TYPE_CHECKING, Any, ClassVar, Match, Optional, Pattern, Type
 
 import regex
 import serpy
 from aenum import Constant
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Model as DjangoModel
+from django.db.models import Model
 from django.urls import reverse
-from django.utils.html import SafeString
+from django.utils.safestring import SafeString
 from rest_framework.serializers import Serializer
-from typedmodels.models import TypedModel as BaseTypedModel
 
-from core.fields.html_field import (
-    OBJECT_PLACEHOLDER_REGEX,
-    TYPE_GROUP,
-    PlaceholderGroups,
-)
-from core.models.manager import Manager
+from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
+from core.models.manager import SearchableManager, SearchableQuerySet
 from core.utils.models import get_html_for_view as get_html_for_view_
 from core.utils.string import truncate
 
-FieldList = List[str]
+if TYPE_CHECKING:
+    from django.db.models.manager import Manager
 
-# TODO: Extend BaseTypedModel when it's possible.
-# Currently, only one level of inheritance from BaseTypedModel is permitted, unfortunately.
-TypedModel: Type[BaseTypedModel] = BaseTypedModel
+FieldList = list[str]
 
-# TODO: https://docs.djangoproject.com/en/3.1/topics/db/optimization/
+# TODO: https://docs.djangoproject.com/en/dev/topics/db/optimization/
 
 
 class Views(Constant):
@@ -40,10 +34,10 @@ class Views(Constant):
     CARD = 'card'
 
 
-class Model(DjangoModel):
+class ExtendedModel(Model):
     """Model with additional properties used in ModularHistory apps."""
 
-    objects: Manager = Manager()
+    objects: 'Manager' = SearchableManager.from_queryset(SearchableQuerySet)()
     searchable_fields: ClassVar[Optional[FieldList]] = None
     serializer: Type[Serializer]
     placeholder_regex: Optional[str] = None
@@ -51,7 +45,7 @@ class Model(DjangoModel):
     class Meta:
         """Meta options for Model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 
@@ -75,15 +69,6 @@ class Model(DjangoModel):
         """Return a list of fields that can be used to search for instances of the model."""
         return cls.searchable_fields or []
 
-    @classmethod
-    def get_meta(cls):
-        """
-        Return the model's _meta attribute value.
-
-        This is used purely to avoid warnings about accessing a private attribute.
-        """
-        return cls._meta
-
     @property
     def admin_url(self) -> str:
         """Return the model instance's admin URL."""
@@ -95,13 +80,13 @@ class Model(DjangoModel):
         return ContentType.objects.get_for_model(self)
 
     @property
-    def natural_key_fields(self) -> Optional[List]:
+    def natural_key_fields(self) -> list:
         """Return the list of fields that comprise a natural key for the model instance."""
         unique_together = getattr(self.Meta, 'unique_together', None)
         if unique_together:
-            unique_together_is_valid = isinstance(
-                unique_together, (list, tuple)
-            ) and all(isinstance(field_name, str) for field_name in unique_together)
+            unique_together_is_valid = isinstance(unique_together, (list, tuple)) and all(
+                isinstance(field_name, str) for field_name in unique_together
+            )
             if not unique_together_is_valid:
                 raise ValueError(
                     'The `unique_together` value must be an iterable containing strings.'
@@ -119,10 +104,15 @@ class Model(DjangoModel):
             'Model must have Meta.unique_together and/or `natural_key_fields` method defined.'
         )
 
-    def get_admin_url(self):
+    def get_admin_url(self) -> str:
         """Return the URL of the model instance's admin page."""
+        model_name = (
+            self._meta.model_name
+            if not self._meta.proxy
+            else self._meta.proxy_for_model.__name__.lower()
+        )
         return reverse(
-            f'admin:{self._meta.app_label}_{self._meta.model_name}_change',
+            f'admin:{self._meta.app_label}_{model_name}_change',
             args=[self.pk],
         )
 
@@ -136,7 +126,7 @@ class Model(DjangoModel):
             self, template_name=view, text_to_highlight=text_to_highlight
         )
 
-    def natural_key(self) -> Tuple[Any, ...]:
+    def natural_key(self) -> tuple[Any, ...]:
         """Return a tuple of values comprising the model instance's natural key."""
         natural_key_values = []
         for field in self.natural_key_fields:
@@ -146,7 +136,7 @@ class Model(DjangoModel):
             natural_key_values.append(value)
         return tuple(natural_key_values)
 
-    def preprocess_html(self, html: str):
+    def preprocess_html(self, html: str) -> str:
         """
         Preprocess the value of an HTML field belonging to the model instance.
 
@@ -155,7 +145,7 @@ class Model(DjangoModel):
         """
         return html
 
-    def serialize(self) -> Dict:
+    def serialize(self) -> dict:
         """Return the serialized model instance (dictionary)."""
         try:
             serialized_instance = self.serializer(self).data
@@ -176,7 +166,7 @@ class Model(DjangoModel):
     ) -> str:
         """Return a model instance's HTML based on a placeholder in the admin."""
         if not cls.get_admin_placeholder_regex().match(match.group(0)):
-            raise ValueError(f'{match} does not match {cls.admin_placeholder_regex}')
+            raise ValueError(f'{match} does not match {cls.get_admin_placeholder_regex()}')
 
         if use_preretrieved_html:
             # Return the pre-retrieved HTML (already included in placeholder)
@@ -192,7 +182,7 @@ class Model(DjangoModel):
         logging.info(f'Retrieving object HTML for {cls.__name__} {key}...')
         try:
             model_instance = cls.objects.get(pk=key)
-            object_html = model_instance.html
+            object_html = getattr(model_instance, 'html', '')
             logging.debug(f'Retrieved object HTML: {object_html}')
         except ObjectDoesNotExist as e:
             logging.error(f'Unable to retrieve object HTML; {e}')
@@ -231,7 +221,7 @@ class ModelSerializer(serpy.Serializer):
     id = serpy.IntField()
     model = serpy.MethodField()
 
-    def get_model(self, instance: Model) -> str:  # noqa
+    def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""
-        model_cls: Type['Model'] = instance.__class__
-        return f'{model_cls.get_meta().app_label}.{model_cls.__name__.lower()}'
+        model_cls: Type['ExtendedModel'] = instance.__class__
+        return f'{model_cls._meta.app_label}.{model_cls.__name__.lower()}'

@@ -2,7 +2,8 @@
 
 import logging
 import re
-from typing import TYPE_CHECKING, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Union
+from urllib.parse import urlparse
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -11,17 +12,19 @@ from django.db.models.query import QuerySet
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
+from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
+from polymorphic.query import PolymorphicQuerySet
 
 from apps.dates.fields import HistoricDateTimeField
+from apps.dates.models import DatedModel
 from apps.dates.structures import HistoricDateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.search.models import SearchableDatedModel
-from apps.sources.manager import PolymorphicSourceManager, PolymorphicSourceQuerySet
+from apps.search.models import SearchableModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
-from core.fields import HTMLField
-from core.models import store
+from core.fields.html_field import HTMLField
+from core.models.manager import SearchableManager, SearchableQuerySet
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -38,7 +41,11 @@ MAX_TITLE_LENGTH: int = 250
 
 COMPONENT_DELIMITER = ', '
 
-SOURCE_TYPES = (('P', 'Primary'), ('S', 'Secondary'), ('T', 'Tertiary'))
+SOURCE_TYPES = (
+    ('P', 'Primary'),
+    ('S', 'Secondary'),
+    ('T', 'Tertiary'),
+)
 
 CITATION_PHRASE_OPTIONS = (
     (None, ''),
@@ -47,24 +54,30 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
-class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
+class SourceQuerySet(PolymorphicQuerySet, SearchableQuerySet):
+    """Custom queryset for sources."""
+
+
+class SourceManager(PolymorphicManager, SearchableManager):
+    """Custom manager for sources."""
+
+
+class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEntities):
     """A source of content or information."""
 
     content = HTMLField(
         verbose_name=_('content'),
-        null=True,
         blank=True,
         help_text='Enter the content of the source (with ellipses as needed).',
     )
+
     attributee_html = models.CharField(
         max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
-        null=True,
         blank=True,
         verbose_name=_('attributee HTML'),
     )
     attributee_string = models.CharField(
         max_length=MAX_ATTRIBUTEE_STRING_LENGTH,
-        null=True,
         blank=True,
         verbose_name=_('attributee string'),
     )
@@ -75,37 +88,19 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         blank=True,  # Some sources may not have attributees.
         verbose_name=_('attributees'),
     )
-    citation_html = models.TextField(
-        verbose_name=_('citation HTML'),
-        null=False,
-        # Allow to be blank in model forms (and computed during cleaning).
+
+    title = models.CharField(
+        verbose_name=_('title'),
+        max_length=MAX_TITLE_LENGTH,
         blank=True,
     )
-    citation_string = models.CharField(
-        verbose_name=_('citation string'),
-        max_length=MAX_CITATION_STRING_LENGTH,
-        null=False,
-        # Allow to be blank in model forms (and computed during cleaning).
-        blank=True,
-        unique=True,
-    )
-    containment_html = models.TextField(
-        verbose_name=_('containment HTML'), null=True, blank=True
-    )
-    containers = models.ManyToManyField(
-        to='self',
-        through='sources.SourceContainment',
-        through_fields=('source', 'container'),
-        related_name='contained_sources',
-        symmetrical=False,
-        blank=True,
-        verbose_name=_('containers'),
-    )
-    description = HTMLField(
-        verbose_name=_('description'),
+
+    url = models.URLField(
+        verbose_name=_('URL'),
+        max_length=MAX_URL_LENGTH,
         null=True,
         blank=True,
-        paragraphed=True,
+        help_text=('URL where the source can be accessed online (outside ModularHistory)'),
     )
     file = models.ForeignKey(
         to=SourceFile,
@@ -124,6 +119,34 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
             'could be the URL of the source file (if one exists) or of a webpage.'
         ),
     )
+
+    citation_html = models.TextField(
+        verbose_name=_('citation HTML'),
+        # Allow to be blank in model forms (and computed during cleaning).
+        blank=True,
+    )
+    citation_string = models.CharField(
+        verbose_name=_('citation string'),
+        max_length=MAX_CITATION_STRING_LENGTH,
+        # Allow to be blank in model forms (and computed during cleaning).
+        blank=True,
+        unique=True,
+    )
+
+    containment_html = models.TextField(
+        verbose_name=_('containment HTML'),
+        blank=True,
+    )
+    containers = models.ManyToManyField(
+        to='self',
+        through='sources.SourceContainment',
+        through_fields=('source', 'container'),
+        related_name='contained_sources',
+        symmetrical=False,
+        blank=True,
+        verbose_name=_('containers'),
+    )
+
     location = models.ForeignKey(
         to='places.Place',
         null=True,
@@ -131,6 +154,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         on_delete=models.SET_NULL,
         verbose_name=_('location'),
     )
+
     release = models.OneToOneField(
         to='propositions.Publication',
         on_delete=models.SET_NULL,
@@ -143,29 +167,40 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         null=True,
         blank=True,
     )
-    title = models.CharField(
-        verbose_name=_('title'),
-        max_length=MAX_TITLE_LENGTH,
-        null=True,
-        blank=True,
+
+    class VariantType(models.IntegerChoices):
+        ORIGINAL = 0, _('Original')
+        TRANSLATION = 1, _('Translation')
+        TRANSCRIPTION = 2, _('Transcription')
+
+    variant_type = models.PositiveSmallIntegerField(
+        verbose_name=_('variant type'),
+        choices=VariantType.choices,
+        db_index=True,
+        default=VariantType.ORIGINAL,
     )
-    url = models.URLField(
-        verbose_name=_('URL'),
-        max_length=MAX_URL_LENGTH,
+    original = models.ForeignKey(
+        to='self',
+        on_delete=models.PROTECT,
+        related_name='versions',
         null=True,
         blank=True,
-        help_text=(
-            'URL where the source can be accessed online (outside ModularHistory)'
-        ),
+        verbose_name=_('original'),
+    )
+
+    description = HTMLField(
+        verbose_name=_('description'),
+        blank=True,
+        paragraphed=True,
     )
 
     class Meta:
         ordering = ['-date']
 
-    objects = PolymorphicSourceManager.from_queryset(PolymorphicSourceQuerySet)()
-    searchable_fields = ['citation_string', 'description']
+    objects = SourceManager().from_queryset(SourceQuerySet)()
+    searchable_fields = ['citation_string', 'tags__name', 'tags__aliases', 'description']
     serializer = SourceSerializer
-    slug_base_field = 'title'
+    slug_base_fields = ('title',)
 
     def __html__(self) -> str:
         """
@@ -173,9 +208,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
 
         Must be defined by models inheriting from Source.
         """
+        if not self._state.adding:
+            return self.ctype.model_class().objects.get(pk=self.pk).__html__()  # hack
         raise NotImplementedError
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the source's string representation."""
         return self.citation_string
 
@@ -216,9 +253,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
     def get_attributee_html(self) -> str:
         """Return an HTML string representing the source's attributees."""
         # Avoid attempting to access a m2m relationship on a not-yet-saved source.
-        m2m_relation_exists = (
-            self.attributees.exists() if not self._state.adding else False
-        )
+        m2m_relation_exists = self.attributees.exists() if not self._state.adding else False
         if m2m_relation_exists or self.attributee_string:
             if self.attributee_string:
                 # Use attributee_string to generate attributee_html, if possible.
@@ -257,13 +292,6 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if not self.file:
             if self.link and self.link not in html:
                 html = f'{html}, retrieved from {self.link}'
-        # TODO: Do something else with the information URL.
-        # It shouldn't be part of the citation string, but we should use it.
-        # if getattr(self, 'information_url', None) and self.information_url:
-        #     information_link = compose_link(
-        #         self.information_url, href=self.information_url, target="_blank"
-        #     )
-        #     html = f'{html}, information available at {information_link}'
         return format_html(fix_comma_positions(html))
 
     def get_containment_html(self) -> str:
@@ -272,10 +300,10 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if self._state.adding:
             logging.debug('Containments of an unsaved source cannot be accessed.')
             return ''
-        containments: QuerySet[
-            'SourceContainment'
-        ] = self.source_containments.select_related('container').order_by('position')
-        container_strings: List[str] = []
+        containments: QuerySet['SourceContainment'] = self.source_containments.select_related(
+            'container'
+        ).order_by('position')
+        container_strings: list[str] = []
         same_creator = True
         containment: SourceContainment
         for containment in containments[:2]:
@@ -317,16 +345,11 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
                     self.source_containments.first().select_related('container')
                 )
                 return containment.container.date
-            except Exception:
+            except (ObjectDoesNotExist, AttributeError):
                 pass
         return None
 
-    # TODO: after deploying to prod and copying deprecated_href to the new href field,
-    # remove the @property and @store decorators and rename this method
-    # to get_href.
-    @property  # type: ignore
-    @store(attribute_name='href')
-    def deprecated_href(self) -> str:
+    def get_href(self) -> str:
         """
         Return the href to use when providing a link to the source.
 
@@ -343,25 +366,28 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         else:
             url = self.url or ''
             page_number = getattr(self, 'page_number', None)
-            # TODO: refactor?
+            # TODO: refactor
             if page_number:
-                if 'www.sacred-texts.com' in url:
-                    url = f'{url}#page_{page_number}'
-                elif 'josephsmithpapers.org' in url:
-                    url = f'{url}/{page_number}'
+                sites = {
+                    'www.sacred-texts.com': '{url}#page_{page_number}'.format,
+                    'www.josephsmithpapers.org': '{url}/{page_number}'.format,
+                }
+                domain = urlparse(url).netloc
+                process = sites.get(domain, None)
+                url = process(url) if process else url
         return url
 
     def get_page_number_html(
         self, page_number: Optional[int] = None, end_page_number: Optional[int] = None
     ) -> str:
+        """Return the HTML for a page number reference."""
         page_number = page_number or self.page_number
         end_page_number = end_page_number or self.end_page_number
         if page_number:
             pn = self.get_page_number_link(page_number=page_number) or page_number
             if end_page_number:
                 end_pn = (
-                    self.get_page_number_link(page_number=end_page_number)
-                    or end_page_number
+                    self.get_page_number_link(page_number=end_page_number) or end_page_number
                 )
                 return f'pp. {pn}–{end_pn}'
             return f'p. {pn}'
@@ -373,9 +399,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         url = self.get_page_number_url(page_number=page_number)
         if url:
             # Example: '<a href="https://..." class="display-source" target="_blank">25</a>'  # noqa: E800,E501
-            return compose_link(
-                page_number, href=url, klass='display-source', target=NEW_TAB
-            )
+            return compose_link(page_number, href=url, klass='display-source', target=NEW_TAB)
         return ''
 
     def get_page_number_url(self, page_number: Optional[int] = None) -> str:
@@ -414,7 +438,7 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         return format_html(html)
 
     @property
-    def ordered_attributees(self) -> List['Entity']:
+    def ordered_attributees(self) -> list['Entity']:
         """Return an ordered list of the source's attributees."""
         try:
             attributions = self.attributions.select_related('attributee')
@@ -465,14 +489,12 @@ class Source(PolymorphicModel, SearchableDatedModel, ModelWithRelatedEntities):
         if self.containment_html and self.containment_html in self.citation_html:
             # Omit the containment string and anything following it.
             index = self.citation_html.index(self.containment_html)
-            self.citation_string = soupify(
-                self.citation_html[:index].rstrip(', ')
-            ).get_text()
+            self.citation_string = soupify(self.citation_html[:index].rstrip(', ')).get_text()
         else:
             self.citation_string = soupify(self.citation_html).get_text()
 
     @staticmethod
-    def components_to_html(components: Sequence[Optional[str]]):
+    def components_to_html(components: Sequence[Optional[str]]) -> str:
         """Combine a list of HTML components into an HTML string."""
         return components_to_html(components, delimiter=COMPONENT_DELIMITER)
 
@@ -495,7 +517,10 @@ class AbstractSource(Source):
     """
 
     source = models.OneToOneField(
-        Source, parent_link=True, on_delete=models.CASCADE, related_name='%(class)s'
+        Source,
+        parent_link=True,
+        on_delete=models.CASCADE,
+        related_name='%(class)s',
     )
 
     class Meta:

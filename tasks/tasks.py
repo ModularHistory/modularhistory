@@ -2,14 +2,16 @@
 
 import os
 from os.path import join
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import django
 from decouple import config
 
 from core.constants.environments import Environments
+from tasks.command import command
 
-from .command import command
+if TYPE_CHECKING:
+    from invoke.context import Context
 
 django.setup()
 
@@ -23,8 +25,8 @@ GITHUB_CREDENTIALS_FILE = join(settings.BASE_DIR, '.github/.credentials')
 
 
 @command
-def build(
-    context,
+def build(  # noqa: S107
+    context: 'Context',
     github_actor: str = '',
     access_token: str = '',
     sha: str = 'latest',
@@ -51,7 +53,7 @@ def build(
     context.run(
         f'echo {access_token} | docker login ghcr.io -u {github_actor} --password-stdin'
     )
-    for image_name in ('django', 'react'):
+    for image_name in ('django', 'react', 'webserver'):
         image = f'ghcr.io/modularhistory/{image_name}'
         print(f'Pulling {image}:latest...')
         context.run(f'docker pull {image}:latest', warn=True)
@@ -73,15 +75,17 @@ def build(
 
 
 @command
-def debug(context):
+def debug(context: 'Context'):
     """Print a message for debugging purposes."""
     context.run('echo "Success."')
 
 
 @command
-def generate_artifacts(context):
+def generate_artifacts(context: 'Context'):
     """Generate artifacts."""
     from django.db.models import Count
+
+    # Note: wordcloud is a dev-only dependency.
     from wordcloud import WordCloud
 
     from apps.topics.models.topic import Topic

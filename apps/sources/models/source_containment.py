@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CASCADE, ForeignKey
 from django.utils.html import format_html
+from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.serializers import ContainmentSerializer
 from core.models.positioned_relation import PositionedRelation
@@ -19,6 +20,20 @@ CONTAINMENT_PHRASES = (
     ('reproduced', 'reproduced'),
     ('transcribed', 'transcribed'),
 )
+
+
+class ContainmentPhrase(models.TextChoices):
+    """Containment phrase options."""
+
+    ARCHIVED = 'archived', _('archived in')
+    CITED = 'cited', _('cited in')
+    COPY = 'copy', _('copy in')
+    INCLUDED = 'included', _('as included in')
+    QUOTED = 'quoted', _('quoted in')
+    RECORDED = 'recorded', _('recorded in')
+    REPRODUCED = 'reproduced', _('reproduced in')
+    TRANSCRIBED = 'transcribed', _('transcribed in')
+    __empty__ = '-------'
 
 
 class SourceContainment(PositionedRelation):
@@ -38,7 +53,7 @@ class SourceContainment(PositionedRelation):
     end_page_number = models.PositiveSmallIntegerField(null=True, blank=True)
     phrase = models.CharField(
         max_length=PHRASE_MAX_LENGTH,
-        choices=CONTAINMENT_PHRASES,
+        choices=ContainmentPhrase.choices,
         default='',
         blank=True,
     )

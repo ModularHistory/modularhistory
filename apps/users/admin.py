@@ -1,15 +1,10 @@
-from allauth.socialaccount.admin import (
-    SocialAccountAdmin,
-    SocialAppAdmin,
-    SocialTokenAdmin,
-)
-from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, Permission
 
 from apps.admin.admin_site import admin_site
+from apps.users.models import SocialAccount
 
 User = get_user_model()
 
@@ -60,9 +55,7 @@ class UserCreationForm(forms.ModelForm):
         widget=forms.TextInput(attrs=DEFAULT_WIDGET_ATTRIBUTES),
     )
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(
-        label='Password confirmation', widget=forms.PasswordInput
-    )
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
     force_password_change = forms.BooleanField(
         help_text='Prompt user to change password upon first login',
         required=False,
@@ -107,9 +100,7 @@ class UserCreationForm(forms.ModelForm):
 
     def clean_username(self):
         """Clean the username field value."""
-        username = self.cleaned_data.get(USERNAME_FIELD) or self.cleaned_data.get(
-            EMAIL_FIELD
-        )
+        username = self.cleaned_data.get(USERNAME_FIELD) or self.cleaned_data.get(EMAIL_FIELD)
         if User.objects.filter(username=username).count() > 0:
             raise forms.ValidationError(
                 'An account with this username has already been created.'
@@ -165,9 +156,7 @@ class UserChangeForm(forms.ModelForm):
         max_length=MAX_NAME_LENGTH,
         widget=forms.TextInput(attrs=DEFAULT_WIDGET_ATTRIBUTES),
     )
-    force_password_change = forms.BooleanField(
-        label='Force password change', required=False
-    )
+    force_password_change = forms.BooleanField(label='Force password change', required=False)
     locked = forms.BooleanField(label='Locked', required=False)
     groups = forms.ModelMultipleChoiceField(
         label='Groups',
@@ -273,6 +262,8 @@ class UserAdmin(BaseUserAdmin):
 
 admin_site.register(User, UserAdmin)
 
-admin_site.register(SocialApp, SocialAppAdmin)
-admin_site.register(SocialToken, SocialTokenAdmin)
-admin_site.register(SocialAccount, SocialAccountAdmin)
+# admin_site.register(SocialApp, SocialAppAdmin)
+# admin_site.register(SocialToken, SocialTokenAdmin)
+# admin_site.register(SocialAccount, SocialAccountAdmin)
+
+admin_site.register(SocialAccount)

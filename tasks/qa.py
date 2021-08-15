@@ -1,23 +1,21 @@
 """See Invoke's documentation: http://docs.pyinvoke.org/en/stable/."""
 
-from typing import Optional
+from glob import iglob
+from typing import TYPE_CHECKING, Optional
 
 import django
 
-try:
-    from core.linters import flake8 as lint_with_flake8
-    from core.linters import mypy as lint_with_mypy
-except ModuleNotFoundError:
-    print('Skipped importing nonexistent linting modules.')
 from core.utils import qa
+from tasks.command import command
 
-from .command import command
+if TYPE_CHECKING:
+    from invoke.context import Context
 
 django.setup()
 
 
 @command
-def autoformat(context, filepaths: Optional[str] = None):
+def autoformat(context: 'Context', filepaths: Optional[str] = None):
     """Safely run autoformatters against all Python files."""
     # Note: If we were using Invoke directly, we could use the iterable flag feature:
     # http://docs.pyinvoke.org/en/stable/concepts/invoking-tasks.html?highlight=incrementable#iterable-flag-values
@@ -28,31 +26,16 @@ def autoformat(context, filepaths: Optional[str] = None):
 
 
 @command
-def flake8(context, *args):
-    """Run flake8 linter."""
-    lint_with_flake8(interactive=True)
-
-
-@command
-def mypy(context, *args):
-    """Run mypy static type checker."""
-    lint_with_mypy()
-
-
-@command
-def lint(context, *args):
+def lint(context: 'Context', files: str = '**/*.py', mypy: bool = True):
     """Run linters."""
-    # Run Flake8
-    print('Running flake8...')
-    lint_with_flake8(interactive=True)
-
-    # Run MyPy
-    print('Running mypy...')
-    lint_with_mypy()
+    _command = ('flake8 {filepath}; mypy {filepath}' if mypy else 'flake8 {filepath}').format
+    for filepath in iglob(files, recursive=True):
+        # Run linters.
+        context.run(_command(filepath=filepath), warn=True)
 
 
 @command
-def test(context, docker: bool = True, fail_fast: bool = False):
+def test(context: 'Context', docker: bool = True, fail_fast: bool = False):
     """Run tests."""
     pytest_args = [
         '-v',

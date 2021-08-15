@@ -1,8 +1,8 @@
 import { AxiosResponse } from "axios";
-import { Session, User } from "next-auth";
+import { Account, Session, User } from "next-auth";
 import { signIn, signOut } from "next-auth/client";
 import { JWT } from "next-auth/jwt";
-import { Router } from "next/router";
+import { NextRouter } from "next/router";
 import axios from "./axiosWithAuth";
 
 export const DJANGO_CSRF_COOKIE_NAME = "csrftoken";
@@ -25,11 +25,11 @@ export interface Credentials {
   password: string;
 }
 
-const makeDjangoApiUrl = (endpoint) => {
+export const makeDjangoApiUrl = (endpoint: string): string => {
   return `http://django:8000/api${endpoint}`;
 };
 
-export const handleLogin = (router: Router): void => {
+export const handleLogin = (router: NextRouter): void => {
   // If not already on the sign-in page, initiate the sign-in process.
   // (This prevents messing up the callbackUrl by reloading the sign-in page.)
   if (router.pathname != "/auth/signin") {
@@ -137,24 +137,10 @@ interface SocialMediaAccountCredentials {
 
 export const authenticateWithSocialMediaAccount = async (
   user: User,
-  provider: Record<string, string>
+  account: Account
 ): Promise<User> => {
-  const url = makeDjangoApiUrl(`/users/auth/${provider.provider}`);
   const credentials: SocialMediaAccountCredentials = { user };
-  switch (provider.provider) {
-    // case "github": {
-    //   // https://next-auth.js.org/providers/github
-    //   // Retrieve email address, if necessary.
-    //   if (!user.email) {
-    //     const emailRes = await fetch("https://api.github.com/user/emails", {
-    //       headers: { Authorization: `token ${provider.accessToken}` },
-    //     });
-    //     const emails = await emailRes.json();
-    //     if (emails?.length !== 0) {
-    //       user.email = emails.find((emails) => emails.primary).email;
-    //     }
-    //   }
-    // }
+  switch (account.provider) {
     // https://next-auth.js.org/providers/discord
     // https://next-auth.js.org/providers/facebook
     // https://next-auth.js.org/providers/github
@@ -164,16 +150,34 @@ export const authenticateWithSocialMediaAccount = async (
     case "facebook":
     case "google":
     case "twitter":
-      credentials.access_token = provider.accessToken;
-      credentials.refresh_token = provider.refreshToken;
+      credentials.access_token = account.accessToken;
+      credentials.refresh_token = account.refreshToken;
       break;
+    case "github": {
+      // https://next-auth.js.org/providers/github
+      // Retrieve email address, if necessary.
+      if (!user.email) {
+        const emailRes = await fetch("https://api.github.com/user/emails", {
+          headers: { Authorization: `token ${account.accessToken}` },
+        });
+        const emails = await emailRes.json();
+        if (emails?.length !== 0) {
+          user.email = emails.find((emails) => emails.primary).email;
+        }
+      }
+      credentials.access_token = account.accessToken;
+      credentials.refresh_token = account.refreshToken;
+      break;
+    }
     default:
       // eslint-disable-next-line no-console
-      console.error("Unsupported provider:", provider.provider);
+      console.error("Unsupported provider:", account.provider);
       return user;
   }
+  console.log("user:", user);
+  console.log("account:", account);
   await axios
-    .post(url, credentials)
+    .post(makeDjangoApiUrl(`/users/auth/${account.provider}/`), { user, account, credentials })
     .then(function (response) {
       /*
         Attach necessary values to the user object.

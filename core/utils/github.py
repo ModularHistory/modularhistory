@@ -1,6 +1,6 @@
 import os
 from getpass import getpass
-from typing import Optional, Tuple
+from typing import Optional
 
 import requests
 from django.conf import settings
@@ -19,12 +19,13 @@ def pat_is_valid(username: str, pat: str) -> bool:
         auth=(username, pat),
         headers={'Accept': 'application/vnd.github.v3+json'},
     )
+    print(pat_validity_check.status_code)
     return pat_validity_check.status_code == 200
 
 
 def accept_credentials(
     username: Optional[str] = None, pat: Optional[str] = None
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     """Accept a GitHub username and password/PAT as input and store for future use."""
     if username or pat:
         if username and pat:

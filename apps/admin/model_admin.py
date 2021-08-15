@@ -1,14 +1,16 @@
 import re
-from typing import List, Optional, Tuple, Type, Union
+from typing import Mapping, Optional, Type, Union
 
 from aenum import Constant
 from django.conf import settings
 from django.contrib.admin import ListFilter
 from django.contrib.admin import ModelAdmin as BaseModelAdmin
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.contrib.sites.models import Site
+from django.db.models import Model
+from django.db.models.fields import Field
 from django.db.models.query import QuerySet
+from django.forms import CharField, TextInput, Widget
 from django.http import HttpRequest
 from django_celery_beat.admin import PeriodicTaskAdmin
 from django_celery_beat.models import (
@@ -23,19 +25,27 @@ from polymorphic.admin import PolymorphicInlineSupportMixin
 from sass_processor.processor import sass_processor
 
 from apps.admin.admin_site import admin_site
+from apps.admin.widgets.historic_date_widget import HistoricDateWidget
+from apps.admin.widgets.json_editor_widget import JSONEditorWidget
 from apps.dates.fields import HistoricDateTimeField
 from core.constants.environments import Environments
-from core.fields import JSONField
-from core.forms import HistoricDateWidget
-from core.models.model import Model
-from core.widgets.json_editor_widget import JSONEditorWidget
+from core.fields.html_field import HTMLField, TrumbowygWidget
+from core.fields.json_field import JSONField
+from core.models.manager import SearchableQuerySet
 
 AdminListFilter = Union[str, Type[ListFilter]]
 
+char_counter_code = (
+    'if ($(this)).attr("maxLength")) {{ console.log("yes") }} else {{ console.log("no") }}'
+)
 
-FORM_FIELD_OVERRIDES = {
+FORM_FIELD_OVERRIDES: Mapping[Type[Field], Mapping[str, Type[Widget]]] = {
+    CharField: {
+        'widget': TextInput(attrs={'onClick': char_counter_code, 'style': 'width: 100%'})
+    },
     HistoricDateTimeField: {'widget': HistoricDateWidget},
-    JSONField: {'widget': JSONEditorWidget()},
+    HTMLField: {'widget': TrumbowygWidget},
+    JSONField: {'widget': JSONEditorWidget},
 }
 
 if settings.ENVIRONMENT == Environments.DEV:
@@ -47,6 +57,8 @@ else:
     MCE_CSS = 'styles/mce.css'
     ADMIN_CSS = 'styles/admin.css'
 
+TRUMBOWYG_CDN_BASE_URL = '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0'
+
 
 class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
     """Base admin class for ModularHistory's models."""
@@ -55,33 +67,26 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
 
     formfield_overrides = FORM_FIELD_OVERRIDES
 
-    list_display: List[str]
-    list_filter: List[AdminListFilter]
-    ordering: List[str]
-    readonly_fields: List[str]
-    search_fields: List[str]
-    autocomplete_fields: List[str]
-
     class Media:
         css = {
             'all': (
                 'https://use.fontawesome.com/releases/v5.11.2/css/all.css',
-                # 'https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css',  # TODO
+                f'{TRUMBOWYG_CDN_BASE_URL}/ui/trumbowyg.min.css',
+                f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/ui/trumbowyg.table.min.css',
                 BASE_CSS,
-                MCE_CSS,
                 ADMIN_CSS,
             )
         }
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jQuery
-            '//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js',  # Bootstrap
-            '//cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js',  # EPub.JS
-            'scripts/base.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
+            f'{TRUMBOWYG_CDN_BASE_URL}/trumbowyg.min.js',
+            f'{TRUMBOWYG_CDN_BASE_URL}/plugins/table/trumbowyg.table.min.js',
+            'scripts/admin.js',
         )
 
     def get_readonly_fields(
         self, request: HttpRequest, model_instance: Optional['Model'] = None
-    ) -> List[str]:
+    ) -> list[str]:
         """Add additional readonly fields."""
         default_readonly_fields = ('cache',)
         readonly_fields = list(super().get_readonly_fields(request, model_instance))
@@ -92,37 +97,16 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         return list(set(readonly_fields))
 
     def get_search_results(
-        self, request: HttpRequest, queryset: QuerySet, search_term: str
-    ) -> Tuple[QuerySet, bool]:
+        self,
+        request: HttpRequest,
+        queryset: Union[QuerySet, SearchableQuerySet],
+        search_term: str = '',
+    ) -> tuple[QuerySet, bool]:
         """Return model instances matching the supplied search term."""
-        queryset, use_distinct = super().get_search_results(
-            request, queryset, search_term
-        )
         search_term = search_term.strip()
-        if search_term:
-            searchable_fields = (
-                getattr(self.model, 'searchable_fields', None) or self.search_fields
-            )
-            if searchable_fields:
-                # Use Postgres full-text search.
-                weights = ['A', 'B', 'C', 'D']
-                vector = SearchVector(searchable_fields[0], weight=weights[0])
-                for index, field in enumerate(searchable_fields[1:]):
-                    try:
-                        weight = weights[index + 1]
-                    except IndexError:
-                        weight = 'D'
-                    vector += SearchVector(field, weight=weight)
-                search_terms = search_term.split(' ')
-                # https://www.postgresql.org/docs/current/functions-textsearch.html
-                query = f'{" & ".join(search_terms)}:*'
-                queryset = (
-                    self.model.objects.annotate(
-                        rank=SearchRank(vector, SearchQuery(query, search_type='raw'))
-                    )
-                    .filter(rank__gt=0.0)
-                    .order_by('-rank')
-                )
+        searchable_fields = (
+            getattr(self.model, 'searchable_fields', None) or self.search_fields
+        )
         # If the request comes from the admin edit page for a model instance,
         # exclude the model instance from the search results. This prevents
         # inline admins from displaying an unwanted value in an autocomplete
@@ -133,6 +117,15 @@ class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
         if match:
             pk = int(match.group(1))
             queryset = queryset.exclude(pk=pk)
+        if isinstance(queryset, SearchableQuerySet):
+            queryset, use_distinct = (
+                queryset.search(search_term, elastic=False, fields=searchable_fields),
+                False,
+            )
+        else:
+            queryset, use_distinct = super().get_search_results(
+                request, queryset, search_term
+            )
         return queryset, use_distinct
 
 
@@ -169,7 +162,7 @@ class SiteAdmin(ModelAdmin):
     """
     Admin for sites.
 
-    Ref: https://docs.djangoproject.com/en/3.1/ref/contrib/sites/
+    Ref: https://docs.djangoproject.com/en/dev/ref/contrib/sites/
     """
 
     model = Site

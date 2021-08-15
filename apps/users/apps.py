@@ -34,7 +34,7 @@ class UsersConfig(AppConfig):
         """
         Perform initialization tasks for the users app.
 
-        https://docs.djangoproject.com/en/3.1/ref/applications/#django.apps.AppConfig.ready
+        https://docs.djangoproject.com/en/dev/ref/applications/#django.apps.AppConfig.ready
         """
         ready = super().ready()
         register(superuser_check)

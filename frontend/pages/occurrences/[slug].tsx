@@ -1,19 +1,19 @@
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { OccurrenceModule } from "@/interfaces";
+import { Occurrence } from "@/interfaces";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
 interface OccurrenceProps {
-  occurrence: OccurrenceModule;
+  occurrence: Occurrence;
 }
 
 /**
  * A page that renders the HTML of a single occurrence.
  */
-const Occurrence: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
+const OccurrenceDetailPage: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
   return (
     <Layout title={occurrence.title}>
       <ModuleContainer>
@@ -22,7 +22,7 @@ const Occurrence: FC<OccurrenceProps> = ({ occurrence }: OccurrenceProps) => {
     </Layout>
   );
 };
-export default Occurrence;
+export default OccurrenceDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let occurrence = {};
@@ -33,7 +33,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       occurrence = response.data;
     })
-    .catch((_error) => {
+    .catch(() => {
       occurrence = null;
     });
 

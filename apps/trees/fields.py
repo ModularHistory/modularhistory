@@ -28,6 +28,7 @@ class Ancestor(models.Lookup):
     lookup_name = 'ancestor'
 
     def as_sql(self, qn, connection):
+        """Return the SQL for the lookup."""
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
         params = lhs_params + rhs_params
@@ -40,6 +41,7 @@ class Descendant(models.Lookup):
     lookup_name = 'descendant'
 
     def as_sql(self, qn, connection):
+        """Return the SQL for the lookup."""
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
         params = lhs_params + rhs_params

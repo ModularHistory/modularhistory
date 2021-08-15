@@ -1,10 +1,10 @@
-import { FC, useState } from "react";
+import { Breakpoint, Theme, useMediaQuery, useTheme } from "@material-ui/core";
+import MuiPagination from "@material-ui/core/Pagination";
+import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
-import MuiPagination from "@material-ui/lab/Pagination";
-import { makeStyles, useMediaQuery, useTheme } from "@material-ui/core";
-import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
+import { FC, useState } from "react";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     // override bootstrap css
     "& button:focus": { outline: "none" },
@@ -52,8 +52,9 @@ const Pagination: FC<PaginationProps> = ({ count }: PaginationProps) => {
   const classes = useStyles(theme);
 
   // increase pagination size based on viewport size
-  const breakpoints: Breakpoint[] = ["sm", "md"];
+  const breakpoints: ReadonlyArray<Breakpoint> = ["sm", "md"];
   const sibCount = breakpoints
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     .map((breakpoint) => useMediaQuery(theme.breakpoints.up(breakpoint)))
     .reduce((sum, current) => sum + Number(current), 1);
 

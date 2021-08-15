@@ -8,8 +8,8 @@ from core.models.model import ModelSerializer
 class TopicSerializer(ModelSerializer):
     """Serializer for topics."""
 
-    name = serpy.Field()
-    key = serpy.StrField()
+    name = serpy.StrField()
+    slug = serpy.StrField()
     aliases = serpy.StrField()
     description = serpy.StrField()
     path = serpy.StrField()
@@ -23,4 +23,5 @@ class TopicDictSerializer:
     """Serializer for topics retrieved from ORM with `.values()`."""
 
     def __init__(self, queryset, *args, **kwargs):
+        """Construct the serializer."""
         self.data = list(queryset)

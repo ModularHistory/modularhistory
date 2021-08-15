@@ -5,23 +5,22 @@ from typing import Optional, Type, Union
 
 from celery import shared_task
 from django.apps import apps
-from django.db.models.fields.related import ManyToManyField
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.models.citation import AbstractCitation
 from core.constants.strings import EMPTY_STRING
-from core.fields import HTMLField
 from core.fields.custom_m2m_field import CustomManyToManyField
-from core.models.model import Model
+from core.fields.html_field import HTMLField
+from core.models.model import ExtendedModel
 
 
 class SourcesField(CustomManyToManyField):
-    """Field for sources."""
+    """Custom field for m2m relationship with sources."""
 
     target_model = 'sources.Source'
-    through_model = AbstractCitation
+    through_model_base = AbstractCitation
 
     def __init__(self, through: Union[Type[AbstractCitation], str], **kwargs):
         """Construct the field."""
@@ -30,7 +29,7 @@ class SourcesField(CustomManyToManyField):
         super().__init__(**kwargs)
 
 
-class ModelWithSources(Model):
+class ModelWithSources(ExtendedModel):
     """
     A model that has sources; e.g., a quote or occurrence.
 
@@ -63,7 +62,7 @@ class ModelWithSources(Model):
     @property
     def citations(self):
         """
-        The `related_name` value for the intermediate citation model.
+        Require the `related_name` value of the intermediate model to be 'citations'.
 
         Models inheriting from ModelWithSources must have a m2m relationship
         with the Source model with a `through` model that inherits from
@@ -83,12 +82,20 @@ class ModelWithSources(Model):
         )
 
     @property
-    def sources(self) -> ManyToManyField:
+    def sources(self) -> SourcesField:
+        """
+        Require implementation of a `sources` field on inheriting models.
+
+        For example:
+        ``
+        sources = SourcesField(through=Citation)
+        ``
+        """
         raise NotImplementedError
 
     @property
     def source_file_url(self) -> Optional[str]:
-        """TODO: write docstring."""
+        """Return the URL of the source file."""
         if self.citation:
             return self.citation.source_file_url
         return None
@@ -120,6 +127,6 @@ def cache_citations(model: str, instance_id: int, citations: list):
     if not citations:
         return
     Model = apps.get_model(model)  # noqa: N806
-    model_instance: ModelWithSources = Model.objects.get(pk=instance_id)  # noqa: N806
+    model_instance: ModelWithSources = Model.objects.get(pk=instance_id)
     model_instance.cache['citations'] = citations
     model_instance.save(wipe_cache=False)

@@ -8,10 +8,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
 
-class ContentInteraction(Model):
+class ContentInteraction(ExtendedModel):
     """Abstract base model for content interactions."""
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -24,7 +24,7 @@ class ContentInteraction(Model):
     class Meta:
         """Meta options for ContentInteraction."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 
@@ -41,7 +41,7 @@ class FieldContentInteraction(ContentInteraction):
     class Meta:
         """Meta options for FieldContentInteraction."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 

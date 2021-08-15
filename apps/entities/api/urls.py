@@ -10,5 +10,4 @@ app_name = 'entities'
 
 urlpatterns = [
     path('', views.EntityListAPIView.as_view()),
-    path('partial/', views.EntityPartialAPIView.as_view()),
 ]

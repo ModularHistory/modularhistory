@@ -3,7 +3,7 @@
 import json
 import logging
 from pprint import pformat
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Optional, Type, Union
 
 from django.core.exceptions import ValidationError
 from django.db.models import (  # type: ignore  # https://github.com/typeddjango/django-stubs/issues/439  # noqa: E501
@@ -23,7 +23,7 @@ class JSONField(BaseJSONField):
     Adds pre-save validation functionality.
     """
 
-    schema: Optional[Union[str, Dict]]
+    schema: Optional[Union[str, dict]]
     model: Type['Model']
 
     def __init__(self, *args, schema=None, **kwargs):
@@ -51,7 +51,7 @@ class JSONField(BaseJSONField):
                 self._validate_schema(json_value, model_instance)
         return json_value
 
-    def get_schema_data(self, model_instance) -> Optional[Dict]:
+    def get_schema_data(self, model_instance) -> Optional[dict]:
         """Return the field's JSON schema as a Python object."""
         schema = self.schema
         if schema:
@@ -152,7 +152,7 @@ class ExtraField:
         return stored_value
 
     @staticmethod
-    def to_json(value_to_store) -> Union[str, int, List, Dict]:
+    def to_json(value_to_store) -> Union[str, int, dict]:
         """Transform a value to a format suitable for storage in JSON."""
         return value_to_store
 

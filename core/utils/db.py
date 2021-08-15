@@ -8,6 +8,7 @@ from typing import Optional
 from zipfile import ZipFile
 
 from celery import shared_task
+from celery_singleton import Singleton
 from django.conf import settings
 from django.db import transaction
 from invoke.context import Context
@@ -25,21 +26,22 @@ DAYS_TO_KEEP_BACKUP = 7
 SECONDS_IN_DAY = 86400
 SECONDS_TO_KEEP_BACKUP = DAYS_TO_KEEP_BACKUP * SECONDS_IN_DAY
 BACKUP_FILES_PATTERN = join(settings.BACKUPS_DIR, '*sql')
-
 CONTEXT = Context()
 
 
-@shared_task
+@shared_task(base=Singleton)
 def groom_backup_files():
     """Remove old and/or duplicate db backup files."""
-    logging.info('Deduping backup files ...')
-    Context().run(f'fdupes -rdN {settings.BACKUPS_DIR}', warn=True)
-    logging.info('Removing old backup files ...')
+    context = Context()
+    logging.info('Pruning backup files ...')
     end = '{} \;'  # noqa: W605, P103
-    Context().run(
+    context.run(
         f'find {BACKUP_FILES_PATTERN} -mtime +{DAYS_TO_KEEP_BACKUP} -exec rm {end}',
         warn=True,
     )
+    # For each day, keep the first,
+    logging.info('Deduping backup files ...')
+    context.run(f'fdupes -rdIN {settings.BACKUPS_DIR}', warn=True)
 
 
 def backup(
@@ -58,9 +60,7 @@ def backup(
     temp_file = max(backup_files, key=os.path.getctime)
     backup_filepath = temp_file.replace('.psql', '.sql')
     if filename:
-        backup_filepath = backup_filepath.replace(
-            os.path.basename(backup_filepath), filename
-        )
+        backup_filepath = backup_filepath.replace(os.path.basename(backup_filepath), filename)
     else:
         filename = os.path.basename(backup_filepath)
     with open(temp_file, 'r') as unprocessed_backup:
@@ -74,7 +74,7 @@ def backup(
                     re.match(r'(.*DROP\ |--\n?$)', line),
                     # fmt: off
                     redact and not line.startswith(r'\.') and re.match(
-                        r'COPY public\.(users_user|.+user_id)', previous_line
+                        r'COPY public\.(users_user|.+user_id|silk_)', previous_line
                     )
                     # fmt: on
                 ]
@@ -128,8 +128,7 @@ def clear_migration_history(context: Context = CONTEXT, app: str = ''):
                 input('Press enter to continue.')
             else:
                 raise Exception(
-                    f'Failed to clear migration history for {app_name}: '
-                    f'{result.stderr}'
+                    f'Failed to clear migration history for {app_name}: ' f'{result.stderr}'
                 )
         else:
             print(f'Skipped {app_name} because it only has {n_migrations} migrations.')
@@ -273,21 +272,16 @@ def seed(
     print('Initializing postgres data...')
     context.run('docker-compose up -d postgres')
     print('Waiting for Postgres to finish recreating the database...')
-    sleep(10)  # Give postgres time to recreate the database.
+    sleep(15)  # Give postgres time to recreate the database.
     if migrate:
         context.run('docker-compose run django_helper python manage.py migrate')
-    if input('Create a superuser (for testing the website)? [Y/n] ') != NEGATIVE:
-        sleep(1)
-        instructions = (
-            'When prompted, enter the username and password you would like to use '
-            'for your superuser account.'
-        )
-        context.run(
-            "docker-compose run django_helper bash -c '"
-            f'echo "{instructions}" && python manage.py createsuperuser'
-            "'",
-            pty=True,
-        )
+    context.run(
+        "docker-compose run django_helper bash -c '"
+        'python manage.py createsuperuser --no-input '
+        '--username=admin --email=admin@example.com &>/dev/null'
+        "'",
+        pty=True,
+    )
     if up:
         context.run('docker-compose up -d dev')
 
@@ -344,7 +338,7 @@ def sync(
     push: bool = False,
 ):
     """Sync the db seed from source to destination, modifying destination only."""
-    return files.sync(
+    files.sync(
         local_dir=settings.DB_INIT_DIR,
         remote_dir='/database/',
         push=push,

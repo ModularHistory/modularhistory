@@ -42,11 +42,13 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const callbackUrl = `${router.query?.callbackUrl}`;
+  const redirectUrl = callbackUrl || process.env.BASE_URL;
   useEffect(() => {
     if (router.query?.error) {
       setError(`${router.query?.error}`);
     }
-  }, []);
+  }, [router.query?.error]);
   useEffect(() => {
     if (redirecting) {
       const url = redirectUrl ?? window.location.origin;
@@ -60,9 +62,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
         window.location.replace(url);
       }
     }
-  }, [redirecting]);
-  const callbackUrl = `${router.query?.callbackUrl}`;
-  const redirectUrl = callbackUrl || process.env.BASE_URL;
+  }, [redirecting, router, redirectUrl]);
   const handleCredentialLogin = async (event) => {
     event.preventDefault();
     if (!username || !password) {
@@ -98,21 +98,23 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   };
   const socialAuthLoginComponents = [];
   let SocialLoginButton;
-  Object.entries(providers).forEach(([, provider]) => {
-    if (provider.id === CREDENTIALS_KEY) {
-      return null;
-    }
-    SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
-    socialAuthLoginComponents.push(
-      <SocialLoginButton
-        key={provider.name}
-        style={{ minWidth: "245px", maxWidth: "245px" }}
-        onClick={() => handleSocialLogin(provider.id)}
-      >
-        Sign in with {provider.name}
-      </SocialLoginButton>
-    );
-  });
+  if (providers) {
+    Object.entries(providers).forEach(([, provider]) => {
+      if (provider.id === CREDENTIALS_KEY) {
+        return null;
+      }
+      SocialLoginButton = SOCIAL_LOGIN_BUTTONS[provider.id];
+      socialAuthLoginComponents.push(
+        <SocialLoginButton
+          key={provider.name}
+          style={{ minWidth: "245px", maxWidth: "245px" }}
+          onClick={() => handleSocialLogin(provider.id)}
+        >
+          Sign in with {provider.name}
+        </SocialLoginButton>
+      );
+    });
+  }
   if (loading) return null;
   return (
     <Layout title={"Sign in"}>
@@ -127,7 +129,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
           {session?.user && !redirecting && (
             <Paper className="p-4 text-center">
               <p className="lead">
-                You are logged in as <strong>{session.user.username || session.user.email}</strong>.
+                You are logged in as <strong>{session.user.email}</strong>.
               </p>
               <br />
               <Button
@@ -147,7 +149,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                   Sign in
                 </h1>
                 <form method="post" onSubmit={handleCredentialLogin}>
-                  <input type="hidden" name="csrfToken" value={csrfToken} />
+                  {csrfToken && <input type="hidden" name="csrfToken" value={csrfToken} />}
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <Grid container spacing={2}>
@@ -177,16 +179,18 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
-                      <Button color="primary" fullWidth type="submit" variant="contained">
+                      <Button fullWidth type="submit" variant="contained">
                         Sign in
                       </Button>
                     </Grid>
                   </Grid>
                 </form>
                 <Divider style={{ width: "100%", marginTop: "2rem", marginBottom: "2rem" }} />
-                <Grid id="social-sign-in" container justify="center">
-                  {socialAuthLoginComponents}
-                </Grid>
+                {(!!socialAuthLoginComponents.length && (
+                  <Grid id="social-sign-in" container justifyContent="center">
+                    {socialAuthLoginComponents}
+                  </Grid>
+                )) || <p className="text-center">Other sign-in options are unavailable.</p>}
               </div>
             ))}
         </Box>
@@ -202,7 +206,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       providers: await providers(),
-      csrfToken: await csrfToken(context),
+      csrfToken: (await csrfToken(context)) || null,
     }, // passed to the page component as props
   };
 };

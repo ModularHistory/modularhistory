@@ -1,8 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from typedmodels.models import TypedModel
 
-from core.models.model import TypedModel
+from core.models.manager import TypedModelManager
 from core.models.model_with_cache import ModelWithCache, store
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
@@ -28,7 +29,6 @@ class Place(TypedModel, ModelWithCache):
 
     name = models.CharField(
         verbose_name=_('name'),
-        null=True,
         blank=True,
         max_length=NAME_MAX_LENGTH,
         unique=True,
@@ -40,14 +40,13 @@ class Place(TypedModel, ModelWithCache):
         null=True,
         on_delete=models.PROTECT,
     )
-    preposition = models.CharField(
-        max_length=2, choices=PREPOSITION_CHOICES, default='in'
-    )
+    preposition = models.CharField(max_length=2, choices=PREPOSITION_CHOICES, default='in')
 
     class Meta:
         unique_together = ['name', 'location']
 
-    slug_base_field = 'string'
+    objects = TypedModelManager()
+    slug_base_fields = ('string',)
 
     def __str__(self) -> str:
         """Return the location's string representation."""
@@ -72,8 +71,7 @@ class Place(TypedModel, ModelWithCache):
         if location:
             inferable_countries = ['United States of America']
             location_is_inferable_country = (
-                location.type == PlaceTypes.country
-                and location.name in inferable_countries
+                location.type == PlaceTypes.country and location.name in inferable_countries
             )
             location_is_inferable = location_is_inferable_country or location.type in {
                 PlaceTypes.region,

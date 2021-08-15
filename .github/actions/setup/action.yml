@@ -15,6 +15,11 @@ inputs:
     description: 'Fetch depth'
     required: false
     default: 1
+  environment:
+    description: 'Environment (e.g., "dev" or "prod")'
+    required: false
+    default: ""
+
 runs:
   # https://github.com/mithro/actions-includes
   using: "includes"
@@ -53,16 +58,22 @@ runs:
         path: .venv
         key: venv-${{ inputs.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
     # Make sure Poetry environment is healthy.
-    - name: Test poetry environment
+    - name: Test poetry environment (A)
       id: venv-test
+      continue-on-error: true
       if: ${{ steps.venv-cache.outputs.cache-hit == 'true' }}
       run: poetry run invoke debug
     # Install Python dependencies if necessary.
     - name: Install Python dependencies
-      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || failure() }}
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: |
+        poetry --version
         echo "${{ inputs.os }}" | grep -i --quiet "macos" && brew install graphviz || sudo apt-get install -y graphviz graphviz-dev
         poetry install --no-root
+    # Make sure Poetry environment is healthy after dependencies are installed.
+    - name: Test poetry environment (B)
+      if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
+      run: poetry run invoke debug
     # Load cached node_modules dir, if it exists.
     - name: Cache node modules
       uses: actions/cache@v2.1.5
@@ -77,3 +88,5 @@ runs:
         cd frontend
         npm ci
         cd ..
+    - name: Create .env file
+      run: echo "${{ inputs.environment }}" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file

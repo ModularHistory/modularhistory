@@ -34,9 +34,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .get(`http://django:8000/api/staticpages//${path}/`)
     .then((response) => {
       page = response.data;
-    })
-    .catch((error) => {
-      // TODO: how should we handle errors here?
     });
 
   return {

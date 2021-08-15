@@ -1,16 +1,15 @@
 """Models for the search app."""
 
-from typing import List, Tuple
 
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
-from core.models.model import Model
+from core.models.model import ExtendedModel
 
-CONTENT_TYPE_OPTIONS: List[Tuple[str, str]] = [
-    ('occurrences.occurrence', 'Occurrences'),
+CONTENT_TYPE_OPTIONS: list[tuple[str, str]] = [
+    ('propositions.occurrence', 'Occurrences'),
     ('quotes.quote', 'Quotes'),
     ('images.image', 'Images'),
     ('sources.source', 'Sources'),
@@ -19,7 +18,7 @@ CONTENT_TYPE_OPTIONS: List[Tuple[str, str]] = [
 ORDERING_OPTIONS = (('date', 'Date'), ('relevance', 'Relevance'))
 
 
-class UserSearch(Model):
+class UserSearch(ExtendedModel):
     """An instance of a search by a user."""
 
     user = models.ForeignKey(
@@ -43,12 +42,10 @@ class UserSearch(Model):
         return f'{self.user}, {self.datetime}, `{self.search}`'
 
 
-class Search(Model):
+class Search(ExtendedModel):
     """A search."""
 
-    query = models.CharField(
-        verbose_name=_('query'), max_length=100, null=True, blank=True
-    )
+    query = models.CharField(verbose_name=_('query'), max_length=100, null=True, blank=True)
     ordering = models.CharField(max_length=10, choices=ORDERING_OPTIONS)
     start_year = HistoricDateTimeField(null=True, blank=True)
     end_year = HistoricDateTimeField(null=True, blank=True)
@@ -56,7 +53,7 @@ class Search(Model):
     class Meta:
         """Meta options for Search."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Searches'
 

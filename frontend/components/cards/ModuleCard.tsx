@@ -30,8 +30,10 @@ const useStyles = makeStyles({
     },
     "& .img-bg": {
       position: "absolute",
-      width: "100%",
-      height: "100%",
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
       opacity: "0.8",
       backgroundColor: "black",
       backgroundPosition: "center",
@@ -144,7 +146,11 @@ const ModuleCard: FC<ModuleCardProps> = ({
     bgImage = module;
   }
   return (
-    <Card className={`m-2 ${classes.card} ${className || ""}`} style={style}>
+    <Card
+      className={`m-2 ${classes.card} ${className || ""}`}
+      style={style}
+      data-type={module.model}
+    >
       {false && process.env.ENVIRONMENT != "prod" && !module.verified && (
         <span style={{ display: "inline-block", position: "absolute", top: "1px", right: "1px" }}>
           UNVERIFIED
@@ -165,7 +171,7 @@ const ModuleCard: FC<ModuleCardProps> = ({
       )}
       {header ? (
         <p className={`text-center ${classes.cardHeader}`}>
-          <small>{header}</small>
+          <small dangerouslySetInnerHTML={{ __html: header }} />
         </p>
       ) : module.dateString ? (
         <p className={`text-center ${classes.cardHeader}`}>

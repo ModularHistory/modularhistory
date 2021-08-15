@@ -3,7 +3,7 @@ import os
 import tempfile
 from datetime import datetime
 from pprint import pformat
-from typing import IO, Any, List, Optional, Tuple
+from typing import IO, Any, Optional
 
 import requests
 from django.conf import settings
@@ -71,7 +71,7 @@ class MegaClient(Mega):
                 raise ValueError('Mismatched mac')
             return temp_output_file
 
-    def _get_file_stream(self, url: str) -> Tuple[Any, ...]:
+    def _get_file_stream(self, url: str) -> tuple[Any, ...]:
         """Return a file stream and other values needed by get_temporary_file."""
         is_public = True
         path = self._parse_url(url).split('!')
@@ -136,9 +136,6 @@ mega_clients = {'default': mega_client}
 if IS_PROD and mega_client:
     mega_clients[Environments.DEV] = mega_client
     mega_user = mega_client.get_user()
-    logging.info(
-        f'Obtained Mega client for {settings.MEGA_DEV_USERNAME}: {pformat(mega_user)}'
-    )
 else:
     mega_clients[Environments.DEV] = mega_client
 
@@ -150,7 +147,7 @@ class MegaStorage(Storage):
         """
         Delete the file referenced by name.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.delete
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.delete
         """
         mega_client.delete(name)
 
@@ -158,7 +155,7 @@ class MegaStorage(Storage):
         """
         Return whether a file with the given name already exists in the storage system.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.exists
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.exists
         """
         return mega_client.find(name) is not None
 
@@ -169,7 +166,7 @@ class MegaStorage(Storage):
         If USE_TZ is True, returns an aware datetime;
         otherwise returns a naive datetime in the local timezone.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_accessed_time
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.get_accessed_time
         """
         url = mega_client.get_url_from_name(name)
         return datetime.fromtimestamp(mega_client.get_file_info(url).st_atime)
@@ -190,7 +187,7 @@ class MegaStorage(Storage):
         If a file with name already exists, get_alternative_name() is called
         to obtain an alternative name.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_available_name
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.get_available_name
         """
         # TODO
         dir_name, file_name = os.path.split(name)
@@ -226,7 +223,7 @@ class MegaStorage(Storage):
         """
         Return the datetime of the file's creation.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_created_time
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.get_created_time
         """
         url = mega_client.get_url_from_name(name)
         return datetime.fromtimestamp(mega_client.get_file_info(url).st_ctime)
@@ -235,7 +232,7 @@ class MegaStorage(Storage):
         """
         Return the datetime of the file's last modification.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.get_modified_time
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.get_modified_time
         """
         url = mega_client.get_url_from_name(name)
         return datetime.fromtimestamp(mega_client.get_file_info(url).st_mtime)
@@ -253,17 +250,17 @@ class MegaStorage(Storage):
         The default implementation uses os.path operations.
         Override this method if that’s not appropriate for your storage.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.generate_filename
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.generate_filename
         """
         # TODO
         dirname, filename = os.path.split(filename)
         return os.path.normpath(os.path.join(dirname, self.get_valid_name(filename)))
 
-    def listdir(self, path: str) -> Tuple[List[str], List[str]]:
+    def listdir(self, path: str) -> tuple[list[str], list[str]]:
         """
         List the contents of the specified path.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.listdir
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.listdir
         """
         # TODO
         raise NotImplementedError
@@ -276,7 +273,7 @@ class MegaStorage(Storage):
         it might actually be some subclass. In the case of remote file storage,
         this means that reading/writing could be quite slow.  Be warned.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.open
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.open
         """
         url = mega_client.get_url_from_name(name)
         return mega_client.get_temporary_file(url, mode=mode)
@@ -299,7 +296,7 @@ class MegaStorage(Storage):
         The content argument must be an instance of django.core.files.File
         or a file-like object that can be wrapped in File.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.save
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.save
         """
         # TODO: improve implementation to agree with docstring
         with tempfile.NamedTemporaryFile(
@@ -315,7 +312,7 @@ class MegaStorage(Storage):
         """
         Return the total size, in bytes, of the file referenced by name.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.size
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.size
         """
         url = mega_client.get_url_from_name(name)
         return mega_client.get_file_info(url).st_size
@@ -324,6 +321,6 @@ class MegaStorage(Storage):
         """
         Return the URL where the contents of the file referenced by name can be accessed.
 
-        https://docs.djangoproject.com/en/3.1/ref/files/storage/#django.core.files.storage.Storage.url
+        https://docs.djangoproject.com/en/dev/ref/files/storage/#django.core.files.storage.Storage.url
         """
         return mega_client.get_url_from_name(name)

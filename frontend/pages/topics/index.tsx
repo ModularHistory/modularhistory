@@ -1,7 +1,8 @@
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
+import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import { createStyles, makeStyles } from "@material-ui/styles";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
@@ -11,31 +12,33 @@ interface TopicsProps {
   topicsData: any;
 }
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    topicLink: {
+      color: "black",
+      margin: "0.6rem 1.2rem",
+      display: "inline-block",
+    },
+  })
+);
+
 const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
   const topics = topicsData["data"]["topics"] || [];
-
-  //Style for the anchor used in topicNames
-  const topicAnchorStyle = {
-    color: "black",
-  };
-
-  const topicNames = topics.map((topic) => (
-    <Grid item key={topic.name} xs={4}>
-      <Link href={`/topics/${topic.slug}`}>
-        <a style={topicAnchorStyle}>
-          <strong>{topic.name}</strong>
-        </a>
-      </Link>
-    </Grid>
-  ));
+  const classes = useStyles();
 
   return (
     <Layout title={"Topics"}>
       <Container>
         <PageHeader>Topics</PageHeader>
-        <Grid container spacing={2}>
-          {topicNames}
-        </Grid>
+        <div style={{ marginBottom: "2rem", textAlign: "center" }}>
+          {topics.map((topic) => (
+            <Link href={`/topics/${topic.slug}`} key={topic.name} passHref>
+              <Button className={classes.topicLink} component="a">
+                {topic.name}
+              </Button>
+            </Link>
+          ))}
+        </div>
       </Container>
     </Layout>
   );
@@ -44,16 +47,13 @@ const Topics: FC<TopicsProps> = ({ topicsData }: TopicsProps) => {
 export default Topics;
 
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   let topicsData = {};
 
   await axios
     .get("http://django:8000/graphql/?query={topics{name%20slug}}", {})
     .then((response) => {
       topicsData = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

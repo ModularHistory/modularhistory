@@ -2,18 +2,18 @@ import axiosWithoutAuth from "@/axiosWithoutAuth";
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { SourceModule } from "@/interfaces";
+import { Source } from "@/interfaces";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
 interface SourceProps {
-  source: SourceModule;
+  source: Source;
 }
 
 /**
  * A page that renders the HTML of a single source.
  */
-const Source: FC<SourceProps> = ({ source }: SourceProps) => {
+const SourceDetailPage: FC<SourceProps> = ({ source }: SourceProps) => {
   return (
     <Layout title={source.title || source.citationString}>
       <ModuleContainer>
@@ -22,7 +22,7 @@ const Source: FC<SourceProps> = ({ source }: SourceProps) => {
     </Layout>
   );
 };
-export default Source;
+export default SourceDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let source = {};
@@ -44,7 +44,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       source = response.data.data.source;
     })
-    .catch((_error) => {
+    .catch(() => {
       source = null;
     });
 

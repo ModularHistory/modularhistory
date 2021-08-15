@@ -1,23 +1,36 @@
-from typing import Type
+from typing import TYPE_CHECKING, Type
 
 from django.db.models.aggregates import Count
 from image_cropping import ImageCroppingMixin
 
 from apps.admin import ModelAdmin, TabularInline, admin_site
 from apps.admin.list_filters.boolean_filters import BooleanListFilter
-from apps.entities.models.entity_image import EntityImage
+from apps.entities.admin.filters import EntityAutocompleteFilter
+from apps.entities.models.entity import Entity
 from apps.images.models.image import Image
 from apps.images.models.video import Video
 from apps.search.admin import SearchableModelAdmin
+
+if TYPE_CHECKING:
+    from django.db.models import Model, QuerySet
+    from django.http import HttpRequest
+
+
+class EntityFilter(EntityAutocompleteFilter):
+    """Autocomplete filter for depicted entities."""
+
+    title = 'entity'
+    field_name = 'entity_set'
 
 
 class EntitiesInline(TabularInline):
     """Inline admin for entities (in image admin)."""
 
-    model = EntityImage
+    model = Entity.images.through
     verbose_name = 'entity'
+    verbose_name_plural = 'entities'
     extra = 1
-    autocomplete_fields = ['entity']
+    autocomplete_fields = ['content_object']
 
 
 class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
@@ -30,18 +43,19 @@ class ImageAdmin(ImageCroppingMixin, SearchableModelAdmin):
         'provider',
         'date_string',
     ]
+    list_filter = [EntityFilter]
     inlines = [EntitiesInline]
     search_fields = Image.searchable_fields
     readonly_fields = ['height', 'width', 'urls', 'pretty_cache']
 
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 
 
 class AbstractImagesInline(TabularInline):
     """Abstract base inline for images."""
 
-    model: Type
+    model: Type['Model']
 
     autocomplete_fields = ['image']
     readonly_fields = ['admin_image_element']
@@ -53,7 +67,7 @@ class AbstractImagesInline(TabularInline):
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def admin_image_element(self, instance):
+    def admin_image_element(self, instance: 'Model'):
         """Return an inline image's admin image element."""
         return instance.image.admin_image_element
 
@@ -64,7 +78,7 @@ class HasMultipleImagesFilter(BooleanListFilter):
     title = 'has multiple images'
     parameter_name = 'has_multiple_images'
 
-    def queryset(self, request, queryset):
+    def queryset(self, request: 'HttpRequest', queryset: 'QuerySet') -> 'QuerySet':
         """Return the filtered queryset."""
         queryset = queryset.annotate(citation_count=Count('images'))
         if self.value() == 'Yes':

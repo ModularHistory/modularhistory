@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import NextAuth, {
+  Account,
   CallbacksOptions,
   NextAuthOptions,
   PagesOptions,
@@ -43,12 +44,12 @@ const providers = [
     clientId: process.env.SOCIAL_AUTH_TWITTER_KEY,
     clientSecret: process.env.SOCIAL_AUTH_TWITTER_SECRET,
   }),
-  // TODO: Someday, enable troublesome GitHub login?
-  // // https://next-auth.js.org/providers/github
-  // Providers.GitHub({
-  //   clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
-  //   clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
-  // }),
+  // https://next-auth.js.org/providers/github
+  Providers.GitHub({
+    clientId: process.env.SOCIAL_AUTH_GITHUB_CLIENT_ID,
+    clientSecret: process.env.SOCIAL_AUTH_GITHUB_SECRET,
+    scope: "user repo",
+  }),
   // https://next-auth.js.org/providers/credentials
   Providers.Credentials({
     id: "credentials",
@@ -67,14 +68,14 @@ const providers = [
 // https://next-auth.js.org/configuration/callbacks
 const callbacks: CallbacksOptions = {};
 
-callbacks.signIn = async function signIn(user: User, provider: any, _data) {
+callbacks.signIn = async function signIn(user: User, account: Account) {
   // Respond to the sign-in attempt. If the user signed in with credentials (i.e.,
   // a username and password), authentication with the back-end Django server will
   // have been completed before the signIn callback is reached. However, if the user
   // signed in with a social media account, authentication with the Django server
   // is still required.
-  if (provider.type != "credentials") {
-    user = await authenticateWithSocialMediaAccount(user, provider);
+  if (account.type != "credentials") {
+    user = await authenticateWithSocialMediaAccount(user, account);
   }
   // If there is no error, return true to permit signing in.
   // If there is an error, return false to reject the sign-in attempt.
@@ -82,7 +83,7 @@ callbacks.signIn = async function signIn(user: User, provider: any, _data) {
 };
 
 // https://next-auth.js.org/configuration/callbacks#jwt-callback
-callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNewUser?: boolean) {
+callbacks.jwt = async function jwt(token, user?: User, account?) {
   // The arguments user, account, profile and isNewUser are only passed the first time
   // this callback is called on a new session, after the user signs in.
   if (user && account) {
@@ -102,7 +103,6 @@ callbacks.jwt = async function jwt(token, user?: User, account?, profile?, isNew
 
 // https://next-auth.js.org/configuration/callbacks#session-callback
 callbacks.session = async function session(session: Session, jwt: JWT) {
-  const sessionPlus: Session = { ...session };
   if (jwt) {
     // If the access token is expired, ...
     if (Date.now() > jwt.accessTokenExpiry) {
@@ -111,20 +111,20 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
       if (Date.now() > jwt.accessTokenExpiry) {
         // eslint-disable-next-line no-console
         console.log("くそっ！ サインアウトするしかない。");
-        sessionPlus.expired = true;
-        return sessionPlus;
+        session.expired = true;
+        return session;
       }
     }
     const accessToken = jwt.accessToken;
     if (jwt.sessionIdCookie) {
-      sessionPlus.sessionIdCookie = jwt.sessionIdCookie;
+      session.sessionIdCookie = jwt.sessionIdCookie;
     }
     if (accessToken) {
       const clientSideCookies = jwt.clientSideCookies;
-      sessionPlus.accessToken = accessToken;
-      sessionPlus.clientSideCookies = clientSideCookies;
+      session.accessToken = accessToken;
+      session.clientSideCookies = clientSideCookies;
       // TODO: Refactor? The point of this is to only make the request when necessary.
-      if (!sessionPlus.user?.username) {
+      if (!session.user || !session.user["username"]) {
         // Replace the session's `user` attribute (containing only name, image, and
         // a couple other fields) with full user details from the Django API.
         let userData;
@@ -141,14 +141,13 @@ callbacks.session = async function session(session: Session, jwt: JWT) {
             if (error.response?.data) {
               console.error(error.response.data);
             }
-            // return Promise.reject(error);
             return null;
           });
-        sessionPlus.user = userData;
+        session.user = userData;
       }
     }
   }
-  return sessionPlus;
+  return session;
 };
 
 callbacks.redirect = async function redirect(url, baseUrl) {

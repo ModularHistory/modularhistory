@@ -8,10 +8,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.utils.html import soupify
 
-from .model import Model
+from .model import ExtendedModel
 
 
-class SluggedModel(Model):
+class SluggedModel(ExtendedModel):
     """
     A model with a detail page and slug.
 
@@ -21,7 +21,6 @@ class SluggedModel(Model):
 
     slug = AutoSlugField(
         verbose_name=_('slug'),
-        null=True,
         blank=True,
         editable=True,
         unique=True,
@@ -41,7 +40,7 @@ class SluggedModel(Model):
     def get_absolute_url(self):
         """Return the URL for the model instance detail page."""
         slug = getattr(self, 'slug', None)
-        return f'{self.get_meta().app_label}/{slug or self.pk}'
+        return f'/{self._meta.app_label}/{slug or self.pk}'
 
     @property
     def absolute_url(self) -> str:
@@ -63,13 +62,15 @@ class SluggedModel(Model):
         content = content or '<i class="fas fa-info-circle"></i>'
         return format_html(f'<a href="{self.detail_url}" target="_blank">{content}</a>')
 
-    def get_slug(self):
+    def get_slug(self) -> str:
         """Get a slug for the model instance."""
-        slug = None
-        slug_base_field = getattr(self, 'slug_base_field', None)
-        if slug_base_field:
-            slug_base = str(getattr(self, slug_base_field, self.pk))
-            if '<' in slug_base:
+        slug = ''
+        slug_base_fields = getattr(self, 'slug_base_fields', [])
+        for base_field in slug_base_fields:
+            slug_base = str(getattr(self, base_field, ''))
+            if not slug_base:
+                continue
+            elif '<' in slug_base:
                 slug_base = soupify(slug_base).get_text()
             slug = slugify(slug_base)[:75]
-        return slug or self.pk
+        return slug or str(self.pk)

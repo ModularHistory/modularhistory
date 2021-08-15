@@ -2,7 +2,12 @@
 
 name: seed
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Email address associated with GitHub account and ModularHistory account'
+        required: true
 
 env:
   ENVIRONMENT: dev
@@ -13,8 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-      ADMINS: "${{ github.actor }}, ${{ github.actor }}@users.noreply.github.com"
+      ADMINS: "${{ secrets.ADMINS }}"
       ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+      DJANGO_SUPERUSER_EMAIL: ${{ github.event.inputs.email }}
       EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
       EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
       EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
@@ -27,23 +33,27 @@ jobs:
       SENTRY_FRONTEND_DSN: ${{ secrets.SENTRY_FRONTEND_DSN }}
       MEGA_USERNAME: ${{ secrets.MEGA_USERNAME }}
       MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
-      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
-      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
+      SOCIAL_AUTH_DISCORD_KEY: ${{ secrets.SOCIAL_AUTH_DISCORD_KEY }}
+      SOCIAL_AUTH_DISCORD_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_DISCORD_CLIENT_ID }}
+      SOCIAL_AUTH_DISCORD_SECRET: ${{ secrets.SOCIAL_AUTH_DISCORD_SECRET }}
       SOCIAL_AUTH_FACEBOOK_KEY: ${{ secrets.SOCIAL_AUTH_FACEBOOK_KEY }}
       SOCIAL_AUTH_FACEBOOK_SECRET: ${{ secrets.SOCIAL_AUTH_FACEBOOK_SECRET }}
       SOCIAL_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GITHUB_CLIENT_ID }}
       SOCIAL_AUTH_GITHUB_SECRET: ${{ secrets.SOCIAL_AUTH_GITHUB_SECRET }}
+      SOCIAL_AUTH_GOOGLE_CLIENT_ID: ${{ secrets.SOCIAL_AUTH_GOOGLE_CLIENT_ID }}
+      SOCIAL_AUTH_GOOGLE_SECRET: ${{ secrets.SOCIAL_AUTH_GOOGLE_SECRET }}
+      SOCIAL_AUTH_TWITTER_KEY: ${{ secrets.SOCIAL_AUTH_TWITTER_KEY }}
+      SOCIAL_AUTH_TWITTER_SECRET: ${{ secrets.SOCIAL_AUTH_TWITTER_SECRET }}
       RCLONE_GDRIVE_SA_CREDENTIALS: ${{ secrets.RCLONE_GDRIVE_SA_CREDENTIALS }}
       X_RAPIDAPI_KEY: ${{ secrets.X_RAPIDAPI_KEY }}
     steps:
     - includes: ./.github/actions/setup
       with:
         os: ${{ runner.os }}
-        python-version: 3.7
+        python-version: 3.9
         # Fetch entire history so we can analyze commits since last tag.
         fetch-depth: 0
-    - name: Inject environment vars
-      run: poetry run invoke setup.write-env-file --dev
+        environment: dev
     - name: Archive .env file
       uses: actions/upload-artifact@v2
       with:

@@ -1,8 +1,14 @@
+from typing import TYPE_CHECKING, Optional
+
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
+from graphql.error import GraphQLError
 
 from apps.propositions.api.types import PropositionType
-from apps.propositions.models import TypedProposition
+from apps.propositions.models import Proposition
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 class Query(graphene.ObjectType):
@@ -12,17 +18,22 @@ class Query(graphene.ObjectType):
     proposition = graphene.Field(PropositionType, slug=graphene.String())
 
     @staticmethod
-    def resolve_propositions(root, info, **kwargs):
+    def resolve_propositions(*args, **kwargs) -> 'QuerySet[Proposition]':
         """Return the queryset against which a 'propositions' query should be executed."""
-        return TypedProposition.objects.all()
+        return Proposition.objects.all()
 
     @staticmethod
-    def resolve_proposition(root, info, slug: str):
+    def resolve_proposition(*args, slug: str) -> Optional[Proposition]:
         """Return the proposition specified by a 'proposition' query."""
         try:
-            return TypedProposition.objects.get(slug=slug)
+            return Proposition.objects.get(slug=slug)
         except ObjectDoesNotExist:
-            return TypedProposition.objects.get(pk=slug)
+            if slug.isnumeric():
+                try:
+                    return Proposition.objects.get(pk=int(slug))
+                except GraphQLError:
+                    pass
+        return None
 
 
 # class Mutation(graphene.ObjectType):

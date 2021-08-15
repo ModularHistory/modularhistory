@@ -1,31 +1,23 @@
 """Serializers for the account app."""
 
-import logging
-from typing import TYPE_CHECKING
+from rest_framework.serializers import BooleanField, ModelSerializer
 
-import serpy
-
-if TYPE_CHECKING:
-    from apps.users.models import User
+from apps.users.models import SocialAccount, User
 
 
-class UserSerializer(serpy.Serializer):
+class SocialAccountSerializer(ModelSerializer):
     """Serializer for users."""
 
-    id = serpy.Field()
-    username = serpy.Field()
-    avatar = serpy.MethodField('get_avatar')
-    name = serpy.Field()
-    email = serpy.Field()
-    isSuperuser = serpy.BoolField(attr='is_superuser')
-    # 'is_active',
-    # 'date_joined',
-    # 'last_login',
+    class Meta:
+        model = SocialAccount
+        exclude = []
 
-    def get_avatar(self, instance: 'User'):
-        """Return the entity's death date, serialized."""
-        try:
-            return instance.avatar.url if instance.avatar else None
-        except Exception as err:
-            logging.error(f'{err}')
-        return None
+
+class UserSerializer(ModelSerializer):
+    """Serializer for users."""
+
+    isSuperuser = BooleanField(source='is_superuser')
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'name', 'email', 'avatar', 'isSuperuser']

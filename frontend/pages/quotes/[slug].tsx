@@ -1,19 +1,19 @@
 import ModuleContainer from "@/components/details/ModuleContainer";
 import ModuleDetail from "@/components/details/ModuleDetail";
 import Layout from "@/components/Layout";
-import { QuoteModule } from "@/interfaces";
+import { Quote } from "@/interfaces";
 import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { FC } from "react";
 
 interface QuoteProps {
-  quote: QuoteModule;
+  quote: Quote;
 }
 
 /**
  * A page that renders the HTML of a single quote.
  */
-const Quote: FC<QuoteProps> = ({ quote }: QuoteProps) => {
+const QuoteDetailPage: FC<QuoteProps> = ({ quote }: QuoteProps) => {
   return (
     <Layout title={quote.title}>
       <ModuleContainer>
@@ -22,7 +22,7 @@ const Quote: FC<QuoteProps> = ({ quote }: QuoteProps) => {
     </Layout>
   );
 };
-export default Quote;
+export default QuoteDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   let quote = {};
@@ -33,7 +33,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     .then((response) => {
       quote = response.data;
     })
-    .catch((_error) => {
+    .catch(() => {
       quote = null;
     });
 

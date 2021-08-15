@@ -11,9 +11,8 @@ name: artifact cleanup
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#schedule
   schedule:
-    # Every day at 1am
-  - cron: 0 1 * * *
-  # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
+    # Every other day at 1am
+  - cron: 0 1 * * */2
   workflow_dispatch:
 jobs:
   remove-old-artifacts:
@@ -30,6 +29,3 @@ jobs:
       uses: c-hive/gha-remove-artifacts@v1.2.0
       with:
         age: 3 days
-        # Optional inputs
-        # skip-tags: true
-        # skip-recent: 5

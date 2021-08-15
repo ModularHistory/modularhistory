@@ -7,6 +7,11 @@ x-common-env-vars: &common-env-vars
 
 services:
   dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.webserver
+      args:
+        ENVIRONMENT: dev
     depends_on:
       - django
       - celery_beat
@@ -14,16 +19,10 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-    healthcheck:
-      # NOTE: This check will only work in dev environment.
-      test: ["CMD", "curl", "--fail", "http://localhost"]
-      interval: 1m
-      timeout: 10s
-      retries: 3
     hostname: modularhistory.dev.net
-    image: nginx
+    image: webserver
     ports:
-      - "80:80"
+      - "80:8080"
     volumes:
       - ./config/nginx/dev:/etc/nginx/conf.d
       - .:/modularhistory
@@ -33,6 +32,7 @@ services:
 
   celery:
     image: django:latest
+    user: root
     volumes:
       - .:/modularhistory
       - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
@@ -49,6 +49,9 @@ services:
       dockerfile: Dockerfile.django
       args:
         ENVIRONMENT: dev
+    deploy:
+      restart_policy:
+        condition: none
     image: django:latest
     user: root
     volumes:
@@ -70,12 +73,6 @@ services:
     volumes:
       - .:/modularhistory
 
-  flower:
-    image: django:latest
-    volumes:
-      - .:/modularhistory
-      - ./wait-for-it.sh:/usr/local/bin/wait-for-it.sh
-
   github_workflow_preprocessor:
     command: sh .github/preprocess.sh
     entrypoint: ''
@@ -94,6 +91,7 @@ services:
     command: npm run dev
     environment:
       NEXTAUTH_URL: "http://modularhistory.dev.net"
+      NEXTAUTH_URL_INTERNAL: "http://react:3000"
       REACT_EDITOR: "code"
     image: react:latest
     user: root # avoid permissions issues with writing in build dir

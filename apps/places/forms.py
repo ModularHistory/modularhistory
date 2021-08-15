@@ -1,17 +1,8 @@
-from typing import List, Optional
+from typing import Optional
 
 from django.forms import ModelForm
 
-from apps.places.models import (
-    City,
-    Continent,
-    Country,
-    County,
-    Place,
-    Region,
-    State,
-    Venue,
-)
+from apps.places.models import City, Continent, Country, County, Place, Region, State, Venue
 
 
 class _PlaceForm(ModelForm):
@@ -20,7 +11,7 @@ class _PlaceForm(ModelForm):
     type: Optional[str] = None  # noqa: WPS125
 
     def __init__(self, *args, **kwargs):
-        """TODO: add docstring."""
+        """Construct the form."""
         super().__init__(*args, **kwargs)
         self.initial['type'] = self.type or self.instance.type
 
@@ -30,7 +21,7 @@ class PlaceForm(_PlaceForm):
 
     class Meta:
         model = Place
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class ContinentForm(_PlaceForm):
@@ -40,7 +31,7 @@ class ContinentForm(_PlaceForm):
 
     class Meta:
         model = Continent
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class CountryForm(_PlaceForm):
@@ -50,7 +41,7 @@ class CountryForm(_PlaceForm):
 
     class Meta:
         model = Country
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class RegionForm(ModelForm):
@@ -60,7 +51,7 @@ class RegionForm(ModelForm):
 
     class Meta:
         model = Region
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class StateForm(ModelForm):
@@ -70,7 +61,7 @@ class StateForm(ModelForm):
 
     class Meta:
         model = State
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class CountyForm(ModelForm):
@@ -80,7 +71,7 @@ class CountyForm(ModelForm):
 
     class Meta:
         model = County
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class CityForm(ModelForm):
@@ -90,7 +81,7 @@ class CityForm(ModelForm):
 
     class Meta:
         model = City
-        exclude: List[str] = []
+        exclude: list[str] = []
 
 
 class VenueForm(ModelForm):
@@ -100,4 +91,4 @@ class VenueForm(ModelForm):
 
     class Meta:
         model = Venue
-        exclude: List[str] = []
+        exclude: list[str] = []

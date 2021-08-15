@@ -6,8 +6,7 @@ from polymorphic.admin import PolymorphicParentModelAdmin
 
 if TYPE_CHECKING:
     from polymorphic.models import PolymorphicModel
-
-    from core.models import TypedModel
+    from typedmodels.models import TypedModel
 
 
 class PolymorphicContentTypeFilter(SimpleListFilter):
@@ -51,7 +50,7 @@ class TypeFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         """Return an iterable of tuples (value, verbose value)."""
-        return self.base_model.get_meta().get_field('type').choices
+        return self.base_model._meta.get_field('type').choices
 
     def queryset(self, request, queryset):
         """Return the queryset filtered by type."""

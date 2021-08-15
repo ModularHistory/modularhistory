@@ -20,15 +20,15 @@ const Donate: FC<DonateProps> = ({ clientToken }: DonateProps) => {
   const [tokenize, setTokenizeFunc] = useState(() => {
     return () => null;
   });
-  const [cardType, setCardType] = useState("");
+  const [cardType, _setCardType] = useState("");
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
-  const [focusedFieldName, setFocusedField] = useState("");
+  const [focusedFieldName, _setFocusedField] = useState("");
   const numberField = useRef();
   const cvvField = useRef();
   const cardholderNameField = useRef();
 
-  const getToken = () => {
+  const _getToken = () => {
     tokenize().then(setToken).catch(handleError);
   };
   const handleError = (newError) => {

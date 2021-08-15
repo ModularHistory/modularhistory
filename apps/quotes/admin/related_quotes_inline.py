@@ -1,5 +1,3 @@
-from typing import List
-
 from django.db.models.base import Model
 
 from apps.admin.inlines import TabularInline
@@ -10,7 +8,7 @@ class AbstractRelatedQuotesInline(TabularInline):
 
     model: Model
 
-    autocomplete_fields: List[str] = ['quote']
+    autocomplete_fields: list[str] = ['quote']
     extra = 0
 
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables

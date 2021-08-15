@@ -1,15 +1,12 @@
 """Classes for forms and form fields."""
 
 from django.contrib.postgres.forms import SimpleArrayField as BaseSimpleArrayField
-from django.forms import DateTimeField
-
-from core.widgets.historic_date_widget import HistoricDateWidget
 
 
 class SimpleArrayField(BaseSimpleArrayField):
     """Array field."""
 
-    def widget_attrs(self, widget):
+    def widget_attrs(self, widget) -> dict:
         """Return the attributes to apply to the field widget."""
         attrs = super().widget_attrs(widget)
         class_attr = 'vTextField'
@@ -18,9 +15,3 @@ class SimpleArrayField(BaseSimpleArrayField):
             class_attr = f'{class_attr} {additional_classes}'
         attrs['class'] = class_attr
         return attrs
-
-
-class HistoricDateFormField(DateTimeField):
-    """Form field for historic datetimes (potentially BCE, with variable specificity."""
-
-    widget = HistoricDateWidget

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from decouple import config
 
@@ -8,8 +8,8 @@ from core.environment import ENVIRONMENT, IS_DEV
 
 # Caching settings
 use_dummy_cache = config('DUMMY_CACHE', cast=bool, default=False)
-Cache = Dict[str, Any]
-CACHES: Dict[str, Cache]
+Cache = dict[str, Any]
+CACHES: dict[str, Cache]
 
 REDIS_CACHE = {
     'BACKEND': 'django_redis.cache.RedisCache',
@@ -32,7 +32,7 @@ else:
         'default': REDIS_CACHE,
     }
     # https://github.com/jazzband/django-redis
-    # https://docs.djangoproject.com/en/3.1/topics/http/sessions/#using-cached-sessions
+    # https://docs.djangoproject.com/en/dev/topics/http/sessions/#using-cached-sessions
     SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
     SESSION_CACHE_ALIAS = 'default'
 

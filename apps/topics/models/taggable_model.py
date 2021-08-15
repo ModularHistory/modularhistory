@@ -1,6 +1,6 @@
 """Taggable models."""
 
-from typing import List, Optional
+from typing import Optional
 
 from celery import shared_task
 from django.apps import apps
@@ -12,7 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.topics.models.topic import Topic
-from core.fields.json_field import JSONField
 from core.models.model_with_cache import ModelWithCache
 from core.models.slugged_model import SluggedModel
 
@@ -45,7 +44,7 @@ class TaggableModel(SluggedModel, ModelWithCache):
         return tags
 
     @property  # type: ignore
-    def tag_keys(self) -> Optional[List[str]]:
+    def tag_keys(self) -> Optional[list[str]]:
         """Return a list of tag keys (e.g., ['race', 'religion'])."""
         return [topic['name'] for topic in self.cached_tags]
 
@@ -62,10 +61,7 @@ class TaggableModel(SluggedModel, ModelWithCache):
         tags_html = ''
         if self.tag_keys:
             tags_html = ' '.join(
-                [
-                    f'<li class="topic-tag"><a>{tag_key}</a></li>'
-                    for tag_key in self.tag_keys
-                ]
+                [f'<li class="topic-tag"><a>{tag_key}</a></li>' for tag_key in self.tag_keys]
             )
         return format_html(tags_html)
 

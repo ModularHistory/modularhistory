@@ -1,15 +1,12 @@
 """Base classes for models that appear in ModularHistory search results."""
 
-from typing import TYPE_CHECKING
+from typing import Sequence
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.topics.models.taggable_model import TaggableModel
 from apps.verifications.models import VerifiableModel
-
-if TYPE_CHECKING:
-    from apps.search.models.manager import SearchableModelManager
 
 
 class SearchableModel(TaggableModel, VerifiableModel):
@@ -23,7 +20,6 @@ class SearchableModel(TaggableModel, VerifiableModel):
     title = models.CharField(
         verbose_name=_('title'),
         max_length=120,
-        null=True,
         blank=True,
         help_text=(
             'The title can be used for the detail page header and title tag, '
@@ -39,12 +35,11 @@ class SearchableModel(TaggableModel, VerifiableModel):
     class Meta:
         """Meta options for SearchableModel."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         abstract = True
 
-    objects: 'SearchableModelManager'
-    slug_base_field: str = 'key'
+    slug_base_fields: Sequence[str] = ('title',)
 
     def clean(self):
         """Prepare the model instance to be saved."""

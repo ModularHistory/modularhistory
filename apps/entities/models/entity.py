@@ -1,6 +1,5 @@
 import logging
-from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional, Type
+from typing import TYPE_CHECKING, Optional, Type
 
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -8,12 +7,18 @@ from django.db import IntegrityError, models
 from django.template.defaultfilters import truncatechars_html
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+from typedmodels.models import TypedModel
 
+from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
-from apps.dates.structures import HistoricDateTime as DateTime
+from apps.dates.structures import HistoricDateTime
 from apps.entities.api.serializers import EntitySerializer
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.images.models.model_with_images import ModelWithImages
+from apps.images.models.model_with_images import (
+    AbstractImageRelation,
+    ImagesField,
+    ModelWithImages,
+)
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -21,9 +26,12 @@ from apps.quotes.models.model_with_related_quotes import (
 )
 from apps.search.models import SearchableModel
 from core.constants.strings import EMPTY_STRING
-from core.fields import ArrayField, HTMLField, JSONField
+from core.fields.array_field import ArrayField
+from core.fields.html_field import HTMLField
+from core.fields.json_field import JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models import TypedModel, store
+from core.models import store
+from core.models.manager import TypedModelManager
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -41,7 +49,25 @@ PARTS_OF_SPEECH = (
 )
 
 
+class CollectionInclusion(AbstractCollectionInclusion):
+    """An inclusion of an entity in a collection."""
+
+    content_object = ManyToManyForeignKey(
+        to='entities.Entity', related_name='collection_inclusions', verbose_name='entity'
+    )
+
+
+class ImageRelation(AbstractImageRelation):
+    """A relation of an image to an entity."""
+
+    content_object = ManyToManyForeignKey(
+        to='entities.Entity', related_name='image_relations', verbose_name='entity'
+    )
+
+
 class QuoteRelation(AbstractQuoteRelation):
+    """A relation of a quote to an entity."""
+
     content_object = ManyToManyForeignKey(
         to='entities.Entity', related_name='quote_relations', verbose_name='entity'
     )
@@ -57,10 +83,14 @@ class Entity(
     """An entity."""
 
     name = models.CharField(
-        verbose_name=_('name'), max_length=NAME_MAX_LENGTH, unique=True
+        verbose_name=_('name'),
+        max_length=NAME_MAX_LENGTH,
+        unique=True,
     )
     unabbreviated_name = models.CharField(
-        max_length=NAME_MAX_LENGTH, unique=True, null=True, blank=True
+        max_length=NAME_MAX_LENGTH,
+        unique=True,
+        blank=True,
     )
     aliases = ArrayField(
         models.CharField(max_length=NAME_MAX_LENGTH),
@@ -70,19 +100,28 @@ class Entity(
     )
     birth_date = HistoricDateTimeField(null=True, blank=True)
     death_date = HistoricDateTimeField(null=True, blank=True)
-    description = HTMLField(null=True, blank=True, paragraphed=True)
+    birth = models.OneToOneField(
+        to='propositions.Birth',
+        on_delete=models.SET_NULL,
+        related_name='born_entity',
+        null=True,
+        blank=True,
+    )
+    death = models.OneToOneField(
+        to='propositions.Death',
+        on_delete=models.SET_NULL,
+        related_name='dead_entity',
+        null=True,
+        blank=True,
+    )
+    description = HTMLField(blank=True, paragraphed=True)
     categories = models.ManyToManyField(
         to='entities.Category',
         through='entities.Categorization',
         related_name='entities',
         blank=True,
     )
-    images = models.ManyToManyField(
-        to='images.Image',
-        through='entities.EntityImage',
-        related_name='entities',
-        blank=True,
-    )
+    images = ImagesField(through=ImageRelation)
     affiliated_entities = models.ManyToManyField(
         to='self', through='entities.Affiliation', blank=True
     )
@@ -92,14 +131,15 @@ class Entity(
     class Meta:
         """Meta options for the Entity model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Entities'
         ordering = ['name']
 
+    objects = TypedModelManager()
     searchable_fields = ['name', 'aliases', 'description']
     serializer = EntitySerializer
-    slug_base_field = 'unabbreviated_name'
+    slug_base_fields = ('unabbreviated_name',)
 
     def __str__(self) -> str:
         """Return the string representation of the entity."""
@@ -145,20 +185,18 @@ class Entity(
             .replace('</p>', '')
         )
 
-    def get_categorization(self, date: DateTime) -> Optional['Categorization']:
+    def get_categorization(self, date: HistoricDateTime) -> Optional['Categorization']:
         """Return the most applicable categorization based on the date."""
         if not self.categories.exists():
             return None
         categorizations = self.categorizations.all()
-        categorizations = (
-            categorizations.exclude(date__gt=date) if date else categorizations
-        )
+        categorizations = categorizations.exclude(date__gt=date) if date else categorizations
         if not len(categorizations):
             categorizations = self.categorizations.all()
         return categorizations.order_by('date', 'category__weight').last()
 
     def get_categorizations(
-        self, date: Optional[DateTime] = None
+        self, date: Optional[HistoricDateTime] = None
     ) -> 'QuerySet[Categorization]':
         """Return a list of all applicable categorizations."""
         categorizations = (
@@ -169,12 +207,12 @@ class Entity(
         return categorizations.select_related('category')
 
     @store(attribute_name='categorization_string')
-    def get_categorization_string(self, date: Optional[DateTime] = None) -> str:
+    def get_categorization_string(self, date: Optional[HistoricDateTime] = None) -> str:
         """Intelligently build a categorization string, like `liberal scholar`."""
         categorizations: 'QuerySet[Categorization]' = self.get_categorizations(date)
         if categorizations:
             # Build the string
-            categorization_words: List[str] = []
+            categorization_words: list[str] = []
             for part_of_speech in ('noun', 'any', 'adj'):
                 pos_categorizations = categorizations.filter(
                     category__part_of_speech=part_of_speech
@@ -202,7 +240,7 @@ class Entity(
             # Prevent a RuntimeError when saving a new publication
             self.recast(self.type)
 
-    def get_date(self) -> Optional[DateTime]:
+    def get_date(self) -> Optional[HistoricDateTime]:
         """Date used for sorting search results."""
         return self.birth_date
 
@@ -213,7 +251,7 @@ class Person(Entity):
     class Meta:
         """Meta options for the Person model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'People'
 
@@ -224,7 +262,7 @@ class Deity(Entity):
     class Meta:
         """Meta options for the Deity model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Deities'
 
@@ -235,7 +273,7 @@ class Group(Entity):
     class Meta:
         """Meta options for the Group model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Groups'
 
@@ -246,11 +284,11 @@ class Organization(Entity):
     class Meta:
         """Meta options for the Organization model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'Organizations'
 
     @property
-    def founding_date(self) -> datetime:
+    def founding_date(self) -> HistoricDateTime:
         """Return the date the organization was founded."""
         return self.birth_date

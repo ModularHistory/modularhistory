@@ -1,16 +1,14 @@
-import logging
-from pprint import pformat
-from typing import List, Optional
+from typing import Optional
 
 from elasticsearch_dsl import Q
 from rest_framework import filters
 
-from apps.dates.structures import HistoricDateTime
-from apps.search.documents.config import get_index_name_for_ct
-from core.widgets.historic_date_widget import CE
-from core.widgets.historic_date_widget import (
+from apps.admin.widgets.historic_date_widget import CE
+from apps.admin.widgets.historic_date_widget import (
     _datetime_from_datadict_values as historicdate_from_year,
 )
+from apps.dates.structures import HistoricDateTime
+from apps.search.documents.config import get_index_name_for_ct
 
 QUERY_PARAM = 'query'
 START_YEAR_PARAM = 'start_year'
@@ -82,8 +80,8 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         query_string: Optional[str] = None,
         start_date: Optional[HistoricDateTime] = None,
         end_date: Optional[HistoricDateTime] = None,
-        entity_ids: Optional[List[int]] = None,
-        topic_ids: Optional[List[int]] = None,
+        entity_ids: Optional[list[int]] = None,
+        topic_ids: Optional[list[int]] = None,
         suppress_unverified: bool = True,
         suppress_hidden: bool = True,
     ):
@@ -113,13 +111,10 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
                     | Q('terms', attributees__id=entity_ids)
                 ],
             )
-
         if topic_ids:
             qs = qs.query('bool', filter=[Q('terms', topics__id=topic_ids)])
-
         if suppress_unverified:
             qs = qs.query('bool', filter=[Q('match', verified=True)])
-
         if suppress_hidden:
             qs = qs.query('bool', filter=[Q('match', hidden=False)])
 
@@ -138,8 +133,6 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
             pre_tags=['<mark>'],
             post_tags=['</mark>'],
         )
-
-        logging.info(f'ES Indexes: {indexes}')
-        logging.info(f'ES Query: {pformat(qs.to_dict())}')
-
+        # logging.info(f'ES Indexes: {indexes}')
+        # logging.info(f'ES Query: {pformat(qs.to_dict())}')
         return qs

@@ -1,25 +1,24 @@
 """Model classes for entity categories/categorizations."""
 
-from typing import Tuple
 
 from django.db import models
 from django.db.models.functions import Lower
 from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
-from core.fields import ArrayField
-from core.models.model import Model
+from core.fields.array_field import ArrayField
+from core.models.model import ExtendedModel
 
 NAME_MAX_LENGTH: int = 100
 
-PARTS_OF_SPEECH: Tuple[Tuple[str, str], ...] = (
+PARTS_OF_SPEECH: tuple[tuple[str, str], ...] = (
     ('noun', 'noun'),
     ('adj', 'adjective'),
     ('any', 'noun / adjective'),
 )
 
 
-class Category(Model):
+class Category(ExtendedModel):
     """An entity category."""
 
     name = models.CharField(max_length=NAME_MAX_LENGTH, unique=True)
@@ -47,7 +46,7 @@ class Category(Model):
     class Meta:
         """Meta options for the Category model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         verbose_name_plural = 'categories'
         ordering = [Lower('name')]
@@ -57,7 +56,7 @@ class Category(Model):
         return self.name
 
 
-class Categorization(Model):
+class Categorization(ExtendedModel):
     """A categorization of an entity."""
 
     entity = models.ForeignKey(
@@ -78,7 +77,7 @@ class Categorization(Model):
     class Meta:
         """Meta options for the Categorization model."""
 
-        # https://docs.djangoproject.com/en/3.1/ref/models/options/#model-meta-options
+        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
 
         unique_together = ['entity', 'category']
 

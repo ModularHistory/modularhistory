@@ -1,5 +1,8 @@
+from typing import Optional
+
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
+from graphql.error import GraphQLError
 
 from apps.entities.api.types import EntityType
 from apps.entities.models.entity import Entity
@@ -17,12 +20,17 @@ class Query(graphene.ObjectType):
         return Entity.objects.all()
 
     @staticmethod
-    def resolve_entity(root, info, slug: str):
+    def resolve_entity(root, info, slug: str) -> Optional[Entity]:
         """Return the entity specified by an 'entity' query."""
         try:
             return Entity.objects.get(slug=slug)
         except ObjectDoesNotExist:
-            return Entity.objects.get(pk=slug)
+            if slug.isnumeric():
+                try:
+                    return Entity.objects.get(pk=int(slug))
+                except GraphQLError:
+                    pass
+        return None
 
 
 # class Mutation(graphene.ObjectType):

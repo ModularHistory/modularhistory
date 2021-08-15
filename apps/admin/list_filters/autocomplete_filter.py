@@ -1,7 +1,7 @@
 """AutocompleteFilter based on https://github.com/farhan0581/django-admin-autocomplete-filter."""
 
 import re
-from typing import Type, Union
+from typing import TYPE_CHECKING, Type, Union
 
 from admin_auto_filters.filters import AutocompleteFilter as BaseAutocompleteFilter
 from django.db.models import QuerySet
@@ -10,15 +10,15 @@ from django.utils.html import format_html
 from django.utils.module_loading import import_string
 from django.utils.safestring import SafeString
 
-from core.models.model import Model
+from core.models.model import ExtendedModel
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
+# https://github.com/farhan0581/django-admin-autocomplete-filter
 class AutocompleteFilter(BaseAutocompleteFilter):
-    """
-    Wrap admin_auto_filters.filters.AutocompleteFilter.
-
-    https://github.com/farhan0581/django-admin-autocomplete-filter
-    """
+    """Wraps admin_auto_filters.filters.AutocompleteFilter."""
 
     rendered_widget: SafeString
 
@@ -26,12 +26,12 @@ class AutocompleteFilter(BaseAutocompleteFilter):
 class ManyToManyAutocompleteFilter(AutocompleteFilter):
     """Autocomplete filter to be used with many-to-many relationships."""
 
-    m2m_cls: Union[Type['Model'], str]
+    m2m_cls: Union[Type['ExtendedModel'], str]
 
-    def __init__(self, request, query_params, model, model_admin):
+    def __init__(self, request: 'HttpRequest', query_params, model, model_admin):
         """Construct the many-to-many autocomplete filter."""
         super().__init__(request, query_params, model, model_admin)
-        m2m_cls: Type['Model']
+        m2m_cls: Type['ExtendedModel']
         if isinstance(self.m2m_cls, str):
             m2m_cls = import_string(self.m2m_cls)
         else:
@@ -52,11 +52,13 @@ class ManyToManyAutocompleteFilter(AutocompleteFilter):
         # if the field is m2m.
         return self.title.replace(' ', '_')
 
-    def get_autocomplete_url(self, request, model_admin) -> str:
+    def get_autocomplete_url(self, request: 'HttpRequest', model_admin) -> str:
         """Return the URL used by the autocomplete filter."""
         return reverse(f'admin:{self.key}_search')
 
-    def queryset(self, request, queryset) -> 'QuerySet[Model]':
+    def queryset(
+        self, request: 'HttpRequest', queryset: 'QuerySet[ExtendedModel]'
+    ) -> 'QuerySet[ExtendedModel]':
         """Return the filtered queryset."""
         if self.value():
             return queryset.filter(**{self._parameter_name: self.value()})

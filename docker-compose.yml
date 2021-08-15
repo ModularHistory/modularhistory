@@ -8,22 +8,23 @@ x-common-env-vars: &common-env-vars
 
 services:
   celery:
-    command: bash config/init/celery.sh
+    command: bash config/scripts/init/celery.sh
     depends_on:
-      - django
       - redis
       - postgres
     deploy:
       restart_policy:
         condition: on-failure
     env_file: .env
-    environment: *common-env-vars
+    environment:
+      <<: *common-env-vars
+      IS_CELERY: "True"
     healthcheck:
       test: celery -A core inspect ping -d celery@$$HOSTNAME
       timeout: 30s
-      interval: 20s
+      interval: 30s
       retries: 3
-      start_period: 15s
+      start_period: 20s
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
@@ -36,7 +37,7 @@ services:
       - ./_media:/modularhistory/_media
 
   celery_beat:
-    command: bash config/init/celery_beat.sh
+    command: bash config/scripts/init/celery_beat.sh
     depends_on:
       - celery
       - django
@@ -46,15 +47,17 @@ services:
       restart_policy:
         condition: on-failure
     env_file: .env
-    environment: *common-env-vars
+    environment:
+      <<: *common-env-vars
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
         ipv4_address: 172.27.0.12
 
   django:
-    command: bash config/init/django.sh
+    command: bash config/scripts/init/django.sh
     depends_on:
+      - celery
       - postgres
       - redis
       - elasticsearch
@@ -72,9 +75,9 @@ services:
           "curl --fail http://localhost:8000/healthcheck/ || exit 1",
         ]
       timeout: 7s
-      interval: 20s
+      interval: 30s
       retries: 2
-      start_period: 10s
+      start_period: 30s
     image: "ghcr.io/modularhistory/django:$SHA"
     networks:
       default:
@@ -83,154 +86,25 @@ services:
       - "8000:8000"
     user: www-data
     volumes:
-      - /var/lib/lxd/storage-pools/coresvcs/containers/webserver/rootfs/etc/letsencrypt:/etc/letsencrypt
       # NOTE: www-data must be granted permission to write to these directories
       # both in the container and on the host machine. Permissions to write in
       # the container are granted in Dockerfile.django. Permissions to write on
-      # the host machine have been granted manually; e.g.,
+      # the host machine must be granted manually; e.g.,
       #     sudo chown -R www-data:www-data .backups && sudo chmod g+w -R .backups
       - ./.backups:/modularhistory/.backups
       - ./.init:/modularhistory/.init
       - ./_static:/modularhistory/_static
       - ./_media:/modularhistory/_media
 
-  flower:
-    command: bash config/init/flower.sh
-    depends_on:
-      - celery
-      - celery_beat
-      - django
-      - redis
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 5
-    env_file: .env
-    environment: *common-env-vars
-    image: "ghcr.io/modularhistory/django:$SHA"
-    networks:
-      default:
-        ipv4_address: 172.27.0.13
-    ports:
-      - "5555:5555"
-
-  mongo:
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-    env_file: .env
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-      interval: 10s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
-    image: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - data:/data
-
-  postgres:
-    deploy:
-      restart_policy:
-        condition: any
-    env_file: .env
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    image: postgres
-    networks:
-      default:
-        ipv4_address: 172.27.0.6
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./.init:/docker-entrypoint-initdb.d
-
-  react:
-    command: npm run start
-    depends_on:
-      - django
-    deploy:
-      restart_policy:
-        condition: on-failure
-    env_file: .env
-    environment:
-      NEXTAUTH_URL: "https://modularhistory.com"
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:3000/ || exit 1"]
-      timeout: 7s
-      interval: 7s
-      retries: 3
-      start_period: 12s
-    image: "ghcr.io/modularhistory/react:$SHA"
-    networks:
-      default:
-        ipv4_address: 172.27.0.9
-    ports:
-      - "3000:3000"
-
-  redis:
-    deploy:
-      restart_policy:
-        condition: on-failure
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 20s
-      timeout: 10s
-      retries: 3
-    image: redis
-    networks:
-      default:
-        ipv4_address: 172.27.0.7
-    ports:
-      - "6379:6379"
-    volumes:
-      - "data:/data"
-
-  redisinsight:
-    depends_on:
-      - redis
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-    env_file: .env
-    environment:
-      REDIS_HOSTS: "local:redis:6379"
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl --fail http://localhost:8001/healthcheck/ || exit 1",
-        ]
-      timeout: 7s
-      interval: 15s
-      retries: 2
-      start_period: 10s
-    networks:
-      default:
-        ipv4_address: 172.27.0.14
-    image: redislabs/redisinsight:latest
-    ports:
-      - "8001:8001"
-    volumes:
-      - "redisinsight:/db"
-
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
     environment:
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
       - node.name=modularhistory-es
       - cluster.name=es-docker-cluster
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.ml.enabled=false
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
       interval: 30s
@@ -261,6 +135,132 @@ services:
       default:
         ipv4_address: 172.27.0.16
 
+  # mongo:
+  #   deploy:
+  #     restart_policy:
+  #       condition: on-failure
+  #       max_attempts: 3
+  #   env_file: .env
+  #   healthcheck:
+  #     test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 20s
+  #   image: mongo
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - data:/data
+
+  postgres:
+    deploy:
+      restart_policy:
+        condition: any
+    env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    image: postgres
+    networks:
+      default:
+        ipv4_address: 172.27.0.6
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./.init:/docker-entrypoint-initdb.d
+
+  react:
+    command: npm run start
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file: .env
+    environment:
+      NEXTAUTH_URL: "https://modularhistory.com"
+    image: "ghcr.io/modularhistory/react:$SHA"
+    networks:
+      default:
+        ipv4_address: 172.27.0.9
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./_static:/modularhistory/_static
+
+  redis:
+    deploy:
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+    image: redis
+    networks:
+      default:
+        ipv4_address: 172.27.0.7
+    ports:
+      - "6379:6379"
+    volumes:
+      - "data:/data"
+
+  # redisinsight:
+  #   depends_on:
+  #     - redis
+  #   deploy:
+  #     restart_policy:
+  #       condition: on-failure
+  #       max_attempts: 3
+  #   env_file: .env
+  #   environment:
+  #     REDIS_HOSTS: "local:redis:6379"
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD-SHELL",
+  #         "curl --fail http://localhost:8001/healthcheck/ || exit 1",
+  #       ]
+  #     timeout: 7s
+  #     interval: 15s
+  #     retries: 2
+  #     start_period: 10s
+  #   networks:
+  #     default:
+  #       ipv4_address: 172.27.0.14
+  #   image: redislabs/redisinsight:latest
+  #   ports:
+  #     - "8001:8001"
+  #   volumes:
+  #     - "redisinsight:/db"
+
+  webserver:
+    depends_on:
+      - django
+      - react
+    deploy:
+      restart_policy:
+        condition: on-failure
+    env_file: .env
+    environment:
+      DOMAINS: "modularhistory.com,www.modularhistory.com"
+    image: "ghcr.io/modularhistory/webserver:$SHA"
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - ./_media:/modularhistory/_media
+      - ./_static:/modularhistory/_static
+      - ./config/nginx/prod:/etc/nginx/conf.d
+      - letsencrypt:/etc/letsencrypt
+      - certbot:/var/www/certbot
+    networks:
+      default:
+        ipv4_address: 172.27.0.5
+
 networks:
   default:
     driver: bridge
@@ -271,6 +271,8 @@ networks:
 volumes:
   # `data` is used by both redis and mongodb
   data:
+  letsencrypt:
+  certbot:
   postgres_data:
   search_data:
   redisinsight:

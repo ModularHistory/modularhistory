@@ -1,6 +1,8 @@
 """Admin for the quotes app."""
 
-from django.db.models.query import QuerySet
+from typing import TYPE_CHECKING
+
+from rangefilter.filters import DateRangeFilter
 
 from apps.admin.admin_site import admin_site
 from apps.entities.admin.inlines import AbstractRelatedEntitiesInline
@@ -20,6 +22,10 @@ from apps.sources.admin.filters.simple_filters import (
 )
 from apps.topics.admin.tags import AbstractTagsInline, HasTagsFilter
 from apps.topics.models.taggable_model import TopicFilter
+
+if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
+    from django.http import HttpRequest
 
 
 class SourcesInline(AbstractSourcesInline):
@@ -81,6 +87,7 @@ class QuoteAdmin(SearchableModelAdmin):
         AttributeeFilter,
         AttributeeCategoryFilter,
         AttributeeCountFilter,
+        ('date', DateRangeFilter),
     ]
     ordering = ['date']
     readonly_fields = SearchableModelAdmin.readonly_fields + [
@@ -89,21 +96,18 @@ class QuoteAdmin(SearchableModelAdmin):
     ]
     search_fields = models.Quote.searchable_fields
 
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy
-    date_hierarchy = 'date'
-
-    # https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
+    # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_per_page
     list_per_page = 10
 
-    def get_queryset(self, request) -> 'QuerySet[models.Quote]':
+    def get_queryset(self, request: 'HttpRequest') -> 'QuerySet[models.Quote]':
         """
         Return the queryset of quotes to be displayed in the admin.
 
-        https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
+        https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.get_queryset
         """
         qs = models.Quote.objects.prefetch_related('attributees', 'tags')
         ordering = self.get_ordering(request)
-        if ordering and ordering != models.Quote.get_meta().ordering:
+        if ordering and ordering != models.Quote._meta.ordering:
             qs = qs.order_by(*ordering)
         return qs
 

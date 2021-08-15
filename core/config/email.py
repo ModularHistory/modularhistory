@@ -4,8 +4,8 @@ from decouple import config
 
 DEFAULT_EMAIL_PORT = 25
 
-# https://docs.djangoproject.com/en/3.1/topics/email/
-# https://docs.djangoproject.com/en/3.1/ref/settings#s-email-backend
+# https://docs.djangoproject.com/en/dev/topics/email/
+# https://docs.djangoproject.com/en/dev/ref/settings#s-email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='localhost')
 EMAIL_PORT = config(

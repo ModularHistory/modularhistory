@@ -29,12 +29,19 @@ module.exports = {
   // Delegate static file compression to Nginx in production.
   // https://nextjs.org/docs/api-reference/next.config.js/compression
   compress: process.env.ENVIRONMENT != "prod",
-  productionBrowserSourceMaps: true,
   env: {
     // Make the version accessible to clients so that Sentry events
     // can be associated with the release they belong to.
     NEXT_PUBLIC_VERSION: process.env.SENTRY_RELEASE,
   },
+  // images: {
+  //   domains: process.env.ENVIRONMENT == "prod" ? [
+  //     'modularhistory.com'
+  //   ] : [
+  //     'modularhistory.dev.net'
+  //   ],
+  // },
+  productionBrowserSourceMaps: true,
   webpack: (config, options) => {
     if (!options.isServer) {
       config.resolve.alias["@sentry/node"] = "@sentry/browser";

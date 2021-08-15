@@ -1,8 +1,9 @@
 import axiosWithoutAuth from "@/axiosWithoutAuth";
-import ImageCard from "@/components/cards/ImageCard";
+import ImageCard from "@/components/images/ImageCard";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
+import { Image } from "@/interfaces";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { GetServerSideProps } from "next";
@@ -10,7 +11,9 @@ import Link from "next/link";
 import { FC } from "react";
 
 interface ImagesProps {
-  imagesData: any;
+  imagesData: {
+    results: Image[];
+  };
 }
 
 const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
@@ -49,9 +52,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .get("http://django:8000/api/images/", { params: context.query })
     .then((response) => {
       imagesData = response.data;
-    })
-    .catch((error) => {
-      // console.error(error);
     });
 
   return {

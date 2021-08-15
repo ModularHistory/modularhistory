@@ -1,4 +1,7 @@
-import { Container, Grid, makeStyles, Theme } from "@material-ui/core";
+import axiosWithoutAuth from "@/axiosWithoutAuth";
+import TextField from "@/components/forms/StyledTextField";
+import { Container, Grid, Theme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
 import {
   ChangeEventHandler,
@@ -11,13 +14,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import axiosWithoutAuth from "../../axiosWithoutAuth";
 import PageTransitionContext from "../PageTransitionContext";
 import CheckboxGroup from "./CheckboxGroup";
 import MultiSelect from "./MultiSelect";
 import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
-import TextField from "./StyledTextField";
 import YearSelect from "./YearSelect";
 
 interface SearchFormStateType {
@@ -52,6 +53,7 @@ function useSearchFormState(): SearchFormStateType {
   useEffect(() => {
     // Remove any params we don't want sent to the next search page
     // and update form state when browser history is navigated.
+    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
     const { page, ...query } = router.query;
     setState(query);
   }, [router.query]);
@@ -139,19 +141,18 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             <MultiSelect label={"Entities"} name={"entities"} keyName={"id"} valueName={"name"}>
               {() =>
                 axiosWithoutAuth
-                  .get("/api/entities/partial/?attributes=id&attributes=name")
-                  .then((response) => response.data["results"])
-                  .catch((error) => console.log(">>>", error.request))
+                  .get("/graphql/?query={entities{id%20name}}", {})
+                  .then((response) => response.data["data"]["entities"])
               }
             </MultiSelect>
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            <MultiSelect label={"Topics"} name={"topics"} keyName={"pk"} valueName={"name"}>
+            <MultiSelect label={"Topics"} name={"topics"} keyName={"id"} valueName={"name"}>
               {() =>
                 axiosWithoutAuth
-                  .get("/api/topics/partial/")
-                  .then((response) => response.data["results"])
+                  .get("/graphql/?query={topics{id%20name}}", {})
+                  .then((response) => response.data["data"]["topics"])
               }
             </MultiSelect>
           </Grid>
@@ -164,7 +165,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
 
           <Grid item xs={12} sm={sm}>
             <CheckboxGroup label={"Content Types"} name={"content_types"}>
-              {{ label: "Occurrences", key: "occurrences.occurrence" }}
+              {{ label: "Occurrences", key: "propositions.occurrence" }}
               {{ label: "Quotes", key: "quotes.quote" }}
               {{ label: "Images", key: "images.image", defaultChecked: false }}
               {{ label: "Sources", key: "sources.source" }}
