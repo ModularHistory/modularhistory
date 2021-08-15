@@ -49,7 +49,7 @@
   "devDependencies": {
     "@types/jquery": "^3.5.6",
     "@types/next-auth": "^3.7.1",
-    "@types/node": "^16.4.12",
+    "@types/node": "^16.6.1",
     "@types/react": "^17.0.15",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.29.0",
