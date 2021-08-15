@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import { Button } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 import DropIn from "braintree-web-drop-in-react";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
