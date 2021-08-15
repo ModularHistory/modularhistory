@@ -86,16 +86,19 @@ interface ArgumentSetProps {
 
 const ArgumentSet: FC<ArgumentSetProps> = ({ argumentSet }: ArgumentSetProps) => {
   const classes = useStyles();
+  const filteredArguments = argumentSet.filter(
+    (argument) => argument.explanation && !!argument.premises?.length
+  );
   return (
     <TreeView
       className={classes.tree}
-      defaultExpanded={argumentSet.map((argument) => `${argument.id}`)}
+      defaultExpanded={filteredArguments.map((argument) => `${argument.id}`)}
       defaultCollapseIcon={<MinusSquare />}
       defaultExpandIcon={<PlusSquare />}
       defaultEndIcon={<CloseSquare />}
       style={{ marginBottom: "1.5rem" }}
     >
-      {argumentSet.map((argument, index) => (
+      {filteredArguments.map((argument, index) => (
         <StyledTreeItem
           key={argument.id}
           nodeId={`${argument.id}`}
