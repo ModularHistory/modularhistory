@@ -18,6 +18,7 @@ from apps.images.models.model_with_images import (
     ImagesField,
     ModelWithImages,
 )
+from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.places.models.model_with_locations import (
     AbstractLocationRelation,
     LocationsField,
@@ -29,7 +30,6 @@ from apps.quotes.models.model_with_related_quotes import (
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
-from apps.search.models import SearchableModel
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
 from core.fields.html_field import (
@@ -40,7 +40,6 @@ from core.fields.html_field import (
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
-from core.models.model import ExtendedModel
 from core.utils.html import escape_quotes, soupify
 from core.utils.string import dedupe_newlines, truncate
 
@@ -132,7 +131,7 @@ class OccurrenceType(models.TextChoices):
 
 
 class Proposition(  # noqa: WPS215
-    SearchableModel,
+    SearchableModeratedModel,
     DatedModel,  # submodels like `Occurrence` require date
     ModelWithSources,
     ModelWithRelatedEntities,

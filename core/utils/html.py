@@ -19,10 +19,7 @@ def soupify(html_string: str, features='lxml') -> BeautifulSoup:
 def compose_link(text, href, klass: Optional[str] = None, **html_attributes) -> str:
     """Build a link from the supplied text, href, klass, and html_attributes."""
     attributes = ' '.join(
-        [
-            f'{attr_name}="{attr_value}"'
-            for attr_name, attr_value in html_attributes.items()
-        ]
+        [f'{attr_name}="{attr_value}"' for attr_name, attr_value in html_attributes.items()]
     )
     if klass:
         attributes = f'class="{klass}" {attributes}'

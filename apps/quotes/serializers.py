@@ -30,6 +30,4 @@ class QuoteSerializer(SearchableModelSerializer):
     def get_bite(self, instance: 'Quote') -> str:
         """Return the user-facing bite HTML."""
         # Set `bite` to truncated text if it does not exist.
-        return (
-            instance.bite if instance.bite else truncatechars_html(instance.text, 150)
-        )
+        return instance.bite if instance.bite else truncatechars_html(instance.text, 150)

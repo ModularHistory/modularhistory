@@ -1,14 +1,13 @@
 from django.db import models
 
 from apps.dates.models import DatedModel
-from apps.search.models.searchable_model import SearchableModel
-
+from apps.moderation.models.moderated_model import SearchableModeratedModel
 from core.fields.html_field import HTMLField
 
 PROVIDER_MAX_LENGTH: int = 200
 
 
-class MediaModel(SearchableModel, DatedModel):
+class MediaModel(SearchableModeratedModel, DatedModel):
     """Abstract base model for media models (e.g., images and videos)."""
 
     caption = HTMLField(blank=True, paragraphed=False)

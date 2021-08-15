@@ -5,11 +5,9 @@ from rest_framework.response import Response
 
 braintree.Configuration.configure(
     braintree.Environment.Sandbox,
-    merchant_id=config('BRAINTREE_MERCHANT_ID', default='hqscdtx5y45q8gst'),
-    public_key=config('BRAINTREE_PUBLIC_KEY', default='gqwntn8ffm8g6pcf'),
-    private_key=config(
-        'BRAINTREE_PRIVATE_KEY', default='52bd7b66686e3d302208ca55ddac87c2'
-    ),
+    merchant_id=config('BRAINTREE_MERCHANT_ID', default=''),
+    public_key=config('BRAINTREE_PUBLIC_KEY', default=''),
+    private_key=config('BRAINTREE_PRIVATE_KEY', default=''),
 )
 
 

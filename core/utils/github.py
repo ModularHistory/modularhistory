@@ -4,6 +4,7 @@ from typing import Optional
 
 import requests
 from django.conf import settings
+from github import Github
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 OWNER = 'modularhistory'
@@ -15,7 +16,7 @@ GITHUB_CREDENTIALS_FILE = os.path.join(settings.BASE_DIR, '.github/.credentials'
 def pat_is_valid(username: str, pat: str) -> bool:
     """Return a bool reflecting whether the PAT is valid."""
     pat_validity_check = requests.get(
-        'https://api.github.com/user',
+        f'{GITHUB_API_BASE_URL}/user',
         auth=(username, pat),
         headers={'Accept': 'application/vnd.github.v3+json'},
     )
@@ -38,20 +39,20 @@ def accept_credentials(
             signature = personal_access_token.read()
             username, pat = signature.split(':')
     else:
-        print()
         print(
+            '\n'
             'To proceed, you will need a GitHub personal access token (PAT) '
-            'with "repo" and "workfow" permissions. For instructions on acquiring '
+            'with "repo" and "workflow" permissions. For instructions on acquiring '
             'a PAT, see the GitHub PAT documentation: \n'
-            '    https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'  # noqa: E501
+            '  https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token'  # noqa: E501
+            '\n'
         )
-        print()
-        username = input('Enter your GitHub username/email: ')
+        username = input('Enter your GitHub email address: ')
         pat = getpass('Enter your GitHub personal access token: ')
         signature = f'{username}:{pat}'
         while not pat_is_valid(username, pat):
             print('Invalid GitHub credentials.')
-            username = input('Enter your GitHub username/email: ')
+            username = input('Enter your GitHub email address: ')
             pat = input('Enter your Personal Access Token: ')
             signature = f'{username}:{pat}'
         with open(GITHUB_CREDENTIALS_FILE, 'w') as file:
@@ -65,3 +66,8 @@ def initialize_session(username: str, pat: str) -> requests.Session:
     session.auth = (username, pat)
     session.headers.update({'Accept': 'application/vnd.github.v3+json'})
     return session
+
+
+def initialize_client(pat: str) -> Github:
+    """Initialize and return a GitHub client."""
+    return Github(pat)

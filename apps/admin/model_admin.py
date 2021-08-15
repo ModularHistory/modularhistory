@@ -60,7 +60,7 @@ else:
 TRUMBOWYG_CDN_BASE_URL = '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0'
 
 
-class ModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
+class ExtendedModelAdmin(PolymorphicInlineSupportMixin, BaseModelAdmin):
     """Base admin class for ModularHistory's models."""
 
     model: Type[Model]
@@ -137,7 +137,7 @@ class ContentTypeFields(Constant):
     model = 'model'
 
 
-class ContentTypeAdmin(ModelAdmin):
+class ContentTypeAdmin(ExtendedModelAdmin):
     """Admin for content types."""
 
     model = ContentType
@@ -158,7 +158,7 @@ class ContentTypeAdmin(ModelAdmin):
 admin_site.register(ContentType, ContentTypeAdmin)
 
 
-class SiteAdmin(ModelAdmin):
+class SiteAdmin(ExtendedModelAdmin):
     """
     Admin for sites.
 

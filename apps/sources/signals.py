@@ -29,9 +29,7 @@ def process_pre_delete(source: models.Source):
 
 
 @receiver(post_save, sender=models.SourceAttribution)
-def respond_to_source_attribution_save(
-    sender, instance: models.SourceAttribution, **kwargs
-):
+def respond_to_source_attribution_save(sender, instance: models.SourceAttribution, **kwargs):
     """Respond to creation/modification of a source-attributee relationship."""
     process_post_save(instance.source)
 
@@ -45,9 +43,7 @@ def respond_to_source_attribution_deletion(
 
 
 @receiver(post_save, sender=models.SourceContainment)
-def respond_to_source_containment_save(
-    sender, instance: models.SourceContainment, **kwargs
-):
+def respond_to_source_containment_save(sender, instance: models.SourceContainment, **kwargs):
     """Respond to creation/modification of a source-container relationship."""
     process_post_save(instance.source)
 

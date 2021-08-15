@@ -124,9 +124,7 @@ def _encrypt_chunk(chunk, encryptor, mac_encryptor, file_size):
 try:
     mega_client = MegaClient().login(settings.MEGA_USERNAME, settings.MEGA_PASSWORD)
     mega_user = mega_client.get_user()
-    logging.info(
-        f'Obtained Mega client for {settings.MEGA_USERNAME}: {pformat(mega_user)}'
-    )
+    logging.info(f'Obtained Mega client for {settings.MEGA_USERNAME}: {pformat(mega_user)}')
 except Exception as err:
     logging.error(f'Failed to initialize Mega client: {err}')
     mega_client = None
@@ -198,9 +196,7 @@ class MegaStorage(Storage):
         # exceed the max_length.
         while self.exists(name) or (max_length and len(name) > max_length):
             # file_ext includes the dot.
-            name = os.path.join(
-                dir_name, self.get_alternative_name(file_root, file_ext)
-            )
+            name = os.path.join(dir_name, self.get_alternative_name(file_root, file_ext))
             if max_length is None:
                 continue
             # Truncate file_root if max_length exceeded.
@@ -214,9 +210,7 @@ class MegaStorage(Storage):
                         'Please make sure that the corresponding file field '
                         'allows sufficient "max_length".' % name
                     )
-                name = os.path.join(
-                    dir_name, self.get_alternative_name(file_root, file_ext)
-                )
+                name = os.path.join(dir_name, self.get_alternative_name(file_root, file_ext))
         return name
 
     def get_created_time(self, name: str) -> datetime:

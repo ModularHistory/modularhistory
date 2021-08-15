@@ -14,5 +14,5 @@ else:
 
 IS_PROD = ENVIRONMENT == Environments.PROD
 IS_DEV = ENVIRONMENT == Environments.DEV
-DOCKERIZED = config('DOCKERIZED', cast=bool, default=IS_PROD)
+DOCKERIZED = config('DOCKERIZED', cast=bool, default=True)
 TESTING: bool = 'test' in sys.argv

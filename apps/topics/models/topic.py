@@ -48,7 +48,6 @@ class TopicParentChildRelation(ExtendedModel):
         unique_together = ['parent_topic', 'child_topic']
 
     def __str__(self) -> str:
-        """TODO: write docstring."""
         return f'{self.parent_topic} > {self.child_topic}'
 
 

@@ -48,7 +48,7 @@ class LocationsField(CustomManyToManyField):
     def __init__(self, through: Union[Type[AbstractLocationRelation], str], **kwargs):
         """Construct the field."""
         kwargs['through'] = through
-        kwargs['verbose_name'] = _('related quotes')
+        kwargs['verbose_name'] = _('locations')
         super().__init__(**kwargs)
 
 

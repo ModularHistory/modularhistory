@@ -23,6 +23,9 @@ env:
   ADMINS: ${{ secrets.ADMINS }}
   ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
   ALPHA_VANTAGE_ACCESS_KEY: ${{ secrets.ALPHA_VANTAGE_ACCESS_KEY }}
+  BRAINTREE_MERCHANT_ID: ${{ secrets.BRAINTREE_MERCHANT_ID }}
+  BRAINTREE_PUBLIC_KEY: ${{ secrets.BRAINTREE_PUBLIC_KEY }}
+  BRAINTREE_PRIVATE_KEY: ${{ secrets.BRAINTREE_PRIVATE_KEY }}
   CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
   CLOUDFLARE_PASSWORD: ${{ secrets.CLOUDFLARE_PASSWORD }}
   CONTENT_MANAGER_EMAIL: ${{ secrets.CONTENT_MANAGER_EMAIL }}
@@ -140,9 +143,16 @@ jobs:
       with:
         os: ${{ runner.os }}
         python-version: ${{ matrix.python-version }}
+    - 
+      name: Cache type stubs
+      id: cache-stubs
+      uses: actions/cache@v2
+      with:
+        path: .pytype
+        key: ${{ matrix.python-version }}-type-stubs
     -
       name: Run static type checker
-      run: poetry run pytype *
+      run: poetry run pytype --config=./setup.cfg
 
   build-django:
     name: Build Django image

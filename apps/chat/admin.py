@@ -1,8 +1,8 @@
-from apps.admin.model_admin import ModelAdmin, admin_site
+from apps.admin.model_admin import ExtendedModelAdmin, admin_site
 from apps.chat import models
 
 
-class ChatAdmin(ModelAdmin):
+class ChatAdmin(ExtendedModelAdmin):
     """Model admin for searchable models."""
 
     model: models.Chat

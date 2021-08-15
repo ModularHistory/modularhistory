@@ -56,10 +56,10 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       // Use Next.js router to redirect to a React page,
       // or use window.location to redirect to a non-React page.
       // Note: window.location is safe in any case.
-      if (/(\/?$|\/entities\/?|\/search\/?|\/occurrences\/?|\/quotes\/?)/.test(url)) {
-        router.push(url);
-      } else {
+      if (/(\/django_url_pattern1\/?|\/django_url_pattern2\/?)/.test(url)) {
         window.location.replace(url);
+      } else {
+        router.push(url);
       }
     }
   }, [redirecting, router, redirectUrl]);
@@ -91,7 +91,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
   };
   const handleSocialLogin = async (provider_id: string) => {
     try {
-      signIn(provider_id);
+      signIn(provider_id, { callbackUrl });
     } catch (error) {
       setError(`${error}`);
     }
@@ -115,7 +115,9 @@ const SignIn: FunctionComponent<SignInProps> = ({ providers, csrfToken }: SignIn
       );
     });
   }
-  if (loading) return null;
+  if (loading) {
+    return null;
+  }
   return (
     <Layout title={"Sign in"}>
       <Container>

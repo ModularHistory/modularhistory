@@ -3,7 +3,7 @@
 import logging
 from typing import Optional, Type, Union
 
-from celery import shared_task
+from core.celery import app
 from django.apps import apps
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -121,7 +121,7 @@ class ModelWithSources(ExtendedModel):
         return format_html(citation_html)
 
 
-@shared_task
+@app.task
 def cache_citations(model: str, instance_id: int, citations: list):
     """Save cached citations to a model instance."""
     if not citations:

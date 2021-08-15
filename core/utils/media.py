@@ -90,9 +90,7 @@ def sync(
             f'--mega-pass=$(echo "{mega_password}" | rclone obscure -)'
         )
     else:
-        raise NotImplementedError(
-            f'Syncing media with {storage_provider} is not supported.'
-        )
+        raise NotImplementedError(f'Syncing media with {storage_provider} is not supported.')
     if push:
         command = f'{command} --drive-stop-on-upload-limit'
         context.run(f'echo "" && {command} --dry-run; echo ""')

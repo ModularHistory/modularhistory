@@ -1,9 +1,4 @@
-"""
-ModularHistory's custom admin menu.
-
-This custom admin menu is activated by the following line in settings.py:
-    ADMIN_TOOLS_MENU = 'core.admin_menu.AdminMenu'
-"""
+"""Custom admin menu."""
 
 from typing import Iterable
 
@@ -26,6 +21,7 @@ APPS_TO_INCLUDE = (
     'sources',
     'users',
     'staticpages',
+    'moderation',
 )
 
 
@@ -53,17 +49,8 @@ class AdminMenu(Menu):
         self.children += [
             items.MenuItem(_('Dashboard'), reverse('admin:index')),
             items.Bookmarks(),
-            items.AppList(
-                title='Applications',
-                exclude=[
-                    'admin_honeypot.*',
-                    'rest_framework.*',
-                    'defender.*',
-                    'django_celery_*',
-                    'django.contrib.*',
-                ],
-            ),
-        ] + self._menu_items
+            *self._menu_items,
+        ]
 
     @property
     def _menu_items(self):
