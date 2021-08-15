@@ -19,7 +19,7 @@ class ChangeType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    """GraphQL query for all entities."""
+    """GraphQL query for changes."""
 
     changes = graphene.List(ChangeType)
     change = graphene.Field(ChangeType, id=graphene.Int())
