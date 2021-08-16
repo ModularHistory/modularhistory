@@ -60,6 +60,10 @@ class Argument(PositionedRelation):
         choices=Type.choices,
         db_index=True,
         null=True,
+        help_text=(
+            'The type of reasoning (see '
+            'https://www.merriam-webster.com/words-at-play/deduction-vs-induction-vs-abduction).'
+        ),
     )
     premise_groups: 'RelatedManager[PremiseGroup]'
     premises = models.ManyToManyField(
@@ -69,6 +73,7 @@ class Argument(PositionedRelation):
         related_name='supported_arguments',
         symmetrical=False,
         verbose_name=_('premises'),
+        help_text='The premises on which the argument depends.',
     )
     conclusion = models.ForeignKey(
         to='propositions.Proposition',
