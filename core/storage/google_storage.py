@@ -51,9 +51,7 @@ class GoogleCloudMediaFileStorage(GoogleCloudStorage):
             super().open(name, mode)
             logging.debug(f'Successfully opened {name}.')
         except DefaultCredentialsError as err:
-            raise ValueError(
-                f'Attempting to open invalid file "{name}" resulted in {err}'
-            )
+            raise ValueError(f'Attempting to open invalid file "{name}" resulted in {err}')
 
     def save(self, name, content, max_length=None):
         """Save a media file to Google Cloud."""

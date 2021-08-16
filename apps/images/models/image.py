@@ -73,11 +73,8 @@ class Image(MediaModel):
         help_text='Not yet fully implemented.',
     )
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for the Image model."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         unique_together = [IMAGE_FIELD_NAME, 'caption']
         ordering = ['date']
 
@@ -118,7 +115,9 @@ class Image(MediaModel):
         if width > max_width:
             width, height = max_width, int(max_width / self.aspect_ratio)
         return format_html(
+            f'<a target="_blank" href="/_admin/images/image/{self.pk}/change/">'
             f'<img src="{self.image.url}" width="{width}px" height="{height}px" />'
+            '</a>'
         )
 
     @property

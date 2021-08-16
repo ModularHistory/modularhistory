@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 
 interface SearchProps {
   count: number;
-  total_pages: number;
+  totalPages: number;
   results: ModuleUnion[];
 }
 
@@ -67,7 +67,7 @@ const Search: FC<SearchProps> = (props: SearchProps) => {
           </div>
 
           <Container>
-            <Pagination count={props.total_pages} />
+            <Pagination count={props.totalPages} />
           </Container>
         </>
       )}

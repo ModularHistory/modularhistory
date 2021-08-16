@@ -44,9 +44,14 @@ runs:
         sudo echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
         sudo echo "127.0.0.1 redis" | sudo tee -a /etc/hosts
       shell: bash
+    # Install PyInvoke config.
+    - name: Install PyInvoke config
+      run: |
+        sudo cp config/invoke.yaml /etc/invoke.yaml
+      shell: bash
     # Install and configure Poetry.
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.8
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true

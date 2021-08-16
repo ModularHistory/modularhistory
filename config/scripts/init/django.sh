@@ -31,7 +31,13 @@ python manage.py collectstatic --no-input || {
     exit 1
 }
 
-python manage.py search_index -f --rebuild --parallel || {
+# Rebuild indexes.
+if [[ "$USE_PARALLEL_INDEX_BUILDING" = 1 ]]; then
+    parallel="--parallel"
+else
+    parallel=""
+fi
+python manage.py search_index -f --rebuild "$parallel" || {
     echo "Failed to rebuild elasticsearch indexes."
     exit 1
 }
@@ -42,7 +48,7 @@ if [ "$ENVIRONMENT" = prod ]; then
       --workers 9 --max-requests 100 --max-requests-jitter 50
 else
     # Create superuser if necessary.
-    python manage.py createsuperuser --no-input --username=admin --email=admin@example.com &>/dev/null
+    python manage.py createsuperuser --no-input --username="$DJANGO_SUPERUSER_EMAIL" --email="$DJANGO_SUPERUSER_EMAIL" &>/dev/null
     # Run the dev server.
     python manage.py runserver 0.0.0.0:8000
 fi

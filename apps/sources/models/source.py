@@ -20,7 +20,7 @@ from apps.dates.fields import HistoricDateTimeField
 from apps.dates.models import DatedModel
 from apps.dates.structures import HistoricDateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.search.models import SearchableModel
+from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from core.fields.html_field import HTMLField
@@ -29,7 +29,7 @@ from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
 if TYPE_CHECKING:
-    from apps.entities.models import Entity
+    from apps.entities.models.entity import Entity
     from apps.sources.models.source_containment import SourceContainment
 
 MAX_CITATION_STRING_LENGTH: int = 500
@@ -62,7 +62,12 @@ class SourceManager(PolymorphicManager, SearchableManager):
     """Custom manager for sources."""
 
 
-class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEntities):
+class Source(
+    PolymorphicModel,
+    SearchableModeratedModel,
+    DatedModel,
+    ModelWithRelatedEntities,
+):
     """A source of content or information."""
 
     content = HTMLField(
@@ -75,10 +80,15 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
         max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
         blank=True,
         verbose_name=_('attributee HTML'),
+        help_text=(
+            'If not set manually, this value is set automatically '
+            'based on the `attributees` relationship.'
+        ),
     )
     attributee_string = models.CharField(
         max_length=MAX_ATTRIBUTEE_STRING_LENGTH,
         blank=True,
+        editable=False,
         verbose_name=_('attributee string'),
     )
     attributees = models.ManyToManyField(
@@ -136,6 +146,7 @@ class Source(PolymorphicModel, SearchableModel, DatedModel, ModelWithRelatedEnti
     containment_html = models.TextField(
         verbose_name=_('containment HTML'),
         blank=True,
+        help_text='This value is set automatically but can be overridden.',
     )
     containers = models.ManyToManyField(
         to='self',

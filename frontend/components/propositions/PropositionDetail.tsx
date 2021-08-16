@@ -66,9 +66,7 @@ const PropositionDetail: FC<PropositionDetailProps> = ({ proposition }: Proposit
         dangerouslySetInnerHTML={{ __html: proposition.elaboration }}
         style={{ margin: "1.5rem 0" }}
       />
-      {proposition.arguments && !!proposition.arguments.length && (
-        <ArgumentSet argumentSet={proposition.arguments} />
-      )}
+      {!!proposition.arguments?.length && <ArgumentSet argumentSet={proposition.arguments} />}
     </>
   );
 };

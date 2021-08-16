@@ -1,7 +1,7 @@
 from rangefilter.filters import DateRangeFilter
 
 from apps.admin.admin_site import admin_site
-from apps.admin.model_admin import ModelAdmin
+from apps.admin.model_admin import ExtendedModelAdmin
 from apps.collections.admin import AbstractCollectionsInline, CollectionFilter
 from apps.entities.admin.filters import RelatedEntityFilter
 from apps.propositions import models
@@ -33,10 +33,12 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
 
     exclude = [
         *SearchableModelAdmin.exclude,
+        'conflicting_propositions',
         'related_entities',
         'sources',
         'images',
         'locations',
+        'related_quotes',
     ]
     inlines = [
         ArgumentsInline,
@@ -87,7 +89,7 @@ class PublicationAdmin(AbstractPropositionAdmin):
     search_fields = model.searchable_fields
 
 
-class ArgumentAdmin(ModelAdmin):
+class ArgumentAdmin(ExtendedModelAdmin):
     """Admin for arguments."""
 
     model = models.Argument

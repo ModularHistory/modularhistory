@@ -7,11 +7,7 @@ from apps.entities.admin.filters import (
     HasImageFilter,
     HasQuotesFilter,
 )
-from apps.entities.admin.inlines import (
-    CategorizationsInline,
-    ImagesInline,
-    QuotesInline,
-)
+from apps.entities.admin.inlines import CategorizationsInline, ImagesInline, QuotesInline
 from apps.entities.forms import DeityForm, GroupForm, OrganizationForm, PersonForm
 from apps.quotes.admin.related_quotes_inline import AbstractRelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin

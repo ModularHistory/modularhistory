@@ -120,7 +120,7 @@ class SearchableManager(SearchableMixin, Manager):
 
     def get_by_natural_key(self, *args) -> 'ExtendedModel':
         """Retrieve a model instance by its natural key."""
-        fields = self.model.natural_key_fields
+        fields = self.model.get_natural_key_fields()
         natural_key = {}
         for index, field in enumerate(fields):
             natural_key[field] = args[index]

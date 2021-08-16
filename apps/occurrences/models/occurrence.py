@@ -3,26 +3,24 @@ from typing import TYPE_CHECKING
 from django.db import models
 
 from apps.dates.models import DatedModel
+from apps.moderation.models.moderated_model import (
+    SearchableModeratedModel,
+    SearchableModeratedModelManager,
+)
 from apps.propositions.api.serializers import OccurrenceSerializer
-from apps.search.models import SearchableModel
-from core.fields.html_field import PlaceholderGroups
-from core.models.manager import SearchableManager
-from core.utils.html import escape_quotes, soupify
-from core.utils.string import dedupe_newlines, truncate
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
 
-
-class OccurrenceManager(SearchableManager):
+class OccurrenceManager(SearchableModeratedModelManager):
     """Manager for occurrences."""
 
     def get_queryset(self) -> 'QuerySet[Occurrence]':
         return super().get_queryset().select_related('proposition')
 
 
-class Occurrence(SearchableModel, DatedModel):
+class Occurrence(SearchableModeratedModel, DatedModel):
     """An occurrence, i.e., something that has happened."""
 
     # Each occurrence is proposed (with some degree of certainty) to have occurred.

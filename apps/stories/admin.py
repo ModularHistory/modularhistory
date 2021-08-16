@@ -1,4 +1,4 @@
-from apps.admin import ModelAdmin, StackedInline, admin_site
+from apps.admin import ExtendedModelAdmin, StackedInline, admin_site
 from apps.stories import models
 
 
@@ -31,7 +31,7 @@ class StoryElementsInline(StackedInline):
     extra = 0
 
 
-class StoryAdmin(ModelAdmin):
+class StoryAdmin(ExtendedModelAdmin):
     """Admin for stories."""
 
     model = models.Story

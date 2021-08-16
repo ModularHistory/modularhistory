@@ -9,7 +9,7 @@ services:
   dev:
     build:
       context: .
-      dockerfile: Dockerfile.webserver
+      dockerfile: ./build/Dockerfile.webserver
       args:
         ENVIRONMENT: dev
     depends_on:
@@ -46,7 +46,7 @@ services:
   django:
     build:
       context: .
-      dockerfile: Dockerfile.django
+      dockerfile: ./build/Dockerfile.django
       args:
         ENVIRONMENT: dev
     deploy:
@@ -85,7 +85,7 @@ services:
   react:
     build:
       context: .
-      dockerfile: Dockerfile.react
+      dockerfile: ./build/Dockerfile.react
       args:
         ENVIRONMENT: dev
     command: npm run dev

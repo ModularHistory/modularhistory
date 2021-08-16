@@ -5,12 +5,12 @@ import Pagination from "@/components/Pagination";
 import { Source } from "@/interfaces";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
+import { makeStyles } from "@material-ui/styles";
 import { GetServerSideProps } from "next";
 import { FC } from "react";
 
@@ -34,7 +34,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
     <Layout title={"Sources"}>
       <Container>
         <PageHeader>Sources</PageHeader>
-        <Pagination count={sourcesData["total_pages"]} />
+        <Pagination count={sourcesData["totalPages"]} />
         <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="source table">
             <TableBody>
@@ -48,7 +48,7 @@ const Sources: FC<SourcesProps> = ({ sourcesData }: SourcesProps) => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Pagination count={sourcesData["total_pages"]} />
+        <Pagination count={sourcesData["totalPages"]} />
       </Container>
     </Layout>
   );

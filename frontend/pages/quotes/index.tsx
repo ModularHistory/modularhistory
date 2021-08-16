@@ -43,11 +43,11 @@ const Quotes: FC<QuotesProps> = ({ quotesData }: QuotesProps) => {
     <Layout title={"Quotes"}>
       <Container>
         <PageHeader>Quotes</PageHeader>
-        <Pagination count={quotesData["total_pages"]} />
+        <Pagination count={quotesData["totalPages"]} />
         <Grid container spacing={2}>
           {quoteCards}
         </Grid>
-        <Pagination count={quotesData["total_pages"]} />
+        <Pagination count={quotesData["totalPages"]} />
       </Container>
     </Layout>
   );

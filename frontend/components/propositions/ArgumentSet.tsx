@@ -86,19 +86,22 @@ interface ArgumentSetProps {
 
 const ArgumentSet: FC<ArgumentSetProps> = ({ argumentSet }: ArgumentSetProps) => {
   const classes = useStyles();
+  const filteredArguments = argumentSet.filter(
+    (argument) => argument.explanation && !!argument.premises?.length
+  );
   return (
     <TreeView
       className={classes.tree}
-      defaultExpanded={argumentSet.map((argument) => `${argument.pk}`)}
+      defaultExpanded={filteredArguments.map((argument) => `${argument.id}`)}
       defaultCollapseIcon={<MinusSquare />}
       defaultExpandIcon={<PlusSquare />}
       defaultEndIcon={<CloseSquare />}
       style={{ marginBottom: "1.5rem" }}
     >
-      {argumentSet.map((argument, index) => (
+      {filteredArguments.map((argument, index) => (
         <StyledTreeItem
-          key={argument.pk}
-          nodeId={`${argument.pk}`}
+          key={argument.id}
+          nodeId={`${argument.id}`}
           label={
             <span
               dangerouslySetInnerHTML={{ __html: argument.explanation || `Argument ${index + 1}` }}

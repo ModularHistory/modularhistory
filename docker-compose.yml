@@ -98,6 +98,9 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
+    deploy:
+      restart_policy:
+        condition: on-failure
     environment:
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html
       - node.name=modularhistory-es
@@ -105,6 +108,7 @@ services:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - xpack.ml.enabled=false
+      - "ES_JAVA_OPTS=-Xms1536m -Xmx1536m"
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
       interval: 30s

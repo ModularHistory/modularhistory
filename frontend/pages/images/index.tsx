@@ -19,8 +19,8 @@ interface ImagesProps {
 const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
   const images = imagesData["results"] || [];
   const imageCards = images.map((image) => (
-    <Grid item key={image.pk} xs={6} sm={4} md={3}>
-      <Link href={`/images/${image.pk}`}>
+    <Grid item key={image.id} xs={6} sm={4} md={3}>
+      <Link href={`/images/${image.id}`}>
         <a>
           <ImageCard image={image} />
         </a>
@@ -32,11 +32,11 @@ const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
     <Layout title={"Images"}>
       <Container>
         <PageHeader>Images</PageHeader>
-        <Pagination count={imagesData["total_pages"]} />
+        <Pagination count={imagesData["totalPages"]} />
         <Grid container spacing={2}>
           {imageCards}
         </Grid>
-        <Pagination count={imagesData["total_pages"]} />
+        <Pagination count={imagesData["totalPages"]} />
       </Container>
     </Layout>
   );

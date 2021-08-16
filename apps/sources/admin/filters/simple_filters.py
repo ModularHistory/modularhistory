@@ -47,9 +47,7 @@ class HasFilePageOffsetFilter(BooleanListFilter):
 
     def queryset(self, request, queryset):
         """Return the queryset filtered by whether page offsets are specified."""
-        sources = queryset.filter(db_file__isnull=False).exclude(
-            db_file__file=EMPTY_STRING
-        )
+        sources = queryset.filter(db_file__isnull=False).exclude(db_file__file=EMPTY_STRING)
         ids = []
         include_if_has_page_offset = self.value() == YES
         for source in sources:
@@ -97,9 +95,7 @@ class ImpreciseDateFilter(BooleanListFilter):
     def queryset(self, request, queryset):
         """Return the queryset filtered by whether dates are imprecise."""
         if self.value() == YES:
-            return queryset.filter(
-                date__second='01', date__minute='01', date__hour='01'
-            )
+            return queryset.filter(date__second='01', date__minute='01', date__hour='01')
         return queryset
 
 

@@ -1,21 +1,25 @@
+import { User } from "@sentry/node";
+
 export interface BaseModule {
   model: string;
-  pk: number;
+  id: number;
   slug: string;
   absoluteUrl: string;
   adminUrl: string;
   cachedImages?: Image[];
   verified?: boolean;
   dateString?: string;
+  changes?: Change[];
+  issues?: Issue[];
 }
 
 export interface SearchableModule extends BaseModule {
-  tagsHtml: string;
+  cachedTags: Topic[];
   verified: boolean;
 }
 
 export interface Citation {
-  pk: string;
+  id: number;
   html: string;
 }
 
@@ -72,6 +76,7 @@ export interface Argument extends BaseModule {
 }
 
 export interface Proposition extends BaseModule {
+  title: string;
   summary: string;
   elaboration: string;
   certainty: number;
@@ -90,4 +95,19 @@ export type ModuleUnion = Image | Quote | Occurrence | Source | Entity | Proposi
 export interface StaticPage {
   title: string;
   content: string;
+}
+
+export interface Change {
+  id: number;
+  url: string;
+  initiator: User;
+  description: string;
+  changedObject?: ModuleUnion;
+  unchangedObject?: ModuleUnion;
+}
+
+export interface Issue {
+  id: number;
+  url: string;
+  title: string;
 }

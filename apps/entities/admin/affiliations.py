@@ -1,8 +1,8 @@
-from apps.admin import ModelAdmin, TabularInline, admin_site
+from apps.admin import ExtendedModelAdmin, TabularInline, admin_site
 from apps.entities import models
 
 
-class RoleAdmin(ModelAdmin):
+class RoleAdmin(ExtendedModelAdmin):
     """Admin for roles."""
 
     search_fields = ['name']
@@ -25,7 +25,7 @@ class RolesInline(TabularInline):
         return fields
 
 
-class AffiliationAdmin(ModelAdmin):
+class AffiliationAdmin(ExtendedModelAdmin):
     """Admin for affiliations."""
 
     list_display = ['entity', 'affiliated_entity', 'start_date', 'end_date']

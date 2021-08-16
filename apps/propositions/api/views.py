@@ -1,15 +1,8 @@
-from rest_framework.generics import ListAPIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 
+from apps.moderation.serializers import get_moderated_model_serializer
 from apps.propositions.api.serializers import PropositionSerializer
 from apps.propositions.models import Proposition
-
-
-class PropositionViewSet(ModelViewSet):
-    """API endpoint for viewing and editing propositions."""
-
-    queryset = Proposition.objects.filter(type='propositions.conclusion')
-    serializer_class = PropositionSerializer
 
 
 class PropositionListAPIView(ListAPIView):
@@ -19,3 +12,19 @@ class PropositionListAPIView(ListAPIView):
         type='propositions.conclusion', hidden=False, verified=True
     )
     serializer_class = PropositionSerializer
+
+
+class PropositionAPIView(RetrieveAPIView):
+    """API view for retrieving a proposition."""
+
+    queryset = Proposition.objects.all()
+    serializer_class = PropositionSerializer
+    lookup_field = 'slug'
+
+
+class PropositionModerationAPIView(RetrieveAPIView):
+    """API view for retrieving a proposition for moderation."""
+
+    queryset = Proposition.objects.all()
+    serializer_class = get_moderated_model_serializer(Proposition)
+    lookup_field = 'slug'
