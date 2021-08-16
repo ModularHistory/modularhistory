@@ -14,12 +14,6 @@ from core.utils.html import soupify
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
 
-TYPE_CHOICES = (
-    (None, '-------'),
-    (1, 'deductive'),
-    (2, 'inductive'),
-)
-
 
 class PremiseGroupInclusion(PositionedRelation):
     """A relation of a premise and a premise group."""
@@ -56,8 +50,14 @@ class PremiseGroup(PositionedRelation):
 class Argument(PositionedRelation):
     """An argument for a proposition."""
 
+    class Type(models.IntegerChoices):
+        __empty__ = '-------'
+        DEDUCTIVE = 1, 'deductive'
+        INDUCTIVE = 2, 'inductive'
+        ABDUCTIVE = 3, 'abductive'
+
     type = models.PositiveSmallIntegerField(
-        choices=TYPE_CHOICES,
+        choices=Type.choices,
         db_index=True,
         null=True,
     )
