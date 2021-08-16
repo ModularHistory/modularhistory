@@ -59,7 +59,7 @@ class ChangeAdmin(admin.ModelAdmin):
         if request.POST:
             admin_form = self.get_form(request, change)(request.POST)
             if admin_form.is_valid():
-                reason = admin_form.cleaned_data['reason']
+                reason = admin_form.cleaned_data.get('reason')
                 if 'approve' in request.POST:
                     change.approve(moderator=request.user, reason=reason)
                 elif 'reject' in request.POST:

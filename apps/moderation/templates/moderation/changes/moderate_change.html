@@ -76,6 +76,16 @@
 			{% for fieldset in adminform %}
 			{% include "admin/includes/fieldset.html" %}
 			{% endfor %}
+			<fieldset class="module aligned">
+				<h2>Moderation</h2>
+				<div class="form-row field-description">
+                	<div>
+                        <label for="id_reason">Reason for verdict:</label>
+						<textarea name="reason" cols="40" rows="10" class="vLargeTextField" id="id_reason"></textarea>
+						<div class="help">Reason for approval or rejection</div>
+                	</div>
+        		</div>
+			</fieldset>
 			<div class="submit-row">
 				<p class="deletelink-box">
 					<input type="submit" value="{% trans 'Reject' %}" name="reject" />
