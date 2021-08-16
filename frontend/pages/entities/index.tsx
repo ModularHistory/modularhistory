@@ -12,7 +12,7 @@ import { FC } from "react";
 import HTMLEllipsis from "react-lines-ellipsis/lib/html";
 
 interface EntitiesDataProps {
-  total_pages: number;
+  totalPages: number;
   results: Entity[];
 }
 
@@ -38,11 +38,11 @@ const Entities: FC<EntitiesProps> = ({ entitiesData }: EntitiesProps) => {
     <Layout title={"Entities"}>
       <Container>
         <PageHeader>Entities</PageHeader>
-        <Pagination count={entitiesData["total_pages"]} />
+        <Pagination count={entitiesData["totalPages"]} />
         <Grid container spacing={2}>
           {entityCards}
         </Grid>
-        <Pagination count={entitiesData["total_pages"]} />
+        <Pagination count={entitiesData["totalPages"]} />
       </Container>
     </Layout>
   );

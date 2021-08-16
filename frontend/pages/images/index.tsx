@@ -32,11 +32,11 @@ const Images: FC<ImagesProps> = ({ imagesData }: ImagesProps) => {
     <Layout title={"Images"}>
       <Container>
         <PageHeader>Images</PageHeader>
-        <Pagination count={imagesData["total_pages"]} />
+        <Pagination count={imagesData["totalPages"]} />
         <Grid container spacing={2}>
           {imageCards}
         </Grid>
-        <Pagination count={imagesData["total_pages"]} />
+        <Pagination count={imagesData["totalPages"]} />
       </Container>
     </Layout>
   );
