@@ -24,6 +24,8 @@ class AbstractSourceAdmin(SearchableModelAdmin):
     """Abstract base admin for PolymorphicSourceAdmin and SourceAdmin."""
 
     exclude = SearchableModelAdmin.exclude + [
+        'attributees',
+        'containers',
         'related_entities',
         'images',
         'locations',

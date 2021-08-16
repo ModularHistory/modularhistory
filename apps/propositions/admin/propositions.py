@@ -33,10 +33,12 @@ class AbstractPropositionAdmin(SearchableModelAdmin):
 
     exclude = [
         *SearchableModelAdmin.exclude,
+        'conflicting_propositions',
         'related_entities',
         'sources',
         'images',
         'locations',
+        'related_quotes',
     ]
     inlines = [
         ArgumentsInline,
