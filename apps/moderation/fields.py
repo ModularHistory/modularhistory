@@ -87,6 +87,11 @@ def _deserialize(value_set: list, **options):
 def serialize_instance(instance: Model) -> SerializedModel:
     if not isinstance(instance, Model):
         raise TypeError(instance)
+    fields = instance._meta.get_fields()
+    for field in fields:
+        is_string_field = field.get_internal_type() in ('CharField', 'TextField')
+        if is_string_field and getattr(instance, field.name, None):
+            setattr(instance, field.name, '')
     value_set = [instance]
     if instance._meta.parents:
         value_set += [
