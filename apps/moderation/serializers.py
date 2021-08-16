@@ -14,6 +14,6 @@ def get_moderated_model_serializer(model_cls: Type[ModeratedModel]) -> Type[Mode
 
         class Meta:
             model = model_cls
-            exclude = model.Moderation.excluded_fields
+            include = model_cls.get_moderated_fields()
 
     return ModeratedModelSerializer

@@ -90,7 +90,7 @@ def serialize_instance(instance: Model) -> SerializedModel:
     fields = instance._meta.get_fields()
     for field in fields:
         is_string_field = field.get_internal_type() in ('CharField', 'TextField')
-        if is_string_field and getattr(instance, field.name, None):
+        if is_string_field and getattr(instance, field.name, None) is None:
             setattr(instance, field.name, '')
     value_set = [instance]
     if instance._meta.parents:
