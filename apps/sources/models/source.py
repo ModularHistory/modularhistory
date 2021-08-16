@@ -80,10 +80,15 @@ class Source(
         max_length=MAX_ATTRIBUTEE_HTML_LENGTH,
         blank=True,
         verbose_name=_('attributee HTML'),
+        help_text=(
+            'If not set manually, this value is set automatically '
+            'based on the `attributees` relationship.'
+        ),
     )
     attributee_string = models.CharField(
         max_length=MAX_ATTRIBUTEE_STRING_LENGTH,
         blank=True,
+        editable=False,
         verbose_name=_('attributee string'),
     )
     attributees = models.ManyToManyField(
@@ -141,6 +146,7 @@ class Source(
     containment_html = models.TextField(
         verbose_name=_('containment HTML'),
         blank=True,
+        help_text='This value is set automatically but can be overridden.',
     )
     containers = models.ManyToManyField(
         to='self',
