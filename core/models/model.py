@@ -65,6 +65,31 @@ class ExtendedModel(Model):
         return regex.compile(pattern)
 
     @classmethod
+    def get_natural_key_fields(cls) -> list:
+        """Return the list of fields that comprise a natural key for the model instance."""
+        unique_together = getattr(cls.Meta, 'unique_together', None)
+        if unique_together:
+            unique_together_is_valid = isinstance(unique_together, (list, tuple)) and all(
+                isinstance(field_name, str) for field_name in unique_together
+            )
+            if not unique_together_is_valid:
+                raise ValueError(
+                    'The `unique_together` value must be an iterable containing strings.'
+                )
+            return list(unique_together)
+        else:
+            fields = cls._meta.get_fields()
+            unique_fields = []
+            for field in fields:
+                if getattr(field, 'unique', False):
+                    unique_fields.append(field.name)
+            if unique_fields:
+                return unique_fields
+        raise NotImplementedError(
+            'Model must have Meta.unique_together and/or `natural_key_fields` method defined.'
+        )
+
+    @classmethod
     def get_searchable_fields(cls) -> FieldList:
         """Return a list of fields that can be used to search for instances of the model."""
         return cls.searchable_fields or []
@@ -78,31 +103,6 @@ class ExtendedModel(Model):
     def ctype(self) -> ContentType:
         """Return the model instance's ContentType."""
         return ContentType.objects.get_for_model(self)
-
-    @property
-    def natural_key_fields(self) -> list:
-        """Return the list of fields that comprise a natural key for the model instance."""
-        unique_together = getattr(self.Meta, 'unique_together', None)
-        if unique_together:
-            unique_together_is_valid = isinstance(unique_together, (list, tuple)) and all(
-                isinstance(field_name, str) for field_name in unique_together
-            )
-            if not unique_together_is_valid:
-                raise ValueError(
-                    'The `unique_together` value must be an iterable containing strings.'
-                )
-            return list(unique_together)
-        else:
-            fields = self._meta.get_fields()
-            unique_fields = []
-            for field in fields:
-                if getattr(field, 'unique', False):
-                    unique_fields.append(field.name)
-            if unique_fields:
-                return unique_fields
-        raise NotImplementedError(
-            'Model must have Meta.unique_together and/or `natural_key_fields` method defined.'
-        )
 
     def get_admin_url(self) -> str:
         """Return the URL of the model instance's admin page."""
@@ -129,11 +129,10 @@ class ExtendedModel(Model):
     def natural_key(self) -> tuple[Any, ...]:
         """Return a tuple of values comprising the model instance's natural key."""
         natural_key_values = []
-        for field in self.natural_key_fields:
-            value = getattr(self, field, None)
-            if not value:
+        for field in self.__class__.get_natural_key_fields():
+            if not hasattr(self, field):
                 raise AttributeError(f'Model has no `{field}` attribute.')
-            natural_key_values.append(value)
+            natural_key_values.append(getattr(self, field, None))
         return tuple(natural_key_values)
 
     def preprocess_html(self, html: str) -> str:
