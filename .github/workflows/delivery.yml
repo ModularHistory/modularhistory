@@ -112,7 +112,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.8
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -244,7 +244,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.8
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -376,7 +376,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.8
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -509,7 +509,7 @@ jobs:
         sudo cp config/invoke.yaml /etc/invoke.yaml
       shell: bash
     - name: Install and configure Poetry
-      uses: snok/install-poetry@v1.1.6
+      uses: snok/install-poetry@v1.1.8
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
@@ -566,7 +566,7 @@ jobs:
           set +a; bash config/scripts/deploy.sh
         ENDSSH
     - name: Create Sentry release
-      uses: getsentry/action-release@v1.1.5
+      uses: getsentry/action-release@v1.1.6
       env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}

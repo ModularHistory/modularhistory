@@ -13,7 +13,7 @@ class SearchableModelSerializer(ModelSerializer):
     absoluteUrl = serpy.StrField(attr='absolute_url')
     adminUrl = serpy.StrField(attr='admin_url')
     slug = serpy.StrField()
-    tagsHtml = serpy.StrField(attr='tags_html')
+    cachedTags = serpy.Field(attr='cached_tags')
     title = serpy.StrField()
     verified = serpy.BoolField()
     meta = serpy.MethodField()
@@ -21,7 +21,6 @@ class SearchableModelSerializer(ModelSerializer):
     def get_meta(self, model) -> Optional[dict]:
         if not hasattr(model, 'meta'):
             return None
-
         meta = model.meta.to_dict()
         for key in ELASTICSEARCH_META_FIELDS_TO_CLEAN:
             # TODO: find out why in some cases it's already cleaned

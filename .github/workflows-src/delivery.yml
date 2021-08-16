@@ -192,7 +192,7 @@ jobs:
           set +a; bash config/scripts/deploy.sh
         ENDSSH
     - name: Create Sentry release
-      uses: getsentry/action-release@v1.1.5
+      uses: getsentry/action-release@v1.1.6
       env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}

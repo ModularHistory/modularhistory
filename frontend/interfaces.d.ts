@@ -14,7 +14,7 @@ export interface BaseModule {
 }
 
 export interface SearchableModule extends BaseModule {
-  tagsHtml: string;
+  cachedTags: Topic[];
   verified: boolean;
 }
 
