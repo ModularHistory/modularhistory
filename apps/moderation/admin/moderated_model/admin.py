@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from django.contrib.contenttypes.models import ContentType
 
 from apps.admin.model_admin import ExtendedModelAdmin
+from apps.admin.widgets.historic_date_widget import HistoricDateWidget
 from apps.moderation.constants import ModerationStatus
 from apps.moderation.forms import SoftModificationForm
 from apps.moderation.models.change import Change
@@ -37,6 +38,10 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
                 class Meta:
                     model = obj.__class__
                     exclude = excluded_fields
+                    widgets = {
+                        'date': HistoricDateWidget,
+                        'end_date': HistoricDateWidget,
+                    }
 
             return _Form
         return super().get_form(request, obj, **kwargs)
