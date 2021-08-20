@@ -44,6 +44,7 @@
     "react-social-login-buttons": "^3.5.0",
     "react-swipeable-views": "^0.14.0",
     "sass": "^1.37.5",
+    "throttle-debounce": "^3.0.1",
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {

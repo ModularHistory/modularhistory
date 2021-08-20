@@ -33,11 +33,12 @@ python manage.py collectstatic --no-input || {
 
 # Rebuild indexes.
 if [[ "$USE_PARALLEL_INDEX_BUILDING" = 1 ]]; then
-    parallel="--parallel"
+    args="-f --parallel"
 else
-    parallel=""
+    args="-f"
 fi
-python manage.py search_index -f --rebuild "$parallel" || {
+python manage.py search_index --rebuild "$args" || {
+    echo "$args"
     echo "Failed to rebuild elasticsearch indexes."
     exit 1
 }

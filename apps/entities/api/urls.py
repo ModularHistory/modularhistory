@@ -10,4 +10,5 @@ app_name = 'entities'
 
 urlpatterns = [
     path('', views.EntityListAPIView.as_view()),
+    path('instant_search/', views.EntityInstantSearchAPIView.as_view()),
 ]
