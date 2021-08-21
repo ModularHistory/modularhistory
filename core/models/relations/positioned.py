@@ -1,14 +1,12 @@
-"""Base model class for positioned relations."""
+"""Base model classes for relations, i.e., models that mediate m2m relationships."""
 
 
 from django.db import models
 
-from .model import ExtendedModel
-
-FieldList = list[str]
+from .relation import Relation
 
 
-class PositionedRelation(ExtendedModel):
+class PositionedRelation(Relation):
     """An m2m intermediate relation sortable by position."""
 
     position = models.PositiveSmallIntegerField(blank=True, default=0)

@@ -20,11 +20,13 @@ from apps.dates.fields import HistoricDateTimeField
 from apps.dates.models import DatedModel
 from apps.dates.structures import HistoricDateTime
 from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
-from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
+from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
 from core.fields.html_field import HTMLField
-from core.models.manager import SearchableManager, SearchableQuerySet
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
+from core.models.manager import SearchableQuerySet
+from core.models.module import Module, ModuleManager
 from core.utils.html import NEW_TAB, components_to_html, compose_link, soupify
 from core.utils.string import fix_comma_positions
 
@@ -54,18 +56,27 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
+class TopicRelation(AbstractTopicRelation):
+    """A relation of a topic to a source."""
+
+    content_object = ManyToManyForeignKey(
+        to='sources.Source', related_name='topic_relations', verbose_name='source'
+    )
+
+
 class SourceQuerySet(PolymorphicQuerySet, SearchableQuerySet):
     """Custom queryset for sources."""
 
 
-class SourceManager(PolymorphicManager, SearchableManager):
+class SourceManager(PolymorphicManager, ModuleManager):
     """Custom manager for sources."""
 
 
 class Source(
     PolymorphicModel,
-    SearchableModeratedModel,
+    Module,
     DatedModel,
+    TaggableModel,
     ModelWithRelatedEntities,
 ):
     """A source of content or information."""
@@ -204,6 +215,8 @@ class Source(
         blank=True,
         paragraphed=True,
     )
+
+    new_tags = TagsField(through=TopicRelation)
 
     class Meta:
         ordering = ['-date']

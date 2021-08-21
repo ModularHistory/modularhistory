@@ -19,7 +19,6 @@ from apps.images.models.model_with_images import (
     ImagesField,
     ModelWithImages,
 )
-from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -30,8 +29,9 @@ from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
 from core.fields.json_field import JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models import store
 from core.models.manager import TypedModelManager
+from core.models.model_with_cache import store
+from core.models.module import Module
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -75,7 +75,7 @@ class QuoteRelation(AbstractQuoteRelation):
 
 class Entity(
     TypedModel,
-    SearchableModeratedModel,
+    Module,
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,

@@ -22,7 +22,7 @@ class SearchableModelAdmin(ModeratedModelAdmin):
     model: Type['SearchableModel']
 
     exclude = ['cache', 'tags']
-    readonly_fields = ['slug', 'pretty_cache']
+    readonly_fields = ['slug']
 
     def get_fields(
         self, request: 'HttpRequest', model_instance: Optional['SearchableModel'] = None
@@ -53,7 +53,10 @@ class SearchableModelAdmin(ModeratedModelAdmin):
         fields, fieldsets = list(self.get_fields(request, model_instance)), []
         meta_fields = [
             fields.pop(fields.index(field))
-            for field in ('notes', 'verified', 'hidden')
+            for field in (
+                'notes',
+                'verified',
+            )
             if field in fields
         ]
         if meta_fields:

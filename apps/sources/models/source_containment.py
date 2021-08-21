@@ -7,37 +7,26 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from apps.sources.serializers import ContainmentSerializer
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
 
 PHRASE_MAX_LENGTH: int = 12
-CONTAINMENT_PHRASES = (
-    ('', '-----'),
-    ('archived', 'archived'),
-    ('cited', 'cited'),
-    ('copy', 'copy'),
-    ('quoted', 'quoted'),
-    ('recorded', 'recorded'),
-    ('reproduced', 'reproduced'),
-    ('transcribed', 'transcribed'),
-)
 
 
-class ContainmentPhrase(models.TextChoices):
-    """Containment phrase options."""
-
-    ARCHIVED = 'archived', _('archived in')
-    CITED = 'cited', _('cited in')
-    COPY = 'copy', _('copy in')
-    INCLUDED = 'included', _('as included in')
-    QUOTED = 'quoted', _('quoted in')
-    RECORDED = 'recorded', _('recorded in')
-    REPRODUCED = 'reproduced', _('reproduced in')
-    TRANSCRIBED = 'transcribed', _('transcribed in')
-    __empty__ = '-------'
-
-
-class SourceContainment(PositionedRelation):
+class SourceContainment(ModeratedPositionedRelation):
     """A source containment."""
+
+    class ContainmentPhrase(models.TextChoices):
+        """Containment phrase options."""
+
+        ARCHIVED = 'archived', _('archived in')
+        CITED = 'cited', _('cited in')
+        COPY = 'copy', _('copy in')
+        INCLUDED = 'included', _('as included in')
+        QUOTED = 'quoted', _('quoted in')
+        RECORDED = 'recorded', _('recorded in')
+        REPRODUCED = 'reproduced', _('reproduced in')
+        TRANSCRIBED = 'transcribed', _('transcribed in')
+        __empty__ = '-------'
 
     source = ForeignKey(
         to='sources.Source',

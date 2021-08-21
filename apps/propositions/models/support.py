@@ -3,10 +3,10 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
 
 
-class ArgumentSupport(PositionedRelation):
+class ArgumentSupport(ModeratedPositionedRelation):
     """A support of an argument by a proposition."""
 
     premise = models.ForeignKey(

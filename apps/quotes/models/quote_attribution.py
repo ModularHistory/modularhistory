@@ -4,10 +4,10 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
 
 
-class QuoteAttribution(PositionedRelation):
+class QuoteAttribution(ModeratedPositionedRelation):
     """An attribution of a quote to an entity."""
 
     quote = models.ForeignKey(

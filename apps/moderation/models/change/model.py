@@ -43,6 +43,16 @@ class Change(AbstractChange):
         blank=True,
     )
 
+    # Changes to m2m relationships require their own `Change` instances but can be
+    # explicitly connected to their originating change through the `parent` field.
+    parent = models.ForeignKey(
+        to='self',
+        on_delete=models.CASCADE,
+        related_name='dependent_changes',
+        null=True,
+        blank=True,
+    )
+
     # Django's content types framework is used to store references to moderated model
     # instances, which can belong to various models.
     # https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/
@@ -90,7 +100,7 @@ class Change(AbstractChange):
     objects = ChangeManager()
 
     def __str__(self) -> str:
-        return f'Change #{self.pk}, affecting {self.content_object}'
+        return f'Change affecting {self.content_object}'
 
     @property
     def is_approved(self) -> bool:

@@ -8,6 +8,7 @@ from django.utils.safestring import SafeString
 from apps.sources.models.mixins.document import DocumentMixin
 from apps.sources.models.source import Source
 from core.models.model_with_cache import ModelWithCache, store
+from core.models.slugged import SluggedModel
 from core.utils.html import soupify
 
 NAME_MAX_LENGTH: int = 100
