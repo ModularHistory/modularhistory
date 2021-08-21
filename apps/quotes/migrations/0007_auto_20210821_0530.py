@@ -14,8 +14,6 @@ if TYPE_CHECKING:
 
 
 def forwards_func(apps, schema_editor):
-    # We get the model from the versioned app registry;
-    # if we directly import it, it'll be the wrong version
     Quote: Type['_Quote'] = apps.get_model('quotes', 'Quote')
     TopicRelation = apps.get_model('quotes', 'TopicRelation')
     q: '_Quote'
