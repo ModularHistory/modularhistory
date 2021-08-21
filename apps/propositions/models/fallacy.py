@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from core.fields.html_field import HTMLField
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.positioned import PositionedRelation
 
 
 class FallacyIdentification(PositionedRelation):

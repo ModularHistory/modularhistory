@@ -19,7 +19,7 @@ from core.fields.html_field import (
 from core.fields.html_field import PlaceholderGroups as DefaultPlaceholderGroups
 from core.fields.json_field import JSONField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
 from core.utils import pdf
 from core.utils.html import components_to_html, compose_link, escape_quotes, soupify
 
@@ -75,7 +75,7 @@ PAGES_SCHEMA = {
 }
 
 
-class AbstractCitation(PositionedRelation):
+class AbstractCitation(ModeratedPositionedRelation):
     """Abstract base model for m2m relationships between sources and other models."""
 
     source = ManyToManyForeignKey(

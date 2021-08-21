@@ -18,7 +18,6 @@ from apps.images.models.model_with_images import (
     ImagesField,
     ModelWithImages,
 )
-from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.places.models.model_with_locations import (
     AbstractLocationRelation,
     LocationsField,
@@ -32,6 +31,7 @@ from apps.quotes.models.model_with_related_quotes import (
 )
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
+from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
     TYPE_GROUP,
@@ -40,6 +40,7 @@ from core.fields.html_field import (
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
+from core.models.module import Module
 from core.utils.html import escape_quotes, soupify
 from core.utils.string import dedupe_newlines, truncate
 
@@ -108,6 +109,12 @@ class QuoteRelation(AbstractQuoteRelation):
     content_object = get_proposition_fk(related_name='quote_relations')
 
 
+class TopicRelation(AbstractTopicRelation):
+    """A relationship between a proposition and a topic."""
+
+    content_object = get_proposition_fk(related_name='topic_relations')
+
+
 TYPE_CHOICES = (
     ('propositions.conclusion', 'conclusion'),
     ('propositions.occurrence', 'occurrence'),
@@ -131,7 +138,8 @@ class OccurrenceType(models.TextChoices):
 
 
 class Proposition(  # noqa: WPS215
-    SearchableModeratedModel,
+    Module,
+    TaggableModel,
     DatedModel,  # submodels like `Occurrence` require date
     ModelWithSources,
     ModelWithRelatedEntities,
@@ -189,6 +197,7 @@ class Proposition(  # noqa: WPS215
         through=QuoteRelation,
         related_name='propositions',
     )
+    new_tags = TagsField(through=TopicRelation)
 
     postscript = HTMLField(
         verbose_name=_('postscript'),

@@ -1,9 +1,11 @@
 import difflib
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.db.models import ImageField, fields
-from django.db.models.fields.related import ForeignObject
+from django.db.models.fields.related import ForeignObject, ManyToManyField, OneToOneField
+from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel, OneToOneRel
+from django.template.loader import render_to_string
 from django.utils.html import escape
 
 if TYPE_CHECKING:
@@ -13,18 +15,16 @@ if TYPE_CHECKING:
 class FieldChange:
     """Base class for a change to a field's value."""
 
-    def __init__(self, verbose_name: str, field, before_and_after: tuple):
+    def __init__(self, verbose_name: str, field: fields.Field, before_and_after: tuple):
         self.verbose_name = verbose_name
         self.field = field
-        self.change = before_and_after
+        self.before = before_and_after[0]
+        self.after = before_and_after[1]
 
     def __repr__(self) -> str:
-        value_before, value_after = self.change
-        return f'Change object: {value_before} - {value_after}'
+        return f'Change object: {self.before} - {self.after}'
 
     def render_diff(self, template, context) -> str:
-        from django.template.loader import render_to_string
-
         return render_to_string(template, context)
 
 
@@ -34,12 +34,12 @@ class TextChange(FieldChange):
     @property
     def diff(self) -> str:
         """Render the diff."""
-        value_before, value_after = escape(self.change[0]), escape(self.change[1])
+        value_before, value_after = escape(self.before), escape(self.after)
         if value_before == value_after:
             return value_before
         return self.render_diff(
             template='moderation/changes/html_diff.html',
-            context={'diff_operations': get_diff_operations(*self.change)},
+            context={'diff_operations': get_diff_operations(self.before, self.after)},
         )
 
 
@@ -49,10 +49,32 @@ class ImageChange(FieldChange):
     @property
     def diff(self) -> str:
         """Render the diff."""
-        left_image, right_image = self.change
         return self.render_diff(
             'moderation/image_diff.html',
-            {'left_image': left_image, 'right_image': right_image},
+            {'left_image': self.before, 'right_image': self.after},
+        )
+
+
+class RelationsChange(FieldChange):
+    """A change to the value of a m2m field."""
+
+    @property
+    def diff(self) -> str:
+        """Render the diff."""
+        print()
+        print(f'Before: {self.before}\nAfter: {self.after}')
+        if self.before == self.after:
+            diffs = self.before
+        else:
+            print('Diffs:')
+            for diff in difflib.unified_diff(self.before, self.after):
+                print(diff)
+            diffs = [diff for diff in difflib.unified_diff(self.before, self.after)]
+            # print(diffs)
+        print()
+        return self.render_diff(
+            template='moderation/changes/m2m_diff.html',
+            context={'diff_items': diffs},
         )
 
 
@@ -67,33 +89,59 @@ def get_field_change(
         value_before = getattr(object_before_change, f'get_{field.name}_display')()
         value_after = getattr(object_after_change, f'get_{field.name}_display')()
     except AttributeError:
-        if isinstance(field, ForeignObject) and resolve_foreignkeys:
+        if isinstance(field, (OneToOneRel, OneToOneField)) and resolve_foreignkeys:
+            try:
+                value_before = str(getattr(object_before_change, field.name))
+            except field.related_model.DoesNotExist:
+                value_before = ''
+            try:
+                value_after = str(getattr(object_after_change, field.name))
+            except field.related_model.DoesNotExist:
+                value_after = ''
+            return RelationsChange(
+                field.related_name,
+                field=field,
+                before_and_after=(value_before, value_after),
+            )
+        elif isinstance(field, (ManyToManyRel, ManyToManyField)):
+            value_before = [
+                str(related_object)
+                for related_object in getattr(object_before_change, field.name).all()
+            ]
+            value_after = [
+                str(related_object)
+                for related_object in getattr(object_after_change, field.name).all()
+            ]
+            return RelationsChange(
+                field.verbose_name,
+                field=field,
+                before_and_after=(value_before, value_after),
+            )
+        elif isinstance(field, (ForeignObject, ManyToOneRel)) and resolve_foreignkeys:
             value_before = str(getattr(object_before_change, field.name))
             value_after = str(getattr(object_after_change, field.name))
         else:
             value_before = field.value_from_object(object_before_change)
             value_after = field.value_from_object(object_after_change)
     if isinstance(field, ImageField):
-        change = ImageChange(
+        return ImageChange(
             f'Current {field.verbose_name} / New {field.verbose_name}',
             field=field,
             before_and_after=(value_before, value_after),
         )
-    else:
-        change = TextChange(
-            field.verbose_name,
-            field=field,
-            before_and_after=(str(value_before), str(value_after)),
-        )
-    return change
+    return TextChange(
+        getattr(field, 'verbose_name', getattr(field, 'related_name', '')),
+        field=field,
+        before_and_after=(str(value_before), str(value_after)),
+    )
 
 
 def get_changes_between_models(
     object_before_change: 'ModeratedModel',
     object_after_change: 'ModeratedModel',
-    excluded_fields=None,
-    included_fields=None,
-    resolve_foreignkeys=False,
+    excluded_fields: Optional[list] = None,
+    included_fields: Optional[list] = None,
+    resolve_foreignkeys: bool = True,
 ) -> dict:
     changes = {}
     if excluded_fields is None:
@@ -101,11 +149,12 @@ def get_changes_between_models(
     if included_fields is None:
         included_fields = []
     field: fields.Field
-    for field in object_before_change._meta.fields:
+    for field in object_before_change._meta.get_fields():
         if any(
             [
-                included_fields and field.name not in included_fields,
                 field.name in excluded_fields,
+                included_fields and field.name not in included_fields,
+                getattr(field, 'verbose_name', None) is None,
                 isinstance(field, (fields.AutoField,)),
             ]
         ):

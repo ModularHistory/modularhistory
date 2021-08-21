@@ -6,6 +6,7 @@ from django.db import models
 from apps.search.models.searchable_model import SearchableModel
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.manager import SearchableManager
+from core.models.slugged import SluggedModel
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
@@ -29,7 +30,7 @@ class CollectionManager(SearchableManager):
         return super().get_queryset().select_related('creator')
 
 
-class Collection(SearchableModel):
+class Collection(SearchableModel, SluggedModel):
     """A collection of model instances."""
 
     creator = models.ForeignKey(
@@ -56,6 +57,7 @@ class Collection(SearchableModel):
 
     objects = CollectionManager()
     searchable_fields = ['title', 'creator__name']
+    slug_base_fields = ('title',)
 
     def __str__(self) -> str:
         """Return the model instance's string representation."""

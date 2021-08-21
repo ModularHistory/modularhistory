@@ -19,7 +19,7 @@ from apps.propositions.admin.inlines import (
 )
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.filters import HasMultipleSourcesFilter, HasSourceFilter
-from apps.topics.models.taggable_model import TopicFilter
+from apps.topics.admin.filter import TopicFilter
 
 
 class CollectionsInline(AbstractCollectionsInline):

@@ -6,18 +6,12 @@ from django.utils.safestring import SafeString
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
+from core.models.titled import TitledModel
 from core.utils.html import soupify
 
-from .model import ExtendedModel
 
-
-class SluggedModel(ExtendedModel):
-    """
-    A model with a detail page and slug.
-
-    Ideally, this class would be a mixin, but due to Django's model magic,
-    it must be defined as an abstract model class.
-    """
+class SluggedModel(TitledModel):
+    """Base model for models of which instances have a detail page and slug."""
 
     slug = AutoSlugField(
         verbose_name=_('slug'),
@@ -65,7 +59,7 @@ class SluggedModel(ExtendedModel):
     def get_slug(self) -> str:
         """Get a slug for the model instance."""
         slug = ''
-        slug_base_fields = getattr(self, 'slug_base_fields', [])
+        slug_base_fields = getattr(self, 'slug_base_fields', ['title'])
         for base_field in slug_base_fields:
             slug_base = str(getattr(self, base_field, ''))
             if not slug_base:

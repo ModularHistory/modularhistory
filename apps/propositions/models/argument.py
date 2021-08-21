@@ -8,21 +8,20 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.fields.html_field import HTMLField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
-from core.models.positioned_relation import PositionedRelation
-from core.utils.html import soupify
+from core.models.relations.moderated import ModeratedPositionedRelation
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
 
 
-class PremiseGroupInclusion(PositionedRelation):
+class PremiseGroupInclusion(ModeratedPositionedRelation):
     """A relation of a premise and a premise group."""
 
     premise_group = ManyToManyForeignKey(to='propositions.PremiseGroup')
     premise = ManyToManyForeignKey(to='propositions.Proposition')
 
 
-class PremiseGroup(PositionedRelation):
+class PremiseGroup(ModeratedPositionedRelation):
     """A group of premises that, combined, support an argument."""
 
     type = models.CharField(
@@ -47,7 +46,7 @@ class PremiseGroup(PositionedRelation):
         return f'{self.type}: \n{newline.join([str(premise) for premise in self.premises.all()])}'
 
 
-class Argument(PositionedRelation):
+class Argument(ModeratedPositionedRelation):
     """An argument for a proposition."""
 
     class Type(models.IntegerChoices):

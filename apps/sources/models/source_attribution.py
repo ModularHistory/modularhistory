@@ -1,11 +1,16 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
+
+if TYPE_CHECKING:
+    from apps.entities.models import Entity
 
 
-class SourceAttribution(PositionedRelation):
-    """An entity (e.g., a writer or organization) to which a source is attributed."""
+class SourceAttribution(ModeratedPositionedRelation):
+    """An attribution of a source to an entity (e.g., a writer or organization)."""
 
     source = models.ForeignKey(
         to='sources.Source',
@@ -21,4 +26,5 @@ class SourceAttribution(PositionedRelation):
 
     def __str__(self) -> str:
         """Return the string representation of the source attribution."""
-        return self.attributee.unabbreviated_name or f'{self.attributee}'
+        attributee: 'Entity' = self.attributee
+        return attributee.unabbreviated_name or f'{attributee}'

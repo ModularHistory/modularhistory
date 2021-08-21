@@ -8,10 +8,10 @@ from django.utils.translation import ugettext_lazy as _
 from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
 
 
-class AbstractQuoteRelation(PositionedRelation):
+class AbstractQuoteRelation(ModeratedPositionedRelation):
     """
     Abstract base model for quote relations.
 

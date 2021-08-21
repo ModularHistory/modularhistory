@@ -70,7 +70,6 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
             'entity_ids': entity_ids,
             'topic_ids': topic_ids,
             'suppress_unverified': suppress_unverified,
-            'suppress_hidden': True,
         }
 
     @staticmethod
@@ -83,7 +82,6 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
         entity_ids: Optional[list[int]] = None,
         topic_ids: Optional[list[int]] = None,
         suppress_unverified: bool = True,
-        suppress_hidden: bool = True,
     ):
 
         qs = qs.index(indexes)
@@ -115,8 +113,6 @@ class ModulesSearchFilterBackend(filters.BaseFilterBackend):
             qs = qs.query('bool', filter=[Q('terms', topics__id=topic_ids)])
         if suppress_unverified:
             qs = qs.query('bool', filter=[Q('match', verified=True)])
-        if suppress_hidden:
-            qs = qs.query('bool', filter=[Q('match', hidden=False)])
 
         # TODO: refactor & improve this. currently only applying highlights to quote#text and occurrence#description
         qs = qs.highlight(

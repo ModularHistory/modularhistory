@@ -10,13 +10,13 @@ from core.fields.custom_m2m_field import CustomManyToManyField
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
 from core.models.model_with_cache import store
-from core.models.positioned_relation import PositionedRelation
+from core.models.relations.moderated import ModeratedPositionedRelation
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager
 
 
-class AbstractLocationRelation(PositionedRelation):
+class AbstractLocationRelation(ModeratedPositionedRelation):
     """
     Abstract base model for locations relations.
 

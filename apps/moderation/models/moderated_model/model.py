@@ -2,27 +2,32 @@ import logging
 from typing import TYPE_CHECKING, Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import ModerationStatus
 from apps.moderation.models.change import Change
-from apps.moderation.models.moderated_model.manager import (
-    ModeratedModelManager,
-    SearchableModeratedModelManager,
-)
-from apps.search.models.searchable_model import SearchableModel
+from apps.moderation.models.change.model import Change
+from apps.moderation.models.contribution import ContentContribution
+from apps.moderation.models.moderated_model.manager import ModeratedModelManager
+from core.models.model import ExtendedModel
+from core.models.soft_deletable import SoftDeletableModel
 
 if TYPE_CHECKING:
     from django.db.models.fields import Field
 
+    from apps.moderation.models.changeset import ChangeSet
+    from apps.users.models import User
 
-class ModeratedModel(models.Model):
+
+class ModeratedModel(SoftDeletableModel, ExtendedModel):
     """Base class for models of which instances must be moderated."""
 
     changes = GenericRelation(to='moderation.Change')
 
-    # This field is used to determine whether model instances should be visible to users.
+    # This field is used to determine whether model instances have been moderated and
+    # should be visible to users.
     verified = models.BooleanField(
         verbose_name=_('verified'),
         default=False,
@@ -34,7 +39,45 @@ class ModeratedModel(models.Model):
         abstract = True
 
     class Moderation:
-        excluded_fields = ['cache', 'date_string']
+        excluded_fields = ['cache', 'date_string', 'changes', 'verified']
+
+    def save_change(
+        self,
+        contributor: Optional['User'],
+        set: Optional['ChangeSet'] = None,
+        parent_change: Optional['Change'] = None,
+    ) -> Change:
+        """Save changes to a `Change` instance."""
+        object_is_new = self._state.adding
+        if object_is_new:
+            self.verified = False
+            self.save()
+        if object_is_new or not self.has_change_in_progress:
+            # Create a new `Change` instance.
+            _change: Change = Change.objects.create(
+                content_type=ContentType.objects.get_for_model(self.__class__),
+                object_id=self.pk,
+                moderation_status=ModerationStatus.PENDING,
+                changed_object=self,
+            )
+            ContentContribution.objects.create(
+                contributor=contributor,
+                change=_change,
+                content_before=_change.unchanged_object,
+                content_after=self,
+            )
+        else:
+            # Save the changes to the existing in-progress `Change` instance.
+            _change = self.change_in_progress
+            ContentContribution.objects.create(
+                contributor=contributor,
+                change=_change,
+                content_before=_change.changed_object,
+                content_after=self,
+            )
+            _change.changed_object = self
+            _change.save()
+        return _change
 
     @classmethod
     def get_moderated_fields(cls) -> list[dict]:
@@ -83,12 +126,3 @@ class ModeratedModel(models.Model):
         except Exception as err:
             logging.error(err)
             return False
-
-
-class SearchableModeratedModel(SearchableModel, ModeratedModel):
-    """Base class for moderated models of which users can search for instances."""
-
-    objects = SearchableModeratedModelManager()
-
-    class Meta:
-        abstract = True

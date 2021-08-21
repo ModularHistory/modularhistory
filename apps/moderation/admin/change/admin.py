@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
@@ -43,7 +43,12 @@ class ChangeAdmin(admin.ModelAdmin):
         return actions
 
     # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.change_view
-    def change_view(self, request: 'HttpRequest', object_id: int, extra_context=None):
+    def change_view(
+        self,
+        request: 'HttpRequest',
+        object_id: int,
+        extra_context: Optional[dict] = None,
+    ):
         """Return the Django view for the change moderation page."""
         change: Change = Change.objects.get(pk=object_id)
         object_after_change: ModeratedModel = change.changed_object

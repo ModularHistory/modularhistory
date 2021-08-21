@@ -1,23 +1,18 @@
 from typing import TYPE_CHECKING, Type
 
-from django.db.models.manager import Manager
-
-from core.models.manager import SearchableManager
+from core.models.soft_deletable.managers import SoftDeletableManager
 
 if TYPE_CHECKING:
-    from apps.moderation.models.moderated_model import (
-        ModeratedModel,
-        SearchableModeratedModel,
-    )
+    from apps.moderation.models.moderated_model import ModeratedModel
 
 
-class ModeratedModelManager(Manager):
+class ModeratedModelManager(SoftDeletableManager):
     """Manager for moderated models."""
 
     model: Type['ModeratedModel']
 
-
-class SearchableModeratedModelManager(SearchableManager, ModeratedModelManager):
-    """Manager for moderated models of which users can search for instances."""
-
-    model: Type['SearchableModeratedModel']
+    # def create(self, *args, **kwargs) -> 'ModeratedModel':
+    #     kwargs['verified'] = False
+    #     object = super().create(*args, **kwargs)
+    #     Change.objects.create()
+    #     return object

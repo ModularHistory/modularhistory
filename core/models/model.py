@@ -42,11 +42,8 @@ class ExtendedModel(Model):
     serializer: Type[Serializer]
     placeholder_regex: Optional[str] = None
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for Model."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         abstract = True
 
     @classmethod
