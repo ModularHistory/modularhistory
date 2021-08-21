@@ -67,7 +67,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
             )
         else:
             # Save the changes to the existing in-progress `Change` instance.
-            _change = self.change_in_progress
+            _change: Change = self.change_in_progress
             ContentContribution.objects.create(
                 contributor=contributor,
                 change=_change,
