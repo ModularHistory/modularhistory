@@ -25,6 +25,7 @@ class TreeModel(ExtendedModel):
         on_delete=models.CASCADE,
         verbose_name=_('parent'),
     )
+    children: 'QuerySet[TreeModel]'  # from parent's `related_name`
     name = models.TextField(verbose_name=_('name'))
     # The `key` field is a unique identifier derived from the `name` field.
     key = models.CharField(
