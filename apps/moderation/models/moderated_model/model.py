@@ -43,7 +43,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
 
     def save_change(
         self,
-        contributor: Optional['User'],
+        contributor: Optional['User'] = None,
         set: Optional['ChangeSet'] = None,
         parent_change: Optional['Change'] = None,
     ) -> Change:
