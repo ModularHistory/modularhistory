@@ -25,7 +25,7 @@ class ModeratedManager(SoftDeletableManager):
         return queryset
 
     def create(self, *args, **kwargs) -> 'ModeratedModel':
-        kwargs['verified'] = False
+        kwargs['verified'] = kwargs.get('verified', False)
         object: 'ModeratedModel' = super().create(*args, **kwargs)
         object.save_change()
         return object
