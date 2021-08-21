@@ -1,6 +1,6 @@
 from django.db import models
 
-from .queryset import SoftDeletableQueryset
+from .queryset import SoftDeletableQuerySet
 
 
 class SoftDeletableManager(models.Manager):
@@ -10,22 +10,21 @@ class SoftDeletableManager(models.Manager):
     Soft-deleted model instances are excluded from querysets.
     """
 
-    _safedelete_visibility_field = 'pk'
-    _queryset_class = SoftDeletableQueryset
+    queryset_cls = SoftDeletableQuerySet
 
     def get_queryset(self):
-        return self._queryset_class(self.model, using=self._db).filter(deleted__isnull=True)
+        return self.queryset_cls(self.model, using=self._db).filter(deleted__isnull=True)
 
 
 class SoftDeletableAllManager(SoftDeletableManager):
     """Manager for all objects, regardless of deletion status."""
 
     def get_queryset(self):
-        return self._queryset_class(self.model, using=self._db)
+        return self.queryset_cls(self.model, using=self._db)
 
 
 class SoftDeletableDeletedManager(SoftDeletableManager):
     """Manager for deleted objects."""
 
     def get_queryset(self):
-        return self._queryset_class(self.model, using=self._db).filter(deleted__isnull=False)
+        return self.queryset_cls(self.model, using=self._db).filter(deleted__isnull=False)

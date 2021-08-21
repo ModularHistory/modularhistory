@@ -71,7 +71,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
         # If admin integration for moderated models is not active, save the changes
         # directly to the model instance like normal.
         else:
-            instance.save(soft=False)
+            instance.save()
 
     def save_formset(
         self,

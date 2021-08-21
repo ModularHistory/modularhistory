@@ -10,7 +10,7 @@ from apps.moderation.constants import ModerationStatus
 from apps.moderation.models.change import Change
 from apps.moderation.models.change.model import Change
 from apps.moderation.models.contribution import ContentContribution
-from apps.moderation.models.moderated_model.manager import ModeratedModelManager
+from apps.moderation.models.moderated_model.manager import ModeratedManager
 from core.models.model import ExtendedModel
 from core.models.soft_deletable import SoftDeletableModel
 
@@ -33,7 +33,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
         default=False,
     )
 
-    objects = ModeratedModelManager()
+    objects = ModeratedManager()
 
     class Meta:
         abstract = True

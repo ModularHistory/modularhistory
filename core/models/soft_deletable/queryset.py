@@ -7,11 +7,11 @@ if TYPE_CHECKING:
     from core.models.soft_deletable.model import SoftDeletableModel
 
 
-class SoftDeletableQueryset(QuerySet):
+class SoftDeletableQuerySet(QuerySet):
     """Default queryset for the SoftDeletableManager.
 
     Takes care of "lazily evaluating" safedelete QuerySets. QuerySets passed
-    within the ``SoftDeletableQueryset`` will have all of the models available.
+    within the ``SoftDeletableQuerySet`` will have all of the models available.
     The deleted policy is evaluated at the very end of the chain when the
     QuerySet itself is evaluated.
     """

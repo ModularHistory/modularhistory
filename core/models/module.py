@@ -14,8 +14,8 @@ from django.utils.safestring import SafeString
 from rest_framework.serializers import Serializer
 
 from apps.moderation.models.searchable import (
+    SearchableModeratedManager,
     SearchableModeratedModel,
-    SearchableModeratedModelManager,
 )
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.models.model_with_cache import ModelWithCache
@@ -54,7 +54,7 @@ class Views(Constant):
     CARD = 'card'
 
 
-class ModuleManager(SearchableModeratedModelManager):
+class ModuleManager(SearchableModeratedManager):
     """Manager for modules."""
 
 
