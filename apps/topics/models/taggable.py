@@ -121,7 +121,7 @@ def cache_tags(model: str, instance_id: int, tags: list):
     if not tags:
         return
     Model = apps.get_model(model)  # noqa: N806
-    model_instance: TaggableModel = Model.objects.get(pk=instance_id)
+    model_instance: 'ModelWithCache' = Model.objects.get(pk=instance_id)
     model_instance.cache['tags'] = tags
     model_instance.save(wipe_cache=False)
     model_instance.refresh_from_db()

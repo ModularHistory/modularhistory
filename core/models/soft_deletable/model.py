@@ -1,4 +1,3 @@
-
 from django.contrib.admin.utils import NestedObjects
 from django.db import models, router
 from django.utils import timezone
@@ -66,10 +65,16 @@ class SoftDeletableModel(models.Model):
 
     def _delete(self, **kwargs):
         """Override Django's delete behavior."""
-        current_policy = self._safedelete_policy if (force_policy is None) else force_policy
-        if current_policy == SOFT_DELETE:
-
+        hard: bool = kwargs.pop('hard', self.deleted is not None)
+        if hard:
+            # Normally hard-delete the object.
+            super().delete()
+        else:
             # Only soft-delete the object, marking it as deleted.
+            # First, soft-delete related objects.
+            for related_object in related_objects(self):
+                if not related_object.deleted:
+                    related_object.delete(**kwargs)
             self.deleted = timezone.now()
             using = kwargs.get('using') or router.db_for_write(self.__class__, instance=self)
             # send pre_softdelete signal
@@ -77,30 +82,6 @@ class SoftDeletableModel(models.Model):
             self.save(keep_deleted=True, **kwargs)
             # send softdelete signal
             post_softdelete.send(sender=self.__class__, instance=self, using=using)
-
-        elif current_policy == HARD_DELETE:
-
-            # Normally hard-delete the object.
-            super(SoftDeletableModel, self).delete()
-
-        elif current_policy == HARD_DELETE_NOCASCADE:
-
-            # Hard-delete the object only if nothing would be deleted with it
-
-            if not can_hard_delete(self):
-                self._delete(force_policy=SOFT_DELETE, **kwargs)
-            else:
-                self._delete(force_policy=HARD_DELETE, **kwargs)
-
-        elif current_policy == SOFT_DELETE_CASCADE:
-            # Soft-delete on related objects before
-            for related in related_objects(self):
-                if is_safedelete_cls(related.__class__) and not related.deleted:
-                    related.delete(force_policy=SOFT_DELETE, **kwargs)
-
-            # soft-delete the object
-            self._delete(force_policy=SOFT_DELETE, **kwargs)
-
             collector = NestedObjects(using=router.db_for_write(self))
             collector.collect([self])
             # update fields (SET, SET_DEFAULT or SET_NULL)
