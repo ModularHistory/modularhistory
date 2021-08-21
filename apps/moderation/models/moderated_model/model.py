@@ -7,7 +7,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import ModerationStatus
-from apps.moderation.models.change import Change
 from apps.moderation.models.change.model import Change
 from apps.moderation.models.contribution import ContentContribution
 from apps.moderation.models.moderated_model.manager import ModeratedManager
@@ -113,6 +112,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
 
     @property
     def change_in_progress(self) -> Optional['Change']:
+        """Return the in-progress change for the moderated model instance."""
         return (
             self.changes.filter(moderation_status=ModerationStatus.PENDING).first()
             if self.has_change_in_progress
@@ -121,6 +121,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
 
     @property
     def has_change_in_progress(self) -> bool:
+        """Return whether the moderated model instance has an in-progress change."""
         try:
             return self.changes.filter(moderation_status=ModerationStatus.PENDING).exists()
         except Exception as err:
