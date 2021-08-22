@@ -51,7 +51,19 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
         if object_is_new:
             self.verified = False
             self.save()
-        if object_is_new or not self.has_change_in_progress:
+        change_in_progress = self.change_in_progress if not object_is_new else None
+        if change_in_progress:
+            # Save the changes to the existing in-progress `Change` instance.
+            _change = change_in_progress
+            ContentContribution.objects.create(
+                contributor=contributor,
+                change=_change,
+                content_before=_change.changed_object,
+                content_after=self,
+            )
+            _change.changed_object = self
+            _change.save()
+        else:
             # Create a new `Change` instance.
             _change: Change = Change.objects.create(
                 content_type=ContentType.objects.get_for_model(self.__class__),
@@ -65,17 +77,6 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
                 content_before=_change.unchanged_object,
                 content_after=self,
             )
-        else:
-            # Save the changes to the existing in-progress `Change` instance.
-            _change = self.change_in_progress
-            ContentContribution.objects.create(
-                contributor=contributor,
-                change=_change,
-                content_before=_change.changed_object,
-                content_after=self,
-            )
-            _change.changed_object = self
-            _change.save()
         return _change
 
     @classmethod
