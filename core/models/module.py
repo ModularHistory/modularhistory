@@ -40,6 +40,7 @@ class ModuleSerializer(serpy.Serializer):
     title = serpy.StrField()
     model = serpy.MethodField()
     absolute_url = serpy.StrField()
+    cached_tags = serpy.Field(required=False)
 
     def get_model(self, instance: 'Module') -> str:
         """Return the model name of the instance."""

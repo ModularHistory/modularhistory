@@ -9,11 +9,11 @@ class _PropositionSerializer(SearchableModelSerializer):
     summary = serpy.StrField()
     elaboration = serpy.StrField()
     certainty = serpy.IntField(required=False)
-    dateString = serpy.StrField(attr='date_string')
-    cachedImages = serpy.Field(attr='cached_images')
-    primaryImage = serpy.Field(attr='primary_image')
-    cachedCitations = serpy.Field(attr='cached_citations')
-    tagsHtml = serpy.StrField(attr='tags_html')
+    date_string = serpy.StrField()
+    cached_images = serpy.Field()
+    primary_image = serpy.Field()
+    cached_citations = serpy.Field()
+    tags_html = serpy.StrField()
 
     def get_model(self, instance) -> str:
         """Return the model name of serialized propositions."""
@@ -33,11 +33,11 @@ class PropositionSerializer(_PropositionSerializer):
     summary = serpy.StrField()
     elaboration = serpy.StrField()
     certainty = serpy.IntField(required=False)
-    dateString = serpy.StrField(attr='date_string')
-    cachedImages = serpy.Field(attr='cached_images')
-    primaryImage = serpy.Field(attr='primary_image')
-    cachedCitations = serpy.Field(attr='cached_citations')
-    tagsHtml = serpy.StrField(attr='tags_html')
+    date_string = serpy.StrField()
+    cached_images = serpy.Field()
+    primary_image = serpy.Field()
+    cached_citations = serpy.Field()
+    tags_html = serpy.StrField()
     arguments = ArgumentSerializer(many=True, attr='arguments.all', call=True)
 
     def get_model(self, instance) -> str:

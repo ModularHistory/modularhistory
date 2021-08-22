@@ -9,7 +9,7 @@ from core.models.model import ModelSerializer
 class SourceSerializer(SearchableModelSerializer):
     """Serializer for sources."""
 
-    citationHtml = serpy.StrField(attr='citation_html')
+    citation_html = serpy.StrField()
     title = serpy.StrField()
 
     def get_model(self, instance) -> str:  # noqa
@@ -33,4 +33,5 @@ class ContainmentSerializer(ModelSerializer):
 class CitationSerializer(serpy.Serializer):
     """Serializer for citations."""
 
+    id = serpy.IntField()
     html = serpy.Field()

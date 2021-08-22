@@ -130,11 +130,8 @@ class Quote(
     )
     new_tags = TagsField(through=TopicRelation)
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for Quote."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         unique_together = ['date', 'bite']
         ordering = ['date']
 
