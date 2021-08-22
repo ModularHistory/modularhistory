@@ -216,7 +216,7 @@ class ModelSerializer(serpy.Serializer):
 
     id = serpy.IntField()
     model = serpy.MethodField()
-    absolute_url = serpy.StrField(attr='absolute_url')
+    absolute_url = serpy.StrField()
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""

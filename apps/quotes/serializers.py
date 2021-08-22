@@ -16,12 +16,12 @@ class QuoteSerializer(ModuleSerializer):
 
     bite = serpy.MethodField()
     html = serpy.StrField()
-    attributee_html = serpy.StrField(attr='attributee_html')
-    attributee_string = serpy.StrField(attr='attributee_string')
-    dateString = serpy.StrField(attr='date_string')
-    cachedImages = serpy.Field(attr='cached_images')
-    primaryImage = serpy.Field(attr='primary_image')
-    cachedCitations = serpy.Field(attr='cached_citations')
+    attributee_html = serpy.StrField()
+    attributee_string = serpy.StrField()
+    date_string = serpy.StrField()
+    cached_images = serpy.Field()
+    primary_image = serpy.Field()
+    cached_citations = serpy.Field()
 
     def get_model(self, instance) -> str:  # noqa
         """Return the model name of the instance."""
