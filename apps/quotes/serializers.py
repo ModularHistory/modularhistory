@@ -5,19 +5,19 @@ from typing import TYPE_CHECKING
 import serpy
 from django.template.defaultfilters import truncatechars_html
 
-from apps.search.api.serializers import SearchableModelSerializer
+from core.models.module import ModuleSerializer
 
 if TYPE_CHECKING:
     from apps.quotes.models.quote import Quote
 
 
-class QuoteSerializer(SearchableModelSerializer):
+class QuoteSerializer(ModuleSerializer):
     """Serializer for quotes."""
 
     bite = serpy.MethodField()
     html = serpy.StrField()
-    attributeeHtml = serpy.StrField(attr='attributee_html')
-    attributeeString = serpy.StrField(attr='attributee_string')
+    attributee_html = serpy.StrField(attr='attributee_html')
+    attributee_string = serpy.StrField(attr='attributee_string')
     dateString = serpy.StrField(attr='date_string')
     cachedImages = serpy.Field(attr='cached_images')
     primaryImage = serpy.Field(attr='primary_image')
