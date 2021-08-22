@@ -1,4 +1,3 @@
-import Tag from "@/components/topics/Tag";
 import { Quote } from "@/interfaces";
 import { FC } from "react";
 import ImageCard from "../images/ImageCard";
@@ -9,9 +8,7 @@ interface QuoteDetailProps {
 }
 
 const QuoteDetail: FC<QuoteDetailProps> = ({ quote }: QuoteDetailProps) => {
-  const titleHtml = [quote.attributeeHtml, quote.dateString]
-    .filter((html) => Boolean(html))
-    .join(", ");
+  const titleHtml = [quote.attributeeHtml, quote.dateString].filter(Boolean).join(", ");
   const firstImage = quote.cachedImages?.[0];
   return (
     <>
