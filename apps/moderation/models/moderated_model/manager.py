@@ -16,7 +16,7 @@ class ModeratedManager(SoftDeletableManager):
 
     model: Type['ModeratedModel']
     queryset_cls = ModeratedQuerySet
-    exclude_unverified = True
+    exclude_unverified = False  # TODO
 
     def get_queryset(self) -> ModeratedQuerySet:
         """Return the default queryset to be used by the manager."""
