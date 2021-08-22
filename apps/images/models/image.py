@@ -12,9 +12,11 @@ from image_cropping import ImageRatioField
 
 from apps.images.models.media_model import MediaModel
 from apps.images.serializers import ImageSerializer
+from apps.topics.models.taggable import AbstractTopicRelation, TagsField
 from core.fields.file_field import upload_to
 from core.fields.html_field import OBJECT_PLACEHOLDER_REGEX, TYPE_GROUP, PlaceholderGroups
 from core.fields.json_field import JSONField
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.utils.string import components_to_string
 
 FLOAT_UPPER_WIDTH_LIMIT: int = 300
@@ -41,6 +43,21 @@ image_placeholder_regex: str = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'  # noqa: WPS360
 )
 logging.debug(f'Image placeholder pattern: {image_placeholder_regex}')
+
+
+def get_image_fk(related_name: str) -> ManyToManyForeignKey:
+    """Return a foreign key field referencing a proposition."""
+    return ManyToManyForeignKey(
+        to='images.Image',
+        related_name=related_name,
+        verbose_name='image',
+    )
+
+
+class TopicRelation(AbstractTopicRelation):
+    """A relationship between a proposition and a topic."""
+
+    content_object = get_image_fk(related_name='topic_relations')
 
 
 class Image(MediaModel):
@@ -72,6 +89,8 @@ class Image(MediaModel):
         verbose_name=_('cropping'),
         help_text='Not yet fully implemented.',
     )
+
+    new_tags = TagsField(through=TopicRelation)
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:

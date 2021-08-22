@@ -1,13 +1,14 @@
 from django.db import models
 
 from apps.dates.models import DatedModel
+from apps.topics.models.taggable import TaggableModel
 from core.fields.html_field import HTMLField
 from core.models.module import Module
 
 PROVIDER_MAX_LENGTH: int = 200
 
 
-class MediaModel(Module, DatedModel):
+class MediaModel(Module, TaggableModel, DatedModel):
     """Abstract base model for media models (e.g., images and videos)."""
 
     caption = HTMLField(blank=True, paragraphed=False)
