@@ -33,4 +33,5 @@ class ContainmentSerializer(ModelSerializer):
 class CitationSerializer(serpy.Serializer):
     """Serializer for citations."""
 
+    id = serpy.IntField()
     html = serpy.Field()
