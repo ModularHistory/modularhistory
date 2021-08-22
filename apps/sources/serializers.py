@@ -12,7 +12,7 @@ class SourceSerializer(SearchableModelSerializer):
     citation_html = serpy.StrField()
     title = serpy.StrField()
 
-    def get_model(self, instance) -> str:  # noqa
+    def get_model(self, instance) -> str:
         """Return the model name of the instance."""
         return 'sources.source'
 
