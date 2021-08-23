@@ -197,7 +197,7 @@ class Proposition(  # noqa: WPS215
         through=QuoteRelation,
         related_name='propositions',
     )
-    new_tags = TagsField(through=TopicRelation)
+    tags = TagsField(through=TopicRelation)
 
     postscript = HTMLField(
         verbose_name=_('postscript'),

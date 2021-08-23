@@ -106,7 +106,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
                     set=change_set,
                     parent_change=parent_change,
                 )
-            for relation in formset.changed_objects:
+            for relation, _changed_fields in formset.changed_objects:
                 relation.save_change(
                     contributor=request.user,
                     set=change_set,

@@ -6,7 +6,7 @@ from django.urls import NoReverseMatch, reverse
 
 from apps.admin.admin_site import admin_site
 from apps.admin.list_filters.type_filter import ContentTypeFilter
-from apps.moderation.diff import get_changes_between_models
+from apps.moderation.diff import get_field_changes
 from apps.moderation.models import Change
 from apps.moderation.models.moderated_model.model import ModeratedModel
 
@@ -14,6 +14,8 @@ from .actions import approve_objects, reject_objects, set_objects_as_pending
 
 if TYPE_CHECKING:
     from django.http.request import HttpRequest
+
+    from apps.moderation.models.change.queryset import ChangeQuerySet
 
 
 class ChangeAdmin(admin.ModelAdmin):
@@ -31,6 +33,13 @@ class ChangeAdmin(admin.ModelAdmin):
     change_list_template = 'moderation/changes/changes_list.html'
     actions = [reject_objects, approve_objects, set_objects_as_pending]
     fieldsets = (('Moderation', {'fields': ('description',)}),)
+    exclude_relations = True
+
+    def get_queryset(self, request: 'HttpRequest') -> 'ChangeQuerySet':
+        queryset = super().get_queryset(request)
+        if self.exclude_relations:
+            queryset = queryset.filter(parent__isnull=True)  # TODO
+        return queryset
 
     def get_actions(self, request: 'HttpRequest'):
         """Return the bulk actions available to the admin."""
@@ -54,9 +63,8 @@ class ChangeAdmin(admin.ModelAdmin):
         object_after_change: ModeratedModel = change.changed_object
         object_before_change: ModeratedModel = change.unchanged_object
         changes = list(
-            get_changes_between_models(
-                object_before_change,
-                object_after_change,
+            get_field_changes(
+                change,
                 excluded_fields=object_before_change.Moderation.excluded_fields,
                 resolve_foreignkeys=True,
             ).values()

@@ -8,7 +8,11 @@ from django.db.models.fields.reverse_related import ManyToManyRel, ManyToOneRel,
 from django.template.loader import render_to_string
 from django.utils.html import escape
 
+from apps.moderation.models import Change
+
 if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
+
     from apps.moderation.models.moderated_model import ModeratedModel
 
 
@@ -80,11 +84,12 @@ class RelationsChange(FieldChange):
 
 def get_field_change(
     field: fields.Field,
-    object_before_change: 'ModeratedModel',
-    object_after_change: 'ModeratedModel',
+    change: 'Change',
     resolve_foreignkeys: bool = True,
 ) -> FieldChange:
     """Return a FieldChange object for the field."""
+    object_after_change: ModeratedModel = change.changed_object
+    object_before_change: ModeratedModel = change.unchanged_object
     try:
         value_before = getattr(object_before_change, f'get_{field.name}_display')()
         value_after = getattr(object_after_change, f'get_{field.name}_display')()
@@ -103,15 +108,37 @@ def get_field_change(
                 field=field,
                 before_and_after=(value_before, value_after),
             )
-        elif isinstance(field, (ManyToManyRel, ManyToManyField)):
-            value_before = [
-                str(related_object)
-                for related_object in getattr(object_before_change, field.name).all()
-            ]
-            value_after = [
-                str(related_object)
-                for related_object in getattr(object_after_change, field.name).all()
-            ]
+        elif isinstance(field, (ManyToManyRel, ManyToManyField)):  # TODO: refactor
+            related_objects: 'QuerySet' = getattr(
+                object_before_change, field.name
+            ).all()  # TODO: get regardless of verification status!
+            related_object_ids = related_objects.values_list('id', flat=True)
+            print()
+            from pprint import pformat
+
+            print(f'>>>> {field.name} {field.remote_field} \n{pformat(field.__dict__)}')
+            print(f'>>>> {field.remote_field.through=}')
+            relation_kwargs = {
+                f'{field._m2m_name_cache}_id__in': related_object_ids,
+            }
+            relations = field.remote_field.through.objects.filter(**relation_kwargs)
+            relation_ids = relations.values_list('id', flat=True)
+            print(f'>>>> {relation_ids=}')
+            print(f'>>>> {relations=}')
+            relation_changes = Change.objects.filter(parent=change)
+            changed_relation_ids = relation_changes.values_list('object_id', flat=True)
+            print(f'>>>> {changed_relation_ids=}')
+            modified_relations = relations.filter(id__in=changed_relation_ids)
+            print(f'>>>> {modified_relations=}')
+            added_relations = modified_relations.filter(deleted__isnull=True)
+            print(f'>>>> {added_relations=}')
+            deleted_relations = modified_relations.filter(deleted__isnull=False)
+            print(f'>>>> {deleted_relations=}')
+            relations_before = relations.difference(added_relations)
+            relations_after = relations.difference(deleted_relations)
+            # TODO: changed_relations
+            value_before = [str(related_object) for related_object in relations_before]
+            value_after = [str(related_object) for related_object in relations_after]
             return RelationsChange(
                 field.verbose_name,
                 field=field,
@@ -136,20 +163,20 @@ def get_field_change(
     )
 
 
-def get_changes_between_models(
-    object_before_change: 'ModeratedModel',
-    object_after_change: 'ModeratedModel',
+def get_field_changes(
+    change: 'Change',
     excluded_fields: Optional[list] = None,
     included_fields: Optional[list] = None,
     resolve_foreignkeys: bool = True,
 ) -> dict:
+    content_object: ModeratedModel = change.content_object
     changes = {}
     if excluded_fields is None:
         excluded_fields = []
     if included_fields is None:
         included_fields = []
     field: fields.Field
-    for field in object_before_change._meta.get_fields():
+    for field in content_object._meta.get_fields():
         if any(
             [
                 field.name in excluded_fields,
@@ -159,10 +186,8 @@ def get_changes_between_models(
             ]
         ):
             continue
-        name = f'{object_before_change.__class__.__name__.lower()}__{field.name}'
-        changes[name] = get_field_change(
-            field, object_before_change, object_after_change, resolve_foreignkeys
-        )
+        name = f'{content_object.__class__.__name__.lower()}__{field.name}'
+        changes[name] = get_field_change(field, change, resolve_foreignkeys)
     return changes
 
 

@@ -216,7 +216,7 @@ class Source(
         paragraphed=True,
     )
 
-    new_tags = TagsField(through=TopicRelation)
+    tags = TagsField(through=TopicRelation)
 
     class Meta:
         ordering = ['-date']

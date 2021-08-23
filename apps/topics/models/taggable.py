@@ -31,6 +31,9 @@ class AbstractTopicRelation(ModeratedRelation):
     class Meta:
         abstract = True
 
+    def __str__(self) -> str:
+        return f'{self.topic.name}'
+
     def content_object(self) -> models.ForeignKey:
         """Foreign key to the model that references the topic."""
         raise NotImplementedError
@@ -52,18 +55,11 @@ class TagsField(CustomManyToManyField):
 class TaggableModel(models.Model):
     """Base model for models of which instances are topic-taggable."""
 
-    tags = models.ManyToManyField(
-        to='topics.Topic',
-        related_name='%(app_label)s_%(class)s_set',
-        blank=True,
-        verbose_name=_('tags'),
-    )
-
     class Meta:
         abstract = True
 
     @property
-    def new_tags(self) -> TagsField:
+    def tags(self) -> TagsField:
         """
         Require implementation of a `tags` field on inheriting models.
 
