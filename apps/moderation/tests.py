@@ -56,9 +56,7 @@ class TestModeration:
         assert change.changed_object.date == change.content_object.date
 
         # Test adding a m2m relationship.
-        import sys
-
-        assert TESTING, f'{sys.argv}'
+        assert TESTING
         topic = Topic.objects.create(name='test topic', verified=True)
         relation = TopicRelation(topic=topic, content_object=p)
         relation.save_change(parent_change=change)
@@ -72,6 +70,6 @@ class TestModeration:
         for _ in range(change.n_required_approvals):
             change.approve()
             sleep(3)
-        sleep(5)
-        assert change.is_approved
+        sleep(7)
+        assert change.is_approved, f'{change.n_remaining_approvals_required=}'
         assert p.topic_relations.exists()
