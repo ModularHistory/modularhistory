@@ -8,7 +8,6 @@ from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
-from core.models.model import ExtendedModel
 from core.models.model_with_cache import store
 from core.models.module import Module
 from core.models.relations.moderated import ModeratedRelation
