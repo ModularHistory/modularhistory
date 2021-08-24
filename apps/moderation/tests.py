@@ -1,3 +1,4 @@
+import sys
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
@@ -56,7 +57,7 @@ class TestModeration:
         assert change.changed_object.date == change.content_object.date
 
         # Test adding a m2m relationship.
-        assert TESTING
+        assert TESTING, f'{sys.argv}'
         topic = Topic.objects.create(name='test topic', verified=True)
         relation = TopicRelation(topic=topic, content_object=p)
         relation_change = relation.save_change(parent_change=change)
