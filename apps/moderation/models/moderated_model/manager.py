@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Optional, Type
+from typing import TYPE_CHECKING, Type
+
+from django.conf import settings
 
 from core.models.soft_deletable.managers import SoftDeletableManager
 from core.models.soft_deletable.queryset import SoftDeletableQuerySet
@@ -16,7 +18,7 @@ class ModeratedManager(SoftDeletableManager):
 
     model: Type['ModeratedModel']
     queryset_cls = ModeratedQuerySet
-    exclude_unverified = False  # TODO
+    exclude_unverified = settings.TESTING  # TODO
 
     def get_queryset(self) -> ModeratedQuerySet:
         """Return the default queryset to be used by the manager."""
@@ -32,14 +34,10 @@ class ModeratedManager(SoftDeletableManager):
         object.save_change()
         return object
 
-    def get_or_create(
-        self,
-        defaults: Optional[dict[str, Any]],
-        **kwargs,
-    ) -> tuple['ModeratedModel', bool]:
+    def get_or_create(self, **kwargs) -> tuple['ModeratedModel', bool]:
         """Get or create the model instance with the specified kwargs and return it."""
         object: 'ModeratedModel'
-        object, created = super().get_or_create(defaults=defaults, **kwargs)
+        object, created = super().get_or_create(**kwargs)
         if created:
             object.save_change()
         return object, created

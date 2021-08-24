@@ -8,6 +8,7 @@ from .proposition import (
     Citation,
     CollectionInclusion,
     Conclusion,
+    EntityRelation,
     ImageRelation,
     Location,
     Proposition,

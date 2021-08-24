@@ -23,11 +23,8 @@ class QuoteAttribution(ModeratedPositionedRelation):
         verbose_name=_('attributee'),
     )
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for QuoteAttribution."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         unique_together = ['quote', 'attributee']
         ordering = ['position']
 

@@ -13,7 +13,11 @@ from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.structures import HistoricDateTime
 from apps.entities.api.serializers import EntitySerializer
-from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.entities.models.model_with_related_entities import (
+    AbstractEntityRelation,
+    ModelWithRelatedEntities,
+    RelatedEntitiesField,
+)
 from apps.images.models.model_with_images import (
     AbstractImageRelation,
     ImagesField,
@@ -49,28 +53,37 @@ PARTS_OF_SPEECH = (
 )
 
 
+def get_entity_fk(related_name: str) -> ManyToManyForeignKey:
+    """Return a foreign key field referencing an entity."""
+    return ManyToManyForeignKey(
+        to='entities.Entity',
+        related_name=related_name,
+        verbose_name='entity',
+    )
+
+
 class CollectionInclusion(AbstractCollectionInclusion):
     """An inclusion of an entity in a collection."""
 
-    content_object = ManyToManyForeignKey(
-        to='entities.Entity', related_name='collection_inclusions', verbose_name='entity'
-    )
+    content_object = get_entity_fk(related_name='collection_inclusions')
 
 
 class ImageRelation(AbstractImageRelation):
     """A relation of an image to an entity."""
 
-    content_object = ManyToManyForeignKey(
-        to='entities.Entity', related_name='image_relations', verbose_name='entity'
-    )
+    content_object = get_entity_fk(related_name='image_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
     """A relation of a quote to an entity."""
 
-    content_object = ManyToManyForeignKey(
-        to='entities.Entity', related_name='quote_relations', verbose_name='entity'
-    )
+    content_object = get_entity_fk(related_name='quote_relations')
+
+
+class EntityRelation(AbstractEntityRelation):
+    """A relation of an entity to an entity."""
+
+    content_object = get_entity_fk(related_name='entity_relations')
 
 
 class Entity(
@@ -127,6 +140,7 @@ class Entity(
     )
     reference_urls = JSONField(blank=True, default=dict)
     related_quotes = RelatedQuotesField(through=QuoteRelation)
+    related_entities = RelatedEntitiesField(through=EntityRelation, related_name='entity_nre')
 
     class Meta:
         """Meta options for the Entity model."""

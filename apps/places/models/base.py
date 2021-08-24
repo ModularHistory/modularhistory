@@ -4,7 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from typedmodels.models import TypedModel
 
 from core.models.manager import TypedModelManager
-from core.models.model_with_cache import ModelWithCache, store
+from core.models.model_with_cache import store
+from core.models.module import Module
 
 PREPOSITION_CHOICES = (('in', 'in'), ('at', 'at'))
 
@@ -24,7 +25,7 @@ class PlaceTypes:
 NAME_MAX_LENGTH: int = 40
 
 
-class Place(TypedModel, ModelWithCache):
+class Place(TypedModel, Module):
     """Where something has happened."""
 
     name = models.CharField(

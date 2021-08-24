@@ -25,9 +25,10 @@ class AbstractQuoteRelation(ModeratedPositionedRelation):
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for AbstractQuoteRelation."""
-
         abstract = True
+
+    def __str__(self) -> str:
+        return f'{self.quote}'
 
     def content_object(self) -> models.ForeignKey:
         """Foreign key to the model that references the quote."""

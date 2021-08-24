@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
     from apps.moderation.models.change import Change
+    from apps.moderation.models.change.queryset import ChangeQuerySet
     from apps.moderation.models.moderated_model import ModeratedModel
     from apps.users.models import User
 
@@ -48,10 +49,11 @@ class Change(AbstractChange):
     parent = models.ForeignKey(
         to='self',
         on_delete=models.CASCADE,
-        related_name='dependent_changes',
+        related_name='constituent_changes',
         null=True,
         blank=True,
     )
+    constituent_changes: 'ChangeQuerySet'  # from parent's `related_name`
 
     # Django's content types framework is used to store references to moderated model
     # instances, which can belong to various models.
@@ -103,11 +105,6 @@ class Change(AbstractChange):
         return f'Change affecting {self.content_object}'
 
     @property
-    def is_approved(self) -> bool:
-        """Return a boolean reflecting whether the change is approved."""
-        return self.moderation_status == ModerationStatus.APPROVED
-
-    @property
     def unchanged_object(self) -> 'ModeratedModel':
         """
         Return the object prior to application of the change.
@@ -130,6 +127,25 @@ class Change(AbstractChange):
             return prior_change.changed_object
         return self.content_object
 
+    @property
+    def is_approved(self) -> bool:
+        """Return a boolean reflecting whether the change is approved."""
+        return self.moderation_status == ModerationStatus.APPROVED
+
+    @property
+    def n_remaining_approvals_required(self) -> int:
+        """Return the number of remaining approvals required before the change is applied."""
+        if self.is_approved:
+            return 0
+        n_required_approvals = self.n_required_approvals
+        latest_moderations = self.moderations.order_by('-date')[:n_required_approvals]
+        for moderation in latest_moderations:
+            if moderation.verdict == ModerationStatus.APPROVED:
+                n_required_approvals -= 1
+            else:
+                break
+        return n_required_approvals
+
     def apply(self) -> bool:
         """
         Apply the change to the referenced model instance.
@@ -147,7 +163,7 @@ class Change(AbstractChange):
                 logging.error(err)
                 return False
             return True
-        logging.info(f'Ignored request to apply unapproved change: {self}')
+        logging.error(f'Ignored request to apply unapproved change: {self}')
         return False
 
     def approve(
@@ -161,6 +177,7 @@ class Change(AbstractChange):
             moderator=moderator,
             reason=reason,
         )
+        self.constituent_changes.all().approve(moderator=moderator, reason=reason)
         handle_approval.delay(approval.pk)
         return approval
 

@@ -90,7 +90,7 @@ class Image(MediaModel):
         help_text='Not yet fully implemented.',
     )
 
-    new_tags = TagsField(through=TopicRelation)
+    tags = TagsField(through=TopicRelation)
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:

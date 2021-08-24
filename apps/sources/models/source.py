@@ -19,7 +19,11 @@ from polymorphic.query import PolymorphicQuerySet
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.models import DatedModel
 from apps.dates.structures import HistoricDateTime
-from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.entities.models.model_with_related_entities import (
+    AbstractEntityRelation,
+    ModelWithRelatedEntities,
+    RelatedEntitiesField,
+)
 from apps.sources.models.source_file import SourceFile
 from apps.sources.serializers import SourceSerializer
 from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
@@ -56,12 +60,25 @@ CITATION_PHRASE_OPTIONS = (
 )
 
 
+def get_source_fk(related_name: str) -> ManyToManyForeignKey:
+    """Return a foreign key field referencing a source."""
+    return ManyToManyForeignKey(
+        to='sources.Source',
+        related_name=related_name,
+        verbose_name='source',
+    )
+
+
 class TopicRelation(AbstractTopicRelation):
     """A relation of a topic to a source."""
 
-    content_object = ManyToManyForeignKey(
-        to='sources.Source', related_name='topic_relations', verbose_name='source'
-    )
+    content_object = get_source_fk(related_name='topic_relations')
+
+
+class EntityRelation(AbstractEntityRelation):
+    """A relation of an entity to a proposition."""
+
+    content_object = get_source_fk(related_name='entity_relations')
 
 
 class SourceQuerySet(PolymorphicQuerySet, SearchableQuerySet):
@@ -216,7 +233,8 @@ class Source(
         paragraphed=True,
     )
 
-    new_tags = TagsField(through=TopicRelation)
+    related_entities = RelatedEntitiesField(through=EntityRelation, related_name='source_nre')
+    tags = TagsField(through=TopicRelation)
 
     class Meta:
         ordering = ['-date']
