@@ -11,5 +11,6 @@ from .entity import (
     Organization,
     Person,
     QuoteRelation,
+    TopicRelation,
 )
 from .idea import EntityIdea, Idea

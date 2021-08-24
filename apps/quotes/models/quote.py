@@ -138,7 +138,7 @@ class Quote(
         symmetrical=False,
         through_fields=('content_object', 'quote'),
     )
-    related_entities = RelatedEntitiesField(through=EntityRelation, related_name='quote_nre')
+    related_entities = RelatedEntitiesField(through=EntityRelation)
     tags = TagsField(through=TopicRelation)
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
