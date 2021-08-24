@@ -207,9 +207,7 @@ class Proposition(  # noqa: WPS215
         through=QuoteRelation,
         related_name='propositions',
     )
-    related_entities = RelatedEntitiesField(
-        through=EntityRelation, related_name='proposition_nre'
-    )
+    related_entities = RelatedEntitiesField(through=EntityRelation)
     tags = TagsField(through=TopicRelation)
 
     postscript = HTMLField(

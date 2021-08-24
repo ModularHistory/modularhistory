@@ -233,7 +233,7 @@ class Source(
         paragraphed=True,
     )
 
-    related_entities = RelatedEntitiesField(through=EntityRelation, related_name='source_nre')
+    related_entities = RelatedEntitiesField(through=EntityRelation)
     tags = TagsField(through=TopicRelation)
 
     class Meta:

@@ -28,6 +28,7 @@ from apps.quotes.models.model_with_related_quotes import (
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
+from apps.topics.models.taggable import AbstractTopicRelation, TagsField
 from core.constants.strings import EMPTY_STRING
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
@@ -78,6 +79,12 @@ class QuoteRelation(AbstractQuoteRelation):
     """A relation of a quote to an entity."""
 
     content_object = get_entity_fk(related_name='quote_relations')
+
+
+class TopicRelation(AbstractTopicRelation):
+    """A relation of a topic to an entity."""
+
+    content_object = get_entity_fk(related_name='topic_relations')
 
 
 class EntityRelation(AbstractEntityRelation):
@@ -140,7 +147,8 @@ class Entity(
     )
     reference_urls = JSONField(blank=True, default=dict)
     related_quotes = RelatedQuotesField(through=QuoteRelation)
-    related_entities = RelatedEntitiesField(through=EntityRelation, related_name='entity_nre')
+    related_entities = RelatedEntitiesField(through=EntityRelation)
+    tags = TagsField(through=TopicRelation)
 
     class Meta:
         """Meta options for the Entity model."""
