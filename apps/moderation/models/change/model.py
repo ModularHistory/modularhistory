@@ -53,7 +53,7 @@ class Change(AbstractChange):
         null=True,
         blank=True,
     )
-    constituent_changes: 'ChangeQuerySet[Change]'  # from parent's `related_name`
+    constituent_changes: 'ChangeQuerySet'  # from parent's `related_name`
 
     # Django's content types framework is used to store references to moderated model
     # instances, which can belong to various models.

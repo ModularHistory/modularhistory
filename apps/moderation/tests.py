@@ -67,7 +67,7 @@ class TestModeration:
         topic_relations = p.topic_relations.all()
         assert not topic_relations.exists(), f'{type(topic_relations)}: {topic_relations}'
 
-        # Approve the change.
+        # Test approving the change.
         for _ in range(change.n_required_approvals):
             approval = change.approve()
             handle_approval(approval.pk)
@@ -80,3 +80,4 @@ class TestModeration:
             relation_change.is_approved
         ), f'{relation_change.n_remaining_approvals_required=}'
         assert p.topic_relations.exists()
+        assert p.topic_relations.first().topic == topic
