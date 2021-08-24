@@ -15,10 +15,8 @@ else:
 IS_PROD = ENVIRONMENT == Environments.PROD
 IS_DEV = ENVIRONMENT == Environments.DEV
 DOCKERIZED = config('DOCKERIZED', cast=bool, default=True)
-TESTING: bool = any(
-    [
-        os.getenv('TESTING', None),
-        'test' in sys.argv,
-        any(['pytest' in arg for arg in sys.argv]),
-    ]
+TESTING: bool = (
+    os.getenv('TESTING', None)
+    or 'test' in sys.argv
+    or any(['pytest' in arg for arg in sys.argv])
 )
