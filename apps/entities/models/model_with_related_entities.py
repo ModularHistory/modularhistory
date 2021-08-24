@@ -1,19 +1,61 @@
 """Classes for models with related entities."""
 
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type, Union
 
 from django.db import models
 from django.db.models import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
+from core.fields.custom_m2m_field import CustomManyToManyField
+from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.model import ExtendedModel
 from core.models.model_with_cache import store
+from core.models.relations.moderated import ModeratedRelation
 
 if TYPE_CHECKING:
     from apps.entities.models.entity import Entity
 
 ATTRIBUTE_NAMES = ('attributees', 'involved_entities', 'affiliated_entities')
+
+
+class AbstractEntityRelation(ModeratedRelation):
+    """
+    Abstract base model for entity relations.
+
+    Models governing m2m relationships between `Entity` and another model
+    should inherit from this abstract model.
+    """
+
+    entity = ManyToManyForeignKey(
+        to='entities.Entity',
+        related_name='%(app_label)s_%(class)s_set',
+        verbose_name=_('related entity'),
+    )
+
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
+    class Meta:
+        abstract = True
+
+    def __str__(self) -> str:
+        return f'{self.entity}'
+
+    def content_object(self) -> models.ForeignKey:
+        """Foreign key to the model that references the entity."""
+        raise NotImplementedError
+
+
+class RelatedEntitiesField(CustomManyToManyField):
+    """Custom field for related topics."""
+
+    target_model = 'entities.Entity'
+    through_model_base = AbstractEntityRelation
+
+    def __init__(self, through: Union[Type[AbstractEntityRelation], str], **kwargs):
+        """Construct the field."""
+        kwargs['through'] = through
+        kwargs['verbose_name'] = _('related entities')
+        super().__init__(**kwargs)
 
 
 class ModelWithRelatedEntities(ExtendedModel):
@@ -24,19 +66,21 @@ class ModelWithRelatedEntities(ExtendedModel):
     it must be defined as an abstract model class.
     """
 
-    related_entities = models.ManyToManyField(
-        to='entities.Entity',
-        related_name='%(class)s_set',
-        blank=True,
-        verbose_name=_('related entities'),
-    )
-
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for ModelWithRelatedEntities."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         abstract = True
+
+    @property
+    def related_entities(self) -> RelatedEntitiesField:
+        """
+        Require implementation of a `tags` field on inheriting models.
+
+        For example:
+        ``
+        tags = TagsField(through=TopicRelation)
+        ``
+        """
+        raise NotImplementedError
 
     @property
     def _related_entities(self) -> 'QuerySet[Entity]':

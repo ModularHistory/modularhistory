@@ -15,14 +15,11 @@ class ModelWithCache(ExtendedModel):
 
     cache = JSONField(null=True, blank=True, default=dict)
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for ModelWithCache."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         abstract = True
 
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args, wipe_cache: bool = True, **kwargs) -> None:
         """
         Save the model instance to the database.
 
@@ -30,8 +27,6 @@ class ModelWithCache(ExtendedModel):
         when the instance is updated and saved from the admin (or via a script),
         properties will be recomputed when next accessed.  TODO: do better.
         """
-        # By default, wipe the instance's computations when saving.
-        wipe_cache = kwargs.pop('wipe_cache', True)
         if wipe_cache:
             self.cache = {}  # type: ignore
         super().save(*args, **kwargs)
@@ -113,7 +108,7 @@ def store(
                             f'with value: {pformat(property_value)}'
                         )
                         # Specify `wipe_cache=False` to properly update the JSON value
-                        model_instance.save(wipe_cache=False)
+                        ModelWithCache.save(model_instance, wipe_cache=False)
                     return property_value
                 logging.error(
                     f'{model_instance.__class__.__name__} uses @store '

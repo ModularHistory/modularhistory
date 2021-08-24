@@ -26,8 +26,14 @@ class ChangeAdmin(admin.ModelAdmin):
     """
 
     date_hierarchy = 'created_date'
-    list_display = ('content_object', 'content_type', 'created_date', 'moderation_status')
-    list_filter = (ContentTypeFilter, 'moderation_status')
+    list_display = (
+        'content_object',
+        'content_type',
+        'created_date',
+        'moderation_status',
+        'n_remaining_approvals_required',
+    )
+    list_filter = (ContentTypeFilter, 'moderation_status', 'contributors')
     search_fields = ['changed_object']
     change_form_template = 'moderation/changes/moderate_change.html'
     change_list_template = 'moderation/changes/changes_list.html'

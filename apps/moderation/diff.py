@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
     from apps.moderation.models.moderated_model import ModeratedModel
+    from core.models.relations.moderated import ModeratedRelation
 
 
 class FieldChange:
@@ -65,17 +66,15 @@ class RelationsChange(FieldChange):
     @property
     def diff(self) -> str:
         """Render the diff."""
-        print()
-        print(f'Before: {self.before}\nAfter: {self.after}')
         if self.before == self.after:
             diffs = self.before
         else:
-            print('Diffs:')
-            for diff in difflib.unified_diff(self.before, self.after):
-                print(diff)
-            diffs = [diff for diff in difflib.unified_diff(self.before, self.after)]
-            # print(diffs)
-        print()
+            control_strings = ('---', '+++', '@@')
+            diffs = [
+                diff
+                for diff in difflib.unified_diff(self.before, self.after)
+                if not diff.startswith(control_strings)
+            ]
         return self.render_diff(
             template='moderation/changes/m2m_diff.html',
             context={'diff_items': diffs},
@@ -109,34 +108,27 @@ def get_field_change(
                 before_and_after=(value_before, value_after),
             )
         elif isinstance(field, (ManyToManyRel, ManyToManyField)):  # TODO: refactor
-            related_objects: 'QuerySet' = getattr(
-                object_before_change, field.name
-            ).all()  # TODO: get regardless of verification status!
-            related_object_ids = related_objects.values_list('id', flat=True)
-            print()
-            from pprint import pformat
-
-            print(f'>>>> {field.name} {field.remote_field} \n{pformat(field.__dict__)}')
-            print(f'>>>> {field.remote_field.through=}')
-            relation_kwargs = {
-                f'{field._m2m_name_cache}_id__in': related_object_ids,
-            }
-            relations = field.remote_field.through.objects.filter(**relation_kwargs)
-            relation_ids = relations.values_list('id', flat=True)
-            print(f'>>>> {relation_ids=}')
-            print(f'>>>> {relations=}')
+            relation_kwargs = {f'{field.m2m_column_name()}': object_before_change.pk}
+            relations: 'QuerySet[ModeratedRelation]' = (
+                field.remote_field.through.objects.filter(**relation_kwargs)
+            )
             relation_changes = Change.objects.filter(parent=change)
             changed_relation_ids = relation_changes.values_list('object_id', flat=True)
-            print(f'>>>> {changed_relation_ids=}')
             modified_relations = relations.filter(id__in=changed_relation_ids)
-            print(f'>>>> {modified_relations=}')
             added_relations = modified_relations.filter(deleted__isnull=True)
-            print(f'>>>> {added_relations=}')
-            deleted_relations = modified_relations.filter(deleted__isnull=False)
-            print(f'>>>> {deleted_relations=}')
+            # TODO: changed_relations
+            deleted_relations = field.remote_field.through.objects.filter(
+                id__in=[
+                    change.object_id
+                    for change in relation_changes.all()
+                    if change.changed_object.deleted
+                ]
+            )
+            added_relations = modified_relations.filter(deleted__isnull=True).difference(
+                deleted_relations
+            )
             relations_before = relations.difference(added_relations)
             relations_after = relations.difference(deleted_relations)
-            # TODO: changed_relations
             value_before = [str(related_object) for related_object in relations_before]
             value_after = [str(related_object) for related_object in relations_after]
             return RelationsChange(

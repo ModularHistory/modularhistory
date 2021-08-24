@@ -1,16 +1,20 @@
+from time import sleep
+
 import pytest
 from django.contrib.contenttypes.models import ContentType
 
 from apps.dates.structures import HistoricDateTime
 from apps.moderation.models.change import Change
-from apps.propositions.models import Proposition
+from apps.propositions.models import Proposition, TopicRelation
+from apps.topics.models import Topic
+from core.environment import TESTING
 
 
 @pytest.mark.django_db()
 class TestModeration:
     """Test the moderation app."""
 
-    def test_making_a_change(self):
+    def test_making_change(self):
         """Test making a change to a moderated model instance."""
         original_summary = 'summary'
         changed_summary = 'changed summary'
@@ -25,10 +29,12 @@ class TestModeration:
         )
         p.save()
 
+        proposition_ct = ContentType.objects.get_for_model(Proposition)
+
         # Create and save a `Change` instance in which a field is modified.
         p.summary = changed_summary
         change = Change(
-            content_type=ContentType.objects.get_for_model(Proposition),
+            content_type=proposition_ct,
             object_id=p.pk,
             changed_object=p,
         )
@@ -48,3 +54,24 @@ class TestModeration:
         assert change.changed_object.title == changed_title
         assert change.changed_object.title != p.title
         assert change.changed_object.date == change.content_object.date
+
+        # Test adding a m2m relationship.
+        import sys
+
+        assert TESTING, f'{sys.argv}'
+        topic = Topic.objects.create(name='test topic', verified=True)
+        relation = TopicRelation(topic=topic, content_object=p)
+        relation.save_change(parent_change=change)
+        assert not relation.verified
+        assert relation.has_change_in_progress
+        assert relation.change_in_progress.parent == change
+        topic_relations = p.topic_relations.all()
+        assert not topic_relations.exists(), f'{type(topic_relations)}: {topic_relations}'
+
+        # Approve the change.
+        for _ in range(change.n_required_approvals):
+            change.approve()
+            sleep(3)
+        sleep(5)
+        assert change.is_approved
+        assert p.topic_relations.exists()

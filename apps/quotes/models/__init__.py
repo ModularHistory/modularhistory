@@ -2,6 +2,7 @@
 
 from .quote import (
     Citation,
+    EntityRelation,
     ImageRelation,
     Quote,
     QuoteRelation,

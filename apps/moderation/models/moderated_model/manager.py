@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, Any, Optional, Type
 
+from django.conf import settings
+
 from core.models.soft_deletable.managers import SoftDeletableManager
 from core.models.soft_deletable.queryset import SoftDeletableQuerySet
 
@@ -16,7 +18,7 @@ class ModeratedManager(SoftDeletableManager):
 
     model: Type['ModeratedModel']
     queryset_cls = ModeratedQuerySet
-    exclude_unverified = False  # TODO
+    exclude_unverified = settings.TESTING  # TODO
 
     def get_queryset(self) -> ModeratedQuerySet:
         """Return the default queryset to be used by the manager."""

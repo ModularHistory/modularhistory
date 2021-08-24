@@ -11,7 +11,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.dates.fields import HistoricDateTimeField
 from apps.dates.models import DatedModel
-from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.entities.models.model_with_related_entities import (
+    AbstractEntityRelation,
+    ModelWithRelatedEntities,
+    RelatedEntitiesField,
+)
 from apps.images.models.model_with_images import (
     AbstractImageRelation,
     ImagesField,
@@ -76,6 +80,12 @@ class QuoteRelation(AbstractQuoteRelation):
     content_object = get_quote_fk(related_name='quote_relations')
 
 
+class EntityRelation(AbstractEntityRelation):
+    """A relationship between a quote and an entity."""
+
+    content_object = get_quote_fk(related_name='entity_relations')
+
+
 class TopicRelation(AbstractTopicRelation):
     """A relationship between a quote and a topic."""
 
@@ -128,6 +138,7 @@ class Quote(
         symmetrical=False,
         through_fields=('content_object', 'quote'),
     )
+    related_entities = RelatedEntitiesField(through=EntityRelation, related_name='quote_nre')
     tags = TagsField(through=TopicRelation)
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options

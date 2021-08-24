@@ -11,6 +11,8 @@ from core.fields.m2m_foreign_key import ManyToManyForeignKey
 from core.models.relations.moderated import ModeratedRelation
 
 if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
+
     from core.models.model_with_cache import ModelWithCache
 
 
@@ -71,6 +73,21 @@ class TaggableModel(models.Model):
         raise NotImplementedError
 
     @property
+    def topic_relations(self) -> 'QuerySet[AbstractTopicRelation]':
+        """
+        Require the intermediate model to specify `related_name='topic_relations'`.
+        For example:
+
+        ``
+        class TopicRelation(AbstractTopicRelation):
+            content_object = ManyToManyForeignKey(
+                to='propositions.Proposition',
+                related_name='topic_relations',
+            )
+        ``
+        """
+
+    @property
     def cached_tags(self: Union['TaggableModel', 'ModelWithCache']) -> list:
         """Return the model instance's cached tags."""
         cache: Optional[dict] = getattr(self, 'cache', None)
@@ -80,7 +97,7 @@ class TaggableModel(models.Model):
         tags = cache.get('tags', [])
         if tags or not self.tags.exists():
             return tags
-        tags = [tag.serialize() for tag in self.tags.all()]
+        tags = [relation.topic.serialize() for relation in self.topic_relations.all()]
         cache_tags.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
@@ -117,6 +134,9 @@ def cache_tags(model: str, instance_id: int, tags: list):
     if not tags:
         return
     Model = apps.get_model(model)  # noqa: N806
+    if not hasattr(Model, 'cache'):
+        logging.error(f'{Model} has no cache.')
+        return
     model_instance: 'ModelWithCache' = Model.objects.get(pk=instance_id)
     model_instance.cache['tags'] = tags
     model_instance.save(wipe_cache=False)

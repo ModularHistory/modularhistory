@@ -20,13 +20,10 @@ class SoftDeletableModel(models.Model):
 
     deleted = models.DateTimeField(editable=False, null=True)
 
-    # Manager for all objects, regardless of deletion status.
-    # Must be defined first so that it becomes the `_default_manager`:
-    # https://docs.djangoproject.com/en/dev/topics/db/managers/#default-managers
-    # TODO: test that this is set to _default manager for inheriting models
-    all_objects = SoftDeletableAllManager()
     # Manager for objects that are not deleted.
     objects = SoftDeletableManager()
+    # Manager for all objects, regardless of deletion status.
+    all_objects = SoftDeletableAllManager()
     # Manager for deleted objects.
     deleted_objects = SoftDeletableDeletedManager()
 

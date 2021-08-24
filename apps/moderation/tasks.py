@@ -14,14 +14,7 @@ def handle_approval(approval_id: int):
     """Post-process an approval."""
     approval: Approval = Approval.objects.get(pk=approval_id)
     change: 'Change' = approval.change
-    n_required_approvals = change.n_required_approvals
-    latest_moderations = change.moderations.order_by('-date')[:n_required_approvals]
-
-    # Check if the change has enough accumulated approvals for its status to be updated.
-    for moderation in latest_moderations:
-        if moderation.verdict != ModerationStatus.APPROVED:
-            break
-    else:
+    if change.n_remaining_approvals_required == 0:
         # The change has enough approvals; update its status to "approved".
         change.moderation_status = ModerationStatus.APPROVED
         change.save()

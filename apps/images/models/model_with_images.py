@@ -33,6 +33,9 @@ class AbstractImageRelation(ModeratedPositionedRelation):
     class Meta:
         abstract = True
 
+    def __str__(self) -> str:
+        return f'{self.image}'
+
     def content_object(self) -> models.ForeignKey:
         """Foreign key to the model that references the image."""
         raise NotImplementedError
@@ -102,7 +105,7 @@ class ModelWithImages(ExtendedModel):
         images = self.cache.get('images', [])
         if images or not self.images.exists():
             return images
-        images = [image.serialize() for image in self.images.all()]
+        images = [relation.image.serialize() for relation in self.image_relations.all()]
         cache_images.delay(
             f'{self.__class__._meta.app_label}.{self.__class__.__name__.lower()}',
             self.id,
@@ -126,6 +129,9 @@ def cache_images(model: str, instance_id: int, images: list):
     if not images:
         return
     Model = apps.get_model(model)  # noqa: N806
+    if not hasattr(Model, 'cache'):
+        logging.error(f'{Model} has no cache.')
+        return
     model_instance: ModelWithImages = Model.objects.get(pk=instance_id)
     model_instance.cache['images'] = images
     model_instance.save(wipe_cache=False)
