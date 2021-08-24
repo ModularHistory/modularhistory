@@ -20,6 +20,9 @@ class PremiseGroupInclusion(ModeratedPositionedRelation):
     premise_group = ManyToManyForeignKey(to='propositions.PremiseGroup')
     premise = ManyToManyForeignKey(to='propositions.Proposition')
 
+    def __str__(self) -> str:
+        return f'{self.premise}'
+
 
 class PremiseGroup(ModeratedPositionedRelation):
     """A group of premises that, combined, support an argument."""

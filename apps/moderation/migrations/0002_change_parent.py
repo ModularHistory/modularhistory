@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name='dependent_changes',
+                related_name='constituent_changes',
                 to='moderation.change',
             ),
         ),

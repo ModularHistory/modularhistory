@@ -64,7 +64,7 @@ class ConflictsInline(StackedInline):
     """Inline admin for a proposition's conflicting propositions."""
 
     model = models.Proposition.conflicting_propositions.through
-    fk_name = 'proposition'
+    fk_name = 'content_object'
     autocomplete_fields = ['conflicting_proposition']
     extra = 0
     verbose_name = 'conflicting proposition'

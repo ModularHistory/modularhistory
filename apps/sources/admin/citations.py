@@ -10,7 +10,7 @@ class AbstractSourcesInline(TabularInline):
 
     autocomplete_fields = ['source']
     # TODO: fix JSON widget so pages can be included in the inline editor
-    exclude = ['cache', 'pages', 'citation_html']
+    exclude = ['cache', 'pages', 'citation_html', 'verified']
     readonly_fields = ['escaped_citation_html', 'pk']
     verbose_name = 'citation'
     verbose_name_plural = 'sources'

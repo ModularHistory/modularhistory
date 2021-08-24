@@ -62,6 +62,8 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
                 content_after=self,
             )
             _change.changed_object = self
+            _change.set = set or _change.set  # TODO
+            _change.parent = parent_change or _change.parent  # TODO
             _change.save()
         else:
             # Create a new `Change` instance.
@@ -70,6 +72,8 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
                 object_id=self.pk,
                 moderation_status=ModerationStatus.PENDING,
                 changed_object=self,
+                set=set,
+                parent=parent_change,
             )
             ContentContribution.objects.create(
                 contributor=contributor,

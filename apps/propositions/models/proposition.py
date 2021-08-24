@@ -12,7 +12,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.collections.models import AbstractCollectionInclusion
 from apps.dates.models import DatedModel
-from apps.entities.models.model_with_related_entities import ModelWithRelatedEntities
+from apps.entities.models.model_with_related_entities import (
+    AbstractEntityRelation,
+    ModelWithRelatedEntities,
+    RelatedEntitiesField,
+)
 from apps.images.models.model_with_images import (
     AbstractImageRelation,
     ImagesField,
@@ -86,31 +90,37 @@ class CollectionInclusion(AbstractCollectionInclusion):
 
 
 class Citation(AbstractCitation):
-    """A relationship between a proposition and a source."""
+    """A relation of a source to a proposition."""
 
     content_object = get_proposition_fk(related_name='citations')
 
 
 class Location(AbstractLocationRelation):
-    """A relationship between a proposition and a place."""
+    """A relation of a location to a proposition."""
 
     content_object = get_proposition_fk(related_name='location_relations')
 
 
 class ImageRelation(AbstractImageRelation):
-    """A relationship between a proposition and an image."""
+    """A relation of an image to a proposition."""
 
     content_object = get_proposition_fk(related_name='image_relations')
 
 
 class QuoteRelation(AbstractQuoteRelation):
-    """A relationship between a proposition and a quote."""
+    """A relation of a quote to a proposition."""
 
     content_object = get_proposition_fk(related_name='quote_relations')
 
 
+class EntityRelation(AbstractEntityRelation):
+    """A relation of an entity to a proposition."""
+
+    content_object = get_proposition_fk(related_name='entity_relations')
+
+
 class TopicRelation(AbstractTopicRelation):
-    """A relationship between a proposition and a topic."""
+    """A relation of a topic to a proposition."""
 
     content_object = get_proposition_fk(related_name='topic_relations')
 
@@ -197,7 +207,10 @@ class Proposition(  # noqa: WPS215
         through=QuoteRelation,
         related_name='propositions',
     )
-    new_tags = TagsField(through=TopicRelation)
+    related_entities = RelatedEntitiesField(
+        through=EntityRelation, related_name='proposition_nre'
+    )
+    tags = TagsField(through=TopicRelation)
 
     postscript = HTMLField(
         verbose_name=_('postscript'),

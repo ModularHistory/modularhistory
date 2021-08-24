@@ -14,6 +14,7 @@ class AbstractTagsInline(TabularInline):
 
     model: Type[Model]
     autocomplete_fields = ['topic']
+    exclude = ['verified']
     verbose_name = 'tag'
     verbose_name_plural = 'tags'
 

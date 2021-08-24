@@ -1,13 +1,13 @@
 from typing import Type
 
-from django.db.models.base import Model
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from apps.propositions.models.proposition import get_proposition_fk
+from core.models.relations.moderated import ModeratedRelation
 
 
-class Conflict(Model):
+class Conflict(ModeratedRelation):
     """
     A conflict between two propositions.
 
@@ -18,12 +18,12 @@ class Conflict(Model):
     `post_delete` signals.
     """
 
-    proposition = get_proposition_fk(related_name='inward_conflicts')
+    content_object = get_proposition_fk(related_name='inward_conflicts')
     conflicting_proposition = get_proposition_fk(related_name='outward_conflicts')
 
     def __str__(self) -> str:
         """Return the conflict's string representation."""
-        return f'Conflict {self.pk}: {self.proposition} | {self.conflicting_proposition}'
+        return f'Conflict {self.pk}: {self.content_object} | {self.conflicting_proposition}'
 
 
 @receiver(post_save, sender=Conflict)

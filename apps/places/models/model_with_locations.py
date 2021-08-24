@@ -30,9 +30,10 @@ class AbstractLocationRelation(ModeratedPositionedRelation):
 
     # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for AbstractLocationRelation."""
-
         abstract = True
+
+    def __str__(self) -> str:
+        return f'{self.location}'
 
     def content_object(self) -> models.ForeignKey:
         """Foreign key to the model that references the location."""
