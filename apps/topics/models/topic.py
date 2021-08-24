@@ -17,24 +17,6 @@ NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
 
 
-class TopicTopicRelation(ExtendedModel):
-    """A relationship between equivalent or closely related topics."""
-
-    from_topic = ForeignKey(
-        to='topics.Topic', on_delete=CASCADE, related_name='topics_related_to'
-    )
-    to_topic = ForeignKey(
-        to='topics.Topic', on_delete=CASCADE, related_name='topics_related_from'
-    )
-
-    class Meta:
-        unique_together = ['from_topic', 'to_topic']
-
-    def __str__(self) -> str:
-        """Return the string representation of the relation."""
-        return f'{self.from_topic} ~ {self.to_topic}'
-
-
 class TopicRelation(ModeratedRelation):
     """A relationship between equivalent or closely related topics."""
 
