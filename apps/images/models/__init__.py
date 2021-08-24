@@ -1,2 +1,2 @@
-from .image import Image
+from .image import Image, TopicRelation
 from .video import Video

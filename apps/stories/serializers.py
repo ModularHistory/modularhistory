@@ -10,7 +10,7 @@ class StorySerializer(SearchableModelSerializer):
 
     handle = serpy.Field()
     description = serpy.StrField()
-    cachedCitations = serpy.Field(attr='cached_citations')
+    cached_citations = serpy.Field()
 
     def get_model(self, instance) -> str:
         """Return the model name of the instance."""

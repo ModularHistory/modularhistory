@@ -12,5 +12,6 @@ from .proposition import (
     Location,
     Proposition,
     QuoteRelation,
+    TopicRelation,
 )
 from .support import ArgumentSupport

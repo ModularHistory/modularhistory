@@ -17,7 +17,6 @@ from apps.images.models.model_with_images import (
     ImagesField,
     ModelWithImages,
 )
-from apps.moderation.models.moderated_model.model import SearchableModeratedModel
 from apps.quotes.models.model_with_related_quotes import (
     AbstractQuoteRelation,
     ModelWithRelatedQuotes,
@@ -26,6 +25,7 @@ from apps.quotes.models.model_with_related_quotes import (
 from apps.quotes.serializers import QuoteSerializer
 from apps.sources.models.citation import AbstractCitation
 from apps.sources.models.model_with_sources import ModelWithSources, SourcesField
+from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
 from core.constants.strings import EMPTY_STRING
 from core.fields.html_field import (
     OBJECT_PLACEHOLDER_REGEX,
@@ -34,6 +34,7 @@ from core.fields.html_field import (
     PlaceholderGroups,
 )
 from core.fields.m2m_foreign_key import ManyToManyForeignKey
+from core.models.module import Module
 from core.utils.html import soupify
 
 if TYPE_CHECKING:
@@ -75,8 +76,15 @@ class QuoteRelation(AbstractQuoteRelation):
     content_object = get_quote_fk(related_name='quote_relations')
 
 
+class TopicRelation(AbstractTopicRelation):
+    """A relationship between a quote and a topic."""
+
+    content_object = get_quote_fk(related_name='topic_relations')
+
+
 class Quote(
-    SearchableModeratedModel,
+    Module,
+    TaggableModel,
     DatedModel,
     ModelWithSources,
     ModelWithRelatedQuotes,
@@ -120,12 +128,10 @@ class Quote(
         symmetrical=False,
         through_fields=('content_object', 'quote'),
     )
+    new_tags = TagsField(through=TopicRelation)
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for Quote."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         unique_together = ['date', 'bite']
         ordering = ['date']
 

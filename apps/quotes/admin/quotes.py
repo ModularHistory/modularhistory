@@ -12,7 +12,7 @@ from apps.quotes.admin.filters import (
     AttributeeCountFilter,
     AttributeeFilter,
 )
-from apps.quotes.admin.inlines import AttributeesInline, BitesInline
+from apps.quotes.admin.inlines import AttributeesInline
 from apps.quotes.admin.related_quotes_inline import AbstractRelatedQuotesInline
 from apps.search.admin import SearchableModelAdmin
 from apps.sources.admin.citations import AbstractSourcesInline
@@ -20,8 +20,8 @@ from apps.sources.admin.filters.simple_filters import (
     HasMultipleSourcesFilter,
     HasSourceFilter,
 )
+from apps.topics.admin.filter import TopicFilter
 from apps.topics.admin.tags import AbstractTagsInline, HasTagsFilter
-from apps.topics.models.taggable_model import TopicFilter
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
@@ -68,7 +68,6 @@ class QuoteAdmin(SearchableModelAdmin):
         RelatedQuotesInline,
         RelatedEntitiesInline,
         TagsInline,
-        BitesInline,
     ]
     list_display = [
         'title',

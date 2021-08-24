@@ -1,2 +1,2 @@
-from .manager import ModeratedModelManager, SearchableModeratedModelManager
-from .model import ModeratedModel, SearchableModeratedModel
+from .manager import ModeratedManager
+from .model import ModeratedModel

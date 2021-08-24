@@ -10,10 +10,10 @@ ELASTICSEARCH_META_FIELDS_TO_CLEAN = ['id', 'index', 'doc_type']
 class SearchableModelSerializer(ModelSerializer):
     """Base serializer for searchable models."""
 
-    absoluteUrl = serpy.StrField(attr='absolute_url')
-    adminUrl = serpy.StrField(attr='admin_url')
+    absolute_url = serpy.StrField()
+    admin_url = serpy.StrField()
     slug = serpy.StrField()
-    cachedTags = serpy.Field(attr='cached_tags')
+    cached_tags = serpy.Field()
     title = serpy.StrField()
     verified = serpy.BoolField()
     meta = serpy.MethodField()

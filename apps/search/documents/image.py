@@ -17,7 +17,7 @@ class ImageDocument(Document):
 
     caption = fields.TextField(analyzer=html_field_analyzer)
     description = fields.TextField(analyzer=html_field_analyzer)
-    provider = fields.TextField(attr='provider')
+    provider = fields.TextField()
 
     class Django:
         model = Image

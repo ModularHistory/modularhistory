@@ -7,7 +7,7 @@ from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFi
 from apps.admin.model_admin import admin_site
 from apps.collections import models
 from apps.search.admin import SearchableModelAdmin
-from apps.topics.models.taggable_model import TopicFilter
+from apps.topics.admin.filter import TopicFilter
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -21,6 +21,7 @@ class CollectionAdmin(SearchableModelAdmin):
     list_display = ['slug', 'title', 'creator']
     list_filter = [TopicFilter, 'creator']
     search_fields = model.searchable_fields
+    slug_base_fields = ('title',)
 
 
 class AbstractCollectionsInline(TabularInline):

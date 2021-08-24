@@ -4,7 +4,7 @@ from apps.admin import ExtendedModelAdmin, admin_site
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.admin.list_filters.boolean_filters import HasRelationFilter
 from apps.topics import models
-from apps.topics.admin.topic_inlines import (
+from apps.topics.admin.inlines import (
     ChildTopicsInline,
     ParentTopicsInline,
     TopicRelationsInline,

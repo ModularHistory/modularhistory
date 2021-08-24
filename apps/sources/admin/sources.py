@@ -49,7 +49,6 @@ class AbstractSourceAdmin(SearchableModelAdmin):
         # HasFileFilter,
         # HasFilePageOffsetFilter,
         # ImpreciseDateFilter,
-        'hidden',
         AttributeeFilter,
         SourceTypeFilter,
     ]
@@ -199,7 +198,6 @@ class SourcesInline(StackedInline):
     extra = 0
     fields = [
         'verified',
-        'hidden',
         'date_is_circa',
         'attributee_string',
         'url',

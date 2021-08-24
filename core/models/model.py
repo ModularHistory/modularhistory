@@ -42,11 +42,8 @@ class ExtendedModel(Model):
     serializer: Type[Serializer]
     placeholder_regex: Optional[str] = None
 
+    # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
     class Meta:
-        """Meta options for Model."""
-
-        # https://docs.djangoproject.com/en/dev/ref/models/options/#model-meta-options
-
         abstract = True
 
     @classmethod
@@ -219,7 +216,7 @@ class ModelSerializer(serpy.Serializer):
 
     id = serpy.IntField()
     model = serpy.MethodField()
-    absoluteUrl = serpy.StrField(attr='absolute_url')
+    absolute_url = serpy.StrField()
 
     def get_model(self, instance: ExtendedModel) -> str:
         """Return the model name of the instance."""

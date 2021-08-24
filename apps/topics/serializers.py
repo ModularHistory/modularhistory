@@ -2,14 +2,13 @@
 
 import serpy
 
-from core.models.model import ModelSerializer
+from core.models.module import ModuleSerializer
 
 
-class TopicSerializer(ModelSerializer):
+class TopicSerializer(ModuleSerializer):
     """Serializer for topics."""
 
     name = serpy.StrField()
-    slug = serpy.StrField()
     aliases = serpy.StrField()
     description = serpy.StrField()
     path = serpy.StrField()
