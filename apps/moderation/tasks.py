@@ -7,6 +7,7 @@ from core.celery import app
 if TYPE_CHECKING:
     from apps.moderation.models.change import Change
     from apps.moderation.models.changeset import ChangeSet
+    from apps.moderation.models.moderated_model import ModeratedModel
 
 
 @app.task
@@ -15,8 +16,11 @@ def handle_approval(approval_id: int):
     approval: Approval = Approval.objects.get(pk=approval_id)
     change: 'Change' = approval.change
     if change.n_remaining_approvals_required == 0:
-        # The change has enough approvals; update its status to "approved".
+        # The change has enough approvals; update its status to "approved"
+        # and set the `verified` field on the changed object.
         change.moderation_status = ModerationStatus.APPROVED
+        changed_object: 'ModeratedModel' = change.changed_object
+        changed_object.verified = True
         change.save()
 
         # Check if the status of the change's associated change set can also be updated.

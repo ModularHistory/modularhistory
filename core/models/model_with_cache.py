@@ -29,7 +29,7 @@ class ModelWithCache(ExtendedModel):
         """
         if wipe_cache:
             self.cache = {}  # type: ignore
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs)  # type: ignore
 
     @property
     def pretty_cache(self) -> str:
@@ -108,7 +108,7 @@ def store(
                             f'with value: {pformat(property_value)}'
                         )
                         # Specify `wipe_cache=False` to properly update the JSON value
-                        ModelWithCache.save(model_instance, wipe_cache=False)
+                        ModelWithCache.save(model_instance, wipe_cache=False)  # type: ignore
                     return property_value
                 logging.error(
                     f'{model_instance.__class__.__name__} uses @store '

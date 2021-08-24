@@ -1,10 +1,10 @@
-from time import sleep
 
 import pytest
 from django.contrib.contenttypes.models import ContentType
 
 from apps.dates.structures import HistoricDateTime
 from apps.moderation.models.change import Change
+from apps.moderation.tasks import handle_approval
 from apps.propositions.models import Proposition, TopicRelation
 from apps.topics.models import Topic
 from core.environment import TESTING
@@ -59,7 +59,7 @@ class TestModeration:
         assert TESTING
         topic = Topic.objects.create(name='test topic', verified=True)
         relation = TopicRelation(topic=topic, content_object=p)
-        relation.save_change(parent_change=change)
+        relation_change = relation.save_change(parent_change=change)
         assert not relation.verified
         assert relation.has_change_in_progress
         assert relation.change_in_progress.parent == change
@@ -68,8 +68,14 @@ class TestModeration:
 
         # Approve the change.
         for _ in range(change.n_required_approvals):
-            change.approve()
-            sleep(3)
-        sleep(7)
+            approval = change.approve()
+            handle_approval(approval.pk)
+        relation_approval = relation_change.moderations.first()
+        handle_approval(relation_approval.pk)
+        change.refresh_from_db()
+        relation_change.refresh_from_db()
         assert change.is_approved, f'{change.n_remaining_approvals_required=}'
+        assert (
+            relation_change.is_approved
+        ), f'{relation_change.n_remaining_approvals_required=}'
         assert p.topic_relations.exists()
