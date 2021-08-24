@@ -139,15 +139,6 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            {/*<MultiSelect label={"Entities"} name={"entities"} keyName={"id"} valueName={"name"}>*/}
-            {/*  {() =>*/}
-            {/*    axiosWithoutAuth*/}
-            {/*      .get("/graphql/", {*/}
-            {/*        params: { query: "{ entities { id name } }" },*/}
-            {/*      })*/}
-            {/*      .then((response) => response.data["data"]["entities"])*/}
-            {/*  }*/}
-            {/*</MultiSelect>*/}
             <InstantSearch
               label={"Entities"}
               name={"entities"}
