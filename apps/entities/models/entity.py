@@ -28,7 +28,7 @@ from apps.quotes.models.model_with_related_quotes import (
     ModelWithRelatedQuotes,
     RelatedQuotesField,
 )
-from apps.topics.models.taggable import AbstractTopicRelation, TagsField
+from apps.topics.models.taggable import AbstractTopicRelation, TaggableModel, TagsField
 from core.constants.strings import EMPTY_STRING
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
@@ -99,6 +99,7 @@ class Entity(
     ModelWithImages,
     ModelWithRelatedQuotes,
     ModelWithRelatedEntities,
+    TaggableModel,
 ):
     """An entity."""
 
