@@ -244,7 +244,11 @@ const SearchResultsRightPane: FC<PaneProps> = ({
 export default Search;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  let searchResults = {};
+  let searchResults: SearchProps = {
+    count: 0,
+    totalPages: 0,
+    results: [],
+  };
 
   await axios
     .get("http://django:8000/api/search/", {

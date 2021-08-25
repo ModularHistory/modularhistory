@@ -20,6 +20,7 @@ import MultiSelect from "./MultiSelect";
 import RadioGroup from "./RadioGroup";
 import SearchButton from "./SearchButton";
 import YearSelect from "./YearSelect";
+import InstantSearch from "@/components/search/InstantSearch";
 
 interface SearchFormStateType {
   state?: { [key: string]: any };
@@ -117,7 +118,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             <TextField
               label="Query"
               name="query"
-              value={formState.state["query"] || ""}
+              defaultValue={formState.state["query"] || ""}
               disabled={formState.disabled}
               onChange={formState.setStateFromEvent}
               onKeyUp={handleKeyUp}
@@ -138,20 +139,35 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
           </Grid>
 
           <Grid item xs={12} sm={sm}>
-            <MultiSelect label={"Entities"} name={"entities"} keyName={"id"} valueName={"name"}>
-              {() =>
+            <InstantSearch
+              label={"Entities"}
+              name={"entities"}
+              labelKey={"name"}
+              getDataForInput={(input, config) =>
                 axiosWithoutAuth
-                  .get("/graphql/?query={entities{id%20name}}", {})
-                  .then((response) => response.data["data"]["entities"])
+                  .get("/api/entities/instant_search/", {
+                    params: { query: input },
+                    ...config,
+                  })
+                  .then(({ data }) => data)
               }
-            </MultiSelect>
+              getInitialValue={(ids) =>
+                axiosWithoutAuth
+                  .get("/graphql/", {
+                    params: { query: `{ entities(ids: [${ids}]) { id name } }` },
+                  })
+                  .then(({ data: { data } }) => data.entities)
+              }
+            />
           </Grid>
 
           <Grid item xs={12} sm={sm}>
             <MultiSelect label={"Topics"} name={"topics"} keyName={"id"} valueName={"name"}>
               {() =>
                 axiosWithoutAuth
-                  .get("/graphql/?query={topics{id%20name}}", {})
+                  .get("/graphql/", {
+                    params: { query: "{ topics { id name } }" },
+                  })
                   .then((response) => response.data["data"]["topics"])
               }
             </MultiSelect>

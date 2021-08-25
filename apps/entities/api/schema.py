@@ -28,13 +28,13 @@ class EntityType(ModuleType):
 class Query(graphene.ObjectType):
     """GraphQL query for all entities."""
 
-    entities = graphene.List(EntityType)
+    entities = graphene.List(EntityType, ids=graphene.List(graphene.Int))
     entity = graphene.Field(EntityType, slug=graphene.String())
 
     @staticmethod
-    def resolve_entities(root, info, **kwargs):
+    def resolve_entities(root, info, ids: list[int], **kwargs):
         """Return the queryset against which an 'entities' query should be executed."""
-        return Entity.objects.all()
+        return Entity.objects.filter(id__in=ids)
 
     @staticmethod
     def resolve_entity(root, info, slug: str) -> Optional[Entity]:
