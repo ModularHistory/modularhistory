@@ -9,6 +9,8 @@ from apps.search.api.search import SEARCHABLE_DOCUMENTS
 from apps.search.models import SearchableDatedModel
 
 if TYPE_CHECKING:
+    from django.http import HttpRequest
+
     from apps.search.documents.base import Document
     from core.models.model import ExtendedModel
 
@@ -28,7 +30,7 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
         """Construct the filter backend."""
         self.view = None
 
-    def filter_queryset(self, request, queryset, view):
+    def filter_queryset(self, request: 'HttpRequest', queryset, view) -> list:
         """Return the filtered queryset."""
         self.view = view
         return list(map(self.apply_meta, queryset))
@@ -54,7 +56,7 @@ class ApplyMetaFilterBackend(filters.BaseFilterBackend):
 class SortByFilterBackend(filters.BaseFilterBackend):
     """Filter that sorts queryset by SORT_BY_PARAM."""
 
-    def filter_queryset(self, request, queryset, view):
+    def filter_queryset(self, request: 'HttpRequest', queryset, view):
         """Return the filtered queryset."""
         query = request.query_params.get(QUERY_PARAM)
         sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
