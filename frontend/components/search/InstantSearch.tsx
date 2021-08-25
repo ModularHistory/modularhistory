@@ -38,6 +38,19 @@ interface InstantSearchProps {
   throttleDelay?: number;
 }
 
+/**
+ * A TextInput component that instantly retrieves suggested
+ * options from ElasticSearch as the user types.
+ * @param label - the input field label.
+ * @param name - the query parameter name used during form submission.
+ * @param getDataForInput - the callback used to retrieve results for a given text input.
+ * @param getInitialValue - the callback used to load option data for an array of option IDs.
+ * @param labelKey - the key used to access an option's label attribute.
+ * @param idKey - the key used to access an option's id attribute.
+ * @param minimumSearchLength - the minimum length of text input required to call `getDataForInput`.
+ * @param throttleDelay - the delay in ms between calls to `getDataForInput`.
+ * @constructor
+ */
 const InstantSearch: FC<InstantSearchProps> = ({
   label,
   name,
@@ -105,6 +118,7 @@ const InstantSearch: FC<InstantSearchProps> = ({
   };
 
   // https://next.material-ui.com/components/autocomplete/
+  console.log("autocomplete render");
   return (
     <Autocomplete
       multiple

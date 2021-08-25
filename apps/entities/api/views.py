@@ -25,6 +25,7 @@ class EntityListAPIView(ListAPIView):
     queryset = Entity.objects.exclude(type='entities.deity').order_by('birth_date')  # type: ignore
 
 class EntityInstantSearchAPIView(APIView):
+    """API view used by search-as-you-type fields retrieving entity names and IDs."""
 
     def get(self, request):
         query = request.query_params.get('query', '')

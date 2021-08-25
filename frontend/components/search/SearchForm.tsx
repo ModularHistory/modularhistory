@@ -118,7 +118,7 @@ const SearchForm: FC<SearchFormProps> = ({ inSidebar = false }: SearchFormProps)
             <TextField
               label="Query"
               name="query"
-              value={formState.state["query"] || ""}
+              defaultValue={formState.state["query"] || ""}
               disabled={formState.disabled}
               onChange={formState.setStateFromEvent}
               onKeyUp={handleKeyUp}
