@@ -2,6 +2,7 @@ import logging
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
+from autoslug import AutoSlugField
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import UserManager as BaseUserManager
@@ -47,10 +48,31 @@ class UserManager(BaseUserManager):
     """Manager for users."""
 
 
+def get_handle_base(instance: 'User') -> str:
+    """Return the value to use as the base for the user's default handle."""
+    if instance.name:
+        return instance.name
+    elif instance.email:
+        return instance.email.split('@')[0]
+    else:
+        return instance.username
+
+
+def handlify(value: str) -> str:
+    """Modify the value to be in the appropriate format for a handle."""
+    return value.replace(' ', '')
+
+
 class User(AbstractUser):
     """A user of ModularHistory."""
 
     email = models.EmailField(verbose_name=_('email address'), unique=True)
+    handle = AutoSlugField(
+        verbose_name=_('handle'),
+        populate_from=get_handle_base,
+        slugify=handlify,
+        unique=True,
+    )
     avatar = models.ImageField(
         verbose_name=_('avatar'),
         null=True,
@@ -73,6 +95,10 @@ class User(AbstractUser):
     def name(self) -> str:
         """Return the user's name."""
         return self.get_full_name()
+
+    def get_handle_base(self) -> str:
+        """Return the value to use as the base for the user's default handle."""
+        return get_handle_base(self)
 
     def update_avatar(self, url: str):
         """Update the user's avatar with the image located at the given URL."""

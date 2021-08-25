@@ -77,7 +77,7 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
   };
   if (session) {
     return (
-      <Layout title={String(user.name || user.username)}>
+      <Layout title={String(user.name || user.handle)}>
         <Container className={classes.root}>
           <Grid container spacing={3} alignContent="center">
             <Grid item sm={4}>
@@ -85,7 +85,7 @@ const UserSettingsPage: FC<UserSettingsPageProps> = ({
                 <Image
                   src={String(user.avatar || "/static/profile_pic_placeholder.png")}
                   className="rounded-circle z-depth-0"
-                  alt={`profile image for ${user.name || user.username}`}
+                  alt={`profile image for ${user.name || user.handle}`}
                   width="200"
                   height="200"
                 />

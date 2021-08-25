@@ -2,12 +2,14 @@ from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.mail import send_mass_mail
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
 from apps.moderation.constants import ModerationStatus
+from core.environment import IS_PROD
+from core.utils.email import send_mass_html_mail
+from core.utils.html import soupify
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
@@ -53,6 +55,14 @@ class Moderation(models.Model):
     def __str__(self) -> str:
         return f'Verdict: {self.verdict} (moderation of {self.change} by {self.moderator})'
 
+    @property
+    def is_approval(self) -> bool:
+        return self.verdict == ModerationStatus.APPROVED
+
+    @property
+    def is_rejection(self) -> bool:
+        return self.verdict == ModerationStatus.REJECTED
+
     def notify_users(self):
         """Notify users of the moderation."""
         # TODO: ensure the notification is only sent once per moderation
@@ -62,10 +72,12 @@ class Moderation(models.Model):
         # https://docs.djangoproject.com/en/dev/ref/models/querysets/#union
         users = contributors.union(moderators)
         site = Site.objects.get_current()
+        protocol = 'https' if IS_PROD else 'http'
         ctx = {
             'moderation': self,
             'content_object': change.content_object,
             'site': site,
+            'protocol': protocol,
             'content_type': change.content_type,
         }
         passive_verb = (
@@ -74,16 +86,16 @@ class Moderation(models.Model):
             else 'reviewed'
         )
         subject = f'Change was {passive_verb}'
-        message_body = render_to_string(
-            'moderation/moderation_notification_body.txt',
-            ctx.update({'user': change.initiator}),
+        message_body_html = render_to_string(
+            'moderation/moderation_notification_body.html', ctx
         )
-        # https://docs.djangoproject.com/en/dev/topics/email/#send-mass-mail
-        send_mass_mail(
+        message_body_text = soupify(message_body_html).get_text()
+        send_mass_html_mail(
             tuple(
                 (
                     subject,
-                    message_body,
+                    message_body_text,
+                    message_body_html,
                     f'do.not.reply@{site.domain}',  # from email
                     [user.email],  # recipient list
                 )
