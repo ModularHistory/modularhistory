@@ -177,7 +177,7 @@ def get_field_changes(
     return changes
 
 
-def get_diff_operations(a, b) -> list:
+def get_diff_operations(a: str, b: str) -> list:
     operations = []
     a_words = re.split(r'(\W+)', a)
     b_words = re.split(r'(\W+)', b)

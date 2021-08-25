@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 from apps.dates.fields import HistoricDateTimeField
 from apps.moderation.models.moderated_model.model import ModeratedModel
 from core.fields.array_field import ArrayField
-from core.models.model import ExtendedModel
 from core.models.relations.moderated import ModeratedRelation
 
 NAME_MAX_LENGTH: int = 100
