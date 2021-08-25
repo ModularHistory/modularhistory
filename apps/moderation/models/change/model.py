@@ -132,8 +132,7 @@ class Change(AbstractChange):
         """Return a boolean reflecting whether the change is approved."""
         return self.moderation_status == ModerationStatus.APPROVED
 
-    @property
-    def n_remaining_approvals_required(self) -> int:
+    def get_n_remaining_approvals_required(self) -> int:
         """Return the number of remaining approvals required before the change is applied."""
         if self.is_approved:
             return 0

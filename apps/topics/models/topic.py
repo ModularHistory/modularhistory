@@ -8,33 +8,38 @@ from apps.topics.serializers import TopicSerializer
 from apps.trees.models import TreeModel
 from core.fields.array_field import ArrayField
 from core.fields.html_field import HTMLField
-from core.models.model import ExtendedModel
 from core.models.model_with_cache import store
 from core.models.module import Module
+from core.models.relations.moderated import ModeratedRelation
 
 NAME_MAX_LENGTH: int = 25
 TOPIC_STRING_DELIMITER = ', '
 
 
-class TopicTopicRelation(ExtendedModel):
+class TopicRelation(ModeratedRelation):
     """A relationship between equivalent or closely related topics."""
 
-    from_topic = ForeignKey(
-        to='topics.Topic', on_delete=CASCADE, related_name='topics_related_to'
+    topic = ForeignKey(
+        to='topics.Topic',
+        on_delete=CASCADE,
+        related_name='topic_relations',
+        verbose_name='topic',
     )
-    to_topic = ForeignKey(
-        to='topics.Topic', on_delete=CASCADE, related_name='topics_related_from'
+    related_topic = ForeignKey(
+        to='topics.Topic',
+        on_delete=CASCADE,
+        verbose_name='related topic',
     )
 
     class Meta:
-        unique_together = ['from_topic', 'to_topic']
+        unique_together = ['topic', 'related_topic']
 
     def __str__(self) -> str:
         """Return the string representation of the relation."""
-        return f'{self.from_topic} ~ {self.to_topic}'
+        return f'{self.topic} ~ {self.related_topic}'
 
 
-class TopicParentChildRelation(ExtendedModel):
+class TopicParentChildRelation(ModeratedRelation):
     """A relationship between a parent topic and child topic."""
 
     parent_topic = ForeignKey(
@@ -75,9 +80,9 @@ class Topic(TreeModel, Module):
     )
     related_topics = ManyToManyField(
         to='self',
-        through=TopicTopicRelation,
+        through=TopicRelation,
         symmetrical=True,
-        related_name='topics_related',
+        related_name='related_topics',
         blank=True,
     )
 

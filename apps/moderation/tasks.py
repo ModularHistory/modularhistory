@@ -15,6 +15,10 @@ def handle_approval(approval_id: int):
     """Post-process an approval."""
     approval: Approval = Approval.objects.get(pk=approval_id)
     change: 'Change' = approval.change
+    n_remaining_approvals_required = change.get_n_remaining_approvals_required()
+    if n_remaining_approvals_required != change.n_remaining_approvals_required:
+        change.n_remaining_approvals_required = n_remaining_approvals_required
+        change.save()
     if change.n_remaining_approvals_required == 0:
         # The change has enough approvals; update its status to "approved"
         # and set the `verified` field on the changed object.

@@ -75,6 +75,12 @@ class AbstractChange(models.Model):
         default=_ModerationStatus.PENDING.value,  # type: ignore
         editable=False,
     )
+    n_remaining_approvals_required = models.PositiveSmallIntegerField(
+        verbose_name=_('number of remaining approvals required'),
+        blank=True,
+        default=n_required_approvals,
+        editable=False,
+    )
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     updated_date = models.DateTimeField(auto_now=True, editable=False)
 
