@@ -103,6 +103,8 @@ class ApprovalManager(ModerationManager):
 
 
 class Approval(Moderation):
+    """Proxy model for moderations with a verdict of APPROVED."""
+
     objects = ApprovalManager()
 
     class Meta:
@@ -115,6 +117,8 @@ class RejectionManager(ModerationManager):
 
 
 class Rejection(Moderation):
+    """Proxy model for moderations with a verdict of REJECTED."""
+
     objects = RejectionManager()
 
     class Meta:
