@@ -55,7 +55,7 @@ class ImageChange(FieldChange):
     def diff(self) -> str:
         """Render the diff."""
         return self.render_diff(
-            'moderation/image_diff.html',
+            'moderation/changes/image_diff.html',
             {'left_image': self.before, 'right_image': self.after},
         )
 
