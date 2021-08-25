@@ -94,16 +94,10 @@ def get_field_change(
         value_after = getattr(object_after_change, f'get_{field.name}_display')()
     except AttributeError:
         if isinstance(field, (OneToOneRel, OneToOneField)) and resolve_foreignkeys:
-            try:
-                value_before = str(getattr(object_before_change, field.name))
-            except field.related_model.DoesNotExist:
-                value_before = ''
-            try:
-                value_after = str(getattr(object_after_change, field.name))
-            except field.related_model.DoesNotExist:
-                value_after = ''
+            value_before = getattr(object_before_change, field.name, '') or ''
+            value_after = getattr(object_after_change, field.name, '') or ''
             return RelationsChange(
-                field.related_name,
+                field.verbose_name,
                 field=field,
                 before_and_after=(value_before, value_after),
             )
