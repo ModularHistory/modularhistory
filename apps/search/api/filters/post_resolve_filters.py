@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from apps.search.documents.base import Document
     from core.models.model import ExtendedModel
 
+QUERY_PARAM = 'query'
 SORT_BY_PARAM = 'ordering'
 
 
@@ -55,16 +56,18 @@ class SortByFilterBackend(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         """Return the filtered queryset."""
+        query = request.query_params.get(QUERY_PARAM)
         sort_by_date = request.query_params.get(SORT_BY_PARAM) == 'date'
-        score_sortable = (view.search._response.hits.max_score or 0) > 0
-
+        default_score = 1.0  # The max score is 1.0 when there is no query.
+        highest_score = view.search._response.hits.max_score or 0
+        score_sortable = query and highest_score > default_score
+        print(f'{view.search._response.hits.max_score=}')
         sort_by = score_sorter
         reverse = True
-
         if sort_by_date or not score_sortable:
             sort_by = date_sorter
             reverse = False
-
+        print(f'>>> {sort_by}')
         return sorted(queryset, key=sort_by, reverse=reverse)
 
 
@@ -86,6 +89,7 @@ def date_sorter(model_instance: Union[SearchableDatedModel, dict]) -> datetime:
     if getattr(model_instance, 'end_date', None):
         microsecond = date.microsecond + 1
         date = date.replace(microsecond=microsecond)
+    print(f'>>> {date}: {model_instance}')
     return date
 
 
