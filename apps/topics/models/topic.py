@@ -120,3 +120,7 @@ class Topic(TreeModel, Module):
         return TOPIC_STRING_DELIMITER.join(
             [str(topic) for topic in self.related_topics.all()]
         )
+
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.name

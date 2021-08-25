@@ -1,3 +1,1 @@
-Change was
-{% ifequal moderation.status 0 %}rejected{% endifequal %}
-{% ifequal moderation.status 1 %}accepted{% endifequal %}
+Change was {% ifequal moderation.status 0 %}rejected{% endifequal %}{% ifequal moderation.status 1 %}accepted{% endifequal %}

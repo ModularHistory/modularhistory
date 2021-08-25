@@ -68,21 +68,24 @@ class Moderation(models.Model):
             'site': site,
             'content_type': change.content_type,
         }
+        passive_verb = (
+            self.ModerationOutcome(self.verdict).label.lower()
+            if self.verdict != ModerationStatus.PENDING
+            else 'reviewed'
+        )
+        subject = f'Change was {passive_verb}'
+        message_body = render_to_string(
+            'moderation/moderation_notification_body.txt',
+            ctx.update({'user': change.initiator}),
+        )
         # https://docs.djangoproject.com/en/dev/topics/email/#send-mass-mail
         send_mass_mail(
             tuple(
-                # (subject, message, from_email, recipient_list)
                 (
-                    render_to_string(
-                        'moderation_notification_subject.txt',
-                        ctx.update({'user': change.changed_by}),
-                    ),
-                    render_to_string(
-                        'moderation_notification_body.txt',
-                        ctx.update({'user': change.changed_by}),
-                    ),
-                    f'do.not.reply@{site.domain}',
-                    [user.email],
+                    subject,
+                    message_body,
+                    f'do.not.reply@{site.domain}',  # from email
+                    [user.email],  # recipient list
                 )
                 for user in users
             ),

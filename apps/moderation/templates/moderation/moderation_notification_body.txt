@@ -1,4 +1,6 @@
+{% if user.first_name %}
 Dear {{ user.first_name }},
+{% endif %}
 
 {% if moderation.change.initiator == user %}
 The change you initiated for "{{ moderation.change.content_object.title }}" 

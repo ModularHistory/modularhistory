@@ -14,3 +14,14 @@ class TitledModel(models.Model):
 
     class Meta:
         abstract = True
+
+    def save(self, **kwargs):
+        if not self.title:
+            self.title = self.get_default_title()
+        super().save(**kwargs)
+
+    def clean(self):
+        super().clean()
+
+    def get_default_title(self) -> str:
+        raise NotImplementedError
