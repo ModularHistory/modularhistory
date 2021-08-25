@@ -1,10 +1,17 @@
-from elasticsearch_dsl import analyzer
+from elasticsearch_dsl import analyzer, tokenizer, char_filter
 
 html_field_analyzer = analyzer(
     'html_strip',
     tokenizer='standard',
     filter=['lowercase', 'stop', 'porter_stem'],
     char_filter=['html_strip'],
+)
+
+instant_search_analyzer = analyzer(
+    'custom',
+    tokenizer=tokenizer('mono_bi_gram', 'ngram', min_gram=1, max_gram=2),
+    filter=['lowercase', 'asciifolding'],
+    char_filter=[char_filter('punctuation', 'pattern_replace', pattern=r'[^\w\s]', replacement='')]
 )
 
 DEFAULT_INDEX_SETTINGS = {
