@@ -138,7 +138,7 @@ def get_field_change(
             value_after = field.value_from_object(object_after_change)
     if isinstance(field, ImageField):
         return ImageChange(
-            f'Current {field.verbose_name} / New {field.verbose_name}',
+            field.verbose_name,
             field=field,
             before_and_after=(value_before, value_after),
         )
