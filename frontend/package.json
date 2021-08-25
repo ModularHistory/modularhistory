@@ -31,7 +31,7 @@
     "next": "^11.1.0",
     "next-auth": "^3.29.0",
     "nookies": "^2.5.2",
-    "npm": "^7.20.2",
+    "npm": "^7.21.0",
     "prop-types": "^15.7.2",
     "qs": "^6.10.1",
     "ra-data-django-rest-framework": "^0.2.0",
