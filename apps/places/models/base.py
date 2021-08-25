@@ -62,6 +62,10 @@ class Place(TypedModel, Module):
             self.recast(self.type)
         super().save()
 
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.name
+
     @property  # type: ignore
     @store(attribute_name='string')
     def string(self) -> str:

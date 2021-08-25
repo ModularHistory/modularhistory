@@ -20,3 +20,7 @@ class MediaModel(Module, TaggableModel, DatedModel):
         abstract = True
 
     slug_base_fields = ('caption',)
+
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.caption
