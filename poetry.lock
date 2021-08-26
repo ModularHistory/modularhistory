@@ -3203,6 +3203,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "types-pytz"
+version = "2021.1.2"
+description = "Typing stubs for pytz"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "3.10.0.0"
 description = "Backported and Experimental Type Hints for Python 3.5+"
@@ -3438,7 +3446,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "2bc1f866b979c5f7c9077019716b7c6484f8c92eb17a1c8de16d8143a42dee86"
+content-hash = "ea8f19b80cb1afebf6759907b5cdfda764284089d287c268361cab4948986751"
 
 [metadata.files]
 aenum = [
@@ -5331,6 +5339,10 @@ typed-ast = [
 types-colorama = [
     {file = "types-colorama-0.4.3.tar.gz", hash = "sha256:3b2c7877878f2ba8cd1c2b3da524158f718c10e2fe046f91948b43459b69dc6a"},
     {file = "types_colorama-0.4.3-py3-none-any.whl", hash = "sha256:3cdd76e8080a146d55b7281b352a4330be6d7ba91217d28c7e3a50dc433d4b89"},
+]
+types-pytz = [
+    {file = "types-pytz-2021.1.2.tar.gz", hash = "sha256:448828a06f2aaa840e57364d866c661645a045e532f817e4f10c8c3ab2b66651"},
+    {file = "types_pytz-2021.1.2-py3-none-any.whl", hash = "sha256:28fb1c0f77f59aebe9b792d073ebfbbbf7b329f9d4af6a6079713a618a1c0f31"},
 ]
 typing-extensions = [
     {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
