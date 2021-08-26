@@ -17,12 +17,14 @@ class TestModeration:
 
     def test_making_change(self):
         """Test making a change to a moderated model instance."""
+        title = 'title'
         original_summary = 'summary'
         changed_summary = 'changed summary'
 
         # Create and save a model instance.
         p = Proposition(
             type='propositions.conclusion',
+            title=title,
             summary=original_summary,
             elaboration='<p>elaboration</p>',
             certainty=1,
