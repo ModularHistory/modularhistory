@@ -213,10 +213,12 @@ jobs:
     services:
       frontend:
         image: react
-        ports: '3000:3000'
+        ports:
+          - 3000:3000
       backend:
         image: django
-        ports: '8000:8000'
+        ports:
+          - 8000:8000
     steps:
       - name: Checkout
         uses: actions/checkout@v2
