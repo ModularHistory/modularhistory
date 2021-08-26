@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Optional, Type
 
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
+from image_cropping import ImageCropWidget
 
 from apps.admin.model_admin import ExtendedModelAdmin
 from apps.admin.widgets.historic_date_widget import HistoricDateWidget
@@ -51,6 +52,7 @@ class ModeratedModelAdmin(ExtendedModelAdmin):
                     widgets = {
                         'date': HistoricDateWidget,
                         'end_date': HistoricDateWidget,
+                        'image': ImageCropWidget,
                     }
 
             return _Form

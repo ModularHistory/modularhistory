@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Callable, Optional, Sequence, Union
 
 from django.contrib.admin import StackedInline as BaseStackedInline
 from django.contrib.admin import TabularInline as BaseTabularInline
@@ -8,15 +8,31 @@ from django.core.exceptions import FieldDoesNotExist, FieldError
 from apps.admin.model_admin import FORM_FIELD_OVERRIDES
 
 if TYPE_CHECKING:
+    from django.db.models import Model
     from django.http import HttpRequest
 
     from core.models.model import ExtendedModel
+
+
+FIELDS_EXCLUDED_FROM_INLINES = (
+    'deleted',
+    'verified',
+)
 
 
 class StackedInline(BaseStackedInline):
     """Inline admin with fields stacked vertically."""
 
     formfield_overrides = FORM_FIELD_OVERRIDES
+
+    def get_fields(
+        self, request: 'HttpRequest', obj: Optional['Model']
+    ) -> Sequence[Union[Callable, str]]:
+        return [
+            field
+            for field in super().get_fields(request, obj=obj)
+            if field not in FIELDS_EXCLUDED_FROM_INLINES
+        ]
 
 
 class TabularInline(BaseTabularInline):
@@ -46,6 +62,15 @@ class TabularInline(BaseTabularInline):
             except (FieldError, FieldDoesNotExist) as err:
                 logging.error(err)
         return 1
+
+    def get_fields(
+        self, request: 'HttpRequest', obj: Optional['Model']
+    ) -> Sequence[Union[Callable, str]]:
+        return [
+            field
+            for field in super().get_fields(request, obj=obj)
+            if field not in FIELDS_EXCLUDED_FROM_INLINES
+        ]
 
 
 def get_fk_name(model_instance: 'ExtendedModel') -> str:
