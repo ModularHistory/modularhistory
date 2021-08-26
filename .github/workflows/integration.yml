@@ -651,10 +651,12 @@ jobs:
     services:
       frontend:
         image: react
-        ports: 3000:3000
+        ports:
+        - 3000:3000
       backend:
         image: django
-        ports: 8000:8000
+        ports:
+        - 8000:8000
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
