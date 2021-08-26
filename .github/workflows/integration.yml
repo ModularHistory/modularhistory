@@ -69,7 +69,6 @@ env:
 jobs:
   test-setup:
     name: Test setup script
-    runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 3
       matrix:
@@ -77,6 +76,7 @@ jobs:
         # NOTE: Services (running in Docker containers) only work on ubuntu.
         os: [macos-latest, ubuntu-latest]
         python-version: [3.9]
+    runs-on: ${{ matrix.os }}
     environment: dev
     env:
       TESTING: true
@@ -150,15 +150,15 @@ jobs:
     - name: Run setup script
       run: bash setup.sh
       shell: bash
-  test-app:
-    name: Test application
-    runs-on: ${{ matrix.os }}
+  test-backend:
+    name: Test backend
     strategy:
       max-parallel: 3
       matrix:
-        # services (running in Docker containers) only work on ubuntu
+        # Note: Services (running in Docker containers) only work on ubuntu.
         os: [ubuntu-latest]
         python-version: [3.9]
+    runs-on: ${{ matrix.os }}
     services:
       postgres:
         image: postgres
@@ -168,7 +168,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
         ports:
         - 5432:5432
-        # Set health checks to wait until postgres has started
+        # Set health checks to wait until postgres has started.
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -178,7 +178,7 @@ jobs:
         image: redis
         ports:
         - 6379:6379
-        # Set health checks to wait until redis has started
+        # Set health checks to wait until redis has started.
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     environment: integration
     env:
@@ -256,6 +256,31 @@ jobs:
         poetry run pytest nothing.py
     - name: Run tests
       run: poetry run invoke test --no-docker
+  test-frontend:
+    name: Test frontend
+    container: cypress/browsers:node12.18.3-chrome87-ff82
+    strategy:
+      fail-fast: false
+      matrix:
+        # Note: Services (running in Docker containers) only work on ubuntu.
+        os: [ubuntu-latest]
+        browser: [chrome, firefox]
+      max-parallel: 3
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/integration.yml
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Run Cypress
+      uses: cypress-io/github-action@v2
+      with:
+        browser: ${{ matrix.browser }}
+        working-directory: frontend
   check-types:
     name: Check types
     runs-on: ubuntu-latest
