@@ -158,6 +158,8 @@ class Change(AbstractChange):
                 with transaction.atomic():
                     model_instance: 'ModeratedModel' = self.changed_object
                     model_instance.save()
+                    self.moderation_status = ModerationStatus.MERGED
+                    self.save()
             except Exception as err:
                 logging.error(err)
                 return False
