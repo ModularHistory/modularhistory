@@ -107,13 +107,11 @@ class Image(MediaModel):
 
     def __str__(self) -> str:
         """Return the string representation of the image."""
-        return self.caption if self.caption else self.image.name
+        return self.caption or self.image.name
 
     def clean(self):
         """Prepare the image to be saved."""
         super().clean()
-        if not self.caption:
-            raise ValidationError('Image needs a caption.')
         image_is_duplicated = (
             self.caption
             and Image.objects.filter(image=self.image, caption=self.caption)
@@ -147,7 +145,7 @@ class Image(MediaModel):
     @property
     def caption_html(self) -> str:
         """Return the user-facing caption HTML."""
-        return self.caption or ''
+        return self.caption
 
     @property
     def cropped_image_url(self) -> Optional[str]:
