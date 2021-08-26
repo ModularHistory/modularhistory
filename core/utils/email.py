@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 
 # (subject, text_content, html_content, from_email, recipient_list)
-DataTuple = tuple[str, str, str, str, str]
+DataTuple = tuple[str, str, str, str, list[str]]
 
 
 def send_mass_html_mail(
