@@ -3203,9 +3203,41 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "types-markdown"
+version = "3.3.2"
+description = "Typing stubs for Markdown"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-python-dateutil"
+version = "0.1.6"
+description = "Typing stubs for python-dateutil"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "types-pytz"
 version = "2021.1.2"
 description = "Typing stubs for pytz"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-pyyaml"
+version = "5.4.6"
+description = "Typing stubs for PyYAML"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-requests"
+version = "2.25.6"
+description = "Typing stubs for requests"
 category = "dev"
 optional = false
 python-versions = "*"
@@ -3446,7 +3478,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.9.5"
-content-hash = "ea8f19b80cb1afebf6759907b5cdfda764284089d287c268361cab4948986751"
+content-hash = "968a447e455742b04f4c8798e030182602e8546b52021236499b4097a3ca2109"
 
 [metadata.files]
 aenum = [
@@ -5340,9 +5372,25 @@ types-colorama = [
     {file = "types-colorama-0.4.3.tar.gz", hash = "sha256:3b2c7877878f2ba8cd1c2b3da524158f718c10e2fe046f91948b43459b69dc6a"},
     {file = "types_colorama-0.4.3-py3-none-any.whl", hash = "sha256:3cdd76e8080a146d55b7281b352a4330be6d7ba91217d28c7e3a50dc433d4b89"},
 ]
+types-markdown = [
+    {file = "types-Markdown-3.3.2.tar.gz", hash = "sha256:6779c629223cf8acbed7582b8b98643a1beb958f788375776468e0dab4e103c3"},
+    {file = "types_Markdown-3.3.2-py3-none-any.whl", hash = "sha256:c5dcc255b43afa3b6c5e481ced4c524b559680bd4de5d59c56629283ef759d59"},
+]
+types-python-dateutil = [
+    {file = "types-python-dateutil-0.1.6.tar.gz", hash = "sha256:b02de39a54ce6e3fadfdc7dba77d8519fbfb6ca049920e190b5f89c74d5f9de6"},
+    {file = "types_python_dateutil-0.1.6-py3-none-any.whl", hash = "sha256:5b6241ea9fca2d8878cc152017d9524da62a7a856b98e31006e68b02aab47442"},
+]
 types-pytz = [
     {file = "types-pytz-2021.1.2.tar.gz", hash = "sha256:448828a06f2aaa840e57364d866c661645a045e532f817e4f10c8c3ab2b66651"},
     {file = "types_pytz-2021.1.2-py3-none-any.whl", hash = "sha256:28fb1c0f77f59aebe9b792d073ebfbbbf7b329f9d4af6a6079713a618a1c0f31"},
+]
+types-pyyaml = [
+    {file = "types-PyYAML-5.4.6.tar.gz", hash = "sha256:745dcb4b1522423026bcc83abb9925fba747f1e8602d902f71a4058f9e7fb662"},
+    {file = "types_PyYAML-5.4.6-py3-none-any.whl", hash = "sha256:96f8d3d96aa1a18a465e8f6a220e02cff2f52632314845a364ecbacb0aea6e30"},
+]
+types-requests = [
+    {file = "types-requests-2.25.6.tar.gz", hash = "sha256:e21541c0f55c066c491a639309159556dd8c5833e49fcde929c4c47bdb0002ee"},
+    {file = "types_requests-2.25.6-py3-none-any.whl", hash = "sha256:a5a305b43ea57bf64d6731f89816946a405b591eff6de28d4c0fd58422cee779"},
 ]
 typing-extensions = [
     {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
