@@ -212,11 +212,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     services:
       frontend:
-        image: react
+        image: ghcr.io/modularhistory/react
         ports:
           - 3000:3000
       backend:
-        image: django
+        image: ghcr.io/modularhistory/react
         ports:
           - 8000:8000
     steps:
