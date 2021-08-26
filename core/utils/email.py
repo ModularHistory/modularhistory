@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Iterable, Optional
 
 from django.core.mail import EmailMultiAlternatives, get_connection
 
@@ -6,8 +6,12 @@ if TYPE_CHECKING:
     from django.core.mail.backends.smtp import EmailBackend
 
 
+# (subject, text_content, html_content, from_email, recipient_list)
+DataTuple = tuple[str, str, str, str, str]
+
+
 def send_mass_html_mail(
-    datatuples,
+    datatuples: Iterable[DataTuple],
     fail_silently: bool = False,
     username: Optional[str] = None,
     password: Optional[str] = None,
@@ -28,8 +32,13 @@ def send_mass_html_mail(
         username=username, password=password, fail_silently=fail_silently
     )
     messages = []
-    for subject, text, html, from_email, recipient in datatuples:
-        message = EmailMultiAlternatives(subject, text, from_email, recipient)
-        message.attach_alternative(html, 'text/html')
+    for subject, text, html, from_email, recipients in datatuples:
+        message = EmailMultiAlternatives(
+            subject,
+            body=text,
+            from_email=from_email,
+            to=recipients,
+        )
+        message.attach_alternative(html, mimetype='text/html')
         messages.append(message)
     return connection.send_messages(messages)
