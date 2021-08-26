@@ -649,14 +649,40 @@ jobs:
       max-parallel: 3
     runs-on: ${{ matrix.os }}
     services:
-      frontend:
-        image: ghcr.io/modularhistory/react
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         ports:
-        - 3000:3000
+        - 5432:5432
+        # Set health checks to wait until postgres has started.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports:
+        - 6379:6379
+        # Set health checks to wait until redis has started.
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
       backend:
-        image: ghcr.io/modularhistory/react
+        image: ghcr.io/modularhistory/django:$SHA
         ports:
         - 8000:8000
+        credentials:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      frontend:
+        image: ghcr.io/modularhistory/react:$SHA
+        ports:
+        - 3000:3000
+        credentials:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
