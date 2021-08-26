@@ -48,6 +48,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
     ) -> Change:
         """Save changes to a `Change` instance."""
         object_is_new = self._state.adding
+        self.clean()
         if object_is_new:
             self.verified = False
             self.save()

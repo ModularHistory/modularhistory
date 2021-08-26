@@ -142,6 +142,10 @@ def get_field_change(
             field=field,
             before_and_after=(value_before, value_after),
         )
+    if value_before is None:
+        value_before = ''
+    if value_after is None:
+        value_after = ''
     return TextChange(
         getattr(field, 'verbose_name', getattr(field, 'related_name', '')),
         field=field,
