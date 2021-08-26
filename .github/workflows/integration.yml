@@ -684,10 +684,9 @@ jobs:
     - name: Run Cypress
       uses: cypress-io/github-action@v2
       with:
-          # build: npm run build
-          # start: npm run start
-        wait-on: http://localhost:3000
-        config: baseUrl=https://localhost:3000
+          # wait-on: 'http://localhost:3000'
+          # wait-on-timeout: 90
+        config: baseUrl=http://localhost:3000
         browser: ${{ matrix.browser }}
         working-directory: frontend
   check-types:
