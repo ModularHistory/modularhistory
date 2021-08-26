@@ -38,7 +38,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
         abstract = True
 
     class Moderation:
-        excluded_fields = ['cache', 'date_string', 'changes', 'verified']
+        excluded_fields = ['cache', 'date_string', 'changes', 'verified', 'deleted']
 
     def save_change(
         self,
