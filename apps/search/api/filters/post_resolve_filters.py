@@ -86,7 +86,7 @@ def date_sorter(model_instance: Union[SearchableDatedModel, dict]) -> datetime:
         logging.error(
             f'{model_instance} has no date attribute but is included in search results.'
         )
-        date = HistoricDateTime(1, 1, 1, 0, 0, 0)
+        date = HistoricDateTime(1, 1, 1, 0, 0, 0, microsecond=0)
     # Display precise dates before ranges, e.g., "1500" before "1500 – 2000"
     if getattr(model_instance, 'end_date', None):
         microsecond = date.microsecond + 1

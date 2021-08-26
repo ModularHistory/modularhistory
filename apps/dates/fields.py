@@ -55,6 +55,7 @@ class HistoricDateTimeField(DateTimeField):
             value.minute,
             value.second,
             value.microsecond,
+            tzinfo=value.tzinfo,
         )
 
     # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-python-objects-to-query-values
