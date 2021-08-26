@@ -93,6 +93,7 @@ jobs:
         image: django
         push: true
         environment: prod
+        tags: ghcr.io/modularhistory/django:${{ github.sha }},ghcr.io/modularhistory/django:latest
 
   push-react:
     environment: prod
@@ -122,6 +123,7 @@ jobs:
         image: react
         push: true
         environment: prod  
+        tags: ghcr.io/modularhistory/react:${{ github.sha }},ghcr.io/modularhistory/react:latest
     
   push-webserver:
     environment: prod
@@ -151,6 +153,7 @@ jobs:
         image: webserver
         push: true
         environment: prod
+        tags: ghcr.io/modularhistory/webserver:${{ github.sha }},ghcr.io/modularhistory/webserver:latest
   
   deploy:
     needs: [push-django, push-react, push-webserver]

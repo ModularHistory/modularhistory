@@ -107,6 +107,8 @@ jobs:
       with:
         os: ${{ runner.os }}
         image: django
+        push: true
+        tags: ghcr.io/modularhistory/django:${{ github.sha }}
 
   build-react:
     name: Build React image
@@ -130,6 +132,8 @@ jobs:
       with:
         os: ${{ runner.os }}
         image: react
+        push: true
+        tags: ghcr.io/modularhistory/react:${{ github.sha }}
 
   build-webserver:
     name: Build webserver image
@@ -153,6 +157,7 @@ jobs:
       with:
         os: ${{ runner.os }}
         image: webserver
+        tags: ghcr.io/modularhistory/webserver:${{ github.sha }}
 
   test-backend:
     name: Test backend

@@ -15,6 +15,9 @@ inputs:
     description: 'Whether to push the built image to its registry (default: false)'
     required: false
     default: false
+  tags:
+    description: 'Comma-delimited string of tags to apply to the image (e.g., "ghcr.io/modularhistory/django:${{ github.sha }},ghcr.io/modularhistory/django:latest")'
+    required: true
   environment:
     description: 'Environment (build argument)'
     required: false
@@ -50,9 +53,7 @@ runs:
         load: ${{ ! inputs.push }}
         push: ${{ inputs.push }}
         secret-files: ENV_FILE=./.env
-        tags: |
-          ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
-          ghcr.io/modularhistory/${{ inputs.image }}:latest
+        tags: ${{ inputs.tags }}
     -
       name: Build image (retry without cache)
       if: ${{ steps.build.outcome == 'failure' }}
@@ -66,9 +67,7 @@ runs:
         push: ${{ inputs.push }}
         no-cache: true
         secret-files: ENV_FILE=./.env
-        tags: |
-          ghcr.io/modularhistory/${{ inputs.image }}:${{ github.sha }}
-          ghcr.io/modularhistory/${{ inputs.image }}:latest
+        tags: ${{ inputs.tags }}
     -
       name: Run Snyk to check image for vulnerabilities
       # Snyk can be used to break the build when it detects vulnerabilities.
