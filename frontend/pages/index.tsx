@@ -1,23 +1,30 @@
 import Layout from "@/components/Layout";
+// import { styled } from "@material-ui/core/styles";
 import SearchButton from "@/components/search/SearchButton";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import { makeStyles } from "@material-ui/styles";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { Box } from "@material-ui/core";
 
-const useStyles = makeStyles({
-  root: {
-    flex: "1 1",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "1.5rem 1rem 1.5rem 1rem",
-  },
-});
+// const PREFIX = "index";
+//
+// const classes = {
+//   root: `${PREFIX}-root`,
+// };
+
+// const StyledLayout = styled(Layout)({
+//   [`& .${classes.root}`]: {
+//     flex: "1 1",
+//     display: "flex",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     margin: "1.5rem 1rem 1.5rem 1rem",
+//   },
+// });
 
 function useQueryState(initialState) {
   const [query, setQuery] = useState(initialState);
@@ -25,12 +32,11 @@ function useQueryState(initialState) {
 }
 
 export default function Home() {
-  const classes = useStyles();
   const router = useRouter();
   const [query, setQuery] = useQueryState("");
 
   // event handler for pressing enter or clicking search button
-  const search = ({ key }: any) => {
+  const search = ({ key }) => {
     if (key && key !== "Enter") return;
     router.push({
       pathname: "/search/",
@@ -66,7 +72,15 @@ export default function Home() {
 
   return (
     <Layout title={"Home"}>
-      <div className={classes.root}>
+      <Box
+        sx={{
+          flex: "1 1",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "1.5rem 1rem 1.5rem 1rem",
+        }}
+      >
         <Card elevation={5}>
           <CardContent>
             <Container>
@@ -75,7 +89,7 @@ export default function Home() {
             </Container>
           </CardContent>
         </Card>
-      </div>
+      </Box>
     </Layout>
   );
 }

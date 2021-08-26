@@ -25,8 +25,8 @@ const ImageDetailPage: FC<ImageProps> = ({ image }: ImageProps) => {
 export default ImageDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let image = {};
-  const { slug } = params;
+  let image;
+  const { slug } = params || {};
   const body = {
     query: `{
       image(slug: "${slug}") {
@@ -44,19 +44,15 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   };
   await axiosWithoutAuth
     .post("http://django:8000/graphql/", body)
-    .then((response) => {
-      image = response.data.data.image;
+    .then(({ data }) => {
+      image = data.data.image;
     })
-    .catch(() => {
-      image = null;
+    .catch((error) => {
+      console.error(error);
+      return {
+        notFound: true,
+      };
     });
-
-  if (!image) {
-    // https://nextjs.org/blog/next-10#notfound-support
-    return {
-      notFound: true,
-    };
-  }
 
   return {
     props: {

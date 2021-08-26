@@ -25,12 +25,12 @@ const EntityDetailPage: FC<EntityProps> = ({ entity }: EntityProps) => {
 export default EntityDetailPage;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  let entity = {};
-  const { slug } = params;
+  let entity;
+  let notFound = false;
+  const { slug } = params || {};
 
-  if (slug) {
-    const body = {
-      query: `{
+  const body = {
+    query: `{
         entity(slug: "${slug}") {
           name
           slug
@@ -40,30 +40,25 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           adminUrl
         }
       }`,
-    };
-    await axiosWithoutAuth
-      .post("http://django:8000/graphql/", body)
-      .then((response) => {
-        entity = response.data.data.entity;
-      })
-      .catch(() => {
-        entity = null;
-      });
-  } else {
-    entity = null;
-  }
-
-  if (!entity) {
-    // https://nextjs.org/blog/next-10#notfound-support
-    return {
-      notFound: true,
-    };
-  }
+  };
+  await axiosWithoutAuth
+    .post("http://django:8000/graphql/", body)
+    .then((response) => {
+      entity = response.data.data.entity;
+    })
+    .catch((error) => {
+      if (error.response.status === 404) {
+        notFound = true;
+      } else {
+        throw error;
+      }
+    });
 
   return {
     props: {
       entity,
     },
+    notFound,
     revalidate: 10,
   };
 };
