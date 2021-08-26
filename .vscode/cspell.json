@@ -38,6 +38,7 @@
         "Invoke's",
         "isnumeric",
         "isort",
+        "isready",
         "itertools",
         "jquery",
         "keyscan",
