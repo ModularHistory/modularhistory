@@ -18,7 +18,7 @@ class AbstractSourcesInline(TabularInline):
     # https://django-grappelli.readthedocs.io/en/latest/customization.html#inline-sortables
     sortable_field_name = 'position'
 
-    def get_fields(self, request, model_instance) -> list[str]:
+    def get_fields(self, request, model_instance) -> list:
         fields = list(super().get_fields(request, model_instance))
         ordered_fields = ['citation_phrase']
         for field in ordered_fields:
