@@ -1,12 +1,15 @@
 """HistoricDateTime module."""
 
-from datetime import datetime
+from datetime import datetime, tzinfo
 from decimal import Decimal, getcontext
 from typing import Optional
 
 import sigfig
 from millify import millify, prettify
 from pytz import UTC
+
+# TODO: https://dateparser.readthedocs.io/en/latest/
+# TODO: https://dateutil.readthedocs.io/en/stable/
 
 SEASONS = (
     (None, '-----'),
@@ -75,9 +78,30 @@ class HistoricDateTime(datetime):
     bce_threshold = YBP_LOWER_LIMIT - BP_REFERENCE_YEAR
     significant_figures = SIGNIFICANT_FIGURES
 
-    def __new__(cls, *args, **kwargs):
-        kwargs['tzinfo'] = kwargs.get('tzinfo') or UTC
-        return super().__new__(cls, *args, **kwargs)
+    def __new__(
+        cls,
+        year: int,
+        month: int,
+        day: int,
+        hour: int,
+        minute: int,
+        second: int,
+        microsecond: int,
+        tzinfo: Optional[tzinfo] = None,
+    ):
+        """Create an instance."""
+        tzinfo = tzinfo or UTC
+        return super().__new__(
+            cls,
+            year,
+            month,
+            day,
+            hour=hour,
+            minute=minute,
+            second=second,
+            microsecond=microsecond,
+            tzinfo=tzinfo,
+        )
 
     def __str__(self) -> str:
         """Return the datetime's string representation."""

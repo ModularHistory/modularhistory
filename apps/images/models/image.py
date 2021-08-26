@@ -36,8 +36,7 @@ IMAGE_TYPES = (
 
 TYPE_NAME_MAX_LENGTH = 14
 
-IMAGE_FIELD_NAME = 'image'
-IMAGE_KEY = IMAGE_FIELD_NAME
+IMAGE_KEY = IMAGE_FIELD_NAME = 'image'
 
 image_placeholder_regex: str = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'  # noqa: WPS360
@@ -77,13 +76,11 @@ class Image(MediaModel):
         default=IMAGE_TYPES[0][0],
     )
     urls = JSONField(default=dict, blank=True)
-    width = models.PositiveSmallIntegerField(
-        verbose_name=_('width'), null=True, blank=True  # TODO: remove null
-    )
-    height = models.PositiveSmallIntegerField(verbose_name=_('height'), null=True, blank=True)
+    width = models.PositiveSmallIntegerField(verbose_name=_('width'), blank=True)
+    height = models.PositiveSmallIntegerField(verbose_name=_('height'), blank=True)
     # https://github.com/jonasundderwolf/django-image-cropping
     cropping = ImageRatioField(
-        IMAGE_FIELD_NAME,
+        image_field=IMAGE_FIELD_NAME,
         free_crop=True,
         allow_fullsize=True,
         verbose_name=_('cropping'),
