@@ -639,6 +639,7 @@ jobs:
       run: poetry run invoke test --no-docker
   test-frontend:
     name: Test frontend
+    needs: [build-frontend, build-backend]
     container: cypress/browsers:node12.18.3-chrome87-ff82
     strategy:
       fail-fast: false
@@ -670,14 +671,14 @@ jobs:
         # Set health checks to wait until redis has started.
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
       backend:
-        image: ghcr.io/modularhistory/django:$SHA
+        image: ghcr.io/modularhistory/django:${{ github.sha }}
         ports:
         - 8000:8000
         credentials:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       frontend:
-        image: ghcr.io/modularhistory/react:$SHA
+        image: ghcr.io/modularhistory/react:${{ github.sha }}
         ports:
         - 3000:3000
         credentials:
