@@ -10,7 +10,8 @@ inputs:
     required: true
   python-version:
     description: 'Python version'
-    required: true
+    required: false
+    default: 3.9
   fetch-depth:
     description: 'Fetch depth'
     required: false
