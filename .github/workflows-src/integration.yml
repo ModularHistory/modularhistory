@@ -204,7 +204,7 @@ jobs:
     - name: Run tests
       run: poetry run invoke test --no-docker
 
-  test:
+  test-frontend:
     name: Test
     continue-on-error: true
     needs: [build-react, build-django]
@@ -239,79 +239,79 @@ jobs:
           config: baseUrl=http://modularhistory.dev.net
           browser: ${{ matrix.browser }}
 
-  test-frontend:
-    name: Test frontend
-    needs: [build-react, build-django]
-    container: cypress/browsers:node12.18.3-chrome87-ff82
-    strategy:
-      fail-fast: false
-      matrix:
-        # Note: Services (running in Docker containers) only work on ubuntu.
-        os: [ ubuntu-latest ]
-        browser: [ chrome, firefox ]
-      max-parallel: 3
-    runs-on: ${{ matrix.os }}
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-        - 5432:5432
-        # Set health checks to wait until postgres has started.
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis
-        ports:
-        - 6379:6379
-        # Set health checks to wait until redis has started.
-        options: >- 
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      backend:
-        image: ghcr.io/modularhistory/django:${{ github.sha }}
-        ports:
-        - 8000:8000
-        credentials:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CR_PAT }}
-        options: >-
-          --health-cmd "curl --fail http://localhost:8000 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      frontend:
-        image: ghcr.io/modularhistory/react:${{ github.sha }}
-        ports:
-        - 3000:3000
-        credentials:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CR_PAT }}
-        options: >-
-          --health-cmd "curl --fail http://localhost:3000 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Check frontend service
-        run: curl --fail http://localhost:3000 || exit 1
-      # Install NPM dependencies, cache them correctly, and run all Cypress tests.
-      - name: Run Cypress
-        # https://docs.cypress.io/guides/continuous-integration/github-actions
-        uses: cypress-io/github-action@v2
-        with:
-          config: baseUrl=http://localhost:3000
-          browser: ${{ matrix.browser }}
+  # test-frontend:
+  #   name: Test frontend
+  #   needs: [build-react, build-django]
+  #   container: cypress/browsers:node12.18.3-chrome87-ff82
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       # Note: Services (running in Docker containers) only work on ubuntu.
+  #       os: [ ubuntu-latest ]
+  #       browser: [ chrome, firefox ]
+  #     max-parallel: 3
+  #   runs-on: ${{ matrix.os }}
+  #   services:
+  #     postgres:
+  #       image: postgres
+  #       env:
+  #         POSTGRES_DB: postgres
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_PASSWORD: postgres
+  #       ports:
+  #       - 5432:5432
+  #       # Set health checks to wait until postgres has started.
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #     redis:
+  #       image: redis
+  #       ports:
+  #       - 6379:6379
+  #       # Set health checks to wait until redis has started.
+  #       options: >- 
+  #         --health-cmd "redis-cli ping"
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #     backend:
+  #       image: ghcr.io/modularhistory/django:${{ github.sha }}
+  #       ports:
+  #       - 8000:8000
+  #       credentials:
+  #         username: ${{ github.repository_owner }}
+  #         password: ${{ secrets.CR_PAT }}
+  #       options: >-
+  #         --health-cmd "curl --fail http://localhost:8000 || exit 1"
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #     frontend:
+  #       image: ghcr.io/modularhistory/react:${{ github.sha }}
+  #       ports:
+  #       - 3000:3000
+  #       credentials:
+  #         username: ${{ github.repository_owner }}
+  #         password: ${{ secrets.CR_PAT }}
+  #       options: >-
+  #         --health-cmd "curl --fail http://localhost:3000 || exit 1"
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Check frontend service
+  #       run: curl --fail http://localhost:3000 || exit 1
+  #     # Install NPM dependencies, cache them correctly, and run all Cypress tests.
+  #     - name: Run Cypress
+  #       # https://docs.cypress.io/guides/continuous-integration/github-actions
+  #       uses: cypress-io/github-action@v2
+  #       with:
+  #         config: baseUrl=http://localhost:3000
+  #         browser: ${{ matrix.browser }}
 
   check-types:
     name: Check types
