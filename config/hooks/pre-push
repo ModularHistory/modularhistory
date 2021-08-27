@@ -33,17 +33,4 @@ echo "$committed_filepaths" | grep --quiet "models" && {
     run_in_django python manage.py graph_models -o core/static/model_graph.png
 }
 
-# If workflow YAML files (for CI) have been modified, preprocess the files.
-echo "$committed_filepaths" | grep --quiet ".github/" && {
-    echo "Preprocessing workflow files..."
-    docker-compose up github_workflow_preprocessor &>/dev/null || {
-        echo "Failed to pre-process workflow files."
-        echo "For more output, try running the following:"
-        echo "  docker-compose up github_workflow_preprocessor"
-    }
-    git diff --quiet .github/workflows || {
-        git add .github/workflows && git commit -m 'update workflow'
-    }
-}
-
 echo "Finished pre-push tasks."
