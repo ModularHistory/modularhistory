@@ -25,7 +25,7 @@ runs:
   # https://github.com/mithro/actions-includes
   using: "includes"
   steps:
-    # Check out.
+    # Check out source code.
     - name: Check out main branch
       uses: actions/checkout@v2.3.4
       with:
@@ -80,19 +80,6 @@ runs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    # Load cached node_modules dir, if it exists.
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ inputs.os }}-${{ hashFiles('**/package-lock.json') }}
-    # Install node modules if necessary.
-    - name: Install JavaScript dependencies
-      if: steps.node-modules-cache.outputs.cache-hit != 'true'
-      run: |
-        cd frontend
-        npm ci
-        cd ..
+    # Write a .env file.
     - name: Create .env file
       run: echo "${{ inputs.environment }}" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file

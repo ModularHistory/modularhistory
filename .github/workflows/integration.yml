@@ -133,18 +133,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Run setup script
@@ -211,18 +199,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Inject environment vars
@@ -334,18 +310,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Inject environment vars
@@ -457,18 +421,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Inject environment vars
@@ -605,18 +557,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ matrix.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Make sure pytest is working
@@ -690,18 +630,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ matrix.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Login to GitHub Container Registry
@@ -778,18 +706,6 @@ jobs:
     - name: Test poetry environment (B)
       if: ${{ steps.venv-cache.outputs.cache-hit != 'true' || steps.venv-test.outcome == 'failure' }}
       run: poetry run invoke debug
-    - name: Cache node modules
-      uses: actions/cache@v2.1.5
-      id: node-modules-cache
-      with:
-        path: frontend/node_modules
-        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install JavaScript dependencies
-      if: ${{ steps.node-modules-cache.outputs.cache-hit != 'true' }}
-      run: |
-        cd frontend
-        npm ci
-        cd ..
     - name: Create .env file
       run: echo "" | grep -i --quiet "dev" && poetry run invoke setup.write-env-file --dev || poetry run invoke setup.write-env-file
     - name: Cache type stubs
