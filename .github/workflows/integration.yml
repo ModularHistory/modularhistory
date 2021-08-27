@@ -681,12 +681,18 @@ jobs:
         workflow: .github/workflows/integration.yml
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Check frontend service
+      run: curl --fail http://localhost:3000 || exit 1
     - name: Run Cypress
       uses: cypress-io/github-action@v2
       with:
-        config: baseUrl=http://react:3000
+        config: baseUrl=http://localhost:3000
         browser: ${{ matrix.browser }}
-        working-directory: frontend
+    working_dir: /e2e
+    volumes:
+    - ./frontend/cypress:/e2e/cypress
+    - ./frontend/cypress.json:/e2e/cypress.json
+
   check-types:
     name: Check types
     runs-on: ubuntu-latest
