@@ -254,13 +254,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Check frontend service
+        run: curl --fail http://localhost:3000 || exit 1
       # Install NPM dependencies, cache them correctly, and run all Cypress tests.
       - name: Run Cypress
+        # https://docs.cypress.io/guides/continuous-integration/github-actions
         uses: cypress-io/github-action@v2
         with:
-          config: baseUrl=http://react:3000
+          config: baseUrl=http://localhost:3000
           browser: ${{ matrix.browser }}
-          working-directory: frontend
+          # working-directory: frontend
+    working_dir: /e2e
+    volumes:
+      - ./frontend/cypress:/e2e/cypress
+      - ./frontend/cypress.json:/e2e/cypress.json
 
   check-types:
     name: Check types
