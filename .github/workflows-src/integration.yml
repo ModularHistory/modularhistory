@@ -161,13 +161,11 @@ jobs:
 
   test-backend:
     name: Run backend integration tests
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 3
       matrix:
-        # Note: Services (running in Docker containers) only work on ubuntu.
-        os: [ ubuntu-latest ]
         python-version: [ 3.9 ]
-    runs-on: ${{ matrix.os }}
     services:
       postgres:
         image: postgres
@@ -195,7 +193,7 @@ jobs:
     steps:
     - includes: ./.github/actions/setup
       with:
-        os: ${{ matrix.os }}
+        os: ${{ runner.os }}
         python-version: ${{ matrix.python-version }}
     - name: Make sure pytest is working
       run: |
@@ -206,20 +204,17 @@ jobs:
 
   test-frontend:
     name: Run e2e tests
-    continue-on-error: true
     needs: [build-react, build-django]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # Note: Services (running in Docker containers) only work on ubuntu.
-        os: [ ubuntu-latest ]
         browser: [ chrome, firefox ]
       max-parallel: 3
-    runs-on: ${{ matrix.os }}
     steps:
     - includes: ./.github/actions/setup
       with:
-        os: ${{ matrix.os }}
+        os: ${{ runner.os }}
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1.10.0
       with:
