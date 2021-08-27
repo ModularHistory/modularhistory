@@ -654,15 +654,10 @@ jobs:
     - run: |
         docker-compose pull
         docker-compose up -d django react webserver
-        docker-compose up cypress
-    - name: Check frontend service
+    - name: Check service
       run: curl --fail http://modularhistory.dev.net || exit 1
-    - run: docker-compose up cypress
     - name: Run Cypress
-      uses: cypress-io/github-action@v2
-      with:
-        config: baseUrl=http://modularhistory.dev.net
-        browser: ${{ matrix.browser }}
+      run: docker-compose up cypress
   check-types:
     name: Check types
     runs-on: ubuntu-latest

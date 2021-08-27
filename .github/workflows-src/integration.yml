@@ -228,17 +228,10 @@ jobs:
       - run: |
           docker-compose pull
           docker-compose up -d django react webserver
-          docker-compose up cypress
-      - name: Check frontend service
+      - name: Check service
         run: curl --fail http://modularhistory.dev.net || exit 1
-      - run: docker-compose up cypress
-      # Install NPM dependencies, cache them correctly, and run all Cypress tests.
       - name: Run Cypress
-        # https://docs.cypress.io/guides/continuous-integration/github-actions
-        uses: cypress-io/github-action@v2
-        with:
-          config: baseUrl=http://modularhistory.dev.net
-          browser: ${{ matrix.browser }}
+        run: docker-compose up cypress
 
   # test-frontend:
   #   name: Test frontend
