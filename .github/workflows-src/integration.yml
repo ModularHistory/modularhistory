@@ -249,7 +249,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
         options: >-
-          --env-file .env
           --health-cmd "curl --fail http://localhost:8000 || exit 1"
           --health-interval 10s
           --health-timeout 5s
@@ -262,7 +261,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
         options: >-
-          --env-file .env
           --health-cmd "curl --fail http://localhost:3000 || exit 1"
           --health-interval 10s
           --health-timeout 5s
