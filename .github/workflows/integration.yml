@@ -688,11 +688,6 @@ jobs:
       with:
         config: baseUrl=http://localhost:3000
         browser: ${{ matrix.browser }}
-    working_dir: /e2e
-    volumes:
-    - ./frontend/cypress:/e2e/cypress
-    - ./frontend/cypress.json:/e2e/cypress.json
-
   check-types:
     name: Check types
     runs-on: ubuntu-latest
