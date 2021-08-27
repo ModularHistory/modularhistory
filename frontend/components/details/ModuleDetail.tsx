@@ -1,7 +1,7 @@
 import PropositionDetail from "@/components/propositions/PropositionDetail";
 import { Entity, Image, Occurrence, Proposition, Quote, Source, Topic } from "@/interfaces";
 import { useSession } from "next-auth/client";
-import { createRef, FC, useLayoutEffect } from "react";
+import { FC } from "react";
 import EntityDetail from "../entities/EntityDetail";
 import ImageDetail from "../images/ImageDetail";
 import OccurrenceDetail from "../propositions/OccurrenceDetail";
@@ -14,20 +14,7 @@ interface ModuleDetailProps {
 }
 
 const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
-  const ref = createRef<HTMLDivElement>();
   const [session, loading] = useSession();
-  useLayoutEffect(() => {
-    // After the DOM has rendered, check for lazy images
-    // and set their `src` to the correct value.
-    // This is not an optimal solution, and will likely change
-    // after redesigning how backend HTML is served.
-    const images = ref.current.getElementsByTagName("img");
-
-    for (const img of images) {
-      if (img.dataset["src"]) img.src = img.dataset["src"];
-    }
-  }, [ref]);
-
   let details;
   switch (module.model) {
     // TODO: add more models here as soon as they
@@ -60,7 +47,7 @@ const ModuleDetail: FC<ModuleDetailProps> = ({ module }: ModuleDetailProps) => {
   }
 
   return (
-    <div className="detail" ref={ref}>
+    <div className="detail">
       {!loading && session?.user?.["isSuperuser"] && (
         <a
           href={module.adminUrl}

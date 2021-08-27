@@ -17,9 +17,9 @@
 {% block top %}
     <div class="view overlay" style="max-width: {{ image.width }}px; max-height: {{ image.height }}px;">
         <img class="card-img-top lazy"
-             src="{% static "img-placeholder.jpg" %}"
-             data-src="{% media image.src_url %}"
-             alt="{{ image.image.name }}" />
+             src="{% media image.src_url %}"
+             alt="{{ image.image.name }}"
+             loading="lazy" />
         <a href="#" onclick="return false">
             <div class="mask rgba-white-slight"></div>
         </a>

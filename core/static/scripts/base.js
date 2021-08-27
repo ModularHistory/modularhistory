@@ -68,7 +68,7 @@ function setGetParam(key, value) {
 function lazyLoadImages(element = null) {
     let scope = element ? element : document;
     console.log(`Lazy-loading images in ${scope}.`);
-    let lazyImages = [].slice.call(scope.querySelectorAll('img.lazy,.lazy-bg'));
+    let lazyImages = [].slice.call(scope.querySelectorAll('.lazy-bg'));
     if ('IntersectionObserver' in window) {
         let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
             entries.forEach(function (entry) {
@@ -76,7 +76,6 @@ function lazyLoadImages(element = null) {
                     let lazyElement = entry.target;
                     let url;
                     let hasLazyBg = lazyElement.classList.contains('lazy-bg');
-                    let isImage = 'src' in lazyElement.dataset;
                     if (hasLazyBg) {
                         url = lazyElement.dataset.img;
                         if (!url) {
@@ -85,16 +84,6 @@ function lazyLoadImages(element = null) {
                         }
                         lazyElement.classList.remove('lazy-bg');
                         lazyElement.style.backgroundImage = `url('${url}')`;
-                    } else if (isImage) {
-                        let lazyImage = lazyElement;
-                        url = lazyImage.dataset.src;
-                        if (!url) {
-                            console.log(`no URL could be retrieved for ${lazyImage} ${lazyImage.textContent}`);
-                        }
-                        lazyImage.src = url;
-                        // lazyElement.srcset = lazyElement.dataset.srcset;
-                        lazyImage.classList.remove('lazy');
-                        // lazyImageObserver.unobserve(lazyImage);
                     } else {
                         console.log(lazyElement.dataset);
                         console.log(lazyElement.parentElement);
