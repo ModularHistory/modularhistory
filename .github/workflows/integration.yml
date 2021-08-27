@@ -629,7 +629,6 @@ jobs:
     name: Test
     continue-on-error: true
     needs: [build-react, build-django]
-    container: cypress/browsers:node12.18.3-chrome87-ff82
     strategy:
       fail-fast: false
       matrix:
@@ -655,8 +654,10 @@ jobs:
     - run: |
         docker-compose pull
         docker-compose up -d django react webserver
+        docker-compose up cypress
     - name: Check frontend service
       run: curl --fail http://modularhistory.dev.net || exit 1
+    - run: docker-compose up cypress
     - name: Run Cypress
       uses: cypress-io/github-action@v2
       with:
