@@ -224,7 +224,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
-          - 5432:5432
+        - 5432:5432
         # Set health checks to wait until postgres has started.
         options: >-
           --health-cmd pg_isready
@@ -234,23 +234,32 @@ jobs:
       redis:
         image: redis
         ports:
-          - 6379:6379
+        - 6379:6379
         # Set health checks to wait until redis has started.
-        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        options: >- 
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       backend:
         image: ghcr.io/modularhistory/django:${{ github.sha }}
         ports:
-          - 8000:8000
+        - 8000:8000
         credentials:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       frontend:
         image: ghcr.io/modularhistory/react:${{ github.sha }}
         ports:
-          - 3000:3000
+        - 3000:3000
         credentials:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
+        options: >-
+          --health-cmd "curl --fail http://localhost:3000 || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v2
