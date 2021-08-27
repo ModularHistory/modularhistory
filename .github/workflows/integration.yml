@@ -565,7 +565,7 @@ jobs:
       run: poetry run invoke test --no-docker
   test-frontend:
     name: Run e2e tests
-    environment: prod
+    environment: integration
     needs: [build-react, build-django]
     runs-on: ubuntu-latest
     strategy:
