@@ -1,4 +1,4 @@
-import Autocomplete from "@material-ui/core/Autocomplete";
+import Autocomplete, { AutocompleteProps } from "@material-ui/core/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/styles";
 import React, { FC, useContext, useEffect, useState } from "react";
@@ -97,7 +97,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
       })
       // TODO: add more resilient error handling
       .catch(console.error);
-  }, [children, keyName, valueName]);
+  }, []); // eslint-disable-line
 
   // user input event handler
   const handleChange = (event, value) => {
@@ -111,6 +111,8 @@ const MultiSelect: FC<MultiSelectProps> = ({
       limitTags={5}
       options={orderedKeys}
       getOptionLabel={(optionKey) => options[optionKey]}
+      // we want non-strict equality checks here for string/number comparisons
+      isOptionEqualToValue={(option, value) => option == value}
       value={value}
       ChipProps={{ size: "small" }}
       onChange={handleChange}

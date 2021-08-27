@@ -86,7 +86,7 @@ class Profile(generics.RetrieveUpdateAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
-    lookup_field = 'username'
+    lookup_field = 'handle'
     queryset = User.objects.all()
 
 

@@ -129,8 +129,13 @@ class Change(AbstractChange):
 
     @property
     def is_approved(self) -> bool:
-        """Return a boolean reflecting whether the change is approved."""
-        return self.moderation_status == ModerationStatus.APPROVED
+        """Return a boolean reflecting whether the change has been approved."""
+        return self.moderation_status in (ModerationStatus.APPROVED, ModerationStatus.MERGED)
+
+    @property
+    def is_merged(self) -> bool:
+        """Return a boolean reflecting whether the change has been merged."""
+        return self.moderation_status == ModerationStatus.MERGED
 
     def get_n_remaining_approvals_required(self) -> int:
         """Return the number of remaining approvals required before the change is applied."""
@@ -158,6 +163,8 @@ class Change(AbstractChange):
                 with transaction.atomic():
                     model_instance: 'ModeratedModel' = self.changed_object
                     model_instance.save()
+                    self.moderation_status = ModerationStatus.MERGED
+                    self.save()
             except Exception as err:
                 logging.error(err)
                 return False

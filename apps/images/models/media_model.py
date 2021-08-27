@@ -11,7 +11,7 @@ PROVIDER_MAX_LENGTH: int = 200
 class MediaModel(Module, TaggableModel, DatedModel):
     """Abstract base model for media models (e.g., images and videos)."""
 
-    caption = HTMLField(blank=True, paragraphed=False)
+    caption = HTMLField(paragraphed=False)
     description = HTMLField(blank=True)
     provider = models.CharField(max_length=PROVIDER_MAX_LENGTH, blank=True)
 
@@ -19,4 +19,8 @@ class MediaModel(Module, TaggableModel, DatedModel):
     class Meta:
         abstract = True
 
-    slug_base_fields = ('caption',)
+    slug_base_fields = ('title', 'caption')
+
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.caption

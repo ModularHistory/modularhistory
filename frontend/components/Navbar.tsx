@@ -120,7 +120,7 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
         <Image
           src={session.user.avatar}
           className="rounded-circle z-depth-0"
-          alt={session.user.name || session.user.username}
+          alt={session.user.name || session.user.handle}
           width="35"
           height="35"
         />
@@ -128,8 +128,8 @@ const GlobalNavbar: FC<GlobalNavbarProps> = ({ menuItems }: GlobalNavbarProps) =
     }
     accountControls = (
       <NavDropdown id="accountDropdown" title={accountDropdownIcon} renderMenuOnMount alignRight>
-        <NavDropdown.Item href={`/users/${session.user.username}`}>Profile</NavDropdown.Item>
-        <NavDropdown.Item href={`/users/${session.user.username}/settings`}>
+        <NavDropdown.Item href={`/users/${session.user.handle}`}>Profile</NavDropdown.Item>
+        <NavDropdown.Item href={`/users/${session.user.handle}/settings`}>
           Settings
         </NavDropdown.Item>
         {(session.user.isSuperuser && (

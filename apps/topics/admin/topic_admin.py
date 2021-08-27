@@ -4,11 +4,7 @@ from apps.admin import ExtendedModelAdmin, admin_site
 from apps.admin.list_filters.autocomplete_filter import ManyToManyAutocompleteFilter
 from apps.admin.list_filters.boolean_filters import HasRelationFilter
 from apps.topics import models
-from apps.topics.admin.inlines import (
-    ChildTopicsInline,
-    ParentTopicsInline,
-    TopicRelationsInline,
-)
+from apps.topics.admin.inlines import TopicRelationsInline
 from apps.topics.views import TagSearchView
 
 
@@ -36,8 +32,6 @@ class TopicAdmin(ExtendedModelAdmin):
 
     autocomplete_fields = ['parent']
     inlines = [
-        ParentTopicsInline,
-        ChildTopicsInline,
         TopicRelationsInline,
     ]
     exclude = ['key', 'cache']
@@ -47,8 +41,6 @@ class TopicAdmin(ExtendedModelAdmin):
         'slug',
         'path',
         'detail_link',
-        'parent_topics_string',
-        'child_topics_string',
         'tags_string',
     ]
     list_filter = [RelatedTopicFilter, HasParentFilter]

@@ -38,7 +38,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
         abstract = True
 
     class Moderation:
-        excluded_fields = ['cache', 'date_string', 'changes', 'verified']
+        excluded_fields = ['cache', 'date_string', 'changes', 'verified', 'deleted']
 
     def save_change(
         self,
@@ -48,6 +48,7 @@ class ModeratedModel(SoftDeletableModel, ExtendedModel):
     ) -> Change:
         """Save changes to a `Change` instance."""
         object_is_new = self._state.adding
+        self.clean()
         if object_is_new:
             self.verified = False
             self.save()

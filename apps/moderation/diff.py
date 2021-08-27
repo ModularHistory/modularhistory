@@ -55,7 +55,7 @@ class ImageChange(FieldChange):
     def diff(self) -> str:
         """Render the diff."""
         return self.render_diff(
-            'moderation/image_diff.html',
+            'moderation/changes/image_diff.html',
             {'left_image': self.before, 'right_image': self.after},
         )
 
@@ -94,16 +94,10 @@ def get_field_change(
         value_after = getattr(object_after_change, f'get_{field.name}_display')()
     except AttributeError:
         if isinstance(field, (OneToOneRel, OneToOneField)) and resolve_foreignkeys:
-            try:
-                value_before = str(getattr(object_before_change, field.name))
-            except field.related_model.DoesNotExist:
-                value_before = ''
-            try:
-                value_after = str(getattr(object_after_change, field.name))
-            except field.related_model.DoesNotExist:
-                value_after = ''
+            value_before = getattr(object_before_change, field.name, '') or ''
+            value_after = getattr(object_after_change, field.name, '') or ''
             return RelationsChange(
-                field.related_name,
+                field.verbose_name,
                 field=field,
                 before_and_after=(value_before, value_after),
             )
@@ -144,10 +138,14 @@ def get_field_change(
             value_after = field.value_from_object(object_after_change)
     if isinstance(field, ImageField):
         return ImageChange(
-            f'Current {field.verbose_name} / New {field.verbose_name}',
+            field.verbose_name,
             field=field,
             before_and_after=(value_before, value_after),
         )
+    if value_before is None:
+        value_before = ''
+    if value_after is None:
+        value_after = ''
     return TextChange(
         getattr(field, 'verbose_name', getattr(field, 'related_name', '')),
         field=field,
@@ -183,7 +181,7 @@ def get_field_changes(
     return changes
 
 
-def get_diff_operations(a, b) -> list:
+def get_diff_operations(a: str, b: str) -> list:
     operations = []
     a_words = re.split(r'(\W+)', a)
     b_words = re.split(r'(\W+)', b)

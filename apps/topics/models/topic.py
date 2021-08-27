@@ -70,14 +70,6 @@ class Topic(TreeModel, Module):
         blank=True,
         paragraphed=True,
     )
-    parent_topics = ManyToManyField(
-        to='self',
-        through=TopicParentChildRelation,
-        through_fields=('child_topic', 'parent_topic'),
-        symmetrical=False,
-        related_name='child_topics',
-        blank=True,
-    )
     related_topics = ManyToManyField(
         to='self',
         through=TopicRelation,
@@ -102,21 +94,13 @@ class Topic(TreeModel, Module):
         return self.name
 
     @property  # type: ignore
-    @store(attribute_name='child_topics_string')
-    def child_topics_string(self) -> str:
-        """Return a list of the topic's child topics as a string."""
-        return TOPIC_STRING_DELIMITER.join([str(topic) for topic in self.child_topics.all()])
-
-    @property  # type: ignore
-    @store(attribute_name='parent_topics_string')
-    def parent_topics_string(self) -> str:
-        """Return a list of the topic's parent topics as a string."""
-        return TOPIC_STRING_DELIMITER.join([str(topic) for topic in self.parent_topics.all()])
-
-    @property  # type: ignore
     @store(attribute_name='related_topics_string')
     def tags_string(self) -> str:
         """Return a list of the topic's related topics as a string."""
         return TOPIC_STRING_DELIMITER.join(
             [str(topic) for topic in self.related_topics.all()]
         )
+
+    def get_default_title(self) -> str:
+        """Return the value the title should be set to, if not manually set."""
+        return self.name

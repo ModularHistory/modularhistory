@@ -24,5 +24,5 @@ urlpatterns = [
         name='social_account_disconnect',
     ),
     path('me/', views.Me.as_view(), name='me'),
-    path('<str:username>/', views.Profile.as_view(), name='profile'),
+    path('<str:handle>/', views.Profile.as_view(), name='profile'),
 ]

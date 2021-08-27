@@ -27,7 +27,7 @@ class Conflict(ModeratedRelation):
 
 
 @receiver(post_save, sender=Conflict)
-def post_save(sender: Type[Conflict], instance: Conflict, created: bool, **kwargs):
+def handle_post_save(sender: Type[Conflict], instance: Conflict, created: bool, **kwargs):
     """Respond to the post_save signal."""
     # If saving a new conflict, add a complimentary conflict with `proposition` and
     # `conflicting_proposition` reversed.
@@ -39,7 +39,7 @@ def post_save(sender: Type[Conflict], instance: Conflict, created: bool, **kwarg
 
 
 @receiver(post_delete, sender=Conflict)
-def post_delete(sender: Type[Conflict], instance: Conflict, **kwargs):
+def handle_post_delete(sender: Type[Conflict], instance: Conflict, **kwargs):
     """Respond to the post_delete signal."""
     # Delete the conflict's complimentary conflict.
     sender.objects.filter(

@@ -9,8 +9,6 @@ from django.db.models import DateTimeField
 from apps.dates.structures import HistoricDateTime
 
 
-# TODO: https://dateparser.readthedocs.io/en/latest/
-# TODO: https://dateutil.readthedocs.io/en/stable/
 class HistoricDateTimeField(DateTimeField):
     """Model field for historic datetimes."""
 
@@ -25,7 +23,6 @@ class HistoricDateTimeField(DateTimeField):
         """
         if value is None:
             return value
-        # TODO: include tz? It's set to UTC by default in HistoricDateTime.__new__.
         return HistoricDateTime(
             value.year,
             value.month,
@@ -34,6 +31,7 @@ class HistoricDateTimeField(DateTimeField):
             value.minute,
             value.second,
             value.microsecond,
+            tzinfo=value.tzinfo,
         )
 
     # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-values-to-python-objects
@@ -57,6 +55,7 @@ class HistoricDateTimeField(DateTimeField):
             value.minute,
             value.second,
             value.microsecond,
+            tzinfo=value.tzinfo,
         )
 
     # https://docs.djangoproject.com/en/dev/howto/custom-model-fields/#converting-python-objects-to-query-values

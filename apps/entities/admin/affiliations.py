@@ -17,7 +17,7 @@ class RolesInline(TabularInline):
 
     def get_fields(self, *args, **kwargs):
         """Return reordered fields to be displayed in the admin."""
-        fields = super().get_fields(*args, **kwargs)
+        fields = list(super().get_fields(*args, **kwargs))
         for field in ('start_date', 'end_date'):
             if field in fields:
                 fields.remove(field)

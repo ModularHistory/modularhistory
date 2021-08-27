@@ -45,4 +45,5 @@ def handle_approval(approval_id: int):
             change.apply()
 
     # Notify users of the approval.
-    approval.notify_users()
+    if not change.parent:
+        approval.notify_users()

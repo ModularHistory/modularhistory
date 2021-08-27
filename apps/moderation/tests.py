@@ -17,12 +17,14 @@ class TestModeration:
 
     def test_making_change(self):
         """Test making a change to a moderated model instance."""
+        title = 'title'
         original_summary = 'summary'
         changed_summary = 'changed summary'
 
         # Create and save a model instance.
         p = Proposition(
             type='propositions.conclusion',
+            title=title,
             summary=original_summary,
             elaboration='<p>elaboration</p>',
             certainty=1,
@@ -75,9 +77,7 @@ class TestModeration:
         handle_approval(relation_approval.pk)
         change.refresh_from_db()
         relation_change.refresh_from_db()
-        assert change.is_approved, f'{change.n_remaining_approvals_required=}'
-        assert (
-            relation_change.is_approved
-        ), f'{relation_change.n_remaining_approvals_required=}'
+        assert change.is_merged, f'{change.n_remaining_approvals_required=}'
+        assert relation_change.is_merged, f'{relation_change.n_remaining_approvals_required=}'
         assert p.topic_relations.exists()
         assert p.topic_relations.first().topic == topic

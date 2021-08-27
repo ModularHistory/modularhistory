@@ -47,6 +47,7 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
     case "sources.source":
       content = <div dangerouslySetInnerHTML={{ __html: (module as Source).citationHtml }} />;
       break;
+    case "entities.entity":
     case "entities.person":
     case "entities.organization":
       content = <div dangerouslySetInnerHTML={{ __html: (module as Entity).name }} />;

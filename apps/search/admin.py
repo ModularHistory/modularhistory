@@ -28,7 +28,7 @@ class SearchableModelAdmin(ModeratedModelAdmin):
         self, request: 'HttpRequest', model_instance: Optional['SearchableModel'] = None
     ) -> list[str]:
         """Return reordered fields to be displayed in the admin."""
-        fields = super().get_fields(request, model_instance)
+        fields = list(super().get_fields(request, model_instance))
         ordered_field_names = reversed(
             [
                 'notes',

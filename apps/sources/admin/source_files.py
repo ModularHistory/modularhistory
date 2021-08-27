@@ -44,7 +44,7 @@ class SourceFileAdmin(ExtendedModelAdmin):
 
     def get_fields(self, request: 'HttpRequest', model_instance: Optional['Model'] = None):
         """Return reordered fields to be displayed in the admin."""
-        fields = super().get_fields(request, model_instance)
+        fields = list(super().get_fields(request, model_instance))
         if fields and PAGE_OFFSET_FIELD in fields:
             fields.remove(PAGE_OFFSET_FIELD)
             fields.append(PAGE_OFFSET_FIELD)

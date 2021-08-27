@@ -185,3 +185,12 @@ def test_nested_recursion():
     foo.parent = baz
     with pytest.raises(IntegrityError):
         foo.save()
+
+
+def test_title():
+    """Verify the title is set correctly."""
+    foo = create_topic(name='Foo')
+    assert foo.title == foo.name
+    manually_set_title = 'Manually set title'
+    bar = create_topic(name='Bar', title=manually_set_title)
+    assert bar.title == manually_set_title

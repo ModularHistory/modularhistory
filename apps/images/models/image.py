@@ -36,8 +36,7 @@ IMAGE_TYPES = (
 
 TYPE_NAME_MAX_LENGTH = 14
 
-IMAGE_FIELD_NAME = 'image'
-IMAGE_KEY = IMAGE_FIELD_NAME
+IMAGE_KEY = IMAGE_FIELD_NAME = 'image'
 
 image_placeholder_regex: str = OBJECT_PLACEHOLDER_REGEX.replace(
     TYPE_GROUP, rf'(?P<{PlaceholderGroups.MODEL_NAME}>image)'  # noqa: WPS360
@@ -77,13 +76,11 @@ class Image(MediaModel):
         default=IMAGE_TYPES[0][0],
     )
     urls = JSONField(default=dict, blank=True)
-    width = models.PositiveSmallIntegerField(
-        verbose_name=_('width'), null=True, blank=True  # TODO: remove null
-    )
-    height = models.PositiveSmallIntegerField(verbose_name=_('height'), null=True, blank=True)
+    width = models.PositiveSmallIntegerField(verbose_name=_('width'), blank=True)
+    height = models.PositiveSmallIntegerField(verbose_name=_('height'), blank=True)
     # https://github.com/jonasundderwolf/django-image-cropping
     cropping = ImageRatioField(
-        IMAGE_FIELD_NAME,
+        image_field=IMAGE_FIELD_NAME,
         free_crop=True,
         allow_fullsize=True,
         verbose_name=_('cropping'),
@@ -107,13 +104,11 @@ class Image(MediaModel):
 
     def __str__(self) -> str:
         """Return the string representation of the image."""
-        return self.caption if self.caption else self.image.name
+        return self.caption or self.image.name
 
     def clean(self):
         """Prepare the image to be saved."""
         super().clean()
-        if not self.caption:
-            raise ValidationError('Image needs a caption.')
         image_is_duplicated = (
             self.caption
             and Image.objects.filter(image=self.image, caption=self.caption)
@@ -147,7 +142,7 @@ class Image(MediaModel):
     @property
     def caption_html(self) -> str:
         """Return the user-facing caption HTML."""
-        return self.caption or ''
+        return self.caption
 
     @property
     def cropped_image_url(self) -> Optional[str]:

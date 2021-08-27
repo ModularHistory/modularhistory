@@ -29,7 +29,6 @@ class EntitiesInline(TabularInline):
     model = Entity.images.through
     verbose_name = 'entity'
     verbose_name_plural = 'entities'
-    extra = 1
     autocomplete_fields = ['content_object']
 
 

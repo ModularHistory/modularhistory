@@ -57,6 +57,7 @@
         "noinput",
         "noqa",
         "OSSAR",
+        "pafy",
         "Patreon",
         "pformat",
         "plpgsql",
