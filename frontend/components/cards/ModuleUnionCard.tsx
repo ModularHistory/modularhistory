@@ -24,10 +24,10 @@ const ModuleUnionCard: FC<ModuleUnionCardProps> = ({
       );
       break;
     case "propositions.occurrence":
-      content = <div dangerouslySetInnerHTML={{ __html: (module as Occurrence).summary }} />;
+      content = <div dangerouslySetInnerHTML={{ __html: (module as Occurrence).title }} />;
       break;
     case "propositions.proposition":
-      content = <div dangerouslySetInnerHTML={{ __html: (module as Proposition).summary }} />;
+      content = <div dangerouslySetInnerHTML={{ __html: (module as Proposition).title }} />;
       break;
     case "quotes.quote": {
       const quote: Quote = module as Quote;
