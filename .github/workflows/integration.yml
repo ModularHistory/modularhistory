@@ -625,6 +625,43 @@ jobs:
         poetry run pytest nothing.py
     - name: Run tests
       run: poetry run invoke test --no-docker
+  test:
+    name: Test
+    continue-on-error: true
+    needs: [build-react, build-django]
+    container: cypress/browsers:node12.18.3-chrome87-ff82
+    strategy:
+      fail-fast: false
+      matrix:
+        # Note: Services (running in Docker containers) only work on ubuntu.
+        os: [ubuntu-latest]
+        browser: [chrome, firefox]
+      max-parallel: 3
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
+      uses: mithro/actions-includes@main
+      if: runner.os == 'Linux'
+      continue-on-error: false
+      with:
+        workflow: .github/workflows/integration.yml
+    - uses: actions/checkout@v2
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1.10.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+    - run: |
+        docker-compose pull
+        docker-compose up -d django react webserver
+    - name: Check frontend service
+      run: curl --fail http://modularhistory.dev.net || exit 1
+    - name: Run Cypress
+      uses: cypress-io/github-action@v2
+      with:
+        config: baseUrl=http://modularhistory.dev.net
+        browser: ${{ matrix.browser }}
   test-frontend:
     name: Test frontend
     needs: [build-react, build-django]
