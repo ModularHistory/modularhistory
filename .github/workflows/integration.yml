@@ -636,7 +636,7 @@ jobs:
         password: ${{ secrets.CR_PAT }}
     - run: |
         docker-compose pull
-        docker-compose up -d django react webserver
+        docker-compose up -d dev
     - name: Check service
       run: curl --fail http://modularhistory.dev.net || exit 1
     - name: Run Cypress
