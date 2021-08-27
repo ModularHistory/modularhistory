@@ -204,6 +204,7 @@ jobs:
 
   test-frontend:
     name: Run e2e tests
+    environment: prod
     needs: [build-react, build-django]
     runs-on: ubuntu-latest
     strategy:
