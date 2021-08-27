@@ -657,7 +657,11 @@ jobs:
         ports:
         - 6379:6379
         # Set health checks to wait until redis has started.
-        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       backend:
         image: ghcr.io/modularhistory/django:${{ github.sha }}
         ports:
@@ -672,6 +676,11 @@ jobs:
         credentials:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
+        options: >-
+          --health-cmd "curl --fail http://localhost:3000 || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
     - name: ⏰ 🛂 📕 - Checking workflow expansion is up to date
       uses: mithro/actions-includes@main
