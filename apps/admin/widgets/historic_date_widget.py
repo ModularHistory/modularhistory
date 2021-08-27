@@ -230,7 +230,7 @@ class HistoricDateWidget(MultiWidget):
 
 
 def _datetime_from_datadict_values(
-    year, year_system, season=None, month=None, day=None
+    year: int, year_system, season=None, month=None, day=None
 ) -> HistoricDateTime:
     # Figure out year
     year, second, microsecond = get_year(year, year_system)
