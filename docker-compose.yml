@@ -267,7 +267,8 @@ services:
     # https://github.com/cypress-io/cypress-docker-images
     image: "cypress/included:7.1.0"
     depends_on:
-      - webserver
+      webserver:
+        condition: service_healthy
     environment:
       - CYPRESS_baseUrl=https://www.modularhistory.com
     working_dir: /e2e
