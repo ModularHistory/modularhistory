@@ -10,12 +10,12 @@ from core.environment import ENVIRONMENT
 
 def superuser_check(app_configs, **kwargs):
     """Check that a superuser has been created."""
-    conditions = [
-        ENVIRONMENT == Environments.DEV,
-        sys.argv[1] == 'runserver',
-        not get_user_model().objects.filter(is_superuser=True).exists(),
-    ]
-    if not all(conditions):
+    check_for_superuser = (
+        ENVIRONMENT == Environments.DEV
+        and sys.argv[1] == 'runserver'
+        and not get_user_model().objects.filter(is_superuser=True).exists()
+    )
+    if not check_for_superuser:
         return []
     return [
         Warning(
