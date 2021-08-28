@@ -157,6 +157,7 @@ jobs:
       with:
         os: ${{ runner.os }}
         image: webserver
+        push: true
         tags: ghcr.io/modularhistory/webserver:${{ github.sha }}
 
   test-backend:
@@ -205,7 +206,7 @@ jobs:
   test-frontend:
     name: Run e2e tests
     environment: integration
-    needs: [build-react, build-django]
+    needs: [build-django, build-react, build-webserver]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -223,7 +224,7 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
     - run: |
-        docker-compose -f docker-compose.yml pull
+        docker-compose -f docker-compose.yml pull django react webserver
         docker-compose -f docker-compose.yml up -d webserver
     - name: Run Cypress
       run: docker-compose -f docker-compose.yml up cypress

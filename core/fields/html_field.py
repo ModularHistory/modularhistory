@@ -163,7 +163,7 @@ class HTMLField(TextField):
             html = self._clean(html, model_instance=model_instance)
         except Exception as err:
             raise ValidationError(f'{err}')
-        return html
+        return html or ''
 
     def pre_save(self, model_instance: 'ExtendedModel', add: bool) -> str:
         value: str = getattr(model_instance, self.attname, '')
@@ -245,7 +245,7 @@ class HTMLField(TextField):
         for content_type in self.processable_content_types:
             model_cls_str = MODEL_CLASS_PATHS.get(content_type)
             if model_cls_str:
-                model_cls = import_string(model_cls_str)
+                model_cls: Type['ExtendedModel'] = import_string(model_cls_str)
                 for match in model_cls.get_admin_placeholder_regex().finditer(html):
                     if match.group(PlaceholderGroups.MODEL_NAME) != content_type:
                         logging.error(
